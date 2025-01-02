@@ -1,3 +1,6 @@
+import { LoaderFunction } from "@remix-run/node";
+import { requireUserSession } from "~/services/session.server";
+
 export default function Dashboard() {
   return (
     <main className={"m-40 flex flex-col items-center"}>
@@ -5,3 +8,8 @@ export default function Dashboard() {
     </main>
   );
 }
+
+export const loader: LoaderFunction = async ({ request }) => {
+  await requireUserSession(request);
+  return null;
+};

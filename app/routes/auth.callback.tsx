@@ -1,10 +1,10 @@
 import { data, redirect, type LoaderFunction } from "@remix-run/node";
-import { authorizeUser } from "~/services/brakAuth.server";
+import { authenticator } from "~/services/oauth.server";
 
 // needs to be done on root URL at the moment (redirect_url update needed by BRAK)
-
 export const loader: LoaderFunction = async ({ request }) => {
-  await authorizeUser(request)
+  await authenticator
+    .authenticate("bea", request)
     .then((data) => {
       console.log("authorizeUser then", data);
       throw redirect("/dashboard");

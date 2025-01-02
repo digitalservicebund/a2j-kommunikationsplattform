@@ -1,8 +1,6 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { data, Link, redirect } from "@remix-run/react";
 import { authenticator } from "~/services/oauth.server";
-// import { authorizeUser } from "~/services/brakAuth.server";
-import { getSession } from "~/services/session.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -12,29 +10,14 @@ export const meta: MetaFunction = () => {
 };
 
 // TODO:
-// - test user auth with BRAK IdP test env "schulung"
 // - auth flow: add error handling
 // - on page load: if user is logged in already, redirect to /dashboard
 //   - authorizeUser() via auth.callback.tsx, when redirect_url has been updated @ BRAK
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  // debugging:
-  const session = await getSession(request.headers.get("Cookie"));
-
-  // Our redirect_uri is currently incorrectly configured to the index endpoint.
   // We have requested this to be updated to the auth.callback endpoint, but it has not yet been done.
-  // As a workaround, we will call the authUser function here, which will call authorizeUser.
-
-  // Using the openid-connect library:
-  // await authUserOpenId(request);
-
-  // Using the remix-oauth library:
+  // As a workaround, we will call the authUserRemixOAuth function here, instead of in the `auth.callback.tsx` route.
   await authUserRemixOAuth(request);
-
-  const codeVerifier = session.get("code_verifier");
-  const return_to = session.get("return_to");
-  console.log("codeVerifier is", codeVerifier);
-  console.log("return_to is", return_to);
 
   return data(null);
 }
@@ -52,23 +35,6 @@ async function authUserRemixOAuth(request: Request) {
   }
 }
 
-// async function authUserOpenId(request: Request) {
-//   const url = new URL(request.url);
-//   const code = url.searchParams.get("code");
-
-//   if (code) {
-//     await authorizeUser(request)
-//       .then((data) => {
-//         console.log("authorizeUser then", data);
-//         throw redirect("/dashboard");
-//       })
-//       .catch((error) => {
-//         console.log("authorizeUser catch", error);
-//         throw redirect("/error");
-//       });
-//   }
-// }
-
 export default function Index() {
   return (
     <main className={"m-40 flex flex-col items-center"}>
@@ -82,7 +48,7 @@ export default function Index() {
 
       <div className={"m-40 text-center"}>
         <p className={"pb-20"}>Bitte wählen Sie Ihre Loginmethode:</p>
-        <Link to={"/login/bea"} className={"ds-button"}>
+        <Link to={"/login"} className={"ds-button"}>
           beA-Portal
         </Link>
       </div>

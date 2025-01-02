@@ -1,38 +1,40 @@
 import { Authenticator } from "remix-auth";
 import { CodeChallengeMethod, OAuth2Strategy } from "remix-auth-oauth2";
 import { config } from "~/config/config.server";
+import { createUserSession } from "./session.server";
+import { z } from "zod";
 
-interface User {
-  code: string;
-}
+export const UserSchema = z.object({
+  accessToken: z.string(),
+  expiresAt: z.number(),
+});
+
+export type User = z.infer<typeof UserSchema>;
 
 export const authenticator = new Authenticator<User>();
 
 authenticator.use(
   new OAuth2Strategy(
     {
-      cookie: "oauth2", // Optional, can also be an object with more options
-
+      cookie: "oauth2",
       clientId: config().BRAK_IDP_OIDC_CLIENT_ID,
       clientSecret: config().BRAK_IDP_OIDC_CLIENT_SECRET,
-
       authorizationEndpoint: `${config().BRAK_IDP_OIDC_ISSUER}/protocol/openid-connect/auth`,
       tokenEndpoint: `${config().BRAK_IDP_OIDC_ISSUER}/protocol/openid-connect/token`,
       redirectURI: `${config().BRAK_IDP_OIDC_REDIRECT_URI}`,
-
-      //   tokenRevocationEndpoint: "https://provider.com/oauth2/revoke", // optional
-
-      // scopes: ["safe_oidc", "email", "profile"],
-      codeChallengeMethod: CodeChallengeMethod.S256, // optional
+      // scopes: ["safe_oidc", "email", "profile"], // TODO: Check which scopes we need
+      codeChallengeMethod: CodeChallengeMethod.S256,
     },
     async ({ tokens, request }) => {
-      // here you can use the params above to get the user and return it
-      // what you do inside this and how you find the user is up to you
+      const user: User = {
+        accessToken: tokens.accessToken(),
+        expiresAt: Date.now() + 60 * 60 * 1000 * 24 * 14, // 14 days
+      };
 
-      return { code: tokens.accessToken.toString() };
+      await createUserSession(user, request);
+
+      return user;
     },
   ),
-  // this is optional, but if you setup more than one OAuth2 instance you will
-  // need to set a custom name to each one
-  "bea",
+  "bea", // name of the strategy. When you call `authenticate`, you pass this name to use this strategy.
 );
