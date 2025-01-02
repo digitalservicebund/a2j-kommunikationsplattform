@@ -1,7 +1,6 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { data, Link, redirect } from "@remix-run/react";
-import { authenticator } from "~/services/oauth.server";
-// import { authorizeUser } from "~/services/brakAuth.server";
+import { authorizeUser } from "~/services/brakAuth.server";
 import { getSession } from "~/services/session.server";
 
 export const meta: MetaFunction = () => {
@@ -25,11 +24,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   // We have requested this to be updated to the auth.callback endpoint, but it has not yet been done.
   // As a workaround, we will call the authUser function here, which will call authorizeUser.
 
-  // Using the openid-connect library:
-  // await authUserOpenId(request);
-
-  // Using the remix-oauth library:
-  await authUserRemixOAuth(request);
+  await authUserOpenId(request);
 
   const codeVerifier = session.get("code_verifier");
   const return_to = session.get("return_to");
@@ -39,35 +34,22 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return data(null);
 }
 
-async function authUserRemixOAuth(request: Request) {
+async function authUserOpenId(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
+
   if (code) {
-    try {
-      let user = await authenticator.authenticate("bea", request);
-      console.log("user is", user);
-    } catch (error) {
-      console.error("Authentication error:", error);
-    }
+    await authorizeUser(request)
+      .then((data) => {
+        console.log("authorizeUser then", data);
+        throw redirect("/dashboard");
+      })
+      .catch((error) => {
+        console.log("authorizeUser catch", error);
+        throw redirect("/error");
+      });
   }
 }
-
-// async function authUserOpenId(request: Request) {
-//   const url = new URL(request.url);
-//   const code = url.searchParams.get("code");
-
-//   if (code) {
-//     await authorizeUser(request)
-//       .then((data) => {
-//         console.log("authorizeUser then", data);
-//         throw redirect("/dashboard");
-//       })
-//       .catch((error) => {
-//         console.log("authorizeUser catch", error);
-//         throw redirect("/error");
-//       });
-//   }
-// }
 
 export default function Index() {
   return (
