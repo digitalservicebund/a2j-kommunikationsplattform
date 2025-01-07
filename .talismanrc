@@ -9,8 +9,6 @@ fileignoreconfig:
     checksum: 3f194ddcbbfc8f9ac2a1655dcd288be0df200b3a285e1c96a5765b9664c1f88d
   - filename: .env.example
     checksum: e4f39c1718c11d16be854b2ff85c9bfb1d6ea9d5d1fafa3945515b5b458f0dcc
-  - filename: app/services/brakAuth.server.ts
-    checksum: d0ed7c5f8143376083b00304d514096728f6455e98aa2dfbe57e260868b28888
   - filename: app/config/config.server.ts
     checksum: 3e1bcb8f961ca98c3c018e9ea0eb3abbbce7b071f9cf7b0428b7c8be5f29e947
   - filename: app/services/oauth.server.ts
