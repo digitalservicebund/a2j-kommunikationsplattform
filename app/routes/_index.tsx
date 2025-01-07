@@ -9,13 +9,8 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-// TODO:
-// - auth flow: add error handling
-// - on page load: if user is logged in already, redirect to /dashboard
-//   - authorizeUser() via auth.callback.tsx, when redirect_url has been updated @ BRAK
-
 export async function loader({ request }: LoaderFunctionArgs) {
-  // We have requested this to be updated to the auth.callback endpoint, but it has not yet been done.
+  // TODO: Update this to be done within the auth.callback endpoint, when redirect_uri has been updated by beA support team.
   // As a workaround, we will call the authUserRemixOAuth function here, instead of in the `auth.callback.tsx` route.
   return await authUserRemixOAuth(request);
 }
