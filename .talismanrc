@@ -16,7 +16,7 @@ fileignoreconfig:
   - filename: app/services/oauth.server.ts
     checksum: 8adeb6ed54f89b211c51775ef5ee8c7237271b5e791884a9d6691bf24599786c
   - filename: app/services/session.server.ts
-    checksum: 3bd11eb583e1d75872148c2bf127c6eba067084379173b4f53fa83fc5a820cda
+    checksum: 77992cf897e3c78ddd80d23345629f94772cc0a8ed07c6f5da87dd7aa4c44c48
 version: ""
 scopeconfig:
   - scope: node
@@ -27,4 +27,3 @@ allowed_patterns:
   - password:\ \${{\ secrets.GITHUB_TOKEN\ }}
   - key:\ \${{\ runner.os\ }}-node-\${{\ hashFiles\('[*]{2}/package-lock.json'\)\ }}
   - secrets:\ inherit
-
