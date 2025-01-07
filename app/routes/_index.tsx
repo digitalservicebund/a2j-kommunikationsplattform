@@ -18,9 +18,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 async function authUserRemixOAuth(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
+
   if (code) {
     try {
-      let authenticationResponse = await authenticator.authenticate(
+      const authenticationResponse = await authenticator.authenticate(
         "bea",
         request,
       );
