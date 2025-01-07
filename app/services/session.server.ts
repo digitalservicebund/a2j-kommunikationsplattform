@@ -1,6 +1,7 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import { config } from "~/config/config.server";
-import { User, UserSchema } from "./oauth.server";
+import { UserSchema } from "./oauth.server";
+import type { User } from "./oauth.server";
 
 const { getSession, commitSession, destroySession } =
   createCookieSessionStorage({
