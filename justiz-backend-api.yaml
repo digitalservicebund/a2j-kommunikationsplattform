@@ -1,0 +1,507 @@
+openapi: 3.0.1
+info:
+  title: Justiz-Backend-API
+  description: Justiz-Backend-API
+  version: 0.0.1
+paths:
+  /verfahren:
+    post:
+      summary: "Create a new Verfahren"
+      tags:
+        - "Verfahren"
+      description: "Uploads an XML file to create a new Verfahren."
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: "The XML file to upload"
+      parameters:
+        - in: header
+          name: X-User-ID
+          required: true
+          schema:
+            type: string
+            description: "The unique identifier of the user making the request."
+      responses:
+        '201':
+          description: "Verfahren created successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  verfahren_id:
+                    type: string
+                    format: uuid
+        '400':
+          description: "Invalid XML file format."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid XML format. Please upload a valid XML file conforming to the XJustiz schema."
+        '500':
+          description: "Internal server error."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "An unexpected error occurred on the server."
+    get:
+      summary: "List Verfahren"
+      tags:
+        - "Verfahren"
+      description: "Retrieves a paginated list of all Verfahren using offset-based pagination."
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            description: "The number of items to return per page."
+        - in: query
+          name: offset
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+            description: "The number of items to skip."
+        - in: header
+          name: X-User-ID
+          required: true
+          schema:
+            type: string
+            description: "The unique identifier of the user making the request."
+      responses:
+        '200':
+          description: "Paginated list of Verfahren."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        verfahren_id:
+                          type: string
+                          format: uuid
+                        status:
+                          type: string
+                  pagination:
+                    type: object
+                    properties:
+                      limit:
+                        type: integer
+                        description: "The number of items per page."
+                      offset:
+                        type: integer
+                        description: "The number of items skipped."
+                      total_items:
+                        type: integer
+                        description: "The total number of items in the dataset."
+  /verfahren/{verfahren-id}:
+    get:
+      summary: "Get detailed information about a specific Verfahren."
+      tags:
+        - "Verfahren"
+      description: "Returns detailed information about a given Verfahren."
+      parameters:
+        - in: path
+          name: verfahren-id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-User-ID
+          required: true
+          schema:
+            type: string
+            description: "The unique identifier of the user making the request."
+      responses:
+        '200':
+          description: "Details of the specified Verfahren."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  verfahren_id:
+                    type: string
+                    format: uuid
+                  akte_id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+  /verfahren/{verfahren-id}/nachrichten:
+    post:
+      summary: "Communication related to a Verfahren."
+      tags:
+        - "Verfahren"
+      description: "Enables users to execute commands related to a Verfahren (Erwiderung, Anerkennung, usw.)"
+      parameters:
+        - in: path
+          name: verfahren-id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-User-ID
+          required: true
+          schema:
+            type: string
+            description: "The unique identifier of the user making the request."
+      requestBody:
+        content:
+          application/xml:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: "Action executed successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Action executed successfully"
+  /verfahren/{verfahren-id}/beteiligten:
+    post:
+      summary: "Associate a user with a Verfahren"
+      tags:
+        - "Verfahren"
+      description: |
+        This endpoint associates a user with the specified Verfahren using a unique invitation code (`code`).
+        When the Verfahren is sent to the Beklate, they will receive a URL to KomPla which will link them to this Verfahren.
+        The code is a generated string with a one-time use.
+      parameters:
+        - name: "verfahren-id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            example: "e4d3b8c8-935e-4ad4-b973-0e8f3c77f213"
+        - in: header
+          name: X-User-ID
+          required: true
+          schema:
+            type: string
+            description: "The unique identifier of the user making the request."
+        - name: "code"
+          in: "query"
+          required: true
+          description: "The unique invitation code that links the user to the Verfahren. This code is sent to the Beklagte to 'lift' them to the KomPla."
+          schema:
+            type: "string"
+            example: "abc123invitationcode"
+      responses:
+        "200":
+          description: "Successfully linked the user to the Verfahren"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                    example: "User successfully linked to the Verfahren."
+                  verfahren_id:
+                    type: "string"
+                    example: "e4d3b8c8-935e-4ad4-b973-0e8f3c77f213"
+                  user_id:
+                    type: "string"
+                    example: "20de16ae-0b04-449b-8b70-f9d38d1500a1"
+        "400":
+          description: "Bad Request - The invitation code is invalid, expired, or missing."
+        "404":
+          description: "Not Found - The Verfahren or invitation code was not found."
+        "500":
+          description: "Internal Server Error"
+  /akten/{akte-id}:
+    get:
+      summary: "Get information about a specific Akte."
+      tags:
+        - "Akte"
+      description: "Returns detailed information about a given Akte."
+      parameters:
+        - in: path
+          name: akte-id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-User-ID
+          required: true
+          schema:
+            type: string
+            description: "The unique identifier of the user making the request."
+      responses:
+        '200':
+          description: "Details of the specified Akte."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  akte_id:
+                    type: string
+                    format: uuid
+                  aktenzeichen:
+                    type: string
+  /akten/{akte-id}/aktenbaum:
+    get:
+      summary: "Get the Aktenbaum for a specific Akte."
+      tags:
+        - "Aktenbaum"
+      description: "Returns the folder structure for the specified Akte."
+      parameters:
+        - in: path
+          name: akte-id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: header
+          name: X-User-ID
+          required: true
+          schema:
+            type: string
+            description: "The unique identifier of the user making the request."
+      responses:
+        '200':
+          description: "Returns the Aktenbaum for the specified Akte."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  akte_id:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        ordner_id:
+                          type: string
+                        parent_ordner_id:
+                          type: string
+                          nullable: true
+                        ordner_name:
+                          type: string
+              examples:
+                example-1:
+                  summary: Example folder structure response
+                  value:
+                    akte_id: "dceb126a-379c-46ae-bca8-9488ba68a0b1"
+                    data:
+                      - ordner_id: "2d3d904b-65ec-476b-8f1a-a899f8e6ef80"
+                        parent_ordner_id: null
+                        ordner_name: "Hauptordner"
+                      - ordner_id: "313e375a-2aa8-45d2-ba7f-b240b0e077ca"
+                        parent_ordner_id: "2d3d904b-65ec-476b-8f1a-a899f8e6ef80"
+                        ordner_name: "Subordner 1"
+                      - ordner_id: "1a6e444a-679b-4f59-a860-ac76a52860db"
+                        parent_ordner_id: "313e375a-2aa8-45d2-ba7f-b240b0e077ca"
+                        ordner_name: "Subordner 2"
+                      - ordner_id: "1a6e444a-679b-4f59-a860-ac76a52860db"
+                        parent_ordner_id: null
+                        ordner_name: "Posteingang"
+  /akten/{akte-id}/dokumente:
+    get:
+      summary: "Get a list of documents associated with a specific Akte"
+      tags:
+        - "Dokumente"
+      description: "This endpoint retrieves the documents associated with a specific Akte, supporting offset-based pagination."
+      parameters:
+        - name: "akte-id"
+          in: "path"
+          required: true
+          description: "The ID of the Akte"
+          schema:
+            type: "string"
+            example: "3bda37f1-3932-4e28-8f21-c0974dd3bdb0"
+        - name: "offset"
+          in: "query"
+          description: "The number of items to skip for pagination."
+          required: false
+          schema:
+            type: "integer"
+            default: 0
+        - name: "limit"
+          in: "query"
+          description: "The number of items to return per page."
+          required: false
+          schema:
+            type: "integer"
+            default: 10
+            minimum: 1
+            maximum: 100
+      responses:
+        "200":
+          description: "A list of documents associated with the specified Akte"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  akte_id:
+                    type: "string"
+                    description: "ID of the Akte this document belongs to"
+                  data:
+                    type: "array"
+                    items:
+                      type: "object"
+                      properties:
+                        dokument_id:
+                          type: "string"
+                          description: "Unique ID for the document"
+
+                        ordner_id:
+                          type: "string"
+                          description: "ID of the folder the document is in"
+                        file_name:
+                          type: "string"
+                          description: "The file name of the document"
+                  pagination:
+                    type: object
+                    properties:
+                      limit:
+                        type: integer
+                        description: "The number of items per page."
+                      offset:
+                        type: integer
+                        description: "The number of items skipped."
+                      total_items:
+                        type: integer
+                        description: "The total number of items in the dataset."
+              example:
+                akte_id: "40683024-bb64-4067-9938-933b53f2a88a"
+                data:
+                  - dokument_id: "20de16ae-0b04-449b-8b70-f9d38d1500a1"
+                    ordner_id: "50eae1bc-bdf1-46fe-ab68-ff6288c159db"
+                    file_name: "document1.pdf"
+                  - dokument_id: "cb25b078-0e68-4666-8aac-a6f4ecce42ea"
+                    ordner_id: "7867a619-fc69-431b-a41b-a9fd906869d4"
+                    file_name: "document2.pdf"
+                pagination:
+                  limit: 10
+                  offset: 10
+                  total_items: 1000
+        "400":
+          description: "Bad Request - Invalid parameters"
+        "404":
+          description: "Not Found - Akte not found"
+        "500":
+          description: "Internal Server Error"
+    post:
+      summary: "Upload a document to a specific Aktenbaum in an Akte"
+      tags:
+        - "Dokumente"
+      description: "Allows the user to upload a file in the Akte. The document will be stored in a default folder in the Akte."
+      parameters:
+        - name: "akte-id"
+          in: "path"
+          required: true
+          description: "The unique ID of the Akte where the document will be uploaded."
+          schema:
+            type: "string"
+            example: "40683024-bb64-4067-9938-933b53f2a88a"
+        - in: header
+          name: X-User-ID
+          required: true
+          schema:
+            type: string
+            description: "The unique identifier of the user making the request."
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: "The document (file) to upload."
+      responses:
+        "201":
+          description: "Document uploaded successfully."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dokument_id:
+                    type: string
+                    format: uuid
+                    description: "The unique ID of the uploaded document."
+                  file_name:
+                    type: string
+                    description: "The name of the uploaded file."
+                  ordner_id:
+                    type: string
+                    format: uuid
+                    description: "The ID of the folder (Aktenbaum) where the document is stored."
+        "400":
+          description: "Bad Request - Invalid parameters or missing file."
+        "404":
+          description: "Not Found - The specified Akte or Aktenbaum was not found."
+        "500":
+          description: "Internal Server Error - Unexpected server issues."
+  /akten/{akte-id}/dokumente/{dokument-id}:
+    get:
+      summary: "Download a specific document from an Akte"
+      tags:
+        - "Dokumente"
+      description: "This endpoint allows the user to download a document by specifying the Akte ID and the document ID."
+      parameters:
+        - name: "akte-id"
+          in: "path"
+          required: true
+          description: "The ID of the Akte"
+          schema:
+            type: "string"
+            example: "3bda37f1-3932-4e28-8f21-c0974dd3bdb0"
+        - name: "dokument-id"
+          in: "path"
+          required: true
+          description: "The ID of the Akte"
+          schema:
+            type: "string"
+            example: "3bda37f1-3932-4e28-8f21-c0974dd3bdb0"
+      responses:
+        "200":
+          description: "The requested document file"
+          content:
+            application/octet-stream:
+              schema:
+                type: "string"
+                format: "binary"
+        "404":
+          description: "Not Found - Document not found"
+        "500":
+          description: "Internal Server Error"
