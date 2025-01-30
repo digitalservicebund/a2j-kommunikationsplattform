@@ -86,6 +86,12 @@ paths:
           schema:
             type: string
             description: "The unique identifier of the user making the request."
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+          description: "Filter results by Verfahren status.  Multiple statuses can be provided as a comma-separated list (e.g., status=pending,active,closed)."
       responses:
         '200':
           description: "Paginated list of Verfahren."
