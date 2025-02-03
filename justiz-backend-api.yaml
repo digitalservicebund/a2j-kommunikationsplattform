@@ -16,10 +16,13 @@ paths:
             schema:
               type: object
               properties:
-                file:
-                  type: string
-                  format: binary
-                  description: "The XML file to upload"
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                    description: "An file to upload (XML or PDF)"
+                  description: "Multiple files to upload"
       parameters:
         - in: header
           name: X-User-ID
