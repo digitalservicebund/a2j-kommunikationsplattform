@@ -31,7 +31,7 @@ paths:
             type: string
             description: "The unique identifier of the user making the request."
       responses:
-        '201':
+        "201":
           description: "Verfahren created successfully."
           content:
             application/json:
@@ -41,7 +41,7 @@ paths:
                   verfahren_id:
                     type: string
                     format: uuid
-        '400':
+        "400":
           description: "Invalid XML file format."
           content:
             application/json:
@@ -51,7 +51,7 @@ paths:
                   error:
                     type: string
                     example: "Invalid XML format. Please upload a valid XML file conforming to the XJustiz schema."
-        '500':
+        "500":
           description: "Internal server error."
           content:
             application/json:
@@ -96,7 +96,7 @@ paths:
             type: string
           description: "Filter results by Verfahren status.  Multiple statuses can be provided as a comma-separated list (e.g., status=pending,active,closed). Exact statuses are TBD"
       responses:
-        '200':
+        "200":
           description: "Paginated list of Verfahren."
           content:
             application/json:
@@ -145,7 +145,7 @@ paths:
             type: string
             description: "The unique identifier of the user making the request."
       responses:
-        '200':
+        "200":
           description: "Details of the specified Verfahren."
           content:
             application/json:
@@ -186,7 +186,7 @@ paths:
               type: string
               format: binary
       responses:
-        '200':
+        "200":
           description: "Action executed successfully."
           content:
             application/json:
@@ -268,7 +268,7 @@ paths:
             type: string
             description: "The unique identifier of the user making the request."
       responses:
-        '200':
+        "200":
           description: "Details of the specified Akte."
           content:
             application/json:
@@ -300,7 +300,7 @@ paths:
             type: string
             description: "The unique identifier of the user making the request."
       responses:
-        '200':
+        "200":
           description: "Returns the Aktenbaum for the specified Akte."
           content:
             application/json:
