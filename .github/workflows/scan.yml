@@ -10,7 +10,7 @@ on:
 env:
   CONTAINER_REGISTRY: ghcr.io
   CONTAINER_IMAGE_NAME: ${{ github.repository }}
-  CONTAINER_IMAGE_VERSION: latest
+  CONTAINER_IMAGE_VERSION: ${{ github.ref == 'refs/heads/main' && 'latest' || github.sha }} # Use 'latest' for main, commit hash for PR or other branches
 
 jobs:
   vulnerability-scan:
@@ -25,6 +25,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Restore Docker image cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /tmp/.docker-cache
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+
       - name: Validate github workflow files to have pinned versions
         uses: digitalservicebund/github-actions-linter@09783a3d4e13424bc0caf1f7145f68bc6138688b # v0.1.11
 
@@ -36,7 +43,7 @@ jobs:
           # Specify multiple registries: try default GitHub registry, if too many requests, use the aws mirror.
           TRIVY_DB_REPOSITORY: ghcr.io/aquasecurity/trivy-db,public.ecr.aws/aquasecurity/trivy-db
         with:
-          image-ref: ${{ env.CONTAINER_REGISTRY }}/${{ env.CONTAINER_IMAGE_NAME }}:${{ env.CONTAINER_IMAGE_VERSION }}
+          image-ref: ${{ env.CONTAINER_IMAGE_NAME }}:${{ env.CONTAINER_IMAGE_VERSION }}
           format: "sarif"
           # By default SARIF format enforces output of all vulnerabilities regardless of configured severities.
           # To override this set limit-severities-for-sarif to true.
