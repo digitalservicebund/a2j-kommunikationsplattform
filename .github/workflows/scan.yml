@@ -32,6 +32,21 @@ jobs:
             /tmp/.docker-cache
           key: ${{ runner.os }}-docker-${{ github.sha }}
 
+      - name: Load cached Docker image
+        id: load-docker-image
+        run: |
+          IMAGE_PATH="/tmp/.docker-cache/${{ env.IMAGE_NAME }}_${{ github.sha }}.tar"
+
+          if docker load -i $IMAGE_PATH; then
+            echo "docker-image-load-successful=true" >> $GITHUB_ENV
+            echo "::set-output name=docker-image-load-successful::true"
+            echo "Docker image loaded from cache: $IMAGE_PATH"
+          else
+            echo "docker-image-load-successful=false" >> $GITHUB_ENV
+            echo "::set-output name=docker-image-load-successful::false"
+            echo "Docker image not found in cache: $IMAGE_PATH"
+          fi
+
       - name: Validate github workflow files to have pinned versions
         uses: digitalservicebund/github-actions-linter@09783a3d4e13424bc0caf1f7145f68bc6138688b # v0.1.11
 
