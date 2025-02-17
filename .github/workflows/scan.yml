@@ -35,7 +35,7 @@ jobs:
       - name: Load cached Docker image
         id: load-docker-image
         run: |
-          IMAGE_PATH="/tmp/.docker-cache/${{ env.IMAGE_NAME }}_${{ github.sha }}.tar"
+          IMAGE_PATH="/tmp/.docker-cache/${{ env.CONTAINER_IMAGE_NAME }}_${{ github.sha }}.tar"
 
           if docker load -i $IMAGE_PATH; then
             echo "docker-image-load-successful=true" >> $GITHUB_ENV
