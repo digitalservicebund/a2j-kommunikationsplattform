@@ -8,7 +8,6 @@ fileignoreconfig:
     checksum: 9ff9bdbfe552c09b24590f046ca35cc6bfd6f5d696e8920e9dd553a3921ce6c2
   - filename: .github/workflows/pipeline.yml
     checksum: 7024e4c95bfa53af1af50706e907ec6c39d44a979151fcc4331bfb2cb1c71014
-    checksum: 83b504bdc699989c30c4534220fc811c5acd9968f1743269f6abb010dffd3077
   - filename: .env.example
     checksum: e4f39c1718c11d16be854b2ff85c9bfb1d6ea9d5d1fafa3945515b5b458f0dcc
   - filename: app/config/config.server.ts
