@@ -4,6 +4,7 @@ fileignoreconfig:
   - filename: public/fonts/BundesSansWeb-BoldItalic.woff
     checksum: 446eff0044854604c36e380d186aab48077af382668430ad518ef49b37d4fa02
   - filename: SECURITY.md
+    checksum: b1743150cdd537be3a66f5308f887d130f0f320ab21628b63713808090a84e3f
   - filename: .github/workflows/scan.yml
     checksum: 9ff9bdbfe552c09b24590f046ca35cc6bfd6f5d696e8920e9dd553a3921ce6c2
   - filename: .github/workflows/pipeline.yml
