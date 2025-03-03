@@ -44,7 +44,7 @@
     "@remix-run/dev": "^2.15.2",
     "@remix-run/eslint-config": "^2.15.2",
     "@testing-library/jest-dom": "^6.6.1",
-    "@testing-library/react": "^16.0.1",
+    "@testing-library/react": "^16.2.0",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/jest": "^29.5.13",
     "@types/jsonwebtoken": "^9.0.7",
