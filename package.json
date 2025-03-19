@@ -24,6 +24,7 @@
     "@digitalservice4germany/angie": "^1.2.0",
     "@digitalservice4germany/style-dictionary": "^2.0.0",
     "@digitalservicebund/icons": "^2.0.1",
+    "@kern-ux/native": "^2.0.6",
     "@mjackson/form-data-parser": "^0.7.0",
     "@react-router/fs-routes": "^7.4.1",
     "@react-router/node": "^7.4.1",
