@@ -6,7 +6,7 @@ fileignoreconfig:
   - filename: SECURITY.md
     checksum: b1743150cdd537be3a66f5308f887d130f0f320ab21628b63713808090a84e3f
   - filename: .github/workflows/pipeline.yml
-    checksum: 0013fb0c6eb0a72a7d1d3ad395739b97178298b8459bb9d887e3107a81329f66
+    checksum: e772097e13597d38ffef48bffca33c6e28cc78128af0548cc41b1511b1cbd4f2
   - filename: .env.example
     checksum: 895f531cb961a972bc6eff1002d6ab34fa378c68a2eee82f31e9b7469c1f247e
   - filename: app/services/oAuth.server.ts
