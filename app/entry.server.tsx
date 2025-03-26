@@ -5,10 +5,15 @@
 
 import { PassThrough } from "node:stream";
 
-import { ServerRouter, type EntryContext } from "react-router";
+import {
+  HandleErrorFunction,
+  ServerRouter,
+  type EntryContext,
+} from "react-router";
 import { createReadableStreamFromReadable } from "@react-router/node";
 import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
+import * as Sentry from "@sentry/react-router";
 
 // Reject/cancel all pending promises after 5 seconds
 export const streamTimeout = 5000;
@@ -129,3 +134,11 @@ function handleBrowserRequest(
     setTimeout(abort, streamTimeout + 1000);
   });
 }
+
+export const handleError: HandleErrorFunction = (error, { request }) => {
+  // React Router may abort some interrupted requests, report those
+  if (!request.signal.aborted) {
+    Sentry.captureException(error);
+    console.error(error);
+  }
+};
