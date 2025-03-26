@@ -99,6 +99,8 @@ jobs:
             ${{ runner.os }}-docker-
 
       - name: Build and cache image from Dockerfile
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         if: steps.cache-docker-image.outputs.cache-hit != 'true'
         run: |
           mkdir -p /tmp/.docker-cache/${{ env.IMAGE_NAME }}
