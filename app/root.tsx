@@ -8,6 +8,7 @@ import {
 } from "react-router";
 import type { PropsWithChildren } from "react";
 import type { Route } from "./+types/root";
+import * as Sentry from "@sentry/react-router";
 
 import stylesheet from "~/styles.css?url";
 import fontsStylesheet from "@digitalservice4germany/angie/fonts.css?url";
@@ -70,6 +71,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
         ? "The requested page could not be found."
         : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
+    Sentry.captureException(error);
     details = error.message;
     stack = error.stack;
   }
