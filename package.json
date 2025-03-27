@@ -30,7 +30,6 @@
     "@react-router/serve": "^7.3.0",
     "@remix-run/node": "^2.16.0",
     "@sentry/react-router": "^9.9.0",
-    "@sentry/vite-plugin": "^3.2.2",
     "dotenv": "^16.4.7",
     "isbot": "^5.1.23",
     "jsonwebtoken": "^9.0.2",
