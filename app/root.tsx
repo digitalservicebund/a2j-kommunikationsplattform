@@ -12,6 +12,7 @@ import * as Sentry from "@sentry/react-router";
 
 import stylesheet from "~/styles.css?url";
 import fontsStylesheet from "@digitalservice4germany/angie/fonts.css?url";
+import { clientConfig } from "./config/config";
 
 type LayoutProps = PropsWithChildren & {
   readonly children?: React.ReactNode;
@@ -43,6 +44,11 @@ export function Layout({ children }: LayoutProps) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(clientConfig())}`,
+          }}
+        />
         <Meta />
         <Links />
       </head>

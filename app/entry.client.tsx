@@ -6,17 +6,21 @@ import * as Sentry from "@sentry/react-router";
 import { HydratedRouter } from "react-router/dom";
 import { startTransition, StrictMode } from "react";
 import { hydrateRoot } from "react-dom/client";
-import { clientConfig } from "./config/config.client";
+import { clientConfig } from "./config/config";
 
-Sentry.init({
-  dsn: clientConfig().SENTRY_DSN,
-  integrations: [Sentry.browserTracingIntegration()],
+const { SENTRY_DSN } = clientConfig();
 
-  tracesSampleRate: 1.0, //  Capture 100% of the transactions
+if (SENTRY_DSN !== undefined) {
+  Sentry.init({
+    dsn: clientConfig().SENTRY_DSN,
+    integrations: [Sentry.browserTracingIntegration()],
 
-  // Set `tracePropagationTargets` to declare which URL(s) should have trace propagation enabled
-  tracePropagationTargets: [/^\//, /^https:\/\/yourserver\.io\/api/],
-});
+    tracesSampleRate: 1.0, //  Capture 100% of the transactions
+
+    // Set `tracePropagationTargets` to declare which URL(s) should have trace propagation enabled
+    tracePropagationTargets: [/^\//, /^https:\/\/yourserver\.io\/api/],
+  });
+}
 
 startTransition(() => {
   hydrateRoot(
