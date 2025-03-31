@@ -49,6 +49,7 @@ COPY package*.json LICENSE SECURITY.md ./
 COPY --from=production-dependencies /kompla-app/node_modules/ ./node_modules/
 COPY --from=build /kompla-app/build/server ./build/server
 COPY --from=build /kompla-app/build/client ./build/client
+COPY app/instrument.server.mjs ./app/instrument.server.mjs
 
 EXPOSE 3000
 CMD ["npm", "run", "start"]

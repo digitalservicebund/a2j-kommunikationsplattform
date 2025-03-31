@@ -3,6 +3,7 @@
 
 # Include files required for building the application (except for node_modules these are installed by docker)
 !app
+!app/instrument.server.mjs
 !public
 !LICENSE
 !package-lock.json
