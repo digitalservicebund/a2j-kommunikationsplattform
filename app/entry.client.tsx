@@ -17,8 +17,10 @@ if (SENTRY_DSN !== undefined) {
 
     tracesSampleRate: 1.0, //  Capture 100% of the transactions
 
-    // Set `tracePropagationTargets` to declare which URL(s) should have trace propagation enabled
-    tracePropagationTargets: [/^\//, /^https:\/\/yourserver\.io\/api/],
+    tracePropagationTargets: [
+      /^\//, //  This enables trace propagation for all relative paths on the same domain.
+      /^https:\/\/kompla\.sinc\.de\//,
+    ],
   });
 }
 
