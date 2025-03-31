@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { config } from "~/config/config.server";
 
 const fileStorage = new LocalFileStorage(config().FILE_UPLOAD_DIRECTORY);
+const maxFileSize = 6_000_000_0; // 60MB
 
 export async function getFormDataFromRequest(
   request: Request,
@@ -13,5 +14,5 @@ export async function getFormDataFromRequest(
     await fileStorage.set(storageKey, fileUpload);
     return fileStorage.get(storageKey);
   };
-  return await parseFormData(request, uploadHandler);
+  return await parseFormData(request, { maxFileSize }, uploadHandler);
 }
