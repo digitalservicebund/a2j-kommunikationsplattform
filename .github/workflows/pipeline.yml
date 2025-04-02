@@ -149,9 +149,9 @@ jobs:
         with:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-  # vulnerability-scan:
-  #   uses: ./.github/workflows/scan.yml
-  #   secrets: inherit
+  vulnerability-scan:
+    uses: ./.github/workflows/scan.yml
+    secrets: inherit
 
   build-and-push-image:
     runs-on: ubuntu-latest
@@ -159,7 +159,7 @@ jobs:
     needs:
       - build
       - audit-licenses
-      # - vulnerability-scan
+      - vulnerability-scan
     permissions:
       contents: read
       id-token: write # This is used to complete the identity challenge with sigstore/fulcio..
