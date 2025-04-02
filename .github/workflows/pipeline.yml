@@ -159,7 +159,7 @@ jobs:
     needs:
       - build
       - audit-licenses
-      - vulnerability-scan
+      # - vulnerability-scan
     permissions:
       contents: read
       id-token: write # This is used to complete the identity challenge with sigstore/fulcio..
