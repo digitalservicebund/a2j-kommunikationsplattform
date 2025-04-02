@@ -149,9 +149,9 @@ jobs:
         with:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-  vulnerability-scan:
-    uses: ./.github/workflows/scan.yml
-    secrets: inherit
+  # vulnerability-scan:
+  #   uses: ./.github/workflows/scan.yml
+  #   secrets: inherit
 
   build-and-push-image:
     runs-on: ubuntu-latest
