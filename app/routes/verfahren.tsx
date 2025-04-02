@@ -77,7 +77,11 @@ function ListVerfahren() {
   return (
     <div className="mt-14 flex flex-col gap-24 w-full">
       {verfahren.map((v) => (
-        <div key={v.id} className="flex border-2 border-gray-500 p-24">
+        <div
+          key={v.id}
+          className="flex border-2 border-gray-500 p-24"
+          data-testid="verfahren-item"
+        >
           <div className="w-full">
             <div className="font-bold text-3xl">{v.aktenzeichen}</div>
             <div className="text-sm text-gray-500">Aktenzeichen</div>
@@ -144,7 +148,11 @@ function CreateVerfahren() {
   return (
     <>
       {!formVisible && (
-        <button onClick={toggleFormVisibility} className="ds-button mt-20">
+        <button
+          onClick={toggleFormVisibility}
+          className="ds-button mt-20"
+          data-testid="create-verfahren-button"
+        >
           Neue Klage einreichen
         </button>
       )}
@@ -196,6 +204,7 @@ function CreateVerfahren() {
             type="submit"
             className={`ds-button mt-20 ${xjustizSelected ? "" : "hidden is-disabled"}`}
             disabled={!xjustizSelected}
+            data-testid="submit-verfahren-button"
           >
             Klage einreichen
           </button>
