@@ -30,7 +30,6 @@
     "@react-router/fs-routes": "^7.4.1",
     "@react-router/node": "^7.4.1",
     "@react-router/serve": "^7.4.1",
-    "@remix-run/node": "^2.16.4",
     "@sentry/react-router": "^9.10.1",
     "dotenv": "^16.4.7",
     "isbot": "^5.1.25",
