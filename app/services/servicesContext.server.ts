@@ -39,7 +39,7 @@ class ServicesContext {
     return ServicesContext.mockedJustizBackendService;
   }
 
-  private static isDemoMode(demoMode: boolean): boolean {
+  static isDemoMode(demoMode: boolean): boolean {
     const nodeEnv = process.env.NODE_ENV;
     return demoMode && (nodeEnv === "staging" || nodeEnv === "development");
   }

@@ -3,6 +3,7 @@ import { ActionFunctionArgs, useFetcher, useLoaderData } from "react-router";
 import { getFormDataFromRequest } from "~/services/fileUpload.server";
 import { useRef } from "react";
 import { parse } from "cookie";
+import { requireUserSession } from "~/services/session.server";
 
 export async function loader({
   request,
@@ -11,6 +12,7 @@ export async function loader({
   request: Request;
   params: { id: string };
 }) {
+  await requireUserSession(request);
   const demoMode =
     parse(request.headers.get("cookie") || "").demoMode === "true";
   const justizBackendService =
@@ -40,7 +42,7 @@ export async function loader({
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  // await requireUserSession(request);
+  await requireUserSession(request);
   const demoMode =
     parse(request.headers.get("cookie") || "").demoMode === "true";
   const justizBackendService =

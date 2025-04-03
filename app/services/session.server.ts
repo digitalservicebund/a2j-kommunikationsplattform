@@ -1,6 +1,8 @@
 import { createCookieSessionStorage, redirect } from "react-router";
 import { config } from "~/config/config.server";
 import type { AuthenticationContext } from "./oAuth.server";
+import { ServicesContext } from "./servicesContext.server";
+import { parse } from "cookie";
 
 const { getSession, commitSession, destroySession } =
   createCookieSessionStorage({
@@ -50,6 +52,17 @@ export const getUserSession = async (
 };
 
 export const requireUserSession = async (request: Request) => {
+  const demoMode = ServicesContext.isDemoMode(
+    parse(request.headers.get("cookie") || "").demoMode === "true",
+  );
+  if (demoMode) {
+    const mockAuthenticationContext: AuthenticationContext = {
+      accessToken: "mockAccessToken",
+      expiresAt: Date.now() + 60 * 60 * 1000, // 1 hour
+    };
+    return mockAuthenticationContext;
+  }
+
   const userSession = await getUserSession(request);
 
   if (!userSession) {

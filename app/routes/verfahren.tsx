@@ -9,10 +9,10 @@ import {
 import { getFormDataFromRequest } from "~/services/fileUpload.server";
 import { ServicesContext } from "~/services/servicesContext.server";
 import { parse } from "cookie";
-// import { requireUserSession } from "~/services/session.server";
+import { requireUserSession } from "~/services/session.server";
 
 export async function loader({ request }: { request: Request }) {
-  // await requireUserSession(request);
+  await requireUserSession(request);
   const demoMode =
     parse(request.headers.get("cookie") || "").demoMode === "true";
   const verfahren = await ServicesContext.getJustizBackendService(
@@ -22,7 +22,7 @@ export async function loader({ request }: { request: Request }) {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  // await requireUserSession(request);
+  await requireUserSession(request);
   const formData = await getFormDataFromRequest(request);
 
   const demoMode =
