@@ -53,9 +53,21 @@ export default function Index() {
 
       <div className={"m-40 text-center"}>
         <p className={"pb-20"}>Bitte wählen Sie Ihre Loginmethode:</p>
-        <Link to={"/login"} className={"ds-button"}>
-          beA-Portal
-        </Link>
+        <div className="flex flex-col gap-16 items-center">
+          <Link to={"/login"} className={"ds-button"}>
+            beA-Portal
+          </Link>
+
+          <Link
+            to={"/verfahren"}
+            className={"ds-button"}
+            onClick={() => {
+              localStorage.setItem("demo_mode", "true");
+            }}
+          >
+            Demo mode
+          </Link>
+        </div>
       </div>
     </main>
   );
