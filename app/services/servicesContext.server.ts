@@ -16,7 +16,7 @@ class ServicesContext {
   public static getJustizBackendService(
     demoMode: boolean = false,
   ): JustizBackendService {
-    if (ServicesContext.isDemoMode(demoMode)) {
+    if (demoMode && ServicesContext.isDemoModeAllowed()) {
       return ServicesContext.initializeMockService();
     }
     return ServicesContext.initializeRealService();
@@ -39,9 +39,9 @@ class ServicesContext {
     return ServicesContext.mockedJustizBackendService;
   }
 
-  static isDemoMode(demoMode: boolean): boolean {
+  static isDemoModeAllowed(): boolean {
     const nodeEnv = process.env.NODE_ENV;
-    return demoMode && (nodeEnv === "staging" || nodeEnv === "development");
+    return nodeEnv === "staging" || nodeEnv === "development";
   }
 }
 
