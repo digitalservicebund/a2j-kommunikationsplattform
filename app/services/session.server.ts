@@ -48,6 +48,7 @@ export const getUserSession = async (
   return {
     accessToken,
     expiresAt,
+    demoMode: false,
   };
 };
 
@@ -59,6 +60,7 @@ export const requireUserSession = async (request: Request) => {
     const mockAuthenticationContext: AuthenticationContext = {
       accessToken: "mockAccessToken",
       expiresAt: Date.now() + 60 * 60 * 1000, // 1 hour
+      demoMode: true,
     };
     return mockAuthenticationContext;
   }

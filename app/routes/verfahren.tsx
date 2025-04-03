@@ -8,13 +8,10 @@ import {
 } from "react-router";
 import { getFormDataFromRequest } from "~/services/fileUpload.server";
 import { ServicesContext } from "~/services/servicesContext.server";
-import { parse } from "cookie";
 import { requireUserSession } from "~/services/session.server";
 
 export async function loader({ request }: { request: Request }) {
-  await requireUserSession(request);
-  const demoMode =
-    parse(request.headers.get("cookie") || "").demoMode === "true";
+  const { demoMode } = await requireUserSession(request);
   const verfahren = await ServicesContext.getJustizBackendService(
     demoMode,
   ).getAllVerfahren(10, 0);
@@ -22,11 +19,9 @@ export async function loader({ request }: { request: Request }) {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  await requireUserSession(request);
+  const { demoMode } = await requireUserSession(request);
   const formData = await getFormDataFromRequest(request);
 
-  const demoMode =
-    parse(request.headers.get("cookie") || "").demoMode === "true";
   const xjustiz = formData.get("xjustiz") as File;
   const files = formData.getAll("files") as File[];
 

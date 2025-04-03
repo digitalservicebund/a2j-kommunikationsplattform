@@ -2,7 +2,6 @@ import { ServicesContext } from "~/services/servicesContext.server";
 import { ActionFunctionArgs, useFetcher, useLoaderData } from "react-router";
 import { getFormDataFromRequest } from "~/services/fileUpload.server";
 import { useRef } from "react";
-import { parse } from "cookie";
 import { requireUserSession } from "~/services/session.server";
 
 export async function loader({
@@ -12,9 +11,7 @@ export async function loader({
   request: Request;
   params: { id: string };
 }) {
-  await requireUserSession(request);
-  const demoMode =
-    parse(request.headers.get("cookie") || "").demoMode === "true";
+  const { demoMode } = await requireUserSession(request);
   const justizBackendService =
     ServicesContext.getJustizBackendService(demoMode);
   const akte = await justizBackendService.getAkte(params.id);
@@ -42,9 +39,7 @@ export async function loader({
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  await requireUserSession(request);
-  const demoMode =
-    parse(request.headers.get("cookie") || "").demoMode === "true";
+  const { demoMode } = await requireUserSession(request);
   const justizBackendService =
     ServicesContext.getJustizBackendService(demoMode);
   const formData = await getFormDataFromRequest(request);

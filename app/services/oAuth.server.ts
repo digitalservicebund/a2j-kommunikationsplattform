@@ -6,6 +6,7 @@ import { createUserSession } from "./session.server";
 export interface AuthenticationContext {
   accessToken: string;
   expiresAt: number;
+  demoMode: boolean;
 }
 
 export interface AuthenticationResponse {
@@ -44,6 +45,7 @@ authenticator.use(
         authenticationContext: {
           accessToken,
           expiresAt,
+          demoMode: false,
         },
         sessionCookieHeader,
       };
