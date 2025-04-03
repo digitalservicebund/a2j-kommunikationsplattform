@@ -12,7 +12,6 @@ describe("requireUserSession", () => {
     mockRequest = new Request("http://localhost", {
       headers: { cookie: "" },
     });
-    jest.spyOn(console, "log").mockImplementation(() => {}); // Suppress console logs
   });
 
   afterEach(() => {
@@ -42,14 +41,13 @@ describe("requireUserSession", () => {
     } catch (response) {
       const res = response as Response;
       expect(res.status).toBe(302);
-      expect(res.headers.get("Location")).toBe("/login"); // Assert the redirect location
+      expect(res.headers.get("Location")).toBe("/login");
     }
   });
 
   it("returns a real session when demoMode is not allowed and session exists", async () => {
     jest.spyOn(ServicesContext, "isDemoModeAllowed").mockReturnValue(false);
     mockRequest.headers.set("cookie", "demoMode=true");
-    jest.spyOn(Date, "now").mockReturnValue(0);
     const now = Date.now() + 60 * 60;
 
     jest.spyOn(sessionServer, "getUserSession").mockResolvedValue({
