@@ -62,7 +62,7 @@ export default function Index() {
             to={"/verfahren"}
             className={"ds-button"}
             onClick={() => {
-              localStorage.setItem("demo_mode", "true");
+              document.cookie = "demoMode=true; path=/; max-age=3600"; // 1 hour
             }}
           >
             Demo mode

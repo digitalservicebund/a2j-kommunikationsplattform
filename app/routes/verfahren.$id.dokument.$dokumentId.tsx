@@ -1,12 +1,14 @@
 import { LoaderFunction } from "react-router";
-import { justizBackendService } from "~/services/servicesContext.server";
+import { parse } from "cookie";
+import { ServicesContext } from "~/services/servicesContext.server";
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async ({ params, request }) => {
   const { id, dokumentId } = params;
-  const dokumentFile = await justizBackendService.getDokumentFile(
-    id!,
-    dokumentId!,
-  );
+  const demoMode =
+    parse(request.headers.get("cookie") || "").demoMode === "true";
+  const dokumentFile = await ServicesContext.getJustizBackendService(
+    demoMode,
+  ).getDokumentFile(id!, dokumentId!);
 
   if (!dokumentFile) {
     throw new Response("Not Found", { status: 404 });

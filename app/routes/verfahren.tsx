@@ -7,12 +7,17 @@ import {
   useNavigation,
 } from "react-router";
 import { getFormDataFromRequest } from "~/services/fileUpload.server";
+import { ServicesContext } from "~/services/servicesContext.server";
+import { parse } from "cookie";
 // import { requireUserSession } from "~/services/session.server";
-import { justizBackendService } from "~/services/servicesContext.server";
 
-export async function loader() {
+export async function loader({ request }: { request: Request }) {
   // await requireUserSession(request);
-  const verfahren = await justizBackendService.getAllVerfahren(10, 0);
+  const demoMode =
+    parse(request.headers.get("cookie") || "").demoMode === "true";
+  const verfahren = await ServicesContext.getJustizBackendService(
+    demoMode,
+  ).getAllVerfahren(10, 0);
   return verfahren;
 }
 
@@ -20,10 +25,15 @@ export async function action({ request }: ActionFunctionArgs) {
   // await requireUserSession(request);
   const formData = await getFormDataFromRequest(request);
 
+  const demoMode =
+    parse(request.headers.get("cookie") || "").demoMode === "true";
   const xjustiz = formData.get("xjustiz") as File;
   const files = formData.getAll("files") as File[];
 
-  await justizBackendService.createVerfahren(xjustiz, files);
+  await ServicesContext.getJustizBackendService(demoMode).createVerfahren(
+    xjustiz,
+    files,
+  );
 
   return null;
 }
