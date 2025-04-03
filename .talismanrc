@@ -6,7 +6,11 @@ fileignoreconfig:
   - filename: SECURITY.md
     checksum: b1743150cdd537be3a66f5308f887d130f0f320ab21628b63713808090a84e3f
   - filename: .github/workflows/pipeline.yml
+<<<<<<< HEAD
     checksum: 626fcd1927a98277667f6e7ca13dd59915b1903f5803ce2c2806b388c75b87ec
+=======
+    checksum: e772097e13597d38ffef48bffca33c6e28cc78128af0548cc41b1511b1cbd4f2
+>>>>>>> 829b26b (Update talisman)
   - filename: .env.example
     checksum: 5b045baf79b4273a66633c7cb4251833f16c94e4e9bc875a58f859575631f8c3
   - filename: app/services/oAuth.server.ts
