@@ -56,7 +56,10 @@ export const requireUserSession = async (request: Request) => {
   const demoMode = ServicesContext.isDemoMode(
     parse(request.headers.get("cookie") || "").demoMode === "true",
   );
-  if (demoMode) {
+  const isStagingOrDev =
+    process.env.NODE_ENV === "staging" ||
+    process.env.NODE_ENV === "development";
+  if (demoMode && isStagingOrDev) {
     const mockAuthenticationContext: AuthenticationContext = {
       accessToken: "mockAccessToken",
       expiresAt: Date.now() + 60 * 60 * 1000, // 1 hour
