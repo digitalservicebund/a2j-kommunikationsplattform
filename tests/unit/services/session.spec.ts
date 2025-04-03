@@ -5,6 +5,7 @@ import { requireUserSession } from "~/services/session.server";
 import { ServicesContext } from "~/services/servicesContext.server";
 import { jest } from "@jest/globals";
 import * as sessionServer from "~/services/session.server";
+
 describe("requireUserSession", () => {
   let mockRequest: Request;
 
@@ -51,14 +52,14 @@ describe("requireUserSession", () => {
     const now = Date.now() + 60 * 60;
 
     jest.spyOn(sessionServer, "getUserSession").mockResolvedValue({
-      accessToken: "mockAccessToken",
+      accessToken: "realAccessToken",
       expiresAt: now,
       demoMode: false,
     });
 
     const session = await requireUserSession(mockRequest);
     expect(session).toEqual({
-      accessToken: "mockAccessToken",
+      accessToken: "realAccessToken",
       expiresAt: now,
       demoMode: false,
     });
