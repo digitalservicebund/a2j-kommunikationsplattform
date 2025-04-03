@@ -6,11 +6,7 @@ fileignoreconfig:
   - filename: SECURITY.md
     checksum: b1743150cdd537be3a66f5308f887d130f0f320ab21628b63713808090a84e3f
   - filename: .github/workflows/pipeline.yml
-<<<<<<< HEAD
     checksum: 626fcd1927a98277667f6e7ca13dd59915b1903f5803ce2c2806b388c75b87ec
-=======
-    checksum: e772097e13597d38ffef48bffca33c6e28cc78128af0548cc41b1511b1cbd4f2
->>>>>>> 829b26b (Update talisman)
   - filename: .env.example
     checksum: 5b045baf79b4273a66633c7cb4251833f16c94e4e9bc875a58f859575631f8c3
   - filename: app/services/oAuth.server.ts
@@ -25,6 +21,13 @@ fileignoreconfig:
     checksum: fa275d581af157c132957b9a2c587e851dd293cc5ace0d5c6471f2103c4cfea1
   - filename: app/services/fileUpload.server.ts
     checksum: dbe0cd779b278e7524d2ace7f0cbdfe26e3216856a37b75afb88014ee55e99b5
+  - filename: package-lock.json
+    checksum: a044669d1a393a3dd293d0db8656d69349d9d5f752ca371ca6a51d34c99b71c7
+  - filename: .github/workflows/secrets-check.yml
+    checksum: 676fd94700be5efb904aa97797a0c6312a5802b425b7b1d2e96a93e2d8677fe9
+  - filename: .github/workflows/scan.yml
+    checksum: b845ef02e7f8e27be5b69e151e8084ca89bb08567cd4284cfd0c0dc3e0ab9a1f
+
 version: ""
 scopeconfig:
   - scope: node
