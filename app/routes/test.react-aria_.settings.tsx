@@ -1,10 +1,10 @@
-import { useState } from "react";
+// import { useState } from "react";
 import { Link } from "react-router";
 // https://react-spectrum.adobe.com/react-aria/CheckboxGroup.html
-import { CheckboxGroup, Checkbox, Label } from "react-aria-components";
+import { Checkbox } from "~/components/react-aria/Checkbox";
 
 export default function TestReactAriaSettings() {
-  const [selected, setSelected] = useState([""]);
+  // const [selected, setSelected] = useState([""]);
 
   return (
     <main className={"m-40 flex flex-col items-center"}>
@@ -19,20 +19,19 @@ export default function TestReactAriaSettings() {
         Zum Dashboard
       </Link>
 
-      <CheckboxGroup value={selected} onChange={setSelected}>
-        <Label>Favorite sports</Label>
-        <Checkbox value="soccer" className="ds-checkbox">
-          Soccer
-        </Checkbox>
-        <Checkbox value="baseball" className="ds-checkbox">
-          Baseball
-        </Checkbox>
-        <Checkbox value="basketball" className="ds-checkbox">
-          Basketball
-        </Checkbox>
-      </CheckboxGroup>
-
-      <p>Currently selected is/are: {JSON.stringify(selected)}</p>
+      <fieldset>
+        <legend>Ansprechpartner</legend>
+        <div>
+          <Checkbox className={"ds-checkbox"}>Herr</Checkbox>
+        </div>
+        <div>
+          <Checkbox className={"ds-checkbox"}>Frau</Checkbox>
+        </div>
+        <div>
+          <Checkbox className={"ds-checkbox"}>Divers</Checkbox>
+        </div>
+      </fieldset>
+      {/* <p>Currently selected is/are: {JSON.stringify(selected)}</p> */}
     </main>
   );
 }
