@@ -1,10 +1,20 @@
 import { useState } from "react";
 import { Link } from "react-router";
 
+const initialCheckboxState = [false, false, false];
+
 export default function TestKernUXSettings() {
-  const [checked, setChecked] = useState(false);
-  const handleChange = () => {
-    setChecked(!checked);
+  const [checked, setChecked] = useState(initialCheckboxState);
+
+  const handleChange = (index: number, value: boolean) => {
+    const nextCheckboxState = checked.map((c, i) => {
+      if (i === index) {
+        return value;
+      } else {
+        return c;
+      }
+    });
+    setChecked(nextCheckboxState);
   };
 
   return (
@@ -27,7 +37,8 @@ export default function TestKernUXSettings() {
               id="herr"
               name="geschlecht"
               type="checkbox"
-              onChange={handleChange}
+              checked={checked[0]}
+              onChange={(e) => handleChange(0, e.target.checked)}
             />
             <label className="kern-form-check__label" htmlFor="herr">
               Herr
@@ -39,6 +50,8 @@ export default function TestKernUXSettings() {
               id="frau"
               name="geschlecht"
               type="checkbox"
+              checked={checked[1]}
+              onChange={(e) => handleChange(1, e.target.checked)}
             />
             <label className="kern-form-check__label" htmlFor="frau">
               Frau
@@ -50,6 +63,8 @@ export default function TestKernUXSettings() {
               id="divers"
               name="geschlecht"
               type="checkbox"
+              checked={checked[2]}
+              onChange={(e) => handleChange(2, e.target.checked)}
             />
             <label className="kern-form-check__label" htmlFor="divers">
               Divers
@@ -57,8 +72,8 @@ export default function TestKernUXSettings() {
           </div>
         </div>
       </fieldset>
-
-      <p>Herr is {checked ? "checked" : "not checked"}</p>
+      <br></br>
+      <code>CheckboxState: {JSON.stringify(checked)}</code>
     </main>
   );
 }

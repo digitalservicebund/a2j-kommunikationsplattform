@@ -1,10 +1,24 @@
-// import { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
+
 // https://react-spectrum.adobe.com/react-aria/CheckboxGroup.html
 import { Checkbox } from "~/components/react-aria/Checkbox";
 
+const initialCheckboxState = [false, false, false];
+
 export default function TestReactAriaSettings() {
-  // const [selected, setSelected] = useState([""]);
+  const [checked, setChecked] = useState(initialCheckboxState);
+
+  const handleChange = (index: number, value: boolean) => {
+    const nextCheckboxState = checked.map((c, i) => {
+      if (i === index) {
+        return value;
+      } else {
+        return c;
+      }
+    });
+    setChecked(nextCheckboxState);
+  };
 
   return (
     <main className={"m-40 flex flex-col items-center"}>
@@ -21,17 +35,36 @@ export default function TestReactAriaSettings() {
 
       <fieldset>
         <legend>Ansprechpartner</legend>
-        <div>
-          <Checkbox className={"ds-checkbox"}>Herr</Checkbox>
+        <div className="flex">
+          <Checkbox
+            className={"ds-checkbox"}
+            isSelected={checked[0]}
+            onChange={(isSelected) => handleChange(0, isSelected)}
+          >
+            Herr
+          </Checkbox>
         </div>
-        <div>
-          <Checkbox className={"ds-checkbox"}>Frau</Checkbox>
+        <div className="flex">
+          <Checkbox
+            className={"ds-checkbox"}
+            isSelected={checked[1]}
+            onChange={(isSelected) => handleChange(1, isSelected)}
+          >
+            Frau
+          </Checkbox>
         </div>
-        <div>
-          <Checkbox className={"ds-checkbox"}>Divers</Checkbox>
+        <div className="flex">
+          <Checkbox
+            className={"ds-checkbox"}
+            isSelected={checked[2]}
+            onChange={(isSelected) => handleChange(2, isSelected)}
+          >
+            Divers
+          </Checkbox>
         </div>
       </fieldset>
-      {/* <p>Currently selected is/are: {JSON.stringify(selected)}</p> */}
+      <br></br>
+      <code>CheckboxState: {JSON.stringify(checked)}</code>
     </main>
   );
 }
