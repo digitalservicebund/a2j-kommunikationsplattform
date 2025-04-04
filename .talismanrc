@@ -12,7 +12,7 @@ fileignoreconfig:
   - filename: app/services/oAuth.server.ts
     checksum: fc6496454bc77167082b3027de63303f9c748104c5edfff02cd37eaec417a478
   - filename: app/config/config.server.ts
-    checksum: b1e372dd41b49eed664cb7abc00d8e5a61182e4cd2504f5d5c64a59e49b47f32
+    checksum: 8a39529add3929bf11584c904d7e372e9296723e95271626c0e42889aafb2629
   - filename: app/services/session.server.ts
     checksum: c540a3922c223ae1589f535586d7100245ebebda0cb911afb50c37361c1261b0
   - filename: app/routes/verfahren.$id.tsx
