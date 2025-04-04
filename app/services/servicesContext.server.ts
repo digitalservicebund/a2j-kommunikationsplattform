@@ -40,7 +40,7 @@ class ServicesContext {
   }
 
   static isDemoModeAllowed(): boolean {
-    const environment = process.env.ENVIRONMENT;
+    const environment = config().ENVIRONMENT;
     return environment === "staging" || environment === "development";
   }
 }
