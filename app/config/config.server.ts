@@ -9,6 +9,7 @@ interface Config {
   JUSTIZ_BACKEND_API_URL: string;
   FILE_UPLOAD_DIRECTORY: string;
   SENTRY_DSN: string;
+  ENVIRONMENT: string;
 }
 
 let instance: Config | undefined = undefined;
@@ -33,6 +34,7 @@ export function config(): Config {
       FILE_UPLOAD_DIRECTORY:
         process.env.FILE_UPLOAD_DIRECTORY?.trim() ?? "/tmp",
       SENTRY_DSN: process.env.SENTRY_DSN?.trim() ?? "",
+      ENVIRONMENT: process.env.ENVIRONMENT?.trim() ?? "",
     };
   }
 

@@ -1,9 +1,19 @@
-import { justizBackendService } from "~/services/servicesContext.server";
+import { ServicesContext } from "~/services/servicesContext.server";
 import { ActionFunctionArgs, useFetcher, useLoaderData } from "react-router";
 import { getFormDataFromRequest } from "~/services/fileUpload.server";
 import { useRef } from "react";
+import { requireUserSession } from "~/services/session.server";
 
-export async function loader({ params }: { params: { id: string } }) {
+export async function loader({
+  request,
+  params,
+}: {
+  request: Request;
+  params: { id: string };
+}) {
+  const { demoMode } = await requireUserSession(request);
+  const justizBackendService =
+    ServicesContext.getJustizBackendService(demoMode);
   const akte = await justizBackendService.getAkte(params.id);
 
   const dokumentePromises =
@@ -29,7 +39,9 @@ export async function loader({ params }: { params: { id: string } }) {
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  // await requireUserSession(request);
+  const { demoMode } = await requireUserSession(request);
+  const justizBackendService =
+    ServicesContext.getJustizBackendService(demoMode);
   const formData = await getFormDataFromRequest(request);
 
   const files = formData.getAll("files") as File[];

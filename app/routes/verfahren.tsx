@@ -7,23 +7,28 @@ import {
   useNavigation,
 } from "react-router";
 import { getFormDataFromRequest } from "~/services/fileUpload.server";
-// import { requireUserSession } from "~/services/session.server";
-import { justizBackendService } from "~/services/servicesContext.server";
+import { ServicesContext } from "~/services/servicesContext.server";
+import { requireUserSession } from "~/services/session.server";
 
-export async function loader() {
-  // await requireUserSession(request);
-  const verfahren = await justizBackendService.getAllVerfahren(10, 0);
+export async function loader({ request }: { request: Request }) {
+  const { demoMode } = await requireUserSession(request);
+  const verfahren = await ServicesContext.getJustizBackendService(
+    demoMode,
+  ).getAllVerfahren(10, 0);
   return verfahren;
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  // await requireUserSession(request);
+  const { demoMode } = await requireUserSession(request);
   const formData = await getFormDataFromRequest(request);
 
   const xjustiz = formData.get("xjustiz") as File;
   const files = formData.getAll("files") as File[];
 
-  await justizBackendService.createVerfahren(xjustiz, files);
+  await ServicesContext.getJustizBackendService(demoMode).createVerfahren(
+    xjustiz,
+    files,
+  );
 
   return null;
 }
