@@ -21,11 +21,8 @@ export default function TestKernUXSettings() {
     <main className={"m-40 flex flex-col items-center"}>
       <h1 className={"ds-heading-01-bold mb-40 break-all"}>KERN UX Settings</h1>
 
-      <Link
-        className="kern-btn kern-btn--secondary"
-        to="/test/kern-ux/dashboard"
-      >
-        <span className="kern-btn__title">Zum Dashboard</span>
+      <Link className="kern-btn kern-btn--secondary" to="/test/kern-ux">
+        <span className="kern-btn__title">Zurück</span>
       </Link>
 
       <fieldset className="kern-fieldset">

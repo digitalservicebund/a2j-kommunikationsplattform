@@ -26,16 +26,13 @@ export default function TestReactAriaSettings() {
         React Aria Settings
       </h1>
 
-      <Link
-        className="ds-button ds-button-tertiary"
-        to="/test/react-aria/dashboard"
-      >
-        Zum Dashboard
+      <Link className="ds-button ds-button-tertiary" to="/test/react-aria">
+        Zurück
       </Link>
 
       <fieldset>
         <legend>Ansprechpartner</legend>
-        <div className="flex">
+        <div className="flex mb-20">
           <Checkbox
             className={"ds-checkbox"}
             isSelected={checked[0]}
@@ -44,7 +41,7 @@ export default function TestReactAriaSettings() {
             Herr
           </Checkbox>
         </div>
-        <div className="flex">
+        <div className="flex mb-20">
           <Checkbox
             className={"ds-checkbox"}
             isSelected={checked[1]}
@@ -53,7 +50,7 @@ export default function TestReactAriaSettings() {
             Frau
           </Checkbox>
         </div>
-        <div className="flex">
+        <div className="flex mb-20">
           <Checkbox
             className={"ds-checkbox"}
             isSelected={checked[2]}

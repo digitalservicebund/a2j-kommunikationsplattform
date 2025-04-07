@@ -12,7 +12,7 @@ export default function TestReactAria() {
           Gerichten und Verfahrensbeteiligten.
         </p>
         <p className="ds-body-01-reg mb-20">Bitte wählen Sie Ihren Login:</p>
-        <Link className="ds-button mb-40" to="/test/react-aria/dashboard">
+        <Link className="ds-button mb-40" to="/test/react-aria/settings">
           Login
         </Link>
         <br />

@@ -14,7 +14,7 @@ export default function TestKernUX() {
         <p className="kern-text mb-20">Bitte wählen Sie Ihren Login:</p>
         <Link
           className="kern-btn kern-btn--secondary mb-40"
-          to="/test/kern-ux/dashboard"
+          to="/test/kern-ux/settings"
         >
           <span className="kern-btn__title">Login</span>
         </Link>
