@@ -19,6 +19,10 @@ export default function TestKernUX() {
           <span className="kern-btn__title">Login</span>
         </Link>
         <br />
+        <Link className="kern-btn kern-btn--secondary mb-40" to="/test">
+          <span className="kern-btn__title"> Zurück zur Test-Übersicht</span>
+        </Link>
+        <br />
         <a href="#" className="kern-link">
           Probleme beim Login
         </a>

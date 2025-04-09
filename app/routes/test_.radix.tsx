@@ -16,6 +16,10 @@ export default function TestRadix() {
           Login
         </Link>
         <br />
+        <Link className="ds-button mb-40" to="/test">
+          Zurück zur Test-Übersicht
+        </Link>
+        <br />
         <a href="#" className="ds-link-01-reg">
           Probleme beim Login
         </a>
