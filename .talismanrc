@@ -29,6 +29,8 @@ fileignoreconfig:
     checksum: b845ef02e7f8e27be5b69e151e8084ca89bb08567cd4284cfd0c0dc3e0ab9a1f
   - filename: app/components/a2j-components/Button.tsx
     checksum: 2a573de3319c94ca022be7eba796bef6de6ac3c34a9ba01250eb71c36d09857e
+  - filename: doc/adr/0002-how-is-the-user-interface-built.md
+    checksum: 1d9396e66ec739b2313290ea782a1d8019450bd3f916a220b5760032c5ca4242
 
 version: ""
 scopeconfig:
