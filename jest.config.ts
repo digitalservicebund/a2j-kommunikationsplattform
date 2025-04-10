@@ -7,6 +7,7 @@ const config: Config.InitialOptions = {
   moduleNameMapper: {
     "~/(.*)": "<rootDir>/app/$1",
   },
+  testMatch: ["**/?(*.)+(spec).[jt]s?(x)"],
   testPathIgnorePatterns: ["<rootDir>/tests/e2e", "<rootDir>/tests/a11y"],
   setupFilesAfterEnv: ["<rootDir>/tests/jest.setup.ts"],
   collectCoverageFrom: ["app/**/*.{ts,tsx,js,jsx}", "!**/*.d.ts"],
