@@ -38,7 +38,7 @@ For example:
 
 - Contract testing
   - We could do contract testing to make sure that our two services agree on how they communicate. For example with:
-  - [Pact](https://docs.pact.io/): How it [works](https://docs.pact.io/getting_started/how_pact_works).
+    - [Pact](https://docs.pact.io/): How it [works](https://docs.pact.io/getting_started/how_pact_works).
 - End-to-end (E2E) testing with a simulated backend API. For example with:
   - [Prism](https://stoplight.io/open-source/prism): The [concepts](https://docs.stoplight.io/docs/prism/1593d1470e4df-concepts) of Prism.
 - End-to-end (E2E) testing with a shared staging or sandbox API of the Justiz-Backend-API. For example with:
