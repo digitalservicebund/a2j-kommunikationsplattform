@@ -5,12 +5,11 @@ import react from "eslint-plugin-react";
 
 export default tseslint.config(
   eslint.configs.recommended,
-  tseslint.configs.recommended,
-  react.configs.flat.recommended, // This is not a plugin object, but a shareable config object
-  react.configs.flat["jsx-runtime"], // Add this if you are using React 17+
+  // Global ignores
   {
     ignores: ["**/*", "!app/**", "!tests/**"],
   },
+  // Global ESLint configuration
   {
     languageOptions: {
       ecmaVersion: "latest",
@@ -27,14 +26,24 @@ export default tseslint.config(
       },
     },
   },
+  // React
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
+    extends: [
+      react.configs.flat.recommended, // This is not a plugin object, but a shareable config object
+      react.configs.flat["jsx-runtime"], // Add this if you are using React 17+
+    ],
     plugins: {
       react,
     },
     settings: {
       react: { version: "detect" },
     },
+  },
+  // Typescript
+  {
+    files: ["**/*.{ts,tsx}"],
+    extends: [tseslint.configs.recommended],
     languageOptions: {
       parser: tseslint.parser,
     },
