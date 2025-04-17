@@ -25,24 +25,23 @@ To be defined: The change that we're proposing or have agreed to implement.
   - Unit/component tests should be close to the units to be tested, for example within a `__test__` folder inside an `<Alert />` component folder `app/components/alert/*`. This makes it easier to move or delete components later.
 - **We always test the happy path(s) and think about any unhappy path(s)** that we should cover when things can go wrong. For example, long waiting times or necessary error messages for our users in the event of errors.
 
-### Integration testing with Justiz-Backend-API (JBA)
+### Integration testing with Justiz-Backend-API
 
 We want to test that the communication between both units is working as expected in all possible scenarios. For example: a successfull response, the error handling, dropped requests, different kind of response bodies and anything else that may help us to ensure that all pieces actually play nice with each other.
 
-For example:
+These could be questions such as:
 
 - Does our overview page for Verfahren (lawsuits) correctly call the API and handle the response(s)?
 - Does a POST request respond with `status: 200, headers: {'Content-Type': 'application/json'}`
 
-#### Integration testing options
+#### Integration testing (IT) options
 
-- Contract testing
-  - Tests the agreement (contract) between a service provider and a consumer, ensuring they integrate as expected.
-    Use case: _If Service A (our frontend) depends on Service B (the Justiz-Backend-API), contract tests ensure Service B always returns the exact format and content that Service A expects — even if B is updated independently._
+- **Contract testing**
+  - Tests the agreement (contract) between a service provider and a consumer, ensuring they integrate as expected. Use case: _If Service A (our frontend) depends on Service B (the Justiz-Backend-API), contract tests ensure Service B always returns the exact format and content that Service A expects – even if B is updated independently._
   - We can make this possible with:
     - [Pact](https://docs.pact.io/), popular for consumer-driven contract testing. See how it works [here](https://docs.pact.io/getting_started/how_pact_works)
     - Or with [Dredd](https://dredd.org/en/latest/), validates an API against a contract
-- API Schema validation
+- **API Schema validation**
   - Validates that API requests and responses match a defined schema (like OpenAPI/Swagger, JSON Schema, etc.).
   - Possible tools for this:
     - OpenAPI Validators
@@ -54,13 +53,13 @@ For example:
     - [Prism](https://stoplight.io/open-source/prism): The [concepts](https://docs.stoplight.io/docs/prism/1593d1470e4df-concepts) of Prism.
     - [MSW](https://mswjs.io/) (Mock Service Worker): JavaScript based API mocking. It enables the shared use of mocks for development, unit and E2E tests.
     - [OpenAPI Backend](https://openapistack.co/docs/openapi-backend/intro/): Is a Framework-agnostic middleware tool for building APIs with OpenAPI Specification.
-  - **with a shared staging or sandbox API of the Justiz-Backend-API.**
+  - **with a shared staging or sandbox API of the Justiz-Backend-API (JBA).**
     - To make this possible we need to prepare, create, publish and maintain a new dedicated JBA environment (e.g. `https://staging-kompla.sinc.de/api/v1/verfahren`). It also needs to be accessible for local development and within the GitHub Actions Runner of this project. Currently the JBA service allows only whitelisted IP addresses access to the resource.
 
-|                                    | Contract testing | API Schema validation | E2E w/ simulated API | E2E w/ staging or sandbox API |
+| IT comparison table                | Contract testing | API Schema validation | E2E w/ simulated API | E2E w/ staging or sandbox API |
 | ---------------------------------- | ---------------- | --------------------- | -------------------- | ----------------------------- |
-| Fault Detection Effectiveness [^1] | ok               | ok                    | good                 | good                          |
-| Time to Execute & Maintain [^2]    | ok               | ok                    | good                 | good                          |
+| Fault detection effectiveness [^1] | ok               | ok                    | good                 | good                          |
+| Time to execute & maintain [^2]    | ok               | ok                    | good                 | good                          |
 | Easy to use [^3]                   | easy             | easy                  | ok                   | much                          |
 | External dependencies [^4]         | no               | no                    | no                   | yes                           |
 
