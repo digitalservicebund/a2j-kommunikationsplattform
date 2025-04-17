@@ -11,10 +11,10 @@ export async function loader({
   request: Request;
   params: { id: string };
 }) {
-  const { demoMode } = await requireUserSession(request);
+  const { demoMode, accessToken } = await requireUserSession(request);
   const justizBackendService =
     ServicesContext.getJustizBackendService(demoMode);
-  const akte = await justizBackendService.getAkte(params.id);
+  const akte = await justizBackendService.getAkte(params.id, accessToken);
 
   const dokumentePromises =
     akte?.aktenteile?.map(async (aktenteil) => {
@@ -23,6 +23,7 @@ export async function loader({
         aktenteil.id!,
         100,
         0,
+        accessToken,
       );
       return {
         aktenteilId: aktenteil.id,
@@ -39,7 +40,7 @@ export async function loader({
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { demoMode } = await requireUserSession(request);
+  const { demoMode, accessToken } = await requireUserSession(request);
   const justizBackendService =
     ServicesContext.getJustizBackendService(demoMode);
   const formData = await getFormDataFromRequest(request);
@@ -50,7 +51,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (!verfahrenId) {
     throw new Error("Verfahren ID is required");
   }
-  await justizBackendService.uploadDocumentFiles(verfahrenId, files);
+  await justizBackendService.uploadDocumentFiles(
+    verfahrenId,
+    files,
+    accessToken,
+  );
 
   return null;
 }

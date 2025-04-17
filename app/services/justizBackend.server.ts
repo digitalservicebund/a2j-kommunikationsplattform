@@ -2,20 +2,34 @@ import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
 
 interface JustizBackendService {
-  uploadDocumentFiles(verfahrenId: string, files: File[]): Promise<void>;
-  createVerfahren(xjustiz: File, files: File[]): Promise<Verfahren>;
-  getAllVerfahren(limit: number, offset: number): Promise<Verfahren[]>;
-  getVerfahren(id: string): Promise<Verfahren | undefined>;
-  getAkte(verfahrenId: string): Promise<Akte | undefined>;
+  uploadDocumentFiles(
+    verfahrenId: string,
+    files: File[],
+    accessToken: string,
+  ): Promise<void>;
+  createVerfahren(
+    xjustiz: File,
+    files: File[],
+    accessToken: string,
+  ): Promise<Verfahren>;
+  getAllVerfahren(
+    limit: number,
+    offset: number,
+    accessToken: string,
+  ): Promise<Verfahren[]>;
+  getVerfahren(id: string, accessToken: string): Promise<Verfahren | undefined>;
+  getAkte(verfahrenId: string, accessToken: string): Promise<Akte | undefined>;
   getAllDokumente(
     verfahrenId: string,
     aktenteilId: string,
     limit: number,
     offset: number,
+    accessToken: string,
   ): Promise<AllDokumenteResponse>;
   getDokumentFile(
     verfahrenId: string,
     dokumentId: string,
+    accessToken: string,
   ): Promise<DokumentFile | undefined>;
 }
 
@@ -161,13 +175,23 @@ class JustizBackendServiceImpl implements JustizBackendService {
     this.baseUrl = url;
   }
 
-  async getVerfahren(id: string): Promise<Verfahren | undefined> {
+  createAuthHeaders(accessToken: string): HeadersInit {
+    return {
+      "X-User-ID": this.hardcodedUserId,
+      Authorization: `Bearer ${accessToken}`,
+    };
+  }
+
+  async getVerfahren(
+    id: string,
+    accessToken: string,
+  ): Promise<Verfahren | undefined> {
     const url = `${this.baseUrl}/api/v1/verfahren/${id}`;
     try {
       const response = await fetch(url, {
         method: "GET",
         headers: {
-          "X-User-ID": this.hardcodedUserId,
+          ...this.createAuthHeaders(accessToken),
           "Content-Type": "application/json",
         },
       });
@@ -199,13 +223,17 @@ class JustizBackendServiceImpl implements JustizBackendService {
     }
   }
 
-  async getAllVerfahren(limit: number, offset: number): Promise<Verfahren[]> {
+  async getAllVerfahren(
+    limit: number,
+    offset: number,
+    accessToken: string,
+  ): Promise<Verfahren[]> {
     const url = `${this.baseUrl}/api/v1/verfahren?limit=${limit}&offset=${offset}`;
     try {
       const response = await fetch(url, {
         method: "GET",
         headers: {
-          "X-User-ID": this.hardcodedUserId,
+          ...this.createAuthHeaders(accessToken),
           "Content-Type": "application/json",
         },
       });
@@ -234,7 +262,11 @@ class JustizBackendServiceImpl implements JustizBackendService {
     }
   }
 
-  async createVerfahren(xjustiz: File, files: File[]): Promise<Verfahren> {
+  async createVerfahren(
+    xjustiz: File,
+    files: File[],
+    accessToken: string,
+  ): Promise<Verfahren> {
     const url = `${this.baseUrl}/api/v1/verfahren`;
 
     const formData = new FormData();
@@ -242,15 +274,10 @@ class JustizBackendServiceImpl implements JustizBackendService {
     formData.append("xjustiz", xjustiz);
     files.forEach((file) => formData.append("files", file));
 
-    // TODO: Get the SAFE-ID from the session and set it as the X-User-ID
-    const headers = {
-      "X-User-ID": this.hardcodedUserId,
-    };
-
     try {
       const response = await fetch(url, {
         method: "POST",
-        headers: headers,
+        headers: this.createAuthHeaders(accessToken),
         body: formData,
       });
 
@@ -276,13 +303,16 @@ class JustizBackendServiceImpl implements JustizBackendService {
     }
   }
 
-  async getAkte(verfahrenId: string): Promise<Akte | undefined> {
+  async getAkte(
+    verfahrenId: string,
+    accessToken: string,
+  ): Promise<Akte | undefined> {
     const url = `${this.baseUrl}/api/v1/verfahren/${verfahrenId}/akte`;
     try {
       const response = await fetch(url, {
         method: "GET",
         headers: {
-          "X-User-ID": this.hardcodedUserId,
+          ...this.createAuthHeaders(accessToken),
           "Content-Type": "application/json",
         },
       });
@@ -319,13 +349,14 @@ class JustizBackendServiceImpl implements JustizBackendService {
     aktenteilId: string,
     limit: number,
     offset: number,
+    accessToken: string,
   ): Promise<AllDokumenteResponse> {
     const url = `${this.baseUrl}/api/v1/verfahren/${verfahrenId}/akte/${aktenteilId}/dokumente?limit=${limit}&offset=${offset}`;
     try {
       const response = await fetch(url, {
         method: "GET",
         headers: {
-          "X-User-ID": this.hardcodedUserId,
+          ...this.createAuthHeaders(accessToken),
           "Content-Type": "application/json",
         },
       });
@@ -361,14 +392,13 @@ class JustizBackendServiceImpl implements JustizBackendService {
   async getDokumentFile(
     verfahrenId: string,
     dokumentId: string,
+    accessToken: string,
   ): Promise<DokumentFile | undefined> {
     const url = `${this.baseUrl}/api/v1/verfahren/${verfahrenId}/akte/dokumente/${dokumentId}`;
     try {
       const response = await fetch(url, {
         method: "GET",
-        headers: {
-          "X-User-ID": this.hardcodedUserId,
-        },
+        headers: this.createAuthHeaders(accessToken),
       });
 
       if (response.status === 404) {
@@ -409,20 +439,20 @@ class JustizBackendServiceImpl implements JustizBackendService {
     }
   }
 
-  async uploadDocumentFiles(verfahrenId: string, files: File[]): Promise<void> {
+  async uploadDocumentFiles(
+    verfahrenId: string,
+    files: File[],
+    accessToken: string,
+  ): Promise<void> {
     const url = `${this.baseUrl}/api/v1/verfahren/${verfahrenId}/dokumente`;
 
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
 
-    const headers = {
-      "X-User-ID": this.hardcodedUserId,
-    };
-
     try {
       const response = await fetch(url, {
         method: "POST",
-        headers: headers,
+        headers: this.createAuthHeaders(accessToken),
         body: formData,
       });
 

@@ -34,14 +34,23 @@ describe("JustizBackendService", () => {
       json: jest.fn().mockResolvedValue(mockResponse),
     });
 
-    const result = await service.createVerfahren(xjustizFile, [otherFile]);
+    const mockAccessToken = "mockAccessToken";
+
+    const result = await service.createVerfahren(
+      xjustizFile,
+      [otherFile],
+      mockAccessToken,
+    );
 
     expect(result).toEqual(mockResponse);
     expect(global.fetch).toHaveBeenCalledWith(
       "http://localhost/api/v1/verfahren",
       expect.objectContaining({
         method: "POST",
-        headers: { "X-User-ID": hardcodedUserId },
+        headers: {
+          "X-User-ID": hardcodedUserId,
+          Authorization: `Bearer ${mockAccessToken}`,
+        },
         body: expect.any(FormData),
       }),
     );
