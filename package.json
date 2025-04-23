@@ -34,7 +34,7 @@
     "compression": "^1.8.0",
     "cookie": "^1.0.2",
     "cross-env": "^7.0.3",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "isbot": "^5.1.25",
     "jsonwebtoken": "^9.0.2",
