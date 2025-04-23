@@ -10,6 +10,7 @@
 !package.json
 !README.md
 !SECURITY.md
+!server.js
 !tailwind.config.js
 !tsconfig.json
 !postcss.config.mjs
