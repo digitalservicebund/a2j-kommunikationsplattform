@@ -6,6 +6,8 @@ info:
 paths:
   "/api/v1/lift/{one-time-password}":
     get:
+      operationId: initLiftByOTP
+      summary: Uses a one-time password to invite a user to the application
       tags:
         - Lift
       parameters:
@@ -36,6 +38,8 @@ paths:
                 $ref: "#/components/schemas/ValidateOtpResponse"
   "/api/v1/lift/{lift-id}":
     post:
+      operationId: verifyLift
+      summary: Complete the invitation of a user to the application
       tags:
         - Lift
       parameters:
@@ -79,6 +83,8 @@ paths:
                 $ref: "#/components/schemas/Dokument"
   /api/v1/verfahren:
     get:
+      operationId: getAllVerfahren
+      summary: Gets all Verfahren
       tags:
         - Verfahren
       parameters:
@@ -124,6 +130,8 @@ paths:
                 items:
                   $ref: "#/components/schemas/Verfahren"
     post:
+      operationId: createVerfahren
+      summary: Creates a Verfahren
       tags:
         - Verfahren
       parameters:
@@ -206,6 +214,8 @@ paths:
           schema:
             type: string
             format: uuid
+      operationId: getVerfahrenById
+      summary: Gets a Verfahren by a Verfahren ID
       responses:
         "400":
           description: Bad Request
@@ -233,6 +243,8 @@ paths:
                 $ref: "#/components/schemas/ProblemDetails"
   "/api/v1/verfahren/{verfahren-id}/akte":
     get:
+      operationId: getAkteByVerfahrenId
+      summary: Gets a Akte by a Verfahren ID
       tags:
         - Verfahren
       parameters:
@@ -292,6 +304,8 @@ paths:
                 $ref: "#/components/schemas/ProblemDetails"
   "/api/v1/verfahren/{verfahren-id}/akte/{aktenteil-id}/dokumente":
     get:
+      operationId: getAllDokumenteForAkte
+      summary: Gets all Dokumente for a Akte by a Verfahren ID and Aktenteil ID
       tags:
         - Verfahren
       parameters:
@@ -361,6 +375,8 @@ paths:
                 $ref: "#/components/schemas/ProblemDetails"
   "/api/v1/verfahren/{verfahren-id}/akte/dokumente/{dokument-id}":
     get:
+      operationId: getDokument
+      summary: Gets a Dokument for a Akte by a Verfahren ID and a Dokument ID
       tags:
         - Verfahren
       parameters:
@@ -448,6 +464,8 @@ paths:
                 $ref: "#/components/schemas/ProblemDetails"
   "/api/v1/verfahren/{verfahren-id}/dokumente":
     post:
+      operationId: uploadDokumente
+      summary: Uploads one or multiple documents
       tags:
         - Verfahren
       parameters:
