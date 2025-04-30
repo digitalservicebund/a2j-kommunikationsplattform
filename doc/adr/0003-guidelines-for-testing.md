@@ -63,7 +63,7 @@ These could be questions such as:
 | Easy to use [^3]                   | easy             | easy                  | ok                   | much                          |
 | External dependencies [^4]         | no               | no                    | no                   | yes                           |
 
-It was decided to do **End-to-end (E2E) testing with a simulated backend API**, as we have the fewest external dependencies here. Using an OpenAPI specification of the backend API, we can simulate the API and start development quickly. This is perfectly adequate for the current stage of development. Further integration tests can be added later, e.g. when a production environment exists. Local development is also simplified by a simulated backend API.
+Based on the above options, it was decided to proceed with **end-to-end (E2E) tests simulating the backend API**, as this is where we have the fewest external dependencies. Using an OpenAPI specification of the backend API, we can simulate the API in a good way and start development quickly. Further integration tests can be added later, e.g. when a production environment exists. Local development is also simplified by a simulated backend API.
 
 The following tools have been tested:
 | Stub/mock API tools | [Prism](https://stoplight.io/open-source/prism) | [MSW](https://mswjs.io/) | [OpenAPI Backend](https://openapistack.co/docs/openapi-backend/intro/) | [MockServer](https://www.mock-server.com/) | [Mockoon CLI](https://mockoon.com/) |
