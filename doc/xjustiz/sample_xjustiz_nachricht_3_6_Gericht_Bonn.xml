@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?><tns:nachricht.gds.uebermittlungSchriftgutobjekte.0005005 xmlns:tns="http://www.xjustiz.de" xmlns:xoev-code="http://xoev.de/schemata/code/1_0" xmlns:xoev-lc="http://xoev.de/latinchars/1_1/datatypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.xjustiz.de xjustiz_0005_nachrichten_3_1.xsd">
+	<tns:nachrichtenkopf xjustizVersion="3.6.0">
+		<tns:erstellungszeitpunkt>2109-11-01T08:28:06</tns:erstellungszeitpunkt>
+		<tns:absender>
+			<tns:information>
+				<tns:auswahl_kommunikationspartner>
+					<tns:gericht listVersionID="3.6">
+						<code>B2802</code>
+					</tns:gericht>
+				</tns:auswahl_kommunikationspartner>
+			</tns:information>
+			<tns:aktenzeichen>TestX-999-AZ</tns:aktenzeichen>
+			<tns:eigeneNachrichtenID>FB574FFF-6FB9-4324-BC39-04F6C95D4727</tns:eigeneNachrichtenID>
+		</tns:absender>
+		<tns:empfaenger>
+			<tns:informationen>
+				<tns:auswahl_kommunikationspartner>
+					<tns:gericht listVersionID="3.6">
+						<code>R3200</code>
+					</tns:gericht>
+				</tns:auswahl_kommunikationspartner>		 
+			</tns:informationen>
+			<tns:auswahl_aktenzeichen>
+				<tns:aktenzeichen.freitext>TestY-123-AZ</tns:aktenzeichen.freitext>
+			</tns:auswahl_aktenzeichen>
+			<tns:fremdeNachrichtenID>20B98D13-E676-44B9-B9A9-FC5F84E519B8</tns:fremdeNachrichtenID>
+		</tns:empfaenger>
+		<tns:nachrichtenuebergreifenderProzess>
+			<tns:prozessID>841DF3FD-3215-44AB-82B9-823EA6FF1253</tns:prozessID>
+		</tns:nachrichtenuebergreifenderProzess>
+		<tns:ereignis listVersionID="3.6">
+			<code>Test</code>
+		</tns:ereignis>
+		<tns:herstellerinformation>
+			<tns:nameDesProdukts>Test</tns:nameDesProdukts>
+			<tns:herstellerDesProdukts>Test</tns:herstellerDesProdukts>
+			<tns:version>Test123</tns:version>
+		</tns:herstellerinformation>
+   </tns:nachrichtenkopf>
+   <tns:grunddaten>
+      <tns:verfahrensdaten>
+         <tns:instanzdaten>
+            <tns:instanznummer>8eb</tns:instanznummer>
+            <tns:sachgebiet listVersionID="2.3">
+               <code>001</code>
+            </tns:sachgebiet>
+            <tns:auswahl_instanzbehoerde>
+               <tns:gericht listVersionID="3.6">
+                  <code>D5703G</code>
+               </tns:gericht>
+            </tns:auswahl_instanzbehoerde>
+            <tns:kurzrubrum>Strafsache gegen Erich Schulze</tns:kurzrubrum>
+         </tns:instanzdaten>
+      </tns:verfahrensdaten>
+   </tns:grunddaten>
+   <tns:schriftgutobjekte/>
+</tns:nachricht.gds.uebermittlungSchriftgutobjekte.0005005>
