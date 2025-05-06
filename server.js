@@ -9,14 +9,39 @@ import dotenv from "dotenv";
  */
 dotenv.config();
 
-const viteDevServer =
-  process.env.NODE_ENV === "production"
-    ? undefined
-    : await import("vite").then((vite) =>
-        vite.createServer({
-          server: { middlewareMode: true },
-        }),
-      );
+const environment = process.env.ENVIRONMENT?.trim() ?? "";
+const mockJustizBackendAPI =
+  environment === "development" || environment === "staging";
+const isProduction = process.env.NODE_ENV === "production";
+
+// info logs
+console.log(
+  `Info:
+  -> Environment is '${environment}'
+  -> Production build: ${isProduction ? "yes" : "no"}
+  -> API will be mocked: ${mockJustizBackendAPI ? "yes" : "no"}
+  ${mockJustizBackendAPI && `-> Setting up a Justiz-Backend-API mock for ${environment === "development" ? "easy local development" : "E2E testing on 'staging'"}`}
+  ${!isProduction && `-> Setting up a viteDevServer for local development`}
+  `,
+);
+
+if (mockJustizBackendAPI) {
+  const mockJustizBackendService = mockJustizBackendAPI
+    ? await import("./mocks/api/node.js")
+    : undefined;
+
+  if (mockJustizBackendService) {
+    mockJustizBackendService.server.listen();
+  }
+}
+
+const viteDevServer = isProduction
+  ? undefined
+  : await import("vite").then((vite) =>
+      vite.createServer({
+        server: { middlewareMode: true },
+      }),
+    );
 
 const reactRouterHandler = createRequestHandler({
   build: viteDevServer
@@ -25,7 +50,6 @@ const reactRouterHandler = createRequestHandler({
 });
 
 const app = express();
-
 app.use(compression());
 app.disable("x-powered-by");
 
