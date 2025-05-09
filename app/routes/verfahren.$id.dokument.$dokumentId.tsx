@@ -3,11 +3,11 @@ import { ServicesContext } from "~/services/servicesContext.server";
 import { requireUserSession } from "~/services/session.server";
 
 export const loader: LoaderFunction = async ({ params, request }) => {
-  const { demoMode } = await requireUserSession(request);
+  const { demoMode, accessToken } = await requireUserSession(request);
   const { id, dokumentId } = params;
   const dokumentFile = await ServicesContext.getJustizBackendService(
     demoMode,
-  ).getDokumentFile(id!, dokumentId!);
+  ).getDokumentFile(id!, dokumentId!, accessToken);
 
   if (!dokumentFile) {
     throw new Response("Not Found", { status: 404 });
