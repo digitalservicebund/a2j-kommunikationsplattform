@@ -65,6 +65,7 @@ The application has
 - Run unit tests with watcher: `npm test -- --watch`
 - Run E2E tests: `npm run test:e2e`
 - Run A11y tests: `npm run test:a11y`
+- Generate test coverage: `npm run test:generate-coverage` (used by SonarQube)
 
 ### Code quality checks (linting & formatting)
 
