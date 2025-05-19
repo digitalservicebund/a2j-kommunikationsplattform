@@ -9,6 +9,7 @@ const envFromNode = () =>
 export function clientConfig() {
   const env = envFromBrowser() ?? envFromNode() ?? {};
   return {
+    JUSTIZ_BACKEND_API_URL: env.JUSTIZ_BACKEND_API_URL?.trim(),
     SENTRY_DSN: env.SENTRY_DSN?.trim(),
   };
 }
