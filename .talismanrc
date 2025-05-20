@@ -31,6 +31,8 @@ fileignoreconfig:
     checksum: 3f28dc6e48ed60ef459a02ee67d09113797a926b6ac6e4c5d48b650d256b9c16
   - filename: mocks/api/handlers.js
     checksum: 55bbc42a5428e7ee61b74d5c38e2b056d2b53f0e7deb3807e088cda51acb6495
+  - filename: sonar-project.properties
+    checksum: f97ca40a49b39eb4d0513ee491ab65ad15a34e69c45bdf501b2191539a5c0ef6
 
 version: ""
 scopeconfig:
