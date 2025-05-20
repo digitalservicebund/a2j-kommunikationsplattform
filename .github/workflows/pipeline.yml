@@ -12,11 +12,11 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   CONTAINER_IMAGE_VERSION: ${{ github.sha }}
 
-sonarqube:
-  uses: ./.github/workflows/sonarqube.yml
-  secrets: inherit
-
 jobs:
+  sonarqube:
+    uses: ./.github/workflows/sonarqube.yml
+    secrets: inherit
+
   build:
     runs-on: ubuntu-latest
     steps:
