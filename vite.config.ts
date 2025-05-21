@@ -37,6 +37,8 @@ export default defineConfig((config) => {
           // excluded technical prototypes (spikes) that will be removed/reworked
           "app/services/fileUpload.server.ts",
           "app/services/justizBackend.server.ts",
+          // test files
+          "app/**/__test__/*.test.{ts,tsx}",
         ],
         reporter: ["text", "lcov"],
       },

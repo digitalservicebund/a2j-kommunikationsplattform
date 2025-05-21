@@ -6,7 +6,7 @@ import * as Sentry from "@sentry/react-router";
 import { startTransition, StrictMode } from "react";
 import { hydrateRoot } from "react-dom/client";
 import { HydratedRouter } from "react-router/dom";
-import { clientConfig } from "./config/config";
+import { clientConfig } from "./config/config.client";
 
 const { SENTRY_DSN } = clientConfig();
 

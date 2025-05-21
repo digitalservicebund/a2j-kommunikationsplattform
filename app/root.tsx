@@ -12,7 +12,7 @@ import type { Route } from "./+types/root";
 
 import fontsStylesheet from "@digitalservice4germany/angie/fonts.css?url";
 import stylesheet from "~/styles.css?url";
-import { clientConfig } from "./config/config";
+import { clientConfig } from "./config/config.client";
 
 type LayoutProps = PropsWithChildren & {
   readonly children?: React.ReactNode;
