@@ -23,5 +23,28 @@ export default defineConfig((config) => {
       tsconfigPaths(),
     ],
     server: { port: 3000 },
+    test: {
+      coverage: {
+        provider: "istanbul",
+        include: ["app/**"],
+        exclude: [
+          "app/entry.client.tsx",
+          "app/entry.server.tsx",
+          "app/instrument.server.mjs",
+          "app/root.tsx",
+          // exclude routes (pages)
+          "app/routes/**",
+          // excluded technical prototypes (spikes) that will be removed/reworked
+          "app/services/fileUpload.server.ts",
+          "app/services/justizBackend.server.ts",
+        ],
+        reporter: ["text", "lcov"],
+      },
+      environment: "node",
+      globals: true,
+      include: ["./app/**/__test__/*.test.{ts,tsx}"],
+      pool: "threads",
+      setupFiles: ["vitest.setup.ts"],
+    },
   };
 });

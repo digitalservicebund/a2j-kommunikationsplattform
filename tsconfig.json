@@ -6,7 +6,7 @@
     ".react-router/types/**/*"
   ],
   "compilerOptions": {
-    "types": ["node", "vite/client"],
+    "types": ["node", "vite/client", "vitest/globals"],
     "skipLibCheck": true,
     "module": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
