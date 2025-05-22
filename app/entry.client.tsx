@@ -6,13 +6,13 @@ import * as Sentry from "@sentry/react-router";
 import { startTransition, StrictMode } from "react";
 import { hydrateRoot } from "react-dom/client";
 import { HydratedRouter } from "react-router/dom";
-import { clientConfig } from "./config/config.client";
+import { config } from "./config/config";
 
-const { SENTRY_DSN } = clientConfig();
+const { SENTRY_DSN } = config();
 
 if (SENTRY_DSN !== undefined) {
   Sentry.init({
-    dsn: clientConfig().SENTRY_DSN,
+    dsn: config().SENTRY_DSN,
     integrations: [Sentry.browserTracingIntegration()],
 
     tracesSampleRate: 1.0, //  Capture 100% of the transactions

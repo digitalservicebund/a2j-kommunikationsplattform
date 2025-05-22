@@ -1,4 +1,4 @@
-import { config } from "~/config/config.server";
+import { serverConfig } from "~/config/config.server";
 import {
   type JustizBackendService,
   JustizBackendServiceImpl,
@@ -25,7 +25,7 @@ class ServicesContext {
   private static initializeRealService(): JustizBackendService {
     if (!ServicesContext.justizBackendService) {
       ServicesContext.justizBackendService = new JustizBackendServiceImpl(
-        config().JUSTIZ_BACKEND_API_URL,
+        serverConfig().JUSTIZ_BACKEND_API_URL,
       );
     }
     return ServicesContext.justizBackendService;
@@ -40,7 +40,7 @@ class ServicesContext {
   }
 
   static isDemoModeAllowed(): boolean {
-    const environment = config().ENVIRONMENT;
+    const environment = serverConfig().ENVIRONMENT;
     return environment === "staging" || environment === "development";
   }
 }

@@ -12,7 +12,7 @@ import type { Route } from "./+types/root";
 
 import fontsStylesheet from "@digitalservice4germany/angie/fonts.css?url";
 import stylesheet from "~/styles.css?url";
-import { clientConfig } from "./config/config.client";
+import { config } from "./config/config";
 
 type LayoutProps = PropsWithChildren & {
   readonly children?: React.ReactNode;
@@ -46,7 +46,7 @@ export function Layout({ children }: LayoutProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <script
           dangerouslySetInnerHTML={{
-            __html: `window.ENV = ${JSON.stringify(clientConfig())}`,
+            __html: `window.ENV = ${JSON.stringify(config())}`,
           }}
         />
         <Meta />

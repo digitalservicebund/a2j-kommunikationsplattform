@@ -1,9 +1,9 @@
 import { LocalFileStorage } from "@mjackson/file-storage/local";
 import { type FileUpload, parseFormData } from "@mjackson/form-data-parser";
 import { randomUUID } from "node:crypto";
-import { config } from "~/config/config.server";
+import { serverConfig } from "~/config/config.server";
 
-const fileStorage = new LocalFileStorage(config().FILE_UPLOAD_DIRECTORY);
+const fileStorage = new LocalFileStorage(serverConfig().FILE_UPLOAD_DIRECTORY);
 const maxFileSize = 6_000_000_0; // 60MB
 
 export async function getFormDataFromRequest(

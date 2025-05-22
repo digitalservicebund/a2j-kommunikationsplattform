@@ -1,6 +1,6 @@
 import { Authenticator } from "remix-auth";
 import { CodeChallengeMethod, OAuth2Strategy } from "remix-auth-oauth2";
-import { config } from "~/config/config.server";
+import { serverConfig } from "~/config/config.server";
 import { createUserSession } from "./session.server";
 
 export interface AuthenticationContext {
@@ -24,11 +24,11 @@ authenticator.use(
   new OAuth2Strategy(
     {
       cookie: "oauth2",
-      clientId: config().BRAK_IDP_OIDC_CLIENT_ID,
-      clientSecret: config().BRAK_IDP_OIDC_CLIENT_SECRET,
-      authorizationEndpoint: `${config().BRAK_IDP_OIDC_ISSUER}/protocol/openid-connect/auth`,
-      tokenEndpoint: `${config().BRAK_IDP_OIDC_ISSUER}/protocol/openid-connect/token`,
-      redirectURI: `${config().BRAK_IDP_OIDC_REDIRECT_URI}`,
+      clientId: serverConfig().BRAK_IDP_OIDC_CLIENT_ID,
+      clientSecret: serverConfig().BRAK_IDP_OIDC_CLIENT_SECRET,
+      authorizationEndpoint: `${serverConfig().BRAK_IDP_OIDC_ISSUER}/protocol/openid-connect/auth`,
+      tokenEndpoint: `${serverConfig().BRAK_IDP_OIDC_ISSUER}/protocol/openid-connect/token`,
+      redirectURI: `${serverConfig().BRAK_IDP_OIDC_REDIRECT_URI}`,
       // scopes: ["safe_oidc", "email", "profile"], // TODO: Check which scopes we need
       codeChallengeMethod: CodeChallengeMethod.S256,
     },
