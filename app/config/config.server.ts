@@ -1,7 +1,6 @@
 import { existsSync, readFileSync } from "fs";
 
 interface ServerConfig {
-  BASE_URL: string;
   BRAK_IDP_OIDC_CLIENT_ID: string;
   BRAK_IDP_OIDC_CLIENT_SECRET: string;
   BRAK_IDP_OIDC_ISSUER: string;
@@ -21,7 +20,6 @@ const oidcClientSecretFileExists = existsSync(oidcClientSecretFilePath);
 export function serverConfig(): ServerConfig {
   if (instance === undefined) {
     instance = {
-      BASE_URL: process.env.BASE_URL?.trim() ?? "",
       BRAK_IDP_OIDC_CLIENT_ID:
         process.env.BRAK_IDP_OIDC_CLIENT_ID?.trim() ?? "",
       BRAK_IDP_OIDC_CLIENT_SECRET: oidcClientSecretFileExists

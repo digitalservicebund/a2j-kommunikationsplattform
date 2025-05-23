@@ -40,7 +40,7 @@ For the provided Git hooks you will need to install [lefthook](https://github.co
 Copy the `.env.example` file and save it as `.env` within this projects root folder and define the needed environment variables. For example:
 
 ```sh
-BASE_URL=http://localhost:3000
+ENVIRONMENT=development
 ```
 
 ### Local development
