@@ -32,7 +32,7 @@ fileignoreconfig:
   - filename: app/services/session.server.ts
     checksum: 1bc375aa4cb5d89ffaa5f0a861be61736884587279d2ba71befcfc43f04883da
   - filename: app/config/config.server.ts
-    checksum: 57e6ff88922219750384f6e036775ab7a8c035b0a7d50d9108eca0e550eaed83
+    checksum: b87b20dce20bc941c17a462704b047bb2b5e8ffe7610ca0ce8269767997d6704
 
 version: ""
 scopeconfig:
