@@ -24,7 +24,7 @@ fileignoreconfig:
   - filename: mocks/api/handlers.js
     checksum: 55bbc42a5428e7ee61b74d5c38e2b056d2b53f0e7deb3807e088cda51acb6495
   - filename: sonar-project.properties
-    checksum: f97ca40a49b39eb4d0513ee491ab65ad15a34e69c45bdf501b2191539a5c0ef6
+    checksum: f686a5352c2612e81866f684284b73e00d2ae0860bd18db819d02d0ae76b55ac
   - filename: app/services/fileUpload.server.ts
     checksum: bc2812232864b6d3b6f9189b95fea278d34952318ddb0deaf41be7ac5fd43d35
   - filename: app/services/oAuth.server.ts

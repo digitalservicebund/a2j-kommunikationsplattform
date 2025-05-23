@@ -157,3 +157,6 @@ talisman_report
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# MSW auto mock files
+/msw-auto-mock
