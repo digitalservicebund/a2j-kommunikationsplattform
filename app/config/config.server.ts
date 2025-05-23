@@ -38,3 +38,18 @@ export function serverConfig(): ServerConfig {
 
   return instance;
 }
+
+// in-source test suites
+if (import.meta.vitest) {
+  const { it, expect } = import.meta.vitest;
+
+  it("serverConfig() returns an empty string for an undefined config item", () => {
+    // save original item
+    const originalEnvItem = global.process.env.SENTRY_DSN;
+    delete global.process.env.SENTRY_DSN;
+    const getConfig = serverConfig();
+    expect(getConfig?.SENTRY_DSN).toBe("");
+    // restore item
+    global.process.env.SENTRY_DSN = originalEnvItem;
+  });
+}
