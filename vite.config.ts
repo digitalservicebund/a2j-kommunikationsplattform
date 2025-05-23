@@ -45,6 +45,8 @@ export default defineConfig((config) => {
       environment: "node",
       globals: true,
       include: ["./app/**/__test__/*.test.{ts,tsx}"],
+      // For in-source testing
+      includeSource: ["./app/**/*.{js,ts}"],
       pool: "threads",
       setupFiles: ["vitest.setup.ts"],
     },
