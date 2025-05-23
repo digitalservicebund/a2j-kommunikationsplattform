@@ -41,6 +41,7 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "isbot": "^5.1.25",
+    "jsdom": "^26.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "react": "^19.1.0",
