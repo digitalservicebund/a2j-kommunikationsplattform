@@ -1,37 +1,48 @@
 {
-  "openapi": "3.0.1",
+  "x-generator": "NSwag v14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))",
+  "openapi": "3.0.0",
   "info": {
-    "title": "My API v1",
-    "description": "API documentation for version 1",
-    "version": "v1"
+    "title": "Kompla API v1",
+    "description": "Kompla API documentation",
+    "version": "1.0"
   },
+  "servers": [
+    {
+      "url": "https://localhost:7144"
+    }
+  ],
   "paths": {
     "/api/v1/lift/{one-time-password}": {
       "get": {
         "tags": ["Lift"],
+        "operationId": "Lift_Get",
         "parameters": [
           {
             "name": "X-User-ID",
+            "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "x-position": 1
           },
           {
             "name": "one-time-password",
+            "x-originalName": "oneTimePassword",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "x-position": 2
           }
         ],
         "responses": {
           "400": {
-            "description": "Bad Request",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -39,10 +50,10 @@
             }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": ""
           },
           "200": {
-            "description": "OK",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -57,50 +68,47 @@
     "/api/v1/lift/{lift-id}": {
       "post": {
         "tags": ["Lift"],
+        "operationId": "Lift_Post",
         "parameters": [
           {
             "name": "X-User-ID",
+            "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "x-position": 1
           },
           {
             "name": "lift-id",
+            "x-originalName": "liftId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
-            }
+              "format": "guid"
+            },
+            "x-position": 2
           }
         ],
         "requestBody": {
+          "x-name": "request",
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AcceptLiftRequest"
               }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AcceptLiftRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/AcceptLiftRequest"
-              }
             }
           },
-          "required": true
+          "required": true,
+          "x-position": 3
         },
         "responses": {
           "400": {
-            "description": "Bad Request",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -108,10 +116,10 @@
             }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": ""
           },
           "201": {
-            "description": "Created",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -126,14 +134,17 @@
     "/api/v1/verfahren": {
       "get": {
         "tags": ["Verfahren"],
+        "operationId": "Verfahren_GetAll",
         "parameters": [
           {
             "name": "X-User-ID",
+            "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "x-position": 1
           },
           {
             "name": "limit",
@@ -142,7 +153,8 @@
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "x-position": 2
           },
           {
             "name": "offset",
@@ -150,21 +162,32 @@
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "x-position": 3
           },
           {
             "name": "status",
             "in": "query",
             "schema": {
-              "$ref": "#/components/schemas/EJbaVerfahrenStatus"
-            }
+              "oneOf": [
+                {
+                  "nullable": true,
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/EJbaVerfahrenStatus"
+                    }
+                  ]
+                }
+              ]
+            },
+            "x-position": 4
           }
         ],
         "responses": {
           "400": {
-            "description": "Bad Request",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationProblemDetails"
                 }
@@ -172,9 +195,9 @@
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -182,7 +205,7 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -198,42 +221,35 @@
       },
       "post": {
         "tags": ["Verfahren"],
+        "operationId": "Verfahren_Post",
         "parameters": [
           {
             "name": "X-User-ID",
+            "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "x-position": 1
           }
         ],
         "requestBody": {
           "content": {
             "multipart/form-data": {
               "schema": {
-                "required": ["xJustiz"],
                 "type": "object",
                 "properties": {
                   "xJustiz": {
                     "type": "string",
-                    "format": "binary"
+                    "format": "binary",
+                    "nullable": true
                   },
                   "files": {
                     "type": "array",
-                    "items": {
-                      "type": "string",
-                      "format": "binary"
-                    }
+                    "nullable": true,
+                    "items": {}
                   }
-                }
-              },
-              "encoding": {
-                "xJustiz": {
-                  "style": "form"
-                },
-                "files": {
-                  "style": "form"
                 }
               }
             }
@@ -241,9 +257,9 @@
         },
         "responses": {
           "400": {
-            "description": "Bad Request",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationProblemDetails"
                 }
@@ -251,9 +267,9 @@
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -261,7 +277,7 @@
             }
           },
           "201": {
-            "description": "Created",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -271,9 +287,9 @@
             }
           },
           "501": {
-            "description": "Not Implemented",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -281,9 +297,9 @@
             }
           },
           "502": {
-            "description": "Bad Gateway",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -291,9 +307,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -306,30 +322,35 @@
     "/api/v1/verfahren/{verfahren-id}": {
       "get": {
         "tags": ["Verfahren"],
+        "operationId": "Verfahren_GetById",
         "parameters": [
           {
             "name": "X-User-ID",
+            "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "x-position": 1
           },
           {
             "name": "verfahren-id",
+            "x-originalName": "verfahrenId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
-            }
+              "format": "guid"
+            },
+            "x-position": 2
           }
         ],
         "responses": {
           "400": {
-            "description": "Bad Request",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationProblemDetails"
                 }
@@ -337,9 +358,9 @@
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -347,7 +368,7 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -357,9 +378,9 @@
             }
           },
           "404": {
-            "description": "Not Found",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -372,30 +393,35 @@
     "/api/v1/verfahren/{verfahren-id}/akte": {
       "get": {
         "tags": ["Verfahren"],
+        "operationId": "Verfahren_Get",
         "parameters": [
           {
             "name": "X-User-ID",
+            "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "x-position": 1
           },
           {
             "name": "verfahren-id",
+            "x-originalName": "verfahrenId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
-            }
+              "format": "guid"
+            },
+            "x-position": 2
           }
         ],
         "responses": {
           "400": {
-            "description": "Bad Request",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationProblemDetails"
                 }
@@ -403,9 +429,9 @@
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -413,7 +439,7 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -423,9 +449,9 @@
             }
           },
           "404": {
-            "description": "Not Found",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -433,9 +459,9 @@
             }
           },
           "501": {
-            "description": "Not Implemented",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -443,9 +469,9 @@
             }
           },
           "502": {
-            "description": "Bad Gateway",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -453,9 +479,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -468,31 +494,38 @@
     "/api/v1/verfahren/{verfahren-id}/akte/{aktenteil-id}/dokumente": {
       "get": {
         "tags": ["Verfahren"],
+        "operationId": "Verfahren_GetSchriftstuecke",
         "parameters": [
           {
             "name": "X-User-ID",
+            "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "x-position": 1
           },
           {
             "name": "verfahren-id",
+            "x-originalName": "verfahrenId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
-            }
+              "format": "guid"
+            },
+            "x-position": 2
           },
           {
             "name": "aktenteil-id",
+            "x-originalName": "aktenteilId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "x-position": 3
           },
           {
             "name": "limit",
@@ -501,7 +534,8 @@
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "x-position": 4
           },
           {
             "name": "offset",
@@ -509,14 +543,15 @@
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "x-position": 5
           }
         ],
         "responses": {
           "400": {
-            "description": "Bad Request",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationProblemDetails"
                 }
@@ -524,9 +559,9 @@
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -534,7 +569,7 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -544,9 +579,9 @@
             }
           },
           "501": {
-            "description": "Not Implemented",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -554,9 +589,9 @@
             }
           },
           "502": {
-            "description": "Bad Gateway",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -564,9 +599,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -579,43 +614,45 @@
     "/api/v1/verfahren/{verfahren-id}/akte/dokumente/{dokument-id}": {
       "get": {
         "tags": ["Verfahren"],
+        "operationId": "Verfahren_GetDocumentById",
         "parameters": [
           {
             "name": "X-User-ID",
+            "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "x-position": 1
           },
           {
             "name": "verfahren-id",
+            "x-originalName": "verfahrenId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
-            }
+              "format": "guid"
+            },
+            "x-position": 2
           },
           {
             "name": "dokument-id",
+            "x-originalName": "dokuemntId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "x-position": 3
           }
         ],
         "responses": {
           "400": {
-            "description": "Bad Request",
+            "description": "",
             "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationProblemDetails"
-                }
-              },
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationProblemDetails"
                 }
@@ -623,14 +660,9 @@
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "",
             "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -638,15 +670,9 @@
             }
           },
           "200": {
-            "description": "OK",
+            "description": "",
             "content": {
               "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              },
-              "application/json": {
                 "schema": {
                   "type": "string",
                   "format": "binary"
@@ -655,14 +681,9 @@
             }
           },
           "404": {
-            "description": "Not Found",
+            "description": "",
             "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -670,14 +691,9 @@
             }
           },
           "501": {
-            "description": "Not Implemented",
+            "description": "",
             "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -685,14 +701,9 @@
             }
           },
           "502": {
-            "description": "Bad Gateway",
+            "description": "",
             "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -700,14 +711,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "",
             "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -720,30 +726,38 @@
     "/api/v1/verfahren/{verfahren-id}/dokumente": {
       "post": {
         "tags": ["Verfahren"],
+        "operationId": "Verfahren_PostAll",
         "parameters": [
           {
             "name": "X-User-ID",
+            "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "x-position": 1
           },
           {
             "name": "verfahren-id",
+            "x-originalName": "verfahrenId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "format": "uuid"
-            }
+              "format": "guid"
+            },
+            "x-position": 2
           },
           {
             "name": "aktenteil_id",
+            "x-originalName": "aktenteilId",
             "in": "query",
             "schema": {
-              "type": "string"
-            }
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 3
           }
         ],
         "requestBody": {
@@ -754,16 +768,9 @@
                 "properties": {
                   "files": {
                     "type": "array",
-                    "items": {
-                      "type": "string",
-                      "format": "binary"
-                    }
+                    "nullable": true,
+                    "items": {}
                   }
-                }
-              },
-              "encoding": {
-                "files": {
-                  "style": "form"
                 }
               }
             }
@@ -771,9 +778,9 @@
         },
         "responses": {
           "400": {
-            "description": "Bad Request",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationProblemDetails"
                 }
@@ -781,9 +788,9 @@
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -791,7 +798,7 @@
             }
           },
           "201": {
-            "description": "Created",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -804,9 +811,9 @@
             }
           },
           "501": {
-            "description": "Not Implemented",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -814,9 +821,9 @@
             }
           },
           "502": {
-            "description": "Bad Gateway",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -824,9 +831,9 @@
             }
           },
           "503": {
-            "description": "Service Unavailable",
+            "description": "",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
                 }
@@ -839,110 +846,64 @@
   },
   "components": {
     "schemas": {
-      "AcceptLiftRequest": {
+      "ProblemDetails": {
         "type": "object",
-        "properties": {
-          "accept_lift": {
-            "type": "boolean"
-          },
-          "vollmacht_versicherung": {
-            "type": "boolean"
-          }
+        "additionalProperties": {
+          "nullable": true
         },
-        "additionalProperties": false
-      },
-      "Akte": {
-        "required": ["aktenzeichen", "id"],
-        "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "aktenzeichen": {
+          "type": {
             "type": "string",
             "nullable": true
           },
-          "aktenteile": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Aktenteil"
-            },
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Aktenteil": {
-        "required": ["id", "name"],
-        "type": "object",
-        "properties": {
-          "id": {
+          "title": {
             "type": "string",
             "nullable": true
           },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "parent_id": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "Dokument": {
-        "required": ["dokument_klasse", "id", "name"],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "dokument_klasse": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
-      "DokumentResponse": {
-        "required": ["count", "dokumente", "verfahren_id"],
-        "type": "object",
-        "properties": {
-          "verfahren_id": {
-            "type": "string",
-            "nullable": true
-          },
-          "dokumente": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Dokument"
-            },
-            "nullable": true
-          },
-          "count": {
+          "status": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
-      "EJbaVerfahrenStatus": {
-        "enum": ["Erstellt", "Eingereicht"],
-        "type": "string"
+      "ValidateOtpResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "valid": {
+            "type": "boolean"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EOtpStatus"
+          },
+          "lift": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/LiftMessage"
+              }
+            ]
+          }
+        }
       },
       "EOtpStatus": {
-        "enum": ["Valid", "Outdated", "NotFound", "AlreadyUsed"],
-        "type": "string"
+        "type": "string",
+        "description": "",
+        "x-enumNames": ["Valid", "Outdated", "NotFound", "AlreadyUsed"],
+        "enum": ["Valid", "Outdated", "NotFound", "AlreadyUsed"]
       },
       "LiftMessage": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "id": {
             "type": "string",
@@ -956,106 +917,95 @@
             "type": "string",
             "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
-      "ProblemDetails": {
+      "Dokument": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
-          "type": {
-            "type": "string",
-            "nullable": true
+          "id": {
+            "type": "string"
           },
-          "title": {
-            "type": "string",
-            "nullable": true
+          "name": {
+            "type": "string"
           },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "detail": {
-            "type": "string",
-            "nullable": true
-          },
-          "instance": {
-            "type": "string",
-            "nullable": true
+          "dokument_klasse": {
+            "type": "string"
           }
-        },
-        "additionalProperties": {}
+        }
       },
-      "ValidateOtpResponse": {
+      "AcceptLiftRequest": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
-          "valid": {
+          "accept_lift": {
             "type": "boolean"
           },
-          "status": {
-            "$ref": "#/components/schemas/EOtpStatus"
-          },
-          "lift": {
-            "$ref": "#/components/schemas/LiftMessage"
+          "vollmacht_versicherung": {
+            "type": "boolean"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "ValidationProblemDetails": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "nullable": true
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/HttpValidationProblemDetails"
           },
-          "title": {
-            "type": "string",
-            "nullable": true
+          {
+            "type": "object",
+            "description": "A ProblemDetails for validation errors.",
+            "additionalProperties": {
+              "nullable": true
+            },
+            "properties": {
+              "errors": {
+                "type": "object",
+                "description": "Gets or sets the validation errors associated with this instance of ValidationProblemDetails.",
+                "additionalProperties": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "HttpValidationProblemDetails": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ProblemDetails"
           },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "detail": {
-            "type": "string",
-            "nullable": true
-          },
-          "instance": {
-            "type": "string",
-            "nullable": true
-          },
-          "errors": {
+          {
             "type": "object",
             "additionalProperties": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "nullable": true
             },
-            "nullable": true
+            "properties": {
+              "errors": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
-        },
-        "additionalProperties": {}
+        ]
       },
       "Verfahren": {
-        "required": [
-          "aktenzeichen",
-          "eingereicht_am",
-          "gericht_name",
-          "id",
-          "status",
-          "status_changed"
-        ],
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "guid"
           },
           "aktenzeichen": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "status": {
             "$ref": "#/components/schemas/EJbaVerfahrenStatus"
@@ -1069,24 +1019,93 @@
             "format": "date-time"
           },
           "gericht_name": {
+            "type": "string"
+          }
+        }
+      },
+      "EJbaVerfahrenStatus": {
+        "type": "string",
+        "description": "",
+        "x-enumNames": ["Erstellt", "Eingereicht"],
+        "enum": ["Erstellt", "Eingereicht"]
+      },
+      "Akte": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "aktenzeichen": {
+            "type": "string"
+          },
+          "aktenteile": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/Aktenteil"
+            }
+          }
+        }
+      },
+      "Aktenteil": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parent_id": {
             "type": "string",
             "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
+      },
+      "DokumentResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "verfahren_id": {
+            "type": "string"
+          },
+          "dokumente": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Dokument"
+            }
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
       }
     },
     "securitySchemes": {
-      "OpenIDConnect": {
-        "type": "openIdConnect",
-        "description": "JWT token must be provided",
-        "openIdConnectUrl": "https://komplaidp101.e2a.sinc-intern.de/.well-known/openid-configuration"
+      "oauth2": {
+        "type": "oauth2",
+        "description": "OAuth 2.0 Client Credentials Flow",
+        "name": "Authorization",
+        "in": "header",
+        "openIdConnectUrl": "https://komplaidp101.e2a.sinc-intern.de/.well-known/openid-configuration",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://komplaidp101.e2a.sinc-intern.de/connect/token",
+            "scopes": {
+              "sinc": ""
+            }
+          }
+        }
       }
     }
   },
   "security": [
     {
-      "OpenIDConnect": []
+      "oauth2": []
     }
   ]
 }
