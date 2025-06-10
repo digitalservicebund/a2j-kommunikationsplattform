@@ -6,11 +6,6 @@
     "description": "Kompla API documentation",
     "version": "1.0"
   },
-  "servers": [
-    {
-      "url": "https://localhost:7144"
-    }
-  ],
   "paths": {
     "/api/v1/lift/{one-time-password}": {
       "get": {
@@ -169,14 +164,10 @@
             "name": "status",
             "in": "query",
             "schema": {
+              "nullable": true,
               "oneOf": [
                 {
-                  "nullable": true,
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/EJbaVerfahrenStatus"
-                    }
-                  ]
+                  "$ref": "#/components/schemas/EJbaVerfahrenStatus"
                 }
               ]
             },
@@ -248,7 +239,10 @@
                   "files": {
                     "type": "array",
                     "nullable": true,
-                    "items": {}
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
                   }
                 }
               }
@@ -769,7 +763,10 @@
                   "files": {
                     "type": "array",
                     "nullable": true,
-                    "items": {}
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
                   }
                 }
               }
@@ -914,6 +911,10 @@
             "nullable": true
           },
           "rolle": {
+            "type": "string",
+            "nullable": true
+          },
+          "otp": {
             "type": "string",
             "nullable": true
           }
@@ -1084,28 +1085,6 @@
           }
         }
       }
-    },
-    "securitySchemes": {
-      "oauth2": {
-        "type": "oauth2",
-        "description": "OAuth 2.0 Client Credentials Flow",
-        "name": "Authorization",
-        "in": "header",
-        "openIdConnectUrl": "https://komplaidp101.e2a.sinc-intern.de/.well-known/openid-configuration",
-        "flows": {
-          "clientCredentials": {
-            "tokenUrl": "https://komplaidp101.e2a.sinc-intern.de/connect/token",
-            "scopes": {
-              "sinc": ""
-            }
-          }
-        }
-      }
     }
-  },
-  "security": [
-    {
-      "oauth2": []
-    }
-  ]
+  }
 }
