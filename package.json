@@ -32,7 +32,7 @@
     "@react-router/fs-routes": "^7.5.0",
     "@react-router/node": "^7.4.1",
     "@react-router/serve": "^7.4.1",
-    "@sentry/react-router": "^9.11.0",
+    "@sentry/react-router": "^9.30.0",
     "@vitest/coverage-istanbul": "^3.1.4",
     "@vitest/eslint-plugin": "^1.2.0",
     "@vitest/expect": "^3.1.4",
