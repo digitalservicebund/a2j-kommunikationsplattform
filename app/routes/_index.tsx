@@ -71,23 +71,23 @@ export default function Index() {
             className="footer__nav"
             aria-label="Rechtliche und weiterführende Informationen"
           >
+            <Link to={"/datenschutz"} className={"kern-link"}>
+              Datenschutz
+            </Link>
+            <Link to={"/weitere-informationen"} className={"kern-link"}>
+              Weitere Informationen
+            </Link>
             <Link to={"/barrierefreiheit"} className={"kern-link"}>
               Barrierefreiheit
-            </Link>
-            <Link to={"/impressum"} className={"kern-link"}>
-              Impressum
             </Link>
             <Link to={"/hilfe-und-kontakt"} className={"kern-link"}>
               Hilfe und Kontakt
             </Link>
-            <Link to={"/datenschutz"} className={"kern-link"}>
-              Datenschutz
-            </Link>
             <Link to={"/opensource"} className={"kern-link"}>
               Open Source Code
             </Link>
-            <Link to={"/weitere-informationen"} className={"kern-link"}>
-              Weitere Informationen
+            <Link to={"/impressum"} className={"kern-link"}>
+              Impressum
             </Link>
           </nav>
           <div className="footer__info">
