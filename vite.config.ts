@@ -10,7 +10,9 @@ export default defineConfig((config) => {
       sourcemap: true, // Source map generation must be turned on
     },
     plugins: [
-      reactRouter(),
+      // React Router doesn't work in Vitest's environment,
+      // see: https://akoskm.com/react-router-vitest-example/
+      !process.env.VITEST && reactRouter(),
       sentryReactRouter(
         {
           authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -32,8 +34,10 @@ export default defineConfig((config) => {
           "app/entry.server.tsx",
           "app/instrument.server.mjs",
           "app/root.tsx",
-          // exclude routes (pages)
+          // exclude routes (pages) - almost all are still work in progress (in prototyping state)
           "app/routes/**",
+          // include routes (pages) that have already been developed for production
+          "!app/routes/_index.tsx",
           // test files
           "app/**/__test__/*.test.{ts,tsx}",
           // excluded technical prototypes (spikes) that will be removed/reworked
