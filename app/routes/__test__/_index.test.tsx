@@ -56,13 +56,18 @@ describe("Index route", () => {
   it('renders "Testzugang" button for non production environments', () => {
     renderIndexPageWithRouter();
 
+    // headline
     expect(screen.getByText("Kommunikationsplattform")).toBeInTheDocument();
+
     const demoButtonElement = screen.queryByText("Testzugang");
     expect(demoButtonElement).toBeInTheDocument();
   });
 
   it('renders without "Testzugang" button when environment is production', () => {
     renderIndexPageWithRouter(mockLoaderDataProduction);
+
+    // data privacy link within footer
+    expect(screen.getByText("Datenschutz")).toBeInTheDocument();
 
     const demoButtonElement = screen.queryByText("Testzugang");
     expect(demoButtonElement).not.toBeInTheDocument();
