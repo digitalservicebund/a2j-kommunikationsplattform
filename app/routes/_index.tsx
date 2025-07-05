@@ -1,17 +1,5 @@
-import type { MetaFunction } from "react-router";
 import { Link, useLoaderData } from "react-router";
 import { serverConfig } from "~/config/config.server";
-
-export const indexMeta: MetaFunction = () => {
-  return [
-    { title: "Kommunikationsplattform | Justiz-Services" },
-    {
-      name: "description",
-      content:
-        "Willkommen auf der Pilotplattform für den digitalen Austausch zwischen Gerichten und Verfahrensbeteiligten.",
-    },
-  ];
-};
 
 export async function loader() {
   const environment = serverConfig().ENVIRONMENT;

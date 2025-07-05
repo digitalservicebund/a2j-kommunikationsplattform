@@ -4,7 +4,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { MockInstance } from "vitest";
-import IndexPage, { indexMeta, loader } from "../_index";
+import IndexPage, { loader } from "../_index";
 
 const mockLoaderDataNonProduction = { environment: "testing" };
 const mockLoaderDataProduction = { environment: "production" };
@@ -16,7 +16,6 @@ const renderIndexPageWithRouter = (loader = mockLoaderDataNonProduction) => {
       path: "/",
       element: <IndexPage />,
       loader: () => loader,
-      meta: indexMeta,
     },
     {
       path: "/prototype/verfahren",
@@ -26,7 +25,7 @@ const renderIndexPageWithRouter = (loader = mockLoaderDataNonProduction) => {
 
   const router = createMemoryRouter(routes, {
     initialEntries: ["/"],
-    hydrationData: { loaderData: { "0": loader, "1": indexMeta } },
+    hydrationData: { loaderData: { "0": loader } },
   });
 
   render(<RouterProvider router={router} />);
@@ -44,19 +43,6 @@ describe("Index route", () => {
   afterEach(() => {
     // restore the original document.cookie setter after each test
     setCookieSpy.mockRestore();
-  });
-
-  it("indexMeta returns correct title and description", () => {
-    // @ts-expect-error indexMeta doesn't need any args
-    const metaDescriptors = indexMeta();
-    expect(metaDescriptors).toEqual([
-      { title: "Kommunikationsplattform | Justiz-Services" },
-      {
-        name: "description",
-        content:
-          "Willkommen auf der Pilotplattform für den digitalen Austausch zwischen Gerichten und Verfahrensbeteiligten.",
-      },
-    ]);
   });
 
   it("should return an environment on page load", async () => {

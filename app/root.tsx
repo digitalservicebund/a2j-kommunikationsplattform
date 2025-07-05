@@ -8,32 +8,19 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-import type { Route } from "./+types/root";
-
-import fontsStylesheet from "@digitalservice4germany/angie/fonts.css?url";
 import stylesheet from "~/styles.css?url";
+import type { Route } from "./+types/root";
 import { config } from "./config/config";
 
 type LayoutProps = PropsWithChildren & {
   readonly children?: React.ReactNode;
 };
 
+const title = "Kommunikationsplattform | Justiz-Services";
+const description =
+  "Willkommen auf der Pilotplattform für den digitalen Austausch zwischen Gerichten und Verfahrensbeteiligten.";
+
 export const links: Route.LinksFunction = () => [
-  {
-    rel: "preload",
-    as: "font",
-    type: "font/woff2",
-    href: "/fonts/BundesSansWeb-Regular.woff2",
-    crossOrigin: "anonymous",
-  },
-  {
-    rel: "preload",
-    as: "font",
-    type: "font/woff2",
-    href: "/fonts/BundesSansWeb-Bold.woff2",
-    crossOrigin: "anonymous",
-  },
-  { rel: "stylesheet", href: fontsStylesheet },
   { rel: "stylesheet", href: stylesheet },
   { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
 ];
@@ -42,8 +29,13 @@ export function Layout({ children }: LayoutProps) {
   return (
     <html lang="en">
       <head>
+        <title>{title}</title>
+        <meta name="description" content={description} />
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta property="og:type" content="website" />
+        {/* @TODO: https://digitalservicebund.atlassian.net/browse/KOMPLA-492 */}
+
         <script
           dangerouslySetInnerHTML={{
             __html: `window.ENV = ${JSON.stringify(config())}`,
