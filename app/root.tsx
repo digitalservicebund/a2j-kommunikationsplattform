@@ -1,5 +1,4 @@
 import * as Sentry from "@sentry/react-router";
-import type { PropsWithChildren } from "react";
 import {
   isRouteErrorResponse,
   Links,
@@ -12,10 +11,6 @@ import stylesheet from "~/styles.css?url";
 import type { Route } from "./+types/root";
 import { config } from "./config/config";
 
-type LayoutProps = PropsWithChildren & {
-  readonly children?: React.ReactNode;
-};
-
 const title = "Kommunikationsplattform | Justiz-Services";
 const description =
   "Willkommen auf der Pilotplattform für den digitalen Austausch zwischen Gerichten und Verfahrensbeteiligten.";
@@ -25,7 +20,7 @@ export const links: Route.LinksFunction = () => [
   { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
 ];
 
-export function Layout({ children }: LayoutProps) {
+export default function App() {
   return (
     <html lang="en">
       <head>
@@ -45,16 +40,13 @@ export function Layout({ children }: LayoutProps) {
         <Links />
       </head>
       <body>
-        {children}
+        {/* Outlet renders children */}
+        <Outlet />
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
   );
-}
-
-export default function App() {
-  return <Outlet />;
 }
 
 export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
