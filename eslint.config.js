@@ -7,7 +7,7 @@ export default tseslint.config(
   eslint.configs.recommended,
   // Global ignores
   {
-    ignores: ["**/*", "!app/**", "!tests/**"],
+    ignores: ["**/*", "!app/**", "!tests/**", "**/playwright-report/**"],
   },
   // Global ESLint configuration
   {
