@@ -25,17 +25,13 @@ test.describe("Homepage", () => {
       name: "Anmeldung Anwaltschaft",
     });
 
+    await linkToTest.click();
+
     // expected URL partial after clicking the beA-Portal login link
     const expectedUrl =
       /schulung\.bea-brak\.de\/auth\/realms\/brak\/protocol\/openid-connect\/auth/;
 
-    // click link and wait for the URL change
-    await Promise.all([page.waitForURL(expectedUrl), linkToTest.click()]);
-
-    // assert that the current URL matches the expected URL
     await expect(page).toHaveURL(expectedUrl);
-
-    // further assertions on the redirected page
     await expect(page.locator("h1")).toHaveText("Anmeldung");
   });
 });
