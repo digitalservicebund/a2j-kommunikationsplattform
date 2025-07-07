@@ -9,7 +9,7 @@
 @plugin "@digitalservice4germany/angie";
 /* to be removed: end */
 
-/* start login page prototyping */
+/* start index (login) page styling */
 .logo {
   display: flex;
   flex-direction: row;
@@ -45,7 +45,6 @@
   flex-direction: row;
   flex-wrap: wrap;
   padding: var(--kern-metric-space-large, 24px) 0;
-  margin-bottom: var(--kern-metric-space-default, 16px);
   align-items: flex-start;
   gap: var(--kern-metric-space-default, 16px);
   align-self: stretch;
@@ -73,4 +72,4 @@
     color: var(--kern-color-layout-text-muted, #404565);
   }
 }
-/* end login page prototyping */
+/* end index (login) page styling */

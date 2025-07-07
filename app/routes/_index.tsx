@@ -11,7 +11,7 @@ export default function IndexPage() {
 
   return (
     <div className="kern-container">
-      <div className="kern-col-12 kern-col-sm-10 kern-col-md-8 kern-col-xl-6 kern-col-xxl-4 kern-col-sm-offset-1 kern-col-md-offset-2 kern-col-xl-offset-3 kern-col-xxl-offset-4">
+      <div className="kern-col-12 kern-col-sm-10 kern-col-md-8 kern-col-lg-6 kern-col-xl-6 kern-col-xxl-4 kern-col-sm-offset-1 kern-col-md-offset-2 kern-col-lg-offset-3 kern-col-xl-offset-3 kern-col-xxl-offset-4">
         <main>
           <div className="login">
             <div className="login__container">
