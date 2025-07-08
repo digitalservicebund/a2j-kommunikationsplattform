@@ -67,7 +67,7 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ runner.os }}-playwright-
 
-      - name: Install E2E & A11y test dependencies
+      - name: Install A11y test dependencies
         if: steps.cache-playwright-deps.outputs.cache-hit != 'true'
         run: npx --yes playwright install --with-deps
 
@@ -270,3 +270,54 @@ jobs:
           argocd_pipeline_password: ${{ secrets.ARGOCD_PIPELINE_PASSWORD }}
           argocd_server: ${{ secrets.ARGOCD_SERVER }}
           argocd_sync_timeout: 600
+
+  e2e-test-staging:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+          cache: npm
+
+      - name: Cache npm dependencies
+        id: cache-npm-deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        if: steps.cache-npm-deps.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Cache Playwright dependencies
+        id: cache-playwright-deps
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-playwright-
+
+      - name: Install E2E test dependencies
+        if: steps.cache-playwright-deps.outputs.cache-hit != 'true'
+        run: npx --yes playwright install --with-deps
+
+      - name: Run E2E tests against staging
+        env:
+          E2E_BASE_URL: "https://a2j-kompla.dev.ds4g.net"
+        run: npm run test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ failure() }}
+        with:
+          name: playwright-e2e-test-results
+          path: tests/e2e/playwright-report
