@@ -27,6 +27,8 @@ test.describe("Homepage", () => {
 
     await linkToTest.click();
 
+    await page.waitForURL((url) => url.toString().includes("schulung"));
+
     // expected URL partial after clicking the beA-Portal login link
     const expectedUrl =
       /schulung\.bea-brak\.de\/auth\/realms\/brak\/protocol\/openid-connect\/auth/;
