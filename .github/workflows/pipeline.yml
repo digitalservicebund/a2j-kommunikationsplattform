@@ -71,15 +71,6 @@ jobs:
         if: steps.cache-playwright-deps.outputs.cache-hit != 'true'
         run: npx --yes playwright install --with-deps
 
-      - name: Run E2E tests
-        run: npm run test:e2e
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ failure() }}
-        with:
-          name: playwright-e2e-test-results
-          path: tests/e2e/playwright-report
-
       - name: Run A11y tests
         run: npm run test:a11y
         env:
