@@ -6,11 +6,12 @@ import dotenv from "dotenv";
  * https://github.com/motdotla/dotenv
  */
 
-// Load both .env and test.env
+// Load .env file for local testing
 dotenv.config();
-dotenv.config({ path: "../test.env" });
 
 const useDefaultBaseUrl = ["", undefined].includes(process.env.E2E_BASE_URL);
+console.log("useDefaultBaseUrl", useDefaultBaseUrl);
+
 const baseURL = useDefaultBaseUrl
   ? "http://localhost:3000"
   : process.env.E2E_BASE_URL;
