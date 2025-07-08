@@ -264,6 +264,8 @@ jobs:
 
   e2e-test-staging:
     runs-on: ubuntu-latest
+    needs:
+      - deploy-staging
     permissions:
       contents: read
     steps:
