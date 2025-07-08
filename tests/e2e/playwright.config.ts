@@ -10,11 +10,12 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const useDefaultBaseUrl = ["", undefined].includes(process.env.E2E_BASE_URL);
-console.log("useDefaultBaseUrl", useDefaultBaseUrl);
 
 const baseURL = useDefaultBaseUrl
   ? "http://localhost:3000"
   : process.env.E2E_BASE_URL;
+
+console.log("e2e test baseURL is:", baseURL);
 
 /**
  * See https://playwright.dev/docs/test-configuration.
