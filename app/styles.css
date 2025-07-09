@@ -16,7 +16,7 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: var(--kern-metric-space-default, 16px);
+  gap: var(--kern-metric-space-small, 8px);
   word-break: break-all;
   padding-bottom: var(--kern-metric-space-default, 16px);
 }
