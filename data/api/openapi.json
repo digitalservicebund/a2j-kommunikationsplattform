@@ -1007,28 +1007,35 @@
       },
       "Dokument": {
         "type": "object",
+        "description": "Repräsentiert ein Dokument mit grundlegenden Eigenschaften.",
         "additionalProperties": false,
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "Eindeutige Kennung des Dokuments."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "Der Name des Dokuments."
           },
           "dokument_klasse": {
-            "type": "string"
+            "type": "string",
+            "description": "Klasse für die Klassifizierung eines Dokuments."
           }
         }
       },
       "AcceptLiftRequest": {
         "type": "object",
+        "description": "Stellt eine Anfrage zum Akzeptieren eines Lifts dar.",
         "additionalProperties": false,
         "properties": {
           "accept_lift": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Gibt an, ob der Lift akzeptiert wird."
           },
           "vollmacht_versicherung": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Gibt an, ob eine Vollmacht für die Versicherung vorliegt."
           }
         }
       },
@@ -1046,28 +1053,39 @@
       },
       "Verfahren": {
         "type": "object",
+        "description": "Dto-Klasse, die ein Verfahren beschreibt.",
         "additionalProperties": false,
         "properties": {
           "id": {
             "type": "string",
+            "description": "Eindeutige Kennung des Verfahrens.",
             "format": "guid"
           },
           "aktenzeichen": {
-            "type": "string"
+            "type": "string",
+            "description": "Aktenzeichen des Verfahrens."
           },
           "status": {
-            "$ref": "#/components/schemas/EJbaVerfahrenStatus"
+            "description": "Aktueller Status des Verfahrens.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/EJbaVerfahrenStatus"
+              }
+            ]
           },
           "status_changed": {
             "type": "string",
+            "description": "Datum der letzten Statusänderung.",
             "format": "date-time"
           },
           "eingereicht_am": {
             "type": "string",
+            "description": "Datum der Einreichung des Verfahrens.",
             "format": "date-time"
           },
           "gericht_name": {
-            "type": "string"
+            "type": "string",
+            "description": "Name des zuständigen Gerichts."
           }
         }
       },
@@ -1085,17 +1103,21 @@
       },
       "Akte": {
         "type": "object",
+        "description": "Datenübertragungsobjekt für eine Akte.",
         "additionalProperties": false,
         "properties": {
           "id": {
             "type": "string",
+            "description": "Eindeutige Kennung der Akte.",
             "format": "guid"
           },
           "aktenzeichen": {
-            "type": "string"
+            "type": "string",
+            "description": "Eindeutiges Aktenkennzeichen."
           },
           "aktenteile": {
             "type": "array",
+            "description": "Enthält die Teile der Akte.",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/Aktenteil"
@@ -1105,35 +1127,43 @@
       },
       "Aktenteil": {
         "type": "object",
+        "description": "Repräsentiert einen Aktenteil im System.",
         "additionalProperties": false,
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "Eindeutige Identifikationsnummer des Aktenteils."
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "Name des Aktenteils."
           },
           "parent_id": {
             "type": "string",
+            "description": "Identifikationsnummer des übergeordneten Aktenteils.",
             "nullable": true
           }
         }
       },
       "DokumentResponse": {
         "type": "object",
+        "description": "Repräsentiert die Antwort mit Dokumenten und Metadaten.",
         "additionalProperties": false,
         "properties": {
           "verfahren_id": {
-            "type": "string"
+            "type": "string",
+            "description": "Eindeutige Kennung des Verfahrens."
           },
           "dokumente": {
             "type": "array",
+            "description": "Liste der zugehörigen Dokumente.",
             "items": {
               "$ref": "#/components/schemas/Dokument"
             }
           },
           "count": {
             "type": "integer",
+            "description": "Gibt die Gesamtanzahl der Dokumente an.",
             "format": "int32"
           }
         }
