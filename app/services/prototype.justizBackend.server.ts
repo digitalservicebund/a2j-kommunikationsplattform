@@ -41,7 +41,10 @@ class JustizBackendServiceMockImpl implements JustizBackendService {
       aktenzeichen: "AZ123456",
       status: "Eingereicht",
       status_changed: new Date().toISOString(),
+      eingereicht_am: new Date().toISOString(),
+      gericht_name: "Amtsgericht Kreuzberg",
     };
+
     this.verfahren.push(mockVerfahren);
 
     const mockAkte: Akte = {
@@ -188,6 +191,8 @@ class JustizBackendServiceImpl implements JustizBackendService {
       }
 
       const body = await response.json();
+
+      console.log("body", body);
       const parsedVerfahren: Verfahren = VerfahrenSchema.parse(body);
 
       console.log("Fetched Verfahren successfully:", parsedVerfahren);
@@ -221,12 +226,10 @@ class JustizBackendServiceImpl implements JustizBackendService {
       }
 
       const body = await response.json();
-      // TODO: Once the API is fixed, we can use the commented line below instead of working directly with an array.
-      // const parsedVerfahren: Verfahren[] = z.object( { data: z.array(VerfahrenSchema) }).parse(body)?.data;
-      const parsedVerfahren: Verfahren[] = z.array(VerfahrenSchema).parse(body);
+      const parsedVerfahren = VerfahrenResponseSchema.parse(body);
+      console.log("Fetched all Verfahren successfully:", parsedVerfahren);
 
-      console.log("Fetched Verfahren successfully:", parsedVerfahren);
-      return parsedVerfahren;
+      return parsedVerfahren.verfahren;
     } catch (error) {
       if (error instanceof z.ZodError) {
         // Handle zod validation errors
@@ -478,6 +481,12 @@ const VerfahrenSchema = z.object({
   aktenzeichen: z.string().nullable(),
   status: VerfahrenStatusSchema,
   status_changed: z.string().datetime(),
+  eingereicht_am: z.string().datetime(),
+  gericht_name: z.string(),
+});
+
+const VerfahrenResponseSchema = z.object({
+  verfahren: z.array(VerfahrenSchema),
 });
 
 const AkteSchema = z.object({
