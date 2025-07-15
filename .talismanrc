@@ -18,7 +18,7 @@ fileignoreconfig:
   - filename: .github/workflows/scan.yml
     checksum: b845ef02e7f8e27be5b69e151e8084ca89bb08567cd4284cfd0c0dc3e0ab9a1f
   - filename: doc/adr/0002-how-is-the-user-interface-built.md
-    checksum: de6a2cfb03e97d6c65a5a8351e968b98f912e34e911a144fce70bcb9ad86a91e
+    checksum: 04c75cd8591e538c9603969a3a1ec8759f372c939aaa7eca688f4b479dede354
   - filename: app/routes/verfahren.$id.tsx
     checksum: 0727efb5d565dae591f7413ee57c506d5cb8f1fa5042d3cb98b0214b9a3a6132
   - filename: mocks/api/handlers.js
