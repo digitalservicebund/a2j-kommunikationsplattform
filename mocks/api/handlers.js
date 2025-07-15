@@ -95,7 +95,11 @@ const getVerfahren = (id) => {
     }
   }
 
-  return id ? requestedVerfahren : allVerfahren;
+  return id
+    ? requestedVerfahren
+    : {
+        verfahren: allVerfahren,
+      };
 };
 
 export const handlers = [
