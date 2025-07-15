@@ -1,14 +1,13 @@
 # 2. How is the user interface built
 
-Date: 2025-04-09
+- 2025-04-09: Drafted
+- 2025-07-15: Accepted
 
 ## Status
 
-Pending
+Accepted
 
 ## Context
-
-Work in progress: The issue motivating this decision, and any context that influences or constrains the decision.
 
 Within the next 12 months we need to create a user interface (UI) that enables testing of a communication platform in online civil court proceedings. The scope of the MVP is clear from a functional perspective, but the user flow and its look and feel (design) is and will be work in progress for the weeks ahead. It will adjust iteratively. For example after doing a technical spike or user testing/interviews or an option that may seem promising for our roadmap. It is therefore important to be able to react flexibly to future user interface (product) requirements.
 In order to be able to start development soon and gather initial findings at an early stage, we have various options with regard to the UI development and considered the following:
@@ -26,6 +25,8 @@ In order to be able to start development soon and gather initial findings at an 
 | Integration type                                   | npm package + copy/paste | npm package | npm package          | copy/paste/adjust | -          |
 | Tailwind support                                   | yes                      | yes         | yes (not encouraged) | yes               | -          |
 | Good starting point for a shared component library | yes                      | no          | yes                  | yes               | -          |
+
+Skip to [Decision](#decision).
 
 ### Testing notes
 
@@ -139,10 +140,10 @@ In order to be able to start development soon and gather initial findings at an 
 
 ## Decision
 
-To be defined: The change that we're proposing or have agreed to implement.
+We decided to use the [KERN UX](https://www.kern-ux.de/design-system/) design system. As KERN and openCode are examples of "Digital Public Infrastructure", systems/platforms that aim to streamline the delivery of public services, we want to support that actively as DigitalService and as a project team. In addition, using KERN helps us to learn how to create accessible websites with it and how to contribute possible improvements to the KERN community. In the long term, we are aiming for sustainable use of KERN React components throughout the entire A2j projects landscape.
 
 ## Consequences
 
-To be defined: What becomes easier or more difficult to do and any risks introduced by the change that will need to be mitigated.
+The UI will be build with KERN UX. A KERN React Community Kit can be used or a new one can be created.
 
 [^1]: The design discipline had previously classified this design system as unsuitable for our project.
