@@ -22,7 +22,7 @@ fileignoreconfig:
   - filename: app/routes/verfahren.$id.tsx
     checksum: 0727efb5d565dae591f7413ee57c506d5cb8f1fa5042d3cb98b0214b9a3a6132
   - filename: mocks/api/handlers.js
-    checksum: 55bbc42a5428e7ee61b74d5c38e2b056d2b53f0e7deb3807e088cda51acb6495
+    checksum: 6b2c676fe6fbeb01fa7832dc094de4bee695a579cf07eed1857e25d75ed27a69
   - filename: sonar-project.properties
     checksum: 9f2d946a302893989db79178045adf8af8fa83bdb369579051145b074ce50d02
   - filename: app/services/fileUpload.server.ts
