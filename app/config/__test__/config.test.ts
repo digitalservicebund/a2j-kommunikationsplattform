@@ -16,6 +16,7 @@ describe("config()", () => {
     delete (window as any).ENV;
     // save and clear process.env
     process.env = { ...originalEnv };
+    delete process.env.ENVIRONMENT;
     delete process.env.SENTRY_DSN;
   });
 
@@ -31,9 +32,10 @@ describe("config()", () => {
   });
 
   it("returns defined config items for browser environment (window.ENV)", () => {
-    (window as any).ENV = { SENTRY_DSN: "first" };
+    (window as any).ENV = { ENVIRONMENT: "testing", SENTRY_DSN: "first" };
     const browserConfig = configModule.config();
     expect(browserConfig).toStrictEqual({
+      ENVIRONMENT: "testing",
       SENTRY_DSN: "first",
     });
   });

@@ -1,8 +1,8 @@
 import { Link, useLoaderData } from "react-router";
-import { serverConfig } from "~/config/config.server";
+import { config } from "~/config/config";
 
 export async function loader() {
-  const environment = serverConfig().ENVIRONMENT;
+  const environment = config().ENVIRONMENT;
   return { environment };
 }
 
