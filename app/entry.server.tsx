@@ -3,11 +3,10 @@
  * For more information, see https://reactrouter.com/explanation/special-files#entryservertsx
  */
 
-import { PassThrough } from "node:stream";
-
 import { createReadableStreamFromReadable } from "@react-router/node";
 import * as Sentry from "@sentry/react-router";
 import { isbot } from "isbot";
+import { PassThrough } from "node:stream";
 import { renderToPipeableStream } from "react-dom/server";
 import {
   HandleErrorFunction,
@@ -17,6 +16,14 @@ import {
 
 // Reject/cancel all pending promises after 5 seconds
 export const streamTimeout = 5000;
+
+export const handleError: HandleErrorFunction = (error, { request }) => {
+  // React Router may abort some interrupted requests, report those
+  if (!request.signal.aborted) {
+    Sentry.captureException(error);
+    console.error(error);
+  }
+};
 
 export default function handleRequest(
   request: Request,
@@ -47,6 +54,7 @@ function handleBotRequest(
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
+
     const { pipe, abort } = renderToPipeableStream(
       <ServerRouter context={routerContext} url={request.url} />,
       {
@@ -134,11 +142,3 @@ function handleBrowserRequest(
     setTimeout(abort, streamTimeout + 1000);
   });
 }
-
-export const handleError: HandleErrorFunction = (error, { request }) => {
-  // React Router may abort some interrupted requests, report those
-  if (!request.signal.aborted) {
-    Sentry.captureException(error);
-    console.error(error);
-  }
-};
