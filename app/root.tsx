@@ -17,6 +17,7 @@ const description =
 
 export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
+  { rel: "icon", href: "/favicon.ico", sizes: "32x32" },
   { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
 ];
 
