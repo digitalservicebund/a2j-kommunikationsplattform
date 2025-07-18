@@ -15,7 +15,7 @@ export function config(): ClientConfig {
   const env = envFromBrowser() ?? envFromNode() ?? {};
 
   return {
-    ENVIRONMENT: env.ENVIRONMENT?.trim() ?? "",
+    ENVIRONMENT: env.ENVIRONMENT?.trim() ?? "development",
     SENTRY_DSN: env.SENTRY_DSN?.trim() ?? "",
   };
 }
@@ -35,7 +35,7 @@ if (import.meta.vitest) {
     delete global.window;
     const getConfig = config();
     expect(getConfig).toStrictEqual({
-      ENVIRONMENT: "",
+      ENVIRONMENT: "development",
       SENTRY_DSN: "",
     });
     // restore process
