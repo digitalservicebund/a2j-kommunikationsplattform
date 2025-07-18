@@ -14,15 +14,20 @@ const mockJustizBackendAPI = environment === "development";
 const isProduction = process.env.NODE_ENV === "production";
 
 // info logs
-console.log(
-  `Info:
-  -> Environment is '${environment}'
+let infoLog = `Info:
+  -> Environment is "${environment}"
   -> Production build: ${isProduction ? "yes" : "no"}
   -> API will be mocked: ${mockJustizBackendAPI ? "yes" : "no"}
-  ${mockJustizBackendAPI && `-> Setting up a Justiz-Backend-API mock for local development`}
-  ${!isProduction && `-> Setting up a viteDevServer for local development`}
-  `,
-);
+`;
+
+if (mockJustizBackendAPI) {
+  infoLog +=
+    "  -> Setting up a Justiz-Backend-API mock for local development\n";
+}
+
+if (!isProduction) {
+  infoLog += "  -> Setting up a viteDevServer for local development\n";
+}
 
 if (mockJustizBackendAPI) {
   const mockJustizBackendService = mockJustizBackendAPI
@@ -59,6 +64,20 @@ if (viteDevServer) {
     "/assets",
     express.static("build/client/assets", { immutable: true, maxAge: "1y" }),
   );
+
+  if (environment === "staging") {
+    infoLog += '  -> Add "X-Robots-Tag: noindex" header to all requests\n';
+
+    app.use((req, res, next) => {
+      /**
+       * Set noindex header for all requests on staging environment
+       *
+       * @see: https://developers.google.com/search/docs/crawling-indexing/block-indexing?hl=en#http-response-header
+       */
+      res.set("X-Robots-Tag", "noindex");
+      next();
+    });
+  }
 }
 
 app.use(express.static("build/client", { maxAge: "1h" }));
@@ -73,6 +92,7 @@ app.use(morgan("tiny"));
 app.all(/(.*)/, reactRouterHandler);
 
 const port = process.env.PORT || 3000;
-app.listen(port, () =>
-  console.log(`Express server listening at http://localhost:${port}`),
-);
+app.listen(port, () => {
+  console.log(infoLog);
+  console.log(`Express server listening at http://localhost:${port}\n`);
+});
