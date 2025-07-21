@@ -7,17 +7,13 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-import stylesheet from "~/styles.css?url";
 import type { Route } from "./+types/root";
 import { config } from "./config/config";
+import "./styles.css";
 
 const title = "Kommunikationsplattform | Justiz-Services";
 const description =
   "Willkommen auf der Pilotplattform für den digitalen Austausch zwischen Gerichten und Verfahrensbeteiligten.";
-
-export const links: Route.LinksFunction = () => [
-  { rel: "stylesheet", href: stylesheet },
-];
 
 export default function App() {
   return (
