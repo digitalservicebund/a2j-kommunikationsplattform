@@ -1,3 +1,4 @@
+import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
 import {
   type JustizBackendService,
@@ -40,7 +41,7 @@ class ServicesContext {
   }
 
   static isDemoModeAllowed(): boolean {
-    const environment = serverConfig().ENVIRONMENT;
+    const environment = config().ENVIRONMENT;
     return environment === "staging" || environment === "development";
   }
 }
