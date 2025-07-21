@@ -13,7 +13,7 @@ const { SENTRY_DSN } = config();
 if (SENTRY_DSN !== undefined) {
   Sentry.init({
     dsn: config().SENTRY_DSN,
-    integrations: [Sentry.browserTracingIntegration()],
+    integrations: [Sentry.reactRouterTracingIntegration()],
 
     tracesSampleRate: 1.0, //  Capture 100% of the transactions
 
