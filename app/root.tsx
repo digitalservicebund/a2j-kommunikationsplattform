@@ -17,8 +17,6 @@ const description =
 
 export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
-  { rel: "icon", href: "/favicon.ico", sizes: "32x32" },
-  { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
 ];
 
 export default function App() {
@@ -31,6 +29,8 @@ export default function App() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:type" content="website" />
         {/* @TODO: https://digitalservicebund.atlassian.net/browse/KOMPLA-492 */}
+        <link rel="icon" href="/favicon.ico" sizes="32x32" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
         <script
           dangerouslySetInnerHTML={{
