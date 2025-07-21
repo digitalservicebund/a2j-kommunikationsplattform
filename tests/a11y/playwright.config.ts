@@ -15,6 +15,9 @@ const baseURL = useDefaultBaseUrl
   ? "http://localhost:3000"
   : process.env.E2E_BASE_URL;
 
+const basicAuthUser = process.env.HTTP_CREDENTIALS_USERNAME ?? "";
+const basicAuthPassword = process.env.HTTP_CREDENTIALS_PASSWORD ?? "";
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -43,6 +46,11 @@ export default defineConfig({
     actionTimeout: 5 * 1000,
     /* Base URL to use in actions like `await page.goto("/")`. */
     baseURL,
+    /* Credentials for HTTP authentication. See https://playwright.dev/docs/api/class-testoptions#test-options-http-credentials */
+    httpCredentials: {
+      username: basicAuthUser,
+      password: basicAuthPassword,
+    },
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
   },
