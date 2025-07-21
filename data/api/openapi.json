@@ -12,6 +12,7 @@
         "tags": [
           "Lift"
         ],
+        "summary": "Führt eine asynchrone Prüfung des Einmalpasswortes durch.",
         "operationId": "Lift_Get",
         "parameters": [
           {
@@ -19,6 +20,7 @@
             "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
+            "description": "Die Benutzer-ID aus dem Header.",
             "schema": {
               "type": "string"
             },
@@ -29,6 +31,7 @@
             "x-originalName": "oneTimePassword",
             "in": "path",
             "required": true,
+            "description": "Das Einmalpasswort aus der Route.",
             "schema": {
               "type": "string"
             },
@@ -50,7 +53,7 @@
             "description": ""
           },
           "200": {
-            "description": "",
+            "description": "Ein IActionResult mit der Antwort der Validierung.",
             "content": {
               "application/json": {
                 "schema": {
@@ -67,6 +70,7 @@
         "tags": [
           "Lift"
         ],
+        "summary": "Hebt einen Benutzer für ein Verfahren an.",
         "operationId": "Lift_Post",
         "parameters": [
           {
@@ -74,6 +78,7 @@
             "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
+            "description": "Die Benutzer-ID aus dem Header.",
             "schema": {
               "type": "string"
             },
@@ -84,6 +89,7 @@
             "x-originalName": "liftId",
             "in": "path",
             "required": true,
+            "description": "Die Lift-ID aus der Route.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -93,6 +99,7 @@
         ],
         "requestBody": {
           "x-name": "request",
+          "description": "Die Anfrage zum Anheben eines Benutzers.",
           "content": {
             "application/json": {
               "schema": {
@@ -118,7 +125,7 @@
             "description": ""
           },
           "201": {
-            "description": "",
+            "description": "Ein IActionResult mit der Antwort des Vorgangs.",
             "content": {
               "application/json": {
                 "schema": {
@@ -145,6 +152,7 @@
         "tags": [
           "Verfahren"
         ],
+        "summary": "Ruft eine asynchrone Liste von Verfahren ab.",
         "operationId": "Verfahren_Get",
         "parameters": [
           {
@@ -152,6 +160,7 @@
             "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
+            "description": "Die sichere Benutzer-ID aus der Kopfzeile.",
             "schema": {
               "type": "string"
             },
@@ -161,6 +170,7 @@
             "name": "limit",
             "in": "query",
             "required": true,
+            "description": "Maximale Anzahl der zurückzugebenden Datensätze.",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -170,6 +180,7 @@
           {
             "name": "offset",
             "in": "query",
+            "description": "Offset für die Rückgabe der Datensätze.",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -179,6 +190,7 @@
           {
             "name": "status",
             "in": "query",
+            "description": "Optionaler Status zur Filterung der Verfahren.",
             "schema": {
               "nullable": true,
               "oneOf": [
@@ -212,7 +224,7 @@
             }
           },
           "200": {
-            "description": "",
+            "description": "ActionResult mit einer Liste von Verfahren.",
             "content": {
               "application/json": {
                 "schema": {
@@ -227,6 +239,7 @@
         "tags": [
           "Verfahren"
         ],
+        "summary": "Erstellt ein neues Verfahren.",
         "operationId": "Verfahren_Post",
         "parameters": [
           {
@@ -234,6 +247,7 @@
             "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
+            "description": "Die sichere Benutzer-ID aus der Kopfzeile.",
             "schema": {
               "type": "string"
             },
@@ -286,7 +300,7 @@
             }
           },
           "201": {
-            "description": "",
+            "description": "ActionResult mit dem erstellten Verfahren.",
             "content": {
               "application/json": {
                 "schema": {
@@ -333,6 +347,7 @@
         "tags": [
           "Verfahren"
         ],
+        "summary": "Ruft ein Verfahren basierend auf der ID ab.",
         "operationId": "Verfahren_GetById",
         "parameters": [
           {
@@ -340,6 +355,7 @@
             "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
+            "description": "Die sichere Benutzer-ID aus der Kopfzeile.",
             "schema": {
               "type": "string"
             },
@@ -350,6 +366,7 @@
             "x-originalName": "verfahrenId",
             "in": "path",
             "required": true,
+            "description": "Die ID des anzuzeigenden Verfahrens.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -379,7 +396,7 @@
             }
           },
           "200": {
-            "description": "",
+            "description": "ActionResult mit dem angeforderten Verfahren oder NotFound.",
             "content": {
               "application/json": {
                 "schema": {
@@ -406,6 +423,7 @@
         "tags": [
           "Verfahren"
         ],
+        "summary": "Ruft die Akte eines Verfahrens ab.",
         "operationId": "Verfahren_Get2",
         "parameters": [
           {
@@ -413,6 +431,7 @@
             "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
+            "description": "Die sichere Benutzer-ID aus der Kopfzeile.",
             "schema": {
               "type": "string"
             },
@@ -423,6 +442,7 @@
             "x-originalName": "verfahrenId",
             "in": "path",
             "required": true,
+            "description": "Die ID des spezifischen Verfahrens.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -452,7 +472,7 @@
             }
           },
           "200": {
-            "description": "",
+            "description": "ActionResult mit einer Liste von Verfahren.",
             "content": {
               "application/json": {
                 "schema": {
@@ -509,6 +529,7 @@
         "tags": [
           "Verfahren"
         ],
+        "summary": "Ruft eine Liste von Schriftstücken für einen Akten-Teil ab.",
         "operationId": "Verfahren_GetSchriftstuecke",
         "parameters": [
           {
@@ -516,6 +537,7 @@
             "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
+            "description": "Die sichere Benutzer-ID aus der Kopfzeile.",
             "schema": {
               "type": "string"
             },
@@ -526,6 +548,7 @@
             "x-originalName": "verfahrenId",
             "in": "path",
             "required": true,
+            "description": "Die ID des Verfahrens aus der URL.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -537,6 +560,7 @@
             "x-originalName": "aktenteilId",
             "in": "path",
             "required": true,
+            "description": "Die ID des Aktenteils aus der URL.",
             "schema": {
               "type": "string"
             },
@@ -546,6 +570,7 @@
             "name": "limit",
             "in": "query",
             "required": true,
+            "description": "Maximale Anzahl der zurückzugebenden Datensätze.",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -555,6 +580,7 @@
           {
             "name": "offset",
             "in": "query",
+            "description": "Offset für die Rückgabe der Datensätze.",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -584,7 +610,7 @@
             }
           },
           "200": {
-            "description": "",
+            "description": "ActionResult mit einer Liste von Schriftstücken.",
             "content": {
               "application/json": {
                 "schema": {
@@ -631,6 +657,7 @@
         "tags": [
           "Verfahren"
         ],
+        "summary": "Lädt ein Dokument anhand seiner ID herunter.",
         "operationId": "Verfahren_GetDocumentById",
         "parameters": [
           {
@@ -638,6 +665,7 @@
             "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
+            "description": "Sichere Benutzer-ID aus der Kopfzeile.",
             "schema": {
               "type": "string"
             },
@@ -648,6 +676,7 @@
             "x-originalName": "verfahrenId",
             "in": "path",
             "required": true,
+            "description": "ID des Verfahrens.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -659,6 +688,7 @@
             "x-originalName": "dokumentId",
             "in": "path",
             "required": true,
+            "description": "ID des Dokuments.",
             "schema": {
               "type": "string"
             },
@@ -687,7 +717,7 @@
             }
           },
           "200": {
-            "description": "",
+            "description": "Datei im Stream oder NotFound, falls nicht vorhanden.",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -745,6 +775,7 @@
         "tags": [
           "Verfahren"
         ],
+        "summary": "Erstellt Dokumente für ein spezifisches Verfahren.",
         "operationId": "Verfahren_PostAll",
         "parameters": [
           {
@@ -752,6 +783,7 @@
             "x-originalName": "userSafeId",
             "in": "header",
             "required": true,
+            "description": "Die sichere Benutzer-ID aus der Kopfzeile.",
             "schema": {
               "type": "string"
             },
@@ -762,6 +794,7 @@
             "x-originalName": "verfahrenId",
             "in": "path",
             "required": true,
+            "description": "ID des Verfahrens, zu dem die Dokumente gehören.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -772,6 +805,7 @@
             "name": "aktenteil_id",
             "x-originalName": "aktenteilId",
             "in": "query",
+            "description": "Optionale Aktenteil-ID zur Zuordnung der Dokumente.",
             "schema": {
               "type": "string",
               "nullable": true
@@ -820,7 +854,7 @@
             }
           },
           "201": {
-            "description": "",
+            "description": "ActionResult mit dem erstellten Verfahren.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1041,10 +1075,12 @@
       },
       "VerfahrenList": {
         "type": "object",
+        "description": "Repräsentiert eine Liste von Verfahren.",
         "additionalProperties": false,
         "properties": {
           "verfahren": {
             "type": "array",
+            "description": "Repräsentiert ein Verfahren.",
             "items": {
               "$ref": "#/components/schemas/Verfahren"
             }
@@ -1091,7 +1127,7 @@
       },
       "EJbaVerfahrenStatus": {
         "type": "string",
-        "description": "",
+        "description": "Status eines JBA-Verfahrens.",
         "x-enumNames": [
           "Erstellt",
           "Eingereicht"
