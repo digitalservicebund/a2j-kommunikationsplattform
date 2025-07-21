@@ -307,6 +307,8 @@ jobs:
       - name: Run E2E tests against staging
         env:
           E2E_BASE_URL: "https://a2j-kompla.dev.ds4g.net"
+          HTTP_CREDENTIALS_USERNAME: ${{ secrets.HTTP_CREDENTIALS_USERNAME }}
+          HTTP_CREDENTIALS_PASSWORD: ${{ secrets.HTTP_CREDENTIALS_PASSWORD }}
         run: npm run test:e2e
 
       - uses: actions/upload-artifact@v4
