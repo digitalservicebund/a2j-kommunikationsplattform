@@ -8,7 +8,7 @@ fileignoreconfig:
   - filename: .github/workflows/pipeline.yml
     checksum: 6c9e9861121e5973f2cd61c027de3e2d4420ff564508d7c080de2e39107d7a10
   - filename: .env.example
-    checksum: c262fbe55a8a17bce80354843f8e68d77dc4847319efa6a4a720989adbb6fea1
+    checksum: 9c26e057dd68b66233424efb37d180efffc7a235bb2cb35b67df1d798bafabb3
   - filename: app/routes/verfahren.tsx
     checksum: fa275d581af157c132957b9a2c587e851dd293cc5ace0d5c6471f2103c4cfea1
   - filename: package-lock.json
