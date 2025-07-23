@@ -1,3 +1,11 @@
+import {
+  KernButton,
+  KernColumn,
+  KernContainer,
+  KernDivider,
+  KernIcon,
+  KernText,
+} from "@kern-ux-annex/kern-react-kit";
 import { Link, useLoaderData } from "react-router";
 import { config } from "~/config/config";
 
@@ -10,25 +18,39 @@ export default function IndexPage() {
   const { environment } = useLoaderData<typeof loader>();
 
   return (
-    <div className="kern-container">
-      <div className="kern-col-12 kern-col-sm-10 kern-col-md-8 kern-col-lg-6 kern-col-xl-6 kern-col-xxl-4 kern-col-sm-offset-1 kern-col-md-offset-2 kern-col-lg-offset-3 kern-col-xl-offset-3 kern-col-xxl-offset-4">
+    <KernContainer>
+      <KernColumn
+        sizes={{
+          sm: 10,
+          md: 8,
+          lg: 6,
+          xl: 6,
+          xxl: 4,
+        }}
+        offsets={{
+          sm: 1,
+          md: 2,
+          lg: 3,
+          xl: 3,
+          xxl: 4,
+        }}
+      >
         <main>
           <div className="login">
             <div className="login__container">
               <div className="logo">
-                <span
-                  className="kern-icon icon--network_node kern-icon--large"
-                  aria-hidden="true"
-                ></span>
+                <KernIcon icon="network_node" size="large" />
+
+                {/* level property does not exist yet <KernHeading size="large" level={1}>Kommunikationsplattform</KernHeading> */}
                 <h1 className="kern-heading-large">Kommunikationsplattform</h1>
               </div>
 
-              <hr className="kern-divider" aria-hidden="true" />
+              <KernDivider />
 
-              <p className="kern-subline">
+              <KernText type="subline">
                 Willkommen auf der Pilotplattform für den digitalen Austausch
                 zwischen Gerichten und Verfahrensbeteiligten.
-              </p>
+              </KernText>
 
               <div className="login__buttons">
                 <Link
@@ -38,13 +60,12 @@ export default function IndexPage() {
                   <span className="kern-label">Anmeldung Anwaltschaft</span>
                 </Link>
 
-                <button
-                  className="kern-btn kern-btn--block kern-btn--primary"
-                  aria-disabled="true"
+                <KernButton
+                  text="Anmeldung Gerichte"
+                  variant="primary"
                   disabled
-                >
-                  <span className="kern-label">Anmeldung Gerichte</span>
-                </button>
+                  className="kern-btn--block"
+                />
 
                 {/* only render "Testzugang" demo link for non production environments */}
                 {environment !== "production" && (
@@ -61,7 +82,7 @@ export default function IndexPage() {
                 )}
               </div>
 
-              <hr className="kern-divider" aria-hidden="true" />
+              <KernDivider />
             </div>
           </div>
         </main>
@@ -97,7 +118,7 @@ export default function IndexPage() {
             </p>
           </div>
         </footer>
-      </div>
-    </div>
+      </KernColumn>
+    </KernContainer>
   );
 }
