@@ -9,6 +9,7 @@ import {
 } from "react-router";
 import type { Route } from "./+types/root";
 import { config } from "./config/config";
+import { IdleTrackerProvider } from "./services/idle/idleTracker";
 import "./styles.css";
 
 const title = "Kommunikationsplattform | Justiz-Services";
@@ -16,6 +17,10 @@ const description =
   "Willkommen auf der Pilotplattform für den digitalen Austausch zwischen Gerichten und Verfahrensbeteiligten.";
 
 export default function App() {
+  const logoutHandler = () => {
+    console.log("logout user, clear session...");
+  };
+
   return (
     <html lang="en">
       <head>
@@ -37,8 +42,10 @@ export default function App() {
         <Links />
       </head>
       <body>
-        {/* Outlet renders children */}
-        <Outlet />
+        <IdleTrackerProvider handler={logoutHandler}>
+          {/* Outlet renders children */}
+          <Outlet />
+        </IdleTrackerProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
