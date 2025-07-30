@@ -25,7 +25,7 @@
     "@digitalservice4germany/angie": "^2.0.1",
     "@digitalservice4germany/style-dictionary": "^2.0.0",
     "@digitalservicebund/icons": "^2.0.1",
-    "@kern-ux-annex/kern-react-kit": "^2.8.0",
+    "@kern-ux-annex/kern-react-kit": "^2.14.0",
     "@kern-ux/native": "^2.2.0",
     "@mjackson/file-storage": "^0.7.0",
     "@mjackson/form-data-parser": "^0.9.1",
