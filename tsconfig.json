@@ -6,7 +6,13 @@
     ".react-router/types/**/*"
   ],
   "compilerOptions": {
-    "types": ["node", "vite/client", "vitest/globals", "vitest/importMeta", "@kern-ux-annex/kern-react-kit"],
+    "types": [
+      "node",
+      "vite/client",
+      "vitest/globals",
+      "vitest/importMeta",
+      "@kern-ux-annex/kern-react-kit"
+    ],
     "skipLibCheck": true,
     "module": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ES2022"],

@@ -41,7 +41,9 @@ export default function IndexPage() {
             <div className="login__container">
               <div className="logo">
                 <KernIcon icon="network_node" size="large" />
-                <KernHeading size="large" level={1}>Kommunikationsplattform</KernHeading>
+                <KernHeading size="large" level={1}>
+                  Kommunikationsplattform
+                </KernHeading>
               </div>
 
               <KernDivider />
