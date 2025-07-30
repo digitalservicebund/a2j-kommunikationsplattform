@@ -1,6 +1,7 @@
 import { parse } from "cookie";
 import { createCookieSessionStorage, redirect } from "react-router";
 import { serverConfig } from "~/config/config.server";
+import { useSecureCookie } from "~/utils/useSecureCookie";
 import type { AuthenticationContext } from "./prototype.oAuth.server";
 import { ServicesContext } from "./prototype.servicesContext.server";
 
@@ -12,7 +13,7 @@ const { getSession, commitSession, destroySession } =
       path: "/",
       httpOnly: true,
       secrets: [serverConfig().BRAK_IDP_OIDC_CLIENT_SECRET],
-      secure: process.env.NODE_ENV === "production",
+      secure: useSecureCookie,
     },
   });
 
@@ -75,4 +76,22 @@ export const requireUserSession = async (request: Request) => {
   }
 
   return userSession;
+};
+
+export const userHasActiveSession = async (
+  request: Request,
+): Promise<boolean | null> => {
+  const test = await getSession(request.headers.get("Cookie"));
+  console.log("test", test);
+  const userSession = null;
+  if (userSession) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+export const destroyUserSession = async (request: Request) => {
+  const session = await getSession(request.headers.get("Cookie"));
+  destroySession(session);
 };
