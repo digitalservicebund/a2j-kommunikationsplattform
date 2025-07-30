@@ -6,6 +6,8 @@ import { createUserSession } from "./prototype.session.server";
 export interface AuthenticationContext {
   accessToken: string;
   expiresAt: number;
+  // @TODO: move this functionality out of Auth feature
+  // https://digitalservicebund.atlassian.net/browse/KOMPLA-466
   demoMode: boolean;
 }
 
