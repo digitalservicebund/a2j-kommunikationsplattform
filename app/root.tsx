@@ -9,6 +9,7 @@ import {
 } from "react-router";
 import type { Route } from "./+types/root";
 import { config } from "./config/config";
+import { AuthProvider } from "./services/auth/auth";
 import { IdleTrackerProvider } from "./services/idle/idleTracker";
 import "./styles.css";
 
@@ -42,10 +43,12 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <IdleTrackerProvider handler={logoutHandler}>
-          {/* Outlet renders children */}
-          <Outlet />
-        </IdleTrackerProvider>
+        <AuthProvider>
+          <IdleTrackerProvider handler={logoutHandler}>
+            {/* Outlet renders children */}
+            <Outlet />
+          </IdleTrackerProvider>
+        </AuthProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
