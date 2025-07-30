@@ -3,6 +3,7 @@ import {
   KernColumn,
   KernContainer,
   KernDivider,
+  KernHeading,
   KernIcon,
   KernText,
 } from "@kern-ux-annex/kern-react-kit";
@@ -40,9 +41,7 @@ export default function IndexPage() {
             <div className="login__container">
               <div className="logo">
                 <KernIcon icon="network_node" size="large" />
-
-                {/* level property does not exist yet <KernHeading size="large" level={1}>Kommunikationsplattform</KernHeading> */}
-                <h1 className="kern-heading-large">Kommunikationsplattform</h1>
+                <KernHeading size="large" level={1}>Kommunikationsplattform</KernHeading>
               </div>
 
               <KernDivider />
@@ -59,6 +58,7 @@ export default function IndexPage() {
                 >
                   <span className="kern-label">Anmeldung Anwaltschaft</span>
                 </Link>
+                <KernButton component={Link} block variant="primary" to={{ pathname: "/login" }} text="Anmeldung Anwaltschaft" />
 
                 <KernButton
                   text="Anmeldung Gerichte"
