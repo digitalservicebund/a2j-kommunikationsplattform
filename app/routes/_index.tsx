@@ -58,7 +58,6 @@ export default function IndexPage() {
                 >
                   <span className="kern-label">Anmeldung Anwaltschaft</span>
                 </Link>
-                <KernButton component={Link} block variant="primary" to={{ pathname: "/login" }} text="Anmeldung Anwaltschaft" />
 
                 <KernButton
                   text="Anmeldung Gerichte"
