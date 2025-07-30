@@ -28,9 +28,9 @@ fileignoreconfig:
   - filename: app/services/fileUpload.server.ts
     checksum: bc2812232864b6d3b6f9189b95fea278d34952318ddb0deaf41be7ac5fd43d35
   - filename: app/services/prototype.oAuth.server.ts
-    checksum: 3bf2a96167ee508d023ad11ebf0931547bab4f794a60d22e3e2a36640e4c7d52
+    checksum: 78086d4f389249e9e939c9cd0cd9fd836aa3b9a3d0f7a98d21650ec356cb2aca
   - filename: app/services/session.server.ts
-    checksum: 1bc375aa4cb5d89ffaa5f0a861be61736884587279d2ba71befcfc43f04883da
+    checksum: 9b72e726e8a09623f4c0b11908a1ad2af6faaa4328254ddce43f15a1f3803921
   - filename: app/config/config.server.ts
     checksum: be5adef22a4a4616df478f8ce94401a5be1246e914440edbcf311aae4236a2cb
   - filename: app/config/__test__/config.server.test.ts
