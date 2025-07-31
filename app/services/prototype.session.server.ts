@@ -78,16 +78,18 @@ export const requireUserSession = async (request: Request) => {
   return userSession;
 };
 
-export const userHasActiveSession = async (
+export const hasUserSession = async (
   request: Request,
 ): Promise<boolean | null> => {
-  const test = await getSession(request.headers.get("Cookie"));
-  console.log("test", test);
-  const userSession = null;
-  if (userSession) {
-    return true;
-  } else {
+  const session = await getSession(request.headers.get("Cookie"));
+  const accessToken = session.get("accessToken");
+
+  if (!accessToken) {
+    console.log("hasUserSession: no access token ");
     return false;
+  } else {
+    console.log("hasUserSession: is defined");
+    return true;
   }
 };
 
