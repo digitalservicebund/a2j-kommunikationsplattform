@@ -30,7 +30,7 @@ fileignoreconfig:
   - filename: app/services/prototype.oAuth.server.ts
     checksum: 78086d4f389249e9e939c9cd0cd9fd836aa3b9a3d0f7a98d21650ec356cb2aca
   - filename: app/services/prototype.session.server.ts
-    checksum: e45773edaa49baab752bef08c995a6cf8ec2a46a8b714fc96d067df35b18baa0
+    checksum: d7d70211940c16b1ee8573f1986df3d561f2a104e0802ee0b1812d499ce0917f
   - filename: app/config/config.server.ts
     checksum: be5adef22a4a4616df478f8ce94401a5be1246e914440edbcf311aae4236a2cb
   - filename: app/config/__test__/config.server.test.ts
