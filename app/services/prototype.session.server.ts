@@ -1,7 +1,6 @@
 import { parse } from "cookie";
 import { createCookieSessionStorage, redirect } from "react-router";
 import { serverConfig } from "~/config/config.server";
-import { useSecureCookie } from "~/utils/useSecureCookie";
 import type { AuthenticationContext } from "./prototype.oAuth.server";
 import { ServicesContext } from "./prototype.servicesContext.server";
 
@@ -13,7 +12,7 @@ const { getSession, commitSession, destroySession } =
       path: "/",
       httpOnly: true,
       secrets: [serverConfig().BRAK_IDP_OIDC_CLIENT_SECRET],
-      secure: useSecureCookie,
+      secure: process.env.NODE_ENV === "production",
     },
   });
 
