@@ -32,6 +32,7 @@ export const IdleTrackerProvider = ({
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(
       () => {
+        console.log("IdleTrackerProvider: call handler");
         handler();
       },
       1000 * 60 * minutes,

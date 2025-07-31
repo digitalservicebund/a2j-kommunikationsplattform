@@ -1,25 +1,44 @@
 import * as Sentry from "@sentry/react-router";
 import {
+  data,
   isRouteErrorResponse,
   Links,
+  LoaderFunctionArgs,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "react-router";
 import type { Route } from "./+types/root";
 import { config } from "./config/config";
-import { AuthProvider } from "./services/auth/auth";
 import { IdleTrackerProvider } from "./services/idle/idleTracker";
+import { hasUserSession } from "./services/prototype.session.server";
 import "./styles.css";
 
 const title = "Kommunikationsplattform | Justiz-Services";
 const description =
   "Willkommen auf der Pilotplattform für den digitalen Austausch zwischen Gerichten und Verfahrensbeteiligten.";
 
+export type RootLoader = typeof loader;
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const isLoggedIn = await hasUserSession(request);
+  console.log("root loader isLoggedIn:", isLoggedIn);
+
+  return data({ isLoggedIn });
+};
+
 export default function App() {
+  const { isLoggedIn } = useLoaderData<RootLoader>();
+
+  console.log("App isLoggedIn:", isLoggedIn);
+
   const logoutHandler = () => {
-    console.log("logout user, clear session...");
+    console.log("logoutHandler isLoggedIn:", isLoggedIn);
+    if (isLoggedIn) {
+      // handle logout
+    }
   };
 
   return (
@@ -43,12 +62,10 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <AuthProvider>
-          <IdleTrackerProvider handler={logoutHandler}>
-            {/* Outlet renders children */}
-            <Outlet />
-          </IdleTrackerProvider>
-        </AuthProvider>
+        <IdleTrackerProvider handler={logoutHandler} minutes={1 / 60}>
+          {/* Outlet renders children */}
+          <Outlet />
+        </IdleTrackerProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
