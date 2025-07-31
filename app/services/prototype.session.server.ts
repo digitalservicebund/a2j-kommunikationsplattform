@@ -91,8 +91,3 @@ export const hasUserSession = async (
     return true;
   }
 };
-
-export const destroyUserSession = async (request: Request) => {
-  const session = await getSession(request.headers.get("Cookie"));
-  destroySession(session);
-};
