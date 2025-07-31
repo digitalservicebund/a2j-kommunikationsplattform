@@ -62,7 +62,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <IdleTrackerProvider handler={logoutHandler} minutes={1 / 60}>
+        <IdleTrackerProvider handler={logoutHandler} minutes={10 / 60}>
           {/* Outlet renders children */}
           <Outlet />
         </IdleTrackerProvider>
