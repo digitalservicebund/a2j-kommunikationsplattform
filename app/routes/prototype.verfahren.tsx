@@ -155,10 +155,10 @@ function CreateVerfahren() {
       {!formVisible && (
         <button
           onClick={toggleFormVisibility}
-          className="ds-button mt-20"
+          className="kern-btn kern-btn--primary mt-20"
           data-testid="create-verfahren-button"
         >
-          Neue Klage einreichen
+          <span className="kern-label">Neue Klage einreichen</span>
         </button>
       )}
       {formVisible && (
@@ -207,11 +207,11 @@ function CreateVerfahren() {
 
           <button
             type="submit"
-            className={`ds-button mt-20 ${xjustizSelected ? "" : "is-disabled hidden"}`}
+            className={`kern-btn kern-btn--primary mt-20 ${xjustizSelected ? "" : "is-disabled hidden"}`}
             disabled={!xjustizSelected}
             data-testid="submit-verfahren-button"
           >
-            Klage einreichen
+            <span className="kern-label">Klage einreichen</span>
           </button>
         </form>
       )}

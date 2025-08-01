@@ -1,3 +1,4 @@
+import { KernButton } from "@kern-ux-annex/kern-react-kit";
 import { useRef } from "react";
 import { ActionFunctionArgs, useFetcher, useLoaderData } from "react-router";
 import { getFormDataFromRequest } from "~/services/prototype.fileUpload.server";
@@ -165,28 +166,13 @@ function UploadFile() {
       className="relative"
       ref={formRef}
     >
-      <button
-        className="ds-button ds-button-small ds-button-tertiary ds-button-with-icon"
+      <KernButton
+        text="Datei hochladen"
+        variant="secondary"
+        //@ts-expect-error KERN React-Kit expects a HTMLElement, we provide a HTMLButtonElement which should be fine
         onClick={handleButtonClick}
-      >
-        <div className="flex gap-10">
-          <svg
-            width="24"
-            height="25"
-            viewBox="0 0 24 25"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M2.92598 19.5663C3.20994 19.8554 3.54873 20 3.94233 20H20.0576C20.441 20 20.7772 19.8554 21.0663 19.5663C21.3554 19.2772 21.5 18.941 21.5 18.5576V8.07695C21.5 7.69362 21.3554 7.3574 21.0663 7.0683C20.7772 6.77918 20.441 6.63463 20.0576 6.63463H11.8134L10.1788 5H3.94233C3.54873 5 3.20994 5.14456 2.92598 5.43368C2.64199 5.72278 2.5 6.05899 2.5 6.44232V18.5576C2.5 18.941 2.64199 19.2772 2.92598 19.5663ZM12.5673 11.5846V17.1153H11.4327V11.5846L9.4096 13.6076L8.6096 12.8077L12 9.42693L15.4096 12.8269L14.6096 13.6269L12.5673 11.5846Z"
-              fill="#0073A8"
-            />
-          </svg>
-          <div>Datei Hochladen</div>
-        </div>
-      </button>
+        icon="drive-folder-upload"
+      />
       <input
         type="file"
         name="files"

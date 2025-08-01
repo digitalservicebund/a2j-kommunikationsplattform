@@ -1,3 +1,4 @@
+import { KernHeading } from "@kern-ux-annex/kern-react-kit";
 import { redirect, type LoaderFunction } from "react-router";
 import {
   AuthenticationProvider,
@@ -36,9 +37,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function AuthCallback() {
   return (
     <main className={"m-40 flex flex-col items-center"}>
-      <h1 className={"ds-heading-01-bold mb-40 break-all"}>
-        Authentication callback error
-      </h1>
+      <KernHeading level={1}>Authentication callback error</KernHeading>
     </main>
   );
 }

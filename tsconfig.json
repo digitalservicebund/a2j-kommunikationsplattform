@@ -28,10 +28,7 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./app/*"],
-      "@digitalservicebund/icons/*": [
-        "node_modules/@digitalservicebund/icons/*"
-      ]
+      "~/*": ["./app/*"]
     },
     "noEmit": true
   }

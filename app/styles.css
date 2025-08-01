@@ -6,7 +6,6 @@
 @import "tailwindcss";
 
 @config "@digitalservice4germany/style-dictionary/tailwind";
-@plugin "@digitalservice4germany/angie";
 /* to be removed: end */
 
 /* start index (login) page styling */
