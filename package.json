@@ -22,8 +22,8 @@
     "audit:licences": "license-checker --production --excludePrivatePackages --onlyAllow '' --summary"
   },
   "dependencies": {
-    "@kern-ux-annex/kern-react-kit": "^2.14.0",
-    "@kern-ux/native": "^2.2.0",
+    "@kern-ux-annex/kern-react-kit": "^2.16.0",
+    "@kern-ux/native": "^2.3.0",
     "@mjackson/file-storage": "^0.7.0",
     "@mjackson/form-data-parser": "^0.9.1",
     "@react-router/express": "^7.7.0",
