@@ -6,6 +6,7 @@ import {
   useLoaderData,
   useNavigation,
 } from "react-router";
+import deprecatedPrototypeStyles from "~/prototype.styles.css?url";
 import { getFormDataFromRequest } from "~/services/prototype.fileUpload.server";
 import { ServicesContext } from "~/services/prototype.servicesContext.server";
 import { requireUserSession } from "~/services/prototype.session.server";
@@ -36,6 +37,7 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function Verfahren() {
   return (
     <ContentContainer>
+      <link rel="stylesheet" href={deprecatedPrototypeStyles} />
       <div className="mt-40 flex items-center gap-8">
         <svg
           width="22"

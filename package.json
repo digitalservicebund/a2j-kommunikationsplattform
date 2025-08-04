@@ -22,7 +22,6 @@
     "audit:licences": "license-checker --production --excludePrivatePackages --onlyAllow '' --summary"
   },
   "dependencies": {
-    "@digitalservice4germany/style-dictionary": "^2.0.0",
     "@kern-ux-annex/kern-react-kit": "^2.14.0",
     "@kern-ux/native": "^2.2.0",
     "@mjackson/file-storage": "^0.7.0",
@@ -58,7 +57,6 @@
     "@eslint/js": "^9.31.0",
     "@playwright/test": "^1.54.1",
     "@react-router/dev": "^7.7.0",
-    "@tailwindcss/vite": "^4.1.11",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -79,7 +77,6 @@
     "msw": "^2.10.4",
     "prettier": "3.6.2",
     "prettier-plugin-organize-imports": "^4.2.0",
-    "prettier-plugin-tailwindcss": "^0.6.14",
     "react-router-devtools": "^5.0.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",

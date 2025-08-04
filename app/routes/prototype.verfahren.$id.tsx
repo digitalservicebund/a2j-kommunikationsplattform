@@ -1,6 +1,7 @@
 import { KernButton } from "@kern-ux-annex/kern-react-kit";
 import { useRef } from "react";
 import { ActionFunctionArgs, useFetcher, useLoaderData } from "react-router";
+import deprecatedPrototypeStyles from "~/prototype.styles.css?url";
 import { getFormDataFromRequest } from "~/services/prototype.fileUpload.server";
 import { ServicesContext } from "~/services/prototype.servicesContext.server";
 import { requireUserSession } from "~/services/prototype.session.server";
@@ -59,6 +60,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function VerfahrenInfo() {
   return (
     <div>
+      <link rel="stylesheet" href={deprecatedPrototypeStyles} />
       <div className="mb-20 text-xl font-bold">Datenraum</div>
       <AkteWithDokumente />
       <UploadFile />
