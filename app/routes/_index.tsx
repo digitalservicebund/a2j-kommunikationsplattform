@@ -1,14 +1,18 @@
 import {
+  KernAlert,
   KernButton,
   KernDivider,
   KernHeading,
   KernIcon,
   KernText,
 } from "@kern-ux-annex/kern-react-kit";
-import { Link, useLoaderData } from "react-router";
+import { Link, useLoaderData, useSearchParams } from "react-router";
 import { NarrowPageLayout } from "~/components/NarrowPageLayout";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
+import { LogoutStatus } from "./action.logout-user";
+
+type AlertState = "" | LogoutStatus.Auto;
 
 export async function loader() {
   const environment = config().ENVIRONMENT;
@@ -17,11 +21,24 @@ export async function loader() {
 
 export default function IndexPage() {
   const { environment } = useLoaderData<typeof loader>();
+  const [searchParams] = useSearchParams();
+
+  const alertStatus = searchParams.get("status") as AlertState;
 
   return (
     <>
       <PageMetadata />
+
       <NarrowPageLayout>
+        {alertStatus === LogoutStatus.Auto && (
+          // @TODO: needs to get correct spacings @ top/bottom
+          <KernAlert
+            body="Aus Sicherheitsgründen wurden Sie nach 60 Minuten Inaktivität automatisch abgemeldet. Bitte melden Sie sich erneut an."
+            text="Automatisch abgemeldet"
+            variant="warning"
+          />
+        )}
+
         <div className="login">
           <div className="login__container">
             <div className="logo">
