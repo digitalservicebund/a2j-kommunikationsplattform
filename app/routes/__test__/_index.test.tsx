@@ -3,7 +3,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
-import { MockInstance, vi } from "vitest";
+import { it, MockInstance, vi } from "vitest";
 import IndexPage, { loader } from "../_index";
 
 const mockLoaderDataNonProduction = { environment: "testing" };
