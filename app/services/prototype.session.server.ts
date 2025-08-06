@@ -83,11 +83,5 @@ export const hasUserSession = async (
   const session = await getSession(request.headers.get("Cookie"));
   const accessToken = session.get("accessToken");
 
-  if (!accessToken) {
-    console.log("hasUserSession: no access token ");
-    return false;
-  } else {
-    console.log("hasUserSession: is defined");
-    return true;
-  }
+  return !!accessToken;
 };

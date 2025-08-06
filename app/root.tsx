@@ -17,19 +17,17 @@ import {
   useLoaderData,
 } from "react-router";
 import type { Route } from "./+types/root";
+import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
 import { NarrowPageLayout } from "./components/NarrowPageLayout";
 import { config } from "./config/config";
-import { IdleTrackerProvider } from "./services/idle/idleTracker";
 import { hasUserSession } from "./services/prototype.session.server";
 import styles from "./styles.css?url";
 
 export type RootLoader = typeof loader;
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const isLoggedIn = await hasUserSession(request);
-  console.log("root loader isLoggedIn:", isLoggedIn);
-
-  return data({ isLoggedIn });
+  const userIsLoggedIn = Boolean(await hasUserSession(request));
+  return data({ userIsLoggedIn });
 };
 
 export const links: LinksFunction = () => [
@@ -83,21 +81,12 @@ export function Layout({ children }: { children: ReactNode }) {
 }
 
 export default function App() {
-  const { isLoggedIn } = useLoaderData<RootLoader>();
-
-  console.log("App isLoggedIn:", isLoggedIn);
-
-  const logoutHandler = () => {
-    console.log("logoutHandler isLoggedIn:", isLoggedIn);
-    if (isLoggedIn) {
-      // handle logout
-    }
-  };
+  const { userIsLoggedIn } = useLoaderData<RootLoader>();
 
   return (
-    <IdleTrackerProvider handler={logoutHandler} minutes={10 / 60}>
+    <LogoutInactiveUserWrapper handleInactivity={userIsLoggedIn}>
       <Outlet />
-    </IdleTrackerProvider>
+    </LogoutInactiveUserWrapper>
   );
 }
 
