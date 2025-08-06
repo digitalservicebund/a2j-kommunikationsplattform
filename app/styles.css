@@ -1,13 +1,5 @@
-/* tailwindcss v4+ */
 @import "@kern-ux/native/dist/kern.min.css";
 @import "@kern-ux/native/dist/fonts/fira-sans.css" layer(base);
-
-/* to be removed: start */
-@import "tailwindcss";
-
-@config "@digitalservice4germany/style-dictionary/tailwind";
-@plugin "@digitalservice4germany/angie";
-/* to be removed: end */
 
 /* start index (login) page styling */
 .logo {

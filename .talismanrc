@@ -1,8 +1,4 @@
 fileignoreconfig:
-  - filename: public/fonts/BundesSerifWeb-Italic.woff
-    checksum: 2cad03dd85939c73e892cce6d994a89046677e94ceb11dd1cde5a23a3b35c392
-  - filename: public/fonts/BundesSansWeb-BoldItalic.woff
-    checksum: 446eff0044854604c36e380d186aab48077af382668430ad518ef49b37d4fa02
   - filename: SECURITY.md
     checksum: b1743150cdd537be3a66f5308f887d130f0f320ab21628b63713808090a84e3f
   - filename: .github/workflows/pipeline.yml
@@ -21,6 +17,8 @@ fileignoreconfig:
     checksum: 04c75cd8591e538c9603969a3a1ec8759f372c939aaa7eca688f4b479dede354
   - filename: app/routes/verfahren.$id.tsx
     checksum: 0727efb5d565dae591f7413ee57c506d5cb8f1fa5042d3cb98b0214b9a3a6132
+  - filename: app/routes/prototype.verfahren.$id.tsx
+    checksum: 398a62cd00d031270246541973b0d3d8a8468658311adb34b1f393392ee18e0a
   - filename: mocks/api/handlers.js
     checksum: 6b2c676fe6fbeb01fa7832dc094de4bee695a579cf07eed1857e25d75ed27a69
   - filename: sonar-project.properties
