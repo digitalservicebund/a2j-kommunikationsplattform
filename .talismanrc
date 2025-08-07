@@ -39,6 +39,8 @@ fileignoreconfig:
     checksum: a56a35422c49882b0d35efda5246b17d9d674907f8d8e3ef826df8cffd3f1ac8
   - filename: app/services/idle/idleTracker.tsx
     checksum: ae043afb00f26c1f61a51fc1b00804e62fa345c33a533bfa6fc8d1b6ef9090c7
+  - filename: app/components/hooks/__test__/useLogoutInactiveUser.test.tsx
+    checksum: 12ab12f988ea44db3f1eb99ef9d203109deb143114c9cb34d8c4e95b366c4ece
 
 version: ""
 scopeconfig:
