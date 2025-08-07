@@ -1,8 +1,7 @@
 // @vitest-environment jsdom
-
 import { renderHook } from "@testing-library/react";
 import { act, ReactNode } from "react";
-import { createMemoryRouter, RouterProvider, useFetcher } from "react-router";
+import { createMemoryRouter, RouterProvider } from "react-router";
 import { it, vi } from "vitest";
 import { useLogoutInactiveUser } from "../useLogoutInactiveUser";
 
@@ -34,17 +33,24 @@ describe("useLogoutInactiveUser hook", () => {
 
     vi.spyOn(global, "setTimeout");
 
-    // useFetcher.mockReturnValue({
-    //   data: { foo: "bar" },
-    //   state: "idle",
-    //   submit: vi.fn(),
-    // });
+    mockSubmit.mockClear();
   });
 
   // clean up and restore the original timers and mocks.
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
+  });
+
+  it("sets up and cleans up event listeners", () => {
+    const addSpy = vi.spyOn(window, "addEventListener");
+    const removeSpy = vi.spyOn(window, "removeEventListener");
+    const { unmount } = renderHook(() => useLogoutInactiveUser(true), {
+      wrapper,
+    });
+    expect(addSpy).toHaveBeenCalledWith("mousemove", expect.any(Function));
+    unmount();
+    expect(removeSpy).toHaveBeenCalledWith("mousemove", expect.any(Function));
   });
 
   it("should only run if handleInactivity is defined", () => {
@@ -59,22 +65,43 @@ describe("useLogoutInactiveUser hook", () => {
   });
 
   it("should initiate logout action when handleInactivity is passed", () => {
-    // vi.mocked(useFetcher).mockReturnValue({
-    //   submit: mockSubmit,
-    // });
+    const start = 1_000_000_000_000;
+    vi.spyOn(Date, "now").mockImplementation(() => start);
 
     renderHook(() => useLogoutInactiveUser(true), { wrapper });
-    // const { result } = renderHook(() => useLogoutInactiveUser(), { wrapper });
+
+    // Simulate time passing: advance timers and mock Date.now() to a later time
+    const after = start + 6000; // 6 seconds later
+    vi.spyOn(Date, "now").mockImplementation(() => after);
 
     act(() => {
-      // fast-forward time by 70 mintes
-      vi.advanceTimersByTime(oneMinute * 70);
+      vi.advanceTimersByTime(6000); // advance past timeout
     });
 
     expect(setTimeout).toHaveBeenCalled();
-    expect(useFetcher).toHaveBeenCalled();
+    expect(mockSubmit).toHaveBeenCalledWith(null, {
+      method: "post",
+      action: "/action/logout-user",
+    });
+  });
 
-    // mocking and verifying of the `fetcher.submit({ ... })` method isn't working so far
-    // expect(mockSubmit).toHaveBeenCalled();
+  it("should reset lastActivity on user activity events", () => {
+    const start = 1_000_000_000_000;
+    vi.spyOn(Date, "now").mockImplementation(() => start);
+    renderHook(() => useLogoutInactiveUser(true), {
+      wrapper,
+    });
+    const after = start + 1000;
+    vi.spyOn(Date, "now").mockImplementation(() => after);
+
+    act(() => {
+      window.dispatchEvent(new Event("mousemove"));
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+
+    expect(mockSubmit).not.toHaveBeenCalled();
   });
 });
