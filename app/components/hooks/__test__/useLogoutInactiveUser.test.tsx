@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import reactRouterConfig from "~/react-router.config";
+import { LogoutType } from "~/routes/action.logout-user";
 import { useLogoutInactiveUser } from "../useLogoutInactiveUser";
 
 const oneMinute = 1000 * 60 * 1;
@@ -97,9 +98,14 @@ describe("useLogoutInactiveUser", () => {
     });
 
     expect(setTimeout).toHaveBeenCalled();
-    expect(mockSubmit).toHaveBeenCalledWith(null, {
-      method: "post",
-      action: "/action/logout-user",
-    });
+    expect(mockSubmit).toHaveBeenCalledWith(
+      {
+        logoutType: LogoutType.Automatic,
+      },
+      {
+        method: "post",
+        action: "/action/logout-user",
+      },
+    );
   });
 });
