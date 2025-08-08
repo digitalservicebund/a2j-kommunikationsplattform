@@ -1,15 +1,19 @@
+import { KernButton, KernHeading } from "@kern-ux-annex/kern-react-kit";
 import { useState } from "react";
 import {
   type ActionFunctionArgs,
+  Form,
   Link,
   Outlet,
   useLoaderData,
   useNavigation,
 } from "react-router";
+import { DefaultPageLayout } from "~/components/DefaultPageLayout";
 import deprecatedPrototypeStyles from "~/prototype.styles.css?url";
 import { getFormDataFromRequest } from "~/services/prototype.fileUpload.server";
 import { ServicesContext } from "~/services/prototype.servicesContext.server";
 import { requireUserSession } from "~/services/prototype.session.server";
+import { LogoutType } from "./action.logout-user";
 
 export async function loader({ request }: { request: Request }) {
   const { demoMode } = await requireUserSession(request);
@@ -36,33 +40,32 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Verfahren() {
   return (
-    <ContentContainer>
+    <>
       <link rel="stylesheet" href={deprecatedPrototypeStyles} />
-      <div className="mt-40 flex items-center gap-8">
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 22 22"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M3.3 22C2.695 22 2.17708 21.7846 1.74625 21.3538C1.31542 20.9229 1.1 20.405 1.1 19.8V7.3975C0.77 7.19583 0.504167 6.93458 0.3025 6.61375C0.100833 6.29292 0 5.92167 0 5.5V2.2C0 1.595 0.215417 1.07708 0.64625 0.64625C1.07708 0.215417 1.595 0 2.2 0H19.8C20.405 0 20.9229 0.215417 21.3538 0.64625C21.7846 1.07708 22 1.595 22 2.2V5.5C22 5.92167 21.8992 6.29292 21.6975 6.61375C21.4958 6.93458 21.23 7.19583 20.9 7.3975V19.8C20.9 20.405 20.6846 20.9229 20.2538 21.3538C19.8229 21.7846 19.305 22 18.7 22H3.3ZM3.3 7.7V19.8H18.7V7.7H3.3ZM2.2 5.5H19.8V2.2H2.2V5.5ZM8.8 13.2H13.2C13.5117 13.2 13.7729 13.0946 13.9838 12.8838C14.1946 12.6729 14.3 12.4117 14.3 12.1C14.3 11.7883 14.1946 11.5271 13.9838 11.3163C13.7729 11.1054 13.5117 11 13.2 11H8.8C8.48833 11 8.22708 11.1054 8.01625 11.3163C7.80542 11.5271 7.7 11.7883 7.7 12.1C7.7 12.4117 7.80542 12.6729 8.01625 12.8838C8.22708 13.0946 8.48833 13.2 8.8 13.2Z"
-            fill="#0073A8"
-          />
-        </svg>
-        <h1 className={"text-2xl font-semibold break-all"}>Verfahren</h1>
-      </div>
-      <div className="flex flex-col items-start">
-        <CreateVerfahren />
-        <ListVerfahren />
-      </div>
-    </ContentContainer>
-  );
-}
+      <DefaultPageLayout>
+        <KernHeading level={1} size="large">
+          Verfahren
+        </KernHeading>
 
-function ContentContainer({ children }: { children: React.ReactNode }) {
-  return <main className="px-40 md:px-128">{children}</main>;
+        <Form method="post" action="/action/logout-user">
+          <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
+          <KernButton
+            icon="close"
+            iconPosition="left"
+            text="Abmelden"
+            type="submit"
+          />
+        </Form>
+
+        <main>
+          <div className="flex flex-col items-start mb-20">
+            <CreateVerfahren />
+            <ListVerfahren />
+          </div>
+        </main>
+      </DefaultPageLayout>
+    </>
+  );
 }
 
 function ListVerfahren() {
