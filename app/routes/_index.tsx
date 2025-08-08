@@ -11,9 +11,9 @@ import { Link, useLoaderData, useSearchParams } from "react-router";
 import { NarrowPageLayout } from "~/components/NarrowPageLayout";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
-import { LogoutStatus } from "./action.logout-user";
+import { LogoutType } from "./action.logout-user";
 
-type AlertState = "" | LogoutStatus.Auto;
+type AlertState = "" | LogoutType.Automatic | LogoutType.ByUser;
 
 export async function loader() {
   const environment = config().ENVIRONMENT;
@@ -31,7 +31,7 @@ export default function IndexPage() {
       <PageMetadata />
 
       <NarrowPageLayout>
-        {alertStatus === LogoutStatus.Auto && (
+        {alertStatus === LogoutType.Automatic && (
           // @TODO: needs to get correct spacings @ top/bottom, bug @kern-ux-annex/kern-react-kit v2.16.0
           <>
             <KernSpace size="xl" />
@@ -40,6 +40,15 @@ export default function IndexPage() {
               text="Automatisch abgemeldet"
               variant="warning"
             />
+            <KernSpace size="m" />
+          </>
+        )}
+
+        {alertStatus === LogoutType.ByUser && (
+          // @TODO: needs to get correct spacings @ top/bottom, bug @kern-ux-annex/kern-react-kit v2.16.0
+          <>
+            <KernSpace size="xl" />
+            <KernAlert text="Erfolgreich abgemeldet" variant="success" />
             <KernSpace size="m" />
           </>
         )}
