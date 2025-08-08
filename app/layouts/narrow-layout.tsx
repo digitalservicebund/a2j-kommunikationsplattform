@@ -1,8 +1,8 @@
 import { KernColumn, KernContainer } from "@kern-ux-annex/kern-react-kit";
-import { ReactNode } from "react";
-import PageFooter from "./PageFooter";
+import { Outlet } from "react-router";
+import PageFooter from "~/components/PageFooter";
 
-export function NarrowPageLayout({ children }: { children: ReactNode }) {
+export default function NarrowLayout() {
   return (
     <KernContainer>
       <KernColumn
@@ -21,7 +21,9 @@ export function NarrowPageLayout({ children }: { children: ReactNode }) {
           xxl: 4,
         }}
       >
-        <main>{children}</main>
+        <main>
+          <Outlet />
+        </main>
         <PageFooter />
       </KernColumn>
     </KernContainer>

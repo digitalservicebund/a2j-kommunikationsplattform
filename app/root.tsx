@@ -18,7 +18,6 @@ import {
 } from "react-router";
 import type { Route } from "./+types/root";
 import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
-import { NarrowPageLayout } from "./components/NarrowPageLayout";
 import { config } from "./config/config";
 import { hasUserSession } from "./services/prototype.session.server";
 import styles from "./styles.css?url";
@@ -114,7 +113,7 @@ export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
   }
 
   return (
-    <NarrowPageLayout>
+    <main>
       <KernHeading level={1} size="large">
         {message}
       </KernHeading>
@@ -131,6 +130,6 @@ export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
           <code>{stack}</code>
         </pre>
       )}
-    </NarrowPageLayout>
+    </main>
   );
 }
