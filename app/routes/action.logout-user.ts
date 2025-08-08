@@ -12,7 +12,8 @@ export enum LogoutType {
 /**
  * /action/logout-user
  *
- * Redirects to the login page with a automatic or
+ * Redirects to the login page with automatic or logged out
+ * by user status URL param.
  */
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
