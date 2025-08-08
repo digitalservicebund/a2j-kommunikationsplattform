@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useFetcher, useLocation } from "react-router";
+import { useFetcher } from "react-router";
 
 /**
  * useLogoutInactiveUser custom hook
@@ -9,22 +9,17 @@ import { useFetcher, useLocation } from "react-router";
  */
 export const useLogoutInactiveUser = (
   handleInactivity = false,
-  // @TODO: use 60 minutes timeout
+  // @TODO: use 60 minutes timeout, when successfully tested on staging environment
   // timeout = 1000 * 60 * 60,
   // to verify the logout easier it is set to one minute
-  // timeout = 1000 * 60 * 1,
-  timeout = 5000,
+  timeout = 1000 * 60 * 1,
 ): void => {
   const fetcher = useFetcher();
-  const location = useLocation();
   const [lastActivity, setLastActivity] = useState(Date.now());
-
-  console.log("read and recognize useLogoutInactiveUser...");
 
   // resets the activity timer on activity
   const handleActivity = useCallback(() => {
     if (!handleInactivity) return;
-    console.log("handleActivity was called");
 
     setLastActivity(Date.now());
   }, []);
@@ -32,7 +27,6 @@ export const useLogoutInactiveUser = (
   // effect to set up/clean up event listeners on user activity
   useEffect(() => {
     if (!handleInactivity) return;
-    console.log("and add event listeners that recognize user activity");
 
     window.addEventListener("mousemove", handleActivity);
     window.addEventListener("keydown", handleActivity);
@@ -54,7 +48,6 @@ export const useLogoutInactiveUser = (
     if (!handleInactivity) return;
 
     const timer = setTimeout(() => {
-      console.log("countdown has ended, logout user...");
       const now = Date.now();
       const timeSinceLastActivity = now - lastActivity;
 
@@ -63,11 +56,10 @@ export const useLogoutInactiveUser = (
           method: "post",
           action: "/action/logout-user",
         });
-        console.log("fetcher.submit has been called");
       }
     }, timeout);
 
     // cleanup function for the timer timeout
     return () => clearTimeout(timer);
-  }, [lastActivity, fetcher, timeout, location]);
+  }, [lastActivity, fetcher, timeout]);
 };
