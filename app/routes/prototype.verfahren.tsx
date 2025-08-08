@@ -58,7 +58,7 @@ export default function Verfahren() {
         </Form>
 
         <main>
-          <div className="flex flex-col items-start mb-20">
+          <div className="flex flex-col items-start mb-40">
             <CreateVerfahren />
             <ListVerfahren />
           </div>
