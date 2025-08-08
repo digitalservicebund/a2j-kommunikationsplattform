@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useFetcher } from "react-router";
+import { LogoutType } from "~/routes/action.logout-user";
 
 /**
  * useLogoutInactiveUser custom hook
@@ -52,10 +53,13 @@ export const useLogoutInactiveUser = (
       const timeSinceLastActivity = now - lastActivity;
 
       if (timeSinceLastActivity > timeout) {
-        fetcher.submit(null, {
-          method: "post",
-          action: "/action/logout-user",
-        });
+        fetcher.submit(
+          { logoutType: LogoutType.Automatic },
+          {
+            method: "post",
+            action: "/action/logout-user",
+          },
+        );
       }
     }, timeout);
 
