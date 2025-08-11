@@ -36,6 +36,7 @@ export default defineConfig((config) => {
           "app/routes/**",
           // include routes (pages) that have already been developed for production
           "!app/routes/_index.tsx",
+          "!app/routes/action.*.ts",
           // test files
           "app/**/__test__/*.test.{ts,tsx}",
           // excluded technical prototypes (spikes) that will be removed/reworked
