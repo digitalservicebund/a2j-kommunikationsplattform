@@ -1,7 +1,35 @@
-import { type RouteConfig } from "@react-router/dev/routes";
-import { flatRoutes } from "@react-router/fs-routes";
+import { index, layout, prefix, route } from "@react-router/dev/routes";
 
-// @see: https://reactrouter.com/how-to/file-route-conventions
-export default flatRoutes({
-  // ignoredRouteFiles: ["example.tsx"],
-}) satisfies RouteConfig;
+export default [
+  layout("./layouts/narrow-layout.tsx", [index("./routes/_index.tsx")]),
+
+  // auth
+  route("login", "./routes/login.ts"),
+  route("auth/callback", "./routes/auth.callback.tsx"),
+  route("error", "./routes/error.tsx"),
+  route("action/logout-user", "./routes/action.logout-user.ts"),
+  route("/dev-login", "./routes/dev-login.tsx"),
+
+  layout("./layouts/default-layout.tsx", [
+    // verfahren
+    ...prefix("prototype/verfahren", [
+      index("./routes/prototype.verfahren.tsx"),
+      route(":id", "./routes/prototype.verfahren.$id.tsx", {}),
+      route(
+        ":id/dokument/:dokumentId",
+        "./routes/prototype.verfahren.$id.dokument.$dokumentId.tsx",
+      ),
+    ]),
+
+    // static content pages
+    route("datenschutz", "./routes/datenschutz.tsx"),
+    route("barrierefreiheit", "./routes/barrierefreiheit.tsx"),
+    route("impressum", "./routes/impressum.tsx"),
+    route("hilfe-und-kontakt", "./routes/hilfe-und-kontakt.tsx"),
+    route("open-source", "./routes/open-source.tsx"),
+    route("weitere-informationen", "./routes/weitere-informationen.tsx"),
+  ]),
+
+  // Kubernetes health check
+  route("readyz", "./routes/readyz.ts"),
+];

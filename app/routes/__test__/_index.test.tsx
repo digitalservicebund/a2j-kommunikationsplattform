@@ -75,7 +75,9 @@ describe("Index route", () => {
     renderIndexPageWithRouter(mockLoaderDataProduction);
 
     // data privacy link within footer
-    expect(screen.getByText("Datenschutz")).toBeInTheDocument();
+    // TODO: will work again when this is part of an e2e test -> KOMPLA-579
+    //       (for now in a unit test, the footer is no longer part of the unit)
+    // expect(screen.getByText("Datenschutz")).toBeInTheDocument();
 
     const demoButtonElement = screen.queryByText("Testzugang");
     expect(demoButtonElement).not.toBeInTheDocument();

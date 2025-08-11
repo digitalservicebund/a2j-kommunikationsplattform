@@ -1,8 +1,8 @@
 import { KernColumn, KernContainer } from "@kern-ux-annex/kern-react-kit";
-import { ReactNode } from "react";
-import PageFooter from "./PageFooter";
+import { Outlet } from "react-router";
+import PageFooter from "~/components/PageFooter";
 
-export function DefaultPageLayout({ children }: { children: ReactNode }) {
+export default function DefaultLayout() {
   return (
     <KernContainer>
       <KernColumn
@@ -15,7 +15,9 @@ export function DefaultPageLayout({ children }: { children: ReactNode }) {
           md: 2,
         }}
       >
-        <main>{children}</main>
+        <main>
+          <Outlet />
+        </main>
         <PageFooter />
       </KernColumn>
     </KernContainer>
