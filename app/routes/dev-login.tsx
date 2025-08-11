@@ -12,11 +12,13 @@ export const loader = async ({ request }: { request: Request }) => {
 
     if (!sessionCookieHeader) throw new Error("Session cookie not set");
 
+    const cookieWithDemoMode = sessionCookieHeader + "; demoMode=false";
+
     return new Response(null, {
       status: 302,
       headers: {
         Location: "/prototype/verfahren",
-        "Set-Cookie": sessionCookieHeader,
+        "Set-Cookie": cookieWithDemoMode,
       },
     });
   } catch (error) {

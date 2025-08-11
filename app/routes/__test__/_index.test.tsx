@@ -4,13 +4,21 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { it, MockInstance, vi } from "vitest";
+import { LogoutType } from "~/routes/action.logout-user";
 import IndexPage, { loader } from "../_index";
 
 const mockLoaderDataNonProduction = { environment: "testing" };
 const mockLoaderDataProduction = { environment: "production" };
+const mockLoaderDataDevelopment = { environment: "development" };
+const getStatusEntry = (entry: LogoutType) => {
+  return [`/?status=${entry}`];
+};
 
 // setup and render routes for all necessary test cases with createMemoryRouter
-const renderIndexPageWithRouter = (loader = mockLoaderDataNonProduction) => {
+const renderIndexPageWithRouter = (
+  loader = mockLoaderDataNonProduction,
+  initialEntries = ["/"],
+) => {
   const routes = [
     {
       path: "/",
@@ -24,7 +32,7 @@ const renderIndexPageWithRouter = (loader = mockLoaderDataNonProduction) => {
   ];
 
   const router = createMemoryRouter(routes, {
-    initialEntries: ["/"],
+    initialEntries: initialEntries,
     hydrationData: { loaderData: { "0": loader } },
   });
 
@@ -84,5 +92,41 @@ describe("Index route", () => {
     expect(setCookieSpy).toHaveBeenCalledWith(
       "demoMode=true; path=/; max-age=3600",
     );
+  });
+
+  it('renders "Login as Developer" button for development environment', () => {
+    renderIndexPageWithRouter(mockLoaderDataDevelopment);
+
+    const devLoginButtonElement = screen.getByText("Login as Developer");
+    expect(devLoginButtonElement).toBeInTheDocument();
+  });
+
+  it('does not render "Login as Developer" button for non development environments', () => {
+    renderIndexPageWithRouter(mockLoaderDataProduction);
+
+    const devLoginButtonElement = screen.queryByText("Login as Developer");
+    expect(devLoginButtonElement).not.toBeInTheDocument();
+  });
+
+  it("renders an alert Automatisch abgemeldet when logged out automatically", () => {
+    renderIndexPageWithRouter(
+      mockLoaderDataDevelopment,
+      getStatusEntry(LogoutType.Automatic),
+    );
+
+    expect(
+      screen.getByText((content) => content.includes("Automatisch abgemeldet")),
+    ).toBeInTheDocument();
+  });
+
+  it("renders an alert Erfolgreich abgemeldet when logged out manually", () => {
+    renderIndexPageWithRouter(
+      mockLoaderDataDevelopment,
+      getStatusEntry(LogoutType.ByUser),
+    );
+
+    expect(
+      screen.getByText((content) => content.includes("Erfolgreich abgemeldet")),
+    ).toBeInTheDocument();
   });
 });
