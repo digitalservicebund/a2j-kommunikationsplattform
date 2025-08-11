@@ -88,6 +88,14 @@ export default function IndexPage() {
                   <span className="kern-label">Testzugang</span>
                 </Link>
               )}
+              {environment === "development" && (
+                <Link
+                  to="/dev-login"
+                  className="kern-btn kern-btn--block kern-btn--primary"
+                >
+                  <span className="kern-label">Login as Developer</span>
+                </Link>
+              )}
             </div>
 
             <KernDivider />
