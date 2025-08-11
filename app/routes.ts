@@ -7,7 +7,7 @@ export default [
   route("login", "./routes/login.ts"),
   route("auth/callback", "./routes/auth.callback.tsx"),
   route("error", "./routes/error.tsx"),
-  route("action/logout-user", "./routes/action.logout-user.tsx"),
+  route("action/logout-user", "./routes/action.logout-user.ts"),
 
   // verfahren
   ...prefix("prototype/verfahren", [
