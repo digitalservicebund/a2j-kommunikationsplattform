@@ -9,17 +9,18 @@ export default [
   route("error", "./routes/error.tsx"),
   route("action/logout-user", "./routes/action.logout-user.ts"),
 
-  // verfahren
-  ...prefix("prototype/verfahren", [
-    index("./routes/prototype.verfahren.tsx"),
-    route(":id", "./routes/prototype.verfahren.$id.tsx", {}),
-    route(
-      ":id/dokument/:dokumentId",
-      "./routes/prototype.verfahren.$id.dokument.$dokumentId.tsx",
-    ),
-  ]),
-  // static content pages
   layout("./layouts/default-layout.tsx", [
+    // verfahren
+    ...prefix("prototype/verfahren", [
+      index("./routes/prototype.verfahren.tsx"),
+      route(":id", "./routes/prototype.verfahren.$id.tsx", {}),
+      route(
+        ":id/dokument/:dokumentId",
+        "./routes/prototype.verfahren.$id.dokument.$dokumentId.tsx",
+      ),
+    ]),
+
+    // static content pages
     route("datenschutz", "./routes/datenschutz.tsx"),
     route("barrierefreiheit", "./routes/barrierefreiheit.tsx"),
     route("impressum", "./routes/impressum.tsx"),

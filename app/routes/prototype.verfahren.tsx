@@ -8,7 +8,6 @@ import {
   useLoaderData,
   useNavigation,
 } from "react-router";
-import { DefaultPageLayout } from "~/components/DefaultPageLayout";
 import deprecatedPrototypeStyles from "~/prototype.styles.css?url";
 import { getFormDataFromRequest } from "~/services/prototype.fileUpload.server";
 import { ServicesContext } from "~/services/prototype.servicesContext.server";
@@ -42,28 +41,26 @@ export default function Verfahren() {
   return (
     <>
       <link rel="stylesheet" href={deprecatedPrototypeStyles} />
-      <DefaultPageLayout>
-        <KernHeading level={1} size="large">
-          Verfahren
-        </KernHeading>
+      <KernHeading level={1} size="large">
+        Verfahren
+      </KernHeading>
 
-        <Form method="post" action="/action/logout-user">
-          <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
-          <KernButton
-            icon="close"
-            iconPosition="left"
-            text="Abmelden"
-            type="submit"
-          />
-        </Form>
+      <Form method="post" action="/action/logout-user">
+        <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
+        <KernButton
+          icon="close"
+          iconPosition="left"
+          text="Abmelden"
+          type="submit"
+        />
+      </Form>
 
-        <main>
-          <div className="flex flex-col items-start mb-40">
-            <CreateVerfahren />
-            <ListVerfahren />
-          </div>
-        </main>
-      </DefaultPageLayout>
+      <main>
+        <div className="flex flex-col items-start mb-40">
+          <CreateVerfahren />
+          <ListVerfahren />
+        </div>
+      </main>
     </>
   );
 }
