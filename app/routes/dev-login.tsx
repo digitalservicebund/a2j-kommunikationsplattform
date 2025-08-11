@@ -10,7 +10,7 @@ export const loader = async ({ request }: { request: Request }) => {
       request,
     );
 
-    if (!sessionCookieHeader) throw new Error("Session cookie not set");
+    if (!sessionCookieHeader) return;
 
     const cookieWithDemoMode = sessionCookieHeader + "; demoMode=false";
 
