@@ -36,7 +36,7 @@ export const createUserSession = async (
   session.set("expiresAt", expiresAt);
 
   try {
-    console.log("Creating user session with accessToken:", accessToken);
+    console.log("Creating user session");
     return commitSession(session);
   } catch (error) {
     console.error("Error creating user session:", error);
