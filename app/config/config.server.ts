@@ -8,7 +8,7 @@ interface ServerConfig {
   JUSTIZ_BACKEND_API_URL: string;
   FILE_UPLOAD_DIRECTORY: string;
   SENTRY_DSN: string;
-  NODE_ENV: string;
+  ENVIRONMENT: string;
 }
 
 const oidcClientSecretFilePath =
@@ -27,7 +27,7 @@ export function serverConfig(): ServerConfig {
     JUSTIZ_BACKEND_API_URL: process.env.JUSTIZ_BACKEND_API_URL?.trim() ?? "",
     FILE_UPLOAD_DIRECTORY: process.env.FILE_UPLOAD_DIRECTORY?.trim() ?? "/tmp",
     SENTRY_DSN: process.env.SENTRY_DSN?.trim() ?? "",
-    NODE_ENV: process.env.NODE_ENV?.trim() ?? "",
+    ENVIRONMENT: process.env.ENVIRONMENT?.trim() ?? "",
   };
 }
 

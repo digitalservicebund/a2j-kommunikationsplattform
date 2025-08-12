@@ -5,7 +5,7 @@ import { ServicesContext } from "~/services/prototype.servicesContext.server";
 import type { AuthenticationContext } from "./prototype.oAuth.server";
 
 const getSecret = () => {
-  return config().ENVIRONMENT === "development"
+  return serverConfig().ENVIRONMENT === "development"
     ? "default-secret"
     : serverConfig().BRAK_IDP_OIDC_CLIENT_SECRET;
 };
