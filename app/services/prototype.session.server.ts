@@ -1,11 +1,12 @@
 import { parse } from "cookie";
 import { createCookieSessionStorage, redirect } from "react-router";
+import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
 import { ServicesContext } from "~/services/prototype.servicesContext.server";
 import type { AuthenticationContext } from "./prototype.oAuth.server";
 
 const getSecret = () => {
-  return serverConfig().ENVIRONMENT === "development"
+  return config().ENVIRONMENT === "development"
     ? "default-secret"
     : serverConfig().BRAK_IDP_OIDC_CLIENT_SECRET;
 };
