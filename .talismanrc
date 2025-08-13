@@ -28,9 +28,9 @@ fileignoreconfig:
   - filename: app/services/prototype.oAuth.server.ts
     checksum: 78086d4f389249e9e939c9cd0cd9fd836aa3b9a3d0f7a98d21650ec356cb2aca
   - filename: app/services/prototype.session.server.ts
-    checksum: 93905ef2b9f581038d2d84a38aea77aa9c210ee778c7dd3d5e005b484fc0d55d
+    checksum: e3bf1ac11d0982b19e4d332f05b3cb1a31eac97d58744227b2235c72f8d0ae05
   - filename: app/config/config.server.ts
-    checksum: 842a37619c5c0d7f768010e44ec8abc6a6e6c9797dd03cb3ae5b2243f78015c9
+    checksum: be5adef22a4a4616df478f8ce94401a5be1246e914440edbcf311aae4236a2cb
   - filename: app/config/__test__/config.server.test.ts
     checksum: 55ff306d55c77f5317c6a4b03cebe9685b34f65a7c1983376d09ecaaf6c54e60
   - filename: tests/a11y/playwright.config.ts
