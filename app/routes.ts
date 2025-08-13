@@ -8,7 +8,6 @@ export default [
   route("auth/callback", "./routes/auth.callback.tsx"),
   route("error", "./routes/error.tsx"),
   route("action/logout-user", "./routes/action.logout-user.ts"),
-  route("/dev-login", "./routes/dev-login.tsx"),
 
   layout("./layouts/default-layout.tsx", [
     // verfahren
