@@ -1,6 +1,6 @@
 import type { LoaderFunction } from "react-router";
 import { config } from "~/config/config";
-import { loginAsDeveloper } from "~/services/prototype.mockAuth.server";
+import { loginAsDeveloper } from "~/services/mockAuth.server";
 import {
   AuthenticationProvider,
   authenticator,
