@@ -2,6 +2,7 @@
 
 - 2025-04-10: Drafted
 - 2025-05-15: Accepted
+- 2025-08-14: Updated
 
 ## Status
 
@@ -17,9 +18,16 @@ We need to ensure that our application is well tested so that all features work 
 
 - **We prefer end-to-end (E2E) tests**, every user journey should be covered through a dedicated e2e test.
   - This ensures that our application works from the user's perspective and allows us to iteratively and constantly release software changes while ensuring that everything runs as planned.
+  - Meaning: All routes (`app/routes/**`) that are being delivered as a page to our users should be e2e tested. Routes that handle server side functionality, an API or action route for example, should be unit tested, if it makes sense.
 - **We use unit/component tests when it makes sense.**
   - This doesn't mean that no unit tests should be written at all. We can write unit tests as they are needed and as the individual contributors prefer. But we don't want a threshold for defect coverage. Example: Coverage should be greater than 80%. We can always change this if we feel it would improve our work.
+
+    However, [SonarQube](https://sonarcloud.io/project/information?id=digitalservicebund_a2j-kommunikationsplattform) is currently configured with the “Sonar Way” quality gate, which performs the following checks on every new piece of code that is committed:
+
+    _New code has sufficient test coverage: Coverage is greater than or equal to 80.0%_
+
   - Unit/component tests should be close to the units to be tested, for example within a `__test__` folder inside an `<Alert />` component folder `app/components/alert/*`. This makes it easier to move or delete components later.
+
 - **We always test the happy path(s) and think about any unhappy path(s)** that we should cover when things can go wrong. For example, long waiting times or necessary error messages for our users in the event of errors.
 
 ### Integration testing with Justiz-Backend-API
@@ -141,6 +149,7 @@ Ultimately, [MSW](https://github.com/mswjs/msw) and [msw-auto-mock](https://gith
 - Remove `JustizBackendService` (see `./app/services/justizBackend.server.ts`), its features and its mock implementation. Use mocked backend API (MSW implementation, see `./mocks/api/**`) instead within the application
   - `Demo mode` option is currently based on this service, a new way must be found to enable it on the staging environment
 - Implement and add relevant E2E tests that mock API calls with MSW
+- Every page (route that provides a user journey) should be covered through a dedicated e2e test
 
 [^1]: (good/ok/bad) Can it detect timing issues, interface mismatches or data integrity problems?
 
