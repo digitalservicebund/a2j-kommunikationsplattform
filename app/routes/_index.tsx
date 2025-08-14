@@ -24,6 +24,10 @@ export default function IndexPage() {
   const [searchParams] = useSearchParams();
 
   const alertStatus = searchParams.get("status") as AlertState;
+  const loginButtonLabel: string =
+    environment === "development"
+      ? "Login as Developer"
+      : "Anmeldung Anwaltschaft";
 
   return (
     <>
@@ -72,7 +76,7 @@ export default function IndexPage() {
               to="/login"
               className="kern-btn kern-btn--block kern-btn--primary"
             >
-              <span className="kern-label">Anmeldung Anwaltschaft</span>
+              <span className="kern-label">{loginButtonLabel}</span>
             </Link>
 
             <KernButton

@@ -1,8 +1,15 @@
 import { parse } from "cookie";
 import { createCookieSessionStorage, redirect } from "react-router";
+import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
+import { ServicesContext } from "~/services/prototype.servicesContext.server";
 import type { AuthenticationContext } from "./prototype.oAuth.server";
-import { ServicesContext } from "./prototype.servicesContext.server";
+
+const getSecret = () => {
+  return config().ENVIRONMENT === "development"
+    ? "default-secret"
+    : serverConfig().BRAK_IDP_OIDC_CLIENT_SECRET;
+};
 
 const { getSession, commitSession, destroySession } =
   createCookieSessionStorage({
@@ -11,7 +18,7 @@ const { getSession, commitSession, destroySession } =
       sameSite: "lax",
       path: "/",
       httpOnly: true,
-      secrets: [serverConfig().BRAK_IDP_OIDC_CLIENT_SECRET],
+      secrets: [getSecret()],
       secure: process.env.NODE_ENV === "production",
     },
   });
@@ -29,7 +36,13 @@ export const createUserSession = async (
   session.set("accessToken", accessToken);
   session.set("expiresAt", expiresAt);
 
-  return commitSession(session);
+  try {
+    console.log("Creating user session");
+    return commitSession(session);
+  } catch (error) {
+    console.error("Error creating user session:", error);
+    throw new Error("Failed to create user session");
+  }
 };
 
 // We retrieve the user session from the request headers and ensure that the session has not expired.
