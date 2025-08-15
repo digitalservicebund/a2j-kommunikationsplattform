@@ -32,14 +32,13 @@ export default defineConfig((config) => {
           "app/entry.server.tsx",
           "app/instrument.server.mjs",
           "app/root.tsx",
-          // exclude routes (pages) - almost all are still work in progress (in prototyping state)
+          // exclude routes (pages) - we test them via e2e tests, see /tests/e2e/**
           "app/routes/**",
-          // include routes (pages) that have already been developed for production
-          "!app/routes/_index.tsx",
+          // include routes (actions)
           "!app/routes/action.*.ts",
           // test files
           "app/**/__test__/*.test.{ts,tsx}",
-          // excluded technical prototypes (spikes) that will be removed/reworked
+          // exclude technical prototypes (spikes) that will be removed/reworked
           "app/**/prototype.*.{ts,tsx}",
         ],
         reporter: ["text", "lcov"],
