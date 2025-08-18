@@ -98,14 +98,5 @@ body {
   margin-top: var(--kern-metric-space-default, 16px);
   margin-bottom: var(--kern-metric-space-x-large, 32px);
   text-align: center;
-
-  /* 
-  @TODO: remove color overwrite here and use muted class instead, see:
-  https://chat.kern-ux.de/default/pl/mhorqg5yjpbsup8ositsrgh8ja (requires
-  a new KERN release)
-  */
-  .kern-body--small {
-    color: var(--kern-color-layout-text-muted, #404565);
-  }
 }
 /* end index (login) page styling */

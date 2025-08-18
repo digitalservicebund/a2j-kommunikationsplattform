@@ -1,4 +1,3 @@
-import { KernButton, KernHeading } from "@kern-ux-annex/kern-react-kit";
 import { useState } from "react";
 import {
   type ActionFunctionArgs,
@@ -41,18 +40,14 @@ export default function Verfahren() {
   return (
     <>
       <link rel="stylesheet" href={deprecatedPrototypeStyles} />
-      <KernHeading level={1} size="large">
-        Verfahren
-      </KernHeading>
+      <h1 className="kern-heading-large">Verfahren</h1>
 
       <Form method="post" action="/action/logout-user">
         <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
-        <KernButton
-          icon="close"
-          iconPosition="left"
-          text="Abmelden"
-          type="submit"
-        />
+        <button type="submit" className="kern-btn kern-btn--secondary">
+          <span className="kern-icon kern-icon--close" aria-hidden />
+          <span className="kern-label">Abmelden</span>
+        </button>
       </Form>
 
       <main>

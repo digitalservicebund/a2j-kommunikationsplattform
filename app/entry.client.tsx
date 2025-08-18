@@ -15,7 +15,7 @@ if (SENTRY_DSN !== undefined) {
     dsn: config().SENTRY_DSN,
     integrations: [Sentry.reactRouterTracingIntegration()],
 
-    tracesSampleRate: 1.0, //  Capture 100% of the transactions
+    tracesSampleRate: 0.1, //  Capture 10% of the transactions
 
     tracePropagationTargets: [
       /^\//, //  This enables trace propagation for all relative paths on the same domain.

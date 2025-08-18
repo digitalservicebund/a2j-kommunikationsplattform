@@ -1,4 +1,3 @@
-import { KernButton } from "@kern-ux-annex/kern-react-kit";
 import { useRef } from "react";
 import { ActionFunctionArgs, useFetcher, useLoaderData } from "react-router";
 import deprecatedPrototypeStyles from "~/prototype.styles.css?url";
@@ -168,13 +167,16 @@ function UploadFile() {
       className="relative"
       ref={formRef}
     >
-      <KernButton
-        text="Datei hochladen"
-        variant="secondary"
-        //@ts-expect-error KERN React-Kit expects a HTMLElement, we provide a HTMLButtonElement which should be fine
+      <button
         onClick={handleButtonClick}
-        icon="drive-folder-upload"
-      />
+        className="kern-btn kern-btn--secondary"
+      >
+        <span
+          className="kern-icon kern-icon--drive-folder-upload"
+          aria-hidden
+        />
+        <span className="kern-label">Datei hochladen</span>
+      </button>
       <input
         type="file"
         name="files"

@@ -1,12 +1,3 @@
-import {
-  KernAlert,
-  KernButton,
-  KernDivider,
-  KernHeading,
-  KernIcon,
-  KernSpace,
-  KernText,
-} from "@kern-ux-annex/kern-react-kit";
 import { Link, useLoaderData, useSearchParams } from "react-router";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
@@ -34,42 +25,65 @@ export default function IndexPage() {
       <PageMetadata />
 
       {alertStatus === LogoutType.Automatic && (
-        // @TODO: needs to get correct spacings @ top/bottom, bug @kern-ux-annex/kern-react-kit v2.16.0
-        <>
-          <KernSpace size="xl" />
-          <KernAlert
-            body="Aus Sicherheitsgründen wurden Sie nach 60 Minuten Inaktivität automatisch abgemeldet. Bitte melden Sie sich erneut an."
-            text="Automatisch abgemeldet"
-            variant="warning"
-          />
-          <KernSpace size="m" />
-        </>
+        <div
+          className="kern-alert kern-alert--warning"
+          role="alert"
+          style={{
+            marginTop: "var(--kern-metric-space-x-large)",
+            marginBottom: "var(--kern-metric-space-default)",
+          }}
+        >
+          <div className="kern-alert__header">
+            <span
+              className="kern-icon kern-icon--warning kern-icon--small"
+              aria-hidden
+            ></span>
+            <span className="kern-title">Automatisch abgemeldet</span>
+          </div>
+          <div className="kern-alert__body">
+            <p className="kern-body">
+              Aus Sicherheitsgründen wurden Sie nach 60 Minuten Inaktivität
+              automatisch abgemeldet. Bitte melden Sie sich erneut an.
+            </p>
+          </div>
+        </div>
       )}
 
       {alertStatus === LogoutType.ByUser && (
-        // @TODO: needs to get correct spacings @ top/bottom, bug @kern-ux-annex/kern-react-kit v2.16.0
-        <>
-          <KernSpace size="xl" />
-          <KernAlert text="Erfolgreich abgemeldet" variant="success" />
-          <KernSpace size="m" />
-        </>
+        <div
+          className="kern-alert kern-alert--success"
+          role="alert"
+          style={{
+            marginTop: "var(--kern-metric-space-x-large)",
+            marginBottom: "var(--kern-metric-space-default)",
+          }}
+        >
+          <div className="kern-alert__header">
+            <span
+              className="kern-icon kern-icon--success kern-icon--small"
+              aria-hidden
+            ></span>
+            <span className="kern-title">Erfolgreich abgemeldet</span>
+          </div>
+        </div>
       )}
 
       <div className="login">
         <div className="login__container">
           <div className="logo">
-            <KernIcon icon="network_node" size="large" />
-            <KernHeading size="large" level={1}>
-              Kommunikationsplattform
-            </KernHeading>
+            <span
+              className="kern-icon kern-icon--network_node kern-icon--large"
+              aria-hidden
+            />
+            <h1 className="kern-heading-large">Kommunikationsplattform</h1>
           </div>
 
-          <KernDivider />
+          <hr className="kern-divider" aria-hidden />
 
-          <KernText type="subline">
+          <p className="kern-subline">
             Willkommen auf der Pilotplattform für den digitalen Austausch
             zwischen Gerichten und Verfahrensbeteiligten.
-          </KernText>
+          </p>
 
           <div className="login__buttons">
             <Link
@@ -79,12 +93,12 @@ export default function IndexPage() {
               <span className="kern-label">{loginButtonLabel}</span>
             </Link>
 
-            <KernButton
-              text="Anmeldung Gerichte"
-              variant="primary"
+            <button
+              className="kern-btn kern-btn--primary kern-btn--block"
               disabled
-              className="kern-btn--block"
-            />
+            >
+              <span className="kern-label">Anmeldung Gerichte</span>
+            </button>
 
             {/* only render "Testzugang" demo link for non production environments */}
             {environment !== "production" && (
@@ -101,7 +115,7 @@ export default function IndexPage() {
             )}
           </div>
 
-          <KernDivider />
+          <hr className="kern-divider" aria-hidden />
         </div>
       </div>
     </>

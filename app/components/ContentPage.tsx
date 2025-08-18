@@ -1,4 +1,3 @@
-import { KernHeading } from "@kern-ux-annex/kern-react-kit";
 import { ReactNode } from "react";
 import { PageMetadata } from "~/components/PageMetadata";
 
@@ -12,9 +11,7 @@ export default function ContentPage({
   return (
     <>
       <PageMetadata title={title} />
-      <KernHeading level={1} size="display">
-        {title}
-      </KernHeading>
+      <h1 className="kern-heading-display">{title}</h1>
       {children}
     </>
   );
