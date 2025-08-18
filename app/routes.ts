@@ -1,7 +1,7 @@
 import { index, layout, prefix, route } from "@react-router/dev/routes";
 
 export default [
-  layout("./layouts/narrow-layout.tsx", [index("./routes/_index.tsx")]),
+  layout("./layouts/NarrowLayout.tsx", [index("./routes/_index.tsx")]),
 
   // auth
   route("login", "./routes/login.ts"),
@@ -9,7 +9,7 @@ export default [
   route("error", "./routes/error.tsx"),
   route("action/logout-user", "./routes/action.logout-user.ts"),
 
-  layout("./layouts/default-layout.tsx", [
+  layout("./layouts/DefaultLayout.tsx", [
     // verfahren
     ...prefix("prototype/verfahren", [
       index("./routes/prototype.verfahren.tsx"),
