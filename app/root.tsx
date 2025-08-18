@@ -16,6 +16,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "react-router";
+import PageHeader from "~/components/PageHeader";
 import type { Route } from "./+types/root";
 import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
 import { config } from "./config/config";
@@ -56,6 +57,7 @@ export const links: LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: ReactNode }) {
+  const { userIsLoggedIn } = useLoaderData<RootLoader>();
   return (
     <html lang="de">
       <head>
@@ -71,6 +73,7 @@ export function Layout({ children }: { children: ReactNode }) {
         />
       </head>
       <body>
+        <PageHeader isDefaultLayout={userIsLoggedIn} />
         {children}
         <ScrollRestoration />
         <Scripts />

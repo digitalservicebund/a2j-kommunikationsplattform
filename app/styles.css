@@ -1,6 +1,54 @@
 @import "@kern-ux/native/dist/kern.min.css";
 @import "@kern-ux/native/dist/fonts/fira-sans.css" layer(base);
 
+body {
+  margin: 0;
+}
+
+/* mimicking the KernColumn styles without padding */
+.kopfzeile-responsive-default,
+.kopfzeile-responsive-narrow {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+
+/* applying responsive styles similar to KernColumn  */
+@media (min-width: 576px) {
+  .kopfzeile-responsive-narrow,
+  .kopfzeile-responsive-default {
+    width: 83.3333%; /* 10/12 columns */
+    margin-left: 9.3333%; /* 1/12 offset */
+    margin-right: 9.3333%;
+  }
+}
+@media (min-width: 768px) {
+  .kopfzeile-responsive-narrow,
+  .kopfzeile-responsive-default {
+    width: 66.6667%; /* 8/12 columns */
+    margin-left: 16.6667%; /* 2/12 offset */
+    margin-right: 16.6667%;
+  }
+}
+
+@media (min-width: 992px) {
+  .kopfzeile-responsive-narrow {
+    width: 50%; /* 6/12 columns */
+    margin-left: 25%; /* 3/12 offset */
+    margin-right: 25%;
+  }
+}
+
+@media (min-width: 1600px) {
+  .kopfzeile-responsive-narrow {
+    width: 33.3333%; /* 4/12 columns */
+    margin-left: 33.3333%; /* 4/12 offset */
+    margin-right: 33.3333%;
+  }
+}
+
 /* start index (login) page styling */
 .logo {
   display: flex;
