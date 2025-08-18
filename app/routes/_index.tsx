@@ -108,7 +108,7 @@ export default function IndexPage() {
                 onClick={() => {
                   document.cookie = "demoMode=true; path=/; max-age=3600"; // 1 hour
                 }}
-                data-testid="demoBtn"
+                data-testid="demo-button"
               >
                 <span className="kern-label">Testzugang</span>
               </Link>
