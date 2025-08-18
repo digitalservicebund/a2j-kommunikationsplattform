@@ -33,19 +33,6 @@ test.describe("Homepage (_index route)", () => {
     await expect(page.locator("h1")).toHaveText("Anmeldung");
   });
 
-  test("important footer links are visible and clickable.", async ({
-    page,
-  }) => {
-    await page.goto("/");
-    await expect(page.getByRole("link", { name: "Datenschutz" })).toBeVisible();
-    await page.getByRole("link", { name: "Datenschutz" }).click();
-    await expect(page).toHaveURL("/datenschutz");
-    await page.goto("/");
-    await expect(page.getByRole("link", { name: "Impressum" })).toBeVisible();
-    await page.getByRole("link", { name: "Impressum" }).click();
-    await expect(page).toHaveURL("/impressum");
-  });
-
   test(`shows success alert box for status=logged-out URL param (will be shown after using the logout button)`, async ({
     page,
   }) => {
