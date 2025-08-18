@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("Demo mode", () => {
+test.describe("Demo mode (functionality)", () => {
   test(`Can be activated using the "Testzugang" button (on staging environment)`, async ({
     page,
   }) => {
