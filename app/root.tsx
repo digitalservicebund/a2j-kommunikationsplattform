@@ -1,4 +1,3 @@
-import { KernHeading } from "@kern-ux-annex/kern-react-kit";
 import FiraSansMedium from "@kern-ux/native/dist/fonts/fira-sans/FiraSans-Medium.woff2?url";
 import FiraSansRegular from "@kern-ux/native/dist/fonts/fira-sans/FiraSans-Regular.woff2?url";
 import FiraSansSemiBold from "@kern-ux/native/dist/fonts/fira-sans/FiraSans-SemiBold.woff2?url";
@@ -114,9 +113,7 @@ export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
 
   return (
     <main>
-      <KernHeading level={1} size="large">
-        {message}
-      </KernHeading>
+      <h1 className="kern-heading-large">{message}</h1>
       <p className="kern-text">{details}</p>
       {message === "404" ? (
         <p>
@@ -126,7 +123,7 @@ export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
           </Link>
         </p>
       ) : (
-        <pre className="w-full overflow-x-auto p-4">
+        <pre>
           <code>{stack}</code>
         </pre>
       )}

@@ -1,14 +1,13 @@
-import { KernContainer } from "@kern-ux-annex/kern-react-kit";
 import { Outlet } from "react-router";
 import PageFooter from "~/components/PageFooter";
 
 export default function DefaultLayout() {
   return (
-    <KernContainer>
+    <div className="kern-container">
       <main>
         <Outlet />
       </main>
       <PageFooter />
-    </KernContainer>
+    </div>
   );
 }

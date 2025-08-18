@@ -2,6 +2,7 @@
 
 - 2025-04-09: Drafted
 - 2025-07-15: Accepted
+- 2025-08-18: Updated
 
 ## Status
 
@@ -51,7 +52,11 @@ Skip to [Decision](#decision).
   </div>
   ```
 
-- No React components are available.
+- React components are available but we don't consider them mature enough at the moment. _For now_ we will use the _native_ KERN library.
+  - one dependency less, less risk, more direct access to updates
+  - we rely on the official maintained library only, not on another one with unclear maintenance
+  - it's more flexible to add extra attributes or to combine styling with given components, e.g. `Link`
+  - drawbacks: sometimes more html code to write, no support from TypeScript
 
 #### React Aria
 
