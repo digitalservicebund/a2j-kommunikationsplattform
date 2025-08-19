@@ -1,3 +1,17 @@
+import React from "react";
+
+type KopfzeileContainerProps = {
+  children: React.ReactNode;
+};
+
+function KopfzeileContainer({ children }: KopfzeileContainerProps) {
+  return (
+    <div className="kopfzeile-wrapper">
+      <div className="kern-container">{children}</div>
+    </div>
+  );
+}
+
 function KopfzeileContent() {
   return (
     <div className="kern-kopfzeile__content">
@@ -22,23 +36,19 @@ export default function Kopfzeile({
 }) {
   if (isDefaultLayout) {
     return (
-      <div className="kern-kopfzeile">
-        <div className="kern-container kopfzeile-responsive-default">
-          <KopfzeileContent />
-        </div>
-      </div>
+      <KopfzeileContainer>
+        <KopfzeileContent />
+      </KopfzeileContainer>
     );
   }
 
   return (
-    <div className="kern-kopfzeile">
-      <div className="kern-container">
-        <div className="kern-row kern-justify-content-center">
-          <div className="kern-col-sm-10 kern-col-md-8 kern-col-lg-6 kern-col-xxl-4 kopfzeile-responsive-narrow">
-            <KopfzeileContent />
-          </div>
+    <KopfzeileContainer>
+      <div className="kern-row kern-justify-content-center">
+        <div className="kern-col-sm-10 kern-col-md-8 kern-col-lg-6 kern-col-xxl-4 kopfzeile-no-vertical-padding">
+          <KopfzeileContent />
         </div>
       </div>
-    </div>
+    </KopfzeileContainer>
   );
 }

@@ -5,21 +5,15 @@ body {
   margin: 0;
 }
 
-.kopfzeile-responsive-narrow {
+.kopfzeile-no-vertical-padding {
   padding-top: 0;
   padding-bottom: 0;
 }
 
-@media (max-width: 768px) {
-  .kopfzeile-responsive-narrow {
-    margin-left: 2%;
-  }
-}
-
-@media (max-width: 768px) {
-  .kopfzeile-responsive-default {
-    margin-left: 3%;
-  }
+.kopfzeile-wrapper {
+  background: var(--kern-color-layout-background-hued, #f7f7f9);
+  padding: var(--kern-component-kopfzeile-padding, 5px)
+    var(--kern-metric-space-none, 0px);
 }
 
 /* start index (login) page styling */
