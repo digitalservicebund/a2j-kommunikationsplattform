@@ -16,6 +16,37 @@ body {
     var(--kern-metric-space-none, 0px);
 }
 
+.flex-row-start {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+}
+
+.flex-row-space-between {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vertical-padding-x-large {
+  padding-top: var(--kern-metric-space-x-large, 32px);
+  padding-bottom: var(--kern-metric-space-x-large, 32px);
+}
+
+.defailt-layout-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kern-metric-space-large, 24px);
+}
+
+.narrow-layout-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--kern-metric-space-default, 16px);
+}
+
 /* start index (login) page styling */
 .logo {
   display: flex;
@@ -25,7 +56,10 @@ body {
   justify-content: center;
   gap: var(--kern-metric-space-small, 8px);
   word-break: break-all;
-  padding-bottom: var(--kern-metric-space-default, 16px);
+}
+
+.navigation {
+  gap: var(--kern-metric-space-x-large, 32px);
 }
 
 .kern-icon--network_node {
