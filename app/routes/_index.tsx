@@ -1,4 +1,5 @@
 import { Link, useLoaderData, useSearchParams } from "react-router";
+import LogoHeader from "~/components/LogoHeader";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
 import { LogoutType } from "./action.logout-user";
@@ -70,13 +71,7 @@ export default function IndexPage() {
 
       <div className="login">
         <div className="login__container">
-          <div className="logo">
-            <span
-              className="kern-icon kern-icon--network_node kern-icon--large"
-              aria-hidden
-            />
-            <h1 className="kern-heading-large">Kommunikationsplattform</h1>
-          </div>
+          <LogoHeader />
 
           <hr className="kern-divider" aria-hidden />
 

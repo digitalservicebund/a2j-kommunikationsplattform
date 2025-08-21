@@ -1,7 +1,13 @@
 export default function HeaderNavigation() {
+  const listStyle = {
+    overflow: "auto",
+  };
   return (
     <nav className="">
-      <ul className="kern-task-list__list flex-row-start navigation">
+      <ul
+        className="kern-task-list__list flex-row-start navigation"
+        style={listStyle}
+      >
         <li className="">
           <a href="#" className="kern-link">
             <span
