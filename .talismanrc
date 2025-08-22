@@ -39,6 +39,8 @@ fileignoreconfig:
     checksum: e9a457bbc355346a90f7a5404fb27638c6e8220b9997893732405d3551ce3391
   - filename: tests/e2e/playwright.config.ts
     checksum: 07aa847af35f9c79757ff18d3c4b6c246262780d4843f7178fef0e8001f6918a
+  - filename: app/components/__test__/ContentPage.test.tsx
+    checksum: a2c62ce36ce3ceea9fcc6757afc6d0d1fb5d4c8a5dbad2b5236d09bfff4e7a75
 
 version: ""
 scopeconfig:

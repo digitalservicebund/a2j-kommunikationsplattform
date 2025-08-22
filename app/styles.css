@@ -53,7 +53,6 @@ header {
   flex-direction: column;
   gap: var(--kern-metric-space-default, 16px);
 }
-
 /* start index (login) page styling */
 .logo {
   display: flex;
@@ -72,11 +71,20 @@ header {
   background-color: var(--kern-color-action-default, #1a3da5);
 }
 
+.kern-alert {
+  margin-top: var(--kern-metric-space-default);
+  margin-bottom: var(--kern-metric-space-default);
+}
+
+.login {
+  padding-top: var(--kern-metric-space-default, 16px);
+}
+
 .login__container {
-  margin-top: var(--kern-metric-space-default, 16px);
   text-align: center;
 
   .kern-subline {
+    margin-top: var(--kern-metric-space-default, 16px);
     margin-bottom: var(--kern-metric-space-default, 16px);
   }
 }
@@ -89,6 +97,11 @@ header {
   align-items: flex-start;
   gap: var(--kern-metric-space-default, 16px);
   align-self: stretch;
+
+  & + .kern-divider {
+    margin-top: var(--kern-metric-space-default, 16px);
+    margin-bottom: var(--kern-metric-space-default, 16px);
+  }
 }
 
 .footer__nav {

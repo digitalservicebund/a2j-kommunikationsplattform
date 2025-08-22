@@ -1,12 +1,13 @@
 import { Link } from "react-router";
 
+export const PROJECT_DESCRIPTION =
+  "Ein Onlineprojekt der DigitalService GmbH des Bundes in Zusammenarbeit mit der BRAK, SINC und im Auftrag des BMJV.";
+export const FOOTER_ARIA_LABEL = "Rechtliche und weiterführende Informationen";
+
 export default function PageFooter() {
   return (
     <footer>
-      <nav
-        className="footer__nav"
-        aria-label="Rechtliche und weiterführende Informationen"
-      >
+      <nav className="footer__nav" aria-label={FOOTER_ARIA_LABEL}>
         <Link to="/datenschutz" className="kern-link">
           Datenschutz
         </Link>
@@ -28,8 +29,7 @@ export default function PageFooter() {
       </nav>
       <div className="footer__info">
         <p className="kern-body kern-body--small kern-body--muted">
-          Ein Onlineprojekt der DigitalService GmbH des Bundes in Zusammenarbeit
-          mit der BRAK, SINC und im Auftrag des BMJV.
+          {PROJECT_DESCRIPTION}
         </p>
       </div>
     </footer>

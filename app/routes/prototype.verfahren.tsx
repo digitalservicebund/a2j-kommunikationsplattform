@@ -7,6 +7,7 @@ import {
   useLoaderData,
   useNavigation,
 } from "react-router";
+import PageNavigation from "~/components/PageNavigation";
 import deprecatedPrototypeStyles from "~/prototype.styles.css?url";
 import { getFormDataFromRequest } from "~/services/prototype.fileUpload.server";
 import { ServicesContext } from "~/services/prototype.servicesContext.server";
@@ -39,6 +40,7 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function Verfahren() {
   return (
     <>
+      <PageNavigation />
       <link rel="stylesheet" href={deprecatedPrototypeStyles} />
       <h1 className="kern-heading-large">Verfahren</h1>
 
