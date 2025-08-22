@@ -6,15 +6,15 @@ export default function PageHeader() {
   return (
     <header>
       <div className="kern-row kern-align-items-center">
-        <div className="kern-col kopfzeile-no-vertical-padding">
+        <div className="kern-col ">
           <LogoHeader />
         </div>
-        <div className="kern-col kopfzeile-no-vertical-padding">
+        <div className="kern-col ">
           <HeaderNavigation />
         </div>
       </div>
       <div className="kern-row kern-align-items-center kern-justify-content-end ">
-        <div className="kern-col kopfzeile-no-vertical-padding">
+        <div className="kern-col">
           <UserProfileCell />
         </div>
       </div>
