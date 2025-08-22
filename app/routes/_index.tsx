@@ -25,14 +25,7 @@ export default function IndexPage() {
       <PageMetadata />
 
       {alertStatus === LogoutType.Automatic && (
-        <div
-          className="kern-alert kern-alert--warning"
-          role="alert"
-          style={{
-            marginTop: "var(--kern-metric-space-x-large)",
-            marginBottom: "var(--kern-metric-space-default)",
-          }}
-        >
+        <div className="kern-alert kern-alert--warning" role="alert">
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--warning kern-icon--small"
@@ -50,14 +43,7 @@ export default function IndexPage() {
       )}
 
       {alertStatus === LogoutType.ByUser && (
-        <div
-          className="kern-alert kern-alert--success"
-          role="alert"
-          style={{
-            marginTop: "var(--kern-metric-space-x-large)",
-            marginBottom: "var(--kern-metric-space-default)",
-          }}
-        >
+        <div className="kern-alert kern-alert--success" role="alert">
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--success kern-icon--small"
