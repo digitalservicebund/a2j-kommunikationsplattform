@@ -28,11 +28,15 @@ body {
   margin-bottom: var(--kern-metric-space-default);
 }
 
+.login {
+  padding-top: var(--kern-metric-space-default, 16px);
+}
+
 .login__container {
-  margin-top: var(--kern-metric-space-default, 16px);
   text-align: center;
 
   .kern-subline {
+    margin-top: var(--kern-metric-space-default, 16px);
     margin-bottom: var(--kern-metric-space-default, 16px);
   }
 }
@@ -45,6 +49,11 @@ body {
   align-items: flex-start;
   gap: var(--kern-metric-space-default, 16px);
   align-self: stretch;
+
+  & + .kern-divider {
+    margin-top: var(--kern-metric-space-default, 16px);
+    margin-bottom: var(--kern-metric-space-default, 16px);
+  }
 }
 
 .footer__nav {
