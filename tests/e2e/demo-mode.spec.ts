@@ -5,7 +5,7 @@ test.describe("Demo mode (functionality)", () => {
     page,
   }) => {
     await page.goto("/");
-    await page.getByTestId("demoBtn").click();
+    await page.getByTestId("demo-button").click();
     await expect(
       page.getByRole("heading", { name: "Verfahren" }),
     ).toBeVisible();
