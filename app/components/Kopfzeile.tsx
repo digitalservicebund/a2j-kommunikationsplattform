@@ -1,6 +1,6 @@
 export default function Kopfzeile() {
   return (
-    <div className="kern-kopfzeile">
+    <header className="kern-kopfzeile">
       <div className="kern-container">
         <div className="kern-kopfzeile__content">
           <span className="kern-kopfzeile__flagge" aria-hidden="true">
@@ -19,6 +19,6 @@ export default function Kopfzeile() {
           </span>
         </div>
       </div>
-    </div>
+    </header>
   );
 }
