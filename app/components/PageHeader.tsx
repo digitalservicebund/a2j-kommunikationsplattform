@@ -1,13 +1,4 @@
-import Kopfzeile from "~/components/Kopfzeile";
-
-export default function PageHeader({
-  isDefaultLayout,
-}: {
-  isDefaultLayout: boolean;
-}) {
-  return (
-    <header>
-      <Kopfzeile isDefaultLayout={isDefaultLayout} />
-    </header>
-  );
+export default function PageHeader() {
+  // /// placeholder for KOMMPLA-208 Header component
+  return <header></header>;
 }

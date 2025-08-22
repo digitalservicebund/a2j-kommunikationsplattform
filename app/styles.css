@@ -5,17 +5,6 @@ body {
   margin: 0;
 }
 
-.kopfzeile-no-vertical-padding {
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.kopfzeile-wrapper {
-  background: var(--kern-color-layout-background-hued, #f7f7f9);
-  padding: var(--kern-component-kopfzeile-padding, 5px)
-    var(--kern-metric-space-none, 0px);
-}
-
 /* start index (login) page styling */
 .logo {
   display: flex;
