@@ -1,4 +1,9 @@
+import Kopfzeile from "~/components/Kopfzeile";
+
 export default function PageHeader() {
-  // /// placeholder for KOMMPLA-208 Header component
-  return <header></header>;
+  return (
+    <header>
+      <Kopfzeile />
+    </header>
+  );
 }
