@@ -1,9 +1,21 @@
-@import "@kern-ux/native/dist/kern.min.css";
+/* KERN UX */
 @import "@kern-ux/native/dist/fonts/fira-sans.css" layer(base);
+@import "@kern-ux/native/dist/kern.min.css" layer(base);
 
-body {
-  margin: 0;
-}
+/* Tailwind */
+@import "tailwindcss" source("../app");
+
+/* use the KERN UX theme */
+@import "@digitalservicebund/kern-ux-tailwind-theme/theme.css";
+
+/* disable Tailwind's container */
+@source not inline("container");
+
+/* exclude prototype routes from Tailwind's content scanning */
+/* that routes use Tailwind too, but with another theme */
+@source not "./prototype.styles.css";
+@source not "./routes/prototype.verfahren.tsx";
+@source not "./routes/prototype.verfahren.$id.tsx";
 
 /* start index (login) page styling */
 .logo {
