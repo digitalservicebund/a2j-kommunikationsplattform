@@ -1,9 +1,6 @@
 export default function UserProfileCell() {
-  const lofoStyle = {
-    justifyContent: "end",
-  };
   return (
-    <div className="logo" style={lofoStyle}>
+    <div className="logo kern-justify-content-end">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"

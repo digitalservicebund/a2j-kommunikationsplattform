@@ -23,13 +23,6 @@ header {
     var(--kern-metric-space-none, 0px);
 }
 
-.flex-row-start {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: start;
-}
-
 .flex-row-space-between {
   display: flex;
   flex-direction: row;
@@ -42,10 +35,21 @@ header {
   padding-bottom: var(--kern-metric-space-x-large, 32px);
 }
 
-.defailt-layout-main {
+.navigation-list {
   display: flex;
-  flex-direction: column;
-  gap: var(--kern-metric-space-large, 24px);
+  flex-direction: row;
+  align-items: center;
+  gap: var(--kern-metric-space-x-large, 32px);
+  overflow: auto;
+}
+
+/* justifies to the right and allows for overflow */
+.navigation-list > :first-child {
+  margin-left: auto;
+}
+
+.logout-button:hover {
+  cursor: pointer;
 }
 
 .narrow-layout-main {
@@ -59,10 +63,6 @@ header {
   flex-direction: row;
   align-items: center;
   gap: var(--kern-metric-space-small, 8px);
-}
-
-.navigation {
-  gap: var(--kern-metric-space-x-large, 32px);
 }
 
 .kern-icon--network_node {

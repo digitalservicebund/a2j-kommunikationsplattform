@@ -1,14 +1,11 @@
+import { Form } from "react-router";
+import { LogoutType } from "~/routes/action.logout-user";
+
 export default function HeaderNavigation() {
-  const listStyle = {
-    overflow: "auto",
-  };
   return (
-    <nav className="">
-      <ul
-        className="kern-task-list__list flex-row-start navigation"
-        style={listStyle}
-      >
-        <li className="">
+    <nav>
+      <ul className="kern-task-list__list navigation-list">
+        <li>
           <a href="#" className="kern-link">
             <span
               className="kern-icon kern-icon--home kern-icon--default"
@@ -17,7 +14,7 @@ export default function HeaderNavigation() {
             Verfahren
           </a>
         </li>
-        <li className="">
+        <li>
           <a href="#" className="kern-link">
             <span
               className="kern-icon kern-icon--mail kern-icon--default"
@@ -26,7 +23,7 @@ export default function HeaderNavigation() {
             Mitteilungen
           </a>
         </li>
-        <li className="">
+        <li>
           <a href="#" className="kern-link">
             <span
               className="kern-icon kern-icon--calendar-today kern-icon--default"
@@ -34,8 +31,8 @@ export default function HeaderNavigation() {
             ></span>
             Kalender
           </a>
-        </li>{" "}
-        <li className="">
+        </li>
+        <li>
           <a href="#" className="kern-link">
             <span
               className="kern-icon kern-icon--easy-language kern-icon--default"
@@ -43,15 +40,20 @@ export default function HeaderNavigation() {
             ></span>
             Profil
           </a>
-        </li>{" "}
-        <li className="">
-          <a href="#" className="kern-link">
-            <span
-              className="kern-icon kern-icon--close kern-icon--default"
-              aria-hidden="true"
-            ></span>
-            Abmelden
-          </a>
+        </li>
+        <li>
+          <Form method="post" action="/action/logout-user">
+            <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
+            <button type="submit" className="kern-link logout-button">
+              <span
+                className="kern-icon kern-icon--close kern-icon--default"
+                aria-hidden="true"
+              ></span>
+              <span className="" aria-hidden="true">
+                Abmelden
+              </span>
+            </button>
+          </Form>
         </li>
       </ul>
     </nav>

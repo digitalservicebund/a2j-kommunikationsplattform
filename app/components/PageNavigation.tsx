@@ -9,11 +9,11 @@ export default function PageNavigation() {
         <div className="kern-col ">
           <LogoHeader />
         </div>
-        <div className="kern-col ">
+        <div className="kern-col">
           <HeaderNavigation />
         </div>
       </div>
-      <div className="kern-row kern-align-items-center kern-justify-content-end ">
+      <div className="kern-row kern-align-items-center">
         <div className="kern-col">
           <UserProfileCell />
         </div>
