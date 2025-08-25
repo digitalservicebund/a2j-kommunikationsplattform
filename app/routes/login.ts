@@ -6,6 +6,10 @@ import {
   authenticator,
 } from "~/services/prototype.oAuth.server";
 
+export enum LoginError {
+  BeA = "bea-login-error",
+}
+
 /**
  * Initiates OAuth2 login on beA-Portal (BRAK IdP)
  */

@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test";
+import { LogoutType } from "~/routes/action.logout-user";
+import { LoginError } from "~/routes/login";
 
 test.describe("Homepage (_index route)", () => {
   test("has title, shows headline and introduction text", async ({ page }) => {
@@ -36,7 +38,7 @@ test.describe("Homepage (_index route)", () => {
   test(`shows success alert box for status=logged-out URL param (will be shown after using the logout button)`, async ({
     page,
   }) => {
-    await page.goto("/?status=logged-out");
+    await page.goto(`/?status=${LogoutType.ByUser}`);
     await expect(page.getByRole("alert")).toContainText(
       "Erfolgreich abgemeldet",
     );
@@ -45,9 +47,18 @@ test.describe("Homepage (_index route)", () => {
   test(`shows warning alert box for status=auto-logged-out URL param (will be shown after 60 min. of inactivity to our logged in users)`, async ({
     page,
   }) => {
-    await page.goto("/?status=auto-logged-out");
+    await page.goto(`/?status=${LogoutType.Automatic}`);
     await expect(page.getByRole("alert")).toContainText(
       "Automatisch abgemeldet",
+    );
+  });
+
+  test(`shows danger alert box for status=bea-login-error URL param (will be shown on any beA-portal login error)`, async ({
+    page,
+  }) => {
+    await page.goto(`/?status=${LoginError.BeA}`);
+    await expect(page.getByRole("alert")).toContainText(
+      "Fehler bei der Anmeldung",
     );
   });
 });

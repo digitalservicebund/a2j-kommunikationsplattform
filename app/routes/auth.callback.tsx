@@ -3,6 +3,11 @@ import {
   AuthenticationProvider,
   authenticator,
 } from "~/services/prototype.oAuth.server";
+import {
+  destroySession,
+  getSession,
+} from "~/services/prototype.session.server";
+import { LoginError } from "./login";
 
 export const loader: LoaderFunction = async ({ request }) => {
   // Fyi: When the authorization server redirects to this route (Redirect URI),
@@ -24,12 +29,19 @@ export const loader: LoaderFunction = async ({ request }) => {
         },
       });
     })
-    .catch((error) => {
+    .catch(async (error) => {
       console.log(
-        `Failed to authenticate user at : ${authenticationProvider}`,
+        `Failed to authenticate user via "${authenticationProvider}":`,
         error,
       );
-      throw redirect("/error");
+
+      const session = await getSession(request.headers.get("Cookie"));
+
+      return redirect(`/?status=${LoginError.BeA}`, {
+        headers: {
+          "Set-Cookie": await destroySession(session),
+        },
+      });
     });
 };
 
