@@ -10,10 +10,7 @@ import { LogoutType } from "~/routes/action.logout-user";
  */
 export const useLogoutInactiveUser = (
   handleInactivity = false,
-  // @TODO: use 60 minutes timeout, when successfully tested on staging environment
-  // timeout = 1000 * 60 * 60,
-  // to verify the logout easier it is set to one minute
-  timeout = 1000 * 60 * 1,
+  timeout = 1000 * 60 * 60,
 ): void => {
   const fetcher = useFetcher();
   const [lastActivity, setLastActivity] = useState(Date.now());
