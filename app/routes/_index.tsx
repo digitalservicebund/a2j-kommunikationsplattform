@@ -66,7 +66,10 @@ export default function IndexPage() {
       )}
 
       {alertStatus === LoginError.BeA && (
-        <div className="kern-alert kern-alert--danger my-kern-space-default" role="alert">
+        <div
+          className="kern-alert kern-alert--danger my-kern-space-default"
+          role="alert"
+        >
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--danger kern-icon--small"
