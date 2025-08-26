@@ -4,7 +4,7 @@ import UserProfileCell from "~/components/UserProfileCell";
 
 export default function PageNavigation() {
   return (
-    <>
+    <div>
       <div className="kern-row kern-align-items-center">
         <div className="kern-col ">
           <LogoHeader />
@@ -18,7 +18,6 @@ export default function PageNavigation() {
           <UserProfileCell />
         </div>
       </div>
-      <hr className="kern-divider" aria-hidden="true" />
-    </>
+    </div>
   );
 }

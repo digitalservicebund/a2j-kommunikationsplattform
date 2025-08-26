@@ -7,7 +7,7 @@ export default function DefaultLayout() {
       className="kern-container vertical-padding-x-large"
       data-testid="default-layout"
     >
-      <main className="defailt-layout-main">
+      <main>
         <Outlet />
       </main>
       <PageFooter />

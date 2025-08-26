@@ -57,7 +57,7 @@ export default function IndexPage() {
 
       <div className="login">
         <div className="login__container">
-          <LogoHeader />
+          <LogoHeader className="logo-narrow" />
 
           <hr className="kern-divider" aria-hidden />
 

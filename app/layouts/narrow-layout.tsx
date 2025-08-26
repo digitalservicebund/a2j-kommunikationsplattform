@@ -9,7 +9,7 @@ export default function NarrowLayout() {
           className="kern-col-sm-10 kern-col-md-8 kern-col-lg-6 kern-col-xxl-4"
           data-testid="narrow-layout"
         >
-          <main className="narrow-layout-main">
+          <main>
             <Outlet />
           </main>
           <PageFooter />

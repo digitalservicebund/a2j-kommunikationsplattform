@@ -1,6 +1,6 @@
-export default function LogoHeader() {
+export default function LogoHeader({ className = "" }: { className?: string }) {
   return (
-    <div className="logo">
+    <div className={`logo ${className}`}>
       <span
         className="kern-icon kern-icon--network_node kern-icon--large"
         aria-hidden
