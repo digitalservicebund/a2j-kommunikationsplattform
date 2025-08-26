@@ -15,7 +15,7 @@ export default function Kopfzeile() {
             </svg>
           </span>
           <span className="kern-kopfzeile__label">
-            Offizielle Website – Bundesrepublik Deutschland
+            Eine offizielle Website der Bundesrepublik Deutschland
           </span>
         </div>
       </div>
