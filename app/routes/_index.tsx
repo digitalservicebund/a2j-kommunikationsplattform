@@ -3,8 +3,13 @@ import LogoHeader from "~/components/LogoHeader";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
 import { LogoutType } from "./action.logout-user";
+import { LoginError } from "./login";
 
-type AlertState = "" | LogoutType.Automatic | LogoutType.ByUser;
+type AlertState =
+  | ""
+  | LogoutType.Automatic
+  | LogoutType.ByUser
+  | LoginError.BeA;
 
 export async function loader() {
   const environment = config().ENVIRONMENT;
@@ -19,7 +24,7 @@ export default function IndexPage() {
   const loginButtonLabel: string =
     environment === "development"
       ? "Login as Developer"
-      : "Anmeldung Anwaltschaft";
+      : "Anmeldung Anwaltschaft (über beA Login)";
 
   return (
     <>
@@ -51,6 +56,24 @@ export default function IndexPage() {
               aria-hidden
             ></span>
             <span className="kern-title">Erfolgreich abgemeldet</span>
+          </div>
+        </div>
+      )}
+
+      {alertStatus === LoginError.BeA && (
+        <div className="kern-alert kern-alert--danger" role="alert">
+          <div className="kern-alert__header">
+            <span
+              className="kern-icon kern-icon--danger kern-icon--small"
+              aria-hidden
+            ></span>
+            <span className="kern-title">Fehler bei der Anmeldung</span>
+          </div>
+          <div className="kern-alert__body">
+            <p className="kern-body">
+              Die Anmeldung über beA-Zugangsdaten war nicht erfolgreich. Bitte
+              versuchen Sie es erneut.
+            </p>
           </div>
         </div>
       )}
