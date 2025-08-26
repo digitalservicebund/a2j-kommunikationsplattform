@@ -10,7 +10,9 @@ import { LogoutType } from "~/routes/action.logout-user";
  */
 export const useLogoutInactiveUser = (
   handleInactivity = false,
-  timeout = 1000 * 60 * 60,
+  // @TODO reactivate 60 minutes when review is done: https://digitalservicebund.atlassian.net/browse/KOMMPLA-104
+  // timeout = 1000 * 60 * 60,
+  timeout = 1000 * 60,
 ): void => {
   const fetcher = useFetcher();
   const [lastActivity, setLastActivity] = useState(Date.now());
