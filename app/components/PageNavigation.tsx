@@ -1,23 +1,25 @@
+import Column from "~/components/Column";
 import HeaderNavigation from "~/components/HeaderNavigation";
 import LogoHeader from "~/components/LogoHeader";
+import Row from "~/components/Row";
 import UserProfileCell from "~/components/UserProfileCell";
 
 export default function PageNavigation() {
   return (
-    <div>
-      <div className="kern-row kern-align-items-center">
-        <div className="kern-col ">
+    <section>
+      <Row>
+        <Column>
           <LogoHeader />
-        </div>
-        <div className="kern-col">
+        </Column>
+        <Column>
           <HeaderNavigation />
-        </div>
-      </div>
-      <div className="kern-row kern-align-items-center">
-        <div className="kern-col">
+        </Column>
+      </Row>
+      <Row>
+        <Column>
           <UserProfileCell />
-        </div>
-      </div>
-    </div>
+        </Column>
+      </Row>
+    </section>
   );
 }
