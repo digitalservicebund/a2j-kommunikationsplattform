@@ -30,7 +30,10 @@ export default function IndexPage() {
       <PageMetadata />
 
       {alertStatus === LogoutType.Automatic && (
-        <div className="kern-alert kern-alert--warning" role="alert">
+        <div
+          className="kern-alert kern-alert--warning my-kern-space-default"
+          role="alert"
+        >
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--warning kern-icon--small"
@@ -48,7 +51,10 @@ export default function IndexPage() {
       )}
 
       {alertStatus === LogoutType.ByUser && (
-        <div className="kern-alert kern-alert--success" role="alert">
+        <div
+          className="kern-alert kern-alert--success my-kern-space-default"
+          role="alert"
+        >
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--success kern-icon--small"
@@ -60,7 +66,7 @@ export default function IndexPage() {
       )}
 
       {alertStatus === LoginError.BeA && (
-        <div className="kern-alert kern-alert--danger" role="alert">
+        <div className="kern-alert kern-alert--danger my-kern-space-default" role="alert">
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--danger kern-icon--small"
@@ -77,9 +83,9 @@ export default function IndexPage() {
         </div>
       )}
 
-      <div className="login">
-        <div className="login__container">
-          <div className="logo">
+      <div className="pt-kern-space-default">
+        <div className="text-center">
+          <div className="gap-kern-space-small pb-kern-space-default flex flex-row flex-wrap items-center justify-center break-all">
             <span
               className="kern-icon kern-icon--network_node kern-icon--large"
               aria-hidden
@@ -89,12 +95,12 @@ export default function IndexPage() {
 
           <hr className="kern-divider" aria-hidden />
 
-          <p className="kern-subline">
+          <p className="kern-subline my-kern-space-default">
             Willkommen auf der Pilotplattform für den digitalen Austausch
             zwischen Gerichten und Verfahrensbeteiligten.
           </p>
 
-          <div className="login__buttons">
+          <div className="p-kern-space-large gap-kern-space-default flex flex-row flex-wrap items-start self-stretch">
             <Link
               to="/login"
               className="kern-btn kern-btn--block kern-btn--primary"
@@ -124,7 +130,7 @@ export default function IndexPage() {
             )}
           </div>
 
-          <hr className="kern-divider" aria-hidden />
+          <hr className="kern-divider my-kern-space-default" aria-hidden />
         </div>
       </div>
     </>

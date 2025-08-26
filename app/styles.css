@@ -1,84 +1,35 @@
+@layer theme, base, utilities;
+
 /* KERN UX */
 @import "@kern-ux/native/dist/fonts/fira-sans.css" layer(base);
-@import "@kern-ux/native/dist/kern.min.css" layer(base);
+@import "@kern-ux/native/dist/kern.css" layer(base);
 
-/* Tailwind */
-@import "tailwindcss" source("../app");
+/* Tailwind without preflight (normalize) */
+/* will only look into the app folder for content */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source("../app");
 
 /* use the KERN UX theme */
-@import "@digitalservicebund/kern-ux-tailwind-theme/theme.css";
+@import "@digitalservicebund/kern-ux-tailwind-theme/theme.css" layer(theme);
 
 /* disable Tailwind's container */
 @source not inline("container");
 
 /* exclude prototype routes from Tailwind's content scanning */
-/* that routes use Tailwind too, but with another theme */
+/* that routes use Tailwind too, but with another (the default) theme */
 @source not "./prototype.styles.css";
 @source not "./routes/prototype.verfahren.tsx";
 @source not "./routes/prototype.verfahren.$id.tsx";
 
-/* start index (login) page styling */
-.logo {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: var(--kern-metric-space-small, 8px);
-  word-break: break-all;
-  padding-bottom: var(--kern-metric-space-default, 16px);
-}
+@layer base {
+  /* additional icons that are not included in the KERN UX stylesheet */
+  .kern-icon--network_node {
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='' viewBox='0 -960 960 960' width='' fill='%23000000'%3E%3Cpath d='M220-80q-58 0-99-41t-41-99q0-58 41-99t99-41q18 0 35 4.5t32 12.5l153-153v-110q-44-13-72-49.5T340-740q0-58 41-99t99-41q58 0 99 41t41 99q0 48-28 84.5T520-606v110l154 153q15-8 31.5-12.5T740-360q58 0 99 41t41 99q0 58-41 99t-99 41q-58 0-99-41t-41-99q0-18 4.5-35t12.5-32L480-424 343-287q8 15 12.5 32t4.5 35q0 58-41 99t-99 41Zm520-80q25 0 42.5-17.5T800-220q0-25-17.5-42.5T740-280q-25 0-42.5 17.5T680-220q0 25 17.5 42.5T740-160ZM480-680q25 0 42.5-17.5T540-740q0-25-17.5-42.5T480-800q-25 0-42.5 17.5T420-740q0 25 17.5 42.5T480-680ZM220-160q25 0 42.5-17.5T280-220q0-25-17.5-42.5T220-280q-25 0-42.5 17.5T160-220q0 25 17.5 42.5T220-160Z'/%3E%3C/svg%3E");
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='' viewBox='0 -960 960 960' width='' fill='%23000000'%3E%3Cpath d='M220-80q-58 0-99-41t-41-99q0-58 41-99t99-41q18 0 35 4.5t32 12.5l153-153v-110q-44-13-72-49.5T340-740q0-58 41-99t99-41q58 0 99 41t41 99q0 48-28 84.5T520-606v110l154 153q15-8 31.5-12.5T740-360q58 0 99 41t41 99q0 58-41 99t-99 41q-58 0-99-41t-41-99q0-18 4.5-35t12.5-32L480-424 343-287q8 15 12.5 32t4.5 35q0 58-41 99t-99 41Zm520-80q25 0 42.5-17.5T800-220q0-25-17.5-42.5T740-280q-25 0-42.5 17.5T680-220q0 25 17.5 42.5T740-160ZM480-680q25 0 42.5-17.5T540-740q0-25-17.5-42.5T480-800q-25 0-42.5 17.5T420-740q0 25 17.5 42.5T480-680ZM220-160q25 0 42.5-17.5T280-220q0-25-17.5-42.5T220-280q-25 0-42.5 17.5T160-220q0 25 17.5 42.5T220-160Z'/%3E%3C/svg%3E");
+    background-color: var(--kern-color-action-default, #1a3da5);
+  }
 
-.kern-icon--network_node {
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='' viewBox='0 -960 960 960' width='' fill='%23000000'%3E%3Cpath d='M220-80q-58 0-99-41t-41-99q0-58 41-99t99-41q18 0 35 4.5t32 12.5l153-153v-110q-44-13-72-49.5T340-740q0-58 41-99t99-41q58 0 99 41t41 99q0 48-28 84.5T520-606v110l154 153q15-8 31.5-12.5T740-360q58 0 99 41t41 99q0 58-41 99t-99 41q-58 0-99-41t-41-99q0-18 4.5-35t12.5-32L480-424 343-287q8 15 12.5 32t4.5 35q0 58-41 99t-99 41Zm520-80q25 0 42.5-17.5T800-220q0-25-17.5-42.5T740-280q-25 0-42.5 17.5T680-220q0 25 17.5 42.5T740-160ZM480-680q25 0 42.5-17.5T540-740q0-25-17.5-42.5T480-800q-25 0-42.5 17.5T420-740q0 25 17.5 42.5T480-680ZM220-160q25 0 42.5-17.5T280-220q0-25-17.5-42.5T220-280q-25 0-42.5 17.5T160-220q0 25 17.5 42.5T220-160Z'/%3E%3C/svg%3E");
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='' viewBox='0 -960 960 960' width='' fill='%23000000'%3E%3Cpath d='M220-80q-58 0-99-41t-41-99q0-58 41-99t99-41q18 0 35 4.5t32 12.5l153-153v-110q-44-13-72-49.5T340-740q0-58 41-99t99-41q58 0 99 41t41 99q0 48-28 84.5T520-606v110l154 153q15-8 31.5-12.5T740-360q58 0 99 41t41 99q0 58-41 99t-99 41q-58 0-99-41t-41-99q0-18 4.5-35t12.5-32L480-424 343-287q8 15 12.5 32t4.5 35q0 58-41 99t-99 41Zm520-80q25 0 42.5-17.5T800-220q0-25-17.5-42.5T740-280q-25 0-42.5 17.5T680-220q0 25 17.5 42.5T740-160ZM480-680q25 0 42.5-17.5T540-740q0-25-17.5-42.5T480-800q-25 0-42.5 17.5T420-740q0 25 17.5 42.5T480-680ZM220-160q25 0 42.5-17.5T280-220q0-25-17.5-42.5T220-280q-25 0-42.5 17.5T160-220q0 25 17.5 42.5T220-160Z'/%3E%3C/svg%3E");
-  background-color: var(--kern-color-action-default, #1a3da5);
-}
-
-.kern-alert {
-  margin-top: var(--kern-metric-space-default);
-  margin-bottom: var(--kern-metric-space-default);
-}
-
-.login {
-  padding-top: var(--kern-metric-space-default, 16px);
-}
-
-.login__container {
-  text-align: center;
-
-  .kern-subline {
-    margin-top: var(--kern-metric-space-default, 16px);
-    margin-bottom: var(--kern-metric-space-default, 16px);
+  body {
+    margin: 0;
   }
 }
-
-.login__buttons {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  padding: var(--kern-metric-space-large, 24px) 0;
-  align-items: flex-start;
-  gap: var(--kern-metric-space-default, 16px);
-  align-self: stretch;
-
-  & + .kern-divider {
-    margin-top: var(--kern-metric-space-default, 16px);
-    margin-bottom: var(--kern-metric-space-default, 16px);
-  }
-}
-
-.footer__nav {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 0 var(--kern-metric-space-default, 16px);
-  justify-content: center;
-}
-
-.footer__info {
-  margin-top: var(--kern-metric-space-default, 16px);
-  margin-bottom: var(--kern-metric-space-x-large, 32px);
-  text-align: center;
-}
-/* end index (login) page styling */
