@@ -1,12 +1,14 @@
 import { useState } from "react";
 import {
   type ActionFunctionArgs,
+  Form,
   Link,
   Outlet,
   useLoaderData,
   useNavigation,
 } from "react-router";
 import deprecatedPrototypeStyles from "~/prototype.styles.css?url";
+import { LogoutType } from "~/routes/action.logout-user";
 import { getFormDataFromRequest } from "~/services/prototype.fileUpload.server";
 import { ServicesContext } from "~/services/prototype.servicesContext.server";
 import { requireUserSession } from "~/services/prototype.session.server";
@@ -39,10 +41,19 @@ export default function Verfahren() {
     <>
       <link rel="stylesheet" href={deprecatedPrototypeStyles} />
       <h1 className="kern-heading-large">Verfahren</h1>
-      <div className="flex flex-col items-start mb-40">
-        <CreateVerfahren />
-        <ListVerfahren />
-      </div>
+      <Form method="post" action="/action/logout-user">
+        <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
+        <button type="submit" className="kern-btn kern-btn--secondary">
+          <span className="kern-icon kern-icon--close" aria-hidden />
+          <span className="kern-label">Abmelden</span>
+        </button>
+      </Form>
+      <main>
+        <div className="flex flex-col items-start mb-40">
+          <CreateVerfahren />
+          <ListVerfahren />
+        </div>
+      </main>
     </>
   );
 }
