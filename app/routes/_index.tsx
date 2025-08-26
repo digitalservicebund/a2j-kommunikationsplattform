@@ -23,7 +23,7 @@ export default function IndexPage() {
   const loginButtonLabel: string =
     environment === "development"
       ? "Login as Developer"
-      : "Anmeldung Anwaltschaft";
+      : "Anmeldung Anwaltschaft (über beA Login)";
 
   return (
     <>
@@ -70,7 +70,7 @@ export default function IndexPage() {
           </div>
           <div className="kern-alert__body">
             <p className="kern-body">
-              Die Anmeldung über das beA-Portal war nicht erfolgreich. Bitte
+              Die Anmeldung über beA-Zugangsdaten war nicht erfolgreich. Bitte
               versuchen Sie es erneut.
             </p>
           </div>
