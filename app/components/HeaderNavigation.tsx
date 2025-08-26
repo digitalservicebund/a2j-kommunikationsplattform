@@ -59,9 +59,7 @@ export default function HeaderNavigation() {
           </li>
         ))}
         <li>
-          <li>
-            <LogoutButton />
-          </li>
+          <LogoutButton />
         </li>
       </ul>
     </nav>
