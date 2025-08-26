@@ -5,7 +5,7 @@ test.describe("Kopfzeile (rendered for all pages)", () => {
     await page.goto("/");
     await expect(page.locator(".kern-kopfzeile__flagge")).toBeVisible();
     await expect(
-      page.getByText("Eine offizielle Website der Bundesrepublik Deutschland"),
+      page.getByText("Offizielle Website – Bundesrepublik Deutschland"),
     ).toBeVisible();
   });
 });
