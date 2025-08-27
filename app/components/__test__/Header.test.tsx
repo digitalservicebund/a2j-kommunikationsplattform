@@ -28,14 +28,14 @@ describe("Header", () => {
     it("should render Kopfzeile", () => {
       expect(container.querySelector(".kern-kopfzeile")).toBeInTheDocument();
     });
-    it("should not render Logo, Navigation and UserProfile", () => {
-      expect(container.querySelector(".logo")).not.toBeInTheDocument();
+    it("should not render UserProfile, Logo Navigation", () => {
+      expect(container).not.toHaveTextContent("Angemeldet als:");
       expect(
-        container.querySelector(".navigation-list"),
+        container.querySelector(".kern-icon--network_node"),
       ).not.toBeInTheDocument();
-      expect(
-        container.querySelector(".logo.kern-justify-content-end"),
-      ).not.toBeInTheDocument();
+      expect(container.querySelector("nav")).not.toBeInTheDocument();
+      expect(container.querySelector("ul")).not.toBeInTheDocument();
+      expect(container.querySelector("li")).not.toBeInTheDocument();
     });
   });
 
@@ -43,18 +43,23 @@ describe("Header", () => {
     beforeEach(() => {
       ({ container } = render(<Header userIsLoggedIn={true} />));
     });
+
     it("should render <header>", () => {
       expect(container.querySelector("header")).toBeInTheDocument();
     });
+
     it("should render Kopfzeile", () => {
       expect(container.querySelector(".kern-kopfzeile")).toBeInTheDocument();
     });
-    it("should render Logo, Navigation and UserProfile", () => {
-      expect(container.querySelector(".logo")).toBeInTheDocument();
-      expect(container.querySelector(".navigation-list")).toBeInTheDocument();
+
+    it("should render UserProfile, Logo Navigation", () => {
+      expect(container).toHaveTextContent("Angemeldet als:");
       expect(
-        container.querySelector(".logo.kern-justify-content-end"),
+        container.querySelector(".kern-icon--network_node"),
       ).toBeInTheDocument();
+      expect(container.querySelector("nav")).toBeInTheDocument();
+      expect(container.querySelector("ul")).toBeInTheDocument();
+      expect(container.querySelector("li")).toBeInTheDocument();
     });
   });
 });
