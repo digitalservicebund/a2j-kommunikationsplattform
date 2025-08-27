@@ -2,7 +2,7 @@
 
 import { render } from "@testing-library/react";
 import { beforeEach, it } from "vitest";
-import PageNavigation from "~/components/PageNavigation";
+import Header from "~/components/Header";
 
 vi.mock("react-router", async () => {
   const actual =
@@ -15,11 +15,11 @@ vi.mock("react-router", async () => {
   };
 });
 
-describe("HeaderNavigation", () => {
+describe("Navigation", () => {
   let container: HTMLElement;
 
   beforeEach(() => {
-    ({ container } = render(<PageNavigation />));
+    ({ container } = render(<Header />));
   });
 
   it("should all rows and columns", () => {
@@ -27,7 +27,7 @@ describe("HeaderNavigation", () => {
     expect(container.querySelectorAll(".flex-1-0-0").length).toBe(3);
   });
 
-  it("should render LogoHeader, HeaderNavigation and UserProfileCell", () => {
+  it("should render Logo, Navigation and UserProfile", () => {
     expect(container.querySelector(".logo")).toBeInTheDocument();
     expect(
       container.querySelector(".kern-task-list__list"),

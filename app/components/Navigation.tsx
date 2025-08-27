@@ -43,7 +43,7 @@ const navigationLinksList = [
   },
 ];
 
-export default function HeaderNavigation() {
+export default function Navigation() {
   return (
     <nav>
       <ul className="kern-task-list__list navigation-list">

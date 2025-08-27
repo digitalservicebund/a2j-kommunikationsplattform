@@ -1,9 +1,9 @@
-import PageNavigation from "~/components/PageNavigation";
+import Header from "~/components/Header";
 
 export default function VerfahrensUebersicht() {
   return (
     <div className="container">
-      <PageNavigation />
+      <Header />
       <hr className="kern-divider" aria-hidden="true" />
       {/* TODO: For future reference, add new components here  */}
       <h1 className="kern-heading-large">Verfahren</h1>

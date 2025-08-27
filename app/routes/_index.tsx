@@ -1,5 +1,5 @@
 import { Link, useLoaderData, useSearchParams } from "react-router";
-import LogoHeader from "~/components/LogoHeader";
+import Logo from "~/components/Logo";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
 import { LogoutType } from "./action.logout-user";
@@ -80,7 +80,7 @@ export default function IndexPage() {
 
       <div className="login">
         <div className="login__container">
-          <LogoHeader className="logo-narrow" />
+          <Logo className="logo-narrow" />
 
           <hr className="kern-divider" aria-hidden />
 

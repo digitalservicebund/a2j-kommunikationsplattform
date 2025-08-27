@@ -1,4 +1,4 @@
-export default function LogoHeader({ className = "" }: { className?: string }) {
+export default function Logo({ className = "" }: { className?: string }) {
   return (
     <div className={`logo ${className}`}>
       <span

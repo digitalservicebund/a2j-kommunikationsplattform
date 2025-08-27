@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 import { render } from "@testing-library/react";
 import { it } from "vitest";
-import LogoHeader from "~/components/LogoHeader";
+import Logo from "~/components/Logo";
 
-describe("LogoHeader", () => {
+describe("Logo", () => {
   it("should render the logo header", () => {
-    const { container } = render(<LogoHeader />);
+    const { container } = render(<Logo />);
     expect(
       container.querySelector(".kern-icon--network_node"),
     ).toBeInTheDocument();

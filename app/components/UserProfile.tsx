@@ -1,4 +1,4 @@
-export default function UserProfileCell() {
+export default function UserProfile() {
   return (
     <div className="logo kern-justify-content-end">
       <svg

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { render } from "@testing-library/react";
 import { it } from "vitest";
-import HeaderNavigation from "~/components/HeaderNavigation";
+import Navigation from "~/components/Navigation";
 
 vi.mock("react-router", async () => {
   const actual =
@@ -14,9 +14,9 @@ vi.mock("react-router", async () => {
   };
 });
 
-describe("HeaderNavigation", () => {
+describe("Navigation", () => {
   it("should render navigation links and a logout button", () => {
-    const { getByText, getAllByRole } = render(<HeaderNavigation />);
+    const { getByText, getAllByRole } = render(<Navigation />);
     expect(getByText("Verfahren")).toBeInTheDocument();
     expect(getByText("Mitteilungen")).toBeInTheDocument();
     expect(getByText("Kalender")).toBeInTheDocument();
