@@ -103,7 +103,7 @@ export default function IndexPage() {
             zwischen Gerichten und Verfahrensbeteiligten.
           </p>
 
-          <div className="p-kern-space-large gap-kern-space-default flex flex-row flex-wrap items-start self-stretch">
+          <div className="py-kern-space-large gap-kern-space-default flex flex-row flex-wrap items-start self-stretch">
             <Link
               to="/login"
               className="kern-btn kern-btn--block kern-btn--primary"
