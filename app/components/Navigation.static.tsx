@@ -5,12 +5,9 @@ export function LogoutButton() {
   return (
     <Form method="post" action="/action/logout-user">
       <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
-      <button type="submit" className="kern-link logout-button">
-        <span
-          className="kern-icon kern-icon--close kern-icon--default"
-          aria-hidden="true"
-        ></span>
-        <span aria-hidden="true">Abmelden</span>
+      <button type="submit" className="kern-link bg-transparent">
+        <span className="kern-icon kern-icon--close kern-icon--default"></span>
+        <span>Abmelden</span>
       </button>
     </Form>
   );
@@ -47,7 +44,7 @@ export default function Navigation() {
   return (
     <nav>
       {/* TODO: when ready, use Tailwind instead of navigation-list className */}
-      <ul className="navigation-list">
+      <ul className="gap-kern-space-large my-0 flex flex-wrap items-center justify-between pl-0">
         {navigationLinksList.map((link) => (
           <li key={link.name}>
             <a href={link.url} className="kern-link">

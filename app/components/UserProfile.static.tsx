@@ -1,6 +1,6 @@
 export default function UserProfile() {
   return (
-    <div className="logo kern-justify-content-end">
+    <div className="gap-kern-space-small flex flex-wrap items-center justify-end">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"
@@ -13,7 +13,7 @@ export default function UserProfile() {
           fill="#404565"
         />
       </svg>
-      <p className="kern-body kern-body--muted">Kim Neumann</p>
+      <p className="kern-body kern-body--muted">Angemeldet als: Kim Neumann</p>
     </div>
   );
 }

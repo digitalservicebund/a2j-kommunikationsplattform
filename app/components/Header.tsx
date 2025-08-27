@@ -13,12 +13,16 @@ export default function Header({
       <Kopfzeile />
       {userIsLoggedIn && (
         <div className="kern-container">
-          {/* TODO: when ready, use Tailwind instead of navigation-logo-row className */}
-          <div className="navigation-logo-row">
-            <Logo />
-            <Navigation />
+          <div className="gap-kern-space-small flex flex-col">
+            <UserProfile />
+            <div className="flex flex-wrap items-center justify-between">
+              <Logo />
+              <Navigation />
+            </div>
           </div>
-          <UserProfile />
+          <div className="py-kern-space-large">
+            <hr className="kern-divider" aria-hidden="true" />
+          </div>
         </div>
       )}
     </header>
