@@ -46,6 +46,7 @@ const navigationLinksList = [
 export default function Navigation() {
   return (
     <nav>
+      {/* TODO: when ready, use Tailwind instead of navigation-list className */}
       <ul className="navigation-list">
         {navigationLinksList.map((link) => (
           <li key={link.name}>

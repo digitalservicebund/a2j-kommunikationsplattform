@@ -13,8 +13,11 @@ export default function Header({
       <Kopfzeile />
       {userIsLoggedIn && (
         <div className="kern-container">
-          <Logo />
-          <Navigation />
+          {/* TODO: when ready, use Tailwind instead of navigation-logo-row className */}
+          <div className="navigation-logo-row">
+            <Logo />
+            <Navigation />
+          </div>
           <UserProfile />
         </div>
       )}
