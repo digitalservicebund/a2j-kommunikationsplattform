@@ -17,25 +17,21 @@ const navigationLinksList = [
   {
     name: "Verfahren",
     iconName: "kern-icon--home",
-    label: "Verfahren",
     url: "#",
   },
   {
     name: "Mitteilungen",
     iconName: "kern-icon--mail",
-    label: "Mitteilungen",
     url: "#",
   },
   {
     name: "Kalender",
     iconName: "kern-icon--calendar-today",
-    label: "Kalender",
     url: "#",
   },
   {
     name: "Profil",
     iconName: "kern-icon--easy-language",
-    label: "Profil",
     url: "#",
   },
 ];
@@ -52,7 +48,7 @@ export default function Navigation() {
                 className={`kern-icon ${link.iconName} kern-icon--default`}
                 aria-hidden="true"
               ></span>
-              {link.label}
+              {link.name}
             </a>
           </li>
         ))}
