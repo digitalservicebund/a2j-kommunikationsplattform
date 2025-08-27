@@ -1,4 +1,4 @@
-export default function VerfahrensUebersicht() {
+export default function Verfahren() {
   return (
     <>
       <div className="container">
