@@ -1,5 +1,5 @@
 import { Link, useLoaderData, useSearchParams } from "react-router";
-import Logo from "~/components/Logo";
+import Logo from "~/components/Logo.static";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
 import { LogoutType } from "./action.logout-user";

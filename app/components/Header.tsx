@@ -1,7 +1,7 @@
-import Kopfzeile from "~/components/Kopfzeile";
-import Logo from "~/components/Logo";
-import Navigation from "~/components/Navigation";
-import UserProfile from "~/components/UserProfile";
+import Kopfzeile from "~/components/Kopfzeile.static";
+import Logo from "~/components/Logo.static";
+import Navigation from "~/components/Navigation.static";
+import UserProfile from "~/components/UserProfile.static";
 
 export default function Header({
   userIsLoggedIn,
