@@ -28,7 +28,7 @@ fileignoreconfig:
   - filename: app/services/idle/idleTracker.tsx
     checksum: ae043afb00f26c1f61a51fc1b00804e62fa345c33a533bfa6fc8d1b6ef9090c7
   - filename: app/components/hooks/useLogoutInactiveUser.ts
-    checksum: f05c724bf3310be9ab98444c3487aa32d3d294e463511a8abc70cd358c5782fb
+    checksum: 00a47a939a699a1a65e33f6ea48735269be7be6792f506d4a59db83b46203a5b
   - filename: app/components/hooks/__test__/useLogoutInactiveUser.test.tsx
     checksum: 6e0c4394b94a9db57b5761f51d14a9ddb52364547a9697ec7046b0e6ea46377c
   - filename: doc/adr/0002-how-is-the-user-interface-built.md
