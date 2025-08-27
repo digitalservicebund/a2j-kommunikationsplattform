@@ -4,6 +4,11 @@
 body {
   margin: 0;
 }
+
+ul {
+  list-style-type: none;
+}
+
 .navigation-list {
   display: flex;
   flex-direction: row;

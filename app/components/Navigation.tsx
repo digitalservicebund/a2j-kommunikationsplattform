@@ -46,7 +46,7 @@ const navigationLinksList = [
 export default function Navigation() {
   return (
     <nav>
-      <ul className="kern-task-list__list navigation-list">
+      <ul className="navigation-list">
         {navigationLinksList.map((link) => (
           <li key={link.name}>
             <a href={link.url} className="kern-link">

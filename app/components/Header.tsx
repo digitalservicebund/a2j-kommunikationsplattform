@@ -1,25 +1,23 @@
-import Column from "~/components/Column";
+import Kopfzeile from "~/components/Kopfzeile";
 import Logo from "~/components/Logo";
 import Navigation from "~/components/Navigation";
-import Row from "~/components/Row";
 import UserProfile from "~/components/UserProfile";
 
-export default function Header() {
+export default function Header({
+  userIsLoggedIn,
+}: {
+  userIsLoggedIn: boolean;
+}) {
   return (
-    <section>
-      <Row>
-        <Column>
+    <header>
+      <Kopfzeile />
+      {userIsLoggedIn && (
+        <div className="kern-container">
           <Logo />
-        </Column>
-        <Column>
           <Navigation />
-        </Column>
-      </Row>
-      <Row>
-        <Column>
           <UserProfile />
-        </Column>
-      </Row>
-    </section>
+        </div>
+      )}
+    </header>
   );
 }
