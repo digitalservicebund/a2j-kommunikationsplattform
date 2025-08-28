@@ -40,7 +40,7 @@ export default function Navigation() {
   return (
     <nav>
       {/* TODO: when ready, use Tailwind instead of navigation-list className */}
-      <ul className="gap-kern-space-large my-0 flex flex-wrap items-center justify-between pl-0">
+      <ul className="gap-kern-space-large my-0 items-center justify-between pl-0 sm:flex sm:flex-wrap">
         {navigationLinksList.map((link) => (
           <li key={link.name}>
             <a href={link.url} className="kern-link">
