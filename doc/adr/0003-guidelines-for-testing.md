@@ -3,6 +3,7 @@
 - 2025-04-10: Drafted
 - 2025-05-15: Accepted
 - 2025-08-14: Updated
+- 2025-08-29: Updated
 
 ## Status
 
