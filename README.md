@@ -73,6 +73,7 @@ The data of `/mocks/api/**` was initialized with the help of `msw-auto-mock` and
 The application has
 
 - unit tests (using [Vitest](https://vitest.dev/))
+  - Stateless/static Components can be excluded from code coverage (SonarQube and Vitest) by using the following file naming convention: `ComponentName.static.tsx`
 - end-to-end tests (using [Playwright](https://playwright.dev/docs/intro))
 - accessibility tests (using [Playwright](https://playwright.dev/docs/intro) and [Axe](https://www.deque.com/axe/))
 
