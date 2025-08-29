@@ -42,7 +42,7 @@ fileignoreconfig:
   - filename: app/components/__test__/ContentPage.test.tsx
     checksum: a2c62ce36ce3ceea9fcc6757afc6d0d1fb5d4c8a5dbad2b5236d09bfff4e7a75
   - filename: app/components/Navigation.static.tsx
-    checksum: b602de2a2603c82bceb69a6b4245e6eb71258969b6b68f371cffb87f090439da
+    checksum: e03aa069360a0840b34d9417995905b858f07bb4df0b150cff8fbc17230b6b6b
 version: ""
 scopeconfig:
   - scope: node
