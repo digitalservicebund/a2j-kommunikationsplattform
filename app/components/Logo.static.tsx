@@ -1,8 +1,6 @@
-export default function Logo({ className = "" }: { className?: string }) {
+export default function Logo() {
   return (
-    <div
-      className={`gap-kern-space-small flex flex-row flex-wrap items-center justify-center break-all ${className}`}
-    >
+    <div className="gap-kern-space-small flex flex-row flex-wrap items-center justify-center break-all">
       <span
         className="kern-icon kern-icon--network_node kern-icon--large"
         aria-hidden

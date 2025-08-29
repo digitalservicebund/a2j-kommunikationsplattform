@@ -1,17 +1,17 @@
 import { Form } from "react-router";
 import { LogoutType } from "~/routes/action.logout-user";
 
-export function LogoutButton() {
+const LogoutButton = () => {
   return (
     <Form method="post" action="/action/logout-user">
       <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
-      <button type="submit" className="kern-link bg-transparent">
+      <button type="submit" className="kern-link cursor-pointer bg-transparent">
         <span className="kern-icon kern-icon--close kern-icon--default"></span>
         <span>Abmelden</span>
       </button>
     </Form>
   );
-}
+};
 
 const navigationLinksList = [
   {
@@ -39,7 +39,7 @@ const navigationLinksList = [
 export default function Navigation() {
   return (
     <nav>
-      <ul className="gap-kern-space-large my-0 items-center justify-between pl-0 sm:flex sm:flex-wrap">
+      <ul className="gap-kern-space-x-large my-0 list-none items-center justify-between pl-0 md:flex xl:flex-wrap">
         {navigationLinksList.map((link) => (
           <li key={link.name}>
             <a href={link.url} className="kern-link">

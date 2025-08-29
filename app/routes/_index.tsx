@@ -89,8 +89,9 @@ export default function IndexPage() {
 
       <div className="pt-kern-space-default">
         <div className="text-center">
-          <Logo className="pb-kern-space-default" />
-          <hr className="kern-divider" aria-hidden />
+          <Logo />
+
+          <hr className="kern-divider mt-kern-space-default" aria-hidden />
 
           <p className="kern-subline my-kern-space-default">
             Willkommen auf der Pilotplattform für den digitalen Austausch

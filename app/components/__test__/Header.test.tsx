@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { render } from "@testing-library/react";
-import { beforeEach, it } from "vitest";
+import { beforeEach, it, vi } from "vitest";
 import Header from "~/components/Header";
 
 vi.mock("react-router", async () => {
@@ -28,7 +28,7 @@ describe("Header", () => {
     it("should render Kopfzeile", () => {
       expect(container.querySelector(".kern-kopfzeile")).toBeInTheDocument();
     });
-    it("should not render UserProfile, Logo Navigation", () => {
+    it("should not render UserProfile, Logo and Navigation", () => {
       expect(container).not.toHaveTextContent("Angemeldet als:");
       expect(
         container.querySelector(".kern-icon--network_node"),
@@ -52,7 +52,7 @@ describe("Header", () => {
       expect(container.querySelector(".kern-kopfzeile")).toBeInTheDocument();
     });
 
-    it("should render UserProfile, Logo Navigation", () => {
+    it("should render UserProfile, Logo and Navigation", () => {
       expect(container).toHaveTextContent("Angemeldet als:");
       expect(
         container.querySelector(".kern-icon--network_node"),

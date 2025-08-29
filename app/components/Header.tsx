@@ -13,9 +13,9 @@ export default function Header({
       <Kopfzeile />
       {userIsLoggedIn && (
         <div className="kern-container">
-          <div className="gap-kern-space-small flex flex-col">
+          <div className="gap-kern-space-small pt-kern-space-large flex flex-col">
             <UserProfile />
-            <div className="flex flex-wrap items-center justify-between">
+            <div className="gap-kern-space-small flex flex-col items-center justify-between xl:flex-row">
               <Logo />
               <Navigation />
             </div>
