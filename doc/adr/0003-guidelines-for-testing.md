@@ -21,6 +21,7 @@ We need to ensure that our application is well tested so that all features work 
   - Meaning: All routes (`app/routes/**`) that are being delivered as a page to our users should be e2e tested. Routes that handle server side functionality, an API or action route for example, should be unit tested, if it makes sense.
 - **We use unit/component tests when it makes sense.**
   - This doesn't mean that no unit tests should be written at all. We can write unit tests as they are needed and as the individual contributors prefer. But we don't want a threshold for defect coverage. Example: Coverage should be greater than 80%. We can always change this if we feel it would improve our work.
+    Stateless/static Components can be excluded from code coverage (SonarQube and Vitest) by using the following file naming convention: `ComponentName.static.tsx`.
 
     However, [SonarQube](https://sonarcloud.io/project/information?id=digitalservicebund_a2j-kommunikationsplattform) is currently configured with the “Sonar Way” quality gate, which performs the following checks on every new piece of code that is committed:
 

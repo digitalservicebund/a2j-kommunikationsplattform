@@ -11,6 +11,7 @@ export default [
 
   layout("./layouts/default-layout.tsx", [
     // verfahren
+    route("verfahren", "./routes/verfahren.tsx"),
     ...prefix("prototype/verfahren", [
       index("./routes/prototype.verfahren.tsx"),
       route(":id", "./routes/prototype.verfahren.$id.tsx", {}),

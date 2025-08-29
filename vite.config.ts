@@ -42,6 +42,8 @@ export default defineConfig((config) => {
           "app/**/__test__/*.test.{ts,tsx}",
           // exclude technical prototypes (spikes) that will be removed/reworked
           "app/**/prototype.*.{ts,tsx}",
+          // exclude static files
+          "app/**/*.static.tsx",
         ],
         reporter: ["text", "lcov"],
       },

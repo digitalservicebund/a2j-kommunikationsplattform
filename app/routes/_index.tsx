@@ -1,4 +1,5 @@
 import { Link, useLoaderData, useSearchParams } from "react-router";
+import Logo from "~/components/Logo.static";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
 import { LogoutType } from "./action.logout-user";
@@ -88,15 +89,9 @@ export default function IndexPage() {
 
       <div className="pt-kern-space-default">
         <div className="text-center">
-          <div className="gap-kern-space-small pb-kern-space-default flex flex-row flex-wrap items-center justify-center break-all">
-            <span
-              className="kern-icon kern-icon--network_node kern-icon--large"
-              aria-hidden
-            />
-            <h1 className="kern-heading-large">Kommunikationsplattform</h1>
-          </div>
+          <Logo />
 
-          <hr className="kern-divider" aria-hidden />
+          <hr className="kern-divider mt-kern-space-default" aria-hidden />
 
           <p className="kern-subline my-kern-space-default">
             Willkommen auf der Pilotplattform für den digitalen Austausch

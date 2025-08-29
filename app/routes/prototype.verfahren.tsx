@@ -8,10 +8,10 @@ import {
   useNavigation,
 } from "react-router";
 import deprecatedPrototypeStyles from "~/prototype.styles.css?url";
+import { LogoutType } from "~/routes/action.logout-user";
 import { getFormDataFromRequest } from "~/services/prototype.fileUpload.server";
 import { ServicesContext } from "~/services/prototype.servicesContext.server";
 import { requireUserSession } from "~/services/prototype.session.server";
-import { LogoutType } from "./action.logout-user";
 
 export async function loader({ request }: { request: Request }) {
   const { demoMode } = await requireUserSession(request);
@@ -41,7 +41,6 @@ export default function Verfahren() {
     <>
       <link rel="stylesheet" href={deprecatedPrototypeStyles} />
       <h1 className="kern-heading-large">Verfahren</h1>
-
       <Form method="post" action="/action/logout-user">
         <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
         <button type="submit" className="kern-btn kern-btn--secondary">
@@ -49,7 +48,6 @@ export default function Verfahren() {
           <span className="kern-label">Abmelden</span>
         </button>
       </Form>
-
       <main>
         <div className="mb-40 flex flex-col items-start">
           <CreateVerfahren />
