@@ -15,7 +15,22 @@ if (SENTRY_DSN !== undefined) {
     dsn: config().SENTRY_DSN,
     integrations: [Sentry.reactRouterTracingIntegration()],
 
-    tracesSampleRate: 0.1, //  Capture 10% of the transactions
+    // @TODO: https://digitalservicebund.atlassian.net/browse/KOMMPLA-112
+    //
+    // 09012025: Another try to reduce the Traces samples within Sentry.
+    //
+    // Capture 0 percent of transactions originating from kube-probe, e.g. /readyz calls by K8s
+    tracesSampler: (samplingContext) => {
+      const userAgent =
+        samplingContext.request?.headers["user-agent"] ||
+        samplingContext.request?.headers["User-Agent"];
+      // Exclude traces if user agent is kube-probe
+      if (userAgent && userAgent.includes("kube-probe")) {
+        return 0.0;
+      }
+      // Default sample rate for all other traces
+      return 0.1; // Capture 10% of the transactions
+    },
 
     tracePropagationTargets: [
       /^\//, //  This enables trace propagation for all relative paths on the same domain.
