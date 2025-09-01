@@ -1,23 +1,23 @@
+import { LoaderFunctionArgs, useLoaderData } from "react-router";
 import { Breadcrumb } from "~/components/Breadcrumb";
-import { Breadcrumbs } from "~/components/Breadcrumbs";
+
+export const loader = async ({ params }: LoaderFunctionArgs) => {
+  return { id: params.id ?? "unknown" };
+};
 
 export const handle = {
-  breadcrumb: (match: { params: { id?: string } }) => {
-    console.log("match", match.params.id);
+  breadcrumb: ({ params }: { params: Request<string, string> }) => {
     return (
-      <Breadcrumb
-        title="verfahrensdetails"
-        url={`/verfahren/${match.params.id}`}
-      />
+      <Breadcrumb title="verfahrensdetails" url={`/verfahren/${params.id}`} />
     );
   },
 };
 
 export default function VerfahrenDetails() {
+  const { id } = useLoaderData<typeof loader>();
   return (
     <div className="container">
-      <Breadcrumbs />
-      <h1 className="kern-heading-large">Verfahrendetails</h1>
+      <h1 className="kern-heading-large">Verfahrendetails for {id}</h1>
     </div>
   );
 }

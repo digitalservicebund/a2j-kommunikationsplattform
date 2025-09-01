@@ -1,36 +1,21 @@
-import React from "react";
-import type { UIMatch } from "react-router";
-import { useMatches } from "react-router";
-import { Breadcrumb } from "~/components/Breadcrumb";
+import { UIMatch, useMatches } from "react-router";
 
-export type BreadcrumbsHandle = {
-  breadcrumb: (match: UIMatch) => React.ReactNode;
-};
+type BreadcrumbMatch = UIMatch<
+  Record<string, unknown>,
+  { breadcrumb: (data?: unknown) => JSX.Element }
+>;
 export const Breadcrumbs = () => {
-  const matches = useMatches();
+  const matches = useMatches() as BreadcrumbMatch[];
 
-  const crumbs = matches
-    .filter((match) => Boolean((match.handle as BreadcrumbsHandle)?.breadcrumb))
-    .map((match) => ({
-      id: match.id,
-      breadcrumb: (match.handle as BreadcrumbsHandle).breadcrumb(match),
-    }));
+  console.log("matches", matches);
 
-  const items = [
-    {
-      id: "verfahren",
-      breadcrumb: <Breadcrumb title="verfahren" url="/verfahren" />,
-    },
-    ...crumbs,
-  ];
+  const crumbs = matches.filter((match) => match.handle?.breadcrumb);
 
   return (
-    <nav aria-label="Breadcrumb">
+    <nav aria-label="Breadcrumb" className="kern-container">
       <ul className="m-0 flex list-none space-x-2 p-0">
-        {items.map((item) => (
-          <li key={item.id} className="flex items-center">
-            {item.breadcrumb}
-          </li>
+        {crumbs.map((match) => (
+          <li key={match.id}>{match.handle.breadcrumb(match)}</li>
         ))}
       </ul>
     </nav>
