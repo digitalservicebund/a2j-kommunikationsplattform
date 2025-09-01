@@ -32,7 +32,6 @@ export default defineConfig((config) => {
         exclude: [
           "app/entry.client.tsx",
           "app/entry.server.tsx",
-          "app/instrument.server.mjs",
           "app/root.tsx",
           // exclude routes (pages) - we test them via e2e tests, see /tests/e2e/**
           "app/routes/**",

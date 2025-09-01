@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
-    "dev": "NODE_OPTIONS='--import ./app/instrument.server.mjs' node ./server.js",
-    "start": "cross-env NODE_ENV=production NODE_OPTIONS='--import ./app/instrument.server.mjs' node ./server.js",
+    "dev": "node ./server.js",
+    "start": "cross-env NODE_ENV=production node ./server.js",
     "typecheck": "react-router typegen && tsc",
     "test": "vitest run",
     "test:watch": "vitest",
