@@ -15,7 +15,7 @@ export const Breadcrumb = ({ title, url }: BreadcrumbProps) => {
         className={`kern-icon ${icon} kern-icon--default`}
         aria-hidden="true"
       ></span>
-      Verfahren
+      <span className="capitalize">{title}</span>
     </a>
   );
 };

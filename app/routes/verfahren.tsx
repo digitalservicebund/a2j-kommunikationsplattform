@@ -1,13 +1,10 @@
-import { Breadcrumb } from "~/components/Breadcrumb";
+import { Outlet } from "react-router";
 import { Breadcrumbs } from "~/components/Breadcrumbs";
-
-export const handle = {
-  breadcrumb: () => <Breadcrumb title="verfahren" url="/verfahren" />,
-};
 
 export default function Verfahren() {
   return (
     <>
+      <Outlet />
       <div className="container">
         <Breadcrumbs />
         {/* TODO: For future reference, add new components here  */}
