@@ -10,7 +10,6 @@ import { config } from "./config/config";
 
 const { SENTRY_DSN } = config();
 
-// @TODO: clean up https://digitalservicebund.atlassian.net/browse/KOMMPLA-112
 if (SENTRY_DSN !== undefined) {
   Sentry.init({
     dsn: config().SENTRY_DSN,
@@ -24,24 +23,7 @@ if (SENTRY_DSN !== undefined) {
 
     integrations: [Sentry.reactRouterTracingIntegration()],
 
-    /*
-    // Can be added, if necessary, docs:
-    // https://docs.sentry.io/platforms/javascript/tracing/configure-sampling/#sampling-function-tracessampler
-    // Capture 0 percent of transactions originating from kube-probe, e.g. /readyz calls by K8s
-    tracesSampler: (samplingContext) => {
-      const userAgent =
-        samplingContext.request?.headers["user-agent"] ||
-        samplingContext.request?.headers["User-Agent"];
-      // Exclude traces if user agent is kube-probe
-      if (userAgent && userAgent.includes("kube-probe")) {
-        return 0.0;
-      }
-      // Default sample rate for all other traces
-      return 0.1; // Capture 10% of the transactions
-    },
-    */
-
-    // Set `tracePropagationTargets` to declare which URL(s) should have trace propagation enabled
+    // set `tracePropagationTargets` to declare which URL(s) should have trace propagation enabled
     tracePropagationTargets: [/^\//, /^https:\/\/kompla\.sinc\.de\//],
   });
 }
