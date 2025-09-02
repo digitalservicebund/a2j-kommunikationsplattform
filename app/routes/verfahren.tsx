@@ -1,20 +1,20 @@
 import { Outlet } from "react-router";
-import { Breadcrumb } from "~/components/Breadcrumb";
 
 export const loader = async () => {
-  return null; // No data needed, but ensures the route is fully resolved
+  return null;
 };
 
 export const handle = {
-  breadcrumb: () => {
-    return <Breadcrumb title="verfahren" url="/verfahren" />;
+  breadcrumb: {
+    title: "Verfahren",
+    url: "/verfahren",
   },
 };
 
 export default function Verfahren() {
   return (
     <>
-      <div className="container">
+      <div>
         {/* TODO: For future reference, add new components here  */}
         <h1 className="kern-heading-large">Verfahren</h1>
         <hr className="kern-divider" aria-hidden="true" />

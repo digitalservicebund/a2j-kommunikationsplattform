@@ -1,5 +1,4 @@
-import { useLoaderData } from "react-router";
-import { Breadcrumb } from "~/components/Breadcrumb";
+import { LoaderFunctionArgs, useLoaderData } from "react-router";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { id, dokumentId } = params;
@@ -7,13 +6,10 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 };
 
 export const handle = {
-  breadcrumb: ({ params }) => {
-    return (
-      <Breadcrumb
-        title="dateiansicht"
-        url={`/verfahren/${params.id}/dokument/${params.dokumentId}`}
-      />
-    );
+  breadcrumb: {
+    title: "Dateiansicht",
+    url: (params: Record<string, string>) =>
+      `/verfahren/${params?.id}/dokument/${params?.dokumentId}`,
   },
 };
 
