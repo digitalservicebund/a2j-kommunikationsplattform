@@ -2,19 +2,19 @@ import { clsx } from "clsx";
 import { Link } from "react-router";
 
 export type VerfahrenTileProps = {
-  update?: string;
-  abgeschlossen?: boolean;
-  detailsHref: string;
-  urteilsHref?: string;
-  mandantin?: string;
-  gegenpartei?: string;
-  vertretung?: string;
-  geschaeftszeichen?: string;
-  gericht?: string;
-  aktenzeichen?: string;
-  verfahrensstand?: string;
-  rechtsgebiet?: string;
-  sachverhalt?: string;
+  readonly update?: string;
+  readonly abgeschlossen?: boolean;
+  readonly detailsHref: string;
+  readonly urteilsHref?: string;
+  readonly mandantin?: string;
+  readonly gegenpartei?: string;
+  readonly vertretung?: string;
+  readonly geschaeftszeichen?: string;
+  readonly gericht?: string;
+  readonly aktenzeichen?: string;
+  readonly verfahrensstand?: string;
+  readonly rechtsgebiet?: string;
+  readonly sachverhalt?: string;
 };
 
 function VerfahrenTileDataItem({
