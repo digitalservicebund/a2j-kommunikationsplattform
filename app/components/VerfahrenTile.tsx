@@ -22,9 +22,9 @@ function VerfahrenTileDataItem({
   value,
   abgeschlossen,
 }: {
-  label: string;
-  value: string;
-  abgeschlossen?: boolean;
+  readonly label: string;
+  readonly value: string;
+  readonly abgeschlossen?: boolean;
 }) {
   const valueCssClasses = clsx("kern-label m-0", {
     "text-kern-layout-text-muted": abgeschlossen,
