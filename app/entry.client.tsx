@@ -13,14 +13,18 @@ const { SENTRY_DSN } = config();
 if (SENTRY_DSN !== undefined) {
   Sentry.init({
     dsn: config().SENTRY_DSN,
+
+    // send all errors
+    sampleRate: 1.0,
+    // aiming for for 100 transactions/day (check sentry stats)
+    tracesSampleRate: 0.002,
+    // enabling this would enable automatic IP address collection on Sentry events
+    sendDefaultPii: false,
+
     integrations: [Sentry.reactRouterTracingIntegration()],
 
-    tracesSampleRate: 0.1, //  Capture 10% of the transactions
-
-    tracePropagationTargets: [
-      /^\//, //  This enables trace propagation for all relative paths on the same domain.
-      /^https:\/\/kompla\.sinc\.de\//,
-    ],
+    // set `tracePropagationTargets` to declare which URL(s) should have trace propagation enabled
+    tracePropagationTargets: [/^\//, /^https:\/\/kompla\.sinc\.de\//],
   });
 }
 
