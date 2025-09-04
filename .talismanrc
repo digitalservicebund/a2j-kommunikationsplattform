@@ -47,6 +47,8 @@ fileignoreconfig:
     checksum: 3425e203fd2622387d8ddef5570b2e12ea394d8034475c33fa91abd262457f53
   - filename: app/routes/verfahren/_index.tsx
     checksum: 6b19be5fdbbe48245dac4d21333788f639f675856fddaf950d2624129b99bc43
+  - filename: app/components/Breadcrumbs.tsx
+    checksum: de8b6d5a0e37a75c7696fa45c86bd27f0311d2a17db2d011eddfffbc26193e31
 version: ""
 scopeconfig:
   - scope: node
