@@ -1,21 +1,23 @@
 import { UIMatch, useMatches } from "react-router";
 
-export type BreadcrumbTitle = "verfahren" | "verfahrendetails" | "dateiansicht";
+export type BreadcrumbTitle =
+  | "Verfahrensübersicht"
+  | "verfahrendetails"
+  | "dateiansicht";
 
 export type MatchHandle = {
-  breadcrumb?: (match: { params: Record<string, string> }) => {
-    title: string;
-    url: string;
-    icon?: string;
-  };
+  breadcrumb: BreadcrumbMeta;
 };
 
-export type BreadcrumbItem = {
-  id: string;
+export type BreadcrumbMeta = {
   title: BreadcrumbTitle;
+  icon?: string;
+};
+
+export type BreadcrumbItem = BreadcrumbMeta & {
   url: string;
-  icon: string;
-  disabled: boolean;
+  id: string;
+  disabled?: boolean;
 };
 
 export type CustomUIMatch = UIMatch & {
@@ -25,23 +27,22 @@ export type CustomUIMatch = UIMatch & {
 export const Breadcrumbs = () => {
   const matches = useMatches() as CustomUIMatch[];
 
-  const items = matches
-    .filter((match) => match.handle?.breadcrumb) // Ensure handle and breadcrumb exist
-    .map((match) => {
-      const breadcrumb = match.handle?.breadcrumb?.({
-        params: match.params as Record<string, string>,
-      }) || { title: "", url: "" };
+  const withCrumbs: CustomUIMatch[] = matches
+    .filter((match) => match.handle?.breadcrumb as BreadcrumbMeta)
+    .filter(Boolean);
 
-      const lastItem = match.id === matches[matches.length - 1].id;
+  const items: BreadcrumbItem[] = withCrumbs.map((match: CustomUIMatch) => {
+    const { title, icon } = match?.handle?.breadcrumb as BreadcrumbMeta;
+    return {
+      title,
+      icon: icon || "kern-icon--keyboard-double-arrow-right",
+      url: match.pathname,
+      id: match.id,
+      disabled: match.id === withCrumbs[withCrumbs.length - 1].id,
+    };
+  });
 
-      return {
-        id: match.id,
-        title: breadcrumb.title as BreadcrumbTitle,
-        url: breadcrumb.url,
-        icon: breadcrumb.icon || "kern-icon--keyboard-double-arrow-right",
-        disabled: lastItem,
-      } as BreadcrumbItem;
-    });
+  console.log("withCrumbs", items);
 
   return (
     <nav aria-label="Breadcrumb" className="kern-container">

@@ -11,16 +11,13 @@ export default [
 
   layout("./layouts/default-layout.tsx", [
     // verfahren
-    route("verfahren", "./routes/verfahren.tsx", [
-      //index page: /verfahren
-      route("", "./routes/verfahren._index.tsx"),
-      // detail page: /verfahren/:id
-      route(":id", "./routes/verfahren.$id.tsx", [
-        //index page: /verfahren/:id
-        route("", "./routes/verfahren.$id._index.tsx"),
+    route("verfahren", "./routes/verfahren/_layout.tsx", [
+      index("./routes/verfahren/_index.tsx"),
+      route(":id", "./routes/verfahren/$id/_layout.tsx", [
+        index("./routes/verfahren/$id/_index.tsx"),
         route(
           "dokument/:dokumentId",
-          "./routes/verfahren.$id.dokument.$dokumentId.tsx",
+          "./routes/verfahren/$id/dokument/$dokumentId.tsx",
         ),
       ]),
     ]),

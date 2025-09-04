@@ -1,15 +1,15 @@
 import { LoaderFunctionArgs, useLoaderData } from "react-router";
+import { MatchHandle } from "~/components/Breadcrumbs";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { id, dokumentId } = params;
   return { id, dokumentId };
 };
 
-export const handle = {
-  breadcrumb: ({ params }: LoaderFunctionArgs) => ({
-    title: "Dateiansicht",
-    url: `/verfahren/${params?.id}/dokument/${params?.dokumentId}`,
-  }),
+export const handle: MatchHandle = {
+  breadcrumb: {
+    title: "dateiansicht",
+  },
 };
 
 export default function Dateiansicht() {

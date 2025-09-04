@@ -4,7 +4,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   return { id: params.id || "unknown" };
 };
 
-export default function Verfahrendetails_index() {
+export default function Verfahrendetails() {
   const { id } = useLoaderData<typeof loader>();
   return (
     <div>
