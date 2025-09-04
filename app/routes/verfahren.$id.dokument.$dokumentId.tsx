@@ -6,11 +6,10 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 };
 
 export const handle = {
-  breadcrumb: {
+  breadcrumb: ({ params }: LoaderFunctionArgs) => ({
     title: "Dateiansicht",
-    url: (params: Record<string, string>) =>
-      `/verfahren/${params?.id}/dokument/${params?.dokumentId}`,
-  },
+    url: `/verfahren/${params?.id}/dokument/${params?.dokumentId}`,
+  }),
 };
 
 export default function Dateiansicht() {

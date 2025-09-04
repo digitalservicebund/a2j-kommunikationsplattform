@@ -5,10 +5,11 @@ export const loader = async () => {
 };
 
 export const handle = {
-  breadcrumb: {
+  breadcrumb: () => ({
     title: "Verfahren",
     url: "/verfahren",
-  },
+    icon: "kern-icon--icon--storage",
+  }),
 };
 
 export default function Verfahren() {

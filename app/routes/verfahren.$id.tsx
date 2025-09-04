@@ -1,14 +1,14 @@
 import { LoaderFunctionArgs, useLoaderData } from "react-router";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  return { id: params.id ?? "unknown" };
+  return { id: params.id || "unknown" };
 };
 
 export const handle = {
-  breadcrumb: {
+  breadcrumb: ({ params }: LoaderFunctionArgs) => ({
     title: "Verfahrendetails",
-    url: (params: Record<string, string>) => `/verfahren/${params?.id}`,
-  },
+    url: `/verfahren/${params.id}`,
+  }),
 };
 
 export default function VerfahrenDetails() {
