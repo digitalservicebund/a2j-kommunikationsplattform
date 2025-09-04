@@ -15,7 +15,7 @@ export const handle = {
 export default function Dateiansicht() {
   const { id, dokumentId } = useLoaderData<typeof loader>();
   return (
-    <div className="kern-container">
+    <div>
       <h1 className="kern-heading-large">
         Dateiansicht for Verfahren {id} , Document {dokumentId}
       </h1>

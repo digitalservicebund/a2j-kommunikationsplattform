@@ -12,7 +12,12 @@ export default [
   layout("./layouts/default-layout.tsx", [
     // verfahren
     route("verfahren", "./routes/verfahren.tsx", [
+      //index page: /verfahren
+      route("", "./routes/verfahren._index.tsx"),
+      // detail page: /verfahren/:id
       route(":id", "./routes/verfahren.$id.tsx", [
+        //index page: /verfahren/:id
+        route("", "./routes/verfahren.$id._index.tsx"),
         route(
           "dokument/:dokumentId",
           "./routes/verfahren.$id.dokument.$dokumentId.tsx",

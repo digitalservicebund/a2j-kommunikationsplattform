@@ -1,8 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-
-export const loader = async ({ params }: LoaderFunctionArgs) => {
-  return { id: params.id || "unknown" };
-};
+import { LoaderFunctionArgs, Outlet } from "react-router";
 
 export const handle = {
   breadcrumb: ({ params }: LoaderFunctionArgs) => ({
@@ -12,10 +8,5 @@ export const handle = {
 };
 
 export default function VerfahrenDetails() {
-  const { id } = useLoaderData<typeof loader>();
-  return (
-    <div>
-      <h1 className="kern-heading-large">Verfahrendetails for {id}</h1>
-    </div>
-  );
+  return <Outlet />;
 }
