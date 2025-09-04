@@ -42,8 +42,6 @@ export const Breadcrumbs = () => {
     };
   });
 
-  console.log("withCrumbs", items);
-
   return (
     <nav aria-label="Breadcrumb" className="kern-container">
       <ul className="m-0 flex list-none space-x-2 p-0">
