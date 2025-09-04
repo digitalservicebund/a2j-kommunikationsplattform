@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { beforeEach, it, vi } from "vitest";
+import { beforeEach, it, Mock, vi } from "vitest";
 
 vi.mock("react-router", async () => {
   const actual = await vi.importActual("react-router");
@@ -13,7 +13,7 @@ import { render, within } from "@testing-library/react";
 import { useMatches } from "react-router";
 import { Breadcrumbs, CustomUIMatch } from "~/components/Breadcrumbs";
 
-const mockedUseMatches = useMatches as unknown as vi.Mock;
+const mockedUseMatches = useMatches as unknown as Mock;
 
 const match = (partial: Partial<CustomUIMatch>): CustomUIMatch => {
   return {
@@ -34,7 +34,7 @@ describe("Breadcrumbs", () => {
       match({ id: "root", pathname: "/verfahren" }),
     ]);
     render(<Breadcrumbs />);
-    const nav = document.querySelector("nav");
+    const nav = document.querySelector("nav") as HTMLElement;
     expect(within(nav).queryAllByRole("listitem")).toHaveLength(0);
   });
   it("should render breadcrumbs when there are matches with a breadcrumb handle (in order)", () => {
@@ -56,7 +56,7 @@ describe("Breadcrumbs", () => {
       }),
     ]);
     render(<Breadcrumbs />);
-    const nav = document.querySelector("nav");
+    const nav = document.querySelector("nav") as HTMLElement;
     const items = within(nav).getAllByRole("listitem");
     expect(items).toHaveLength(3);
     expect(items[0]).toHaveTextContent("Verfahrensübersicht");
@@ -80,7 +80,7 @@ describe("Breadcrumbs", () => {
       }),
     ]);
     render(<Breadcrumbs />);
-    const nav = document.querySelector("nav");
+    const nav = document.querySelector("nav") as HTMLElement;
     const items = within(nav).getAllByRole("listitem");
     expect(items).toHaveLength(2);
     expect(
@@ -102,7 +102,7 @@ describe("Breadcrumbs", () => {
       }),
     ]);
     render(<Breadcrumbs />);
-    const nav = document.querySelector("nav");
+    const nav = document.querySelector("nav") as HTMLElement;
     const items = within(nav).getAllByRole("listitem");
     expect(items).toHaveLength(2);
     expect(items[0].querySelector("a")).toBeInTheDocument();
@@ -119,7 +119,7 @@ describe("Breadcrumbs", () => {
       match({ id: "some/other/match", pathname: "/some/other/match" }),
     ]);
     render(<Breadcrumbs />);
-    const nav = document.querySelector("nav");
+    const nav = document.querySelector("nav") as HTMLElement;
     const items = within(nav).getAllByRole("listitem");
     expect(items).toHaveLength(1);
     expect(items[0]).toHaveTextContent("verfahrendetails");
