@@ -3,7 +3,7 @@ import { MatchHandle } from "~/components/Breadcrumbs";
 
 export const handle: MatchHandle = {
   breadcrumb: {
-    title: "verfahrendetails",
+    title: "Verfahrendetails",
   },
 };
 

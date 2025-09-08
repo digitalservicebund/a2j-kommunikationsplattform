@@ -1,16 +1,11 @@
 import { UIMatch, useMatches } from "react-router";
 
-export type BreadcrumbTitle =
-  | "Verfahrensübersicht"
-  | "verfahrendetails"
-  | "dateiansicht";
-
 export type MatchHandle = {
   breadcrumb: BreadcrumbMeta;
 };
 
 export type BreadcrumbMeta = {
-  title: BreadcrumbTitle;
+  title: string;
   icon?: string;
 };
 
@@ -72,14 +67,14 @@ const Breadcrumb = ({
           className={`kern-icon ${icon} kern-icon--default`}
           aria-hidden="true"
         ></span>
-        <span className="capitalize">{title}</span>
+        <span>{title}</span>
       </span>
     );
   }
   return (
     <a href={url} className="kern-link">
       <span className={`kern-icon ${icon}`} aria-hidden="true"></span>
-      <span className="capitalize">{title}</span>
+      <span>{title}</span>
     </a>
   );
 };

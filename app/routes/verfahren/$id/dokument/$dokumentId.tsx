@@ -8,7 +8,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
 export const handle: MatchHandle = {
   breadcrumb: {
-    title: "dateiansicht",
+    title: "Dateiansicht",
   },
 };
 
