@@ -15,6 +15,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "react-router";
+import { Breadcrumbs } from "~/components/Breadcrumbs";
 import Header from "~/components/Header";
 import type { Route } from "./+types/root";
 import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
@@ -86,6 +87,7 @@ export default function App() {
 
   return (
     <LogoutInactiveUserWrapper handleInactivity={userIsLoggedIn}>
+      <Breadcrumbs />
       <Outlet />
     </LogoutInactiveUserWrapper>
   );
