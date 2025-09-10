@@ -11,9 +11,6 @@ const dummyVerfahrenData = [
     geschaeftszeichen: "C173 04/2025",
     gericht: "Amtsgericht Spandau",
     aktenzeichen: "42C8372/25",
-    verfahrensstand: "Rechtshängig",
-    rechtsgebiet: "Mietsachen",
-    sachverhalt: "Räumungsklage",
   },
   {
     id: "f81d4fae-7dec-11d0-a765-00a0c91e6bf4",
@@ -28,9 +25,6 @@ const dummyVerfahrenData = [
     geschaeftszeichen: "C023 03/2025",
     gericht: "Amtsgericht Spandau",
     aktenzeichen: "42C8372/25",
-    verfahrensstand: "Rechtshängig",
-    rechtsgebiet: "Vertragssachen",
-    sachverhalt: "Zahlungsklage",
   },
   {
     id: "g81d4fae-7dec-11d0-a765-00a0c91e6bf4",
@@ -42,9 +36,6 @@ const dummyVerfahrenData = [
     geschaeftszeichen: "C341 03/2025",
     gericht: "Amtsgericht Schöneberg",
     aktenzeichen: "43C6487/25",
-    verfahrensstand: "Anhängig",
-    rechtsgebiet: "Vertragssachen",
-    sachverhalt: "Zahlungsklage",
   },
   {
     id: "h81d4fae-7dec-11d0-a765-00a0c91e6bf4",
@@ -57,9 +48,6 @@ const dummyVerfahrenData = [
     geschaeftszeichen: "C5947 12/2024",
     gericht: "Amtsgericht Kreuzberg",
     aktenzeichen: "548C425/24",
-    verfahrensstand: "Erkenntnisverfahren abgeschlossen",
-    rechtsgebiet: "Vertragsrecht",
-    sachverhalt: "Vertragsaufhebungsklage",
   },
 ];
 
