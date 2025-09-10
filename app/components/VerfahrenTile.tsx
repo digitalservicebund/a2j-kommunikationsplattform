@@ -12,9 +12,6 @@ export type VerfahrenTileProps = {
   readonly geschaeftszeichen?: string;
   readonly gericht?: string;
   readonly aktenzeichen?: string;
-  readonly verfahrensstand?: string;
-  readonly rechtsgebiet?: string;
-  readonly sachverhalt?: string;
 };
 
 function VerfahrenTileDataItem({
@@ -48,9 +45,6 @@ export default function VerfahrenTile({
   geschaeftszeichen = "nicht verfügbar",
   gericht = "nicht verfügbar",
   aktenzeichen = "nicht verfügbar",
-  verfahrensstand = "nicht verfügbar",
-  rechtsgebiet = "nicht verfügbar",
-  sachverhalt = "nicht verfügbar",
 }: VerfahrenTileProps) {
   const cssClasses = clsx(
     "relative",
@@ -104,21 +98,6 @@ export default function VerfahrenTile({
         <VerfahrenTileDataItem
           label="Aktenzeichen des Gerichts"
           value={aktenzeichen}
-          abgeschlossen={abgeschlossen}
-        />
-        <VerfahrenTileDataItem
-          label="Verfahrensstand"
-          value={verfahrensstand}
-          abgeschlossen={abgeschlossen}
-        />
-        <VerfahrenTileDataItem
-          label="Rechtsgebiet"
-          value={rechtsgebiet}
-          abgeschlossen={abgeschlossen}
-        />
-        <VerfahrenTileDataItem
-          label="Sachverhalt"
-          value={sachverhalt}
           abgeschlossen={abgeschlossen}
         />
       </dl>
