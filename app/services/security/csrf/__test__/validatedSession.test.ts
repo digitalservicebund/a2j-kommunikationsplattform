@@ -1,5 +1,5 @@
 import { createSession, type Session } from "react-router";
-import { mainSessionFromCookieHeader } from "~/services/session.server";
+import { getSession } from "~/services/prototype.session.server";
 import { CSRFKey } from "../csrfKey";
 import {
   ERROR_MESSAGE_TOKEN_FORM,
@@ -9,10 +9,10 @@ import {
   validatedSession,
 } from "../validatedSession.server";
 
-vi.mock("~/services/session.server");
+vi.mock("~/services/prototype.session.server");
 
 const mockMainSessionFromCookieHeader = (sessionMocked: Session) => {
-  vi.mocked(mainSessionFromCookieHeader).mockResolvedValue(sessionMocked);
+  vi.mocked(getSession).mockResolvedValue(sessionMocked);
 };
 
 describe("validatedSession", () => {

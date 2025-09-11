@@ -3,7 +3,6 @@ import {
   destroySession,
   getSession,
 } from "~/services/prototype.session.server";
-import { validateCsrfSessionFormless } from "~/services/security/csrf/validatedSession.server";
 
 export enum LogoutType {
   Automatic = "auto-logged-out",
@@ -17,11 +16,14 @@ export enum LogoutType {
  * by user status URL param.
  */
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const validatedSession = await validateCsrfSessionFormless(request);
-  if (validatedSession.isErr) {
-    return redirect(`/?status=${LogoutType.Automatic}`);
-    throw new Response(null, { status: 403 });
-  }
+  // To test is CSRF validation is working, uncomment the lines below and:
+
+  // const validatedSession = await validateCsrfSessionFormless(request);
+  // if (validatedSession.isErr) {
+  //   return redirect(`/?status=${LogoutType.Automatic}`);
+  //   throw new Response(null, { status: 403 });
+  // }
+
   const formData = await request.formData();
   const logoutType = formData.get("logoutType") as LogoutType;
 

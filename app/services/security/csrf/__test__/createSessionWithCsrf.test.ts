@@ -1,11 +1,11 @@
 import { randomBytes } from "node:crypto";
 import { createSession } from "react-router";
-import { mainSessionFromCookieHeader } from "~/services/session.server";
+import { getSession } from "~/services/prototype.session.server";
 import { createSessionWithCsrf } from "../createSessionWithCsrf.server";
 import { csrfCountMax, CSRFKey } from "../csrfKey";
 import { getCSRFFromSession } from "../getCSRFFromSession.server";
 
-vi.mock("~/services/session.server");
+vi.mock("~/services/prototype.session.server");
 vi.mock("../getCSRFFromSession.server");
 vi.mock("node:crypto");
 
@@ -17,13 +17,13 @@ describe("createSessionWithCsrf", () => {
     const mockSession = createSession();
 
     vi.mocked(randomBytes).mockImplementation(() => mockCsrfToken);
-    vi.mocked(mainSessionFromCookieHeader).mockResolvedValue(mockSession);
+    vi.mocked(getSession).mockResolvedValue(mockSession);
     vi.mocked(getCSRFFromSession).mockReturnValue([]);
 
     const { session, csrf } = await createSessionWithCsrf(mockCookieHeader);
 
     expect(csrf).toBe(mockCsrfToken);
-    expect(mainSessionFromCookieHeader).toHaveBeenCalledWith(mockCookieHeader);
+    expect(getSession).toHaveBeenCalledWith(mockCookieHeader);
     expect(session.get(CSRFKey)).toContain(mockCsrfToken);
   });
 
@@ -32,7 +32,7 @@ describe("createSessionWithCsrf", () => {
     const mockSession = createSession();
 
     vi.mocked(randomBytes).mockImplementation(() => newCsrfToken);
-    vi.mocked(mainSessionFromCookieHeader).mockResolvedValue(mockSession);
+    vi.mocked(getSession).mockResolvedValue(mockSession);
     const mockExistingCSRFs = Array(csrfCountMax).fill("oldToken");
     vi.mocked(getCSRFFromSession).mockReturnValue(mockExistingCSRFs);
 
