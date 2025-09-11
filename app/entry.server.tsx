@@ -123,8 +123,16 @@ function handleBrowserRequest(
       }),
     );
     const { pipe, abort } = renderToPipeableStream(
-      <ServerRouter context={routerContext} url={request.url} />,
+      <NonceContext.Provider value={cspNonce}>
+        <ServerRouter
+          context={routerContext}
+          url={request.url}
+          nonce={cspNonce}
+        />
+        ,
+      </NonceContext.Provider>,
       {
+        nonce: cspNonce,
         onShellReady() {
           shellRendered = true;
           const body = new PassThrough();
