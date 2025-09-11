@@ -17,10 +17,14 @@ import { generateNonce } from "~/services/security/nonce.server";
 
 import { config } from "~/config/config";
 import { getCspHeader } from "~/services/security/cspHeader.server";
+import { originFromUrlString } from "~/util/originFromUrlString";
 import { NonceContext } from "./services/security/nonce";
 
 // Reject/cancel all pending promises after 5 seconds
 export const streamTimeout = 5000;
+const CONNECT_SOURCES = [originFromUrlString(config().SENTRY_DSN)].filter(
+  (origin) => origin !== undefined,
+);
 
 export const handleError: HandleErrorFunction = (error, { request }) => {
   // React Router may abort some interrupted requests, report those
@@ -120,6 +124,7 @@ function handleBrowserRequest(
       getCspHeader({
         nonce: cspNonce,
         environment: config().ENVIRONMENT,
+        additionalConnectSrc: CONNECT_SOURCES,
       }),
     );
     const { pipe, abort } = renderToPipeableStream(

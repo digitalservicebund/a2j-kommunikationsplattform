@@ -1,6 +1,10 @@
 import { serverConfig } from "~/config/config.server";
 
-export const getCspHeader = (args: { nonce: string; environment: string }) => {
+export const getCspHeader = (args: {
+  nonce: string;
+  environment: string;
+  additionalConnectSrc: string[];
+}) => {
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
     "script-src": [
@@ -18,6 +22,7 @@ export const getCspHeader = (args: { nonce: string; environment: string }) => {
       "openplzapi.org",
       "eu.i.posthog.com",
       serverConfig().JUSTIZ_BACKEND_API_URL,
+      ...(args.additionalConnectSrc ?? []),
     ],
     "img-src": [
       "'self'",
