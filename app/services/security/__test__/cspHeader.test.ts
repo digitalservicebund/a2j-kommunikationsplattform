@@ -45,4 +45,27 @@ describe("getCspHeader", () => {
     expect(developmentCspHeaders).toContain("localhost");
     expect(developmentCspHeaders).not.toContain("upgrade-insecure-requests");
   });
+
+  it("includes additionalConnectSrc when provided", () => {
+    const header = getCspHeader({
+      nonce: "testnonce",
+      environment: "production",
+      additionalConnectSrc: ["https://extra.com"],
+    });
+    const normalizedHeader = header.replace(/\s+/g, " ");
+    expect(normalizedHeader).toContain(
+      "connect-src 'self' openplzapi.org eu.i.posthog.com https://extra.com",
+    );
+  });
+
+  it("handles additionalConnectSrc as undefined", () => {
+    const header = getCspHeader({
+      nonce: "testnonce",
+      environment: "production",
+      additionalConnectSrc: undefined,
+    });
+    expect(header).toContain(
+      "connect-src 'self' openplzapi.org eu.i.posthog.com",
+    );
+  });
 });

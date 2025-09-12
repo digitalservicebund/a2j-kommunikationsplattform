@@ -3,7 +3,7 @@ import { serverConfig } from "~/config/config.server";
 export const getCspHeader = (args: {
   nonce: string;
   environment: string;
-  additionalConnectSrc: string[];
+  additionalConnectSrc?: string[];
 }) => {
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],

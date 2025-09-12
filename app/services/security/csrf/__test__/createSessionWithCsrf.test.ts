@@ -27,6 +27,34 @@ describe("createSessionWithCsrf", () => {
     expect(session.get(CSRFKey)).toContain(mockCsrfToken);
   });
 
+  it("handles sessionCSRF as array", async () => {
+    const mockCsrfToken = "mockCsrfToken";
+    const mockSession = createSession();
+    const existingTokens = ["token1", "token2"];
+
+    vi.mocked(randomBytes).mockImplementation(() => mockCsrfToken);
+    vi.mocked(getSession).mockResolvedValue(mockSession);
+    vi.mocked(getCSRFFromSession).mockReturnValue(existingTokens);
+    const { session, csrf } = await createSessionWithCsrf(mockCookieHeader);
+
+    expect(csrf).toBe(mockCsrfToken);
+    expect(session.get(CSRFKey)).toEqual([...existingTokens, mockCsrfToken]);
+  });
+
+  it("handles sessionCSRF as undefined", async () => {
+    const mockCsrfToken = "mockCsrfToken";
+    const mockSession = createSession();
+
+    vi.mocked(randomBytes).mockImplementation(() => mockCsrfToken);
+    vi.mocked(getSession).mockResolvedValue(mockSession);
+    vi.mocked(getCSRFFromSession).mockReturnValue(null);
+
+    const { session, csrf } = await createSessionWithCsrf(mockCookieHeader);
+
+    expect(csrf).toBe(mockCsrfToken);
+    expect(session.get(CSRFKey)).toEqual([mockCsrfToken]);
+  });
+
   it("should limit the CSRF token count to csrfCountMax", async () => {
     const newCsrfToken = "newCsrfToken";
     const mockSession = createSession();
