@@ -1,6 +1,7 @@
 import { Form } from "react-router";
 import { LogoutType } from "~/routes/action.logout-user";
 
+const baseUrl = "/uebersicht";
 const LogoutButton = () => {
   return (
     <Form method="post" action="/action/logout-user">
@@ -17,12 +18,12 @@ const navigationLinksList = [
   {
     name: "Übersicht",
     iconName: "kern-icon--home",
-    url: "/uebersicht",
+    url: baseUrl,
   },
   {
     name: "Verfahren",
     iconName: "kern-icon--icon--storage",
-    url: "/verfahren",
+    url: `${baseUrl}/verfahren`,
   },
   {
     name: "Mitteilungen",
