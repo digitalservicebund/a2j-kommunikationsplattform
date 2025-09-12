@@ -15,9 +15,14 @@ const LogoutButton = () => {
 
 const navigationLinksList = [
   {
-    name: "Verfahren",
+    name: "Übersicht",
     iconName: "kern-icon--home",
-    url: "#",
+    url: "/uebersicht",
+  },
+  {
+    name: "Verfahren",
+    iconName: "kern-icon--icon--storage",
+    url: "/verfahren",
   },
   {
     name: "Mitteilungen",
@@ -27,11 +32,6 @@ const navigationLinksList = [
   {
     name: "Kalender",
     iconName: "kern-icon--calendar-today",
-    url: "#",
-  },
-  {
-    name: "Profil",
-    iconName: "kern-icon--easy-language",
     url: "#",
   },
 ];
