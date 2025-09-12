@@ -37,6 +37,9 @@ export default [
     route("hilfe-und-kontakt", "./routes/hilfe-und-kontakt.tsx"),
     route("open-source", "./routes/open-source.tsx"),
     route("weitere-informationen", "./routes/weitere-informationen.tsx"),
+
+    // redirect links
+    route("link/*", "./routes/link.$.tsx"),
   ]),
 
   // Kubernetes health check
