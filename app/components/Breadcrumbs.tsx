@@ -6,7 +6,6 @@ export type MatchHandle = {
 
 export type BreadcrumbMeta = {
   title: string;
-  icon?: string;
 };
 
 export type BreadcrumbItem = BreadcrumbMeta & {
@@ -27,13 +26,13 @@ export const Breadcrumbs = () => {
     .filter(Boolean);
 
   const items: BreadcrumbItem[] = withCrumbs.map((match: CustomUIMatch) => {
-    const { title, icon } = match?.handle?.breadcrumb as BreadcrumbMeta;
+    const { title } = match?.handle?.breadcrumb as BreadcrumbMeta;
+    const isLast = match.id === withCrumbs[withCrumbs.length - 1].id;
     return {
       title,
-      icon: icon || "kern-icon--keyboard-double-arrow-right",
       url: match.pathname,
       id: match.id,
-      disabled: match.id === withCrumbs[withCrumbs.length - 1].id,
+      disabled: isLast,
     };
   });
 
@@ -45,7 +44,6 @@ export const Breadcrumbs = () => {
             <Breadcrumb
               title={item.title}
               url={item.url}
-              icon={item.icon}
               disabled={item.disabled}
             />
           </li>
@@ -54,27 +52,28 @@ export const Breadcrumbs = () => {
     </nav>
   );
 };
-const Breadcrumb = ({
-  title,
-  url,
-  icon,
-  disabled,
-}: Omit<BreadcrumbItem, "id">) => {
+const Breadcrumb = ({ title, url, disabled }: Omit<BreadcrumbItem, "id">) => {
   if (disabled) {
     return (
-      <span className="kern-link">
-        <span
-          className={`kern-icon ${icon} kern-icon--default`}
-          aria-hidden="true"
-        ></span>
-        <span>{title}</span>
-      </span>
+      <div className="gap-kern-space-small flex items-center">
+        <p className="kern-body--muted">{title}</p>
+      </div>
     );
   }
   return (
-    <a href={url} className="kern-link">
-      <span className={`kern-icon ${icon}`} aria-hidden="true"></span>
-      <span>{title}</span>
-    </a>
+    <div className="gap-kern-space-small flex items-center">
+      <a
+        href={url}
+        className="breadcrumb-link text-kern-layout-text-muted no-underline hover:underline"
+      >
+        {title}
+      </a>
+      {!disabled && (
+        <span
+          className="kern-icon kern-icon--keyboard-double-arrow-right"
+          aria-hidden="true"
+        ></span>
+      )}
+    </div>
   );
 };
