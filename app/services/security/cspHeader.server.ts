@@ -22,7 +22,10 @@ export const getCspHeader = (args: {
       ...(args.additionalConnectSrc ?? []),
     ],
     "img-src": ["'self'", serverConfig().JUSTIZ_BACKEND_API_URL, "data:"],
-    "form-action": ["'self'"],
+    "form-action": [
+      "'self'",
+      "https://schulung.bea-brak.de/auth/realms/brak/login-actions/authenticate",
+    ],
     "object-src": ["'none'"],
     "base-uri": ["'none'"],
     "frame-ancestors": ["'none'"],
