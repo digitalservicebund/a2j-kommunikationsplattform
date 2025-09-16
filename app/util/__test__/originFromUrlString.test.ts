@@ -1,3 +1,4 @@
+import { it } from "vitest";
 import { originFromUrlString } from "../originFromUrlString";
 
 describe("originFromUrlString", () => {
