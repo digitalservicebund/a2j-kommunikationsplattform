@@ -51,6 +51,9 @@ fileignoreconfig:
     checksum: 43e97b8794f868e5d6bdb37e1e760f6abbd4720f22f0d642fe4507e21c6937f0
   - filename: app/services/security/__test__/cspHeader.test.ts
     checksum: 888c4e1b121cde2ac8322bbc2139b36151e9125aa4d5639f63c882ac07a7db02
+  - filename: app/__test__/rootHeaders.test.ts
+    checksum: 68b03744f5d08a9703dd3a84b0273918006d354f4f436d2a11c406466d239dd6
+
 version: ""
 scopeconfig:
   - scope: node
