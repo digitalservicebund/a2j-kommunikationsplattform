@@ -48,7 +48,7 @@ fileignoreconfig:
   - filename: app/components/Breadcrumbs.tsx
     checksum: ab93e3d19ab0eb8baad07d51fd855de7cf90bef8240d2c3d45b7729a8d2c2689
   - filename: app/services/security/cspHeader.server.ts
-    checksum: 705cfab187045839568d7cf4070debef1737c38e8e314ef167c6d476f54533a9
+    checksum: 9f38dfb07920b5fa4fabc78fb02a8279aa59247ce3bde1e619e08d1579de6e77
   - filename: app/services/security/__test__/cspHeader.test.ts
     checksum: 888c4e1b121cde2ac8322bbc2139b36151e9125aa4d5639f63c882ac07a7db02
   - filename: app/__test__/rootHeaders.test.ts
