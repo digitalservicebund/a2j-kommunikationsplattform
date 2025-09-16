@@ -19,13 +19,11 @@ export const getCspHeader = (args: {
     "connect-src": [
       "'self'",
       serverConfig().JUSTIZ_BACKEND_API_URL,
+      serverConfig().BRAK_IDP_OIDC_ISSUER,
       ...(args.additionalConnectSrc ?? []),
     ],
     "img-src": ["'self'", serverConfig().JUSTIZ_BACKEND_API_URL, "data:"],
-    "form-action": [
-      "'self'",
-      "https://schulung.bea-brak.de/auth/realms/brak/login-actions/authenticate",
-    ],
+    "form-action": ["'self'", serverConfig().BRAK_IDP_OIDC_ISSUER],
     "object-src": ["'none'"],
     "base-uri": ["'none'"],
     "frame-ancestors": ["'none'"],
