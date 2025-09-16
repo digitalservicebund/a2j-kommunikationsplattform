@@ -1,3 +1,4 @@
+import { it } from "vitest";
 import { generateNonce } from "../nonce.server";
 
 describe("generateNonce", () => {
