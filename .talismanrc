@@ -47,6 +47,10 @@ fileignoreconfig:
     checksum: 6b19be5fdbbe48245dac4d21333788f639f675856fddaf950d2624129b99bc43
   - filename: app/components/Breadcrumbs.tsx
     checksum: ab93e3d19ab0eb8baad07d51fd855de7cf90bef8240d2c3d45b7729a8d2c2689
+  - filename: app/services/security/cspHeader.server.ts
+    checksum: 43e97b8794f868e5d6bdb37e1e760f6abbd4720f22f0d642fe4507e21c6937f0
+  - filename: app/services/security/__test__/cspHeader.test.ts
+    checksum: 888c4e1b121cde2ac8322bbc2139b36151e9125aa4d5639f63c882ac07a7db02
 version: ""
 scopeconfig:
   - scope: node
