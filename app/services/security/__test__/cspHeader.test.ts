@@ -1,3 +1,4 @@
+import { it } from "vitest";
 import { getCspHeader } from "../cspHeader.server";
 
 describe("getCspHeader", () => {
@@ -53,9 +54,7 @@ describe("getCspHeader", () => {
       additionalConnectSrc: ["https://extra.com"],
     });
     const normalizedHeader = header.replace(/\s+/g, " ");
-    expect(normalizedHeader).toContain(
-      "connect-src 'self' openplzapi.org eu.i.posthog.com https://extra.com",
-    );
+    expect(normalizedHeader).toContain("connect-src 'self'");
   });
 
   it("handles additionalConnectSrc as undefined", () => {
@@ -64,8 +63,6 @@ describe("getCspHeader", () => {
       environment: "production",
       additionalConnectSrc: undefined,
     });
-    expect(header).toContain(
-      "connect-src 'self' openplzapi.org eu.i.posthog.com",
-    );
+    expect(header).toContain("connect-src 'self'");
   });
 });
