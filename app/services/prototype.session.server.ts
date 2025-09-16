@@ -3,8 +3,10 @@ import { createCookieSessionStorage, redirect } from "react-router";
 import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
 import { ServicesContext } from "~/services/prototype.servicesContext.server";
+import { createSessionWithCsrf } from "~/services/security/csrf/createSessionWithCsrf.server";
 import type { AuthenticationContext } from "./prototype.oAuth.server";
 
+export type CookieHeader = string | null | undefined;
 const getSecret = () => {
   return config().ENVIRONMENT === "development"
     ? "default-secret"
@@ -97,4 +99,14 @@ export const hasUserSession = async (
   const accessToken = session.get("accessToken");
 
   return !!accessToken;
+};
+
+export const updateSession = async ({
+  cookieHeader,
+}: {
+  cookieHeader: CookieHeader;
+}) => {
+  const { session, csrf } = await createSessionWithCsrf(cookieHeader);
+  const headers = { "Set-Cookie": await commitSession(session) };
+  return { headers, csrf };
 };
