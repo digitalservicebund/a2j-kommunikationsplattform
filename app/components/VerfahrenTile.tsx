@@ -4,14 +4,14 @@ import { Link } from "react-router";
 export type VerfahrenTileProps = {
   readonly update?: string;
   readonly abgeschlossen?: boolean;
-  readonly detailsHref: string;
   readonly urteilsHref?: string;
-  readonly mandantin?: string;
-  readonly gegenpartei?: string;
-  readonly vertretung?: string;
-  readonly geschaeftszeichen?: string;
-  readonly gericht?: string;
-  readonly aktenzeichen?: string;
+  readonly id: string;
+  readonly aktenzeichen?: string | null;
+  readonly gericht_name?: string | null;
+  readonly mandantin?: string | null;
+  readonly gegenpartei?: string | null;
+  readonly vertretung?: string | null;
+  readonly geschaeftszeichen?: string | null;
 };
 
 function VerfahrenTileDataItem({
@@ -37,13 +37,13 @@ function VerfahrenTileDataItem({
 export default function VerfahrenTile({
   update,
   abgeschlossen = false,
-  detailsHref,
   urteilsHref,
+  id,
   mandantin = "nicht verfügbar",
   gegenpartei = "nicht verfügbar",
   vertretung = "nicht verfügbar",
   geschaeftszeichen = "nicht verfügbar",
-  gericht = "nicht verfügbar",
+  gericht_name = "nicht verfügbar",
   aktenzeichen = "nicht verfügbar",
 }: VerfahrenTileProps) {
   const cssClasses = clsx(
@@ -92,7 +92,7 @@ export default function VerfahrenTile({
         />
         <VerfahrenTileDataItem
           label="Zuständiges Gericht"
-          value={gericht}
+          value={gericht_name}
           abgeschlossen={abgeschlossen}
         />
         <VerfahrenTileDataItem
@@ -108,7 +108,7 @@ export default function VerfahrenTile({
       />
 
       <div className="mb-kern-space-large gap-kern-space-x-large flex flex-wrap">
-        <Link to={detailsHref} className="kern-btn kern-btn--primary">
+        <Link to={`/verfahren/${id}`} className="kern-btn kern-btn--primary">
           <span className="kern-icon kern-icon--open-in-new" aria-hidden />
           <span className="kern-label">Verfahrensdetails anzeigen</span>
         </Link>
