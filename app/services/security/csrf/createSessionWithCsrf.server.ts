@@ -1,4 +1,5 @@
-//https://sergiodxa.com/articles/adding-csrf-protection-to-remix
+// see: https://sergiodxa.com/articles/adding-csrf-protection-to-remix
+
 import { randomBytes } from "node:crypto";
 import { CookieHeader, getSession } from "~/services/prototype.session.server";
 import { csrfCountMax, CSRFKey } from "./csrfKey";
