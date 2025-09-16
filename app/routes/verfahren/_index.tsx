@@ -1,4 +1,5 @@
 import VerfahrenTile from "~/components/VerfahrenTile";
+import { Route } from "./+types/_index";
 
 const dummyVerfahrenData = [
   {
@@ -61,9 +62,16 @@ const dummyVerfahrenData = [
     rechtsgebiet: "Vertragsrecht",
     sachverhalt: "Vertragsaufhebungsklage",
   },
-];
+] as const;
 
-export default function Verfahren() {
+export async function loader() {
+  return {
+    verfahren: dummyVerfahrenData,
+  };
+}
+
+export default function Verfahren({ loaderData }: Route.ComponentProps) {
+  const { verfahren } = loaderData;
   return (
     <>
       {/* TODO: For future reference, add new components here  */}
@@ -72,7 +80,7 @@ export default function Verfahren() {
       <h1 className="kern-heading-large">Suche</h1>
       <hr className="kern-divider my-kern-space-large" aria-hidden />
       <div className="mb-kern-space-large gap-y-kern-space-large flex flex-col">
-        {dummyVerfahrenData.map((data) => (
+        {verfahren.map((data) => (
           <VerfahrenTile key={data.id} {...data} />
         ))}
       </div>
