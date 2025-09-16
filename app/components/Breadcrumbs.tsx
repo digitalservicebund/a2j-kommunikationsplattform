@@ -70,7 +70,7 @@ const Breadcrumb = ({ title, url, disabled }: Omit<BreadcrumbItem, "id">) => {
       </a>
       {!disabled && (
         <span
-          className="kern-icon kern-icon--keyboard-double-arrow-right"
+          className="kern-icon kern-icon--keyboard-double-arrow-right bg-kern-layout-text-muted"
           aria-hidden="true"
         ></span>
       )}
