@@ -17,17 +17,25 @@ import {
 } from "react-router";
 import { Breadcrumbs } from "~/components/Breadcrumbs";
 import Header from "~/components/Header";
+import { useNonce } from "~/services/security/nonce";
 import type { Route } from "./+types/root";
 import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
 import { config } from "./config/config";
-import { hasUserSession } from "./services/prototype.session.server";
+import {
+  hasUserSession,
+  updateSession,
+} from "./services/prototype.session.server";
 import styles from "./styles.css?url";
 
+export { headers } from "./rootHeaders";
 export type RootLoader = typeof loader;
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const { headers } = await updateSession({
+    cookieHeader: request.headers.get("Cookie"),
+  });
   const userIsLoggedIn = Boolean(await hasUserSession(request));
-  return data({ userIsLoggedIn });
+  return data({ userIsLoggedIn }, { headers });
 };
 
 export const links: LinksFunction = () => [
@@ -58,6 +66,7 @@ export const links: LinksFunction = () => [
 
 export function Layout({ children }: { children: ReactNode }) {
   const loaderData = useLoaderData<RootLoader>();
+  const nonce = useNonce();
   return (
     <html lang="de">
       <head>
@@ -67,6 +76,7 @@ export function Layout({ children }: { children: ReactNode }) {
         {/* @TODO: https://digitalservicebund.atlassian.net/browse/KOMPLA-492 */}
         <Links />
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `window.ENV = ${JSON.stringify(config())}`,
           }}
@@ -75,8 +85,8 @@ export function Layout({ children }: { children: ReactNode }) {
       <body>
         <Header userIsLoggedIn={loaderData?.userIsLoggedIn} />
         {children}
-        <ScrollRestoration />
-        <Scripts />
+        <ScrollRestoration nonce={nonce} />
+        <Scripts nonce={nonce} />
       </body>
     </html>
   );
