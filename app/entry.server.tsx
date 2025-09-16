@@ -13,6 +13,11 @@ import {
   ServerRouter,
   type EntryContext,
 } from "react-router";
+import { generateNonce } from "~/services/security/nonce.server";
+
+import { config } from "~/config/config";
+import { getCspHeader } from "~/services/security/cspHeader.server";
+import { NonceContext } from "./services/security/nonce";
 
 // Reject/cancel all pending promises after 5 seconds
 export const streamTimeout = 5000;
@@ -54,9 +59,15 @@ function handleBotRequest(
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
-
+    const cspNonce = generateNonce();
     const { pipe, abort } = renderToPipeableStream(
-      <ServerRouter context={routerContext} url={request.url} />,
+      <NonceContext.Provider value={cspNonce}>
+        <ServerRouter
+          context={routerContext}
+          url={request.url}
+          nonce={cspNonce}
+        />
+      </NonceContext.Provider>,
       {
         onAllReady() {
           shellRendered = true;
@@ -103,6 +114,14 @@ function handleBrowserRequest(
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
+    const cspNonce = generateNonce();
+    responseHeaders.set(
+      "Content-Security-Policy",
+      getCspHeader({
+        nonce: cspNonce,
+        environment: config().ENVIRONMENT,
+      }),
+    );
     const { pipe, abort } = renderToPipeableStream(
       <ServerRouter context={routerContext} url={request.url} />,
       {
