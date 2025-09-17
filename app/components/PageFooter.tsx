@@ -6,7 +6,7 @@ export const FOOTER_ARIA_LABEL = "Rechtliche und weiterführende Informationen";
 
 export default function PageFooter() {
   return (
-    <footer>
+    <footer className="mt-kern-space-x-large">
       <nav
         className="gap-x-kern-space-default flex flex-row flex-wrap justify-center"
         aria-label={FOOTER_ARIA_LABEL}

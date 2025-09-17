@@ -34,17 +34,19 @@ function VerfahrenTileDataItem({
   );
 }
 
+const notAvailable = "nicht verfügbar";
+
 export default function VerfahrenTile({
   update,
   abgeschlossen = false,
   urteilsHref,
   id,
-  mandantin = "nicht verfügbar",
-  gegenpartei = "nicht verfügbar",
-  vertretung = "nicht verfügbar",
-  geschaeftszeichen = "nicht verfügbar",
-  gericht_name = "nicht verfügbar",
-  aktenzeichen = "nicht verfügbar",
+  mandantin,
+  gegenpartei,
+  vertretung,
+  geschaeftszeichen,
+  gericht_name,
+  aktenzeichen,
 }: VerfahrenTileProps) {
   const cssClasses = clsx(
     "relative",
@@ -72,32 +74,32 @@ export default function VerfahrenTile({
       <dl className="kern-row my-0">
         <VerfahrenTileDataItem
           label="Mandant:in"
-          value={mandantin}
+          value={mandantin || notAvailable}
           abgeschlossen={abgeschlossen}
         />
         <VerfahrenTileDataItem
           label="Gegenpartei bzw. -parteien"
-          value={gegenpartei}
+          value={gegenpartei || notAvailable}
           abgeschlossen={abgeschlossen}
         />
         <VerfahrenTileDataItem
           label="Vertreten durch"
-          value={vertretung}
+          value={vertretung || notAvailable}
           abgeschlossen={abgeschlossen}
         />
         <VerfahrenTileDataItem
           label="Eigenes Geschäftszeichen"
-          value={geschaeftszeichen}
+          value={geschaeftszeichen || notAvailable}
           abgeschlossen={abgeschlossen}
         />
         <VerfahrenTileDataItem
           label="Zuständiges Gericht"
-          value={gericht_name}
+          value={gericht_name || notAvailable}
           abgeschlossen={abgeschlossen}
         />
         <VerfahrenTileDataItem
           label="Aktenzeichen des Gerichts"
-          value={aktenzeichen}
+          value={aktenzeichen || notAvailable}
           abgeschlossen={abgeschlossen}
         />
       </dl>
