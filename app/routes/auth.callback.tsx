@@ -7,7 +7,7 @@ import {
   destroySession,
   getSession,
 } from "~/services/prototype.session.server";
-import { LoginError } from "./login";
+import { LoginError } from "./action.login";
 
 export const loader: LoaderFunction = async ({ request }) => {
   // Fyi: When the authorization server redirects to this route (Redirect URI),

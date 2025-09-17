@@ -1,10 +1,14 @@
 import { index, layout, prefix, route } from "@react-router/dev/routes";
 
 export default [
-  layout("./layouts/narrow-layout.tsx", [index("./routes/_index.tsx")]),
-
+  // redirect from root to /uebersicht or /login
+  index("./routes/_index.tsx"),
   // auth
-  route("login", "./routes/login.ts"),
+  // wrapping login page in narrow layout
+  layout("./layouts/narrow-layout.tsx", [
+    route("login", "./routes/login/_index.tsx"),
+  ]),
+  route("action/login", "./routes/action.login.ts"),
   route("auth/callback", "./routes/auth.callback.tsx"),
   route("error", "./routes/error.tsx"),
   route("action/logout-user", "./routes/action.logout-user.ts"),

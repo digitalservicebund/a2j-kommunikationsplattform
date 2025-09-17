@@ -17,7 +17,7 @@ export const loginAsDeveloper = async (request: Request) => {
     return new Response(null, {
       status: 302,
       headers: {
-        Location: "/prototype/verfahren",
+        Location: "/uebersicht",
         "Set-Cookie": cookieWithDemoMode,
       },
     });

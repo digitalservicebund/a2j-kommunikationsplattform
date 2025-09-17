@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
+import { LoginError } from "~/routes/action.login";
 import { LogoutType } from "~/routes/action.logout-user";
-import { LoginError } from "~/routes/login";
 
 test.describe("Homepage (_index route)", () => {
   test("has title, shows headline and introduction text", async ({ page }) => {
