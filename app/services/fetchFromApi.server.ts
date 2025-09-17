@@ -4,9 +4,9 @@ type FetchFromApiOptions = {
 };
 
 const userId = "PierreM";
-const baseUrl = "https://kompla.sinc.de";
+const baseUrl = "https://kompla.sinc.de/api/v1";
 
-export default async function (options: FetchFromApiOptions) {
+export async function fetchFromApi(options: FetchFromApiOptions) {
   const url = `${baseUrl}${options.url}`;
   try {
     const response = await fetch(url, {

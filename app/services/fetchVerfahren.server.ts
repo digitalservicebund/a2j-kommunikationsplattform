@@ -1,7 +1,7 @@
 import z from "zod";
 import dummyVerfahrenData from "~/models/dummyVerfahrenData";
 import VerfahrenSchema from "~/models/VerfahrenSchema";
-import fetchFromApi from "./fetchFromApi.server";
+import { fetchFromApi } from "./fetchFromApi.server";
 
 type FetchVerfahrenOptions = {
   limit?: number;
@@ -21,7 +21,7 @@ export default async function (options?: FetchVerfahrenOptions) {
 
   const offset = options?.offset || 0;
   const limit = options?.limit || 10;
-  const url = `/api/v1/verfahren?limit=${limit}&offset=${offset}`;
+  const url = `/verfahren?limit=${limit}&offset=${offset}`;
 
   const response = await fetchFromApi({
     url,

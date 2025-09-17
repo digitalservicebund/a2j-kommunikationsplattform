@@ -1,6 +1,6 @@
 import dummyVerfahrenData from "~/models/dummyVerfahrenData";
 import VerfahrenSchema from "~/models/VerfahrenSchema";
-import fetchFromApi from "./fetchFromApi.server";
+import { fetchFromApi } from "./fetchFromApi.server";
 
 type FetchVerfahrenByIdOptions = {
   id: string;
@@ -13,8 +13,9 @@ export default async function (options: FetchVerfahrenByIdOptions) {
   if (options.dummyData) {
     return dummyVerfahrenData[0];
   }
-  const url = `/api/v1/verfahren/${options.id}`;
+  const url = `/verfahren/${options.id}`;
   const response = await fetchFromApi({ url, errorMessage });
+  console.log(response);
   try {
     return VerfahrenSchema.parse(response);
   } catch (error) {
