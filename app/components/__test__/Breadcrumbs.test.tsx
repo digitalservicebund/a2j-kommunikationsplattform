@@ -31,7 +31,7 @@ describe("Breadcrumbs", () => {
   });
   it("should render nothing when there are no matches with a breadcrumb handle", () => {
     mockedUseMatches.mockReturnValue([
-      match({ id: "root", pathname: "/verfahren" }),
+      match({ id: "root", pathname: "/uebersicht" }),
     ]);
     render(<Breadcrumbs />);
     const nav = document.querySelector("nav") as HTMLElement;
@@ -41,42 +41,46 @@ describe("Breadcrumbs", () => {
     mockedUseMatches.mockReturnValue([
       match({
         id: "root",
+        pathname: "/uebersicht",
+        handle: { breadcrumb: { title: "Übersicht" } },
+      }),
+      match({
+        id: "verfahren",
         pathname: "/verfahren",
-        handle: { breadcrumb: { title: "Verfahrensübersicht" } },
+        handle: { breadcrumb: { title: "Verfahren" } },
       }),
       match({
         id: "verfahren/$id",
         pathname: "/verfahren/123",
-        handle: { breadcrumb: { title: "verfahrendetails" } },
+        handle: { breadcrumb: { title: "Verfahrendetails" } },
       }),
       match({
         id: "verfahren/$id/datei/$dateiId",
         pathname: "/verfahren/123/datei/456",
-        handle: { breadcrumb: { title: "dateiansicht" } },
+        handle: { breadcrumb: { title: "Dateiansicht" } },
       }),
     ]);
     render(<Breadcrumbs />);
     const nav = document.querySelector("nav") as HTMLElement;
     const items = within(nav).getAllByRole("listitem");
-    expect(items).toHaveLength(3);
-    expect(items[0]).toHaveTextContent("Verfahrensübersicht");
-    expect(items[1]).toHaveTextContent("verfahrendetails");
-    expect(items[2]).toHaveTextContent("dateiansicht");
-    expect(items[2].querySelector("a")).not.toBeInTheDocument();
+    expect(items).toHaveLength(4);
+    expect(items[0]).toHaveTextContent("Übersicht");
+    expect(items[1]).toHaveTextContent("Verfahren");
+    expect(items[2]).toHaveTextContent("Verfahrendetails");
+    expect(items[3]).toHaveTextContent("Dateiansicht");
+    expect(items[3].querySelector("a")).not.toBeInTheDocument();
   });
-  it("should use default icon when none is provided in the breadcrumb handle", () => {
+  it("should have a right arrow icon unless it's a last breadcrumb", () => {
     mockedUseMatches.mockReturnValue([
       match({
         id: "root",
-        pathname: "/verfahren",
-        handle: { breadcrumb: { title: "Verfahrensübersicht" } },
+        pathname: "/uebersicht",
+        handle: { breadcrumb: { title: "Übersicht" } },
       }),
       match({
-        id: "verfahren/$id",
-        pathname: "/verfahren/123",
-        handle: {
-          breadcrumb: { title: "verfahrendetails", icon: "custom-icon" },
-        },
+        id: "verfahren",
+        pathname: "/verfahren",
+        handle: { breadcrumb: { title: "Verfahren" } },
       }),
     ]);
     render(<Breadcrumbs />);
@@ -86,19 +90,21 @@ describe("Breadcrumbs", () => {
     expect(
       items[0].querySelector(".kern-icon--keyboard-double-arrow-right"),
     ).toBeInTheDocument();
-    expect(items[1].querySelector(".custom-icon")).toBeInTheDocument();
+    expect(
+      items[1].querySelector(".kern-icon--keyboard-double-arrow-right"),
+    ).not.toBeInTheDocument();
   });
   it("should disable the last breadcrumb item", () => {
     mockedUseMatches.mockReturnValue([
       match({
         id: "root",
-        pathname: "/verfahren",
-        handle: { breadcrumb: { title: "Verfahrensübersicht" } },
+        pathname: "/uebersicht",
+        handle: { breadcrumb: { title: "Übersicht" } },
       }),
       match({
-        id: "verfahren/$id",
-        pathname: "/verfahren/123",
-        handle: { breadcrumb: { title: "verfahrendetails" } },
+        id: "verfahren",
+        pathname: "/verfahren",
+        handle: { breadcrumb: { title: "Verfahren" } },
       }),
     ]);
     render(<Breadcrumbs />);
@@ -110,11 +116,10 @@ describe("Breadcrumbs", () => {
   });
   it("should filter out matches with no breadcrumbs", () => {
     mockedUseMatches.mockReturnValue([
-      match({ id: "root", pathname: "/verfahren" }),
       match({
-        id: "verfahren/$id",
-        pathname: "/verfahren/123",
-        handle: { breadcrumb: { title: "verfahrendetails" } },
+        id: "root",
+        pathname: "/uebersicht",
+        handle: { breadcrumb: { title: "Übersicht" } },
       }),
       match({ id: "some/other/match", pathname: "/some/other/match" }),
     ]);
@@ -122,7 +127,7 @@ describe("Breadcrumbs", () => {
     const nav = document.querySelector("nav") as HTMLElement;
     const items = within(nav).getAllByRole("listitem");
     expect(items).toHaveLength(1);
-    expect(items[0]).toHaveTextContent("verfahrendetails");
+    expect(items[0]).toHaveTextContent("Übersicht");
     expect(items[0].querySelector("a")).not.toBeInTheDocument();
   });
 });
