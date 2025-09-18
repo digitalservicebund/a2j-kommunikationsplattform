@@ -104,45 +104,42 @@ export default function LoginPage() {
               zwischen Gerichten und Verfahrensbeteiligten.
             </p>
 
-            <div className="py-kern-space-large gap-kern-space-default flex flex-row flex-wrap items-start self-stretch">
-              <Form method="post" action="/action/login">
+            <Form method="post" action="/action/login">
+              <div className="py-kern-space-large gap-kern-space-default flex flex-row flex-wrap items-start self-stretch">
                 <input
                   type="hidden"
                   name="loginType"
                   value={LoginType.Developer}
                 />
-                <button type="submit" className="kern-btn kern-btn--primary">
+                <button
+                  type="submit"
+                  className="kern-btn kern-btn--block kern-btn--primary"
+                >
                   <span className="kern-label">{loginButtonLabel}</span>
                 </button>
-              </Form>
-              <Link
-                to="/login"
-                className="kern-btn kern-btn--block kern-btn--primary"
-              >
-                <span className="kern-label">{loginButtonLabel}</span>
-              </Link>
 
-              <button
-                className="kern-btn kern-btn--primary kern-btn--block"
-                disabled
-              >
-                <span className="kern-label">Anmeldung Gerichte</span>
-              </button>
-
-              {/* only render "Testzugang" demo link for non production environments */}
-              {environment !== "production" && (
-                <Link
-                  to="/prototype/verfahren"
-                  className="kern-btn kern-btn--block kern-btn--secondary"
-                  onClick={() => {
-                    document.cookie = "demoMode=true; path=/; max-age=3600"; // 1 hour
-                  }}
-                  data-testid="demo-button"
+                <button
+                  className="kern-btn kern-btn--primary kern-btn--block"
+                  disabled
                 >
-                  <span className="kern-label">Testzugang</span>
-                </Link>
-              )}
-            </div>
+                  <span className="kern-label">Anmeldung Gerichte</span>
+                </button>
+
+                {/* only render "Testzugang" demo link for non production environments */}
+                {environment !== "production" && (
+                  <Link
+                    to="/prototype/verfahren"
+                    className="kern-btn kern-btn--block kern-btn--secondary"
+                    onClick={() => {
+                      document.cookie = "demoMode=true; path=/; max-age=3600"; // 1 hour
+                    }}
+                    data-testid="demo-button"
+                  >
+                    <span className="kern-label">Testzugang</span>
+                  </Link>
+                )}
+              </div>
+            </Form>
 
             <hr className="kern-divider my-kern-space-default" aria-hidden />
           </div>
