@@ -27,7 +27,7 @@ export const getCspHeader = (args: {
     "form-action": [
       "'self'",
       // serverConfig().BRAK_IDP_OIDC_ISSUER,
-      "https://schulung.bea-brak.de",
+      // "https://schulung.bea-brak.de",
     ],
     "object-src": ["'none'"],
     "base-uri": ["'none'"],
