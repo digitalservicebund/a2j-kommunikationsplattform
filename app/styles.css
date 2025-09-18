@@ -47,8 +47,4 @@
   body {
     margin: 0;
   }
-
-  .breadcrumb-link:visited {
-    color: inherit;
-  }
 }

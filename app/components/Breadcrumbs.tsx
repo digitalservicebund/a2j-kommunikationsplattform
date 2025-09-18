@@ -64,7 +64,7 @@ const Breadcrumb = ({ title, url, disabled }: Omit<BreadcrumbItem, "id">) => {
     <div className="gap-kern-space-small flex items-center">
       <a
         href={url}
-        className="breadcrumb-link text-kern-layout-text-muted no-underline hover:underline"
+        className="text-kern-layout-text-muted visited:text-kern-layout-text-muted no-underline hover:underline"
       >
         {title}
       </a>
