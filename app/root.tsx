@@ -21,21 +21,20 @@ import { useNonce } from "~/services/security/nonce";
 import type { Route } from "./+types/root";
 import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
 import { config } from "./config/config";
-import {
-  hasUserSession,
-  updateSession,
-} from "./services/prototype.session.server";
+import { hasUserSession } from "./services/prototype.session.server";
 import styles from "./styles.css?url";
 
 export { headers } from "./rootHeaders";
 export type RootLoader = typeof loader;
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { headers } = await updateSession({
-    cookieHeader: request.headers.get("Cookie"),
-  });
+  // const { headers } = await updateSession({
+  //   cookieHeader: request.headers.get("Cookie"),
+  // });
+
   const userIsLoggedIn = Boolean(await hasUserSession(request));
-  return data({ userIsLoggedIn }, { headers });
+  // return data({ userIsLoggedIn }, { headers });
+  return data({ userIsLoggedIn });
 };
 
 export const links: LinksFunction = () => [
