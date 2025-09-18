@@ -19,11 +19,16 @@ export const getCspHeader = (args: {
     "connect-src": [
       "'self'",
       serverConfig().JUSTIZ_BACKEND_API_URL,
-      serverConfig().BRAK_IDP_OIDC_ISSUER,
+      // serverConfig().BRAK_IDP_OIDC_ISSUER,
+      "https://schulung.bea-brak.de",
       ...(args.additionalConnectSrc ?? []),
     ],
     "img-src": ["'self'", serverConfig().JUSTIZ_BACKEND_API_URL, "data:"],
-    "form-action": ["'self'", serverConfig().BRAK_IDP_OIDC_ISSUER],
+    "form-action": [
+      "'self'",
+      // serverConfig().BRAK_IDP_OIDC_ISSUER,
+      "https://schulung.bea-brak.de",
+    ],
     "object-src": ["'none'"],
     "base-uri": ["'none'"],
     "frame-ancestors": ["'none'"],
