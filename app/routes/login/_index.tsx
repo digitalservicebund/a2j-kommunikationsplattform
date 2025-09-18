@@ -16,7 +16,7 @@ type AlertState =
 export async function loader({ request }: { request: Request }) {
   const userSession = await getUserSession(request);
   if (userSession) {
-    throw redirect("/uebersicht");
+    throw redirect("/");
   }
   const environment = config().ENVIRONMENT;
   return { environment };
