@@ -18,7 +18,7 @@ fileignoreconfig:
   - filename: app/services/prototype.oAuth.server.ts
     checksum: 78086d4f389249e9e939c9cd0cd9fd836aa3b9a3d0f7a98d21650ec356cb2aca
   - filename: app/services/prototype.session.server.ts
-    checksum: b3f7bc10e6942a0a1219a66462422056484050e0656cf5d50fe515cbef8a076a
+    checksum: 0934465a1b1b604c1283489346f5d96d9a8aab738e7412e02ccfd0ffa2b76bbf
   - filename: app/config/config.server.ts
     checksum: be5adef22a4a4616df478f8ce94401a5be1246e914440edbcf311aae4236a2cb
   - filename: app/config/__test__/config.server.test.ts
@@ -48,7 +48,7 @@ fileignoreconfig:
   - filename: app/components/Breadcrumbs.tsx
     checksum: ab93e3d19ab0eb8baad07d51fd855de7cf90bef8240d2c3d45b7729a8d2c2689
   - filename: app/services/security/cspHeader.server.ts
-    checksum: 9f38dfb07920b5fa4fabc78fb02a8279aa59247ce3bde1e619e08d1579de6e77
+    checksum: fcc5538acf5fb5429bd1a9599b98adc7a36d2d2c75bee8801de4fcb21c8b5a1c
   - filename: app/services/security/__test__/cspHeader.test.ts
     checksum: 888c4e1b121cde2ac8322bbc2139b36151e9125aa4d5639f63c882ac07a7db02
   - filename: app/__test__/rootHeaders.test.ts
