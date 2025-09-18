@@ -23,7 +23,7 @@ export const getCspHeader = (args: {
       ...(args.additionalConnectSrc ?? []),
     ],
     "img-src": ["'self'", serverConfig().JUSTIZ_BACKEND_API_URL, "data:"],
-    "form-action": ["'self'", serverConfig().BRAK_IDP_OIDC_ISSUER],
+    "form-action": ["'self'"],
     "object-src": ["'none'"],
     "base-uri": ["'none'"],
     "frame-ancestors": ["'none'"],
