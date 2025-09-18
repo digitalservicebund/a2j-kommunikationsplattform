@@ -1,5 +1,4 @@
 import type { ActionFunctionArgs } from "react-router";
-import { config } from "~/config/config";
 import { loginAsDeveloper } from "~/services/mockAuth.server";
 import {
   AuthenticationProvider,
@@ -19,13 +18,11 @@ export enum LoginType {
  */
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData();
+  // using clone() to be able to read the body multiple times
+  const formData = await request.clone().formData();
   const loginType = formData.get("loginType") as LoginType;
 
-  if (
-    loginType === LoginType.Developer &&
-    config().ENVIRONMENT === "development"
-  ) {
+  if (loginType === LoginType.Developer) {
     return await loginAsDeveloper(request);
   } else if (loginType === LoginType.BeA) {
     return await authenticator.authenticate(
