@@ -18,7 +18,7 @@ fileignoreconfig:
   - filename: app/services/prototype.oAuth.server.ts
     checksum: 78086d4f389249e9e939c9cd0cd9fd836aa3b9a3d0f7a98d21650ec356cb2aca
   - filename: app/services/prototype.session.server.ts
-    checksum: 0934465a1b1b604c1283489346f5d96d9a8aab738e7412e02ccfd0ffa2b76bbf
+    checksum: e3bf1ac11d0982b19e4d332f05b3cb1a31eac97d58744227b2235c72f8d0ae05
   - filename: app/config/config.server.ts
     checksum: be5adef22a4a4616df478f8ce94401a5be1246e914440edbcf311aae4236a2cb
   - filename: app/config/__test__/config.server.test.ts
@@ -46,7 +46,7 @@ fileignoreconfig:
   - filename: app/routes/verfahren/_index.tsx
     checksum: 6b19be5fdbbe48245dac4d21333788f639f675856fddaf950d2624129b99bc43
   - filename: app/components/Breadcrumbs.tsx
-    checksum: ab93e3d19ab0eb8baad07d51fd855de7cf90bef8240d2c3d45b7729a8d2c2689
+    checksum: 6cca076436507d819e9afcb64b3a88120aa8d163249a218b8c62c183fba2cc7a
   - filename: app/services/security/cspHeader.server.ts
     checksum: fcc5538acf5fb5429bd1a9599b98adc7a36d2d2c75bee8801de4fcb21c8b5a1c
   - filename: app/services/security/__test__/cspHeader.test.ts
@@ -55,14 +55,7 @@ fileignoreconfig:
     checksum: 68b03744f5d08a9703dd3a84b0273918006d354f4f436d2a11c406466d239dd6
   - filename: app/rootHeaders.ts
     checksum: 2ebcd731e212d9be5dcceb88703c12e68b84982d5800162f605d93d0a20a3455
-  - filename: app/services/security/csrf/createSessionWithCsrf.server.ts
-    checksum: 1ee7a81c9d76fa5a1c336f768624da4b2e020e2a507372e0fc8afca0f135a099
-  - filename: app/services/security/csrf/csrfKey.ts
-    checksum: 86a4a5f1bd535c2848de0895a2dd89ac71b61a8d9c1ce640b3dbc979cdf0c785
-  - filename: app/services/security/csrf/__test__/createSessionWithCsrf.test.ts
-    checksum: a6f4d99a1bae91ab015c777929369b7059a5d29384de2b8c491e8691e435ca07
-  - filename: app/services/security/csrf/__test__/validatedSession.test.ts
-    checksum: 599087993158e38c5517a94ce841e24c5d107aca3c25fc2b061579810050b1bd
+
 version: ""
 scopeconfig:
   - scope: node

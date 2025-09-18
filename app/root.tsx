@@ -28,12 +28,7 @@ export { headers } from "./rootHeaders";
 export type RootLoader = typeof loader;
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  // const { headers } = await updateSession({
-  //   cookieHeader: request.headers.get("Cookie"),
-  // });
-
   const userIsLoggedIn = Boolean(await hasUserSession(request));
-  // return data({ userIsLoggedIn }, { headers });
   return data({ userIsLoggedIn });
 };
 
