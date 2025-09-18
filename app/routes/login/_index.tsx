@@ -1,7 +1,8 @@
-import { Form, Link, useSearchParams } from "react-router";
+import { Form, Link, redirect, useSearchParams } from "react-router";
 import Logo from "~/components/Logo.static";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
+import { getUserSession } from "~/services/prototype.session.server";
 import { LoginError, LoginType } from "../action.login";
 import { LogoutType } from "../action.logout-user";
 
@@ -12,7 +13,11 @@ type AlertState =
   | LogoutType.ByUser
   | LoginError.BeA;
 
-export async function loader() {
+export async function loader({ request }: { request: Request }) {
+  const userSession = await getUserSession(request);
+  if (userSession) {
+    throw redirect("/uebersicht");
+  }
   const environment = config().ENVIRONMENT;
   return { environment };
 }

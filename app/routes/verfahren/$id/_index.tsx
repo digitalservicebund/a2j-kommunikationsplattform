@@ -1,8 +1,11 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
+import { useLoaderData } from "react-router";
+import { withSessionLoader } from "~/services/auth/withSessionLoader";
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
-  return { id: params.id || "unknown" };
-};
+export const loader = withSessionLoader(
+  async ({ params }: LoaderFunctionArg) => {
+    return { id: params.id || "unknown" };
+  },
+);
 
 export default function Verfahrendetails() {
   const { id } = useLoaderData<typeof loader>();
