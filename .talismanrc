@@ -55,14 +55,7 @@ fileignoreconfig:
     checksum: 68b03744f5d08a9703dd3a84b0273918006d354f4f436d2a11c406466d239dd6
   - filename: app/rootHeaders.ts
     checksum: 2ebcd731e212d9be5dcceb88703c12e68b84982d5800162f605d93d0a20a3455
-  - filename: app/services/security/csrf/createSessionWithCsrf.server.ts
-    checksum: 1ee7a81c9d76fa5a1c336f768624da4b2e020e2a507372e0fc8afca0f135a099
-  - filename: app/services/security/csrf/csrfKey.ts
-    checksum: 86a4a5f1bd535c2848de0895a2dd89ac71b61a8d9c1ce640b3dbc979cdf0c785
-  - filename: app/services/security/csrf/__test__/createSessionWithCsrf.test.ts
-    checksum: a6f4d99a1bae91ab015c777929369b7059a5d29384de2b8c491e8691e435ca07
-  - filename: app/services/security/csrf/__test__/validatedSession.test.ts
-    checksum: 599087993158e38c5517a94ce841e24c5d107aca3c25fc2b061579810050b1bd
+
 version: ""
 scopeconfig:
   - scope: node
