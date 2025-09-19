@@ -28,7 +28,7 @@ export default [
         ]),
       ]),
     ]),
-    // verfahren
+    // prototype verfahren
     ...prefix("prototype/verfahren", [
       index("./routes/prototype.verfahren.tsx"),
       route(":id", "./routes/prototype.verfahren.$id.tsx", {}),
