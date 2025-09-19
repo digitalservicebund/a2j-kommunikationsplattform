@@ -13,6 +13,7 @@ export default [
     // uebersicht
     route("uebersicht", "./routes/uebersicht/_layout.tsx", [
       index("./routes/uebersicht/_index.tsx"),
+      // verfahren
       route("verfahren", "./routes/verfahren/_layout.tsx", [
         index("./routes/verfahren/_index.tsx"),
         route(":id", "./routes/verfahren/$id/_layout.tsx", [
@@ -24,7 +25,7 @@ export default [
         ]),
       ]),
     ]),
-    // verfahren
+    // prototype verfahren
     ...prefix("prototype/verfahren", [
       index("./routes/prototype.verfahren.tsx"),
       route(":id", "./routes/prototype.verfahren.$id.tsx", {}),
