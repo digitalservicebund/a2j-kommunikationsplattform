@@ -20,21 +20,25 @@ export type CustomUIMatch = UIMatch & {
 
 export const Breadcrumbs = () => {
   const matches = useMatches() as CustomUIMatch[];
+  console.log("All matches:", matches);
 
-  const withCrumbs: CustomUIMatch[] = matches
+  const routesWithCrumbs: CustomUIMatch[] = matches
     .filter((match) => match.handle?.breadcrumb as BreadcrumbMeta)
     .filter(Boolean);
 
-  const items: BreadcrumbItem[] = withCrumbs.map((match: CustomUIMatch) => {
-    const { title } = match?.handle?.breadcrumb as BreadcrumbMeta;
-    const isLast = match.id === withCrumbs[withCrumbs.length - 1].id;
-    return {
-      title,
-      url: match.pathname,
-      id: match.id,
-      disabled: isLast,
-    };
-  });
+  const items: BreadcrumbItem[] = routesWithCrumbs.map(
+    (match: CustomUIMatch) => {
+      const { title } = match?.handle?.breadcrumb as BreadcrumbMeta;
+      const isLast =
+        match.id === routesWithCrumbs[routesWithCrumbs.length - 1].id;
+      return {
+        title,
+        url: match.pathname,
+        id: match.id,
+        disabled: isLast,
+      };
+    },
+  );
 
   return (
     <nav aria-label="Breadcrumb" className="kern-container">
@@ -52,27 +56,25 @@ export const Breadcrumbs = () => {
     </nav>
   );
 };
+
 const Breadcrumb = ({ title, url, disabled }: Omit<BreadcrumbItem, "id">) => {
-  if (disabled) {
-    return (
-      <div className="gap-kern-space-small flex items-center">
-        <p className="kern-body--muted">{title}</p>
-      </div>
-    );
-  }
   return (
     <div className="gap-kern-space-small flex items-center">
-      <a
-        href={url}
-        className="text-kern-layout-text-muted visited:text-kern-layout-text-muted no-underline hover:underline"
-      >
-        {title}
-      </a>
-      {!disabled && (
-        <span
-          className="kern-icon kern-icon--keyboard-double-arrow-right bg-kern-layout-text-muted"
-          aria-hidden="true"
-        ></span>
+      {disabled ? (
+        <p className="kern-body--muted">{title}</p>
+      ) : (
+        <>
+          <a
+            href={url}
+            className="text-kern-layout-text-muted visited:text-kern-layout-text-muted no-underline hover:underline"
+          >
+            {title}
+          </a>
+          <span
+            className="kern-icon kern-icon--keyboard-double-arrow-right bg-kern-layout-text-muted"
+            aria-hidden="true"
+          ></span>
+        </>
       )}
     </div>
   );
