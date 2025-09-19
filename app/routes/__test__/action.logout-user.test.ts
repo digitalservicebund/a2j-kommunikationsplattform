@@ -23,7 +23,9 @@ describe("/action/logout-user route", () => {
     });
 
     expect(response.status).toBe(302);
-    expect(response.headers.get("Location")).toBe("/?status=auto-logged-out");
+    expect(response.headers.get("Location")).toBe(
+      "/login?status=auto-logged-out",
+    );
   });
 
   it("redirects with logged-out status URL params on logout by user", async () => {
@@ -47,6 +49,6 @@ describe("/action/logout-user route", () => {
     });
 
     expect(response.status).toBe(302);
-    expect(response.headers.get("Location")).toBe("/?status=logged-out");
+    expect(response.headers.get("Location")).toBe("/login?status=logged-out");
   });
 });

@@ -6,8 +6,9 @@ test.describe("Demo mode (functionality)", () => {
   }) => {
     await page.goto("/");
     await page.getByTestId("demo-button").click();
+    await expect(page.getByRole("button", { name: "Abmelden" })).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: "Verfahren" }),
+      page.getByRole("button", { name: "Neue Klage einreichen" }),
     ).toBeVisible();
   });
 });

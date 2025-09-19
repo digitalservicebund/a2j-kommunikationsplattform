@@ -1,4 +1,5 @@
 import VerfahrenTile from "~/components/VerfahrenTile";
+import { withSessionLoader } from "~/services/auth/withSessionLoader";
 
 const dummyVerfahrenData = [
   {
@@ -62,6 +63,10 @@ const dummyVerfahrenData = [
     sachverhalt: "Vertragsaufhebungsklage",
   },
 ];
+
+export const loader = withSessionLoader(async () => {
+  return null;
+});
 
 export default function Verfahren() {
   return (
