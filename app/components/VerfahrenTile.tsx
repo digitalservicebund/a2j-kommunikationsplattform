@@ -110,7 +110,10 @@ export default function VerfahrenTile({
       />
 
       <div className="mb-kern-space-large gap-kern-space-x-large flex flex-wrap">
-        <Link to={`/verfahren/${id}`} className="kern-btn kern-btn--primary">
+        <Link
+          to={`/uebersicht/verfahren/${id}`}
+          className="kern-btn kern-btn--primary"
+        >
           <span className="kern-icon kern-icon--open-in-new" aria-hidden />
           <span className="kern-label">Verfahrensdetails anzeigen</span>
         </Link>
