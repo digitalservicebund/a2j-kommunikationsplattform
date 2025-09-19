@@ -19,8 +19,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const logoutType = formData.get("logoutType") as LogoutType;
 
-  console.log(`Logging out user, type: ${logoutType}`);
-
   const session = await getSession(request.headers.get("Cookie"));
 
   return redirect(`/login?status=${logoutType}`, {
