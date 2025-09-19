@@ -1,6 +1,6 @@
 import { it, vi } from "vitest";
-import { fetchFromApi } from "../api/fetchFromApi.server";
-import fetchVerfahrenById from "../verfahren/fetchVerfahrenById.server";
+import { fetchFromApi } from "../../api/fetchFromApi.server";
+import fetchVerfahrenById from "../fetchVerfahrenById.server";
 
 const mocks = vi.hoisted(() => {
   return {
@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => {
   };
 });
 
-vi.mock("../api/fetchFromApi.server", () => ({
+vi.mock("../../api/fetchFromApi.server", () => ({
   fetchFromApi: mocks.fetchFromApi,
 }));
 
