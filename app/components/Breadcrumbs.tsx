@@ -20,7 +20,6 @@ export type CustomUIMatch = UIMatch & {
 
 export const Breadcrumbs = () => {
   const matches = useMatches() as CustomUIMatch[];
-  console.log("All matches:", matches);
 
   const routesWithCrumbs: CustomUIMatch[] = matches
     .filter((match) => match.handle?.breadcrumb as BreadcrumbMeta)
