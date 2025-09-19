@@ -34,17 +34,24 @@ describe("/action/login-user action", () => {
     });
 
     const response = await action({ request, params: {}, context: {} });
+    const res = response as Response;
 
-    expect(response.status).toBe(302);
-    expect(response.headers.get("Location")).toBe("/");
+    expect(res.status).toBe(302);
+    expect(res.headers.get("Location")).toBe("/");
   });
 
   it("delegates to authenticator for BeA login", async () => {
-    // arrange: mock authenticator.authenticate to return a redirect
-    const mockedAuth = vi.mocked(authenticator, { shallow: false });
-    mockedAuth.authenticate.mockResolvedValue(
-      new Response(null, { status: 302, headers: { Location: "/" } }),
-    );
+    // arrange: mock authenticator.authenticate to return an AuthenticationResponse
+    const mockedAuth = vi.mocked(authenticator);
+    const authResponse = {
+      authenticationContext: {
+        accessToken: "bea-token",
+        expiresAt: Date.now() + 1000,
+        demoMode: false,
+      },
+      sessionCookieHeader: "session=abc; Path=/; HttpOnly",
+    };
+    mockedAuth.authenticate.mockResolvedValue(authResponse);
 
     const formData = new FormData();
     formData.append("loginType", LoginType.BeA);
@@ -55,9 +62,8 @@ describe("/action/login-user action", () => {
     });
 
     const response = await action({ request, params: {}, context: {} });
-
-    expect(response.status).toBe(302);
-    expect(response.headers.get("Location")).toBe("/");
+    // action should return the AuthenticationResponse from authenticator
+    expect(response).toEqual(authResponse);
   });
 
   it("returns 400 for invalid login type", async () => {
@@ -70,7 +76,8 @@ describe("/action/login-user action", () => {
     });
 
     const response = await action({ request, params: {}, context: {} });
+    const res = response as Response;
 
-    expect(response.status).toBe(400);
+    expect(res.status).toBe(400);
   });
 });
