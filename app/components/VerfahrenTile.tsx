@@ -4,14 +4,14 @@ import { Link } from "react-router";
 export type VerfahrenTileProps = {
   readonly update?: string;
   readonly abgeschlossen?: boolean;
-  readonly detailsHref: string;
   readonly urteilsHref?: string;
-  readonly mandantin?: string;
-  readonly gegenpartei?: string;
-  readonly vertretung?: string;
-  readonly geschaeftszeichen?: string;
-  readonly gericht?: string;
-  readonly aktenzeichen?: string;
+  readonly id: string;
+  readonly aktenzeichen?: string | null;
+  readonly gericht_name?: string | null;
+  readonly mandantin?: string | null;
+  readonly gegenpartei?: string | null;
+  readonly vertretung?: string | null;
+  readonly geschaeftszeichen?: string | null;
 };
 
 function VerfahrenTileDataItem({
@@ -34,17 +34,19 @@ function VerfahrenTileDataItem({
   );
 }
 
+const notAvailable = "nicht verfügbar";
+
 export default function VerfahrenTile({
   update,
   abgeschlossen = false,
-  detailsHref,
   urteilsHref,
-  mandantin = "nicht verfügbar",
-  gegenpartei = "nicht verfügbar",
-  vertretung = "nicht verfügbar",
-  geschaeftszeichen = "nicht verfügbar",
-  gericht = "nicht verfügbar",
-  aktenzeichen = "nicht verfügbar",
+  id,
+  mandantin,
+  gegenpartei,
+  vertretung,
+  geschaeftszeichen,
+  gericht_name,
+  aktenzeichen,
 }: VerfahrenTileProps) {
   const cssClasses = clsx(
     "relative",
@@ -72,32 +74,32 @@ export default function VerfahrenTile({
       <dl className="kern-row my-0">
         <VerfahrenTileDataItem
           label="Mandant:in"
-          value={mandantin}
+          value={mandantin || notAvailable}
           abgeschlossen={abgeschlossen}
         />
         <VerfahrenTileDataItem
           label="Gegenpartei bzw. -parteien"
-          value={gegenpartei}
+          value={gegenpartei || notAvailable}
           abgeschlossen={abgeschlossen}
         />
         <VerfahrenTileDataItem
           label="Vertreten durch"
-          value={vertretung}
+          value={vertretung || notAvailable}
           abgeschlossen={abgeschlossen}
         />
         <VerfahrenTileDataItem
           label="Eigenes Geschäftszeichen"
-          value={geschaeftszeichen}
+          value={geschaeftszeichen || notAvailable}
           abgeschlossen={abgeschlossen}
         />
         <VerfahrenTileDataItem
           label="Zuständiges Gericht"
-          value={gericht}
+          value={gericht_name || notAvailable}
           abgeschlossen={abgeschlossen}
         />
         <VerfahrenTileDataItem
           label="Aktenzeichen des Gerichts"
-          value={aktenzeichen}
+          value={aktenzeichen || notAvailable}
           abgeschlossen={abgeschlossen}
         />
       </dl>
@@ -108,7 +110,10 @@ export default function VerfahrenTile({
       />
 
       <div className="mb-kern-space-large gap-kern-space-x-large flex flex-wrap">
-        <Link to={detailsHref} className="kern-btn kern-btn--primary">
+        <Link
+          to={`/uebersicht/verfahren/${id}`}
+          className="kern-btn kern-btn--primary"
+        >
           <span className="kern-icon kern-icon--open-in-new" aria-hidden />
           <span className="kern-label">Verfahrensdetails anzeigen</span>
         </Link>

@@ -9,7 +9,7 @@ describe("VerfahrenTile", () => {
   it("should render the default state", () => {
     const { getByRole, queryByRole, getByText, container } = render(
       <MemoryRouter>
-        <VerfahrenTile detailsHref="/verfahren/123" mandantin="Klaus" />
+        <VerfahrenTile id="123" mandantin="Klaus" />
       </MemoryRouter>,
     );
 
@@ -45,10 +45,7 @@ describe("VerfahrenTile", () => {
   it("should render the badge", () => {
     const { getByText, container } = render(
       <MemoryRouter>
-        <VerfahrenTile
-          detailsHref="/verfahren/123"
-          update="Neue Dokumente vom Gericht"
-        />
+        <VerfahrenTile id="123" update="Neue Dokumente vom Gericht" />
       </MemoryRouter>,
     );
 
@@ -59,11 +56,7 @@ describe("VerfahrenTile", () => {
   it("should render the 'abgeschlossen' state", () => {
     const { getByRole, container } = render(
       <MemoryRouter>
-        <VerfahrenTile
-          detailsHref="/verfahren/123"
-          urteilsHref="/urteile/123"
-          abgeschlossen
-        />
+        <VerfahrenTile id="123" urteilsHref="/urteile/123" abgeschlossen />
       </MemoryRouter>,
     );
 
