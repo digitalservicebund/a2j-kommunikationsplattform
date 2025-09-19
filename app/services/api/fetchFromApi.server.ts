@@ -3,6 +3,7 @@ type FetchFromApiOptions = {
   errorMessage: string;
 };
 
+// this is a fixed identifier, which will later be replaced by a suitable authentication.
 const userId = "PierreM";
 const baseUrl = "https://kompla.sinc.de/api/v1";
 
