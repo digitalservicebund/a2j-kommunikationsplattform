@@ -1,6 +1,7 @@
 import { Form } from "react-router";
 import { LogoutType } from "~/routes/action.logout-user";
 
+const baseUrl = "/uebersicht";
 const LogoutButton = () => {
   return (
     <Form method="post" action="/action/logout-user">
@@ -15,9 +16,14 @@ const LogoutButton = () => {
 
 const navigationLinksList = [
   {
-    name: "Verfahren",
+    name: "Übersicht",
     iconName: "kern-icon--home",
-    url: "#",
+    url: baseUrl,
+  },
+  {
+    name: "Verfahren",
+    iconName: "kern-icon--icon--storage",
+    url: `${baseUrl}/verfahren`,
   },
   {
     name: "Mitteilungen",
@@ -27,11 +33,6 @@ const navigationLinksList = [
   {
     name: "Kalender",
     iconName: "kern-icon--calendar-today",
-    url: "#",
-  },
-  {
-    name: "Profil",
-    iconName: "kern-icon--easy-language",
     url: "#",
   },
 ];

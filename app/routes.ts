@@ -10,17 +10,22 @@ export default [
   route("action/logout-user", "./routes/action.logout-user.ts"),
 
   layout("./layouts/default-layout.tsx", [
-    // verfahren
-    route("verfahren", "./routes/verfahren/_layout.tsx", [
-      index("./routes/verfahren/_index.tsx"),
-      route(":id", "./routes/verfahren/$id/_layout.tsx", [
-        index("./routes/verfahren/$id/_index.tsx"),
-        route(
-          "dokument/:dokumentId",
-          "./routes/verfahren/$id/dokument/$dokumentId.tsx",
-        ),
+    // uebersicht
+    route("uebersicht", "./routes/uebersicht/_layout.tsx", [
+      index("./routes/uebersicht/_index.tsx"),
+      // verfahren
+      route("verfahren", "./routes/verfahren/_layout.tsx", [
+        index("./routes/verfahren/_index.tsx"),
+        route(":id", "./routes/verfahren/$id/_layout.tsx", [
+          index("./routes/verfahren/$id/_index.tsx"),
+          route(
+            "dokument/:dokumentId",
+            "./routes/verfahren/$id/dokument/$dokumentId.tsx",
+          ),
+        ]),
       ]),
     ]),
+    // prototype verfahren
     ...prefix("prototype/verfahren", [
       index("./routes/prototype.verfahren.tsx"),
       route(":id", "./routes/prototype.verfahren.$id.tsx", {}),
