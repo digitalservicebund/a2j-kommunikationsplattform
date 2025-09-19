@@ -25,7 +25,7 @@ export async function fetchFromApi(options: FetchFromApiOptions) {
     }
 
     try {
-      return response.json();
+      return await response.json();
     } catch (error) {
       throw new Error(options.errorMessage, { cause: error });
     }
