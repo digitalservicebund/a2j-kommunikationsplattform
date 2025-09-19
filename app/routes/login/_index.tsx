@@ -3,7 +3,7 @@ import Logo from "~/components/Logo.static";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
 import { getUserSession } from "~/services/prototype.session.server";
-import { LoginError, LoginType } from "../action.login";
+import { LoginError, LoginType } from "../action.login-user";
 import { LogoutType } from "../action.logout-user";
 
 // Alert state type
@@ -104,7 +104,7 @@ export default function LoginPage() {
               zwischen Gerichten und Verfahrensbeteiligten.
             </p>
 
-            <Form method="post" action="/action/login">
+            <Form method="post" action="/action/login-user">
               <div className="py-kern-space-large gap-kern-space-default flex flex-row flex-wrap items-start self-stretch">
                 <input
                   type="hidden"
