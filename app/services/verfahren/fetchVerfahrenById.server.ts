@@ -1,5 +1,5 @@
 import VerfahrenSchema from "~/models/VerfahrenSchema";
-import { fetchFromApi } from "./fetchFromApi.server";
+import { fetchFromApi } from "../api/fetchFromApi.server";
 
 type FetchVerfahrenByIdOptions = {
   id: string;

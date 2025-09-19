@@ -1,6 +1,6 @@
 import z from "zod";
 import VerfahrenSchema from "~/models/VerfahrenSchema";
-import { fetchFromApi } from "./fetchFromApi.server";
+import { fetchFromApi } from "../api/fetchFromApi.server";
 
 type FetchVerfahrenOptions = {
   limit?: number;

@@ -1,5 +1,5 @@
 import VerfahrenTile from "~/components/VerfahrenTile";
-import fetchVerfahrenById from "~/services/fetchVerfahrenById.server";
+import fetchVerfahrenById from "~/services/verfahren/fetchVerfahrenById.server";
 import { Route } from "./+types/_index";
 
 export async function loader({ params }: Route.LoaderArgs) {
