@@ -7,13 +7,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   const limit = Number(url.searchParams.get("limit")) || 10;
   const offset = Number(url.searchParams.get("offset")) || 0;
 
-  /* temporary code START */
-  const dummyData = url.searchParams.get("dummy") === "true";
-  if (dummyData) console.warn("Using dummy data!");
-  /* temporary code END */
-
   return {
-    verfahren: await fetchVerfahren({ limit, offset, dummyData }),
+    verfahren: await fetchVerfahren({ limit, offset }),
   };
 }
 

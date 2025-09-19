@@ -2,15 +2,9 @@ import VerfahrenTile from "~/components/VerfahrenTile";
 import fetchVerfahrenById from "~/services/fetchVerfahrenById.server";
 import { Route } from "./+types/_index";
 
-export async function loader({ params, request }: Route.LoaderArgs) {
-  /* temporary code START */
-  const url = new URL(request.url);
-  const dummyData = url.searchParams.get("dummy") === "true";
-  if (dummyData) console.warn("Using dummy data!");
-  /* temporary code END */
-
+export async function loader({ params }: Route.LoaderArgs) {
   return {
-    data: await fetchVerfahrenById({ id: params.id, dummyData }),
+    data: await fetchVerfahrenById({ id: params.id }),
   };
 }
 
