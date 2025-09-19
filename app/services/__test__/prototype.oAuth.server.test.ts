@@ -18,7 +18,7 @@ describe("loginAsDeveloper", () => {
 
     expect(response).toBeInstanceOf(Response);
     expect(response?.status).toBe(302);
-    expect(response?.headers.get("Location")).toBe("/prototype/verfahren");
+    expect(response?.headers.get("Location")).toBe("/");
     expect(response?.headers.get("Set-Cookie")).toContain(
       "session-cookie; demoMode=false",
     );
