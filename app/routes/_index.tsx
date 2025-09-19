@@ -1,5 +1,5 @@
 import { redirect } from "react-router";
-import UebersichtStatic from "~/components/Uebersicht.static";
+import Uebersicht from "~/components/Uebersicht";
 import { getUserSession } from "~/services/prototype.session.server";
 
 export async function loader({ request }: { request: Request }) {
@@ -12,5 +12,5 @@ export async function loader({ request }: { request: Request }) {
 }
 
 export default function IndexPage() {
-  return <UebersichtStatic />;
+  return <Uebersicht />;
 }
