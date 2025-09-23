@@ -2,7 +2,7 @@ import { LoaderFunctionArgs, useLoaderData } from "react-router";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 
 export const loader = withSessionLoader(
-  async ({ params }: LoaderFunctionArg) => {
+  async ({ params }: LoaderFunctionArgs) => {
     return { id: params.id || "unknown" };
   },
 );
