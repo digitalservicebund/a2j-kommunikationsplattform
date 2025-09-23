@@ -1,4 +1,4 @@
-import { useLoaderData } from "react-router";
+import { LoaderFunctionArgs, useLoaderData } from "react-router";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 
 export const loader = withSessionLoader(
