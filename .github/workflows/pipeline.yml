@@ -185,12 +185,10 @@ jobs:
           IMAGE_PATH="/tmp/.docker-cache/${{ env.IMAGE_NAME }}_${{ github.sha }}.tar"
 
           if docker load -i $IMAGE_PATH; then
-            echo "docker-image-load-successful=true" >> $GITHUB_ENV
-            echo "::set-output name=docker-image-load-successful::true"
+            echo "docker-image-load-successful=true" >> $GITHUB_OUTPUT
             echo "Docker image loaded from cache: $IMAGE_PATH"
           else
-            echo "docker-image-load-successful=false" >> $GITHUB_ENV
-            echo "::set-output name=docker-image-load-successful::false"
+            echo "docker-image-load-successful=false" >> $GITHUB_OUTPUT
             echo "Docker image not found in cache: $IMAGE_PATH"
           fi
 
