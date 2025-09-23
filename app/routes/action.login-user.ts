@@ -13,10 +13,12 @@ export enum LoginType {
   BeA = "bea-login",
   Developer = "developer-login",
 }
+
 /**
+ * /action/login-user
+ * 
  * Initiates OAuth2 login on beA-Portal (BRAK IdP)
  */
-
 export const action = async ({ request }: ActionFunctionArgs) => {
   // using clone() to be able to read the body multiple times
   const formData = await request.clone().formData();
