@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs } from "react-router";
-import { loginAsDeveloper } from "~/services/mockAuth.server";
+import { loginAsDeveloper } from "~/mocks/auth/mockAuth.server";
 import {
   AuthenticationProvider,
   authenticator,

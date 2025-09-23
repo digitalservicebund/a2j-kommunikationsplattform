@@ -1,5 +1,5 @@
 import { it, vi } from "vitest";
-import { loginAsDeveloper } from "~/services/mockAuth.server";
+import { loginAsDeveloper } from "~/mocks/auth/mockAuth.server";
 import { createUserSession } from "~/services/prototype.session.server";
 
 vi.mock("~/services/prototype.session.server");
