@@ -1,5 +1,5 @@
 import { redirect } from "react-router";
-import Uebersicht from "~/components/Uebersicht";
+import Uebersicht from "~/components/Uebersicht.static";
 import { getUserSession } from "~/services/prototype.session.server";
 
 export async function loader({ request }: { request: Request }) {
