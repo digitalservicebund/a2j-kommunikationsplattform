@@ -7,9 +7,9 @@ export default [
   ]),
 
   route("action/login-user", "./routes/action.login-user.ts"),
+  route("action/logout-user", "./routes/action.logout-user.ts"),
   route("auth/callback", "./routes/auth.callback.tsx"),
   route("error", "./routes/error.tsx"),
-  route("action/logout-user", "./routes/action.logout-user.ts"),
 
   layout("./layouts/default-layout.tsx", [
     // uebersicht
