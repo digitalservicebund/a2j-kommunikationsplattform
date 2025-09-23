@@ -8,7 +8,8 @@ export const loader = withSessionLoader(
 );
 
 export default function Verfahrendetails() {
-  const { id } = useLoaderData<typeof loader>();
+  const { id } = useLoaderData<{ id: string }>();
+  
   return (
     <div>
       <h1 className="kern-heading-large">Verfahrendetails for {id}</h1>
