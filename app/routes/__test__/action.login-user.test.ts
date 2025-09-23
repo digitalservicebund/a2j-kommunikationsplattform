@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("~/services/mockAuth.server", () => ({
+vi.mock("~/mocks/auth/mockAuth.server", () => ({
   loginAsDeveloper: vi.fn(),
 }));
 
