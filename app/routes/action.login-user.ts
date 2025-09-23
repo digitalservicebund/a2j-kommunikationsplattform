@@ -16,7 +16,7 @@ export enum LoginType {
 
 /**
  * /action/login-user
- * 
+ *
  * Initiates OAuth2 login on beA-Portal (BRAK IdP)
  */
 export const action = async ({ request }: ActionFunctionArgs) => {
