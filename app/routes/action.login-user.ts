@@ -26,12 +26,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   if (loginType === LoginType.Developer) {
     return await loginAsDeveloper(request);
-  } else if (loginType === LoginType.BeA) {
+  }
+
+  if (loginType === LoginType.BeA) {
     return await authenticator.authenticate(
       AuthenticationProvider.BEA,
       request,
     );
-  } else {
-    return new Response("Bad Request", { status: 400 });
   }
+  return new Response("Invalid login type", { status: 400 });
 };

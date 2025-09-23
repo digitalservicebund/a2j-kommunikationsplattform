@@ -21,7 +21,7 @@ test.describe("Homepage (_index route)", () => {
     test.slow();
     await page.goto("/");
     await page
-      .getByRole("link", {
+      .getByRole("button", {
         name: "Anmeldung Anwaltschaft",
       })
       .click();
@@ -38,7 +38,7 @@ test.describe("Homepage (_index route)", () => {
   test(`shows success alert box for status=logged-out URL param (will be shown after using the logout button)`, async ({
     page,
   }) => {
-    await page.goto(`/?status=${LogoutType.ByUser}`);
+    await page.goto(`/login?status=${LogoutType.ByUser}`);
     await expect(page.getByRole("alert")).toContainText(
       "Erfolgreich abgemeldet",
     );
@@ -47,7 +47,7 @@ test.describe("Homepage (_index route)", () => {
   test(`shows warning alert box for status=auto-logged-out URL param (will be shown after 60 min. of inactivity to our logged in users)`, async ({
     page,
   }) => {
-    await page.goto(`/?status=${LogoutType.Automatic}`);
+    await page.goto(`/login?status=${LogoutType.Automatic}`);
     await expect(page.getByRole("alert")).toContainText(
       "Automatisch abgemeldet",
     );
@@ -56,7 +56,7 @@ test.describe("Homepage (_index route)", () => {
   test(`shows danger alert box for status=bea-login-error URL param (will be shown on any beA-portal login error)`, async ({
     page,
   }) => {
-    await page.goto(`/?status=${LoginError.BeA}`);
+    await page.goto(`/login?status=${LoginError.BeA}`);
     await expect(page.getByRole("alert")).toContainText(
       "Fehler bei der Anmeldung",
     );
