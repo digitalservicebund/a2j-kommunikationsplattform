@@ -1,4 +1,10 @@
-import { Form, Link, redirect, useSearchParams } from "react-router";
+import {
+  Form,
+  Link,
+  redirect,
+  useLoaderData,
+  useSearchParams,
+} from "react-router";
 import Logo from "~/components/Logo.static";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
@@ -24,7 +30,7 @@ export async function loader({ request }: { request: Request }) {
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
-  const environment = process.env.NODE_ENV;
+  const { environment } = useLoaderData<typeof loader>();
   const alertStatus = searchParams.get("status") as AlertState;
   const loginButtonLabel: string =
     environment === "development"

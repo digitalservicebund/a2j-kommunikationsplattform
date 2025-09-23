@@ -37,18 +37,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 
       const session = await getSession(request.headers.get("Cookie"));
 
-      return redirect(`/?status=${LoginError.BeA}`, {
+      return redirect(`login/?status=${LoginError.BeA}`, {
         headers: {
           "Set-Cookie": await destroySession(session),
         },
       });
     });
 };
-
-export default function AuthCallback() {
-  return (
-    <main>
-      <h1 className="kern-heading-display">Authentication callback error</h1>
-    </main>
-  );
-}
