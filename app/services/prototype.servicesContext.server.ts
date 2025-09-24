@@ -42,7 +42,7 @@ class ServicesContext {
 
   static isDemoModeAllowed(): boolean {
     const environment = config().ENVIRONMENT;
-    return environment === "staging" || environment === "development";
+    return environment !== "production";
   }
 }
 

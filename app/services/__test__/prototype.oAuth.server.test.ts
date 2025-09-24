@@ -1,5 +1,5 @@
 import { it, vi } from "vitest";
-import { loginAsDeveloper } from "~/services/mockAuth.server";
+import { loginAsDeveloper } from "~/mocks/auth/mockAuth.server";
 import { createUserSession } from "~/services/prototype.session.server";
 
 vi.mock("~/services/prototype.session.server");
@@ -18,7 +18,7 @@ describe("loginAsDeveloper", () => {
 
     expect(response).toBeInstanceOf(Response);
     expect(response?.status).toBe(302);
-    expect(response?.headers.get("Location")).toBe("/prototype/verfahren");
+    expect(response?.headers.get("Location")).toBe("/");
     expect(response?.headers.get("Set-Cookie")).toContain(
       "session-cookie; demoMode=false",
     );
