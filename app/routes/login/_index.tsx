@@ -32,6 +32,7 @@ const loginButtonLabels: Record<LoginType, string> = {
   [LoginType.BeA]: "Anmeldung Anwaltschaft (über beA Login)",
   [LoginType.Developer]: "Login as Developer",
 };
+
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const { environment } = useLoaderData<typeof loader>();
