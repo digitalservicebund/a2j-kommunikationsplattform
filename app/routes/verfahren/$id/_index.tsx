@@ -1,17 +1,29 @@
+import { LoaderFunctionArgs, useLoaderData } from "react-router";
 import VerfahrenTile from "~/components/VerfahrenTile";
+import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import fetchVerfahrenById from "~/services/verfahren/fetchVerfahrenById.server";
-import { Route } from "./+types/_index";
 
-export async function loader({ params }: Route.LoaderArgs) {
-  return {
-    data: await fetchVerfahrenById({ id: params.id }),
-  };
-}
+export const loader = withSessionLoader(
+  async ({ params }: LoaderFunctionArgs) => {
+    if (params.id) {
+      return {
+        data: await fetchVerfahrenById({ id: params.id }),
+      };
+    } else {
+      throw new Response(
+        "Das Verfahrensdetail konnte nicht abgerufen werden.",
+        {
+          status: 500,
+        },
+      );
+    }
+  },
+);
 
-export default function Verfahrensdetails({
-  loaderData,
-}: Route.ComponentProps) {
-  const { data } = loaderData;
+export default function Verfahrendetails() {
+  const { data } = useLoaderData<{
+    data: Awaited<ReturnType<typeof fetchVerfahrenById>>;
+  }>();
 
   return (
     <>

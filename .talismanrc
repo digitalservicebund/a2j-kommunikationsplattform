@@ -2,7 +2,7 @@ fileignoreconfig:
   - filename: SECURITY.md
     checksum: b1743150cdd537be3a66f5308f887d130f0f320ab21628b63713808090a84e3f
   - filename: .github/workflows/pipeline.yml
-    checksum: fdc74c2957ef7f57e7a1bfd50599fa5730eacf829d8e02d8449fc9def8ab3706
+    checksum: 431d1d2cb0a9c333b12b255390d4e214552113b98da90d98f608bf3a8b720366
   - filename: .env.example
     checksum: da4e98ae25d8ead27bd2e93dcfabe316de08b4400933fb60de5f06e1cec111a0
   - filename: package-lock.json
@@ -42,9 +42,9 @@ fileignoreconfig:
   - filename: app/components/__test__/ContentPage.test.tsx
     checksum: a2c62ce36ce3ceea9fcc6757afc6d0d1fb5d4c8a5dbad2b5236d09bfff4e7a75
   - filename: app/components/Navigation.static.tsx
-    checksum: e4f6f29b13f77f1c5aa7c4896c26827b46d42283dd9399e6c3e49fd3e03bdb14
+    checksum: 01c99985c8fd612f00da51787a471794c62c97661b3c4d837748345fdde7d369
   - filename: app/routes/verfahren/_index.tsx
-    checksum: f756740bc2bfa20a563256f1a7a81240ea30b986c24b29ccec4f8ce336060839
+    checksum: 5ce91867ac70263ee4df690a1980dedbe34e23b4253a2656db172bd826583371
   - filename: app/components/Breadcrumbs.tsx
     checksum: 3afb510de025db16ff8736c58c4cda79db6869083603f5c955d2d46b6a84faf1
   - filename: app/services/security/cspHeader.server.ts

@@ -1,19 +1,25 @@
+import { LoaderFunctionArgs, useLoaderData } from "react-router";
 import VerfahrenTile from "~/components/VerfahrenTile";
+import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import fetchVerfahren from "~/services/verfahren/fetchVerfahren.server";
-import { Route } from "./+types/_index";
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const url = new URL(request.url);
-  const limit = Number(url.searchParams.get("limit")) || 10;
-  const offset = Number(url.searchParams.get("offset")) || 0;
+export const loader = withSessionLoader(
+  async ({ request }: LoaderFunctionArgs) => {
+    const url = new URL(request.url);
+    const limit = Number(url.searchParams.get("limit")) || 10;
+    const offset = Number(url.searchParams.get("offset")) || 0;
 
-  return {
-    verfahren: await fetchVerfahren({ limit, offset }),
-  };
-}
+    const verfahren = await fetchVerfahren({ limit, offset });
+    return {
+      verfahren,
+    };
+  },
+);
 
-export default function Verfahren({ loaderData }: Route.ComponentProps) {
-  const { verfahren } = loaderData;
+export default function Verfahren() {
+  const { verfahren } = useLoaderData<{
+    verfahren: Awaited<ReturnType<typeof fetchVerfahren>>;
+  }>();
 
   return (
     <>
