@@ -2,16 +2,18 @@ import { clsx } from "clsx";
 import { Link } from "react-router";
 
 export type VerfahrenTileProps = {
-  readonly update?: string;
-  readonly abgeschlossen?: boolean;
-  readonly urteilsHref?: string;
   readonly id: string;
   readonly aktenzeichen?: string | null;
   readonly gericht_name?: string | null;
+  // START (not available via API)
+  readonly update?: string | null;
+  readonly abgeschlossen?: boolean;
+  readonly urteilsHref?: string | null;
   readonly mandantin?: string | null;
   readonly gegenpartei?: string | null;
   readonly vertretung?: string | null;
   readonly geschaeftszeichen?: string | null;
+  // END
 };
 
 function VerfahrenTileDataItem({
@@ -37,16 +39,18 @@ function VerfahrenTileDataItem({
 const notAvailable = "nicht verfügbar";
 
 export default function VerfahrenTile({
+  id,
+  aktenzeichen,
+  gericht_name,
+  // START (not available via API)
   update,
   abgeschlossen = false,
   urteilsHref,
-  id,
   mandantin,
   gegenpartei,
   vertretung,
   geschaeftszeichen,
-  gericht_name,
-  aktenzeichen,
+  // END
 }: VerfahrenTileProps) {
   const cssClasses = clsx(
     "relative",
