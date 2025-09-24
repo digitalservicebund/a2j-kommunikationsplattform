@@ -12,7 +12,7 @@ fileignoreconfig:
   - filename: .github/workflows/scan.yml
     checksum: b845ef02e7f8e27be5b69e151e8084ca89bb08567cd4284cfd0c0dc3e0ab9a1f
   - filename: mocks/api/handlers.js
-    checksum: 6b2c676fe6fbeb01fa7832dc094de4bee695a579cf07eed1857e25d75ed27a69
+    checksum: e8f0abe6c0cad171978c8a247ab436d14409394e4d8908523a3c228c0909aa9b
   - filename: app/services/fileUpload.server.ts
     checksum: bc2812232864b6d3b6f9189b95fea278d34952318ddb0deaf41be7ac5fd43d35
   - filename: app/services/prototype.oAuth.server.ts
@@ -44,7 +44,7 @@ fileignoreconfig:
   - filename: app/components/Navigation.static.tsx
     checksum: e4f6f29b13f77f1c5aa7c4896c26827b46d42283dd9399e6c3e49fd3e03bdb14
   - filename: app/routes/verfahren/_index.tsx
-    checksum: 55e716d830bec40d99717cf4bd094848269bbe929b0c8ed1e31140415177953c
+    checksum: f756740bc2bfa20a563256f1a7a81240ea30b986c24b29ccec4f8ce336060839
   - filename: app/components/Breadcrumbs.tsx
     checksum: 3afb510de025db16ff8736c58c4cda79db6869083603f5c955d2d46b6a84faf1
   - filename: app/services/security/cspHeader.server.ts
