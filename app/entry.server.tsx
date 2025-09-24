@@ -134,7 +134,6 @@ function handleBrowserRequest(
           url={request.url}
           nonce={cspNonce}
         />
-        ,
       </NonceContext.Provider>,
       {
         nonce: cspNonce,
