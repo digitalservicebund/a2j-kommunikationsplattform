@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { it } from "vitest";
 import { PageMetadata } from "../PageMetadata";
 
@@ -12,8 +12,6 @@ describe("PageMetadata", () => {
         description="This is a description to be tested"
       />,
     );
-
-    console.log(screen.debug());
 
     // check if title is present
     expect(document.title).toBe(

@@ -1,12 +1,18 @@
 /**
  * All defined mocked data for MSW Mocking responses within `./handlers.js`
  */
-const mockVerfahrenErstelltAktenzeichen = "JBA-82746242";
-const mockVerfahrenEingereichtAktenzeichen = "JBA-17546037";
+const mockVerfahrenErstelltAktenzeichen = "42C8372/25";
+const mockVerfahrenEingereichtAktenzeichen = "78C8973/25";
+const mockVerfahrenEingereichtAktenzeichen1 = "12C4374/25";
+const mockVerfahrenEingereichtAktenzeichen2 = "92C2275/25";
 
 export const mockVerfahrenErstelltId = "2ab3cbc7-d00a-48bf-95a1-4d6f07406196";
 export const mockVerfahrenEingereichtId =
-  "1abbb42e-beec-4407-938e-a2d05321de01";
+  "77ba2bbf-be60-4fb3-be3e-132b66a8fe4e";
+export const mockVerfahrenEingereichtId1 =
+  "50e910ef-721c-4a84-9da9-2709308be07a";
+export const mockVerfahrenEingereichtId2 =
+  "dd61ed82-d2ab-4dc0-9734-620b46577505";
 
 // response example: /api/v1/verfahren/{verfahren-id}
 export const mockVerfahrenErstellt = {
@@ -15,7 +21,17 @@ export const mockVerfahrenErstellt = {
   status: "Erstellt",
   status_changed: "2025-03-08T05:00:29.659Z",
   eingereicht_am: "2024-12-29T22:46:29.329Z",
-  gericht_name: "Landgericht Frankfurt",
+  gericht_name: "Amtsgericht Spandau",
+  // START (not available via API)
+  update: "Neue Dokumente der Gegenseite",
+  mandantin: "Lisa Schönfeld (Kläger:in)",
+  gegenpartei: "Tim Hartmann (Beklagte:r)",
+  vertretung: "Rechtsanwalt Dr. Nico Müller",
+  geschaeftszeichen: "C173 04/2025",
+  verfahrensstand: "Rechtshängig",
+  rechtsgebiet: "Mietsachen",
+  sachverhalt: "Räumungsklage",
+  // END
 };
 
 // response example: /api/v1/verfahren/{verfahren-id}
@@ -25,7 +41,60 @@ export const mockVerfahrenEingereicht = {
   status: "Eingereicht",
   status_changed: "2025-04-03T10:42:08.749Z",
   eingereicht_am: "2025-03-08T04:08:25.169Z",
-  gericht_name: "Landgericht Bonn",
+  gericht_name: "Amtsgericht Spandau",
+  // START (not available via API)
+  update: "Neue Dokumente der Gerichts",
+  mandantin:
+    "Niklas-Leonhard Theodor Emanuel von und zu Schönborn-Lichtenwalde (Kläger:in)",
+  gegenpartei:
+    "Annabelle-Christiane Theresia Leonora-Madeleine von Breitenfeld-Rosenegg (Beklagte:r)",
+  vertretung:
+    "Rechtsanwältin Dr. Charlotte-Victoria Emilie Katharina von Hardenberg-Freystetten-Löwenfels",
+  geschaeftszeichen: "C023 03/2025",
+  verfahrensstand: "Rechtshängig",
+  rechtsgebiet: "Vertragssachen",
+  sachverhalt: "Zahlungsklage",
+  // END
+};
+
+// response example: /api/v1/verfahren/{verfahren-id}
+export const mockVerfahrenEingereicht1 = {
+  id: mockVerfahrenEingereichtId1,
+  aktenzeichen: mockVerfahrenEingereichtAktenzeichen1,
+  status: "Eingereicht",
+  status_changed: "2025-04-03T10:42:08.749Z",
+  eingereicht_am: "2025-03-08T04:08:25.169Z",
+  gericht_name: "Amtsgericht Schöneberg",
+  // START (not available via API)
+  mandantin: "Tina Dollinger-Schütz (Beklagte:r)",
+  gegenpartei:
+    "Sebastian Pfaffner, Timo Stöbel, Jochen Klang, Kai Uwe-Platt, Philippa-Sophie Helena Maria-Theresia von Altenmoor-Hohenleuben, Jonas-Ferdinand Leopold Alexander-Maurice von Eichenhorst-Krumbach (Kläger:in)",
+  vertretung: "Rechtsanwalt Lukas Larsen",
+  geschaeftszeichen: "C341 03/2025",
+  verfahrensstand: "Anhängig",
+  rechtsgebiet: "Vertragssachen",
+  sachverhalt: "Zahlungsklage",
+  // END
+};
+
+// response example: /api/v1/verfahren/{verfahren-id}
+export const mockVerfahrenEingereicht2 = {
+  id: mockVerfahrenEingereichtId2,
+  aktenzeichen: mockVerfahrenEingereichtAktenzeichen2,
+  status: "Eingereicht",
+  status_changed: "2025-04-03T10:42:08.749Z",
+  eingereicht_am: "2025-03-08T04:08:25.169Z",
+  gericht_name: "Amtsgericht Kreuzberg",
+  // START (not available via API)
+  abgeschlossen: true,
+  mandantin: "Janna Woods (Kläger:in)",
+  gegenpartei: "Franziska Liebig, Tiffany Drey, Jana Hummel (Beklagte:r)",
+  vertretung: "Rechtsanwalt Dr. Berndt Böhmer",
+  geschaeftszeichen: "C5947 12/2024",
+  verfahrensstand: "Erkenntnisverfahren abgeschlossen",
+  rechtsgebiet: "Vertragsrecht",
+  sachverhalt: "Vertragsaufhebungsklage",
+  // END
 };
 
 // mapping for /api/v1/verfahren/{verfahren-id}/akte response examples

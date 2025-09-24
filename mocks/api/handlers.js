@@ -6,6 +6,8 @@ import {
   getDokumentByAktenteilId,
   mockAktenteilDokumente,
   mockVerfahrenEingereicht,
+  mockVerfahrenEingereicht1,
+  mockVerfahrenEingereicht2,
   mockVerfahrenEingereichtAkte,
   mockVerfahrenEingereichtId,
   mockVerfahrenErstellt,
@@ -32,6 +34,8 @@ const verfahren = new Map();
 let verfahrenId = 0;
 verfahren.set(verfahrenId++, mockVerfahrenErstellt);
 verfahren.set(verfahrenId++, mockVerfahrenEingereicht);
+verfahren.set(verfahrenId++, mockVerfahrenEingereicht1);
+verfahren.set(verfahrenId++, mockVerfahrenEingereicht2);
 
 // init Akte "eingereicht" data
 const aktenteilDokumenteVerfahrenErstellt = new Map();
