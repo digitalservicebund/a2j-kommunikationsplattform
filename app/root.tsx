@@ -17,6 +17,7 @@ import {
 } from "react-router";
 import { Breadcrumbs } from "~/components/Breadcrumbs";
 import Header from "~/components/Header";
+import { contentPages } from "~/constants/contentPages";
 import { useNonce } from "~/services/security/nonce";
 import type { Route } from "./+types/root";
 import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
@@ -29,7 +30,9 @@ export type RootLoader = typeof loader;
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userIsLoggedIn = Boolean(await hasUserSession(request));
-  return data({ userIsLoggedIn });
+  const pathname = new URL(request.url).pathname;
+  const isContentPage = contentPages.some((page) => page.path === pathname);
+  return data({ userIsLoggedIn, isContentPage });
 };
 
 export const links: LinksFunction = () => [
@@ -77,7 +80,10 @@ export function Layout({ children }: { children: ReactNode }) {
         />
       </head>
       <body>
-        <Header userIsLoggedIn={loaderData?.userIsLoggedIn} />
+        <Header
+          userIsLoggedIn={loaderData?.userIsLoggedIn}
+          isContentPage={loaderData.isContentPage}
+        />
         {children}
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
