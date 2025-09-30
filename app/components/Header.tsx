@@ -14,16 +14,15 @@ export default function Header({
   const navigate = useNavigate();
   console.log("iscontentpage", isContentPage);
 
-  return (
-    <header>
-      <Kopfzeile />
-      {userIsLoggedIn && (
+  if (isContentPage) {
+    return (
+      <header>
+        <Kopfzeile />
         <div className="kern-container">
           <div className="gap-kern-space-small pt-kern-space-large flex flex-col">
-            {!isContentPage && <UserProfile />}
             <div className="gap-kern-space-small flex flex-col items-center justify-between xl:flex-row">
               <Logo />
-              {isContentPage ? (
+              {userIsLoggedIn && (
                 <button
                   type="button"
                   className="kern-link cursor-pointer bg-transparent"
@@ -32,9 +31,27 @@ export default function Header({
                   <span className="kern-icon kern-icon--arrow-back kern-icon--default"></span>
                   <span>Zurück</span>
                 </button>
-              ) : (
-                <Navigation />
               )}
+            </div>
+          </div>
+          <div className="py-kern-space-large">
+            <hr className="kern-divider" aria-hidden="true" />
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  return (
+    <header>
+      <Kopfzeile />
+      {userIsLoggedIn && (
+        <div className="kern-container">
+          <div className="gap-kern-space-small pt-kern-space-large flex flex-col">
+            <UserProfile />
+            <div className="gap-kern-space-small flex flex-col items-center justify-between xl:flex-row">
+              <Logo />
+              <Navigation />
             </div>
           </div>
           <div className="py-kern-space-large">
