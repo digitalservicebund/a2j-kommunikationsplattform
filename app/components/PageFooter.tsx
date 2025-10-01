@@ -1,10 +1,8 @@
 import { Link } from "react-router";
-
-export const PROJECT_DESCRIPTION =
-  "Ein Onlineprojekt der DigitalService GmbH des Bundes in Zusammenarbeit mit der BRAK, SINC und im Auftrag des BMJV.";
-export const FOOTER_ARIA_LABEL = "Rechtliche und weiterführende Informationen";
+import { de } from "~/services/translations/de";
 
 export default function PageFooter() {
+  const { FOOTER_ARIA_LABEL, PROJECT_DESCRIPTION } = de.footer;
   return (
     <footer className="mt-kern-space-x-large">
       <nav

@@ -9,6 +9,7 @@ import Logo from "~/components/Logo.static";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
 import { getUserSession } from "~/services/prototype.session.server";
+import { de } from "~/services/translations/de";
 import { LoginError, LoginType } from "../action.login-user";
 import { LogoutType } from "../action.logout-user";
 
@@ -39,6 +40,7 @@ export default function LoginPage() {
   const alertStatus = searchParams.get("status") as AlertState;
   const isDevelopment = environment === "development";
   const currentLoginType = isDevelopment ? LoginType.Developer : LoginType.BeA;
+  const { alert } = de;
 
   return (
     <>
@@ -57,10 +59,7 @@ export default function LoginPage() {
             <span className="kern-title">Automatisch abgemeldet</span>
           </div>
           <div className="kern-alert__body">
-            <p className="kern-body">
-              Aus Sicherheitsgründen wurden Sie nach 60 Minuten Inaktivität
-              automatisch abgemeldet. Bitte melden Sie sich erneut an.
-            </p>
+            <p className="kern-body">{alert.LOGOUT_AUTOMATIC_MESSAGE}</p>
           </div>
         </div>
       )}
@@ -75,7 +74,7 @@ export default function LoginPage() {
               className="kern-icon kern-icon--success kern-icon--small"
               aria-hidden
             ></span>
-            <span className="kern-title">Erfolgreich abgemeldet</span>
+            <span className="kern-title">{alert.LOGOUT_BY_USER_MESSAGE}</span>
           </div>
         </div>
       )}
