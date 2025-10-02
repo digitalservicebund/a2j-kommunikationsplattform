@@ -1,13 +1,13 @@
 import { Link } from "react-router";
-import { de } from "~/services/translations/de";
+import { useTranslations } from "~/services/translations/context";
 
 export default function PageFooter() {
-  const { FOOTER_ARIA_LABEL, PROJECT_DESCRIPTION } = de.footer;
+  const { labels, descriptions } = useTranslations();
   return (
     <footer className="mt-kern-space-x-large">
       <nav
         className="gap-x-kern-space-default flex flex-row flex-wrap justify-center"
-        aria-label={FOOTER_ARIA_LABEL}
+        aria-label={labels.FOOTER_ARIA_LABEL}
       >
         <Link to="/datenschutz" className="kern-link">
           Datenschutz
@@ -30,7 +30,7 @@ export default function PageFooter() {
       </nav>
       <div className="mt-kern-space-default mb-kern-space-x-large text-center">
         <p className="kern-body kern-body--small kern-body--muted">
-          {PROJECT_DESCRIPTION}
+          {descriptions.PROJECT_DESCRIPTION}
         </p>
       </div>
     </footer>

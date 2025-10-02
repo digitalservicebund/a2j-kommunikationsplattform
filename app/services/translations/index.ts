@@ -1,11 +1,11 @@
 import de from "./de";
 import en from "./en";
 
-const translations = { de, en } as const;
+export const dictionaries = { de, en } as const;
 
-export type Language = keyof typeof translations;
-export type RouteName = keyof typeof de;
-
-export function getTranslations(lang: Language) {
-  return translations[lang] || translations.de;
-}
+export type Language = keyof typeof dictionaries;
+//This converts all properties from DE translations to strings, hence making the type usable for type safety in other languages without enforcing the german text
+export type Stringified<T> = {
+  [K in keyof T]: T[K] extends object ? Stringified<T[K]> : string;
+};
+export type Translations = Stringified<typeof de>;

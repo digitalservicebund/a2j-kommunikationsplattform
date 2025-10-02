@@ -9,7 +9,7 @@ import Logo from "~/components/Logo.static";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
 import { getUserSession } from "~/services/prototype.session.server";
-import { de } from "~/services/translations/de";
+import { useTranslations } from "~/services/translations/context";
 import { LoginError, LoginType } from "../action.login-user";
 import { LogoutType } from "../action.logout-user";
 
@@ -29,23 +29,22 @@ export async function loader({ request }: { request: Request }) {
   return { environment };
 }
 
-const loginButtonLabels: Record<LoginType, string> = {
-  [LoginType.BeA]: "Anmeldung Anwaltschaft (über beA Login)",
-  [LoginType.Developer]: "Login as Developer",
-};
-
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const { environment } = useLoaderData<typeof loader>();
   const alertStatus = searchParams.get("status") as AlertState;
   const isDevelopment = environment === "development";
   const currentLoginType = isDevelopment ? LoginType.Developer : LoginType.BeA;
-  const { alert } = de;
+  const { alerts, buttons, titles } = useTranslations();
+
+  const loginButtonLabels: Record<LoginType, string> = {
+    [LoginType.BeA]: buttons.LOGIN_BUTTON_BEA,
+    [LoginType.Developer]: buttons.LOGIN_BUTTON_DEVELOPER,
+  };
 
   return (
     <>
       <PageMetadata />
-
       {alertStatus === LogoutType.Automatic && (
         <div
           className="kern-alert kern-alert--warning my-kern-space-default"
@@ -56,10 +55,10 @@ export default function LoginPage() {
               className="kern-icon kern-icon--warning kern-icon--small"
               aria-hidden
             ></span>
-            <span className="kern-title">Automatisch abgemeldet</span>
+            <span className="kern-title">{alerts.LOGOUT_AUTOMATIC_TITLE}</span>
           </div>
           <div className="kern-alert__body">
-            <p className="kern-body">{alert.LOGOUT_AUTOMATIC_MESSAGE}</p>
+            <p className="kern-body">{alerts.LOGOUT_AUTOMATIC_MESSAGE}</p>
           </div>
         </div>
       )}
@@ -74,7 +73,7 @@ export default function LoginPage() {
               className="kern-icon kern-icon--success kern-icon--small"
               aria-hidden
             ></span>
-            <span className="kern-title">{alert.LOGOUT_BY_USER_MESSAGE}</span>
+            <span className="kern-title">{alerts.LOGOUT_BY_USER_MESSAGE}</span>
           </div>
         </div>
       )}
@@ -92,10 +91,7 @@ export default function LoginPage() {
             <span className="kern-title">Fehler bei der Anmeldung</span>
           </div>
           <div className="kern-alert__body">
-            <p className="kern-body">
-              Die Anmeldung über beA-Zugangsdaten war nicht erfolgreich. Bitte
-              versuchen Sie es erneut.
-            </p>
+            <p className="kern-body">{alerts.LOGIN_ERROR_MESSAGE_BEA}</p>
           </div>
         </div>
       )}
@@ -107,8 +103,7 @@ export default function LoginPage() {
           <hr className="kern-divider mt-kern-space-default" aria-hidden />
 
           <p className="kern-subline my-kern-space-default">
-            Willkommen auf der Pilotplattform für den digitalen Austausch
-            zwischen Gerichten und Verfahrensbeteiligten.
+            {titles.WELCOME_TITLE}
           </p>
 
           <Form method="post" action="/action/login-user">
@@ -127,7 +122,9 @@ export default function LoginPage() {
                 className="kern-btn kern-btn--primary kern-btn--block"
                 disabled
               >
-                <span className="kern-label">Anmeldung Gerichte</span>
+                <span className="kern-label">
+                  {buttons.LOGIN_BUTTON_GERICHTE}
+                </span>
               </button>
 
               {/* only render "Testzugang" demo link for non production environments */}
@@ -140,7 +137,9 @@ export default function LoginPage() {
                   }}
                   data-testid="demo-button"
                 >
-                  <span className="kern-label">Testzugang</span>
+                  <span className="kern-label">
+                    {buttons.LOGIN_BUTTON_TEST_ZUGANG}
+                  </span>
                 </Link>
               )}
             </div>

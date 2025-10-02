@@ -1,14 +1,4 @@
-const PLATFORM_TITLE = "Kommunikationsplattform | Justiz-Services";
-const PLATFORM_DESCRIPTION =
-  "Willkommen auf der Pilotplattform für den digitalen Austausch zwischen Gerichten und Verfahrensbeteiligten.";
-
-function pageTitle(text?: string) {
-  if (text) {
-    return `${text} | ${PLATFORM_TITLE}`;
-  } else {
-    return PLATFORM_TITLE;
-  }
-}
+import { useTranslations } from "~/services/translations/context";
 
 export type PageMetadataOptions = {
   title?: string;
@@ -16,10 +6,21 @@ export type PageMetadataOptions = {
 };
 
 export function PageMetadata({ title, description }: PageMetadataOptions) {
+  const { titles, descriptions } = useTranslations();
+  function pageTitle(text?: string) {
+    if (text) {
+      return `${text} | ${titles.PLATFORM_TITLE}`;
+    } else {
+      return titles.PLATFORM_TITLE;
+    }
+  }
   return (
     <>
       <title>{pageTitle(title)}</title>
-      <meta name="description" content={description || PLATFORM_DESCRIPTION} />
+      <meta
+        name="description"
+        content={description || descriptions.PLATFORM_DESCRIPTION}
+      />
     </>
   );
 }
