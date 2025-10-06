@@ -50,7 +50,7 @@ export const de = {
   },
   descriptions: {
     PROJECT_DESCRIPTION:
-      " Ein Onlineprojekt der DigitalService GmbH des Bundes in Zusammenarbeit mit der BRAK, SINC und im Auftrag des BMJV.",
+      "Ein Onlineprojekt der DigitalService GmbH des Bundes in Zusammenarbeit mit der BRAK, SINC und im Auftrag des BMJV.",
     PLATFORM_DESCRIPTION:
       "Willkommen auf der Pilotplattform für den digitalen Austausch zwischen Gerichten und Verfahrensbeteiligten.",
   },
