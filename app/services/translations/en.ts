@@ -14,6 +14,7 @@ export const en: Translations = {
   },
   errorMessages: {
     TRY_LATER_MESSAGE: "Please try again later.",
+    LOGIN_ERROR_MESSAGE: "Login error",
   },
   alerts: {
     LOGOUT_AUTOMATIC_TITLE: "Automatically logged out",
@@ -36,7 +37,6 @@ export const en: Translations = {
     KOPFZEILE_LABEL: "Official website – Federal Republic of Germany",
     LOGO_LABEL: "Kommunikationsplattform",
     LOGGED_IN_AS_LABEL: "Logged in as:",
-
     START_PAGE_LABEL: "Home",
   },
   titles: {

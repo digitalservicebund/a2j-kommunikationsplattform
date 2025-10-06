@@ -12,6 +12,7 @@ export const de = {
   },
   errorMessages: {
     TRY_LATER_MESSAGE: "Bitte versuchen Sie es später erneut.",
+    LOGIN_ERROR_MESSAGE: "Fehler bei der Anmeldung",
   },
   alerts: {
     LOGOUT_AUTOMATIC_TITLE: "Automatisch abgemeldet",
