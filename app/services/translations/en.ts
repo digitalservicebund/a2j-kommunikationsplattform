@@ -52,7 +52,7 @@ export const en: Translations = {
   },
   descriptions: {
     PROJECT_DESCRIPTION:
-      " An online project by DigitalService GmbH of the Federal Government in cooperation with BRAK, SINC and on behalf of the BMJV.",
+      "An online project by DigitalService GmbH of the Federal Government in cooperation with BRAK, SINC and on behalf of the BMJV.",
     PLATFORM_DESCRIPTION:
       "Welcome to the pilot platform for digital exchange between courts and parties involved in proceedings.",
   },

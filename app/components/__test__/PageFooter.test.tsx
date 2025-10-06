@@ -1,29 +1,31 @@
 // @vitest-environment jsdom
 
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { it } from "vitest";
+import {
+  getTranslationsForTests,
+  renderWithTranslations,
+} from "~/util/test/testUtils";
 import PageFooter from "../PageFooter";
 
 describe("PageFooter", () => {
+  const { labels, descriptions, contentLinkLabels } = getTranslationsForTests();
   it("should render a <nav/> with links and a project info", () => {
-    const { getByLabelText, getByRole } = render(
+    const { getByLabelText, getByRole } = renderWithTranslations(
       <MemoryRouter>
         <PageFooter />
       </MemoryRouter>,
     );
-
     // check if nav is being rendered
-    expect(
-      getByLabelText("Rechtliche und weiterführende Informationen"),
-    ).toBeInTheDocument();
+    expect(getByLabelText(labels.FOOTER_ARIA_LABEL)).toBeInTheDocument();
     // check if a link is being rendered
-    expect(getByRole("link", { name: "Datenschutz" })).toBeInTheDocument();
+    expect(
+      getByRole("link", { name: contentLinkLabels.DATENSCHUTZ_LINK_LABEL }),
+    ).toBeInTheDocument();
     // check if proejct info is present
     expect(
-      screen.getByText(
-        "Ein Onlineprojekt der DigitalService GmbH des Bundes in Zusammenarbeit mit der BRAK, SINC und im Auftrag des BMJV.",
-      ),
+      screen.getByText(descriptions.PROJECT_DESCRIPTION),
     ).toBeInTheDocument();
   });
 });

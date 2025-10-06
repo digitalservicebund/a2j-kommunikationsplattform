@@ -13,6 +13,16 @@ describe("useTranslations", () => {
     expect(result.current).toEqual(dictionaries.de);
   });
 
+  it("returns EN translations when provided", () => {
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <TranslationsProvider value={dictionaries.en}>
+        {children}
+      </TranslationsProvider>
+    );
+    const { result } = renderHook(() => useTranslations(), { wrapper });
+    expect(result.current).toEqual(dictionaries.en);
+  });
+
   it("updates when provider value changes", () => {
     const custom1 = {
       ...dictionaries.de,
