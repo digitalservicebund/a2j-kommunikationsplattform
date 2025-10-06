@@ -5,7 +5,7 @@ import { TranslationsProvider } from "~/services/translations/context";
 
 const TEST_LANGUAGE: Language = "de";
 
-export function getTranslationsForTests() {
+export function getTestTranslations() {
   // Returning DE translations for tests, but in the future we might want to make this configurable to work with other languages
   return dictionaries[TEST_LANGUAGE];
 }
@@ -19,9 +19,9 @@ export function getTranslationsForTests() {
  * Renders a React element wrapped in the TranslationsProvider for testing.
  * Uses the test language defined in DEFAULT_LANGUAGE.
  */
-export function renderWithTranslations(ui: React.ReactElement) {
+export function renderWithTestTranslations(ui: React.ReactElement) {
   return render(
-    <TranslationsProvider value={getTranslationsForTests()}>
+    <TranslationsProvider value={getTestTranslations()}>
       {ui}
     </TranslationsProvider>,
   );

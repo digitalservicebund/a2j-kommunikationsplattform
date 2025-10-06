@@ -4,16 +4,16 @@ import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { it } from "vitest";
 import {
-  getTranslationsForTests,
-  renderWithTranslations,
-} from "~/util/test/testUtils";
+  getTestTranslations,
+  renderWithTestTranslations,
+} from "~/util/testUtils";
 import VerfahrenTile from "../VerfahrenTile";
 
 describe("VerfahrenTile", () => {
-  const { buttons } = getTranslationsForTests();
+  const { buttons } = getTestTranslations();
   it("should render the default state", () => {
     const { getByRole, queryByRole, getByText, container } =
-      renderWithTranslations(
+      renderWithTestTranslations(
         <MemoryRouter>
           <VerfahrenTile id="123" mandantin="Klaus" />
         </MemoryRouter>,

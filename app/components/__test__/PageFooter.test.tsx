@@ -4,15 +4,15 @@ import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { it } from "vitest";
 import {
-  getTranslationsForTests,
-  renderWithTranslations,
-} from "~/util/test/testUtils";
+  getTestTranslations,
+  renderWithTestTranslations,
+} from "~/util/testUtils";
 import PageFooter from "../PageFooter";
 
 describe("PageFooter", () => {
-  const { labels, descriptions, contentLinkLabels } = getTranslationsForTests();
+  const { labels, descriptions, contentLinkLabels } = getTestTranslations();
   it("should render a <nav/> with links and a project info", () => {
-    const { getByLabelText, getByRole } = renderWithTranslations(
+    const { getByLabelText, getByRole } = renderWithTestTranslations(
       <MemoryRouter>
         <PageFooter />
       </MemoryRouter>,

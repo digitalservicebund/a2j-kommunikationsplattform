@@ -3,9 +3,9 @@
 import { beforeEach, it, vi } from "vitest";
 import Header from "~/components/Header";
 import {
-  getTranslationsForTests,
-  renderWithTranslations,
-} from "~/util/test/testUtils";
+  getTestTranslations,
+  renderWithTestTranslations,
+} from "~/util/testUtils";
 
 vi.mock("react-router", async () => {
   const actual =
@@ -20,10 +20,10 @@ vi.mock("react-router", async () => {
 
 describe("Header", () => {
   let container: HTMLElement;
-  const { labels } = getTranslationsForTests();
+  const { labels } = getTestTranslations();
   describe("when user is not logged in", () => {
     beforeEach(() => {
-      ({ container } = renderWithTranslations(
+      ({ container } = renderWithTestTranslations(
         <Header userIsLoggedIn={false} />,
       ));
     });
@@ -46,7 +46,7 @@ describe("Header", () => {
 
   describe("when user is logged in", () => {
     beforeEach(() => {
-      ({ container } = renderWithTranslations(
+      ({ container } = renderWithTestTranslations(
         <Header userIsLoggedIn={true} />,
       ));
     });
