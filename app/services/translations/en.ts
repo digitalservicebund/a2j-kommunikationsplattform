@@ -9,7 +9,11 @@ export const en: Translations = {
     LOGIN_BUTTON_GERICHTE: "Login for courts",
     LOGIN_BUTTON_TEST_ZUGANG: "Test access",
     ABMELDEN_BUTTON: "Logout",
-    SHOW_VERFAHERN_DETAILS: "Show case details",
+    SHOW_VERFAHREN_DETAILS: "Show case details",
+    SHOW_URTEIL: "Show judgment",
+  },
+  errorMessages: {
+    TRY_LATER_MESSAGE: "Please try again later.",
   },
   alerts: {
     LOGOUT_AUTOMATIC_TITLE: "Automatically logged out",
@@ -29,17 +33,36 @@ export const en: Translations = {
     KALENDER_LABEL: "Calendar",
     VERFAHREN_DETAILS_LABEL: "Case details",
     DATEIANSICHT_LABEL: "File view",
+    KOPFZEILE_LABEL: "Official website – Federal Republic of Germany",
+    LOGO_LABEL: "Kommunikationsplattform",
+    LOGGED_IN_AS_LABEL: "Logged in as",
+
+    START_PAGE_LABEL: "Home",
   },
   titles: {
     PLATFORM_TITLE: "Communication Platform | Justice Services",
     WELCOME_TITLE:
       "Welcome to the pilot platform for digital exchange between courts and parties involved in proceedings.",
+    DATENSCHUTZ_TITLE: "Privacy Policy for the Website",
+    WEITERE_INFORMATIONEN_TITLE: "Further Information",
+    BARRIEREFREIHEIT_TITLE: "Accessibility Statement",
+    HILFE_UND_KONTAKT_TITLE: "Help and Contact",
+    OPEN_SOURCE_CODE_TITLE: "Open Source Code",
+    IMPRESSUM_TITLE: "Imprint",
   },
   descriptions: {
     PROJECT_DESCRIPTION:
       " An online project by DigitalService GmbH of the Federal Government in cooperation with BRAK, SINC and on behalf of the BMJV.",
     PLATFORM_DESCRIPTION:
       "Welcome to the pilot platform for digital exchange between courts and parties involved in proceedings.",
+  },
+  contentLinkLabels: {
+    DATENSCHUTZ_LINK_LABEL: "Data protection",
+    WEITERE_INFORMATIONEN_LINK_LABEL: "Further information",
+    BARRIEREFREIHEIT_LINK_LABEL: "Accessibility",
+    HILFE_UND_KONTAKT_LINK_LABEL: "Help and contact",
+    OPEN_SOURCE_CODE_LINK_LABEL: "Open source code",
+    IMPRESSUM_LINK_LABEL: "Imprint",
   },
 } as const;
 

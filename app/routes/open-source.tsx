@@ -1,5 +1,7 @@
 import ContentPage from "~/components/ContentPage";
+import { useTranslations } from "~/services/translations/context";
 
 export default function OpenSourcePage() {
-  return <ContentPage title="Open Source Code">...</ContentPage>;
+  const { titles } = useTranslations();
+  return <ContentPage title={titles.OPEN_SOURCE_CODE_TITLE}>...</ContentPage>;
 }

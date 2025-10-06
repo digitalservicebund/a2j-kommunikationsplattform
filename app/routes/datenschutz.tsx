@@ -1,7 +1,7 @@
 import ContentPage from "~/components/ContentPage";
+import { useTranslations } from "~/services/translations/context";
 
 export default function DatenschutzPage() {
-  return (
-    <ContentPage title="Datenschutzerklärung zur Webseite">...</ContentPage>
-  );
+  const { titles } = useTranslations();
+  return <ContentPage title={titles.DATENSCHUTZ_TITLE}>...</ContentPage>;
 }

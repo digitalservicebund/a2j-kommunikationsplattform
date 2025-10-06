@@ -1,4 +1,7 @@
+import { useTranslations } from "~/services/translations/context";
+
 export default function Kopfzeile() {
+  const { labels } = useTranslations();
   return (
     <div className="kern-kopfzeile">
       <div className="kern-container">
@@ -15,7 +18,7 @@ export default function Kopfzeile() {
             </svg>
           </span>
           <span className="kern-kopfzeile__label">
-            Offizielle Website – Bundesrepublik Deutschland
+            {labels.KOPFZEILE_LABEL}
           </span>
         </div>
       </div>

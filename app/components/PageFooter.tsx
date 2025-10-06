@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { useTranslations } from "~/services/translations/context";
 
 export default function PageFooter() {
-  const { labels, descriptions } = useTranslations();
+  const { labels, descriptions, contentLinkLabels } = useTranslations();
   return (
     <footer className="mt-kern-space-x-large">
       <nav
@@ -10,22 +10,22 @@ export default function PageFooter() {
         aria-label={labels.FOOTER_ARIA_LABEL}
       >
         <Link to="/datenschutz" className="kern-link">
-          Datenschutz
+          {contentLinkLabels.DATENSCHUTZ_LINK_LABEL}
         </Link>
         <Link to="/weitere-informationen" className="kern-link">
-          Weitere Informationen
+          {contentLinkLabels.WEITERE_INFORMATIONEN_LINK_LABEL}
         </Link>
         <Link to="/barrierefreiheit" className="kern-link">
-          Barrierefreiheit
+          {contentLinkLabels.BARRIEREFREIHEIT_LINK_LABEL}
         </Link>
         <Link to="/hilfe-und-kontakt" className="kern-link">
-          Hilfe und Kontakt
+          {contentLinkLabels.HILFE_UND_KONTAKT_LINK_LABEL}
         </Link>
         <Link to="/open-source" className="kern-link">
-          Open Source Code
+          {contentLinkLabels.OPEN_SOURCE_CODE_LINK_LABEL}
         </Link>
         <Link to="/impressum" className="kern-link">
-          Impressum
+          {contentLinkLabels.IMPRESSUM_LINK_LABEL}
         </Link>
       </nav>
       <div className="mt-kern-space-default mb-kern-space-x-large text-center">
