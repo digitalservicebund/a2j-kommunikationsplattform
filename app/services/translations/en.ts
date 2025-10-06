@@ -35,7 +35,7 @@ export const en: Translations = {
     DATEIANSICHT_LABEL: "File view",
     KOPFZEILE_LABEL: "Official website – Federal Republic of Germany",
     LOGO_LABEL: "Kommunikationsplattform",
-    LOGGED_IN_AS_LABEL: "Logged in as",
+    LOGGED_IN_AS_LABEL: "Logged in as:",
 
     START_PAGE_LABEL: "Home",
   },

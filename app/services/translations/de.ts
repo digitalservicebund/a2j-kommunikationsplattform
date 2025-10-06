@@ -34,7 +34,7 @@ export const de = {
     DATEIANSICHT_LABEL: "Dateiansicht",
     KOPFZEILE_LABEL: "Offizielle Website – Bundesrepublik Deutschland",
     LOGO_LABEL: "Kommunikationsplattform",
-    LOGGED_IN_AS_LABEL: "Angemeldet als",
+    LOGGED_IN_AS_LABEL: "Angemeldet als:",
     START_PAGE_LABEL: "Startseite",
   },
   titles: {

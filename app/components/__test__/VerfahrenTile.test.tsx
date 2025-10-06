@@ -3,22 +3,28 @@
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { it } from "vitest";
+import {
+  getTranslationsForTests,
+  renderWithTranslations,
+} from "~/util/test/testUtils";
 import VerfahrenTile from "../VerfahrenTile";
 
 describe("VerfahrenTile", () => {
+  const { buttons } = getTranslationsForTests();
   it("should render the default state", () => {
-    const { getByRole, queryByRole, getByText, container } = render(
-      <MemoryRouter>
-        <VerfahrenTile id="123" mandantin="Klaus" />
-      </MemoryRouter>,
-    );
+    const { getByRole, queryByRole, getByText, container } =
+      renderWithTranslations(
+        <MemoryRouter>
+          <VerfahrenTile id="123" mandantin="Klaus" />
+        </MemoryRouter>,
+      );
 
     expect(getByText("Klaus")).toBeInTheDocument();
 
     expect(
       (
         getByRole("link", {
-          name: "Verfahrensdetails anzeigen",
+          name: buttons.SHOW_VERFAHREN_DETAILS,
         }) as HTMLAnchorElement
       ).href,
     ).toContain("/verfahren/123");
@@ -26,7 +32,7 @@ describe("VerfahrenTile", () => {
     // no "Urteil anzeigen" button
     expect(
       queryByRole("link", {
-        name: "Urteil anzeigen",
+        name: buttons.SHOW_URTEIL,
       }),
     ).not.toBeInTheDocument();
 

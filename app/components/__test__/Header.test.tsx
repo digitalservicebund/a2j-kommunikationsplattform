@@ -1,8 +1,11 @@
 // @vitest-environment jsdom
 
-import { render } from "@testing-library/react";
 import { beforeEach, it, vi } from "vitest";
 import Header from "~/components/Header";
+import {
+  getTranslationsForTests,
+  renderWithTranslations,
+} from "~/util/test/testUtils";
 
 vi.mock("react-router", async () => {
   const actual =
@@ -17,10 +20,12 @@ vi.mock("react-router", async () => {
 
 describe("Header", () => {
   let container: HTMLElement;
-
+  const { labels } = getTranslationsForTests();
   describe("when user is not logged in", () => {
     beforeEach(() => {
-      ({ container } = render(<Header userIsLoggedIn={false} />));
+      ({ container } = renderWithTranslations(
+        <Header userIsLoggedIn={false} />,
+      ));
     });
     it("should render <header>", () => {
       expect(container.querySelector("header")).toBeInTheDocument();
@@ -29,7 +34,7 @@ describe("Header", () => {
       expect(container.querySelector(".kern-kopfzeile")).toBeInTheDocument();
     });
     it("should not render UserProfile, Logo and Navigation", () => {
-      expect(container).not.toHaveTextContent("Angemeldet als:");
+      expect(container).not.toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
       expect(
         container.querySelector(".kern-icon--network_node"),
       ).not.toBeInTheDocument();
@@ -41,7 +46,9 @@ describe("Header", () => {
 
   describe("when user is logged in", () => {
     beforeEach(() => {
-      ({ container } = render(<Header userIsLoggedIn={true} />));
+      ({ container } = renderWithTranslations(
+        <Header userIsLoggedIn={true} />,
+      ));
     });
 
     it("should render <header>", () => {
@@ -53,7 +60,7 @@ describe("Header", () => {
     });
 
     it("should render UserProfile, Logo and Navigation", () => {
-      expect(container).toHaveTextContent("Angemeldet als:");
+      expect(container).toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
       expect(
         container.querySelector(".kern-icon--network_node"),
       ).toBeInTheDocument();

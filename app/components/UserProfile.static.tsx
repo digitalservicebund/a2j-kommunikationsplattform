@@ -18,7 +18,7 @@ export default function UserProfile() {
           fill="#404565"
         />
       </svg>
-      <p className="kern-body kern-body--muted">{`${labels.LOGGED_IN_AS_LABEL}: ${userName}`}</p>
+      <p className="kern-body kern-body--muted">{`${labels.LOGGED_IN_AS_LABEL} ${userName}`}</p>
     </div>
   );
 }
