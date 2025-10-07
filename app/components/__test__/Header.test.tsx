@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 
+import { MemoryRouter } from "react-router";
 import { beforeEach, it, vi } from "vitest";
 import Header from "~/components/Header";
 import {
@@ -21,52 +22,88 @@ vi.mock("react-router", async () => {
 describe("Header", () => {
   let container: HTMLElement;
   const { labels } = getTestTranslations();
-  describe("when user is not logged in", () => {
+
+  describe("when user is NOT logged in and is NOT on content page", () => {
     beforeEach(() => {
       ({ container } = renderWithTestTranslations(
-        <Header userIsLoggedIn={false} />,
+        <MemoryRouter>
+          <Header userIsLoggedIn={false} isContentPage={false} />,
+        </MemoryRouter>,
       ));
     });
-    it("should render <header>", () => {
-      expect(container.querySelector("header")).toBeInTheDocument();
+    it("should not render <header>", () => {
+      expect(container.querySelector("header")).not.toBeInTheDocument();
     });
     it("should render Kopfzeile", () => {
       expect(container.querySelector(".kern-kopfzeile")).toBeInTheDocument();
     });
-    it("should not render UserProfile, Logo and Navigation", () => {
-      expect(container).not.toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
+    it("should not render header's Logo, UserProfile or Navigation ", () => {
       expect(
         container.querySelector(".kern-icon--network_node"),
       ).not.toBeInTheDocument();
       expect(container.querySelector("nav")).not.toBeInTheDocument();
-      expect(container.querySelector("ul")).not.toBeInTheDocument();
-      expect(container.querySelector("li")).not.toBeInTheDocument();
+      expect(container).not.toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
     });
   });
 
-  describe("when user is logged in", () => {
+  describe("when user is NOT logged in and IS on content page", () => {
     beforeEach(() => {
       ({ container } = renderWithTestTranslations(
-        <Header userIsLoggedIn={true} />,
+        <MemoryRouter>
+          <Header userIsLoggedIn={false} isContentPage={true} />,
+        </MemoryRouter>,
       ));
     });
+    it("should render Logo only and no Navigation or UserProfile", () => {
+      expect(
+        container.querySelector(".kern-icon--network_node"),
+      ).toBeInTheDocument();
+      expect(container.querySelector("nav")).not.toBeInTheDocument();
+      expect(container).not.toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
+    });
+  });
 
+  describe("when user IS logged in and is NOT on content page", () => {
+    beforeEach(() => {
+      ({ container } = renderWithTestTranslations(
+        <MemoryRouter>
+          <Header userIsLoggedIn={true} isContentPage={false} />,
+        </MemoryRouter>,
+      ));
+    });
     it("should render <header>", () => {
       expect(container.querySelector("header")).toBeInTheDocument();
     });
-
     it("should render Kopfzeile", () => {
       expect(container.querySelector(".kern-kopfzeile")).toBeInTheDocument();
     });
-
-    it("should render UserProfile, Logo and Navigation", () => {
-      expect(container).toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
+    it("should not render header's Logo, UserProfile or Navigation ", () => {
       expect(
         container.querySelector(".kern-icon--network_node"),
       ).toBeInTheDocument();
       expect(container.querySelector("nav")).toBeInTheDocument();
-      expect(container.querySelector("ul")).toBeInTheDocument();
-      expect(container.querySelector("li")).toBeInTheDocument();
+      expect(container).toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
+    });
+  });
+
+  describe("when user IS logged in and IS on content page", () => {
+    beforeEach(() => {
+      ({ container } = renderWithTestTranslations(
+        <MemoryRouter>
+          <Header userIsLoggedIn={true} isContentPage={true} />,
+        </MemoryRouter>,
+      ));
+    });
+    it("should render Logo and back button, but not Navigation or UserProfile", () => {
+      expect(
+        container.querySelector(".kern-icon--arrow-back"),
+      ).toBeInTheDocument();
+      expect(container).toHaveTextContent("Zurück");
+      expect(
+        container.querySelector(".kern-icon--network_node"),
+      ).toBeInTheDocument();
+      expect(container.querySelector("nav")).not.toBeInTheDocument();
+      expect(container).not.toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
     });
   });
 });
