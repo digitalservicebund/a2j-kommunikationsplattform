@@ -34,7 +34,7 @@ export default function Header({
         <HeaderWrapper>
           <div className="gap-kern-space-small flex flex-col items-center justify-between xl:flex-row">
             <Logo />
-            {userIsLoggedIn && (
+            {userIsLoggedIn ? (
               <button
                 type="button"
                 className="kern-link cursor-pointer bg-transparent"
@@ -42,6 +42,15 @@ export default function Header({
               >
                 <span className="kern-icon kern-icon--arrow-back kern-icon--default"></span>
                 <span>Zurück</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="kern-link cursor-pointer bg-transparent"
+                onClick={() => navigate("/login")}
+              >
+                <span className="kern-icon kern-icon--logout kern-icon--default"></span>
+                <span>Anmelden</span>
               </button>
             )}
           </div>
