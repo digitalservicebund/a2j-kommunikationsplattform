@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { Link } from "react-router";
+import { useTranslations } from "~/services/translations/context";
 
 export type VerfahrenTileProps = {
   readonly id: string;
@@ -52,6 +53,7 @@ export default function VerfahrenTile({
   geschaeftszeichen,
   // END
 }: VerfahrenTileProps) {
+  const { buttons } = useTranslations();
   const cssClasses = clsx(
     "relative",
     "after:border-y-1 sm:after:border-x-1 sm:after:rounded-kern-default after:border-kern-layout-border",
@@ -116,7 +118,7 @@ export default function VerfahrenTile({
       <div className="mb-kern-space-large gap-kern-space-x-large flex flex-wrap">
         <Link to={`/verfahren/${id}`} className="kern-btn kern-btn--primary">
           <span className="kern-icon kern-icon--open-in-new" aria-hidden />
-          <span className="kern-label">Verfahrensdetails anzeigen</span>
+          <span className="kern-label">{buttons.SHOW_VERFAHREN_DETAILS}</span>
         </Link>
         {abgeschlossen && urteilsHref ? (
           <Link to={urteilsHref} className="kern-btn kern-btn--secondary">
@@ -124,7 +126,7 @@ export default function VerfahrenTile({
               className="kern-icon kern-icon--insert-drive-file"
               aria-hidden
             />
-            <span className="kern-label">Urteil anzeigen</span>
+            <span className="kern-label">{buttons.SHOW_URTEIL}</span>
           </Link>
         ) : (
           ""

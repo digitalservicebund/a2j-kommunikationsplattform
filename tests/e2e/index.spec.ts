@@ -1,17 +1,15 @@
 import { expect, test } from "@playwright/test";
 import { LoginError } from "~/routes/action.login-user";
 import { LogoutType } from "~/routes/action.logout-user";
+import { getTestTranslations } from "~/util/testUtils";
 
 test.describe("Homepage (_index route)", () => {
+  const { titles, buttons, alerts, errorMessages } = getTestTranslations();
   test("has title, shows headline and introduction text", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveTitle("Kommunikationsplattform | Justiz-Services");
     await expect(page.locator("text=Kommunikationsplattform")).toBeVisible();
-    await expect(
-      page.locator(
-        "text=Willkommen auf der Pilotplattform für den digitalen Austausch zwischen Gerichten und Verfahrensbeteiligten.",
-      ),
-    ).toBeVisible();
+    await expect(page.locator(`text=${titles.WELCOME_TITLE}`)).toBeVisible();
   });
 
   test('redirects to beA-Portal when using the "Anmeldung Anwaltschaft" login option', async ({
@@ -22,7 +20,7 @@ test.describe("Homepage (_index route)", () => {
     await page.goto("/");
     await page
       .getByRole("button", {
-        name: "Anmeldung Anwaltschaft",
+        name: buttons.LOGIN_BUTTON_BEA,
       })
       .click();
     await page.waitForURL((url) => url.toString().includes("schulung"));
@@ -40,7 +38,7 @@ test.describe("Homepage (_index route)", () => {
   }) => {
     await page.goto(`/login?status=${LogoutType.ByUser}`);
     await expect(page.getByRole("alert")).toContainText(
-      "Erfolgreich abgemeldet",
+      alerts.LOGOUT_BY_USER_MESSAGE,
     );
   });
 
@@ -49,7 +47,7 @@ test.describe("Homepage (_index route)", () => {
   }) => {
     await page.goto(`/login?status=${LogoutType.Automatic}`);
     await expect(page.getByRole("alert")).toContainText(
-      "Automatisch abgemeldet",
+      alerts.LOGOUT_AUTOMATIC_TITLE,
     );
   });
 
@@ -58,7 +56,7 @@ test.describe("Homepage (_index route)", () => {
   }) => {
     await page.goto(`/login?status=${LoginError.BeA}`);
     await expect(page.getByRole("alert")).toContainText(
-      "Fehler bei der Anmeldung",
+      errorMessages.LOGIN_ERROR_MESSAGE,
     );
   });
 });

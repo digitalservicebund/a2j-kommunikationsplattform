@@ -1,4 +1,7 @@
+import { useTranslations } from "~/services/translations/context";
+
 export default function WorkInProgressAlert() {
+  const { alerts } = useTranslations();
   return (
     <div
       className="kern-alert kern-alert--warning my-kern-space-default"
@@ -9,13 +12,10 @@ export default function WorkInProgressAlert() {
           className="kern-icon kern-icon--warning kern-icon--small"
           aria-hidden
         ></span>
-        <span className="kern-title">Work in progress</span>
+        <span className="kern-title">{alerts.WORK_IN_PROGRESS_TITLE}</span>
       </div>
       <div className="kern-alert__body">
-        <p className="kern-body">
-          Diese Seite ist noch in der Entwicklung. Darstellungen und Layouts
-          können sich jederzeit ändern.
-        </p>
+        <p className="kern-body">{alerts.WORK_IN_PROGRESS_MESSAGE}</p>
       </div>
     </div>
   );
