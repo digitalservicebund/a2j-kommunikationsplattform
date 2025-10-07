@@ -1,28 +1,39 @@
 import { expect, test } from "@playwright/test";
+import { getTestTranslations } from "~/util/testUtils";
+
+const { contentLinkLabels, titles } = getTestTranslations();
 
 const links = [
   {
-    label: "Datenschutz",
+    label: contentLinkLabels.DATENSCHUTZ_LINK_LABEL,
     url: "/datenschutz",
-    h1: "Datenschutzerklärung zur Webseite",
+    h1: titles.DATENSCHUTZ_TITLE,
   },
   {
-    label: "Weitere Informationen",
+    label: contentLinkLabels.WEITERE_INFORMATIONEN_LINK_LABEL,
     url: "/weitere-informationen",
-    h1: "Weitere Informationen",
+    h1: titles.WEITERE_INFORMATIONEN_TITLE,
   },
   {
-    label: "Barrierefreiheit",
+    label: contentLinkLabels.BARRIEREFREIHEIT_LINK_LABEL,
     url: "/barrierefreiheit",
-    h1: "Erklärung zur Barrierefreiheit",
+    h1: titles.BARRIEREFREIHEIT_TITLE,
   },
   {
-    label: "Hilfe und Kontakt",
+    label: contentLinkLabels.HILFE_UND_KONTAKT_LINK_LABEL,
     url: "/hilfe-und-kontakt",
-    h1: "Hilfe und Kontakt",
+    h1: titles.HILFE_UND_KONTAKT_TITLE,
   },
-  { label: "Open Source Code", url: "/open-source", h1: "Open Source Code" },
-  { label: "Impressum", url: "/impressum", h1: "Impressum" },
+  {
+    label: contentLinkLabels.OPEN_SOURCE_CODE_LINK_LABEL,
+    url: "/open-source",
+    h1: titles.OPEN_SOURCE_CODE_TITLE,
+  },
+  {
+    label: contentLinkLabels.IMPRESSUM_LINK_LABEL,
+    url: "/impressum",
+    h1: titles.IMPRESSUM_TITLE,
+  },
 ];
 
 test.describe("Footer (rendered for alle pages)", () => {

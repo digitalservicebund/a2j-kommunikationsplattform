@@ -1,38 +1,36 @@
 import { Link } from "react-router";
-
-export const PROJECT_DESCRIPTION =
-  "Ein Onlineprojekt der DigitalService GmbH des Bundes in Zusammenarbeit mit der BRAK, SINC und im Auftrag des BMJV.";
-export const FOOTER_ARIA_LABEL = "Rechtliche und weiterführende Informationen";
+import { useTranslations } from "~/services/translations/context";
 
 export default function PageFooter() {
+  const { labels, descriptions, contentLinkLabels } = useTranslations();
   return (
     <footer className="mt-kern-space-x-large">
       <nav
         className="gap-x-kern-space-default flex flex-row flex-wrap justify-center"
-        aria-label={FOOTER_ARIA_LABEL}
+        aria-label={labels.FOOTER_ARIA_LABEL}
       >
         <Link to="/datenschutz" className="kern-link">
-          Datenschutz
+          {contentLinkLabels.DATENSCHUTZ_LINK_LABEL}
         </Link>
         <Link to="/weitere-informationen" className="kern-link">
-          Weitere Informationen
+          {contentLinkLabels.WEITERE_INFORMATIONEN_LINK_LABEL}
         </Link>
         <Link to="/barrierefreiheit" className="kern-link">
-          Barrierefreiheit
+          {contentLinkLabels.BARRIEREFREIHEIT_LINK_LABEL}
         </Link>
         <Link to="/hilfe-und-kontakt" className="kern-link">
-          Hilfe und Kontakt
+          {contentLinkLabels.HILFE_UND_KONTAKT_LINK_LABEL}
         </Link>
         <Link to="/open-source" className="kern-link">
-          Open Source Code
+          {contentLinkLabels.OPEN_SOURCE_CODE_LINK_LABEL}
         </Link>
         <Link to="/impressum" className="kern-link">
-          Impressum
+          {contentLinkLabels.IMPRESSUM_LINK_LABEL}
         </Link>
       </nav>
       <div className="mt-kern-space-default mb-kern-space-x-large text-center">
         <p className="kern-body kern-body--small kern-body--muted">
-          {PROJECT_DESCRIPTION}
+          {descriptions.PROJECT_DESCRIPTION}
         </p>
       </div>
     </footer>

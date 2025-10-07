@@ -1,5 +1,7 @@
 import ContentPage from "~/components/ContentPage";
+import { useTranslations } from "~/services/translations/context";
 
 export default function HilfeUndKontaktPage() {
-  return <ContentPage title="Hilfe und Kontakt">...</ContentPage>;
+  const { titles } = useTranslations();
+  return <ContentPage title={titles.HILFE_UND_KONTAKT_TITLE}>...</ContentPage>;
 }

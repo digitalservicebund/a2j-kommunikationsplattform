@@ -1,42 +1,44 @@
 import { Form } from "react-router";
 import { LogoutType } from "~/routes/action.logout-user";
+import { useTranslations } from "~/services/translations/context";
 
 const LogoutButton = () => {
+  const { buttons } = useTranslations();
   return (
     <Form method="post" action="/action/logout-user">
       <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
       <button type="submit" className="kern-link cursor-pointer bg-transparent">
         <span className="kern-icon kern-icon--close kern-icon--default"></span>
-        <span>Abmelden</span>
+        <span>{buttons.ABMELDEN_BUTTON}</span>
       </button>
     </Form>
   );
 };
 
-const navigationLinksList = [
-  {
-    name: "Übersicht",
-    iconName: "kern-icon--home",
-    url: `/`,
-  },
-  {
-    name: "Verfahren",
-    iconName: "kern-icon--icon--storage",
-    url: `/verfahren`,
-  },
-  {
-    name: "Mitteilungen",
-    iconName: "kern-icon--mail",
-    url: "#",
-  },
-  {
-    name: "Kalender",
-    iconName: "kern-icon--calendar-today",
-    url: "#",
-  },
-];
-
 export default function Navigation() {
+  const { labels } = useTranslations();
+  const navigationLinksList = [
+    {
+      name: labels.UEBERSICHT_LABEL,
+      iconName: "kern-icon--home",
+      url: `/`,
+    },
+    {
+      name: labels.VERFAHREN_LABEL,
+      iconName: "kern-icon--icon--storage",
+      url: `/verfahren`,
+    },
+    {
+      name: labels.MITTEILUNGEN_LABEL,
+      iconName: "kern-icon--mail",
+      url: "#",
+    },
+    {
+      name: labels.KALENDER_LABEL,
+      iconName: "kern-icon--calendar-today",
+      url: "#",
+    },
+  ];
   return (
     <nav>
       <ul className="gap-kern-space-x-large my-0 list-none items-center justify-between pl-0 md:flex xl:flex-wrap">

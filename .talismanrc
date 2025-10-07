@@ -36,13 +36,13 @@ fileignoreconfig:
   - filename: app/routes/prototype.verfahren.$id.tsx
     checksum: 7a9bce040c250a1175a5ce7e3fdff3f669213b62331bfbf810db3ba6c327f5ab
   - filename: sonar-project.properties
-    checksum: 998881fefa6ea3038948070251a787bfaa46d350943f9d210ab0328c42ed5487
+    checksum: 883b807ca3f83f62cef18cde2da6c0c385860b50a7481557a84910ea83502055
   - filename: tests/e2e/playwright.config.ts
     checksum: 07aa847af35f9c79757ff18d3c4b6c246262780d4843f7178fef0e8001f6918a
   - filename: app/components/__test__/ContentPage.test.tsx
     checksum: a2c62ce36ce3ceea9fcc6757afc6d0d1fb5d4c8a5dbad2b5236d09bfff4e7a75
   - filename: app/components/Navigation.static.tsx
-    checksum: 01c99985c8fd612f00da51787a471794c62c97661b3c4d837748345fdde7d369
+    checksum: b5d5c04d4bae494673f576b6e5b1c0bb1cd9f892de5b02c995599b079dfe4768
   - filename: app/routes/verfahren/_index.tsx
     checksum: c1c417c2ebd6a6f08853aed7a1b008a987010749e1cae3d89f8e62218e90d05c
   - filename: app/components/Breadcrumbs.tsx
@@ -55,6 +55,8 @@ fileignoreconfig:
     checksum: 68b03744f5d08a9703dd3a84b0273918006d354f4f436d2a11c406466d239dd6
   - filename: app/rootHeaders.ts
     checksum: 2ebcd731e212d9be5dcceb88703c12e68b84982d5800162f605d93d0a20a3455
+  - filename: app/services/translations/index.ts
+    checksum: bd9deccfd2a77aa490df3019083baf73a0bff19785a84397f319f6df6ffe195f
 
 version: ""
 scopeconfig:

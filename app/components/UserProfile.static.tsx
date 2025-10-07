@@ -1,4 +1,9 @@
+import { useTranslations } from "~/services/translations/context";
+
 export default function UserProfile() {
+  const { labels } = useTranslations();
+  // When we authenticate users, the user name would be fetched from the user session or context
+  const userName = "Kim Neumann";
   return (
     <div className="gap-kern-space-small flex flex-wrap items-center justify-end">
       <svg
@@ -13,7 +18,7 @@ export default function UserProfile() {
           fill="#404565"
         />
       </svg>
-      <p className="kern-body kern-body--muted">Angemeldet als: Kim Neumann</p>
+      <p className="kern-body kern-body--muted">{`${labels.LOGGED_IN_AS_LABEL} ${userName}`}</p>
     </div>
   );
 }

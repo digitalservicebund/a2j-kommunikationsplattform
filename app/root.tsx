@@ -19,6 +19,8 @@ import { Breadcrumbs } from "~/components/Breadcrumbs";
 import Header from "~/components/Header";
 import { contentPages } from "~/constants/contentPages";
 import { useNonce } from "~/services/security/nonce";
+import { dictionaries } from "~/services/translations";
+import { TranslationsContext } from "~/services/translations/context";
 import type { Route } from "./+types/root";
 import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
 import { config } from "./config/config";
@@ -96,10 +98,13 @@ export default function App() {
   const { userIsLoggedIn } = useLoaderData<RootLoader>();
 
   return (
-    <LogoutInactiveUserWrapper handleInactivity={userIsLoggedIn}>
-      <Breadcrumbs />
-      <Outlet />
-    </LogoutInactiveUserWrapper>
+    // we currently only support German, so we hardcode the dictionary here, but in the future we cab make this dynamic and correct language from the backend
+    <TranslationsContext.Provider value={dictionaries.de}>
+      <LogoutInactiveUserWrapper handleInactivity={userIsLoggedIn}>
+        <Breadcrumbs />
+        <Outlet />
+      </LogoutInactiveUserWrapper>
+    </TranslationsContext.Provider>
   );
 }
 

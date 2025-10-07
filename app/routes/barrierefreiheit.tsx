@@ -1,5 +1,7 @@
 import ContentPage from "~/components/ContentPage";
+import { useTranslations } from "~/services/translations/context";
 
 export default function BarrierefreiheitPage() {
-  return <ContentPage title="Erklärung zur Barrierefreiheit">...</ContentPage>;
+  const { titles } = useTranslations();
+  return <ContentPage title={titles.BARRIEREFREIHEIT_TITLE}>...</ContentPage>;
 }
