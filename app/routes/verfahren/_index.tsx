@@ -1,7 +1,8 @@
-import { LoaderFunctionArgs, useLoaderData, useNavigation } from "react-router";
+import { LoaderFunctionArgs, useLoaderData } from "react-router";
 import VerfahrenTile from "~/components/VerfahrenTile";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import fetchVerfahren from "~/services/verfahren/fetchVerfahren.server";
+import type { Route } from "./+types/_index";
 
 // Number of skeletons per page (could change in the future)
 const SKELETONS = [
@@ -24,24 +25,44 @@ export const loader = withSessionLoader(
   },
 );
 
+export async function clientLoader({ serverLoader }: Route.ClientLoaderArgs) {
+  return await serverLoader();
+}
+
+// Enable client-side hydration for this loader.
+// This ensures that HydrateFallback is shown during loading and the data is rehydrated after navigation.
+clientLoader.hydrate = true as const;
+
+export function HydrateFallback() {
+  return (
+    <>
+      <h1 className="kern-heading-large">Verfahren</h1>
+      <div className="my-kern-space-large gap-y-kern-space-large flex flex-col">
+        {SKELETONS.map((s) => (
+          <VerfahrenTileSkeleton key={s.id} />
+        ))}
+      </div>
+    </>
+  );
+}
+
 export default function Verfahren() {
   const { verfahren } = useLoaderData<{
     verfahren: Awaited<ReturnType<typeof fetchVerfahren>>;
   }>();
-  const navigation = useNavigation();
-  const isLoading = navigation.state === "loading";
 
   return (
     <>
       <h1 className="kern-heading-large">Verfahren</h1>
       <div className="my-kern-space-large gap-y-kern-space-large flex flex-col">
-        {isLoading
-          ? SKELETONS.map((s) => <VerfahrenTileSkeleton key={s.id} />)
-          : verfahren.map((data) => <VerfahrenTile key={data.id} {...data} />)}
+        {verfahren.map((data) => (
+          <VerfahrenTile key={data.id} {...data} />
+        ))}
       </div>
     </>
   );
 }
+
 const SkeletonBlock = () => (
   <div className="space-y-kern-space-x-large w-full">
     <div className="space-y-kern-space-small">
