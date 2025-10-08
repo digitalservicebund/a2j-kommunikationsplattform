@@ -28,7 +28,6 @@ export default function Verfahren() {
   const { verfahren } = useLoaderData<{
     verfahren: Awaited<ReturnType<typeof fetchVerfahren>>;
   }>();
-
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading";
 
@@ -46,12 +45,12 @@ export default function Verfahren() {
 const SkeletonBlock = () => (
   <div className="space-y-kern-space-x-large w-full">
     <div className="space-y-kern-space-small">
-      <div className="bg-kern-feedback-loader-background h-kern-dimension-large rounded-kern-default w-352"></div>
-      <div className="bg-kern-feedback-loader-background h-kern-dimension-large rounded-kern-default w-224"></div>
+      <div className="bg-kern-feedback-loader-background h-kern-dimension-large rounded-kern-default max-w-352"></div>
+      <div className="bg-kern-feedback-loader-background h-kern-dimension-large rounded-kern-default max-w-224"></div>
     </div>
     <div className="space-y-kern-space-small">
-      <div className="bg-kern-feedback-loader-background h-kern-dimension-large rounded-kern-default w-352"></div>
-      <div className="bg-kern-feedback-loader-background h-kern-dimension-large rounded-kern-default w-224"></div>
+      <div className="bg-kern-feedback-loader-background h-kern-dimension-large rounded-kern-default max-w-352"></div>
+      <div className="bg-kern-feedback-loader-background h-kern-dimension-large rounded-kern-default max-w-224"></div>
     </div>
   </div>
 );
@@ -59,7 +58,7 @@ const SkeletonBlock = () => (
 const VerfahrenTileSkeleton = () => {
   return (
     <div className="gap-kern-space-large py-kern-dimension-large px-kern-space-default border-kern-layout-border rounded-kern-default pulse flex w-full flex-col items-center border">
-      <div className="flex w-full">
+      <div className="space-x-kern-space-small flex w-full">
         <SkeletonBlock />
         <SkeletonBlock />
         <SkeletonBlock />
