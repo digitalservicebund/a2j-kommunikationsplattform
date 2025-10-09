@@ -1,4 +1,4 @@
-import { index, layout, prefix, route } from "@react-router/dev/routes";
+import { index, layout, route } from "@react-router/dev/routes";
 
 export default [
   // auth
@@ -26,15 +26,6 @@ export default [
           ),
         ]),
       ]),
-    ]),
-    // prototype verfahren
-    ...prefix("prototype/verfahren", [
-      index("./routes/prototype.verfahren.tsx"),
-      route(":id", "./routes/prototype.verfahren.$id.tsx", {}),
-      route(
-        ":id/dokument/:dokumentId",
-        "./routes/prototype.verfahren.$id.dokument.$dokumentId.tsx",
-      ),
     ]),
 
     // static content pages
