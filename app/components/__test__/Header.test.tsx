@@ -19,9 +19,27 @@ vi.mock("react-router", async () => {
   };
 });
 
+const mockNavigate = vi.fn();
+vi.mock("react-router", async () => {
+  const actual =
+    await vi.importActual<typeof import("react-router")>("react-router");
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+    Form: ({ children, ...props }: React.ComponentProps<"form">) => (
+      <form {...props}>{children}</form>
+    ),
+  };
+});
+
 describe("Header", () => {
   let container: HTMLElement;
   const { labels } = getTestTranslations();
+  const { buttons } = getTestTranslations();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   describe("when user is NOT logged in and is NOT on content page", () => {
     beforeEach(() => {
@@ -54,12 +72,21 @@ describe("Header", () => {
         </MemoryRouter>,
       ));
     });
-    it("should render Logo only and no Navigation or UserProfile", () => {
+    it("should render only Logo and Anmelden button and no Navigation or UserProfile", () => {
       expect(
         container.querySelector(".kern-icon--network_node"),
       ).toBeInTheDocument();
+      expect(container).toHaveTextContent(buttons.ANMELDEN_BUTTON);
       expect(container.querySelector("nav")).not.toBeInTheDocument();
       expect(container).not.toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
+    });
+    it('should render Anmelden button and, when clicked, navigate to "/login" ', () => {
+      const button = container.querySelector("button") as HTMLButtonElement;
+      expect(container.querySelector("button")).toHaveTextContent(
+        buttons.ANMELDEN_BUTTON,
+      );
+      button.click();
+      expect(mockNavigate).toHaveBeenCalledWith("/login");
     });
   });
 
@@ -98,12 +125,18 @@ describe("Header", () => {
       expect(
         container.querySelector(".kern-icon--arrow-back"),
       ).toBeInTheDocument();
-      expect(container).toHaveTextContent("Zurück");
+      expect(container).toHaveTextContent(buttons.BACK);
       expect(
         container.querySelector(".kern-icon--network_node"),
       ).toBeInTheDocument();
       expect(container.querySelector("nav")).not.toBeInTheDocument();
       expect(container).not.toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
+    });
+    it("should render Zurück button and, when clicked, navigate back one step in history", () => {
+      const button = container.querySelector("button") as HTMLButtonElement;
+      expect(container.querySelector("button")).toHaveTextContent(buttons.BACK);
+      button.click();
+      expect(mockNavigate).toHaveBeenCalledWith(-1);
     });
   });
 });
