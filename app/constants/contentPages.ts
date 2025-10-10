@@ -1,8 +1,17 @@
+// export const contentPages = [
+//   "/datenschutz",
+//   "/barrierefreiheit",
+//   "/impressum",
+//   "/hilfe-und-kontakt",
+//   "/open-source",
+//   "/weitere-informationen",
+// ];
+
 export const contentPages = [
-  { path: "/datenschutz", label: "Datenschutzerklärung zur Webseite" },
-  { path: "/barrierefreiheit", label: "Erklärung zur Barrierefreiheit" },
-  { path: "/impressum", label: "Impressum" },
-  { path: "/hilfe-und-kontakt", label: "Hilfe und Kontakt" },
-  { path: "/open-source", label: "Open Source Code" },
-  { path: "/weitere-informationen", label: "Weitere Informationen" },
+  { path: "datenschutz", file: "./routes/datenschutz.tsx" },
+  { path: "barrierefreiheit", file: "./routes/barrierefreiheit.tsx" },
+  { path: "impressum", file: "./routes/impressum.tsx" },
+  { path: "hilfe-und-kontakt", file: "./routes/hilfe-und-kontakt.tsx" },
+  { path: "open-source", file: "./routes/open-source.tsx" },
+  { path: "weitere-informationen", file: "./routes/weitere-informationen.tsx" },
 ];

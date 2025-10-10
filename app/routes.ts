@@ -1,5 +1,5 @@
 import { index, layout, prefix, route } from "@react-router/dev/routes";
-import { contentPages } from "~/constants/contentPages";
+import { contentPages } from "./constants/contentPages";
 
 export default [
   // auth
@@ -39,9 +39,7 @@ export default [
     ]),
 
     // static content pages
-    ...contentPages.map((page) =>
-      route(page.path.replace(/^\//, ""), `./routes${page.path}.tsx`),
-    ),
+    ...contentPages.map((page) => route(page.path, page.file)),
   ]),
 
   // Kubernetes health check

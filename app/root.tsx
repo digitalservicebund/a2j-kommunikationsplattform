@@ -17,6 +17,7 @@ import {
 } from "react-router";
 import { Breadcrumbs } from "~/components/Breadcrumbs";
 import Header from "~/components/Header";
+
 import { contentPages } from "~/constants/contentPages";
 import { useNonce } from "~/services/security/nonce";
 import { dictionaries } from "~/services/translations";
@@ -33,7 +34,9 @@ export type RootLoader = typeof loader;
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userIsLoggedIn = Boolean(await hasUserSession(request));
   const pathname = new URL(request.url).pathname;
-  const isContentPage = contentPages.some((page) => page.path === pathname);
+  const isContentPage = contentPages.some(
+    (page) => `/${page.path}` === pathname,
+  );
   return data({ userIsLoggedIn, isContentPage });
 };
 
