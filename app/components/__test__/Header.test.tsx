@@ -125,7 +125,7 @@ describe("Header", () => {
       expect(
         container.querySelector(".kern-icon--arrow-back"),
       ).toBeInTheDocument();
-      expect(container).toHaveTextContent(buttons.BACK);
+      expect(container).toHaveTextContent(buttons.BACK_BUTTON);
       expect(
         container.querySelector(".kern-icon--network_node"),
       ).toBeInTheDocument();
@@ -134,7 +134,9 @@ describe("Header", () => {
     });
     it("should render Zurück button and, when clicked, navigate back one step in history", () => {
       const button = container.querySelector("button") as HTMLButtonElement;
-      expect(container.querySelector("button")).toHaveTextContent(buttons.BACK);
+      expect(container.querySelector("button")).toHaveTextContent(
+        buttons.BACK_BUTTON,
+      );
       button.click();
       expect(mockNavigate).toHaveBeenCalledWith(-1);
     });

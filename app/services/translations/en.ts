@@ -10,7 +10,7 @@ export const en: Translations = {
     LOGIN_BUTTON_TEST_ZUGANG: "Test access",
     ABMELDEN_BUTTON: "Logout",
     ANMELDEN_BUTTON: "Login",
-    BACK: "Back",
+    BACK_BUTTON: "Back",
     SHOW_VERFAHREN_DETAILS: "Show case details",
     SHOW_URTEIL: "Show judgment",
   },

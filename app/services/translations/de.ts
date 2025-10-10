@@ -8,7 +8,7 @@ export const de = {
     LOGIN_BUTTON_TEST_ZUGANG: "Testzugang",
     ABMELDEN_BUTTON: "Abmelden",
     ANMELDEN_BUTTON: "Anmelden",
-    BACK: "Zurück",
+    BACK_BUTTON: "Zurück",
     SHOW_VERFAHREN_DETAILS: "Verfahrensdetails anzeigen",
     SHOW_URTEIL: "Urteil anzeigen",
   },

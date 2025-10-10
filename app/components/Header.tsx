@@ -4,6 +4,7 @@ import Kopfzeile from "~/components/Kopfzeile.static";
 import Logo from "~/components/Logo.static";
 import Navigation from "~/components/Navigation.static";
 import UserProfile from "~/components/UserProfile.static";
+import { useTranslations } from "~/services/translations/context";
 
 const HeaderWrapper = ({ children }: { children: ReactNode }) => (
   <header>
@@ -26,6 +27,7 @@ export default function Header({
   isContentPage: boolean;
 }) {
   const navigate = useNavigate();
+  const { buttons } = useTranslations();
 
   return (
     <>
@@ -41,7 +43,7 @@ export default function Header({
                 onClick={() => navigate(-1)}
               >
                 <span className="kern-icon kern-icon--arrow-back kern-icon--default"></span>
-                <span>Zurück</span>
+                <span>{buttons.BACK_BUTTON}</span>
               </button>
             ) : (
               <button
@@ -50,7 +52,7 @@ export default function Header({
                 onClick={() => navigate("/login")}
               >
                 <span className="kern-icon kern-icon--logout kern-icon--default"></span>
-                <span>Anmelden</span>
+                <span>{buttons.ANMELDEN_BUTTON}</span>
               </button>
             )}
           </div>
