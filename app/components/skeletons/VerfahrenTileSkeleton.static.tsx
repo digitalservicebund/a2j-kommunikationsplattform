@@ -13,7 +13,7 @@ const SkeletonBlock = () => (
 
 export default function VerfahrenTileSkeleton() {
   return (
-    <div className="gap-kern-space-large py-kern-dimension-large px-kern-space-default border-kern-layout-border rounded-kern-default pulse flex w-full flex-col items-center border">
+    <div className="gap-kern-space-large py-kern-dimension-large px-kern-space-default border-kern-layout-border rounded-kern-default flex w-full animate-pulse flex-col items-center border">
       <div className="space-x-kern-space-small flex w-full">
         <SkeletonBlock />
         <SkeletonBlock />
