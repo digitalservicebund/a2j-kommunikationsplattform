@@ -1,14 +1,14 @@
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("~/services/prototype.session.server", () => ({
+vi.mock("~/services/auth/session.server", () => ({
   requireUserSession: vi.fn(),
 }));
 
 import { LoaderFunctionArgs } from "react-router";
+import { AuthenticationContext } from "~/services/auth/oAuth.server";
+import { requireUserSession } from "~/services/auth/session.server";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
-import { AuthenticationContext } from "~/services/prototype.oAuth.server";
-import { requireUserSession } from "~/services/prototype.session.server";
 
 describe("withSessionLoader", () => {
   beforeEach(() => {

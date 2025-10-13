@@ -3,7 +3,7 @@ import { loginAsDeveloper } from "~/mocks/auth/mockAuth.server";
 import {
   AuthenticationProvider,
   authenticator,
-} from "~/services/prototype.oAuth.server";
+} from "~/services/auth/oAuth.server";
 
 export enum LoginError {
   BeA = "bea-login-error",

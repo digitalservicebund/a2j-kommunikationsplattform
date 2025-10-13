@@ -23,7 +23,7 @@ import { TranslationsContext } from "~/services/translations/context";
 import type { Route } from "./+types/root";
 import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
 import { config } from "./config/config";
-import { hasUserSession } from "./services/prototype.session.server";
+import { hasUserSession } from "./services/auth/session.server";
 import styles from "./styles.css?url";
 
 export { headers } from "./rootHeaders";

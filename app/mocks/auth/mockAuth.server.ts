@@ -1,4 +1,4 @@
-import { createUserSession } from "~/services/prototype.session.server";
+import { createUserSession } from "~/services/auth/session.server";
 
 export const loginAsDeveloper = async (request: Request) => {
   try {
@@ -12,13 +12,11 @@ export const loginAsDeveloper = async (request: Request) => {
 
     if (!sessionCookieHeader) return;
 
-    const cookieWithDemoMode = sessionCookieHeader + "; demoMode=false";
-
     return new Response(null, {
       status: 302,
       headers: {
         Location: "/",
-        "Set-Cookie": cookieWithDemoMode,
+        "Set-Cookie": sessionCookieHeader,
       },
     });
   } catch (error) {

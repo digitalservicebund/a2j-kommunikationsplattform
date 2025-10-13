@@ -1,14 +1,13 @@
 import { Authenticator } from "remix-auth";
 import { CodeChallengeMethod, OAuth2Strategy } from "remix-auth-oauth2";
 import { serverConfig } from "~/config/config.server";
-import { createUserSession } from "./prototype.session.server";
+import { createUserSession } from "./session.server";
 
 export interface AuthenticationContext {
   accessToken: string;
   expiresAt: number;
   // @TODO: move this functionality out of Auth feature
   // https://digitalservicebund.atlassian.net/browse/KOMPLA-466
-  demoMode: boolean;
 }
 
 export interface AuthenticationResponse {
@@ -47,7 +46,6 @@ authenticator.use(
         authenticationContext: {
           accessToken,
           expiresAt,
-          demoMode: false,
         },
         sessionCookieHeader,
       };

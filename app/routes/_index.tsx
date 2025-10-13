@@ -1,6 +1,6 @@
 import { redirect } from "react-router";
 import Uebersicht from "~/components/Uebersicht.static";
-import { getUserSession } from "~/services/prototype.session.server";
+import { getUserSession } from "~/services/auth/session.server";
 
 export async function loader({ request }: { request: Request }) {
   const userSession = await getUserSession(request);
