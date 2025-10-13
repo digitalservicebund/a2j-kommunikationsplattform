@@ -1,4 +1,10 @@
-import { index, layout, prefix, route } from "@react-router/dev/routes";
+import {
+  index,
+  layout,
+  prefix,
+  route,
+  RouteConfig,
+} from "@react-router/dev/routes";
 import { contentPages } from "./constants/contentPages";
 
 export default [
@@ -44,4 +50,4 @@ export default [
 
   // Kubernetes health check
   route("readyz", "./routes/readyz.ts"),
-];
+] satisfies RouteConfig;
