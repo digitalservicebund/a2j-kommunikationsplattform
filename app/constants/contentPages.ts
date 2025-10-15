@@ -1,12 +1,3 @@
-// export const contentPages = [
-//   "/datenschutz",
-//   "/barrierefreiheit",
-//   "/impressum",
-//   "/hilfe-und-kontakt",
-//   "/open-source",
-//   "/weitere-informationen",
-// ];
-
 export const contentPages = [
   { path: "datenschutz", file: "./routes/datenschutz.tsx" },
   { path: "barrierefreiheit", file: "./routes/barrierefreiheit.tsx" },
