@@ -31,7 +31,7 @@ export default function VerfahrenTileSkeleton() {
         <div className="bg-kern-feedback-loader-background rounded-kern-default h-1 w-full"></div>
         <div className="flex w-full">
           <div className="space-y-kern-space-x-large w-full">
-            <div className="bg-kern-feedback-loader-background h-kern-dimension-x-large rounded-kern-default w-352"></div>
+            <div className="bg-kern-feedback-loader-background h-kern-dimension-x-large rounded-kern-default w-352 max-w-full"></div>
           </div>
         </div>
       </div>
