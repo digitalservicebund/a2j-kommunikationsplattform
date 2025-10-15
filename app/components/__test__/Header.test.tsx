@@ -114,7 +114,7 @@ describe("Header", () => {
       it("should render Kopfzeile", () => {
         expect(container.querySelector(".kern-kopfzeile")).toBeInTheDocument();
       });
-      it("should not render header's Logo, UserProfile or Navigation ", () => {
+      it("should render header's Logo, UserProfile or Navigation ", () => {
         expect(
           container.querySelector(".kern-icon--network_node"),
         ).toBeInTheDocument();
