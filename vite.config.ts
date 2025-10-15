@@ -43,6 +43,10 @@ export default defineConfig((config) => {
           "app/**/prototype.*.{ts,tsx}",
           // exclude static files
           "app/**/*.static.tsx",
+          // exclude routes.ts
+          "app/routes.ts",
+          // exclude all files from constants directory
+          "app/constants/**",
         ],
         reporter: ["text", "lcov"],
       },

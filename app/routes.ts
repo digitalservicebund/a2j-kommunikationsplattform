@@ -1,4 +1,11 @@
-import { index, layout, route, RouteConfig } from "@react-router/dev/routes";
+import {
+  index,
+  layout,
+  prefix,
+  route,
+  RouteConfig,
+} from "@react-router/dev/routes";
+import { contentPages } from "./constants/contentPages";
 
 export default [
   // auth
@@ -27,14 +34,18 @@ export default [
         ]),
       ]),
     ]),
+    // prototype verfahren
+    ...prefix("prototype/verfahren", [
+      index("./routes/prototype.verfahren.tsx"),
+      route(":id", "./routes/prototype.verfahren.$id.tsx", {}),
+      route(
+        ":id/dokument/:dokumentId",
+        "./routes/prototype.verfahren.$id.dokument.$dokumentId.tsx",
+      ),
+    ]),
 
     // static content pages
-    route("datenschutz", "./routes/datenschutz.tsx"),
-    route("barrierefreiheit", "./routes/barrierefreiheit.tsx"),
-    route("impressum", "./routes/impressum.tsx"),
-    route("hilfe-und-kontakt", "./routes/hilfe-und-kontakt.tsx"),
-    route("open-source", "./routes/open-source.tsx"),
-    route("weitere-informationen", "./routes/weitere-informationen.tsx"),
+    ...contentPages.map((page) => route(page.path, page.file)),
   ]),
 
   // Kubernetes health check

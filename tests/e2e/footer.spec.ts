@@ -48,7 +48,7 @@ test.describe("Footer (rendered for alle pages)", () => {
     for (const { label, url, h1 } of links) {
       await page.getByRole("link", { name: label }).click();
       await expect(page).toHaveURL(url);
-      await expect(page.locator("h1")).toHaveText(h1);
+      await expect(page.getByRole("heading", { name: h1 })).toBeVisible();
     }
   });
 });
