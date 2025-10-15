@@ -17,7 +17,7 @@ export default function VerfahrenTileSkeleton() {
   const cssClasses = clsx(
     "relative",
     "after:border-y-1 sm:after:border-x-1 sm:after:rounded-kern-default after:border-kern-layout-border",
-    "after:absolute after:-z-1 after:top-0 after:-right-16 after:bottom-0 after:-left-16",
+    "after:absolute after:top-0 after:-right-16 after:bottom-0 after:-left-16",
   );
 
   return (
