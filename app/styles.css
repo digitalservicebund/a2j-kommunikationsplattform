@@ -15,12 +15,6 @@
 /* disable Tailwind's container */
 @source not inline("container");
 
-/* exclude prototype routes from Tailwind's content scanning */
-/* that routes use Tailwind too, but with another (the default) theme */
-@source not "./prototype.styles.css";
-@source not "./routes/prototype.verfahren.tsx";
-@source not "./routes/prototype.verfahren.$id.tsx";
-
 @layer base {
   /* additional icons that are not included in the KERN UX stylesheet */
   .kern-icon--network_node {
