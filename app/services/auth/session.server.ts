@@ -74,12 +74,3 @@ export const requireUserSession = async (request: Request) => {
 
   return userSession;
 };
-
-export const hasUserSession = async (
-  request: Request,
-): Promise<boolean | null> => {
-  const session = await getSession(request.headers.get("Cookie"));
-  const accessToken = session.get("accessToken");
-
-  return !!accessToken;
-};

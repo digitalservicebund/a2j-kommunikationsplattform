@@ -25,14 +25,14 @@ import { TranslationsContext } from "~/services/translations/context";
 import type { Route } from "./+types/root";
 import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
 import { config } from "./config/config";
-import { hasUserSession } from "./services/auth/session.server";
+import { getUserSession } from "./services/auth/session.server";
 import styles from "./styles.css?url";
 
 export { headers } from "./rootHeaders";
 export type RootLoader = typeof loader;
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const userIsLoggedIn = Boolean(await hasUserSession(request));
+  const userIsLoggedIn = Boolean(await getUserSession(request));
   const pathname = new URL(request.url).pathname;
   const isContentPage = contentPages.some(
     (page) => `/${page.path}` === pathname,
