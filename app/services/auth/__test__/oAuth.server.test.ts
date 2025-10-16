@@ -1,10 +1,4 @@
-import { describe, it, vi } from "vitest";
-import { loginAsDeveloper } from "~/mocks/auth/mockAuth.server";
-import {
-  AuthenticationProvider,
-  authenticator,
-} from "~/services/auth/oAuth.server";
-import { createUserSession } from "~/services/auth/session.server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("~/services/auth/session.server");
 vi.mock("~/config/config.server", () => ({
@@ -16,17 +10,42 @@ vi.mock("~/config/config.server", () => ({
   }),
 }));
 
-describe("aAuth.server", () => {
+import { loginAsDeveloper } from "~/mocks/auth/mockAuth.server";
+import {
+  AuthenticationProvider,
+  authenticator,
+  type AuthenticationResponse,
+} from "~/services/auth/oAuth.server";
+import { createUserSession } from "~/services/auth/session.server";
+
+type VerifyArgs = { tokens: { accessToken: () => string }; request: Request };
+type StrategyLike = {
+  verify: (a: VerifyArgs) => Promise<AuthenticationResponse>;
+};
+type AuthWithStrategies = {
+  strategies: Map<string, StrategyLike>;
+};
+
+const mockedCreateUserSession = vi.mocked(createUserSession);
+
+function getBEAStrategy(): StrategyLike {
+  const strategyMap = (authenticator as unknown as AuthWithStrategies)
+    .strategies;
+  const strategy = strategyMap.get(AuthenticationProvider.BEA);
+  if (!strategy) throw new Error("BEA strategy not registered");
+  return strategy;
+}
+
+describe("oAuth.server", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   describe("loginAsDeveloper", () => {
-    const mockRequest = {} as Request;
-    const mockedCreateUserSession = vi.mocked(createUserSession);
+    const mockRequest = new Request("https://example.test/dev-login");
 
-    beforeEach(() => {
-      vi.restoreAllMocks();
-    });
-
-    it("redirects to /prototype/verfahren with correct cookie", async () => {
-      mockedCreateUserSession.mockResolvedValue("session-cookie");
+    it("redirects to / with correct cookie", async () => {
+      mockedCreateUserSession.mockResolvedValueOnce("session-cookie");
       const response = await loginAsDeveloper(mockRequest);
 
       expect(response).toBeInstanceOf(Response);
@@ -36,39 +55,30 @@ describe("aAuth.server", () => {
     });
 
     it("returns undefined if sessionCookieHeader is falsy", async () => {
-      mockedCreateUserSession.mockResolvedValue("");
+      mockedCreateUserSession.mockResolvedValueOnce("");
       const response = await loginAsDeveloper(mockRequest);
-
       expect(response).toBeUndefined();
     });
 
     it("returns 500 response on error", async () => {
-      mockedCreateUserSession.mockRejectedValue(new Error("error"));
+      mockedCreateUserSession.mockRejectedValueOnce(new Error("error"));
       const response = await loginAsDeveloper(mockRequest);
 
       expect(response).toBeInstanceOf(Response);
       expect(response?.status).toBe(500);
-      const text = await response?.text();
-      expect(text).toBe("Dev login failed");
+      await expect(response?.text()).resolves.toBe("Dev login failed");
     });
   });
-  describe("OAuth2Strategy callback", () => {
-    const mockRequest = {} as Request;
-    const mockTokens = {
-      accessToken: () => "mock-access-token",
-    };
 
-    beforeEach(() => {
-      vi.restoreAllMocks();
-    });
+  describe("OAuth2Strategy callback", () => {
+    const mockRequest = new Request("https://example.test/callback");
+    const mockTokens = { accessToken: () => "mock-access-token" };
 
     it("returns AuthenticationResponse with session cookie", async () => {
-      vi.mocked(createUserSession).mockResolvedValue("mock-cookie");
-      const strategy = authenticator.strategies.get(AuthenticationProvider.BEA);
-      expect(strategy).toBeDefined();
+      mockedCreateUserSession.mockResolvedValueOnce("mock-cookie");
 
-      const callback = strategy.verify;
-      const result = await callback({
+      const strategy = getBEAStrategy();
+      const result = await strategy.verify({
         tokens: mockTokens,
         request: mockRequest,
       });
@@ -88,12 +98,11 @@ describe("aAuth.server", () => {
     });
 
     it("throws error if createUserSession fails", async () => {
-      vi.mocked(createUserSession).mockRejectedValue(new Error("fail"));
-      const strategy = authenticator.strategies.get(AuthenticationProvider.BEA);
-      const callback = strategy.verify;
+      mockedCreateUserSession.mockRejectedValueOnce(new Error("fail"));
+      const strategy = getBEAStrategy();
 
       await expect(
-        callback({ tokens: mockTokens, request: mockRequest }),
+        strategy.verify({ tokens: mockTokens, request: mockRequest }),
       ).rejects.toThrow("fail");
     });
   });
