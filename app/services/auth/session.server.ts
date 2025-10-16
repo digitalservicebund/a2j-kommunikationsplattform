@@ -36,7 +36,7 @@ export const createUserSession = async (
 
   try {
     console.log("Creating user session");
-    return commitSession(session);
+    return await commitSession(session);
   } catch (error) {
     console.error("Error creating user session:", error);
     throw new Error("Failed to create user session");
@@ -52,7 +52,7 @@ export const getUserSession = async (
   const expiresAt = session.get("expiresAt");
 
   if (!accessToken || !expiresAt || expiresAt < Date.now()) {
-    destroySession(session);
+    await destroySession(session);
     return null;
   }
 
