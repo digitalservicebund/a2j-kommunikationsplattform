@@ -28,6 +28,9 @@ type AuthWithStrategies = {
 
 const mockedCreateUserSession = vi.mocked(createUserSession);
 
+const requestURL = "http://localhost/oauth-test";
+const accessToken = "test-access-token-oauth";
+
 function getBEAStrategy(): StrategyLike {
   const strategyMap = (authenticator as unknown as AuthWithStrategies)
     .strategies;
@@ -42,7 +45,7 @@ describe("oAuth.server", () => {
   });
 
   describe("loginAsDeveloper", () => {
-    const mockRequest = new Request("https://example.test/dev-login");
+    const mockRequest = new Request(`${requestURL}/dev-login`);
 
     it("redirects to / with correct cookie", async () => {
       mockedCreateUserSession.mockResolvedValueOnce("session-cookie");
@@ -71,8 +74,8 @@ describe("oAuth.server", () => {
   });
 
   describe("OAuth2Strategy callback", () => {
-    const mockRequest = new Request("https://example.test/callback");
-    const mockTokens = { accessToken: () => "mock-access-token" };
+    const mockRequest = new Request(`${requestURL}/callback`);
+    const mockTokens = { accessToken: () => accessToken };
 
     it("returns AuthenticationResponse with session cookie", async () => {
       mockedCreateUserSession.mockResolvedValueOnce("mock-cookie");
@@ -85,13 +88,13 @@ describe("oAuth.server", () => {
 
       expect(result).toEqual({
         authenticationContext: {
-          accessToken: "mock-access-token",
+          accessToken: accessToken,
           expiresAt: expect.any(Number),
         },
         sessionCookieHeader: "mock-cookie",
       });
       expect(createUserSession).toHaveBeenCalledWith(
-        "mock-access-token",
+        accessToken,
         expect.any(Number),
         mockRequest,
       );

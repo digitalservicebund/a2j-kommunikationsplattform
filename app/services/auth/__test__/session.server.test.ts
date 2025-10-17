@@ -9,6 +9,8 @@ import {
 } from "vitest";
 
 const MODULE_PATH = "~/services/auth/session.server";
+const requestURL = "http://localhost/session-test";
+const accessToken = "test-access-token-session";
 
 type CookieSameSite = "lax" | "strict" | "none";
 
@@ -195,14 +197,14 @@ describe("session.server", () => {
   it("createUserSession commits a session with accessToken & expiresAt", async () => {
     const { module, reactRouterMock, restore } = await withMocks({});
 
-    const req = new Request("https://example.test", {
+    const req = new Request(requestURL, {
       headers: { Cookie: "" },
     });
-    const result = await module.createUserSession("testToken", futureTs(), req);
+    const result = await module.createUserSession(accessToken, futureTs(), req);
 
     expect(reactRouterMock.commitSession).toHaveBeenCalledTimes(1);
     const calledWithSession = reactRouterMock.commitSession.mock.calls[0][0];
-    expect(calledWithSession.get("accessToken")).toBe("testToken");
+    expect(calledWithSession.get("accessToken")).toBe(accessToken);
     expect(typeof calledWithSession.get("expiresAt")).toBe("number");
     expect(result).toBe("mock-set-cookie=1");
 
@@ -216,10 +218,10 @@ describe("session.server", () => {
     });
 
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const req = new Request("https://example.test");
+    const req = new Request(requestURL);
 
     await expect(
-      module.createUserSession("tok", futureTs(), req),
+      module.createUserSession(accessToken, futureTs(), req),
     ).rejects.toThrow("Failed to create user session");
     expect(errSpy).toHaveBeenCalled();
 
@@ -229,7 +231,7 @@ describe("session.server", () => {
   it("getUserSession returns null and destroys session if no accessToken", async () => {
     const { module, reactRouterMock, restore } = await withMocks({});
 
-    const req = new Request("https://example.test", {
+    const req = new Request(requestURL, {
       headers: { Cookie: "" },
     });
 
@@ -244,7 +246,7 @@ describe("session.server", () => {
   it("getUserSession returns null and destroys session if expired", async () => {
     const { module, reactRouterMock, restore } = await withMocks({});
     const cookie = `accessToken=testToken; expiresAt=${pastTs()}`;
-    const req = new Request("https://example.test", {
+    const req = new Request(requestURL, {
       headers: { Cookie: cookie },
     });
 
@@ -258,15 +260,15 @@ describe("session.server", () => {
 
   it("getUserSession returns AuthenticationContext when valid", async () => {
     const { module, reactRouterMock, restore } = await withMocks({});
-    const cookie = `accessToken=testToken; expiresAt=${futureTs()}`;
-    const req = new Request("https://example.test", {
+    const cookie = `accessToken=${accessToken}; expiresAt=${futureTs()}`;
+    const req = new Request(requestURL, {
       headers: { Cookie: cookie },
     });
 
     const ctx = await module.getUserSession(req);
 
     expect(ctx).toEqual({
-      accessToken: "testToken",
+      accessToken: accessToken,
       expiresAt: expect.any(Number),
     });
     expect(reactRouterMock.destroySession).not.toHaveBeenCalled();
@@ -276,14 +278,14 @@ describe("session.server", () => {
 
   it("requireUserSession returns the session when present", async () => {
     const { module, restore } = await withMocks({});
-    const cookie = `accessToken=testToken; expiresAt=${futureTs()}`;
-    const req = new Request("https://example.test/profile", {
+    const cookie = `accessToken=${accessToken}; expiresAt=${futureTs()}`;
+    const req = new Request(requestURL, {
       headers: { Cookie: cookie },
     });
 
     const res = await module.requireUserSession(req);
     expect(res).toEqual({
-      accessToken: "testToken",
+      accessToken: accessToken,
       expiresAt: expect.any(Number),
     });
 
@@ -294,7 +296,7 @@ describe("session.server", () => {
     const { module, restore } = await withMocks({});
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
-    const req = new Request("https://example.test", {
+    const req = new Request(requestURL, {
       headers: { Cookie: "" },
     });
 
