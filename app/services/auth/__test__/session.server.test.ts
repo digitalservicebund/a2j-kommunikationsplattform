@@ -130,11 +130,11 @@ async function withMocks({
         };
       },
       redirect: reactRouterMock.redirect,
-      __mock: reactRouterMock, // expose internals for assertions
+      __mock: reactRouterMock, // exposes internals for assertions
     } as const;
   });
 
-  // Types for dynamic imports without 'any'
+  // Types for dynamic imports to avoid using 'any'
   const module = (await import(MODULE_PATH)) as SessionModule;
   const reactRouter = (await import("react-router")) as unknown as {
     __mock: ReactRouterMock;
@@ -149,7 +149,6 @@ async function withMocks({
   };
 }
 
-// Helpers to get timestamps
 const futureTs = (): number => Date.now() + 60_000;
 const pastTs = (): number => Date.now() - 60_000;
 
@@ -313,7 +312,6 @@ describe("session.server", () => {
         throw error; // rethrow if not a Response
       }
     }
-
     restore();
   });
 });
