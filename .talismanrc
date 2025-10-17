@@ -55,6 +55,10 @@ fileignoreconfig:
     checksum: 2ebcd731e212d9be5dcceb88703c12e68b84982d5800162f605d93d0a20a3455
   - filename: app/services/translations/index.ts
     checksum: bd9deccfd2a77aa490df3019083baf73a0bff19785a84397f319f6df6ffe195f
+  - filename: app/services/auth/__test__/oAuth.server.test.ts
+    checksum: 712bcb61954fe6290266513add202f110114a3ac46e9b71a797eddec875d65a7
+  - filename: app/services/auth/__test__/session.server.test.ts
+    checksum: 23662124b55e3b489c9098d75285d2d1b1445a5bc7e3efd64cc9af988d6d9f5f
 
 version: ""
 scopeconfig:
