@@ -15,7 +15,7 @@ fileignoreconfig:
     checksum: e8f0abe6c0cad171978c8a247ab436d14409394e4d8908523a3c228c0909aa9b
   - filename: app/services/fileUpload.server.ts
     checksum: bc2812232864b6d3b6f9189b95fea278d34952318ddb0deaf41be7ac5fd43d35
-  - filename: app/services/oAuth.server.ts
+  - filename: app/services/auth/oAuth.server.ts
     checksum: 6a531cabbea50a68d66ae470811ec728348ba5d1d01f3ced20328e8bd47c7740
   - filename: app/services/session.server.ts
     checksum: e3bf1ac11d0982b19e4d332f05b3cb1a31eac97d58744227b2235c72f8d0ae05
