@@ -1,14 +1,17 @@
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("~/services/prototype.session.server", () => ({
+vi.mock("~/services/auth/session.server", () => ({
   requireUserSession: vi.fn(),
 }));
 
 import { LoaderFunctionArgs } from "react-router";
+import { AuthenticationContext } from "~/services/auth/oAuth.server";
+import { requireUserSession } from "~/services/auth/session.server";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
-import { AuthenticationContext } from "~/services/prototype.oAuth.server";
-import { requireUserSession } from "~/services/prototype.session.server";
+
+const requestURL = "http://localhost/with-session-loader-test";
+const accessToken = "test-access-token-with-session-loader";
 
 describe("withSessionLoader", () => {
   beforeEach(() => {
@@ -17,7 +20,7 @@ describe("withSessionLoader", () => {
 
   it("calls wrapped loader with userSession and returns its result", async () => {
     const mockSession = {
-      accessToken: "token-123",
+      accessToken: accessToken,
       expiresAt: Date.now() + 1000,
     };
     (requireUserSession as unknown as Mock).mockResolvedValue(mockSession);
@@ -26,7 +29,6 @@ describe("withSessionLoader", () => {
       async (
         args: LoaderFunctionArgs & { userSession: AuthenticationContext },
       ) => {
-        // ensure userSession has been injected
         return { ok: true, sessionToken: args.userSession?.accessToken };
       },
     );
@@ -34,13 +36,13 @@ describe("withSessionLoader", () => {
     const loader = withSessionLoader(wrappedLoader);
 
     const result = await loader({
-      request: new Request("http://localhost/"),
+      request: new Request(requestURL),
       params: {},
       context: {},
     });
 
     expect(wrappedLoader).toHaveBeenCalled();
-    expect(result).toEqual({ ok: true, sessionToken: "token-123" });
+    expect(result).toEqual({ ok: true, sessionToken: accessToken });
   });
 
   it("propagates error (redirect) thrown by requireUserSession", async () => {
@@ -52,13 +54,11 @@ describe("withSessionLoader", () => {
 
     await expect(
       loader({
-        request: new Request("http://localhost/"),
+        request: new Request(requestURL),
         params: {},
         context: {},
       }),
     ).rejects.toThrow("redirect-to-login");
-
-    // ensure wrappedLoader was not called
     expect(wrappedLoader).not.toHaveBeenCalled();
   });
 });

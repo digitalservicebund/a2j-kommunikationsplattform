@@ -1,9 +1,7 @@
-import { parse } from "cookie";
 import { createCookieSessionStorage, redirect } from "react-router";
 import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
-import { ServicesContext } from "~/services/prototype.servicesContext.server";
-import type { AuthenticationContext } from "./prototype.oAuth.server";
+import type { AuthenticationContext } from "./oAuth.server";
 
 const getSecret = () => {
   return config().ENVIRONMENT === "development"
@@ -38,7 +36,7 @@ export const createUserSession = async (
 
   try {
     console.log("Creating user session");
-    return commitSession(session);
+    return await commitSession(session);
   } catch (error) {
     console.error("Error creating user session:", error);
     throw new Error("Failed to create user session");
@@ -54,30 +52,17 @@ export const getUserSession = async (
   const expiresAt = session.get("expiresAt");
 
   if (!accessToken || !expiresAt || expiresAt < Date.now()) {
-    destroySession(session);
+    await destroySession(session);
     return null;
   }
 
   return {
     accessToken,
     expiresAt,
-    demoMode: false,
   };
 };
 
 export const requireUserSession = async (request: Request) => {
-  const demoMode =
-    parse(request.headers.get("cookie") || "").demoMode === "true";
-  const isDemoModeAllowed = ServicesContext.isDemoModeAllowed();
-  if (demoMode && isDemoModeAllowed) {
-    const mockAuthenticationContext: AuthenticationContext = {
-      accessToken: "mockAccessToken",
-      expiresAt: Date.now() + 60 * 60 * 1000, // 1 hour
-      demoMode: true,
-    };
-    return mockAuthenticationContext;
-  }
-
   const userSession = await getUserSession(request);
 
   if (!userSession) {
@@ -88,13 +73,4 @@ export const requireUserSession = async (request: Request) => {
   }
 
   return userSession;
-};
-
-export const hasUserSession = async (
-  request: Request,
-): Promise<boolean | null> => {
-  const session = await getSession(request.headers.get("Cookie"));
-  const accessToken = session.get("accessToken");
-
-  return !!accessToken;
 };

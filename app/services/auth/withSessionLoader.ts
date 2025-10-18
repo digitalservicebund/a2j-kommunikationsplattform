@@ -1,6 +1,6 @@
 import { LoaderFunction, LoaderFunctionArgs } from "react-router";
-import { AuthenticationContext } from "~/services/prototype.oAuth.server";
-import { requireUserSession } from "~/services/prototype.session.server";
+import { AuthenticationContext } from "~/services/auth/oAuth.server";
+import { requireUserSession } from "~/services/auth/session.server";
 
 export function withSessionLoader(
   loaderFn: (

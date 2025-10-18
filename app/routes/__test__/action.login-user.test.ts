@@ -4,14 +4,14 @@ vi.mock("~/mocks/auth/mockAuth.server", () => ({
   loginAsDeveloper: vi.fn(),
 }));
 
-vi.mock("~/services/prototype.oAuth.server", () => ({
+vi.mock("~/services/auth/oAuth.server", () => ({
   authenticator: { authenticate: vi.fn() },
   AuthenticationProvider: { BEA: "bea" },
 }));
 
 import { loginAsDeveloper } from "~/mocks/auth/mockAuth.server";
 import { LoginType, action } from "~/routes/action.login-user";
-import { authenticator } from "~/services/prototype.oAuth.server";
+import { authenticator } from "~/services/auth/oAuth.server";
 
 describe("/action/login-user action", () => {
   beforeEach(() => {
@@ -47,7 +47,6 @@ describe("/action/login-user action", () => {
       authenticationContext: {
         accessToken: "bea-token",
         expiresAt: Date.now() + 1000,
-        demoMode: false,
       },
       sessionCookieHeader: "session=abc; Path=/; HttpOnly",
     };

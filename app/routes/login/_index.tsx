@@ -1,14 +1,8 @@
-import {
-  Form,
-  Link,
-  redirect,
-  useLoaderData,
-  useSearchParams,
-} from "react-router";
+import { Form, redirect, useLoaderData, useSearchParams } from "react-router";
 import Logo from "~/components/Logo.static";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
-import { getUserSession } from "~/services/prototype.session.server";
+import { getUserSession } from "~/services/auth/session.server";
 import { useTranslations } from "~/services/translations/context";
 import { LoginError, LoginType } from "../action.login-user";
 import { LogoutType } from "../action.logout-user";
@@ -129,18 +123,16 @@ export default function LoginPage() {
 
               {/* only render "Testzugang" demo link for non production environments */}
               {environment !== "production" && (
-                <Link
-                  to="/prototype/verfahren"
+                <button
                   className="kern-btn kern-btn--block kern-btn--secondary"
-                  onClick={() => {
-                    document.cookie = "demoMode=true; path=/; max-age=3600"; // 1 hour
-                  }}
                   data-testid="demo-button"
+                  disabled
+                  aria-disabled={"true"}
                 >
                   <span className="kern-label">
                     {buttons.LOGIN_BUTTON_TEST_ZUGANG}
                   </span>
-                </Link>
+                </button>
               )}
             </div>
           </Form>

@@ -1,8 +1,5 @@
 import { redirect, type ActionFunctionArgs } from "react-router";
-import {
-  destroySession,
-  getSession,
-} from "~/services/prototype.session.server";
+import { destroySession, getSession } from "~/services/auth/session.server";
 
 export enum LogoutType {
   Automatic = "auto-logged-out",
