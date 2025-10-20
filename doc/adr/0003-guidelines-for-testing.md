@@ -4,6 +4,7 @@
 - 2025-05-15: Accepted
 - 2025-08-14: Updated
 - 2025-08-29: Updated
+- 2025-10-18: Updated
 
 ## Status
 
@@ -147,10 +148,16 @@ Ultimately, [MSW](https://github.com/mswjs/msw) and [msw-auto-mock](https://gith
 
 ## Consequences
 
-- Move unit tests close to the units that they test: `./tests/unit/*` tests will be moved to the appropriate unit within the `./app/*` folder
-- Remove `JustizBackendService` (see `./app/services/justizBackend.server.ts`), its features and its mock implementation. Use mocked backend API (MSW implementation, see `./mocks/api/**`) instead within the application
-  - `Demo mode` option is currently based on this service, a new way must be found to enable it on the staging environment
-- Implement and add relevant E2E tests that mock API calls with MSW
+**Todos:**
+
+- :white_check_mark: Move unit tests close to the units that they test: `./tests/unit/*` tests will be moved to the appropriate unit within the `./app/*` folder
+- :white_check_mark: Remove `JustizBackendService` (see `./app/services/justizBackend.server.ts`), its features and its mock implementation. Use mocked backend API (MSW implementation, see `./mocks/api/**`) instead within the application (if and when it is necessary)
+  - :white_check_mark: `Demo mode` option is currently based on this service, a new way must be found to enable it on the staging environment
+    - `Demo mode` is deactivated for now, we have a new [story](https://digitalservicebund.atlassian.net/browse/KOMMPLA-796) within our backlog that will handle this in the near future
+
+**Reminders:**
+
+- Implement and add relevant E2E tests that mock API calls with MSW (if helpful)
 - Every page (route that provides a user journey) should be covered through a dedicated e2e test
 
 [^1]: (good/ok/bad) Can it detect timing issues, interface mismatches or data integrity problems?

@@ -39,8 +39,6 @@ export default defineConfig((config) => {
           "!app/routes/action.*.ts",
           // test files
           "app/**/__test__/*.test.{ts,tsx}",
-          // exclude technical prototypes (spikes) that will be removed/reworked
-          "app/**/prototype.*.{ts,tsx}",
           // exclude static files
           "app/**/*.static.tsx",
           // exclude routes.ts

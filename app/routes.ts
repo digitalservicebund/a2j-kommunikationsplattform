@@ -1,10 +1,4 @@
-import {
-  index,
-  layout,
-  prefix,
-  route,
-  RouteConfig,
-} from "@react-router/dev/routes";
+import { index, layout, route, RouteConfig } from "@react-router/dev/routes";
 import { contentPages } from "./constants/contentPages";
 
 export default [
@@ -34,16 +28,6 @@ export default [
         ]),
       ]),
     ]),
-    // prototype verfahren
-    ...prefix("prototype/verfahren", [
-      index("./routes/prototype.verfahren.tsx"),
-      route(":id", "./routes/prototype.verfahren.$id.tsx", {}),
-      route(
-        ":id/dokument/:dokumentId",
-        "./routes/prototype.verfahren.$id.dokument.$dokumentId.tsx",
-      ),
-    ]),
-
     // static content pages
     ...contentPages.map((page) => route(page.path, page.file)),
   ]),
