@@ -19,11 +19,11 @@ import {
 import { createUserSession } from "~/services/auth/session.server";
 
 type VerifyArgs = { tokens: { accessToken: () => string }; request: Request };
-type StrategyLike = {
+type StrategyResponse = {
   verify: (a: VerifyArgs) => Promise<AuthenticationResponse>;
 };
 type AuthWithStrategies = {
-  strategies: Map<string, StrategyLike>;
+  strategies: Map<string, StrategyResponse>;
 };
 
 const mockedCreateUserSession = vi.mocked(createUserSession);
@@ -31,11 +31,11 @@ const mockedCreateUserSession = vi.mocked(createUserSession);
 const requestURL = "http://localhost/oauth-test";
 const accessToken = "test-access-token-oauth";
 
-function getBEAStrategy(): StrategyLike {
+function getBEAStrategy(): StrategyResponse {
   const strategyMap = (authenticator as unknown as AuthWithStrategies)
     .strategies;
   const strategy = strategyMap.get(AuthenticationProvider.BEA);
-  if (!strategy) throw new Error("BEA strategy not registered");
+  if (!strategy) throw new Error("beA strategy not registered");
   return strategy;
 }
 
