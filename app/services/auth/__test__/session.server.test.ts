@@ -178,7 +178,7 @@ describe("session.server", () => {
     restore();
   });
 
-  it("uses server secret when ENVIRONMENT != development", async () => {
+  it("uses server secret when ENVIRONMENT is not development", async () => {
     const { reactRouterMock, restore } = await withMocks({
       env: "production",
       serverSecret: "super-secret-from-server",
@@ -227,7 +227,7 @@ describe("session.server", () => {
     restore();
   });
 
-  it("getUserSession returns null and destroys session if no accessToken", async () => {
+  it("getUserSession returns null and destroys session if no accessToken is available", async () => {
     const { module, reactRouterMock, restore } = await withMocks({});
 
     const req = new Request(requestURL, {
@@ -242,7 +242,7 @@ describe("session.server", () => {
     restore();
   });
 
-  it("getUserSession returns null and destroys session if expired", async () => {
+  it("getUserSession returns null and destroys session if it is expired", async () => {
     const { module, reactRouterMock, restore } = await withMocks({});
     const cookie = `accessToken=testToken; expiresAt=${pastTs()}`;
     const req = new Request(requestURL, {
@@ -291,7 +291,7 @@ describe("session.server", () => {
     restore();
   });
 
-  it("requireUserSession throws a redirect Response to /login when missing", async () => {
+  it("requireUserSession triggers a redirect to /login if it is missing.", async () => {
     const { module, restore } = await withMocks({});
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
