@@ -44,9 +44,12 @@ export default function Navigation() {
       <ul className="gap-kern-space-x-large my-0 list-none items-center justify-between pl-0 md:flex xl:flex-wrap">
         {navigationLinksList.map((link) => (
           <li key={link.name}>
-            <a href={link.url} className="kern-link">
+            <a
+              href={link.url}
+              className="kern-link visited:text-kern-action-default"
+            >
               <span
-                className={`kern-icon ${link.iconName} kern-icon--default`}
+                className={`kern-icon ${link.iconName} kern-icon--default bg-current`}
                 aria-hidden="true"
               ></span>
               {link.name}
