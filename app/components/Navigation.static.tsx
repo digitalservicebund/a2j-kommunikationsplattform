@@ -7,9 +7,9 @@ const LogoutButton = () => {
   return (
     <Form method="post" action="/action/logout-user">
       <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
-      <button type="submit" className="kern-link cursor-pointer bg-transparent">
+      <button type="submit" className="kern-btn kern-btn--tertiary">
         <span className="kern-icon kern-icon--close kern-icon--default"></span>
-        <span>{buttons.ABMELDEN_BUTTON}</span>
+        <span className="kern-label">{buttons.ABMELDEN_BUTTON}</span>
       </button>
     </Form>
   );
