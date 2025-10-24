@@ -60,7 +60,7 @@ flowchart
           }
         }
 
-        Boundary(b5, "Technical Tntegration", "Access to state infrastructure") {
+        Boundary(b5, "Technical Integration", "Access to state infrastructure") {
           System(Firewall, "Network", "Tbd: Access, Firewall, Network options for pilot courts.")
           System(KomPlaAdapter, "KomPla Adapter", "Tbd: Enables access to on-site systems")
           System(KomPlaJBA, "KomPla Justice Backend API", "Tbd: Enables communication with on-site systems")
