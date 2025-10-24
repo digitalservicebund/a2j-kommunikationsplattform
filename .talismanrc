@@ -60,7 +60,7 @@ fileignoreconfig:
   - filename: app/services/auth/__test__/session.server.test.ts
     checksum: c0525878a7bb28d6cb317959f79129be7f51724a7ec3b0d62e3ecaa95d3f9edf
   - filename: doc/architecture-diagrams/system-architecture.md
-    checksum: 596e9bf2175b70349bf8509cafee2dbba5b9837eee24974452bd9ce1a4864a28
+    checksum: de020ab1dac71a35937a3d21c819230660b87567f59a6e2060962d574b1941c5
 
 version: ""
 scopeconfig:
