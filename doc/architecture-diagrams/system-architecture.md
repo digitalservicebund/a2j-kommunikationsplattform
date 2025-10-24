@@ -51,7 +51,6 @@ flowchart
         }
 
         Boundary(b3, "KomPla Backend") {
-
           System(KomPlaAPI, "KomPla API", "Allows (external) systems to interact with the KomPla.")
           System(KomPlaIdP, "KomPla Identity Provider (IdP)", "Keycloak based IdP within KomPla, acts as an identity broker.<br/>Redirects to external identity providers, such as BRAK IdP or SAmOA,")
 
@@ -72,18 +71,29 @@ flowchart
       }
 
       BiRel(userA, KomPlaUI, "Uses")
+      UpdateRelStyle(userA, KomPlaUI, $offsetX="-15", $offsetY="-50")
       BiRel(userB, KomPlaUI, "Uses")
+      UpdateRelStyle(userB, KomPlaUI, $offsetX="-10", $offsetY="-50")
       BiRel(KomPlaUI, KomPlaAPI, "Uses")
+      UpdateRelStyle(KomPlaUI, KomPlaAPI, $offsetX="0", $offsetY="150")
       Rel(userA, BeAPortal, "Login", "BRAK IdP")
+      UpdateRelStyle(userA, BeAPortal, $offsetX="20", $offsetY="115")
       Rel(userB, KomPlaIdP, "Login", "KomPla IdP")
-      Rel(KomPlaUI, KomPlaIdP, "OAuth 2.0 Token Exchange", "RFC 8693")
-      Rel(KomPlaUI, BRAKIdP, "OAuth 2.0 Authorization Code flow")
-      BiRel(KomPlaAPI, KomPlaMain, "Processes requests,<br/>handles business logic,<br/>returns repsponses.")
-      BiRel(KomPlaMain, KomPlaDB, "Gets/tells the database,<br/>what data is needed.")
+      UpdateRelStyle(userB, KomPlaIdP, $offsetX="-30", $offsetY="-40")
+      Rel(KomPlaUI, KomPlaIdP, "Token Exchange", "OAuth 2.0 (RFC 8693)")
+      UpdateRelStyle(KomPlaUI, KomPlaIdP, $offsetX="-80", $offsetY="120")
+      BiRel(KomPlaUI, BRAKIdP, "Authorization<br/>Code flow", "OAuth 2.0")
+      UpdateRelStyle(KomPlaUI, BRAKIdP, $offsetX="-50", $offsetY="-40")
+      BiRel(KomPlaAPI, KomPlaMain, "Processes requests,<br/>handles business logic,<br/>returns repsponses")
+      UpdateRelStyle(KomPlaAPI, KomPlaMain, $offsetX="-10", $offsetY="-30")
+      BiRel(KomPlaMain, KomPlaDB, "Data flow")
+      UpdateRelStyle(KomPlaMain, KomPlaDB, $offsetX="-25", $offsetY="-20")
       BiRel(KomPlaMain, Firewall, "tbd")
       BiRel(Firewall, KomPlaAdapter, "tbd")
       BiRel(KomPlaAdapter, KomPlaJBA, "tbd")
       BiRel(KomPlaJBA, FachverfahrenA, "tbd")
       BiRel(KomPlaJBA, FachverfahrenB, "tbd")
       BiRel(KomPlaJBA, FachverfahrenC, "tbd")
+
+      UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
