@@ -70,17 +70,17 @@ flowchart
         }
       }
 
-      BiRel(userA, KomPlaUI, "Uses")
+      Rel(userA, KomPlaUI, "Uses")
       UpdateRelStyle(userA, KomPlaUI, $offsetX="-15", $offsetY="-50")
-      BiRel(userB, KomPlaUI, "Uses")
+      Rel(userB, KomPlaUI, "Uses")
       UpdateRelStyle(userB, KomPlaUI, $offsetX="-10", $offsetY="-50")
       BiRel(KomPlaUI, KomPlaAPI, "Uses")
       UpdateRelStyle(KomPlaUI, KomPlaAPI, $offsetX="0", $offsetY="150")
-      Rel(userA, BeAPortal, "Login", "BRAK IdP")
+      BiRel(userA, BeAPortal, "Login", "BRAK IdP")
       UpdateRelStyle(userA, BeAPortal, $offsetX="20", $offsetY="115")
-      Rel(userB, KomPlaIdP, "Login", "KomPla IdP")
+      BiRel(userB, KomPlaIdP, "Login", "KomPla IdP")
       UpdateRelStyle(userB, KomPlaIdP, $offsetX="-30", $offsetY="-40")
-      Rel(KomPlaUI, KomPlaIdP, "Token Exchange", "OAuth 2.0 (RFC 8693)")
+      BiRel(KomPlaUI, KomPlaIdP, "Token Exchange", "OAuth 2.0 (RFC 8693)")
       UpdateRelStyle(KomPlaUI, KomPlaIdP, $offsetX="-80", $offsetY="120")
       BiRel(KomPlaUI, BRAKIdP, "Authorization<br/>Code flow", "OAuth 2.0")
       UpdateRelStyle(KomPlaUI, BRAKIdP, $offsetX="-50", $offsetY="-40")
