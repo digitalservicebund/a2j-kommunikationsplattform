@@ -7,9 +7,9 @@ const LogoutButton = () => {
   return (
     <Form method="post" action="/action/logout-user">
       <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
-      <button type="submit" className="kern-link cursor-pointer bg-transparent">
-        <span className="kern-icon kern-icon--close kern-icon--default"></span>
-        <span>{buttons.ABMELDEN_BUTTON}</span>
+      <button type="submit" className="kern-btn kern-btn--tertiary">
+        <span className="kern-icon kern-icon--close"></span>
+        <span className="kern-label">{buttons.ABMELDEN_BUTTON}</span>
       </button>
     </Form>
   );
@@ -44,9 +44,12 @@ export default function Navigation() {
       <ul className="gap-kern-space-x-large my-0 list-none items-center justify-between pl-0 md:flex xl:flex-wrap">
         {navigationLinksList.map((link) => (
           <li key={link.name}>
-            <a href={link.url} className="kern-link">
+            <a
+              href={link.url}
+              className="kern-link visited:text-kern-action-default"
+            >
               <span
-                className={`kern-icon ${link.iconName} kern-icon--default`}
+                className={`kern-icon ${link.iconName} bg-current`}
                 aria-hidden="true"
               ></span>
               {link.name}
