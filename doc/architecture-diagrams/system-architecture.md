@@ -26,10 +26,10 @@ flowchart
     KomPlaAdapter<-->eAkte
     KomPlaAdapter<-->Fachverfahren
     end
-    style UI fill:#0000ff,stroke:#0000ff
-    style IdP fill:#009848,stroke:#009848
-    style API fill:#009848,stroke:#009848
-    style KomPlaAdapter fill:#009848,stroke:#009848
+    style UI fill:#0000ff,color:#fff,stroke:#0000ff
+    style IdP fill:#009848,color:#fff,stroke:#009848
+    style API fill:#009848,color:#fff,stroke:#009848
+    style KomPlaAdapter fill:#009848,color:#fff,stroke:#009848
 ```
 
 ## KomPla C4 system overview
