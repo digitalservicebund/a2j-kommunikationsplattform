@@ -8,7 +8,7 @@ const LogoutButton = () => {
     <Form method="post" action="/action/logout-user">
       <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
       <button type="submit" className="kern-btn kern-btn--tertiary">
-        <span className="kern-icon kern-icon--close kern-icon--default"></span>
+        <span className="kern-icon kern-icon--close"></span>
         <span className="kern-label">{buttons.ABMELDEN_BUTTON}</span>
       </button>
     </Form>
@@ -49,7 +49,7 @@ export default function Navigation() {
               className="kern-link visited:text-kern-action-default"
             >
               <span
-                className={`kern-icon ${link.iconName} kern-icon--default bg-current`}
+                className={`kern-icon ${link.iconName} bg-current`}
                 aria-hidden="true"
               ></span>
               {link.name}
