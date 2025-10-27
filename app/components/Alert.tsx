@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 
 type AlertType = "success" | "error" | "warning" | "info";
 
