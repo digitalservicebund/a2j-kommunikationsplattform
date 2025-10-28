@@ -26,6 +26,9 @@ export const de = {
     WORK_IN_PROGRESS_TITLE: "Work in progress",
     WORK_IN_PROGRESS_MESSAGE:
       "Diese Seite ist noch in der Entwicklung. Darstellungen und Layouts können sich jederzeit ändern.",
+    GENERIC_ERROR_TITLE: "Ein Fehler ist aufgetreten",
+    VERFAHREN_ERROR_MESSAGE:
+      "Die Verfahren konnten nicht geladen werden. Dies kann verschiedene Ursachen haben. Versuchen Sie es zu einem späteren Zeitpunkt noch einmal.",
   },
   labels: {
     FOOTER_ARIA_LABEL: "Rechtliche und weiterführende Informationen",
