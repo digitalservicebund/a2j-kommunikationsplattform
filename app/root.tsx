@@ -18,6 +18,7 @@ import {
 import { Breadcrumbs } from "~/components/Breadcrumbs";
 import Header from "~/components/Header";
 
+import ErrorBox from "~/components/ErrorBox";
 import { contentPages } from "~/constants/contentPages";
 import { useNonce } from "~/services/security/nonce";
 import { dictionaries } from "~/services/translations";
@@ -69,6 +70,9 @@ export const links: LinksFunction = () => [
 export function Layout({ children }: { children: ReactNode }) {
   const loaderData = useLoaderData<RootLoader>();
   const nonce = useNonce();
+
+  const userIsLoggedIn = loaderData?.userIsLoggedIn ?? false;
+  const isContentPage = loaderData?.isContentPage ?? false;
   return (
     <html lang="de">
       <head>
@@ -85,10 +89,7 @@ export function Layout({ children }: { children: ReactNode }) {
         />
       </head>
       <body>
-        <Header
-          userIsLoggedIn={loaderData?.userIsLoggedIn}
-          isContentPage={loaderData.isContentPage}
-        />
+        <Header userIsLoggedIn={userIsLoggedIn} isContentPage={isContentPage} />
         {children}
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
@@ -136,6 +137,16 @@ export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
 
   return (
     <main>
+      <ErrorBox
+        label="Fehler"
+        heading="Seite konnte nicht gefunden werden"
+        body="Die von Ihnen gewünschte Seite ist leider nicht verfügbar. Dies kann verschiedene Ursachen haben.
+Wenn Sie die URL direkt eingegeben haben, überprüfen Sie die Schreibweise.
+Versuchen Sie, die Seite von der Startseite aus erneut zu finden.
+Zur Startseite"
+        redirectText="Zurück zur Startseite"
+        redirectUrl="/"
+      />
       <h1 className="kern-heading-large">{message}</h1>
       <p className="kern-text">{details}</p>
       {message === "404" ? (
