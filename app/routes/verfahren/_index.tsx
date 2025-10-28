@@ -1,8 +1,10 @@
 import { Suspense } from "react";
 import { Await, LoaderFunctionArgs, useLoaderData } from "react-router";
+import Alert from "~/components/Alert";
 import VerfahrenTileSkeleton from "~/components/skeletons/VerfahrenTileSkeleton.static";
 import VerfahrenTile from "~/components/VerfahrenTile";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
+import { useTranslations } from "~/services/translations/context";
 import fetchVerfahren from "~/services/verfahren/fetchVerfahren.server";
 
 // Number of skeletons per page (could change in the future)
@@ -51,5 +53,16 @@ export default function Verfahren() {
         </Suspense>
       </div>
     </>
+  );
+}
+
+export function ErrorBoundary() {
+  const { alerts } = useTranslations();
+  return (
+    <Alert
+      type="error"
+      title={alerts.GENERIC_ERROR_TITLE}
+      message={alerts.VERFAHREN_ERROR_MESSAGE}
+    />
   );
 }
