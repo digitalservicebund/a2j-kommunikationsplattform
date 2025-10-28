@@ -57,14 +57,12 @@ export default function Verfahren() {
 }
 
 export function ErrorBoundary() {
-  const { alerts, labels } = useTranslations();
+  const { alerts } = useTranslations();
   return (
     <Alert
       type="error"
       title={alerts.GENERIC_ERROR_TITLE}
       message={alerts.VERFAHREN_ERROR_MESSAGE}
-      redirectUrl="/"
-      redirectText={labels.START_PAGE_LABEL}
     />
   );
 }
