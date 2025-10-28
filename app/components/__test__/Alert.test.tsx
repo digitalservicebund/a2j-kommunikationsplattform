@@ -62,6 +62,8 @@ describe("Alert component", () => {
     expect((link as HTMLAnchorElement).href).toMatch(
       new RegExp(`${redirectUrl}$`),
     );
+    const message = document.querySelector(".kern-body");
+    expect(message).not.toBeInTheDocument();
   });
 
   it("renders both message and redirect link when both provided", () => {
