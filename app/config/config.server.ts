@@ -6,7 +6,6 @@ interface ServerConfig {
   BRAK_IDP_OIDC_ISSUER: string;
   BRAK_IDP_OIDC_REDIRECT_URI: string;
   JUSTIZ_BACKEND_API_URL: string;
-  FILE_UPLOAD_DIRECTORY: string;
   SENTRY_DSN: string;
 }
 
@@ -24,7 +23,6 @@ export function serverConfig(): ServerConfig {
     BRAK_IDP_OIDC_REDIRECT_URI:
       process.env.BRAK_IDP_OIDC_REDIRECT_URI?.trim() ?? "",
     JUSTIZ_BACKEND_API_URL: process.env.JUSTIZ_BACKEND_API_URL?.trim() ?? "",
-    FILE_UPLOAD_DIRECTORY: process.env.FILE_UPLOAD_DIRECTORY?.trim() ?? "/tmp",
     SENTRY_DSN: process.env.SENTRY_DSN?.trim() ?? "",
   };
 }
