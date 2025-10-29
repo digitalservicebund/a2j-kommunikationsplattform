@@ -16,7 +16,7 @@ export default function ErrorBox({
   redirectText,
 }: ErrorPageProps) {
   return (
-    <div className="kern-container">
+    <div>
       <p className="kern-body kern-body--muted">{label}</p>
       <h1 className="kern-heading-medium">{heading}</h1>
       <p className="kern-body">{body}</p>

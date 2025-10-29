@@ -17,6 +17,19 @@ export const en: Translations = {
   errorMessages: {
     TRY_LATER_MESSAGE: "Please try again later.",
     LOGIN_ERROR_MESSAGE: "Login error",
+    UNKNOWN_PAGE_LABEL: "Error 404",
+    UNKNOWN_PAGE_HEADING: "Page could not be found",
+    UNKNOWN_PAGE_BODY:
+      "The page you requested is unfortunately not available. There may be various reasons for this. If you entered the URL directly, please check the spelling. Try to find the page again from the home page.",
+    SERVER_ERROR_LABEL: "Error 500",
+    SERVER_ERROR_HEADING: "An internal server error has occurred",
+    SERVER_ERROR_BODY:
+      "The error is on our side. We are already working on a solution. If the problem persists, please contact our support.",
+    GENERIC_ERROR_LABEL: "An error has occurred",
+    GENERIC_ERROR_HEADING: "Something went wrong",
+    GENERIC_ERROR_BODY: "Please try again later.",
+    VERFAHREN_ERROR_MESSAGE:
+      "The cases could not be loaded. There may be various reasons for this. Please try again later.",
   },
   alerts: {
     LOGOUT_AUTOMATIC_TITLE: "Automatically logged out",
@@ -27,9 +40,6 @@ export const en: Translations = {
     WORK_IN_PROGRESS_TITLE: "Work in progress",
     WORK_IN_PROGRESS_MESSAGE:
       "This page is still under development. Layouts and displays may change at any time.",
-    GENERIC_ERROR_TITLE: "An error has occurred",
-    VERFAHREN_ERROR_MESSAGE:
-      "The cases could not be loaded. There may be various reasons for this. Please try again later.",
   },
   labels: {
     FOOTER_ARIA_LABEL: "Legal and further information",

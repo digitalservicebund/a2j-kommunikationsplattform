@@ -6,7 +6,6 @@ import { ReactNode } from "react";
 import {
   data,
   isRouteErrorResponse,
-  Link,
   Links,
   LinksFunction,
   LoaderFunctionArgs,
@@ -19,6 +18,8 @@ import { Breadcrumbs } from "~/components/Breadcrumbs";
 import Header from "~/components/Header";
 
 import ErrorBox from "~/components/ErrorBox";
+import Logo from "~/components/Logo.static";
+import PageFooter from "~/components/PageFooter";
 import { contentPages } from "~/constants/contentPages";
 import { useNonce } from "~/services/security/nonce";
 import { dictionaries } from "~/services/translations";
@@ -113,54 +114,68 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
-  let message = "Ein Fehler ist aufgetreten.";
-  let details = "An unexpected error occurred.";
-  let stack: string | undefined;
+  // Use the static dictionary to avoid calling hooks inside an error boundary.
+  const { errorMessages, labels } = dictionaries.de;
+
+  // Start with safe defaults (generic error) so production paths always have text.
+  let errorMessage: Record<"label" | "heading" | "body", string> = {
+    label: errorMessages.GENERIC_ERROR_LABEL,
+    heading: errorMessages.GENERIC_ERROR_HEADING,
+    body: errorMessages.GENERIC_ERROR_BODY,
+  };
 
   if (isRouteErrorResponse(error)) {
     if (error.status === 404) {
-      message = "404";
-      details = "Die Seite konnte nicht gefunden werden.";
+      errorMessage = {
+        label: errorMessages.UNKNOWN_PAGE_LABEL,
+        heading: errorMessages.UNKNOWN_PAGE_HEADING,
+        body: errorMessages.UNKNOWN_PAGE_BODY,
+      };
     } else {
-      message = "Fehler";
-      details = error.statusText || details;
+      errorMessage = {
+        label: errorMessages.SERVER_ERROR_LABEL,
+        heading: errorMessages.SERVER_ERROR_HEADING,
+        body: errorMessages.SERVER_ERROR_BODY,
+      };
     }
-  } else if (error && error instanceof Error) {
-    // we only want to capture non 404-errors that reach the boundary
+  } else if (error instanceof Error) {
+    // capture runtime exceptions
     Sentry.captureException(error);
 
     if (import.meta.env.DEV) {
-      details = error.message;
-      stack = error.stack;
+      // show detailed info in development
+      errorMessage = {
+        label: "Error",
+        heading: error.message,
+        body: error.stack || "",
+      };
+    } else {
+      // production: don't leak internals — show server/generic messaging
+      errorMessage = {
+        label: errorMessages.SERVER_ERROR_LABEL,
+        heading: errorMessages.SERVER_ERROR_HEADING,
+        body: errorMessages.SERVER_ERROR_BODY,
+      };
     }
+  } else {
+    // capture unexpected throw types
+    Sentry.captureException(error);
   }
 
   return (
     <main>
-      <ErrorBox
-        label="Fehler"
-        heading="Seite konnte nicht gefunden werden"
-        body="Die von Ihnen gewünschte Seite ist leider nicht verfügbar. Dies kann verschiedene Ursachen haben.
-Wenn Sie die URL direkt eingegeben haben, überprüfen Sie die Schreibweise.
-Versuchen Sie, die Seite von der Startseite aus erneut zu finden.
-Zur Startseite"
-        redirectText="Zurück zur Startseite"
-        redirectUrl="/"
-      />
-      <h1 className="kern-heading-large">{message}</h1>
-      <p className="kern-text">{details}</p>
-      {message === "404" ? (
-        <p>
-          Zurück zur{" "}
-          <Link to="/" className="kern-link">
-            Startseite
-          </Link>
-        </p>
-      ) : (
-        <pre>
-          <code>{stack}</code>
-        </pre>
-      )}
+      <div className="kern-container space-y-kern-space-large py-kern-space-large">
+        <Logo />
+        <hr className="kern-divider" aria-hidden="true" />
+        <ErrorBox
+          label={errorMessage.label}
+          heading={errorMessage.heading}
+          body={errorMessage.body}
+          redirectText={labels.START_PAGE_LABEL}
+          redirectUrl="/"
+        />
+      </div>
+      <PageFooter />
     </main>
   );
 }

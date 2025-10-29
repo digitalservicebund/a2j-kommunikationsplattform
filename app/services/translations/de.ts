@@ -15,6 +15,19 @@ export const de = {
   errorMessages: {
     TRY_LATER_MESSAGE: "Bitte versuchen Sie es später erneut.",
     LOGIN_ERROR_MESSAGE: "Fehler bei der Anmeldung",
+    UNKNOWN_PAGE_LABEL: "Fehler 404",
+    UNKNOWN_PAGE_HEADING: "Seite konnte nicht gefunden werden",
+    UNKNOWN_PAGE_BODY:
+      "Die von Ihnen gewünschte Seite ist leider nicht verfügbar. Dies kann verschiedene Ursachen haben. Wenn Sie die URL direkt eingegeben haben, überprüfen Sie die Schreibweise. Versuchen Sie, die Seite von der Startseite aus erneut zu finden.",
+    SERVER_ERROR_LABEL: "Fehler 500",
+    SERVER_ERROR_HEADING: "Ein interner Serverfehler ist aufgetreten",
+    SERVER_ERROR_BODY:
+      "Der Fehler liegt auf unserer Seite. Wir arbeiten bereits an einer Lösung. Falls das Problem bestehen bleibt, kontaktieren Sie unseren Support.",
+    GENERIC_ERROR_LABEL: "Ein Fehler ist aufgetreten",
+    GENERIC_ERROR_HEADING: "Etwas ist schiefgelaufen",
+    GENERIC_ERROR_BODY: "Bitte versuchen Sie es später erneut.",
+    VERFAHREN_ERROR_MESSAGE:
+      "Die Verfahren konnten nicht geladen werden. Dies kann verschiedene Ursachen haben. Versuchen Sie es zu einem späteren Zeitpunkt noch einmal.",
   },
   alerts: {
     LOGOUT_AUTOMATIC_TITLE: "Automatisch abgemeldet",
@@ -26,9 +39,6 @@ export const de = {
     WORK_IN_PROGRESS_TITLE: "Work in progress",
     WORK_IN_PROGRESS_MESSAGE:
       "Diese Seite ist noch in der Entwicklung. Darstellungen und Layouts können sich jederzeit ändern.",
-    GENERIC_ERROR_TITLE: "Ein Fehler ist aufgetreten",
-    VERFAHREN_ERROR_MESSAGE:
-      "Die Verfahren konnten nicht geladen werden. Dies kann verschiedene Ursachen haben. Versuchen Sie es zu einem späteren Zeitpunkt noch einmal.",
   },
   labels: {
     FOOTER_ARIA_LABEL: "Rechtliche und weiterführende Informationen",
