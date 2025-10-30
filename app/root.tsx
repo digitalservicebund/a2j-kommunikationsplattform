@@ -5,7 +5,6 @@ import * as Sentry from "@sentry/react-router";
 import { ReactNode } from "react";
 import {
   data,
-  isRouteErrorResponse,
   Links,
   LinksFunction,
   LoaderFunctionArgs,
@@ -21,6 +20,7 @@ import ErrorBox from "~/components/ErrorBox";
 import Logo from "~/components/Logo.static";
 import PageFooter from "~/components/PageFooter";
 import { contentPages } from "~/constants/contentPages";
+import { buildErrorContext } from "~/errorHandling/buildErrorContext";
 import { useNonce } from "~/services/security/nonce";
 import { dictionaries } from "~/services/translations";
 import { TranslationsContext } from "~/services/translations/context";
@@ -114,53 +114,10 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
-  // Use the static dictionary to avoid calling hooks inside an error boundary.
-  const { errorMessages, labels } = dictionaries.de;
-
-  // Start with safe defaults (generic error) so production paths always have text.
-  let errorMessage: Record<"label" | "heading" | "body", string> = {
-    label: errorMessages.GENERIC_ERROR_LABEL,
-    heading: errorMessages.GENERIC_ERROR_HEADING,
-    body: errorMessages.GENERIC_ERROR_BODY,
-  };
-
-  if (isRouteErrorResponse(error)) {
-    if (error.status === 404) {
-      errorMessage = {
-        label: errorMessages.UNKNOWN_PAGE_LABEL,
-        heading: errorMessages.UNKNOWN_PAGE_HEADING,
-        body: errorMessages.UNKNOWN_PAGE_BODY,
-      };
-    } else {
-      errorMessage = {
-        label: errorMessages.SERVER_ERROR_LABEL,
-        heading: errorMessages.SERVER_ERROR_HEADING,
-        body: errorMessages.SERVER_ERROR_BODY,
-      };
-    }
-  } else if (error instanceof Error) {
-    // capture runtime exceptions
-    Sentry.captureException(error);
-
-    if (import.meta.env.DEV) {
-      // show detailed info in development
-      errorMessage = {
-        label: "Error",
-        heading: error.message,
-        body: error.stack || "",
-      };
-    } else {
-      // production: don't leak internals — show server/generic messaging
-      errorMessage = {
-        label: errorMessages.SERVER_ERROR_LABEL,
-        heading: errorMessages.SERVER_ERROR_HEADING,
-        body: errorMessages.SERVER_ERROR_BODY,
-      };
-    }
-  } else {
-    // capture unexpected throw types
-    Sentry.captureException(error);
-  }
+  const { errorContent, labels } = buildErrorContext(error, "de", {
+    isDev: import.meta.env.DEV,
+    reportError: (err) => Sentry.captureException(err),
+  });
 
   return (
     <main>
@@ -168,9 +125,9 @@ export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
         <Logo />
         <hr className="kern-divider" aria-hidden="true" />
         <ErrorBox
-          label={errorMessage.label}
-          heading={errorMessage.heading}
-          body={errorMessage.body}
+          label={errorContent.label}
+          heading={errorContent.heading}
+          body={errorContent.body}
           redirectText={labels.START_PAGE_LABEL}
           redirectUrl="/"
         />
