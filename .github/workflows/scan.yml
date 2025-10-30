@@ -10,7 +10,8 @@ on:
 env:
   CONTAINER_REGISTRY: ghcr.io
   CONTAINER_IMAGE_NAME: ${{ github.repository }}
-  CONTAINER_IMAGE_VERSION: latest
+  # Use 'latest' for main, commit hash for PR or other branches
+  CONTAINER_IMAGE_VERSION: ${{ github.ref == 'refs/heads/main' && 'latest' || github.sha }}
 
 jobs:
   vulnerability-scan:
@@ -24,6 +25,26 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Restore Docker image cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /tmp/.docker-cache
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+
+      - name: Load cached Docker image
+        id: load-docker-image
+        run: |
+          IMAGE_PATH="/tmp/.docker-cache/${{ env.CONTAINER_IMAGE_NAME }}_${{ github.sha }}.tar"
+
+          if docker load -i $IMAGE_PATH; then
+            echo "docker-image-load-successful=true" >> $GITHUB_OUTPUT
+            echo "Docker image loaded from cache: $IMAGE_PATH"
+          else
+            echo "docker-image-load-successful=false" >> $GITHUB_OUTPUT
+            echo "Docker image not found in cache: $IMAGE_PATH"
+          fi
+
       - name: Validate github workflow files to have pinned versions
         uses: digitalservicebund/github-actions-linter@7cb107efafe7cb97a58e685a08a1014744b89f71 # v0.1.11
 
@@ -35,7 +56,7 @@ jobs:
           # Specify multiple registries: try default GitHub registry, if too many requests, use the aws mirror.
           TRIVY_DB_REPOSITORY: ghcr.io/aquasecurity/trivy-db,public.ecr.aws/aquasecurity/trivy-db
         with:
-          image-ref: ${{ env.CONTAINER_REGISTRY }}/${{ env.CONTAINER_IMAGE_NAME }}:${{ env.CONTAINER_IMAGE_VERSION }}
+          image-ref: ${{ env.CONTAINER_IMAGE_NAME }}:${{ env.CONTAINER_IMAGE_VERSION }}
           format: "sarif"
           # By default SARIF format enforces output of all vulnerabilities regardless of configured severities.
           # To override this set limit-severities-for-sarif to true.

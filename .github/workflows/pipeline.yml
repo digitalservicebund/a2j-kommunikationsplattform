@@ -153,6 +153,8 @@ jobs:
   vulnerability-scan:
     uses: ./.github/workflows/scan.yml
     secrets: inherit
+    needs:
+      - build
     permissions:
       contents: read
       security-events: write # trivy scan needs this
