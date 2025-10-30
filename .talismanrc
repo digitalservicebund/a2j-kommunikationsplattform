@@ -58,7 +58,7 @@ fileignoreconfig:
   - filename: app/services/auth/__test__/oAuth.server.test.ts
     checksum: 55a5cbaceb72b076d65ffe1325f6dabe6e4257135eadc53aa7038c65d70a00cf
   - filename: app/services/auth/__test__/session.server.test.ts
-    checksum: c0525878a7bb28d6cb317959f79129be7f51724a7ec3b0d62e3ecaa95d3f9edf
+    checksum: 0b403edb10918923aa000d90a90307ae41d8bd039ebeaf5322241590b1b39ab5
   - filename: doc/architecture-diagrams/system-architecture.md
     checksum: f1b3e31f256c536c23c41c3b4928860ea2318f3af9c5e4001ab49095019aec25
 
