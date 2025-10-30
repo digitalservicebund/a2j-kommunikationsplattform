@@ -1,12 +1,12 @@
 # Download and install the dependenciees for building the app
-FROM node:22-alpine AS build-dependencies
+FROM node:24-alpine AS build-dependencies
 
 WORKDIR /kompla-app
 COPY package*.json ./
 RUN npm ci
 
 # Download and install the dependencies for running the app
-FROM node:22-alpine AS production-dependencies
+FROM node:24-alpine AS production-dependencies
 
 ENV NODE_ENV=production
 WORKDIR /kompla-app
@@ -14,7 +14,7 @@ COPY package*.json ./
 RUN npm ci
 
 # Build the app
-FROM node:22-alpine AS build
+FROM node:24-alpine AS build
 
 ARG COMMIT_SHA
 ENV APP_VERSION=$COMMIT_SHA
@@ -30,7 +30,7 @@ COPY . ./
 RUN npm run build
 
 # Final image that runs the app
-FROM node:22-alpine
+FROM node:24-alpine
 
 USER node
 ENV NODE_ENV=production
