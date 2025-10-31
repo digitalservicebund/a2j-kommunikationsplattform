@@ -29,3 +29,20 @@ export default z.object({
   geschaeftszeichen: z.optional(z.nullable(z.string())),
   // END
 });
+
+// new schema test
+export const newSchema = z.object({
+  id: z.uuid(),
+  aktenzeichenGericht: z.nullable(z.string()),
+  status: z.enum(["Erstellt", "Eingereicht"]),
+  status_changed: z.nullable(z.iso.datetime()),
+  eingereichtAm: z.nullable(z.iso.datetime()),
+  gericht: z.nullable(
+    z.object({
+      id: z.uuid(),
+      wert: z.optional(z.number()),
+      code: z.optional(z.string()),
+    }),
+  ),
+  beteiligungen: z.optional(z.unknown()),
+});

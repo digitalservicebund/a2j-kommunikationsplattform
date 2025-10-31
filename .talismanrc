@@ -4,7 +4,7 @@ fileignoreconfig:
   - filename: .github/workflows/pipeline.yml
     checksum: 89087fd7526c15dbaa32a678e2ac9afb33021bb2ab48420f83fc5758d5b3bf71
   - filename: .env.example
-    checksum: da4e98ae25d8ead27bd2e93dcfabe316de08b4400933fb60de5f06e1cec111a0
+    checksum: df46c3f5d57b79fcaed1fff759b491b1b5868d452808dce62f4cfefdc78a256b
   - filename: package-lock.json
     checksum: a044669d1a393a3dd293d0db8656d69349d9d5f752ca371ca6a51d34c99b71c7
   - filename: .github/workflows/secrets-check.yml
@@ -20,7 +20,7 @@ fileignoreconfig:
   - filename: app/services/session.server.ts
     checksum: e3bf1ac11d0982b19e4d332f05b3cb1a31eac97d58744227b2235c72f8d0ae05
   - filename: app/config/config.server.ts
-    checksum: be5adef22a4a4616df478f8ce94401a5be1246e914440edbcf311aae4236a2cb
+    checksum: 396b77c1534c253a277f93c0b841a7557aa6be598344c36d69f13510cec40e47
   - filename: app/config/__test__/config.server.test.ts
     checksum: 55ff306d55c77f5317c6a4b03cebe9685b34f65a7c1983376d09ecaaf6c54e60
   - filename: tests/a11y/playwright.config.ts
@@ -61,6 +61,8 @@ fileignoreconfig:
     checksum: 0b403edb10918923aa000d90a90307ae41d8bd039ebeaf5322241590b1b39ab5
   - filename: doc/architecture-diagrams/system-architecture.md
     checksum: f1b3e31f256c536c23c41c3b4928860ea2318f3af9c5e4001ab49095019aec25
+  - filename: app/routes/kompla-idp.tsx
+    checksum: 3f9b68c8744f550b342dbc9d887a516ac4acb7d3173bfee07273d3c529b6524d
 
 version: ""
 scopeconfig:
