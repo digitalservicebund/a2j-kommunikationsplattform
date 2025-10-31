@@ -114,10 +114,15 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
-  const { errorContent, labels } = buildErrorContext(error, "de", {
-    isDev: import.meta.env.DEV,
-    reportError: (err) => Sentry.captureException(err),
-  });
+  const { errorContent, labels, errorToReport } = buildErrorContext(
+    error,
+    "de",
+    import.meta.env.DEV,
+  );
+
+  if (errorToReport) {
+    Sentry.captureException(errorToReport);
+  }
 
   return (
     <main>

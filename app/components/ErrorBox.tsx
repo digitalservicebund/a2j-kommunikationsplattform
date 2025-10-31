@@ -14,7 +14,7 @@ export default function ErrorBox({
   body,
   redirectUrl,
   redirectText,
-}: ErrorPageProps) {
+}: Readonly<ErrorPageProps>) {
   return (
     <div>
       <p className="kern-body kern-body--muted">{label}</p>
