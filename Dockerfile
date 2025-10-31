@@ -1,49 +1,39 @@
-# Download and install the dependenciees for building the app
-FROM node:22-alpine AS build-dependencies
+# Download and install the dependencies to build the app.
+FROM node:24-alpine AS build-dependencies
 
-WORKDIR /kompla-app
-COPY package*.json ./
+WORKDIR /build-deps
+COPY package.json package-lock.json tsconfig.json vite.config.ts ./
+COPY app ./app/
+COPY public ./public/
 RUN npm ci
-
-# Download and install the dependencies for running the app
-FROM node:22-alpine AS production-dependencies
-
-ENV NODE_ENV=production
-WORKDIR /kompla-app
-COPY package*.json ./
-RUN npm ci
-
-# Build the app
-FROM node:22-alpine AS build
-
-ARG COMMIT_SHA
-ENV APP_VERSION=$COMMIT_SHA
-
-# Create app directory
-WORKDIR /kompla-app
-
-# Copy the build dependencies
-COPY --from=build-dependencies /kompla-app/node_modules /kompla-app/node_modules
-
-# Required files are whitelisted in dockerignore
-COPY . ./
 RUN npm run build
 
-# Final image that runs the app
-FROM node:22-alpine
+# Download and install the dependencies to run the app.
+FROM node:24-alpine AS app-dependencies
+
+WORKDIR /app-deps
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev --omit=optional
+
+# Prepare kompla app relevant files and folders
+FROM scratch AS kompla
+
+WORKDIR /kompla
+COPY --link --from=build-dependencies /build-deps/build ./build/
+COPY --link --from=build-dependencies /build-deps/public ./public/
+COPY --link --from=app-dependencies /app-deps/node_modules ./node_modules/
+COPY server.js package.json ./
+
+# Prepare prod build stage
+FROM kompla AS app-copy
+FROM node:24-alpine AS prod
+RUN apk add --no-cache dumb-init && rm -rf /var/cache/apk/*
 
 USER node
+# /app-deps has only production relevant packages installed, no dev dependencies
+WORKDIR /app-deps
 ENV NODE_ENV=production
-ENV npm_config_cache=/tmp/.npm
-ARG COMMIT_SHA
-ENV APP_VERSION=$COMMIT_SHA
-
-WORKDIR /home/node/kompla-app
-# Move only the files to the final image that are really needed
-COPY package*.json LICENSE SECURITY.md server.js ./
-COPY --from=production-dependencies /kompla-app/node_modules/ ./node_modules/
-COPY --from=build /kompla-app/build/server ./build/server
-COPY --from=build /kompla-app/build/client ./build/client
-
+# copy /kompla production app relevant data into folder
+COPY --link --chown=node:node --from=app-copy /kompla/ ./
 EXPOSE 3000
 CMD ["npm", "run", "start"]

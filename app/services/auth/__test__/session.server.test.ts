@@ -8,7 +8,7 @@ import {
   type Mock,
 } from "vitest";
 
-const MODULE_PATH = "~/services/auth/session.server";
+const MODULE_PATH = "../session.server";
 const requestURL = "http://localhost/session-test";
 const accessToken = "test-access-token-session";
 
