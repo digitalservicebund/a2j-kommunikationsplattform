@@ -27,6 +27,9 @@ export const en: Translations = {
     WORK_IN_PROGRESS_TITLE: "Work in progress",
     WORK_IN_PROGRESS_MESSAGE:
       "This page is still under development. Layouts and displays may change at any time.",
+    GENERIC_ERROR_TITLE: "An error has occurred",
+    VERFAHREN_ERROR_MESSAGE:
+      "The cases could not be loaded. There may be various reasons for this. Please try again later.",
   },
   labels: {
     FOOTER_ARIA_LABEL: "Legal and further information",
