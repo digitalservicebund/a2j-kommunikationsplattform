@@ -2,11 +2,11 @@ import { Suspense } from "react";
 import { Await, LoaderFunctionArgs, useLoaderData } from "react-router";
 import ContentPage from "~/components/ContentPage";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
-import { fetchFromNewApi } from "~/services/verfahren/fetchVerfahren.server";
+import { fetchVerfahrenFromNewApi } from "~/services/verfahren/prototype.fetchVerfahrenFromNewApi.server";
 
 export const loader = withSessionLoader(
   async ({ request }: LoaderFunctionArgs) => {
-    const newVerfahren = fetchFromNewApi(request);
+    const newVerfahren = fetchVerfahrenFromNewApi(request);
 
     return {
       newVerfahren,
@@ -16,7 +16,7 @@ export const loader = withSessionLoader(
 
 export default function KomPlaIdPTestPage() {
   const { newVerfahren } = useLoaderData<{
-    newVerfahren: Promise<ReturnType<typeof fetchFromNewApi>>;
+    newVerfahren: Promise<ReturnType<typeof fetchVerfahrenFromNewApi>>;
   }>();
 
   return (
