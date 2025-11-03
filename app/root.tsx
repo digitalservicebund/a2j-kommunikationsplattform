@@ -39,6 +39,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const isContentPage = contentPages.some(
     (page) => `/${page.path}` === pathname,
   );
+
   return data({ userIsLoggedIn, isContentPage });
 };
 
@@ -114,7 +115,7 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
-  const { errorContent, labels, errorToReport } = buildErrorContext(
+  const { errorContent, errorToReport } = buildErrorContext(
     error,
     "de",
     import.meta.env.DEV,
@@ -129,13 +130,7 @@ export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
       <div className="kern-container space-y-kern-space-large py-kern-space-large">
         <Logo />
         <hr className="kern-divider" aria-hidden="true" />
-        <ErrorBox
-          label={errorContent.label}
-          heading={errorContent.heading}
-          body={errorContent.body}
-          redirectText={labels.START_PAGE_LABEL}
-          redirectUrl="/"
-        />
+        <ErrorBox {...errorContent} />
       </div>
       <PageFooter />
     </main>

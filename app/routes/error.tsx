@@ -9,7 +9,7 @@ export default function ErrorPage() {
         {errorMessages.TRY_LATER_MESSAGE}
       </h1>
       <Link to="/" className="kern-btn kern-btn--primary">
-        <span className="kern-label">{labels.START_PAGE_LABEL}</span>
+        <span className="kern-label">{labels.TO_START_PAGE_LABEL}</span>
       </Link>
     </main>
   );

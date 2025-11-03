@@ -51,7 +51,8 @@ export const de = {
     KOPFZEILE_LABEL: "Offizielle Website – Bundesrepublik Deutschland",
     LOGO_LABEL: "Kommunikationsplattform",
     LOGGED_IN_AS_LABEL: "Angemeldet als:",
-    START_PAGE_LABEL: "Startseite",
+    TO_START_PAGE_LABEL: "Zur Startseite",
+    CONTACT_SUPPORT_LABEL: "Kontaktieren Sie den Support",
   },
   titles: {
     PLATFORM_TITLE: "Kommunikationsplattform | Justiz-Services",

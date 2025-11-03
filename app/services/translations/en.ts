@@ -52,7 +52,8 @@ export const en: Translations = {
     KOPFZEILE_LABEL: "Official website – Federal Republic of Germany",
     LOGO_LABEL: "Kommunikationsplattform",
     LOGGED_IN_AS_LABEL: "Logged in as:",
-    START_PAGE_LABEL: "Home",
+    TO_START_PAGE_LABEL: "Home",
+    CONTACT_SUPPORT_LABEL: "Contact support",
   },
   titles: {
     PLATFORM_TITLE: "Communication Platform | Justice Services",
