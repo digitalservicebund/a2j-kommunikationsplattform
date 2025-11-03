@@ -34,7 +34,7 @@ fileignoreconfig:
   - filename: doc/adr/0002-how-is-the-user-interface-built.md
     checksum: abb41e4f09280b9612f12dc8e6e8b84e8fad25505154df3359c3639ddcaef7ed
   - filename: sonar-project.properties
-    checksum: b9e5f9efaa5ab78d60787158b3c76fea3b666045a3bd55cd96fcfcc5168c29bf
+    checksum: a376b87e8304f789fe1a158ecf3e053dcb8ef550481f2d9374479ce4f77ef18b
   - filename: tests/e2e/playwright.config.ts
     checksum: 07aa847af35f9c79757ff18d3c4b6c246262780d4843f7178fef0e8001f6918a
   - filename: app/components/__test__/ContentPage.test.tsx
