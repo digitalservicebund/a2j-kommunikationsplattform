@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 interface ErrorPageProps {
   label: string;
   heading: string;
@@ -21,13 +19,13 @@ export default function ErrorBox({
       <h1 className="kern-heading-medium">{heading}</h1>
       <p className="kern-body">{body}</p>
       {redirectUrl && redirectText && (
-        <Link to={redirectUrl} className="kern-link">
+        <a href={redirectUrl} className="kern-link">
           <span
             className="kern-icon kern-icon--arrow-forward"
             aria-hidden="true"
           />
           {redirectText}
-        </Link>
+        </a>
       )}
     </div>
   );
