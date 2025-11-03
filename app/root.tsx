@@ -126,12 +126,14 @@ export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
 
   return (
     <main>
-      <div className="kern-container space-y-kern-space-large py-kern-space-large">
-        <Logo />
-        <hr className="kern-divider" aria-hidden="true" />
-        <ErrorBox {...errorContent} />
+      <div className="kern-container py-kern-space-large">
+        <div className="space-y-kern-space-large">
+          <Logo />
+          <hr className="kern-divider" aria-hidden="true" />
+          <ErrorBox {...errorContent} />
+        </div>
+        <PageFooter />
       </div>
-      <PageFooter />
     </main>
   );
 }

@@ -6,7 +6,7 @@ export default function PageFooter() {
   return (
     <footer className="mt-kern-space-x-large">
       <nav
-        className="gap-x-kern-space-default flex flex-row flex-wrap justify-center"
+        className="gap-x-kern-space-default flex flex-row flex-wrap justify-between"
         aria-label={labels.FOOTER_ARIA_LABEL}
       >
         <Link to="/datenschutz" className="kern-link">
