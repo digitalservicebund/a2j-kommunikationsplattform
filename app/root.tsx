@@ -39,7 +39,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const isContentPage = contentPages.some(
     (page) => `/${page.path}` === pathname,
   );
-  throw new Response("error efwef", { status: 500 });
   return data({ userIsLoggedIn, isContentPage });
 };
 
