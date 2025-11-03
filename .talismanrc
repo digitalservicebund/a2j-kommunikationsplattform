@@ -34,7 +34,7 @@ fileignoreconfig:
   - filename: doc/adr/0002-how-is-the-user-interface-built.md
     checksum: abb41e4f09280b9612f12dc8e6e8b84e8fad25505154df3359c3639ddcaef7ed
   - filename: sonar-project.properties
-    checksum: 836da7bbdc626380f76185c757286ad8e6ed52929e1e1c0995117c0b6bb2907e
+    checksum: abebe3753201ce5112ee556e90e494a8939dd502989657d679655a196588d054
   - filename: tests/e2e/playwright.config.ts
     checksum: 07aa847af35f9c79757ff18d3c4b6c246262780d4843f7178fef0e8001f6918a
   - filename: app/components/__test__/ContentPage.test.tsx
@@ -62,7 +62,7 @@ fileignoreconfig:
   - filename: doc/architecture-diagrams/system-architecture.md
     checksum: f1b3e31f256c536c23c41c3b4928860ea2318f3af9c5e4001ab49095019aec25
   - filename: app/routes/kompla-idp.tsx
-    checksum: 3f9b68c8744f550b342dbc9d887a516ac4acb7d3173bfee07273d3c529b6524d
+    checksum: 86f949a32aac56151bf28bd1f4ac811c5552c329dfc9e60c85debca0331d7b24
 
 version: ""
 scopeconfig:
