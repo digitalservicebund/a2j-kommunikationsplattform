@@ -21,7 +21,7 @@ export default function Dateiansicht() {
   const { id, dokumentId } = useLoaderData<LoaderData>();
   return (
     <div>
-      <h1 className="kern-heading-large">
+      <h1 className="kern-heading-medium">
         Dateiansicht for Verfahren {id} , Document {dokumentId}
       </h1>
     </div>

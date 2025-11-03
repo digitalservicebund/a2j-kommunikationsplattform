@@ -10,7 +10,7 @@ export const handle: MatchHandle = {
 export default function VerfahrenLayout() {
   return (
     <>
-      <h1 className="kern-heading-large">Verfahren</h1>
+      <h1 className="kern-heading-medium">Verfahren</h1>
       <Outlet />
     </>
   );
