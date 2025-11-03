@@ -130,6 +130,7 @@ export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
           <Logo />
           <hr className="kern-divider" aria-hidden="true" />
           <ErrorBox {...errorContent} />
+          <hr className="kern-divider" aria-hidden="true" />
         </div>
         <PageFooter />
       </div>
