@@ -27,22 +27,26 @@ export function buildErrorContext(
     body: errorMessages.GENERIC_ERROR_BODY,
   };
 
+  // for now it's just 404 and 500, but we can expand this later by just adding a new entry here
+  const errorContentPerStatus: Record<number, ErrorContent> = {
+    404: {
+      label: errorMessages.UNKNOWN_PAGE_LABEL,
+      heading: errorMessages.UNKNOWN_PAGE_HEADING,
+      body: errorMessages.UNKNOWN_PAGE_BODY,
+    },
+    500: {
+      label: errorMessages.SERVER_ERROR_LABEL,
+      heading: errorMessages.SERVER_ERROR_HEADING,
+      body: errorMessages.SERVER_ERROR_BODY,
+    },
+  };
+
   let errorToReport: unknown;
 
   if (isRouteErrorResponse(error)) {
-    if (error.status === 404) {
-      errorContent = {
-        label: errorMessages.UNKNOWN_PAGE_LABEL,
-        heading: errorMessages.UNKNOWN_PAGE_HEADING,
-        body: errorMessages.UNKNOWN_PAGE_BODY,
-      };
-    } else {
-      errorContent = {
-        label: errorMessages.SERVER_ERROR_LABEL,
-        heading: errorMessages.SERVER_ERROR_HEADING,
-        body: errorMessages.SERVER_ERROR_BODY,
-      };
-    }
+    // render specific message for known status codes, otherwise 500
+    errorContent =
+      errorContentPerStatus[error.status] ?? errorContentPerStatus[500];
   } else if (error instanceof Error) {
     if (isDev) {
       // show full error details in dev
@@ -54,11 +58,7 @@ export function buildErrorContext(
     } else {
       // production: report and render 500 message
       errorToReport = error;
-      errorContent = {
-        label: errorMessages.SERVER_ERROR_LABEL,
-        heading: errorMessages.SERVER_ERROR_HEADING,
-        body: errorMessages.SERVER_ERROR_BODY,
-      };
+      errorContent = errorContentPerStatus[500];
     }
   } else {
     // non-Error throws: mark for reporting and keep generic message
