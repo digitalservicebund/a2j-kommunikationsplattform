@@ -18,11 +18,11 @@ export const de = {
     UNKNOWN_PAGE_LABEL: "Fehler 404",
     UNKNOWN_PAGE_HEADING: "Seite konnte nicht gefunden werden",
     UNKNOWN_PAGE_BODY:
-      "Die von Ihnen gewünschte Seite ist leider nicht verfügbar. Dies kann verschiedene Ursachen haben. Wenn Sie die URL direkt eingegeben haben, überprüfen Sie die Schreibweise. Versuchen Sie, die Seite von der Startseite aus erneut zu finden.",
+      "Die von Ihnen gewünschte Seite ist leider nicht verfügbar. Dies kann verschiedene Ursachen haben. \nWenn Sie die URL direkt eingegeben haben, überprüfen Sie die Schreibweise.\nVersuchen Sie, die Seite von der Startseite aus erneut zu finden.",
     SERVER_ERROR_LABEL: "Fehler 500",
     SERVER_ERROR_HEADING: "Ein interner Serverfehler ist aufgetreten",
     SERVER_ERROR_BODY:
-      "Der Fehler liegt auf unserer Seite. Wir arbeiten bereits an einer Lösung. Falls das Problem bestehen bleibt, kontaktieren Sie unseren Support.",
+      "Der Fehler liegt auf unserer Seite. Wir arbeiten bereits an einer Lösung. \nFalls das Problem bestehen bleibt, kontaktieren Sie unseren Support.",
     GENERIC_ERROR_LABEL: "Ein Fehler ist aufgetreten",
     GENERIC_ERROR_HEADING: "Etwas ist schiefgelaufen",
     GENERIC_ERROR_BODY: "Bitte versuchen Sie es später erneut.",

@@ -17,7 +17,7 @@ export default function ErrorBox({
     <div>
       <p className="kern-body kern-body--muted">{label}</p>
       <h1 className="kern-heading-medium">{heading}</h1>
-      <p className="kern-body">{body}</p>
+      <p className="kern-body whitespace-pre-line">{body}</p>
       {redirectUrl && redirectText && (
         <a href={redirectUrl} className="kern-link">
           <span
