@@ -19,11 +19,7 @@ describe("buildErrorContext", () => {
     mockIsRouteErrorResponse.mockReturnValue(true);
     const routeErr = { status: 404 };
 
-    const { errorContent, errorToReport } = buildErrorContext(
-      routeErr,
-      locale,
-      false,
-    );
+    const { errorContent, errorToReport } = buildErrorContext(routeErr, false);
 
     expect(errorToReport).toBeUndefined();
     expect(errorContent.label).toBe(
@@ -38,11 +34,7 @@ describe("buildErrorContext", () => {
     mockIsRouteErrorResponse.mockReturnValue(true);
     const routeErr = { status: 418 };
 
-    const { errorContent, errorToReport } = buildErrorContext(
-      routeErr,
-      locale,
-      false,
-    );
+    const { errorContent, errorToReport } = buildErrorContext(routeErr, false);
 
     expect(errorToReport).toBeUndefined();
     expect(errorContent.label).toBe(
@@ -55,11 +47,7 @@ describe("buildErrorContext", () => {
     const err = new Error("dev-fail");
     err.stack = "stack-trace";
 
-    const { errorContent, errorToReport } = buildErrorContext(
-      err,
-      locale,
-      true,
-    );
+    const { errorContent, errorToReport } = buildErrorContext(err, true);
 
     expect(errorToReport).toBeUndefined();
     expect(errorContent.label).toBe("Error");
@@ -71,11 +59,7 @@ describe("buildErrorContext", () => {
     mockIsRouteErrorResponse.mockReturnValue(false);
     const err = new Error("prod-fail");
 
-    const { errorContent, errorToReport } = buildErrorContext(
-      err,
-      locale,
-      false,
-    );
+    const { errorContent, errorToReport } = buildErrorContext(err, false);
 
     expect(errorToReport).toBe(err);
     expect(errorContent.label).toBe(
@@ -88,11 +72,7 @@ describe("buildErrorContext", () => {
     mockIsRouteErrorResponse.mockReturnValue(false);
     const thrown = "some-primitive-error";
 
-    const { errorContent, errorToReport } = buildErrorContext(
-      thrown,
-      locale,
-      false,
-    );
+    const { errorContent, errorToReport } = buildErrorContext(thrown, false);
 
     expect(errorToReport).toBe(thrown);
     expect(errorContent.label).toBe(
@@ -105,11 +85,7 @@ describe("buildErrorContext", () => {
     // remove stack to exercise the `error.stack || ""` branch
     err.stack = undefined;
 
-    const { errorContent, errorToReport } = buildErrorContext(
-      err,
-      locale,
-      true,
-    );
+    const { errorContent, errorToReport } = buildErrorContext(err, true);
 
     expect(errorToReport).toBeUndefined();
     expect(errorContent.label).toBe("Error");

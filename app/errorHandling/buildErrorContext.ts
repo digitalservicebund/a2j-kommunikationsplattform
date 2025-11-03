@@ -1,5 +1,5 @@
 import { isRouteErrorResponse } from "react-router";
-import { dictionaries, Language } from "~/services/translations";
+import { dictionaries } from "~/services/translations";
 import { Route } from "../+types/root";
 
 export type ErrorContent = {
@@ -17,10 +17,10 @@ export type ErrorContext = {
 
 export function buildErrorContext(
   error: Route.ErrorBoundaryProps["error"],
-  locale: Language,
   isDev: boolean,
 ): ErrorContext {
-  const { errorMessages, labels } = dictionaries[locale];
+  // load translations statically as, for some errors, useTranslations hook might not be reachable inside ErrorBoundary, eg when an error happens before App component mounts
+  const { errorMessages, labels } = dictionaries["de"];
 
   let errorContent: ErrorContent = {
     label: errorMessages.GENERIC_ERROR_LABEL,

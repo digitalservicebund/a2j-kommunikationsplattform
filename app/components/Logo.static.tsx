@@ -1,7 +1,8 @@
-import { useTranslations } from "~/services/translations/context";
+import { dictionaries } from "~/services/translations";
 
 export default function Logo() {
-  const { labels } = useTranslations();
+  // Using German labels as default/static labels
+  const { labels } = dictionaries["de"];
   return (
     <div className="gap-kern-space-small flex flex-row flex-wrap items-center break-all">
       <span

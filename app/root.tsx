@@ -116,7 +116,6 @@ export default function App() {
 export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
   const { errorContent, errorToReport } = buildErrorContext(
     error,
-    "de",
     import.meta.env.DEV,
   );
 
