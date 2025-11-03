@@ -8,10 +8,5 @@ export const handle: MatchHandle = {
 };
 
 export default function VerfahrenLayout() {
-  return (
-    <>
-      <h1 className="kern-heading-medium">Verfahren</h1>
-      <Outlet />
-    </>
-  );
+  return <Outlet />;
 }

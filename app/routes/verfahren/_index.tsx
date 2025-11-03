@@ -35,31 +35,41 @@ export default function Verfahren() {
   }>();
 
   return (
-    <div className="my-kern-space-large gap-y-kern-space-large flex flex-col">
-      <Suspense
-        fallback={SKELETONS.map((s) => (
-          <VerfahrenTileSkeleton key={s.id} />
-        ))}
-      >
-        <Await resolve={verfahren}>
-          {(resolvedVerfahren) =>
-            resolvedVerfahren.map((data) => (
-              <VerfahrenTile key={data.id} {...data} />
-            ))
-          }
-        </Await>
-      </Suspense>
-    </div>
+    <>
+      <VerfahrenHeading />
+      <div className="my-kern-space-large space-y-kern-space-large flex flex-col">
+        <Suspense
+          fallback={SKELETONS.map((s) => (
+            <VerfahrenTileSkeleton key={s.id} />
+          ))}
+        >
+          <Await resolve={verfahren}>
+            {(resolvedVerfahren) =>
+              resolvedVerfahren.map((data) => (
+                <VerfahrenTile key={data.id} {...data} />
+              ))
+            }
+          </Await>
+        </Suspense>
+      </div>
+    </>
   );
 }
 
 export function ErrorBoundary() {
   const { errorMessages } = useTranslations();
   return (
-    <Alert
-      type="error"
-      title={errorMessages.GENERIC_ERROR_LABEL}
-      message={errorMessages.VERFAHREN_ERROR_MESSAGE}
-    />
+    <div className="space-y-kern-space-large">
+      <VerfahrenHeading />
+      <Alert
+        type="error"
+        title={errorMessages.GENERIC_ERROR_LABEL}
+        message={errorMessages.VERFAHREN_ERROR_MESSAGE}
+      />
+    </div>
   );
 }
+
+const VerfahrenHeading = () => (
+  <h1 className="kern-heading-medium">Verfahren</h1>
+);
