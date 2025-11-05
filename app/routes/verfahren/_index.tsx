@@ -64,7 +64,7 @@ export function ErrorBoundary() {
       <Alert
         type="error"
         title={errorMessages.GENERIC_ERROR_LABEL}
-        message={errorMessages.VERFAHREN_ERROR_MESSAGE}
+        message={errorMessages.API_GET_VERFAHREN_ERROR_MESSAGE}
       />
     </div>
   );

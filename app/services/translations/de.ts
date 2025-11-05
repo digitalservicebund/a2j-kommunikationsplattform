@@ -26,7 +26,7 @@ export const de = {
     GENERIC_ERROR_LABEL: "Ein Fehler ist aufgetreten",
     GENERIC_ERROR_HEADING: "Etwas ist schiefgelaufen",
     GENERIC_ERROR_BODY: "Bitte versuchen Sie es später erneut.",
-    VERFAHREN_ERROR_MESSAGE:
+    API_GET_VERFAHREN_ERROR_MESSAGE:
       "Die Verfahren konnten nicht geladen werden. Dies kann verschiedene Ursachen haben. Versuchen Sie es zu einem späteren Zeitpunkt noch einmal.",
   },
   alerts: {

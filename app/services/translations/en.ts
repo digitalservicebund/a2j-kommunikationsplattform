@@ -28,7 +28,7 @@ export const en: Translations = {
     GENERIC_ERROR_LABEL: "An error has occurred",
     GENERIC_ERROR_HEADING: "Something went wrong",
     GENERIC_ERROR_BODY: "Please try again later.",
-    VERFAHREN_ERROR_MESSAGE:
+    API_GET_VERFAHREN_ERROR_MESSAGE:
       "The cases could not be loaded. There may be various reasons for this. Please try again later.",
   },
   alerts: {
