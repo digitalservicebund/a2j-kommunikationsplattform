@@ -36,8 +36,8 @@ export default function Verfahren() {
 
   return (
     <>
-      <h1 className="kern-heading-large">Verfahren</h1>
-      <div className="my-kern-space-large gap-y-kern-space-large flex flex-col">
+      <VerfahrenHeading />
+      <div className="my-kern-space-large space-y-kern-space-large flex flex-col">
         <Suspense
           fallback={SKELETONS.map((s) => (
             <VerfahrenTileSkeleton key={s.id} />
@@ -57,12 +57,19 @@ export default function Verfahren() {
 }
 
 export function ErrorBoundary() {
-  const { alerts } = useTranslations();
+  const { errorMessages } = useTranslations();
   return (
-    <Alert
-      type="error"
-      title={alerts.GENERIC_ERROR_TITLE}
-      message={alerts.VERFAHREN_ERROR_MESSAGE}
-    />
+    <div className="space-y-kern-space-large">
+      <VerfahrenHeading />
+      <Alert
+        type="error"
+        title={errorMessages.GENERIC_ERROR_LABEL}
+        message={errorMessages.API_GET_VERFAHREN_ERROR_MESSAGE}
+      />
+    </div>
   );
 }
+
+const VerfahrenHeading = () => (
+  <h1 className="kern-heading-medium">Verfahren</h1>
+);

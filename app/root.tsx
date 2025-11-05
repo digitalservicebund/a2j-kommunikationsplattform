@@ -5,8 +5,6 @@ import * as Sentry from "@sentry/react-router";
 import { ReactNode } from "react";
 import {
   data,
-  isRouteErrorResponse,
-  Link,
   Links,
   LinksFunction,
   LoaderFunctionArgs,
@@ -18,7 +16,11 @@ import {
 import { Breadcrumbs } from "~/components/Breadcrumbs";
 import Header from "~/components/Header";
 
+import ErrorBox from "~/components/ErrorBox";
+import Logo from "~/components/Logo.static";
+import PageFooter from "~/components/PageFooter";
 import { contentPages } from "~/constants/contentPages";
+import { buildErrorContext } from "~/errorHandling/buildErrorContext";
 import { useNonce } from "~/services/security/nonce";
 import { dictionaries } from "~/services/translations";
 import { TranslationsContext } from "~/services/translations/context";
@@ -69,6 +71,9 @@ export const links: LinksFunction = () => [
 export function Layout({ children }: { children: ReactNode }) {
   const loaderData = useLoaderData<RootLoader>();
   const nonce = useNonce();
+
+  const userIsLoggedIn = loaderData?.userIsLoggedIn ?? false;
+  const isContentPage = loaderData?.isContentPage ?? false;
   return (
     <html lang="de">
       <head>
@@ -85,10 +90,7 @@ export function Layout({ children }: { children: ReactNode }) {
         />
       </head>
       <body>
-        <Header
-          userIsLoggedIn={loaderData?.userIsLoggedIn}
-          isContentPage={loaderData.isContentPage}
-        />
+        <Header userIsLoggedIn={userIsLoggedIn} isContentPage={isContentPage} />
         {children}
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
@@ -112,44 +114,26 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
-  let message = "Ein Fehler ist aufgetreten.";
-  let details = "An unexpected error occurred.";
-  let stack: string | undefined;
+  const { errorContent, errorToReport } = buildErrorContext(
+    error,
+    import.meta.env.DEV,
+  );
 
-  if (isRouteErrorResponse(error)) {
-    if (error.status === 404) {
-      message = "404";
-      details = "Die Seite konnte nicht gefunden werden.";
-    } else {
-      message = "Fehler";
-      details = error.statusText || details;
-    }
-  } else if (error && error instanceof Error) {
-    // we only want to capture non 404-errors that reach the boundary
-    Sentry.captureException(error);
-
-    if (import.meta.env.DEV) {
-      details = error.message;
-      stack = error.stack;
-    }
+  if (errorToReport) {
+    Sentry.captureException(errorToReport);
   }
 
   return (
     <main>
-      <h1 className="kern-heading-large">{message}</h1>
-      <p className="kern-text">{details}</p>
-      {message === "404" ? (
-        <p>
-          Zurück zur{" "}
-          <Link to="/" className="kern-link">
-            Startseite
-          </Link>
-        </p>
-      ) : (
-        <pre>
-          <code>{stack}</code>
-        </pre>
-      )}
+      <div className="kern-container py-kern-space-large">
+        <div className="space-y-kern-space-large">
+          <Logo />
+          <hr className="kern-divider" aria-hidden="true" />
+          <ErrorBox {...errorContent} />
+          <hr className="kern-divider" aria-hidden="true" />
+        </div>
+        <PageFooter />
+      </div>
     </main>
   );
 }

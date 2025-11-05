@@ -91,7 +91,8 @@ export default function LoginPage() {
       )}
 
       <div className="pt-kern-space-default">
-        <div className="text-center">
+        {/* Target the first child element for centering */}
+        <div className="flex flex-col items-center text-center">
           <Logo />
 
           <hr className="kern-divider mt-kern-space-default" aria-hidden />
