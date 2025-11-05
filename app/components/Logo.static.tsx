@@ -1,19 +1,14 @@
-import { dictionaries } from "~/services/translations";
+import { useTranslations } from "~/services/translations/context";
 
 export default function Logo() {
-  // Using German labels as default/static labels
-  const { labels } = dictionaries["de"];
+  const { labels } = useTranslations();
   return (
-    <a
-      aria-label={labels.TO_START_PAGE_LABEL}
-      href="/"
-      className="gap-kern-space-small kern-link visited:text-kern-action-default flex flex-row flex-wrap items-center break-all no-underline"
-    >
+    <div className="gap-kern-space-small flex flex-row flex-wrap items-center justify-center break-all">
       <span
-        className="kern-icon kern-icon--network_node kern-icon--large bg-current"
+        className="kern-icon kern-icon--network_node kern-icon--large"
         aria-hidden
       />
-      <div className="kern-heading-large">{labels.LOGO_LABEL}</div>
-    </a>
+      <h1 className="kern-heading-large">{labels.LOGO_LABEL}</h1>
+    </div>
   );
 }
