@@ -276,3 +276,110 @@ export const getDokumentByAktenteilId = (aktenteilId) => {
 
   return dokumente;
 };
+
+export const mockNewVerfahren = [
+  {
+    id: "0199cd30-ac46-768f-b695-5a75b21b64af",
+    aktenzeichenGericht: null,
+    status: "Erstellt",
+    statusChanged: "2025-10-10T08:15:43.116718Z",
+    eingereichtAm: null,
+    gericht: null,
+    beteiligungen: [],
+  },
+  {
+    id: "0199dc44-cc85-7ac0-bc4a-fb685ed41f34",
+    aktenzeichenGericht: null,
+    status: "Erstellt",
+    statusChanged: "2025-10-13T06:32:00.3193Z",
+    eingereichtAm: null,
+    gericht: null,
+    beteiligungen: [],
+  },
+  {
+    id: "0199dcbf-0449-74e3-bcb4-6c57afb41fc5",
+    aktenzeichenGericht: null,
+    status: "Erstellt",
+    statusChanged: "2025-10-13T08:45:30.056134Z",
+    eingereichtAm: null,
+    gericht: null,
+    beteiligungen: [],
+  },
+  {
+    id: "019a34b6-4f17-7e13-a87c-86a0bf5bbfd6",
+    aktenzeichenGericht: null,
+    status: "Erstellt",
+    statusChanged: "2025-10-30T10:42:34.334688Z",
+    eingereichtAm: null,
+    gericht: null,
+    beteiligungen: [],
+  },
+  {
+    id: "019a34f9-467c-726e-89da-b727a4afee63",
+    aktenzeichenGericht: "Z8546 06/2025",
+    status: "Eingereicht",
+    statusChanged: "2024-12-12T06:11:27.140898Z",
+    eingereichtAm: "2025-07-12T15:45:49.798414Z",
+    gericht: {
+      id: "243117a4-9658-863b-4a00-000aeb462b43",
+      wert: "Amtsgericht Hannover",
+      code: "P2305",
+    },
+    beteiligungen: [
+      {
+        id: "019a34f9-467c-73d0-a9ec-bc2fcd8de123",
+        name: "Andrea Goldner",
+        rollen: [
+          {
+            id: "c53dd226-7bd9-4da5-19da-5302595a9469",
+            wert: "Kläger(in)",
+            code: "101",
+          },
+        ],
+        prozessbevollmaechtigte: [
+          {
+            aktenzeichen: "F2474012024",
+            bevollmaechtigter: {
+              id: "019a34f9-4576-7b69-883b-06a7a1e7ac0b",
+              safeId: "TestStein",
+              name: "Dr. Rita JohnstonAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            },
+          },
+        ],
+      },
+      {
+        id: "019a34f9-467c-757b-b980-1846338741f1",
+        name: "Air Berlin",
+        rollen: [
+          {
+            id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
+            wert: "Beklagte(r)",
+            code: "028",
+          },
+        ],
+        prozessbevollmaechtigte: [
+          {
+            aktenzeichen: "Z7387092024",
+            bevollmaechtigter: {
+              id: "019a34f9-456f-7788-a393-3680269d4e07",
+              safeId: "DE.BRAK_SPT.c37e8b59-54d2-4e6a-b5d3-f8a2c9e1d774.7b32",
+              name: "Dr. Marvin FriesenAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            },
+          },
+        ],
+      },
+    ],
+  },
+];
+
+export const mockKomPlaIdPTokenExchange = {
+  access_token: "xxx",
+  expires_in: 300,
+  refresh_expires_in: 1800,
+  refresh_token: "yyy",
+  token_type: "Bearer",
+  "not-before-policy": 0,
+  session_state: "zzz",
+  scope: "write:verfahren email profile read:verfahren read:gericht safe-id",
+  issued_token_type: "urn:ietf:params:oauth:token-type:refresh_token",
+};

@@ -6,7 +6,7 @@ interface TokenExchangeResponse {
   refresh_expires_in: number;
   refresh_token: string;
   token_type: string;
-  "not-before-policy": string;
+  "not-before-policy": number;
   session_state: string;
   scope: string;
   issued_token_type: string;
@@ -24,11 +24,11 @@ const scope = "kompla-api";
  *
  * @param idpAccessToken Access token received after successful user login
  */
-export async function exchangeToken({
-  idpAccessToken,
-}: {
-  idpAccessToken: string;
-}): Promise<string> {
+export async function exchangeToken(
+  idpAccessToken: string,
+): Promise<TokenExchangeResponse> {
+  console.log("exchangeToken");
+
   const params = new URLSearchParams();
   params.append(
     "grant_type",
@@ -58,8 +58,7 @@ export async function exchangeToken({
   }
 
   const result = (await response.json()) as TokenExchangeResponse;
-  console.log("Received access_token from KomPla IdP");
+  console.log("Received token exchange response from KomPla IdP");
 
-  // access_token will be used as bearer token for external API authentication
-  return result.access_token;
+  return result;
 }

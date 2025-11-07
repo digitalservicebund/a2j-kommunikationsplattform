@@ -37,7 +37,7 @@ describe("exchangeToken", () => {
 
   it("should exchange token successfully", async () => {
     const idpAccessToken = "test-token";
-    const result = await exchangeToken({ idpAccessToken });
+    const result = await exchangeToken(idpAccessToken);
 
     // Verify fetch was called with correct parameters
     expect(global.fetch).toHaveBeenCalledWith(
@@ -65,8 +65,9 @@ describe("exchangeToken", () => {
     expect(requestBody.get("scope")).toBe("kompla-api");
     expect(requestBody.get("subject_token")).toBe(idpAccessToken);
 
-    // Verify the returned access token
-    expect(result).toBe("mock-access-token");
+    // Verify that the expected tokens are present in the result
+    expect(result.access_token).toBe("mock-access-token");
+    expect(result.refresh_token).toBe("mock-refresh-token");
   });
 
   it("should throw error when request fails", async () => {
@@ -78,8 +79,8 @@ describe("exchangeToken", () => {
 
     global.fetch = vi.fn().mockResolvedValue(errorResponse);
 
-    await expect(
-      exchangeToken({ idpAccessToken: "test-token" }),
-    ).rejects.toThrow("Token exchange failed: 400 Bad Request");
+    await expect(exchangeToken("test-token")).rejects.toThrow(
+      "Token exchange failed: 400 Bad Request",
+    );
   });
 });

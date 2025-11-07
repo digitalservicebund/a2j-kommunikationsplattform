@@ -6,6 +6,10 @@ import { createUserSession } from "./session.server";
 export interface AuthenticationContext {
   accessToken: string;
   expiresAt: number;
+  apiAccessToken?: string;
+  apiAcessExpiresAt?: string;
+  apiRefreshToken?: string;
+  apiRefreshExpiresAt?: string;
 }
 
 export interface AuthenticationResponse {
@@ -32,6 +36,12 @@ authenticator.use(
       codeChallengeMethod: CodeChallengeMethod.S256,
     },
     async ({ tokens, request }) => {
+      // @TODO: remove
+      console.log(
+        "BRAK IdP OAuth2 debugging: hasRefreshToken:",
+        tokens.hasRefreshToken(),
+      );
+
       const accessToken = tokens.accessToken();
       const expiresAt = Date.now() + 60 * 60 * 1000 * 24 * 14; // 14 days
       const sessionCookieHeader = await createUserSession(
