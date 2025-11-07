@@ -12,13 +12,13 @@ fileignoreconfig:
   - filename: .github/workflows/scan.yml
     checksum: f4f260cfa5db3321682210d327d7d525ec7b6c382aef0c241400c7698c4aba8e
   - filename: mocks/api/handlers.js
-    checksum: e8f0abe6c0cad171978c8a247ab436d14409394e4d8908523a3c228c0909aa9b
+    checksum: 71273bd4deebad5b8e9d48e8cf9b40dc353fa45125b6ef11c9a85fc15b3bba78
   - filename: app/services/fileUpload.server.ts
     checksum: bc2812232864b6d3b6f9189b95fea278d34952318ddb0deaf41be7ac5fd43d35
   - filename: app/services/auth/oAuth.server.ts
-    checksum: 6a531cabbea50a68d66ae470811ec728348ba5d1d01f3ced20328e8bd47c7740
+    checksum: 69c8a63f889215be1d683243e249d26a5cd54524c9548eaa7c1e5572faffbf63
   - filename: app/services/session.server.ts
-    checksum: e3bf1ac11d0982b19e4d332f05b3cb1a31eac97d58744227b2235c72f8d0ae05
+    checksum: 54c984869a644cc078d7983545dc4028f4fb2a4bbd33eda1db9c6123b0e55501
   - filename: app/config/config.server.ts
     checksum: 396b77c1534c253a277f93c0b841a7557aa6be598344c36d69f13510cec40e47
   - filename: app/config/__test__/config.server.test.ts
@@ -56,13 +56,15 @@ fileignoreconfig:
   - filename: app/services/translations/index.ts
     checksum: bd9deccfd2a77aa490df3019083baf73a0bff19785a84397f319f6df6ffe195f
   - filename: app/services/auth/__test__/oAuth.server.test.ts
-    checksum: 55a5cbaceb72b076d65ffe1325f6dabe6e4257135eadc53aa7038c65d70a00cf
+    checksum: fa1614003d908290615968c5cc41618356dd86014d7468bb5057c5be0e35ba04
   - filename: app/services/auth/__test__/session.server.test.ts
     checksum: 0b403edb10918923aa000d90a90307ae41d8bd039ebeaf5322241590b1b39ab5
   - filename: doc/architecture-diagrams/system-architecture.md
     checksum: f1b3e31f256c536c23c41c3b4928860ea2318f3af9c5e4001ab49095019aec25
   - filename: app/routes/kompla-idp.tsx
     checksum: 86f949a32aac56151bf28bd1f4ac811c5552c329dfc9e60c85debca0331d7b24
+  - filename: app/services/api/refreshToken.server.ts
+    checksum: 3cf584c6281bcd6a520e676de62a55ece85198abde919681a8f86a1250ed2eda
 
 version: ""
 scopeconfig:
