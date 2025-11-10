@@ -66,7 +66,7 @@ fileignoreconfig:
   - filename: app/services/api/refreshToken.server.ts
     checksum: 2480389a500b8dbcaebce386fa09dd2f58c58765f0b5d98b7f3e4a15f49f5ba2
   - filename: app/services/auth/session.server.ts
-    checksum: 54c984869a644cc078d7983545dc4028f4fb2a4bbd33eda1db9c6123b0e55501
+    checksum: 5cc95eec02096389dabce865cf024f044b8073ea672516a7dd3e0930679b3ae5
 
 version: ""
 scopeconfig:
