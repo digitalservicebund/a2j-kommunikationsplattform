@@ -32,12 +32,12 @@ export default z.object({
 
 // new schema test
 export const newSchema = z.object({
-  id: z.uuid(),
-  aktenzeichenGericht: z.nullable(z.string()),
+  id: z.uuid().nullish(),
+  aktenzeichenGericht: z.string().nullish(),
   status: z.enum(["Erstellt", "Eingereicht"]),
-  status_changed: z.nullable(z.iso.datetime()),
+  statusChanged: z.nullable(z.iso.datetime()),
   eingereichtAm: z.nullable(z.iso.datetime()),
-  gericht: z.nullable(
+  gericht: z.nullish(
     z.object({
       id: z.uuid(),
       wert: z.optional(z.number()),

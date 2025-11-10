@@ -370,6 +370,91 @@ export const mockNewVerfahren = [
       },
     ],
   },
+  {
+    id: "019a34f9-4680-7ab6-b5e9-ef2e77368a60",
+    aktenzeichenGericht: "D84 03/2025",
+    status: "Eingereicht",
+    statusChanged: "2025-03-23T21:22:50.195679Z",
+    eingereichtAm: "2025-04-24T20:52:04.141542Z",
+    gericht: {
+      id: "1e4d18ee-8101-9aed-1e7d-134ec4cb4531",
+      wert: "Amtsgericht Erding",
+      code: "D2411",
+    },
+    beteiligungen: [
+      {
+        id: "019a34f9-4680-70df-946b-c85bc7e46719",
+        name: "Ada Nienow",
+        rollen: [
+          {
+            id: "c53dd226-7bd9-4da5-19da-5302595a9469",
+            wert: "Kläger(in)",
+            code: "101",
+          },
+        ],
+        prozessbevollmaechtigte: [
+          {
+            aktenzeichen: "S3339122024",
+            bevollmaechtigter: {
+              id: "019a34f9-4576-7b69-883b-06a7a1e7ac0b",
+              safeId: "TestStein",
+              name: "Dr. Rita JohnstonAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            },
+          },
+        ],
+      },
+      {
+        id: "019a34f9-4680-795e-9b67-220e958d621e",
+        name: "Condor",
+        rollen: [
+          {
+            id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
+            wert: "Beklagte(r)",
+            code: "028",
+          },
+        ],
+        prozessbevollmaechtigte: [
+          {
+            aktenzeichen: "K1594052024",
+            bevollmaechtigter: {
+              id: "019a34f9-456f-7b94-ac79-0c5fb9b9e2e0",
+              safeId: "DE.BRAK_SPT.fb72a4c9-3e1d-41a6-8b2c-0d6e5f9a7b34.8c51",
+              name: "Dr. Randall KutchAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            },
+          },
+        ],
+      },
+      {
+        id: "019a34f9-4680-7cff-b564-86196a55f228",
+        name: "Ryanair",
+        rollen: [
+          {
+            id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
+            wert: "Beklagte(r)",
+            code: "028",
+          },
+        ],
+        prozessbevollmaechtigte: [
+          {
+            aktenzeichen: "O2251092023",
+            bevollmaechtigter: {
+              id: "019a34f9-456f-7fd3-ba08-2d16cae9c2f7",
+              safeId: "DE.BRAK_SPT.e81f4b27-3a6d-44e8-b2f1-7a5d3e0c9d17.9fbc",
+              name: "Dr. Elizabeth RogahnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            },
+          },
+          {
+            aktenzeichen: "Q1263022025",
+            bevollmaechtigter: {
+              id: "019a34f9-456f-7788-a393-3680269d4e07",
+              safeId: "DE.BRAK_SPT.c37e8b59-54d2-4e6a-b5d3-f8a2c9e1d774.7b32",
+              name: "Dr. Marvin FriesenAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            },
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export const mockKomPlaIdPTokenExchange = {
