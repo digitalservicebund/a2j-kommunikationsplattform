@@ -16,9 +16,9 @@ fileignoreconfig:
   - filename: app/services/fileUpload.server.ts
     checksum: bc2812232864b6d3b6f9189b95fea278d34952318ddb0deaf41be7ac5fd43d35
   - filename: app/services/auth/oAuth.server.ts
-    checksum: 69c8a63f889215be1d683243e249d26a5cd54524c9548eaa7c1e5572faffbf63
+    checksum: 1b82605024a9efc6317e620481c308c4f5e5f3afd726c2927dcb29afccd802ac
   - filename: app/services/session.server.ts
-    checksum: 54c984869a644cc078d7983545dc4028f4fb2a4bbd33eda1db9c6123b0e55501
+    checksum: 5cc95eec02096389dabce865cf024f044b8073ea672516a7dd3e0930679b3ae5
   - filename: app/config/config.server.ts
     checksum: 396b77c1534c253a277f93c0b841a7557aa6be598344c36d69f13510cec40e47
   - filename: app/config/__test__/config.server.test.ts
@@ -58,7 +58,7 @@ fileignoreconfig:
   - filename: app/services/auth/__test__/oAuth.server.test.ts
     checksum: fa1614003d908290615968c5cc41618356dd86014d7468bb5057c5be0e35ba04
   - filename: app/services/auth/__test__/session.server.test.ts
-    checksum: 0b403edb10918923aa000d90a90307ae41d8bd039ebeaf5322241590b1b39ab5
+    checksum: 2b9040888e8ce7a4a23b8750718e9f54540d5697024c4ecd794e1ef874d8f316
   - filename: doc/architecture-diagrams/system-architecture.md
     checksum: f1b3e31f256c536c23c41c3b4928860ea2318f3af9c5e4001ab49095019aec25
   - filename: app/routes/kompla-idp.tsx
