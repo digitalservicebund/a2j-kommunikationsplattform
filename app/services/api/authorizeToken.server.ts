@@ -1,6 +1,6 @@
 import { serverConfig } from "~/config/config.server";
 
-interface TokenExchangeResponse {
+interface AuthorizeTokenResponse {
   access_token: string;
   expires_in: number;
   refresh_expires_in: number;
@@ -12,22 +12,22 @@ interface TokenExchangeResponse {
   issued_token_type: string;
 }
 
-const tokenExchangeEndpoint = `${serverConfig().KOMPLA_IDP_ISSUER}/protocol/openid-connect/token`;
+const authorizeTokenEndpoint = `${serverConfig().KOMPLA_IDP_ISSUER}/protocol/openid-connect/token`;
 const clientId = `${serverConfig().KOMPLA_IDP_CLIENT_ID}`;
 const subjectIssuer = `${serverConfig().KOMPLA_IDP_SUBJECT_ISSUER}`;
 const scope = "kompla-api";
 
 /**
- * Test OAuth 2.0 Token Exchange (RFC 8693)
+ * OAuth 2.0 Token Exchange (RFC 8693)
  *
  * @see: https://www.rfc-editor.org/rfc/rfc8693.html
  *
  * @param idpAccessToken Access token received after successful user login
  */
-export async function exchangeToken(
+export async function authorizeToken(
   idpAccessToken: string,
-): Promise<TokenExchangeResponse> {
-  console.log("exchangeToken");
+): Promise<AuthorizeTokenResponse> {
+  console.log("authorizeToken");
 
   const params = new URLSearchParams();
   params.append(
@@ -43,7 +43,7 @@ export async function exchangeToken(
   params.append("scope", scope);
   params.append("subject_token", idpAccessToken);
 
-  const response = await fetch(tokenExchangeEndpoint, {
+  const response = await fetch(authorizeTokenEndpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -57,7 +57,7 @@ export async function exchangeToken(
     );
   }
 
-  const result = (await response.json()) as TokenExchangeResponse;
+  const result = (await response.json()) as AuthorizeTokenResponse;
   console.log("Received token exchange response from KomPla IdP");
 
   return result;

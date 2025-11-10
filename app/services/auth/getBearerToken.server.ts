@@ -1,5 +1,5 @@
+import { authorizeToken } from "../api/authorizeToken.server";
 import { refreshAccessToken } from "../api/refreshToken.server";
-import { exchangeToken } from "../api/tokenExchange.server";
 import {
   getUserSession,
   updateUserSessionWithApiTokens,
@@ -19,7 +19,7 @@ export async function getBearerToken(request: Request): Promise<string> {
     if (apiAccessToken) {
       // if expired throw an error
       if (new Date(Number(userSession?.apiAcessExpiresAt)) < new Date()) {
-        throw new Error("API acess expired");
+        throw new Error("API access expired");
       }
 
       // return the token
@@ -27,7 +27,7 @@ export async function getBearerToken(request: Request): Promise<string> {
     } else {
       // if not present, get an api access token
       const accessToken = userSession?.accessToken ?? "";
-      const token = await exchangeToken(accessToken);
+      const token = await authorizeToken(accessToken);
 
       await updateUserSessionWithApiTokens(
         token.access_token,

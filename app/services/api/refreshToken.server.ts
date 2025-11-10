@@ -21,10 +21,10 @@ const scope = "kompla-api";
  *
  * @see: https://www.rfc-editor.org/rfc/rfc8693.html
  *
- * @param idpRefresh_token Refresh token received after token exchange
+ * @param idpRefreshToken Refresh token received after token exchange
  */
 export async function refreshAccessToken(
-  idpRefresh_token: string,
+  idpRefreshToken: string,
 ): Promise<RefreshTokenExchangeResponse> {
   console.log("refreshAccessToken");
 
@@ -37,7 +37,7 @@ export async function refreshAccessToken(
   params.append("clientId", clientId);
   params.append("subject_issuer", subjectIssuer);
   params.append("scope", scope);
-  params.append("refresh_token", idpRefresh_token);
+  params.append("refresh_token", idpRefreshToken);
 
   const response = await fetch(tokenExchangeEndpoint, {
     method: "POST",

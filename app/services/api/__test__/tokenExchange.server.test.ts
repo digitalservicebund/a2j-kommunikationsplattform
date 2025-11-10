@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { exchangeToken } from "../tokenExchange.server";
+import { authorizeToken } from "../authorizeToken.server";
 
 // Mock the serverConfig
 vi.mock("~/config/config.server", () => ({
@@ -37,7 +37,7 @@ describe("exchangeToken", () => {
 
   it("should exchange token successfully", async () => {
     const idpAccessToken = "test-token";
-    const result = await exchangeToken(idpAccessToken);
+    const result = await authorizeToken(idpAccessToken);
 
     // Verify fetch was called with correct parameters
     expect(global.fetch).toHaveBeenCalledWith(
@@ -79,7 +79,7 @@ describe("exchangeToken", () => {
 
     global.fetch = vi.fn().mockResolvedValue(errorResponse);
 
-    await expect(exchangeToken("test-token")).rejects.toThrow(
+    await expect(authorizeToken("test-token")).rejects.toThrow(
       "Token exchange failed: 400 Bad Request",
     );
   });
