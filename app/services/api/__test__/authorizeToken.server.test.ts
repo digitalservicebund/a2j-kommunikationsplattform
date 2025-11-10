@@ -10,7 +10,7 @@ vi.mock("~/config/config.server", () => ({
   }),
 }));
 
-describe("exchangeToken", () => {
+describe("authorizeToken", () => {
   const mockResponse: Response = {
     ok: true,
     json: vi.fn().mockResolvedValue({

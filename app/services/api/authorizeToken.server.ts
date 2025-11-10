@@ -1,6 +1,6 @@
 import { serverConfig } from "~/config/config.server";
 
-interface AuthorizeTokenResponse {
+export interface AuthorizeTokenResponse {
   access_token: string;
   expires_in: number;
   refresh_expires_in: number;

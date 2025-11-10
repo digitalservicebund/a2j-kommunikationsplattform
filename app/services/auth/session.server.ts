@@ -1,7 +1,7 @@
 import { createCookieSessionStorage, redirect } from "react-router";
 import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
-import type { AuthenticationContext } from "./oAuth.server";
+import { AuthenticationContext } from "./oAuth.server";
 
 const getSecret = () => {
   return config().ENVIRONMENT === "development"
@@ -43,17 +43,25 @@ export const createUserSession = async (
   }
 };
 
+interface UpdateUserSessionWithApiTokensResponse {
+  apiAccessToken: string;
+  apiAccessExpiresAt: number;
+  apiRefreshToken: string;
+  apiRefreshExpiresAt: number;
+  request: Request;
+}
+
 // Update user session with API access tokens.
-export const updateUserSessionWithApiTokens = async (
-  apiAccessToken: string,
-  apiAcessExpiresAt: number,
-  apiRefreshToken: string,
-  apiRefreshExpiresAt: number,
-  request: Request,
-) => {
+export const updateUserSessionWithApiTokens = async ({
+  apiAccessToken,
+  apiAccessExpiresAt,
+  apiRefreshToken,
+  apiRefreshExpiresAt,
+  request,
+}: UpdateUserSessionWithApiTokensResponse): Promise<string | null> => {
   const session = await getSession(request.headers.get("Cookie"));
   session.set("apiAccessToken", apiAccessToken);
-  session.set("apiAcessExpiresAt", apiAcessExpiresAt);
+  session.set("apiAccessExpiresAt", apiAccessExpiresAt);
   session.set("apiRefreshToken", apiRefreshToken);
   session.set("apiRefreshExpiresAt", apiRefreshExpiresAt);
 
@@ -66,15 +74,18 @@ export const updateUserSessionWithApiTokens = async (
   }
 };
 
+type GetUserSessionResponse = AuthenticationContext &
+  Omit<UpdateUserSessionWithApiTokensResponse, "request">;
+
 // We retrieve the user session from the request headers and ensure that the session has not expired.
 export const getUserSession = async (
   request: Request,
-): Promise<AuthenticationContext | null> => {
+): Promise<GetUserSessionResponse | null> => {
   const session = await getSession(request.headers.get("Cookie"));
   const accessToken = session.get("accessToken");
   const expiresAt = session.get("expiresAt");
   const apiAccessToken = session.get("apiAccessToken");
-  const apiAcessExpiresAt = session.get("apiAcessExpiresAt");
+  const apiAccessExpiresAt = session.get("apiAccessExpiresAt");
   const apiRefreshToken = session.get("apiRefreshToken");
   const apiRefreshExpiresAt = session.get("apiRefreshExpiresAt");
 
@@ -89,7 +100,7 @@ export const getUserSession = async (
     accessToken,
     expiresAt,
     apiAccessToken,
-    apiAcessExpiresAt,
+    apiAccessExpiresAt,
     apiRefreshToken,
     apiRefreshExpiresAt,
   };

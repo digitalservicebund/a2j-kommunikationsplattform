@@ -6,10 +6,6 @@ import { createUserSession } from "./session.server";
 export interface AuthenticationContext {
   accessToken: string;
   expiresAt: number;
-  apiAccessToken?: string;
-  apiAcessExpiresAt?: string;
-  apiRefreshToken?: string;
-  apiRefreshExpiresAt?: string;
 }
 
 export interface AuthenticationResponse {
