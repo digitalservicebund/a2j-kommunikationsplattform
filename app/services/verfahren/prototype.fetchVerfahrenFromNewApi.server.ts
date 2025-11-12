@@ -1,3 +1,4 @@
+import z from "zod";
 import { serverConfig } from "~/config/config.server";
 import { newSchema } from "~/models/VerfahrenSchema";
 import { getBearerToken } from "../auth/getBearerToken.server";
@@ -6,7 +7,7 @@ export async function fetchVerfahrenFromNewApi(request: Request) {
   const bearerToken = await getBearerToken(request);
 
   if (bearerToken) {
-    console.log("apiAccessToken is present in user session");
+    console.log("bearerToken is present in user session");
 
     const offset = 0;
     const limit = 10;
@@ -29,8 +30,10 @@ export async function fetchVerfahrenFromNewApi(request: Request) {
         });
       }
 
+      const data = await response.json();
+
       try {
-        return newSchema.parse(response);
+        return z.array(newSchema).parse(data);
       } catch (error) {
         throw new Error("schema parse error", { cause: error });
       }

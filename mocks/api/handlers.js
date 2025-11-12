@@ -116,9 +116,6 @@ const getVerfahren = (id) => {
 export const handlers = [
   http.get(`${mockJustizBackendApiUrl}/api/v1/verfahren`, async () => {
     const getVerfahrenResponse = [getVerfahren(), { status: 200 }];
-
-    console.log("getVerfahrenResponse", getVerfahrenResponse);
-
     return HttpResponse.json(...getVerfahrenResponse);
   }),
 
@@ -360,8 +357,6 @@ export const handlers = [
   http.post(
     `${mockKomplaIdpIssuer}/realms/:environment/protocol/openid-connect/token`,
     () => {
-      console.log("intercepted mockKomplaIdpIssuer request");
-
       const post200Response = [mockKomPlaIdPTokenExchange, { status: 200 }];
       return HttpResponse.json(...post200Response);
     },
@@ -369,9 +364,6 @@ export const handlers = [
 
   http.get(`${mockKomplaApiUrl}/:environment/api/v1/verfahren`, async () => {
     const getNewVerfahrenResponse = [mockNewVerfahren, { status: 200 }];
-
-    console.log("getNewVerfahrenResponse", getNewVerfahrenResponse);
-
-    return HttpResponse.json(getNewVerfahrenResponse);
+    return HttpResponse.json(...getNewVerfahrenResponse);
   }),
 ];
