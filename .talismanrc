@@ -36,7 +36,7 @@ fileignoreconfig:
   - filename: sonar-project.properties
     checksum: 836da7bbdc626380f76185c757286ad8e6ed52929e1e1c0995117c0b6bb2907e
   - filename: tests/e2e/playwright.config.ts
-    checksum: 07aa847af35f9c79757ff18d3c4b6c246262780d4843f7178fef0e8001f6918a
+    checksum: 34cb8aebe7b81824d2e2bca9f098d5efc58aab983f7da91f7bedfcdf8ef0abf6
   - filename: app/components/__test__/ContentPage.test.tsx
     checksum: a2c62ce36ce3ceea9fcc6757afc6d0d1fb5d4c8a5dbad2b5236d09bfff4e7a75
   - filename: app/components/Navigation.static.tsx
