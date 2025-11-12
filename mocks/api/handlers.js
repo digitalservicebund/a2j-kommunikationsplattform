@@ -32,10 +32,38 @@ const baseMockApiUrl = "https://kompla.sinc.de";
 // init Verfahren data
 const verfahren = new Map();
 let verfahrenId = 0;
-verfahren.set(verfahrenId++, mockVerfahrenErstellt);
-verfahren.set(verfahrenId++, mockVerfahrenEingereicht);
-verfahren.set(verfahrenId++, mockVerfahrenEingereicht1);
-verfahren.set(verfahrenId++, mockVerfahrenEingereicht2);
+const seedVerfahren = [
+  mockVerfahrenErstellt,
+  mockVerfahrenEingereicht,
+  mockVerfahrenEingereicht1,
+  mockVerfahrenEingereicht2,
+];
+
+for (const item of seedVerfahren) {
+  verfahren.set(verfahrenId++, item);
+}
+
+// generate additional random verfahren until we have 200 total entries
+const TARGET_VERFAHREN = 200;
+while (verfahren.size < TARGET_VERFAHREN) {
+  const template =
+    seedVerfahren[Math.floor(Math.random() * seedVerfahren.length)];
+
+  const randomAktenId = Math.floor(10000000 + Math.random() * 90000000);
+  // use a 1-based index suffix for the aktenzeichen
+  const indexSuffix = verfahren.size + 1;
+  const aktenzeichen = `JBA-${randomAktenId}-${indexSuffix}`;
+
+  const newVerfahren = {
+    ...template,
+    id: uuidv4(),
+    aktenzeichen,
+    status_changed: new Date().toJSON(),
+    eingereicht_am: new Date().toJSON(),
+  };
+
+  verfahren.set(verfahrenId++, newVerfahren);
+}
 
 // init Akte "eingereicht" data
 const aktenteilDokumenteVerfahrenErstellt = new Map();
@@ -102,14 +130,45 @@ const getVerfahren = (id) => {
   return id
     ? requestedVerfahren
     : {
+        // keep backward-compatible key
         verfahren: allVerfahren,
+        // total count
+        total: allVerfahren.length,
       };
 };
 
 export const handlers = [
-  http.get(`${baseMockApiUrl}/api/v1/verfahren`, async () => {
-    const getVerfahrenResponse = [getVerfahren(), { status: 200 }];
+  http.get(`${baseMockApiUrl}/api/v1/verfahren`, async ({ request }) => {
+    const url = new URL(request.url);
+    const offsetParam = url.searchParams.get("offset");
+    const limitParam = url.searchParams.get("limit");
 
+    const allResponse = getVerfahren();
+    const allVerfahren = allResponse.verfahren || [];
+    const total = allResponse.total ?? allVerfahren.length;
+
+    // parse values safely (fall back to sensible defaults)
+    const offsetNum = offsetParam !== null ? parseInt(offsetParam, 10) || 0 : 0;
+    const limitNum =
+      limitParam !== null ? parseInt(limitParam, 10) || total : total;
+
+    console.log("Received params:", url.searchParams.toString());
+    console.log(
+      "Fetching verfahren with offset:",
+      offsetNum,
+      "and limit:",
+      limitNum,
+    );
+
+    const paged = allVerfahren.slice(offsetNum, offsetNum + limitNum);
+
+    const getVerfahrenResponse = [
+      {
+        verfahren: paged,
+        total,
+      },
+      { status: 200 },
+    ];
     return HttpResponse.json(...getVerfahrenResponse);
   }),
 

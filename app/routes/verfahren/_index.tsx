@@ -22,7 +22,6 @@ export const loader = withSessionLoader(
     const offset = Number(url.searchParams.get("offset")) || 0;
 
     const verfahren = fetchVerfahren({ limit, offset });
-
     return {
       verfahren,
     };
@@ -44,11 +43,17 @@ export default function Verfahren() {
           ))}
         >
           <Await resolve={verfahren}>
-            {(resolvedVerfahren) =>
-              resolvedVerfahren.map((data) => (
-                <VerfahrenTile key={data.id} {...data} />
-              ))
-            }
+            {({ verfahren, total }) => (
+              <>
+                {console.log("Resolved Verfahren:", verfahren)}
+                <p className="kern-body kern-body--muted">
+                  {`${verfahren.length} (von ${total} Verfahren)`}
+                </p>
+                {verfahren.map((data) => (
+                  <VerfahrenTile key={data.id} {...data} />
+                ))}
+              </>
+            )}
           </Await>
         </Suspense>
       </div>
