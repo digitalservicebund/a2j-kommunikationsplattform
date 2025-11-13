@@ -34,6 +34,7 @@ const mockedCreateUserSession = vi.mocked(createUserSession);
 const requestURL = "http://localhost/oauth-test";
 const accessToken = "test-access-token-oauth";
 const hasRefreshToken = true;
+const accessTokenExpiresInSeconds = 300;
 
 function getBEAStrategy(): StrategyResponse {
   const strategyMap = (authenticator as unknown as AuthWithStrategies)
@@ -82,6 +83,7 @@ describe("oAuth.server", () => {
     const mockTokens = {
       accessToken: () => accessToken,
       hasRefreshToken: () => hasRefreshToken,
+      accessTokenExpiresInSeconds: () => accessTokenExpiresInSeconds,
     };
 
     it("returns AuthenticationResponse with session cookie", async () => {
