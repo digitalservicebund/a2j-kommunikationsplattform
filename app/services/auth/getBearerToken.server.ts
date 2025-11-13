@@ -21,7 +21,9 @@ export async function getBearerToken(request: Request): Promise<string> {
 
       // if expired throw an error
       if (new Date(Number(userSession?.apiAccessExpiresAt)) < new Date()) {
-        throw new Error("API acess expired");
+        throw new Error("API access expired", {
+          cause: "expires_in value of API access token has expired",
+        });
       }
 
       // return the token

@@ -27,6 +27,9 @@ export async function refreshAccessToken(
   idpRefreshToken: string,
 ): Promise<RefreshTokenExchangeResponse> {
   console.log("refreshAccessToken");
+  console.log(
+    `debug config: \ntokenExchangeEndpoint is ${tokenExchangeEndpoint} \nclientId is ${clientId} \n subjectIssuer is ${subjectIssuer} \nscope is ${scope}`,
+  );
 
   const params = new URLSearchParams();
   params.append("grant_type", "refresh_token");
@@ -38,6 +41,8 @@ export async function refreshAccessToken(
   params.append("subject_issuer", subjectIssuer);
   params.append("scope", scope);
   params.append("refresh_token", idpRefreshToken);
+
+  console.log(`debug params: ${params.toString()}`);
 
   const response = await fetch(tokenExchangeEndpoint, {
     method: "POST",

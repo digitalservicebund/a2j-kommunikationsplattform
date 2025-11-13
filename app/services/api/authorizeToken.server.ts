@@ -28,6 +28,9 @@ export async function authorizeToken(
   idpAccessToken: string,
 ): Promise<AuthorizeTokenResponse> {
   console.log("authorizeToken");
+  console.log(
+    `debug config: \nauthorizeTokenEndpoint is ${authorizeTokenEndpoint} \nclientId is ${clientId} \n subjectIssuer is ${subjectIssuer} \nscope is ${scope}`,
+  );
 
   const params = new URLSearchParams();
   params.append(
@@ -42,6 +45,8 @@ export async function authorizeToken(
   params.append("subject_issuer", subjectIssuer);
   params.append("scope", scope);
   params.append("subject_token", idpAccessToken);
+
+  console.log(`debug params: ${params.toString()}`);
 
   const response = await fetch(authorizeTokenEndpoint, {
     method: "POST",
