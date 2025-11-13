@@ -23,6 +23,13 @@ type SessionModule = {
   getUserSession: (
     request: Request,
   ) => Promise<{ accessToken: string; expiresAt: number } | null>;
+  updateUserSessionWithApiTokens: (opts: {
+    apiAccessToken: string;
+    apiAccessExpiresAt: number;
+    apiRefreshToken: string;
+    apiRefreshExpiresAt: number;
+    request: Request;
+  }) => Promise<string | null>;
   requireUserSession: (
     request: Request,
   ) => Promise<{ accessToken: string; expiresAt: number }>;
@@ -227,6 +234,55 @@ describe("session.server", () => {
     restore();
   });
 
+  it("updateUserSessionWithApiTokens commits a session with API tokens", async () => {
+    const { module, reactRouterMock, restore } = await withMocks({});
+
+    const req = new Request(requestURL, {
+      headers: { Cookie: "" },
+    });
+
+    const result = await module.updateUserSessionWithApiTokens({
+      apiAccessToken: "api-access-1",
+      apiAccessExpiresAt: 1_234_567,
+      apiRefreshToken: "api-refresh-1",
+      apiRefreshExpiresAt: 7_654_321,
+      request: req,
+    });
+
+    expect(reactRouterMock.commitSession).toHaveBeenCalledTimes(1);
+    const calledWithSession = reactRouterMock.commitSession.mock.calls[0][0];
+    expect(calledWithSession.get("apiAccessToken")).toBe("api-access-1");
+    expect(calledWithSession.get("apiAccessExpiresAt")).toBe(1_234_567);
+    expect(calledWithSession.get("apiRefreshToken")).toBe("api-refresh-1");
+    expect(calledWithSession.get("apiRefreshExpiresAt")).toBe(7_654_321);
+    expect(result).toBe("mock-set-cookie=1");
+
+    restore();
+  });
+
+  it("updateUserSessionWithApiTokens throws a wrapped error if commitSession fails", async () => {
+    const { module, reactRouterMock, restore } = await withMocks({});
+    reactRouterMock.commitSession.mockImplementationOnce(async () => {
+      throw new Error("Failed to update session");
+    });
+
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const req = new Request(requestURL);
+
+    await expect(
+      module.updateUserSessionWithApiTokens({
+        apiAccessToken: "api-access-1",
+        apiAccessExpiresAt: 1_234_567,
+        apiRefreshToken: "api-refresh-1",
+        apiRefreshExpiresAt: 7_654_321,
+        request: req,
+      }),
+    ).rejects.toThrow("Failed to update the user session");
+    expect(errSpy).toHaveBeenCalled();
+
+    restore();
+  });
+
   it("getUserSession returns null and destroys session if no accessToken is available", async () => {
     const { module, reactRouterMock, restore } = await withMocks({});
 
@@ -312,6 +368,78 @@ describe("session.server", () => {
         throw error; // rethrow if not a Response
       }
     }
+    restore();
+  });
+});
+describe("session.server - api token helpers", () => {
+  it("updateUserSessionWithApiTokens commits a session with API tokens", async () => {
+    const { module, reactRouterMock, restore } = await withMocks({});
+
+    const req = new Request(requestURL, {
+      headers: { Cookie: "" },
+    });
+
+    const result = await module.updateUserSessionWithApiTokens({
+      apiAccessToken: "api-access-1",
+      apiAccessExpiresAt: 1_234_567,
+      apiRefreshToken: "api-refresh-1",
+      apiRefreshExpiresAt: 7_654_321,
+      request: req,
+    });
+
+    expect(reactRouterMock.commitSession).toHaveBeenCalledTimes(1);
+    const calledWithSession = reactRouterMock.commitSession.mock.calls[0][0];
+    expect(calledWithSession.get("apiAccessToken")).toBe("api-access-1");
+    expect(calledWithSession.get("apiAccessExpiresAt")).toBe(1_234_567);
+    expect(calledWithSession.get("apiRefreshToken")).toBe("api-refresh-1");
+    expect(calledWithSession.get("apiRefreshExpiresAt")).toBe(7_654_321);
+    expect(result).toBe("mock-set-cookie=1");
+
+    restore();
+  });
+
+  it("updateUserSessionWithApiTokens throws a wrapped error if commitSession fails", async () => {
+    const { module, reactRouterMock, restore } = await withMocks({});
+    reactRouterMock.commitSession.mockImplementationOnce(async () => {
+      throw new Error("Failed to update session");
+    });
+
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const req = new Request(requestURL);
+
+    await expect(
+      module.updateUserSessionWithApiTokens({
+        apiAccessToken: "api-access-1",
+        apiAccessExpiresAt: 1_234_567,
+        apiRefreshToken: "api-refresh-1",
+        apiRefreshExpiresAt: 7_654_321,
+        request: req,
+      }),
+    ).rejects.toThrow("Failed to update the user session");
+    expect(errSpy).toHaveBeenCalled();
+
+    restore();
+  });
+
+  it("getUserSession returns API tokens when present in the session", async () => {
+    const { module, reactRouterMock, restore } = await withMocks({});
+    const cookie = `accessToken=${accessToken}; expiresAt=${futureTs()}; apiAccessToken=apiA; apiAccessExpiresAt=111; apiRefreshToken=apiR; apiRefreshExpiresAt=222`;
+    const req = new Request(requestURL, {
+      headers: { Cookie: cookie },
+    });
+
+    const ctx = await module.getUserSession(req);
+
+    expect(ctx).toEqual({
+      accessToken: accessToken,
+      expiresAt: expect.any(Number),
+      apiAccessToken: "apiA",
+      apiAccessExpiresAt: "111",
+      apiRefreshToken: "apiR",
+      apiRefreshExpiresAt: "222",
+    });
+    expect(reactRouterMock.destroySession).not.toHaveBeenCalled();
+
     restore();
   });
 });

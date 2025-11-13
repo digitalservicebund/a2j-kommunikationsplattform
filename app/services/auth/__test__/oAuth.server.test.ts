@@ -18,7 +18,10 @@ import {
 } from "~/services/auth/oAuth.server";
 import { createUserSession } from "~/services/auth/session.server";
 
-type VerifyArgs = { tokens: { accessToken: () => string }; request: Request };
+type VerifyArgs = {
+  tokens: { accessToken: () => string; hasRefreshToken: () => boolean };
+  request: Request;
+};
 type StrategyResponse = {
   verify: (a: VerifyArgs) => Promise<AuthenticationResponse>;
 };
@@ -30,6 +33,7 @@ const mockedCreateUserSession = vi.mocked(createUserSession);
 
 const requestURL = "http://localhost/oauth-test";
 const accessToken = "test-access-token-oauth";
+const hasRefreshToken = true;
 
 function getBEAStrategy(): StrategyResponse {
   const strategyMap = (authenticator as unknown as AuthWithStrategies)
@@ -75,7 +79,10 @@ describe("oAuth.server", () => {
 
   describe("OAuth2Strategy callback", () => {
     const mockRequest = new Request(`${requestURL}/callback`);
-    const mockTokens = { accessToken: () => accessToken };
+    const mockTokens = {
+      accessToken: () => accessToken,
+      hasRefreshToken: () => hasRefreshToken,
+    };
 
     it("returns AuthenticationResponse with session cookie", async () => {
       mockedCreateUserSession.mockResolvedValueOnce("mock-cookie");

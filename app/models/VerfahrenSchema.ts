@@ -29,3 +29,47 @@ export default z.object({
   geschaeftszeichen: z.optional(z.nullable(z.string())),
   // END
 });
+
+/**
+ * New Verfahren schema test
+ *
+ * @TODO: remove default export and use new schema after the switch
+ * to https://app.kompla-justiz.sinc.de/dev/swagger/index.html
+ */
+export const newSchema = z.object({
+  id: z.uuid(),
+  aktenzeichenGericht: z.nullable(z.string()),
+  status: z.enum(["Erstellt", "Eingereicht"]),
+  statusChanged: z.iso.datetime(),
+  eingereichtAm: z.nullable(z.iso.datetime()),
+  gericht: z.nullable(
+    z.object({
+      id: z.guid(),
+      wert: z.string(),
+      code: z.string(),
+    }),
+  ),
+  beteiligungen: z.array(
+    z.object({
+      id: z.uuid(),
+      name: z.string(),
+      rollen: z.array(
+        z.object({
+          id: z.guid(),
+          wert: z.string(),
+          code: z.string(),
+        }),
+      ),
+      prozessbevollmaechtigte: z.array(
+        z.object({
+          aktenzeichen: z.string(),
+          bevollmaechtigter: z.object({
+            id: z.uuid(),
+            safeId: z.string(),
+            name: z.string(),
+          }),
+        }),
+      ),
+    }),
+  ),
+});
