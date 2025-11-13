@@ -32,6 +32,12 @@ authenticator.use(
       codeChallengeMethod: CodeChallengeMethod.S256,
     },
     async ({ tokens, request }) => {
+      // @TODO: remove
+      console.log(
+        "BRAK IdP OAuth2 debugging: hasRefreshToken:",
+        tokens.hasRefreshToken(),
+      );
+
       const accessToken = tokens.accessToken();
       const expiresAt = Date.now() + 60 * 60 * 1000 * 24 * 14; // 14 days
       const sessionCookieHeader = await createUserSession(

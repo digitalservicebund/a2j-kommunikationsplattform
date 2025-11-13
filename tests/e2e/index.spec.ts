@@ -18,6 +18,7 @@ test.describe("Homepage (_index route)", () => {
     // triple timeout, see: https://playwright.dev/docs/api/class-test#test-slow
     test.slow();
     await page.goto("/");
+    await page.waitForURL("**/login");
     await page
       .getByRole("button", {
         name: buttons.LOGIN_BUTTON_BEA,

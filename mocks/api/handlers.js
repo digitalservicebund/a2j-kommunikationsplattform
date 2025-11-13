@@ -5,6 +5,8 @@ import {
   aktenteileIds,
   getDokumentByAktenteilId,
   mockAktenteilDokumente,
+  mockKomPlaIdPTokenExchange,
+  mockNewVerfahren,
   mockVerfahrenEingereicht,
   mockVerfahrenEingereicht1,
   mockVerfahrenEingereicht2,
@@ -25,7 +27,12 @@ import {
  * @see https://mswjs.io/docs/basics/mocking-responses
  */
 
-const baseMockApiUrl = "https://kompla.sinc.de";
+// JUSTIZ_BACKEND_API_URL
+const mockJustizBackendApiUrl = "https://kompla.sinc.de";
+// KOMPLA_API_URL
+const mockKomplaApiUrl = "https://app.kompla-justiz.sinc.de";
+// KOMPLA_IDP_ISSUER
+const mockKomplaIdpIssuer = "https://login.kompla-justiz.sinc.de";
 
 // Let's keep a map of all mocked Verfahren and its Dokumente and Aktenteile in memory.
 // At the beginning, we add some default data to each mocked Verfahren (e.g. Aktenteile & Dokumente).
@@ -130,7 +137,6 @@ const getVerfahren = (id) => {
   return id
     ? requestedVerfahren
     : {
-        // keep backward-compatible key
         verfahren: allVerfahren,
         // total count
         total: allVerfahren.length,
@@ -138,41 +144,45 @@ const getVerfahren = (id) => {
 };
 
 export const handlers = [
-  http.get(`${baseMockApiUrl}/api/v1/verfahren`, async ({ request }) => {
-    const url = new URL(request.url);
-    const offsetParam = url.searchParams.get("offset");
-    const limitParam = url.searchParams.get("limit");
+  http.get(
+    `${mockJustizBackendApiUrl}/api/v1/verfahren`,
+    async ({ request }) => {
+      const url = new URL(request.url);
+      const offsetParam = url.searchParams.get("offset");
+      const limitParam = url.searchParams.get("limit");
 
-    const allResponse = getVerfahren();
-    const allVerfahren = allResponse.verfahren || [];
-    const total = allResponse.total ?? allVerfahren.length;
+      const allResponse = getVerfahren();
+      const allVerfahren = allResponse.verfahren || [];
+      const total = allResponse.total ?? allVerfahren.length;
 
-    // parse values safely (fall back to sensible defaults)
-    const offsetNum = offsetParam !== null ? parseInt(offsetParam, 10) || 0 : 0;
-    const limitNum =
-      limitParam !== null ? parseInt(limitParam, 10) || total : total;
+      // parse values safely (fall back to sensible defaults)
+      const offsetNum =
+        offsetParam !== null ? parseInt(offsetParam, 10) || 0 : 0;
+      const limitNum =
+        limitParam !== null ? parseInt(limitParam, 10) || total : total;
 
-    console.log("Received params:", url.searchParams.toString());
-    console.log(
-      "Fetching verfahren with offset:",
-      offsetNum,
-      "and limit:",
-      limitNum,
-    );
+      console.log("Received params:", url.searchParams.toString());
+      console.log(
+        "Fetching verfahren with offset:",
+        offsetNum,
+        "and limit:",
+        limitNum,
+      );
 
-    const paged = allVerfahren.slice(offsetNum, offsetNum + limitNum);
+      const paged = allVerfahren.slice(offsetNum, offsetNum + limitNum);
 
-    const getVerfahrenResponse = [
-      {
-        verfahren: paged,
-        total,
-      },
-      { status: 200 },
-    ];
-    return HttpResponse.json(...getVerfahrenResponse);
-  }),
+      const getVerfahrenResponse = [
+        {
+          verfahren: paged,
+          total,
+        },
+        { status: 200 },
+      ];
+      return HttpResponse.json(...getVerfahrenResponse);
+    },
+  ),
 
-  http.post(`${baseMockApiUrl}/api/v1/verfahren`, async () => {
+  http.post(`${mockJustizBackendApiUrl}/api/v1/verfahren`, async () => {
     // generate random 8 digit number for "aktenzeichen"
     const randomAktenId = Math.floor(10000000 + Math.random() * 900000);
     const aktenzeichen = `JBA-${randomAktenId}`;
@@ -218,7 +228,7 @@ export const handlers = [
 
   // endpoint is not used by the frontend at the moment
   http.get(
-    `${baseMockApiUrl}/api/v1/verfahren/:verfahrenId`,
+    `${mockJustizBackendApiUrl}/api/v1/verfahren/:verfahrenId`,
     async ({ params }) => {
       let getRequestedVerfahren;
       for (const [verfahrenKey, verfahrenValue] of verfahren) {
@@ -240,7 +250,7 @@ export const handlers = [
     },
   ),
   http.get(
-    `${baseMockApiUrl}/api/v1/verfahren/:verfahrenId/akte`,
+    `${mockJustizBackendApiUrl}/api/v1/verfahren/:verfahrenId/akte`,
     async ({ params }) => {
       let returnAkteByVerfahrenId;
 
@@ -261,7 +271,7 @@ export const handlers = [
     },
   ),
   http.get(
-    `${baseMockApiUrl}/api/v1/verfahren/:verfahrenId/akte/:aktenteilId/dokumente`,
+    `${mockJustizBackendApiUrl}/api/v1/verfahren/:verfahrenId/akte/:aktenteilId/dokumente`,
     async ({ params }) => {
       let dokumente;
 
@@ -286,7 +296,7 @@ export const handlers = [
   ),
 
   http.get(
-    `${baseMockApiUrl}/api/v1/verfahren/:verfahrenId/akte/dokumente/:dokumentId`,
+    `${mockJustizBackendApiUrl}/api/v1/verfahren/:verfahrenId/akte/dokumente/:dokumentId`,
     async ({ params }) => {
       const getDokumentId200Response = `${params.dokumentId}.pdf`;
 
@@ -305,7 +315,7 @@ export const handlers = [
    * - akte that has been created by a user with "Eingereicht" status
    */
   http.post(
-    `${baseMockApiUrl}/api/v1/verfahren/:verfahrenId/dokumente`,
+    `${mockJustizBackendApiUrl}/api/v1/verfahren/:verfahrenId/dokumente`,
     async ({ params }) => {
       let akteById;
       let aktenId;
@@ -406,4 +416,17 @@ export const handlers = [
       return HttpResponse.json(...post201Response);
     },
   ),
+
+  http.post(
+    `${mockKomplaIdpIssuer}/realms/:environment/protocol/openid-connect/token`,
+    () => {
+      const post200Response = [mockKomPlaIdPTokenExchange, { status: 200 }];
+      return HttpResponse.json(...post200Response);
+    },
+  ),
+
+  http.get(`${mockKomplaApiUrl}/:environment/api/v1/verfahren`, async () => {
+    const getNewVerfahrenResponse = [mockNewVerfahren, { status: 200 }];
+    return HttpResponse.json(...getNewVerfahrenResponse);
+  }),
 ];
