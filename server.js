@@ -3,6 +3,8 @@ import compression from "compression";
 import dotenv from "dotenv";
 import express from "express";
 import morgan from "morgan";
+import logger from "pino-http";
+// const logger = require('pino-http')
 
 /**
  * @see: https://github.com/dotenv-org/examples/blob/master/usage/dotenv-express/index.mjs
@@ -77,6 +79,9 @@ if (viteDevServer) {
       res.set("X-Robots-Tag", "noindex");
       next();
     });
+
+    infoLog += "  -> Add pino HTTP logger\n";
+    app.use(logger());
   }
 }
 
