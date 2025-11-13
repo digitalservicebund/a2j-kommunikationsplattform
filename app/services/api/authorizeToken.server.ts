@@ -28,9 +28,6 @@ export async function authorizeToken(
   idpAccessToken: string,
 ): Promise<AuthorizeTokenResponse> {
   console.log("authorizeToken");
-  console.log(
-    `debug config: \nauthorizeTokenEndpoint is ${authorizeTokenEndpoint} \nclientId is ${clientId} \n subjectIssuer is ${subjectIssuer} \nscope is ${scope}`,
-  );
 
   const params = new URLSearchParams();
   params.append(
