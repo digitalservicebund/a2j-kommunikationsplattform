@@ -37,7 +37,7 @@ authenticator.use(
         "BRAK IdP OAuth2 debugging: hasRefreshToken",
         tokens.hasRefreshToken(),
         "BRAK access token expires in",
-        tokens.accessTokenExpiresInSeconds,
+        tokens.accessTokenExpiresInSeconds(),
       );
 
       const accessToken = tokens.accessToken();
