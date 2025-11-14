@@ -51,7 +51,7 @@ for (const item of seedVerfahren) {
 }
 
 // generate additional random verfahren until we have 200 total entries
-const TARGET_VERFAHREN = 200;
+const TARGET_VERFAHREN = 500;
 while (verfahren.size < TARGET_VERFAHREN) {
   const template =
     seedVerfahren[Math.floor(Math.random() * seedVerfahren.length)];
@@ -156,10 +156,10 @@ export const handlers = [
       const total = allResponse.total ?? allVerfahren.length;
 
       // parse values safely (fall back to sensible defaults)
-      const offsetNum =
-        offsetParam !== null ? parseInt(offsetParam, 10) || 0 : 0;
-      const limitNum =
-        limitParam !== null ? parseInt(limitParam, 10) || total : total;
+      const offsetNum = offsetParam ? Number.parseInt(offsetParam, 10) || 0 : 0;
+      const limitNum = limitParam
+        ? Number.parseInt(limitParam, 10) || total
+        : total;
 
       console.log("Received params:", url.searchParams.toString());
       console.log(
@@ -174,7 +174,6 @@ export const handlers = [
       const getVerfahrenResponse = [
         {
           verfahren: paged,
-          total,
         },
         { status: 200 },
       ];

@@ -18,8 +18,8 @@ const SKELETONS = [
 export const loader = withSessionLoader(
   async ({ request }: LoaderFunctionArgs) => {
     const url = new URL(request.url);
-    const limit = Number(url.searchParams.get("limit")) || 10;
-    const offset = Number(url.searchParams.get("offset")) || 0;
+    const limit = Number(url.searchParams.get("limit"));
+    const offset = Number(url.searchParams.get("offset"));
 
     const verfahren = fetchVerfahren({ limit, offset });
     return {
@@ -43,11 +43,10 @@ export default function Verfahren() {
           ))}
         >
           <Await resolve={verfahren}>
-            {({ verfahren, total }) => (
+            {({ verfahren }) => (
               <>
-                {console.log("Resolved Verfahren:", verfahren)}
                 <p className="kern-body kern-body--muted">
-                  {`${verfahren.length} (von ${total} Verfahren)`}
+                  {`${verfahren.length} Verfahren`}
                 </p>
                 {verfahren.map((data) => (
                   <VerfahrenTile key={data.id} {...data} />

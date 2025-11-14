@@ -11,7 +11,7 @@ const errorMessage = "Die Verfahren konnten nicht abgerufen werden.";
 
 export default async function (options?: FetchVerfahrenOptions) {
   const offset = options?.offset || 0;
-  const limit = options?.limit || 10;
+  const limit = options?.limit || 100;
   const url = `/verfahren?limit=${limit}&offset=${offset}`;
 
   const response = await fetchFromApi({
@@ -23,7 +23,6 @@ export default async function (options?: FetchVerfahrenOptions) {
     return z
       .object({
         verfahren: z.array(VerfahrenSchema),
-        total: z.number(),
       })
       .parse(response);
   } catch (error) {
