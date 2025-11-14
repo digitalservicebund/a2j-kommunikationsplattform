@@ -60,7 +60,7 @@ describe("authorizeToken", () => {
     expect(requestBody.get("requested_token_type")).toBe(
       "urn:ietf:params:oauth:token-type:refresh_token",
     );
-    expect(requestBody.get("clientId")).toBe("mock-client-id");
+    expect(requestBody.get("client_id")).toBe("mock-client-id");
     expect(requestBody.get("subject_issuer")).toBe("mock-subject-issuer");
     expect(requestBody.get("scope")).toBe("kompla-api");
     expect(requestBody.get("subject_token")).toBe(idpAccessToken);

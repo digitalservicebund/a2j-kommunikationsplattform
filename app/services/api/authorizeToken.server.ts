@@ -38,10 +38,12 @@ export async function authorizeToken(
     "requested_token_type",
     "urn:ietf:params:oauth:token-type:refresh_token",
   );
-  params.append("clientId", clientId);
+  params.append("client_id", clientId);
   params.append("subject_issuer", subjectIssuer);
   params.append("scope", scope);
   params.append("subject_token", idpAccessToken);
+
+  console.log(`debug params: ${params.toString()}`);
 
   const response = await fetch(authorizeTokenEndpoint, {
     method: "POST",

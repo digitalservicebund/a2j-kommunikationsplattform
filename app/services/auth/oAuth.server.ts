@@ -34,8 +34,10 @@ authenticator.use(
     async ({ tokens, request }) => {
       // @TODO: remove
       console.log(
-        "BRAK IdP OAuth2 debugging: hasRefreshToken:",
+        "BRAK IdP OAuth2 debugging: hasRefreshToken",
         tokens.hasRefreshToken(),
+        "BRAK access token expires in",
+        tokens.accessTokenExpiresInSeconds(),
       );
 
       const accessToken = tokens.accessToken();
