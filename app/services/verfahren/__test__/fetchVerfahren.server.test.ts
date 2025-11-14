@@ -22,7 +22,7 @@ describe("fetchVerfahren", () => {
       errorMessage: "Die Verfahren konnten nicht abgerufen werden.",
     });
 
-    expect(result).toEqual([]);
+    expect(result).toEqual({ verfahren: [] });
   });
 
   it("throws error on invalid schema", async () => {
