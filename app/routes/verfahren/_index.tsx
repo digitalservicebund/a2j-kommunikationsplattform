@@ -5,14 +5,15 @@ import { z } from "zod";
 import Alert from "~/components/Alert";
 import VerfahrenTileSkeleton from "~/components/skeletons/VerfahrenTileSkeleton.static";
 import VerfahrenTile from "~/components/VerfahrenTile";
-import { VERFAHREN_PAGE_LIMIT } from "~/constants/verfahren";
 import VerfahrenSchema from "~/models/VerfahrenSchema";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import { useTranslations } from "~/services/translations/context";
 import fetchVerfahren from "~/services/verfahren/fetchVerfahren.server";
+import { paginateWithPeek } from "~/util/pagination";
 import { Route } from "./+types/_index";
 
 type Verfahren = z.infer<typeof VerfahrenSchema>;
+type Paginated<T> = { items: T[]; hasMore: boolean };
 
 const SKELETONS = [
   { id: "skeleton-1" },
@@ -21,26 +22,33 @@ const SKELETONS = [
   { id: "skeleton-4" },
 ];
 
+export const VERFAHREN_PAGE_LIMIT = 5;
+
 export const loader = withSessionLoader(
   async ({ request }: Route.LoaderArgs) => {
     const url = new URL(request.url);
     const limit = Number(url.searchParams.get("limit")) || VERFAHREN_PAGE_LIMIT;
     const offset = Number(url.searchParams.get("offset")) || 0;
 
-    const verfahren = fetchVerfahren({ limit, offset });
+    const verfahrenPromise = fetchVerfahren({
+      limit: limit + 1,
+      offset,
+    }).then((items) => paginateWithPeek(items, limit));
 
     // If this is a fetcher request (has offset), return resolved data
     if (offset > 0) {
-      return await verfahren;
+      return await verfahrenPromise;
     }
 
     // For initial load, return deferred promise for Suspense
-    return { verfahren };
+    return {
+      verfahren: verfahrenPromise,
+    };
   },
 );
 
 export default function Verfahren() {
-  const { verfahren } = useLoaderData<typeof fetchVerfahren>();
+  const data = useLoaderData<{ verfahren: Promise<Paginated<Verfahren>> }>();
 
   return (
     <>
@@ -51,8 +59,10 @@ export default function Verfahren() {
             <VerfahrenTileSkeleton key={s.id} />
           ))}
         >
-          <Await resolve={verfahren}>
-            {(data) => <VerfahrenList initialData={data} />}
+          <Await resolve={data.verfahren}>
+            {(data) => (
+              <VerfahrenList initialData={data as Paginated<Verfahren>} />
+            )}
           </Await>
         </Suspense>
       </div>
@@ -63,11 +73,11 @@ export default function Verfahren() {
 function VerfahrenList({
   initialData,
 }: Readonly<{
-  initialData: Awaited<ReturnType<typeof fetchVerfahren>>;
+  initialData: Paginated<Verfahren>;
 }>) {
-  const fetcher = useFetcher<Awaited<ReturnType<typeof fetchVerfahren>>>();
+  const fetcher = useFetcher<Paginated<Verfahren>>();
   const [allVerfahren, setAllVerfahren] = useState<Verfahren[]>(
-    initialData.verfahren,
+    initialData.items,
   );
   const [hasMore, setHasMore] = useState<boolean>(initialData.hasMore);
   console.log("Initial VerfahrenList data:", initialData);
@@ -76,7 +86,7 @@ function VerfahrenList({
     const data = fetcher.data;
     console.log("Fetcher data changed:", data);
     if (!data) return;
-    setAllVerfahren((prev) => [...prev, ...data.verfahren]);
+    setAllVerfahren((prev) => [...prev, ...data.items]);
     setHasMore(data.hasMore);
   }, [fetcher.data]);
 
