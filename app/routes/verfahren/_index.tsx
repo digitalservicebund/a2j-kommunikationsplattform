@@ -1,13 +1,19 @@
-import { Suspense } from "react";
-import { Await, LoaderFunctionArgs, useLoaderData } from "react-router";
+import { Suspense, useEffect, useState } from "react";
+import { Await, useFetcher, useLoaderData } from "react-router";
+import { z } from "zod";
+
 import Alert from "~/components/Alert";
 import VerfahrenTileSkeleton from "~/components/skeletons/VerfahrenTileSkeleton.static";
 import VerfahrenTile from "~/components/VerfahrenTile";
+import { VERFAHREN_PAGE_LIMIT } from "~/constants/verfahren";
+import VerfahrenSchema from "~/models/VerfahrenSchema";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import { useTranslations } from "~/services/translations/context";
 import fetchVerfahren from "~/services/verfahren/fetchVerfahren.server";
+import { Route } from "./+types/_index";
 
-// Number of skeletons per page (could change in the future)
+type Verfahren = z.infer<typeof VerfahrenSchema>;
+
 const SKELETONS = [
   { id: "skeleton-1" },
   { id: "skeleton-2" },
@@ -16,22 +22,25 @@ const SKELETONS = [
 ];
 
 export const loader = withSessionLoader(
-  async ({ request }: LoaderFunctionArgs) => {
+  async ({ request }: Route.LoaderArgs) => {
     const url = new URL(request.url);
-    const limit = Number(url.searchParams.get("limit"));
-    const offset = Number(url.searchParams.get("offset"));
+    const limit = Number(url.searchParams.get("limit")) || VERFAHREN_PAGE_LIMIT;
+    const offset = Number(url.searchParams.get("offset")) || 0;
 
     const verfahren = fetchVerfahren({ limit, offset });
-    return {
-      verfahren,
-    };
+
+    // If this is a fetcher request (has offset), return resolved data
+    if (offset > 0) {
+      return await verfahren;
+    }
+
+    // For initial load, return deferred promise for Suspense
+    return { verfahren };
   },
 );
 
 export default function Verfahren() {
-  const { verfahren } = useLoaderData<{
-    verfahren: Promise<ReturnType<typeof fetchVerfahren>>;
-  }>();
+  const { verfahren } = useLoaderData<typeof fetchVerfahren>();
 
   return (
     <>
@@ -43,19 +52,65 @@ export default function Verfahren() {
           ))}
         >
           <Await resolve={verfahren}>
-            {({ verfahren }) => (
-              <>
-                <p className="kern-body kern-body--muted">
-                  {`${verfahren.length} Verfahren`}
-                </p>
-                {verfahren.map((data) => (
-                  <VerfahrenTile key={data.id} {...data} />
-                ))}
-              </>
-            )}
+            {(data) => <VerfahrenList initialData={data} />}
           </Await>
         </Suspense>
       </div>
+    </>
+  );
+}
+
+function VerfahrenList({
+  initialData,
+}: Readonly<{
+  initialData: Awaited<ReturnType<typeof fetchVerfahren>>;
+}>) {
+  const fetcher = useFetcher<Awaited<ReturnType<typeof fetchVerfahren>>>();
+  const [allVerfahren, setAllVerfahren] = useState<Verfahren[]>(
+    initialData.verfahren,
+  );
+  const [hasMore, setHasMore] = useState<boolean>(initialData.hasMore);
+  console.log("Initial VerfahrenList data:", initialData);
+
+  useEffect(() => {
+    const data = fetcher.data;
+    console.log("Fetcher data changed:", data);
+    if (!data) return;
+    setAllVerfahren((prev) => [...prev, ...data.verfahren]);
+    setHasMore(data.hasMore);
+  }, [fetcher.data]);
+
+  const handleLoadMore = () => {
+    const formData = new FormData();
+    formData.set("limit", String(VERFAHREN_PAGE_LIMIT));
+    formData.set("offset", String(allVerfahren.length));
+    fetcher.submit(formData, { method: "get" });
+  };
+
+  const isLoading = fetcher.state === "loading";
+
+  return (
+    <>
+      <p className="kern-body kern-body--muted">
+        {`${allVerfahren.length} Verfahren`}
+      </p>
+      {allVerfahren.map((data) => (
+        <VerfahrenTile key={data.id} {...data} />
+      ))}
+      {isLoading && SKELETONS.map((s) => <VerfahrenTileSkeleton key={s.id} />)}
+      {hasMore && (
+        <div className="flex justify-center">
+          <button type="button" className="kern-btn kern-btn--tertiary">
+            <span
+              className="kern-icon kern-icon--arrow-down kern-icon--default"
+              aria-hidden="true"
+            ></span>
+            <span className="kern-label" onClick={handleLoadMore}>
+              Weitere Verfahren laden
+            </span>
+          </button>
+        </div>
+      )}
     </>
   );
 }
