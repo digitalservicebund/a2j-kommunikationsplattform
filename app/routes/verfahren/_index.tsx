@@ -4,7 +4,7 @@ import { z } from "zod";
 import Alert from "~/components/Alert";
 import VerfahrenTileSkeleton from "~/components/skeletons/VerfahrenTileSkeleton.static";
 
-import { usePagination } from "~/components/hooks/usePagination";
+import { useVerfahrenState } from "~/components/hooks/useVerfahrenState";
 import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
 import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
 import VerfahrenSchema from "~/models/VerfahrenSchema";
@@ -74,13 +74,14 @@ function VerfahrenContent({
   initialData: Paginated<Verfahren>;
 }>) {
   const { allItems, hasMore, isLoading, handleLoadMore } =
-    usePagination(initialData);
+    useVerfahrenState(initialData);
 
   return (
     <>
       <p className="kern-body kern-body--muted">
         {`${allItems.length} Verfahren`}
       </p>
+      {/* Filters can be added here in the future */}
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
       {hasMore && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}
     </>
