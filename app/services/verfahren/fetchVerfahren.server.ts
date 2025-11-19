@@ -23,12 +23,7 @@ export default async function (options?: FetchVerfahrenOptions) {
   console.log("Fetched Verfahren response:", response);
 
   try {
-    const items = z
-      .object({
-        verfahren: z.array(VerfahrenSchema),
-      })
-      .parse(response);
-    return items.verfahren;
+    return z.object({ verfahren: z.array(VerfahrenSchema) }).parse(response);
   } catch (error) {
     throw new Error(errorMessage, { cause: error });
   }

@@ -11,10 +11,13 @@ import VerfahrenSchema from "~/models/VerfahrenSchema";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import { useTranslations } from "~/services/translations/context";
 import fetchVerfahren from "~/services/verfahren/fetchVerfahren.server";
-import { Paginated, paginateWithPeek } from "~/util/pagination";
 import { Route } from "./+types/_index";
 
 export type Verfahren = z.infer<typeof VerfahrenSchema>;
+export type VerfahrenLoaderData = {
+  items: Verfahren[];
+  hasMoreItems: boolean;
+};
 
 const SKELETONS = [
   { id: "skeleton-1" },
@@ -34,7 +37,15 @@ export const loader = withSessionLoader(
       // Fetch one more item than the page limit to check for "hasMore"
       limit: VERFAHREN_PAGE_LIMIT + 1,
       offset,
-    }).then((items) => paginateWithPeek(items, VERFAHREN_PAGE_LIMIT));
+    }).then((items) => {
+      const { verfahren } = items;
+      const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
+      const paginatedItems = hasMoreItems
+        ? verfahren.slice(0, VERFAHREN_PAGE_LIMIT)
+        : verfahren;
+
+      return { items: paginatedItems, hasMoreItems };
+    });
 
     // If this is a fetcher request (has offset), return resolved data
     if (offset > 0) {
@@ -48,7 +59,7 @@ export const loader = withSessionLoader(
 );
 
 export default function Verfahren() {
-  const data = useLoaderData<{ verfahren: Promise<Paginated<Verfahren>> }>();
+  const data = useLoaderData<{ verfahren: Promise<VerfahrenLoaderData> }>();
 
   return (
     <>
@@ -71,9 +82,9 @@ export default function Verfahren() {
 function VerfahrenContent({
   initialData,
 }: Readonly<{
-  initialData: Paginated<Verfahren>;
+  initialData: VerfahrenLoaderData;
 }>) {
-  const { allItems, hasMore, isLoading, handleLoadMore } =
+  const { allItems, hasMoreItems, isLoading, handleLoadMore } =
     useVerfahrenState(initialData);
 
   return (
@@ -83,7 +94,7 @@ function VerfahrenContent({
       </p>
       {/* Filters can be added here in the future */}
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
-      {hasMore && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}
+      {hasMoreItems && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}
     </>
   );
 }

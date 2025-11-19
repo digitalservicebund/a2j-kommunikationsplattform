@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useFetcher, useSearchParams } from "react-router";
-import { Paginated } from "~/util/pagination";
+import { Verfahren, VerfahrenLoaderData } from "~/routes/verfahren/_index";
 
 export interface VerfahrenFilters {
   search?: string;
@@ -36,11 +36,13 @@ const getFormData = (
   return formData;
 };
 
-export const useVerfahrenState = <T>(initialData: Paginated<T>) => {
+export const useVerfahrenState = (initialData: VerfahrenLoaderData) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const fetcher = useFetcher<Paginated<T>>();
-  const [allItems, setAllItems] = useState<T[]>(initialData.items);
-  const [hasMore, setHasMore] = useState<boolean>(initialData.hasMore);
+  const fetcher = useFetcher<VerfahrenLoaderData>();
+  const [allItems, setAllItems] = useState<Verfahren[]>(initialData.items);
+  const [hasMoreItems, setHasMore] = useState<boolean>(
+    initialData.hasMoreItems,
+  );
 
   const filters = parseFiltersFromSearchParams(searchParams);
 
@@ -48,14 +50,14 @@ export const useVerfahrenState = <T>(initialData: Paginated<T>) => {
 
   useEffect(() => {
     setAllItems(initialData.items);
-    setHasMore(initialData.hasMore);
+    setHasMore(initialData.hasMoreItems);
   }, [initialData]);
 
   // Append fetched items
   useEffect(() => {
     if (!fetcher.data) return;
     setAllItems((prev) => [...prev, ...fetcher.data!.items]);
-    setHasMore(fetcher.data.hasMore);
+    setHasMore(fetcher.data.hasMoreItems);
   }, [fetcher.data]);
 
   const updateFilters = useCallback(
@@ -92,7 +94,7 @@ export const useVerfahrenState = <T>(initialData: Paginated<T>) => {
     updateFilters,
     clearFilters,
     allItems,
-    hasMore,
+    hasMoreItems,
     isLoading: fetcher.state === "loading",
     handleLoadMore,
   };
