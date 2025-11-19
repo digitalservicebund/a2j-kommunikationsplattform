@@ -7,7 +7,7 @@ import {
   getTestTranslations,
   renderWithTestTranslations,
 } from "~/util/testUtils";
-import VerfahrenTile from "../VerfahrenTile";
+import VerfahrenTile from "../verfahren/VerfahrenTile";
 
 describe("VerfahrenTile", () => {
   const { buttons } = getTestTranslations();

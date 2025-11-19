@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Await, LoaderFunctionArgs, useLoaderData } from "react-router";
 import Alert from "~/components/Alert";
 import VerfahrenTileSkeleton from "~/components/skeletons/VerfahrenTileSkeleton.static";
-import VerfahrenTile from "~/components/VerfahrenTile";
+import VerfahrenTile from "~/components/verfahren/VerfahrenTile";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import { useTranslations } from "~/services/translations/context";
 import fetchVerfahrenById from "~/services/verfahren/fetchVerfahrenById.server";

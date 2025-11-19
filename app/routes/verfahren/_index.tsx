@@ -1,19 +1,20 @@
-import { Suspense, useEffect, useState } from "react";
-import { Await, useFetcher, useLoaderData } from "react-router";
+import { Suspense } from "react";
+import { Await, useLoaderData } from "react-router";
 import { z } from "zod";
-
 import Alert from "~/components/Alert";
 import VerfahrenTileSkeleton from "~/components/skeletons/VerfahrenTileSkeleton.static";
-import VerfahrenTile from "~/components/VerfahrenTile";
+
+import { usePagination } from "~/components/hooks/usePagination";
+import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
+import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
 import VerfahrenSchema from "~/models/VerfahrenSchema";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import { useTranslations } from "~/services/translations/context";
 import fetchVerfahren from "~/services/verfahren/fetchVerfahren.server";
-import { paginateWithPeek } from "~/util/pagination";
+import { Paginated, paginateWithPeek } from "~/util/pagination";
 import { Route } from "./+types/_index";
 
-type Verfahren = z.infer<typeof VerfahrenSchema>;
-type Paginated<T> = { items: T[]; hasMore: boolean };
+export type Verfahren = z.infer<typeof VerfahrenSchema>;
 
 const SKELETONS = [
   { id: "skeleton-1" },
@@ -27,19 +28,18 @@ export const VERFAHREN_PAGE_LIMIT = 5;
 export const loader = withSessionLoader(
   async ({ request }: Route.LoaderArgs) => {
     const url = new URL(request.url);
-    const limit = Number(url.searchParams.get("limit")) || VERFAHREN_PAGE_LIMIT;
     const offset = Number(url.searchParams.get("offset")) || 0;
 
     const verfahrenPromise = fetchVerfahren({
-      limit: limit + 1,
+      // Fetch one more item than the page limit to check for "hasMore"
+      limit: VERFAHREN_PAGE_LIMIT + 1,
       offset,
-    }).then((items) => paginateWithPeek(items, limit));
+    }).then((items) => paginateWithPeek(items, VERFAHREN_PAGE_LIMIT));
 
     // If this is a fetcher request (has offset), return resolved data
     if (offset > 0) {
       return await verfahrenPromise;
     }
-
     // For initial load, return deferred promise for Suspense
     return {
       verfahren: verfahrenPromise,
@@ -60,9 +60,7 @@ export default function Verfahren() {
           ))}
         >
           <Await resolve={data.verfahren}>
-            {(data) => (
-              <VerfahrenList initialData={data as Paginated<Verfahren>} />
-            )}
+            {(data) => <VerfahrenContent initialData={data} />}
           </Await>
         </Suspense>
       </div>
@@ -70,60 +68,28 @@ export default function Verfahren() {
   );
 }
 
-function VerfahrenList({
+function VerfahrenContent({
   initialData,
 }: Readonly<{
   initialData: Paginated<Verfahren>;
 }>) {
-  const fetcher = useFetcher<Paginated<Verfahren>>();
-  const [allVerfahren, setAllVerfahren] = useState<Verfahren[]>(
-    initialData.items,
-  );
-  const [hasMore, setHasMore] = useState<boolean>(initialData.hasMore);
-  console.log("Initial VerfahrenList data:", initialData);
-
-  useEffect(() => {
-    const data = fetcher.data;
-    console.log("Fetcher data changed:", data);
-    if (!data) return;
-    setAllVerfahren((prev) => [...prev, ...data.items]);
-    setHasMore(data.hasMore);
-  }, [fetcher.data]);
-
-  const handleLoadMore = () => {
-    const formData = new FormData();
-    formData.set("limit", String(VERFAHREN_PAGE_LIMIT));
-    formData.set("offset", String(allVerfahren.length));
-    fetcher.submit(formData, { method: "get" });
-  };
-
-  const isLoading = fetcher.state === "loading";
+  const { allItems, hasMore, isLoading, handleLoadMore } =
+    usePagination(initialData);
 
   return (
     <>
       <p className="kern-body kern-body--muted">
-        {`${allVerfahren.length} Verfahren`}
+        {`${allItems.length} Verfahren`}
       </p>
-      {allVerfahren.map((data) => (
-        <VerfahrenTile key={data.id} {...data} />
-      ))}
-      {isLoading && SKELETONS.map((s) => <VerfahrenTileSkeleton key={s.id} />)}
-      {hasMore && (
-        <div className="flex justify-center">
-          <button type="button" className="kern-btn kern-btn--tertiary">
-            <span
-              className="kern-icon kern-icon--arrow-down kern-icon--default"
-              aria-hidden="true"
-            ></span>
-            <span className="kern-label" onClick={handleLoadMore}>
-              Weitere Verfahren laden
-            </span>
-          </button>
-        </div>
-      )}
+      <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
+      {hasMore && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}
     </>
   );
 }
+
+const VerfahrenHeading = () => (
+  <h1 className="kern-heading-medium">Verfahren</h1>
+);
 
 export function ErrorBoundary() {
   const { errorMessages } = useTranslations();
@@ -138,7 +104,3 @@ export function ErrorBoundary() {
     </div>
   );
 }
-
-const VerfahrenHeading = () => (
-  <h1 className="kern-heading-medium">Verfahren</h1>
-);
