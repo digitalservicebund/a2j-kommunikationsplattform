@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useFetcher, useSearchParams } from "react-router";
 import { Verfahren, VerfahrenLoaderData } from "~/routes/verfahren/_index";
 
+// We could adjust it when we implement the filters
 export interface VerfahrenFilters {
   search?: string;
   gericht?: string;
@@ -40,7 +41,7 @@ export const useVerfahrenState = (initialData: VerfahrenLoaderData) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const fetcher = useFetcher<VerfahrenLoaderData>();
   const [allItems, setAllItems] = useState<Verfahren[]>(initialData.items);
-  const [hasMoreItems, setHasMore] = useState<boolean>(
+  const [hasMoreItems, setHasMoreItems] = useState<boolean>(
     initialData.hasMoreItems,
   );
 
@@ -50,23 +51,23 @@ export const useVerfahrenState = (initialData: VerfahrenLoaderData) => {
 
   useEffect(() => {
     setAllItems(initialData.items);
-    setHasMore(initialData.hasMoreItems);
+    setHasMoreItems(initialData.hasMoreItems);
   }, [initialData]);
 
   // Append fetched items
   useEffect(() => {
     if (!fetcher.data) return;
     setAllItems((prev) => [...prev, ...fetcher.data!.items]);
-    setHasMore(fetcher.data.hasMoreItems);
+    setHasMoreItems(fetcher.data.hasMoreItems);
   }, [fetcher.data]);
 
   const updateFilters = useCallback(
-    (updates: Partial<VerfahrenFilters>) => {
+    (values: Partial<VerfahrenFilters>) => {
       setSearchParams((prev) => {
         const newParams = new URLSearchParams(prev);
         newParams.delete("offset"); // Reset pagination
 
-        for (const [key, value] of Object.entries(updates)) {
+        for (const [key, value] of Object.entries(values)) {
           if (value) {
             newParams.set(key, String(value));
           } else {

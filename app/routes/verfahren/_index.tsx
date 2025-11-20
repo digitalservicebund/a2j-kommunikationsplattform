@@ -5,6 +5,7 @@ import Alert from "~/components/Alert";
 import VerfahrenTileSkeleton from "~/components/skeletons/VerfahrenTileSkeleton.static";
 
 import { useVerfahrenState } from "~/components/hooks/useVerfahrenState";
+import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
 import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
 import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
 import VerfahrenSchema from "~/models/VerfahrenSchema";
@@ -89,10 +90,8 @@ function VerfahrenContent({
 
   return (
     <>
-      <p className="kern-body kern-body--muted">
-        {`${allItems.length} Verfahren`}
-      </p>
       {/* Filters can be added here in the future */}
+      <VerfahrenCountInfo count={allItems.length || 0} />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
       {hasMoreItems && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}
     </>

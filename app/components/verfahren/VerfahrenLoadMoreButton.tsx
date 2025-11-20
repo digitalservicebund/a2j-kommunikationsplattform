@@ -1,8 +1,11 @@
+import { useTranslations } from "~/services/translations/context";
+
 export function VerfahrenLoadMoreButton({
   loadMore,
 }: Readonly<{
   loadMore: () => void;
 }>) {
+  const { buttons } = useTranslations();
   return (
     <div className="flex justify-center">
       <button type="button" className="kern-btn kern-btn--tertiary">
@@ -11,7 +14,7 @@ export function VerfahrenLoadMoreButton({
           aria-hidden="true"
         ></span>
         <span className="kern-label" onClick={loadMore}>
-          Weitere Verfahren laden
+          {buttons.LOAD_MORE_VERFAHREN}
         </span>
       </button>
     </div>

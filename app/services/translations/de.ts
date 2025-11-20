@@ -11,6 +11,7 @@ export const de = {
     BACK_BUTTON: "Zurück",
     SHOW_VERFAHREN_DETAILS: "Verfahrensdetails anzeigen",
     SHOW_URTEIL: "Urteil anzeigen",
+    LOAD_MORE_VERFAHREN: "Weitere Verfahren laden",
   },
   errorMessages: {
     TRY_LATER_MESSAGE: "Bitte versuchen Sie es später erneut.",
@@ -39,6 +40,12 @@ export const de = {
     WORK_IN_PROGRESS_TITLE: "Work in progress",
     WORK_IN_PROGRESS_MESSAGE:
       "Diese Seite ist noch in der Entwicklung. Darstellungen und Layouts können sich jederzeit ändern.",
+    TOO_MANY_RESULTS_TITLE: "Es wurden sehr viele Ergebnisse gefunden",
+    TOO_MANY_RESULTS_MESSAGE:
+      "Um schneller zum gewünschten Inhalt zu gelangen, nutzen Sie bitte die Filteroptionen oder geben Sie direkt eine gezielte Suche über die freie Textsuche ein.",
+    NO_VERFAHREN_FOUND_TITLE: "Aktuell liegen keine Verfahren vor",
+    NO_VERFAHREN_FOUND_MESSAGE:
+      "Nach einer erfolgreichen Einreichung oder Zuteilung werden die entsprechenden Verfahren hier angezeigt.",
   },
   labels: {
     FOOTER_ARIA_LABEL: "Rechtliche und weiterführende Informationen",
@@ -53,6 +60,7 @@ export const de = {
     LOGGED_IN_AS_LABEL: "Angemeldet als:",
     TO_START_PAGE_LABEL: "Zur Startseite",
     CONTACT_SUPPORT_LABEL: "Kontaktieren Sie den Support",
+    MORE_THAN_100_VERFAHREN_LABEL: "Mehr als 100 Verfahren",
   },
   titles: {
     PLATFORM_TITLE: "Kommunikationsplattform | Justiz-Services",
