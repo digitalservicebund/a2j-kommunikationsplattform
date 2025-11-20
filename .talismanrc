@@ -42,7 +42,7 @@ fileignoreconfig:
   - filename: app/components/Navigation.static.tsx
     checksum: 4c670e649ab7d148bf94c7ebfb13b5b2b80782b1f5976e6474e0fd19ef8ebfa6
   - filename: app/routes/verfahren/_index.tsx
-    checksum: d2ab93794623ebf0c9646492017eb080ed83773bda147fd977d363ea4f303ca4
+    checksum: db3615aa756c709639a715040ce07cca3ae4bbbf1a9fd70c926fbae432178e98
   - filename: app/components/Breadcrumbs.tsx
     checksum: 3afb510de025db16ff8736c58c4cda79db6869083603f5c955d2d46b6a84faf1
   - filename: app/services/security/cspHeader.server.ts
@@ -67,6 +67,10 @@ fileignoreconfig:
     checksum: 2480389a500b8dbcaebce386fa09dd2f58c58765f0b5d98b7f3e4a15f49f5ba2
   - filename: app/services/auth/session.server.ts
     checksum: 5cc95eec02096389dabce865cf024f044b8073ea672516a7dd3e0930679b3ae5
+  - filename: app/components/verfahren/VerfahrenList.tsx
+    checksum: 626c4040f4fd1f4fe4cae02dc11092399d194c1c85ba3185de3c1c38251c4601
+  - filename: app/components/hooks/useVerfahrenState.ts
+    checksum: 7af45c599cf7b64b603cdd24b3dc2340a098eb65c67baab47e7ea40ba524064e
 
 version: ""
 scopeconfig:
