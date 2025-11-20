@@ -8,14 +8,16 @@ export function VerfahrenLoadMoreButton({
   const { buttons } = useTranslations();
   return (
     <div className="flex justify-center">
-      <button type="button" className="kern-btn kern-btn--tertiary">
+      <button
+        type="button"
+        className="kern-btn kern-btn--tertiary"
+        onClick={loadMore}
+      >
         <span
           className="kern-icon kern-icon--arrow-down kern-icon--default"
           aria-hidden="true"
         ></span>
-        <span className="kern-label" onClick={loadMore}>
-          {buttons.LOAD_MORE_VERFAHREN}
-        </span>
+        <span className="kern-label">{buttons.LOAD_MORE_VERFAHREN}</span>
       </button>
     </div>
   );
