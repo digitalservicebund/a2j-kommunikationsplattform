@@ -22,7 +22,7 @@ export type VerfahrenLoaderData = {
   hasMoreItems: boolean;
 };
 
-export const VERFAHREN_PAGE_LIMIT = 5;
+export const VERFAHREN_PAGE_LIMIT = 100;
 
 export const loader = withSessionLoader(
   async ({ request }: Route.LoaderArgs) => {
