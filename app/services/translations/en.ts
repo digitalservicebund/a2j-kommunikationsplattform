@@ -44,6 +44,9 @@ export const en: Translations = {
     TOO_MANY_RESULTS_TITLE: "Too many results found",
     TOO_MANY_RESULTS_MESSAGE:
       "To get to the desired content faster, please use the filter options or enter a targeted search via the free text search.",
+    NO_VERFAHREN_FOUND_TITLE: "No cases currently available",
+    NO_VERFAHREN_FOUND_MESSAGE:
+      "After a successful submission or assignment, the corresponding cases will be displayed here.",
   },
   labels: {
     FOOTER_ARIA_LABEL: "Legal and further information",
