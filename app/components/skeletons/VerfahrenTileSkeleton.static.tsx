@@ -21,7 +21,7 @@ export default function VerfahrenTileSkeleton() {
   );
 
   return (
-    <div className={cssClasses}>
+    <div className={cssClasses} data-testid="verfahren-tile-skeleton">
       <div className="gap-kern-space-large py-kern-dimension-large px-kern-space-default flex w-full animate-pulse flex-col items-center">
         <div className="space-x-kern-space-small flex w-full">
           <SkeletonBlock />

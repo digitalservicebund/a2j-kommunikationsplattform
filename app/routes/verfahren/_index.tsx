@@ -8,6 +8,8 @@ import { useVerfahrenState } from "~/components/hooks/useVerfahrenState";
 import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
 import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
 import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
+
+import { VERFAHREN_SKELETONS } from "~/constants/verfahrenSkeletons";
 import VerfahrenSchema from "~/models/VerfahrenSchema";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import { useTranslations } from "~/services/translations/context";
@@ -19,13 +21,6 @@ export type VerfahrenLoaderData = {
   items: Verfahren[];
   hasMoreItems: boolean;
 };
-
-const SKELETONS = [
-  { id: "skeleton-1" },
-  { id: "skeleton-2" },
-  { id: "skeleton-3" },
-  { id: "skeleton-4" },
-];
 
 export const VERFAHREN_PAGE_LIMIT = 5;
 
@@ -67,7 +62,7 @@ export default function Verfahren() {
       <VerfahrenHeading />
       <div className="my-kern-space-large space-y-kern-space-large flex flex-col">
         <Suspense
-          fallback={SKELETONS.map((s) => (
+          fallback={VERFAHREN_SKELETONS.map((s) => (
             <VerfahrenTileSkeleton key={s.id} />
           ))}
         >
