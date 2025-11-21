@@ -26,13 +26,19 @@ export { commitSession, destroySession, getSession };
 // Once a user has authenticated with the OAuth2 strategy, we create a session for the user.
 export const createUserSession = async (
   accessToken: string,
-  expiresAt: number,
+  expiresIn: number,
+  refreshToken: string,
   request: Request,
 ) => {
   const session = await getSession(request.headers.get("Cookie"));
 
+  console.log("createUserSession accessToken is", accessToken);
+  console.log("createUserSession expiresIn is", expiresIn);
+  console.log("createUserSession refreshToken is", refreshToken);
+
   session.set("accessToken", accessToken);
-  session.set("expiresAt", expiresAt);
+  session.set("expiresIn", expiresIn);
+  session.set("refreshToken", refreshToken);
 
   try {
     console.log("Creating user session");
@@ -43,39 +49,41 @@ export const createUserSession = async (
   }
 };
 
-interface UpdateUserSessionWithApiTokensResponse {
-  apiAccessToken: string;
-  apiAccessExpiresAt: number;
-  apiRefreshToken: string;
-  apiRefreshExpiresAt: number;
+interface UpdateUserSessionResponse {
+  accessToken: string;
+  expiresIn: number;
+  refreshToken: string;
   request: Request;
 }
 
-// Update user session with API access tokens.
-export const updateUserSessionWithApiTokens = async ({
-  apiAccessToken,
-  apiAccessExpiresAt,
-  apiRefreshToken,
-  apiRefreshExpiresAt,
+// Update user session with new tokens.
+export const updateUserSession = async ({
+  accessToken,
+  expiresIn,
+  refreshToken,
   request,
-}: UpdateUserSessionWithApiTokensResponse): Promise<string | null> => {
+}: UpdateUserSessionResponse): Promise<string | null> => {
   const session = await getSession(request.headers.get("Cookie"));
-  session.set("apiAccessToken", apiAccessToken);
-  session.set("apiAccessExpiresAt", apiAccessExpiresAt);
-  session.set("apiRefreshToken", apiRefreshToken);
-  session.set("apiRefreshExpiresAt", apiRefreshExpiresAt);
+
+  console.log("updateUserSession accessToken is", accessToken);
+  console.log("updateUserSession expiresIn is", expiresIn);
+  console.log("updateUserSession refreshToken is", refreshToken);
+
+  session.set("accessToken", accessToken);
+  session.set("expiresIn", expiresIn);
+  session.set("refreshToken", refreshToken);
 
   try {
-    console.log("Update user session with API tokens");
+    console.log("Updating user session");
     return await commitSession(session);
   } catch (error) {
-    console.error("Error updating user session with API tokens:", error);
+    console.error("Error updating user session:", error);
     throw new Error("Failed to update the user session");
   }
 };
 
 type GetUserSessionResponse = AuthenticationContext &
-  Omit<UpdateUserSessionWithApiTokensResponse, "request">;
+  Omit<UpdateUserSessionResponse, "request">;
 
 // We retrieve the user session from the request headers and ensure that the session has not expired.
 export const getUserSession = async (
@@ -83,26 +91,22 @@ export const getUserSession = async (
 ): Promise<GetUserSessionResponse | null> => {
   const session = await getSession(request.headers.get("Cookie"));
   const accessToken = session.get("accessToken");
-  const expiresAt = session.get("expiresAt");
-  const apiAccessToken = session.get("apiAccessToken");
-  const apiAccessExpiresAt = session.get("apiAccessExpiresAt");
-  const apiRefreshToken = session.get("apiRefreshToken");
-  const apiRefreshExpiresAt = session.get("apiRefreshExpiresAt");
+  const expiresIn = session.get("expiresIn");
+  const refreshToken = session.get("refreshToken");
 
-  console.log("getUserSession apiAccessToken is", apiAccessToken);
+  console.log("getUserSession accessToken is", accessToken);
+  console.log("getUserSession expiresIn is", expiresIn);
+  console.log("getUserSession refreshToken is", refreshToken);
 
-  if (!accessToken || !expiresAt || expiresAt < Date.now()) {
+  if (!accessToken || !expiresIn || new Date(Number(expiresIn)) < new Date()) {
     await destroySession(session);
     return null;
   }
 
   return {
     accessToken,
-    expiresAt,
-    apiAccessToken,
-    apiAccessExpiresAt,
-    apiRefreshToken,
-    apiRefreshExpiresAt,
+    expiresIn,
+    refreshToken,
   };
 };
 

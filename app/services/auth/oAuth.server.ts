@@ -5,7 +5,8 @@ import { createUserSession } from "./session.server";
 
 export interface AuthenticationContext {
   accessToken: string;
-  expiresAt: number;
+  expiresIn: number;
+  refreshToken: string;
 }
 
 export interface AuthenticationResponse {
@@ -38,20 +39,26 @@ authenticator.use(
         tokens.hasRefreshToken(),
         "BRAK access token expires in",
         tokens.accessTokenExpiresInSeconds(),
+        "BRAK refresh token",
+        tokens.refreshToken(),
       );
 
       const accessToken = tokens.accessToken();
-      const expiresAt = Date.now() + 60 * 60 * 1000 * 24 * 14; // 14 days
+      const expiresIn = tokens.accessTokenExpiresInSeconds();
+      const refreshToken = tokens.refreshToken();
+
       const sessionCookieHeader = await createUserSession(
         accessToken,
-        expiresAt,
+        expiresIn,
+        refreshToken,
         request,
       );
 
       const response: AuthenticationResponse = {
         authenticationContext: {
           accessToken,
-          expiresAt,
+          expiresIn,
+          refreshToken,
         },
         sessionCookieHeader,
       };
