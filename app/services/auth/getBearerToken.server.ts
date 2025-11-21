@@ -21,7 +21,7 @@ export async function getBearerToken(request: Request): Promise<string> {
       console.log("we have an accessToken");
 
       // if expired throw an error
-      if (new Date(Number(userSession?.expiresIn)) < new Date()) {
+      if (userSession?.expiresAt < Date.now()) {
         throw new Error("access token expired", {
           cause: "expires in value of API access token has expired",
         });
@@ -31,7 +31,7 @@ export async function getBearerToken(request: Request): Promise<string> {
 
       await updateUserSession({
         accessToken: token.access_token,
-        expiresIn: Number(token.expires_in),
+        expiresAt: Number(token.expires_in),
         refreshToken: token.refresh_token,
         request,
       });
