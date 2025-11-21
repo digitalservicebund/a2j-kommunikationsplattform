@@ -26,18 +26,18 @@ export { commitSession, destroySession, getSession };
 // Once a user has authenticated with the OAuth2 strategy, we create a session for the user.
 export const createUserSession = async (
   accessToken: string,
-  expiresIn: number,
+  expiresAt: number,
   refreshToken: string,
   request: Request,
 ) => {
   const session = await getSession(request.headers.get("Cookie"));
 
   console.log("createUserSession accessToken is", accessToken);
-  console.log("createUserSession expiresIn is", expiresIn);
+  console.log("createUserSession expiresAt is", expiresAt);
   console.log("createUserSession refreshToken is", refreshToken);
 
   session.set("accessToken", accessToken);
-  session.set("expiresIn", expiresIn);
+  session.set("expiresAt", expiresAt);
   session.set("refreshToken", refreshToken);
 
   try {
@@ -51,7 +51,7 @@ export const createUserSession = async (
 
 interface UpdateUserSessionResponse {
   accessToken: string;
-  expiresIn: number;
+  expiresAt: number;
   refreshToken: string;
   request: Request;
 }
@@ -59,18 +59,18 @@ interface UpdateUserSessionResponse {
 // Update user session with new tokens.
 export const updateUserSession = async ({
   accessToken,
-  expiresIn,
+  expiresAt,
   refreshToken,
   request,
 }: UpdateUserSessionResponse): Promise<string | null> => {
   const session = await getSession(request.headers.get("Cookie"));
 
   console.log("updateUserSession accessToken is", accessToken);
-  console.log("updateUserSession expiresIn is", expiresIn);
+  console.log("updateUserSession expiresAt is", expiresAt);
   console.log("updateUserSession refreshToken is", refreshToken);
 
   session.set("accessToken", accessToken);
-  session.set("expiresIn", expiresIn);
+  session.set("expiresAt", expiresAt);
   session.set("refreshToken", refreshToken);
 
   try {
@@ -91,21 +91,22 @@ export const getUserSession = async (
 ): Promise<GetUserSessionResponse | null> => {
   const session = await getSession(request.headers.get("Cookie"));
   const accessToken = session.get("accessToken");
-  const expiresIn = session.get("expiresIn");
+  const expiresAt = session.get("expiresAt");
   const refreshToken = session.get("refreshToken");
 
   console.log("getUserSession accessToken is", accessToken);
-  console.log("getUserSession expiresIn is", expiresIn);
+  console.log("getUserSession expiresAt is", expiresAt);
   console.log("getUserSession refreshToken is", refreshToken);
 
-  if (!accessToken || !expiresIn || new Date(Number(expiresIn)) < new Date()) {
+  if (!accessToken || expiresAt < Date.now()) {
+    console.log("access has expired, destroy session");
     await destroySession(session);
     return null;
   }
 
   return {
     accessToken,
-    expiresIn,
+    expiresAt,
     refreshToken,
   };
 };

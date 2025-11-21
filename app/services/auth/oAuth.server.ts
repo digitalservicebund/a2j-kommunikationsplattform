@@ -5,7 +5,7 @@ import { createUserSession } from "./session.server";
 
 export interface AuthenticationContext {
   accessToken: string;
-  expiresIn: number;
+  expiresAt: number;
   refreshToken: string;
 }
 
@@ -44,12 +44,12 @@ authenticator.use(
       );
 
       const accessToken = tokens.accessToken();
-      const expiresIn = tokens.accessTokenExpiresInSeconds();
+      const expiresAt = Date.now() + tokens.accessTokenExpiresInSeconds();
       const refreshToken = tokens.refreshToken();
 
       const sessionCookieHeader = await createUserSession(
         accessToken,
-        expiresIn,
+        expiresAt,
         refreshToken,
         request,
       );
@@ -57,7 +57,7 @@ authenticator.use(
       const response: AuthenticationResponse = {
         authenticationContext: {
           accessToken,
-          expiresIn,
+          expiresAt,
           refreshToken,
         },
         sessionCookieHeader,
