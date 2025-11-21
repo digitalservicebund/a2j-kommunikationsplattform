@@ -44,7 +44,8 @@ authenticator.use(
       );
 
       const accessToken = tokens.accessToken();
-      const expiresAt = Date.now() + tokens.accessTokenExpiresInSeconds();
+      const expiresAt =
+        Date.now() + tokens.accessTokenExpiresInSeconds() * 1000; // 300 seconds
       const refreshToken = tokens.refreshToken();
 
       const sessionCookieHeader = await createUserSession(
