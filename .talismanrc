@@ -16,7 +16,7 @@ fileignoreconfig:
   - filename: app/services/fileUpload.server.ts
     checksum: bc2812232864b6d3b6f9189b95fea278d34952318ddb0deaf41be7ac5fd43d35
   - filename: app/services/auth/oAuth.server.ts
-    checksum: 4e5fde0301958e68a5a6a24fa2a0e44eac009948678662a2d81ad08020fc81ce
+    checksum: 9a1e5b15adefd70e020445ca23aa01292937aa92602d537367a71101a8f3366e
   - filename: app/config/config.server.ts
     checksum: 396b77c1534c253a277f93c0b841a7557aa6be598344c36d69f13510cec40e47
   - filename: app/config/__test__/config.server.test.ts
@@ -64,7 +64,7 @@ fileignoreconfig:
   - filename: app/services/api/refreshToken.server.ts
     checksum: 2480389a500b8dbcaebce386fa09dd2f58c58765f0b5d98b7f3e4a15f49f5ba2
   - filename: app/services/auth/session.server.ts
-    checksum: af95611ea572b9f2f50122463d5ca2fc9840a6bea34fb1ade1c5053904ad5c68
+    checksum: 2e3f459276ae566f189cdbfc70b437371b792c09633330752eae76b16ec8d1e2
 
 version: ""
 scopeconfig:
