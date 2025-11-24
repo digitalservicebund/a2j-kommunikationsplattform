@@ -21,7 +21,7 @@ export const loader = withSessionLoader(
     const limit = Number(url.searchParams.get("limit")) || 10;
     const offset = Number(url.searchParams.get("offset")) || 0;
 
-    const verfahren = fetchVerfahren({ limit, offset });
+    const verfahren = fetchVerfahren(request, { limit, offset });
 
     return {
       verfahren,

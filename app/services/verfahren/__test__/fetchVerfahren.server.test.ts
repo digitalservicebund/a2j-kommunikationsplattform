@@ -1,18 +1,23 @@
 import { it, vi } from "vitest";
-import { fetchFromApi } from "../../api/fetchFromApi.server";
 import fetchVerfahren from "../fetchVerfahren.server";
 
 const mocks = vi.hoisted(() => {
   return {
-    fetchFromApi: vi.fn(),
+    getBearerToken: vi.fn(),
+    fetch: vi.fn(),
   };
 });
 
-vi.mock("../../api/fetchFromApi.server", () => ({
-  fetchFromApi: mocks.fetchFromApi,
+vi.mock("~/services/auth/getBearerToken.server", () => ({
+  getBearerToken: mocks.getBearerToken,
 }));
 
+global.fetch = mocks.fetch;
+
 describe("fetchVerfahren", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
   it("calls fetchFromApi with correct arguments", async () => {
     const mockVerfahren = [
       {
@@ -30,20 +35,40 @@ describe("fetchVerfahren", () => {
       },
     ];
 
-    mocks.fetchFromApi.mockReturnValue(mockVerfahren);
-    const result = await fetchVerfahren({ limit: 99, offset: 123 });
-
-    expect(fetchFromApi).toHaveBeenCalledWith({
-      url: "/verfahren?limit=99&offset=123",
-      errorMessage: "Die Verfahren konnten nicht abgerufen werden.",
+    mocks.getBearerToken.mockResolvedValue("test-token");
+    mocks.fetch.mockResolvedValue({
+      ok: true,
+      json: async () => mockVerfahren,
     });
+
+    const mockRequest = new Request("http://localhost:3000");
+    const result = await fetchVerfahren(mockRequest, {
+      limit: 99,
+      offset: 123,
+    });
+
+    expect(mocks.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/verfahren?limit=99&offset=123"),
+      expect.objectContaining({
+        headers: {
+          Authorization: "Bearer test-token",
+        },
+      }),
+    );
 
     expect(result).toEqual(mockVerfahren);
   });
 
   it("throws error on invalid schema", async () => {
-    mocks.fetchFromApi.mockReturnValue([{ invalid: true }]);
-    expect(fetchVerfahren).rejects.toThrowError(
+    mocks.getBearerToken.mockResolvedValue("test-token");
+    mocks.fetch.mockResolvedValue({
+      ok: true,
+      json: async () => [{ invalid: true }],
+    });
+
+    const mockRequest = new Request("http://localhost:3000");
+
+    await expect(fetchVerfahren(mockRequest)).rejects.toThrow(
       "Die Verfahren konnten nicht abgerufen werden.",
     );
   });
