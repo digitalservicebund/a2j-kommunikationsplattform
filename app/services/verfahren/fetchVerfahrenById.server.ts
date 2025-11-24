@@ -1,4 +1,4 @@
-import VerfahrenSchema from "~/models/VerfahrenSchema";
+import { newVerfahrenSchema } from "~/models/VerfahrenSchema";
 import { fetchFromApi } from "../api/fetchFromApi.server";
 
 type FetchVerfahrenByIdOptions = {
@@ -11,7 +11,7 @@ export default async function (options: FetchVerfahrenByIdOptions) {
   const url = `/verfahren/${options.id}`;
   const response = await fetchFromApi({ url, errorMessage });
   try {
-    return VerfahrenSchema.parse(response);
+    return newVerfahrenSchema.parse(response);
   } catch (error) {
     throw new Error(errorMessage, { cause: error });
   }

@@ -1,5 +1,5 @@
 import z from "zod";
-import VerfahrenSchema from "~/models/VerfahrenSchema";
+import { newVerfahrenSchema } from "~/models/VerfahrenSchema";
 import { fetchFromApi } from "../api/fetchFromApi.server";
 
 type FetchVerfahrenOptions = {
@@ -20,7 +20,7 @@ export default async function (options?: FetchVerfahrenOptions) {
   });
 
   try {
-    return z.object({ verfahren: z.array(VerfahrenSchema) }).parse(response)
+    return z.object({ verfahren: z.array(newVerfahrenSchema) }).parse(response)
       .verfahren;
   } catch (error) {
     throw new Error(errorMessage, { cause: error });

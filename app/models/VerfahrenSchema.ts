@@ -36,12 +36,14 @@ export default z.object({
  * @TODO: remove default export and use new schema after the switch
  * to https://app.kompla-justiz.sinc.de/dev/swagger/index.html
  */
-export const newSchema = z.object({
+
+// based on the new API response from https://app.kompla-justiz.sinc.de/main/swagger/index.html
+export const newVerfahrenSchema = z.object({
   id: z.uuid(),
-  aktenzeichenGericht: z.nullable(z.string()),
+  aktenzeichen_gericht: z.nullable(z.string()),
   status: z.enum(["Erstellt", "Eingereicht"]),
-  statusChanged: z.iso.datetime(),
-  eingereichtAm: z.nullable(z.iso.datetime()),
+  status_changed: z.iso.datetime(),
+  eingereicht_am: z.nullable(z.iso.datetime()),
   gericht: z.nullable(
     z.object({
       id: z.guid(),
@@ -65,7 +67,7 @@ export const newSchema = z.object({
           aktenzeichen: z.string(),
           bevollmaechtigter: z.object({
             id: z.uuid(),
-            safeId: z.string(),
+            safe_id: z.string(),
             name: z.string(),
           }),
         }),
