@@ -6,7 +6,6 @@ import {
   getDokumentByAktenteilId,
   mockAktenteilDokumente,
   mockKomPlaIdPTokenExchange,
-  mockNewVerfahren,
   mockVerfahrenEingereicht,
   mockVerfahrenEingereicht1,
   mockVerfahrenEingereicht2,
@@ -15,6 +14,8 @@ import {
   mockVerfahrenErstellt,
   mockVerfahrenErstelltAkte,
   mockVerfahrenErstelltId,
+  mockVerfahrenNewAPIDevelop,
+  mockVerfahrenNewAPIMain,
 } from "./data.js";
 
 /**
@@ -115,7 +116,10 @@ const getVerfahren = (id) => {
 
 export const handlers = [
   http.get(`${mockJustizBackendApiUrl}/api/v1/verfahren`, async () => {
-    const getVerfahrenResponse = [getVerfahren(), { status: 200 }];
+    const verfahrenToReturn = {
+      verfahren: mockVerfahrenNewAPIDevelop,
+    };
+    const getVerfahrenResponse = [verfahrenToReturn, { status: 200 }];
     return HttpResponse.json(...getVerfahrenResponse);
   }),
 
@@ -363,7 +367,7 @@ export const handlers = [
   ),
 
   http.get(`${mockKomplaApiUrl}/:environment/api/v1/verfahren`, async () => {
-    const getNewVerfahrenResponse = [mockNewVerfahren, { status: 200 }];
+    const getNewVerfahrenResponse = [mockVerfahrenNewAPIMain, { status: 200 }];
     return HttpResponse.json(...getNewVerfahrenResponse);
   }),
 ];

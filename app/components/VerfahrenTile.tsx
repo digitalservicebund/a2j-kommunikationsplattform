@@ -2,37 +2,78 @@ import { clsx } from "clsx";
 import { Link } from "react-router";
 import { useTranslations } from "~/services/translations/context";
 
+const ROLLE_CODE_KLAEGERIN = "101";
+const ROLLE_CODE_BEKLAGTE = "028";
+
 export type VerfahrenTileProps = {
   readonly id: string;
-  readonly aktenzeichen?: string | null;
-  readonly gericht_name?: string | null;
-  // START (not available via API)
-  readonly update?: string | null;
-  readonly abgeschlossen?: boolean;
-  readonly urteilsHref?: string | null;
-  readonly mandantin?: string | null;
-  readonly gegenpartei?: string | null;
-  readonly vertretung?: string | null;
-  readonly geschaeftszeichen?: string | null;
-  // END
+  readonly aktenzeichen_gericht?: string | null;
+  readonly gericht?: {
+    readonly id: string;
+    readonly wert: string;
+    readonly code: string;
+  } | null;
+  readonly beteiligungen: Array<{
+    readonly id: string;
+    readonly name: string;
+    readonly rollen: Array<{
+      readonly id: string;
+      readonly wert: string;
+      readonly code: string;
+    }>;
+    readonly prozessbevollmaechtigte: Array<{
+      readonly aktenzeichen: string;
+      readonly bevollmaechtigter: {
+        readonly id: string;
+        readonly safe_id: string;
+        readonly name: string;
+      };
+    }>;
+  }>;
 };
+
+// Helper functions to extract data based on role codes - we can move these to a separate utils file and create tests for them later
+function getBeteiligungByRoleCode(
+  beteiligungen: VerfahrenTileProps["beteiligungen"],
+  roleCode: string,
+) {
+  return beteiligungen.find((b) => b.rollen.some((r) => r.code === roleCode));
+}
+
+function getVertretungNamesByRoleCode(
+  beteiligungen: VerfahrenTileProps["beteiligungen"],
+  roleCode: string,
+) {
+  return beteiligungen
+    .filter((b) => b.rollen.some((r) => r.code === roleCode))
+    .flatMap((b) => b.prozessbevollmaechtigte)
+    .map((p) => p.bevollmaechtigter?.name)
+    .filter(Boolean);
+}
+
+function getGeschaeftszeichenByRoleCode(
+  beteiligungen: VerfahrenTileProps["beteiligungen"],
+  roleCode: string,
+) {
+  return (
+    getBeteiligungByRoleCode(
+      beteiligungen,
+      roleCode,
+    )?.prozessbevollmaechtigte.find((p) => p.aktenzeichen)?.aktenzeichen || null
+  );
+}
 
 function VerfahrenTileDataItem({
   label,
   value,
-  abgeschlossen,
 }: {
   readonly label: string;
   readonly value: string;
-  readonly abgeschlossen?: boolean;
 }) {
-  const valueCssClasses = clsx("kern-label m-0", {
-    "text-kern-layout-text-muted": abgeschlossen,
-  });
   return (
     <div className="kern-col kern-col-12 kern-col-md-6 kern-col-lg-4">
-      <dd className={valueCssClasses}>{value}</dd>
       <dt className="kern-body kern-body--muted">{label}</dt>
+      <dd className="kern-label m-0">{value}</dd>
     </div>
   );
 }
@@ -41,72 +82,66 @@ const notAvailable = "nicht verfügbar";
 
 export default function VerfahrenTile({
   id,
-  aktenzeichen,
-  gericht_name,
-  // START (not available via API)
-  update,
-  abgeschlossen = false,
-  urteilsHref,
-  mandantin,
-  gegenpartei,
-  vertretung,
-  geschaeftszeichen,
-  // END
+  aktenzeichen_gericht,
+  gericht,
+  beteiligungen,
 }: VerfahrenTileProps) {
   const { buttons } = useTranslations();
+
+  // TODO: when we refactor this component, we will need to make the below variables more dynamic depending on the User Role, e.g., Kläger:in or Beklagte:r
+
+  // Extract values from beteiligungen based on rollen codes
+  const klaegerin =
+    getBeteiligungByRoleCode(beteiligungen, ROLLE_CODE_KLAEGERIN)?.name || null;
+  const beklagte =
+    getBeteiligungByRoleCode(beteiligungen, ROLLE_CODE_BEKLAGTE)?.name || null;
+
+  const gegenparteiVertretungNames = getVertretungNamesByRoleCode(
+    beteiligungen,
+    ROLLE_CODE_BEKLAGTE,
+  );
+  const gegenparteiVertretung =
+    gegenparteiVertretungNames.length > 0
+      ? gegenparteiVertretungNames.join(", ")
+      : null;
+
+  const geschaeftszeichen = getGeschaeftszeichenByRoleCode(
+    beteiligungen,
+    ROLLE_CODE_KLAEGERIN,
+  );
+
   const cssClasses = clsx(
     "relative",
     "after:border-y-1 sm:after:border-x-1 sm:after:rounded-kern-default after:border-kern-layout-border",
     "after:absolute after:-z-1 after:top-0 after:-right-16 after:bottom-0 after:-left-16",
-    {
-      "after:bg-kern-layout-background-hued": abgeschlossen,
-    },
   );
 
   return (
     <article className={cssClasses}>
-      {update ? (
-        <div className="kern-row mt-kern-space-small">
-          <div className="kern-col-12 pb-kern-space-small">
-            <span className="kern-badge kern-badge--info">
-              <span className="kern-icon kern-icon--info" aria-hidden />
-              <span className="kern-label kern-label--small">{update}</span>
-            </span>
-          </div>
-        </div>
-      ) : (
-        ""
-      )}
       <dl className="kern-row my-0">
         <VerfahrenTileDataItem
-          label="Mandant:in"
-          value={mandantin || notAvailable}
-          abgeschlossen={abgeschlossen}
+          label="Kläger:in"
+          value={klaegerin || notAvailable}
         />
         <VerfahrenTileDataItem
-          label="Gegenpartei bzw. -parteien"
-          value={gegenpartei || notAvailable}
-          abgeschlossen={abgeschlossen}
+          label="Beklagte:r"
+          value={beklagte || notAvailable}
         />
         <VerfahrenTileDataItem
-          label="Vertreten durch"
-          value={vertretung || notAvailable}
-          abgeschlossen={abgeschlossen}
+          label="Anwaltliche Vertretung Gegenpartei-en"
+          value={gegenparteiVertretung || notAvailable}
         />
         <VerfahrenTileDataItem
           label="Eigenes Geschäftszeichen"
           value={geschaeftszeichen || notAvailable}
-          abgeschlossen={abgeschlossen}
         />
         <VerfahrenTileDataItem
           label="Zuständiges Gericht"
-          value={gericht_name || notAvailable}
-          abgeschlossen={abgeschlossen}
+          value={gericht?.wert || notAvailable}
         />
         <VerfahrenTileDataItem
           label="Aktenzeichen des Gerichts"
-          value={aktenzeichen || notAvailable}
-          abgeschlossen={abgeschlossen}
+          value={aktenzeichen_gericht || notAvailable}
         />
       </dl>
 
@@ -120,17 +155,6 @@ export default function VerfahrenTile({
           <span className="kern-icon kern-icon--open-in-new" aria-hidden />
           <span className="kern-label">{buttons.SHOW_VERFAHREN_DETAILS}</span>
         </Link>
-        {abgeschlossen && urteilsHref ? (
-          <Link to={urteilsHref} className="kern-btn kern-btn--secondary">
-            <span
-              className="kern-icon kern-icon--insert-drive-file"
-              aria-hidden
-            />
-            <span className="kern-label">{buttons.SHOW_URTEIL}</span>
-          </Link>
-        ) : (
-          ""
-        )}
       </div>
     </article>
   );

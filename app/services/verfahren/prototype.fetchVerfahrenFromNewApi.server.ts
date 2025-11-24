@@ -1,6 +1,6 @@
 import z from "zod";
 import { serverConfig } from "~/config/config.server";
-import { newSchema } from "~/models/VerfahrenSchema";
+import { newVerfahrenSchema } from "~/models/VerfahrenSchema";
 import { getBearerToken } from "../auth/getBearerToken.server";
 
 export async function fetchVerfahrenFromNewApi(request: Request) {
@@ -33,7 +33,7 @@ export async function fetchVerfahrenFromNewApi(request: Request) {
       const data = await response.json();
 
       try {
-        return z.array(newSchema).parse(data);
+        return z.array(newVerfahrenSchema).parse(data);
       } catch (error) {
         throw new Error("schema parse error", { cause: error });
       }
