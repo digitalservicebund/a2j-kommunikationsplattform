@@ -20,8 +20,7 @@ export default async function (options?: FetchVerfahrenOptions) {
   });
 
   try {
-    return z.object({ verfahren: z.array(newVerfahrenSchema) }).parse(response)
-      .verfahren;
+    return z.array(newVerfahrenSchema).parse(response);
   } catch (error) {
     throw new Error(errorMessage, { cause: error });
   }
