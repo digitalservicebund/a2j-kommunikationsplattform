@@ -6036,6 +6036,7 @@ export const mockVerfahrenNewAPIMain = [
   },
 ];
 
+// fresh copy of GET /verfahren response from https://app.kompla-justiz.sinc.de/develop/swagger/index.html
 export const mockVerfahrenNewAPIDevelop = [
   {
     id: "019aa60d-0851-7361-8829-0746b4ace405",
