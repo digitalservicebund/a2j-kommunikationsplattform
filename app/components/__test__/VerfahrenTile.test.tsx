@@ -7,19 +7,48 @@ import {
   getTestTranslations,
   renderWithTestTranslations,
 } from "~/util/testUtils";
-import VerfahrenTile from "../verfahren/VerfahrenTile";
+import VerfahrenTile, { type VerfahrenTileProps } from "../VerfahrenTile";
 
 describe("VerfahrenTile", () => {
   const { buttons } = getTestTranslations();
+
+  const mockBeteiligungen: VerfahrenTileProps["beteiligungen"] = [
+    {
+      id: "1",
+      name: "Klaus",
+      rollen: [
+        {
+          id: "role-1",
+          wert: "Kläger(in)",
+          code: "101",
+        },
+      ],
+      prozessbevollmaechtigte: [],
+    },
+    {
+      id: "2",
+      name: "Maria Schmidt",
+      rollen: [
+        {
+          id: "role-2",
+          wert: "Beklagte(r)",
+          code: "028",
+        },
+      ],
+      prozessbevollmaechtigte: [],
+    },
+  ];
+
   it("should render the default state", () => {
     const { getByRole, queryByRole, getByText, container } =
       renderWithTestTranslations(
         <MemoryRouter>
-          <VerfahrenTile id="123" mandantin="Klaus" />
+          <VerfahrenTile id="123" beteiligungen={mockBeteiligungen} />
         </MemoryRouter>,
       );
 
     expect(getByText("Klaus")).toBeInTheDocument();
+    expect(getByText("Maria Schmidt")).toBeInTheDocument();
 
     expect(
       (
@@ -48,38 +77,79 @@ describe("VerfahrenTile", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("should render the badge", () => {
-    const { getByText, container } = render(
+  it("should render with gericht and aktenzeichen", () => {
+    const { getByText } = render(
       <MemoryRouter>
-        <VerfahrenTile id="123" update="Neue Dokumente vom Gericht" />
+        <VerfahrenTile
+          id="123"
+          beteiligungen={mockBeteiligungen}
+          gericht={{
+            id: "gericht-1",
+            wert: "Landgericht Frankfurt",
+            code: "LG_FFM",
+          }}
+          aktenzeichen_gericht="JBA-82746242"
+        />
       </MemoryRouter>,
     );
 
-    expect(container.querySelector(".kern-badge")).toBeInTheDocument();
-    expect(getByText("Neue Dokumente vom Gericht")).toBeInTheDocument();
+    expect(getByText("Landgericht Frankfurt")).toBeInTheDocument();
+    expect(getByText("JBA-82746242")).toBeInTheDocument();
   });
 
-  it("should render the 'abgeschlossen' state", () => {
-    const { getByRole, container } = render(
+  it("should render with prozessbevollmaechtigte", () => {
+    const beteiligungen: VerfahrenTileProps["beteiligungen"] = [
+      {
+        id: "1",
+        name: "Klaus",
+        rollen: [
+          {
+            id: "role-1",
+            wert: "Kläger(in)",
+            code: "101",
+          },
+        ],
+        prozessbevollmaechtigte: [
+          {
+            aktenzeichen: "GZ-123",
+            bevollmaechtigter: {
+              id: "anwalt-1",
+              safe_id: "safe-1",
+              name: "RA Müller",
+            },
+          },
+        ],
+      },
+      {
+        id: "2",
+        name: "Maria Schmidt",
+        rollen: [
+          {
+            id: "role-2",
+            wert: "Beklagte(r)",
+            code: "028",
+          },
+        ],
+        prozessbevollmaechtigte: [
+          {
+            aktenzeichen: "GZ-456",
+            bevollmaechtigter: {
+              id: "anwalt-2",
+              safe_id: "safe-2",
+              name: "RA Schmidt",
+            },
+          },
+        ],
+      },
+    ];
+
+    const { getByText } = render(
       <MemoryRouter>
-        <VerfahrenTile id="123" urteilsHref="/urteile/123" abgeschlossen />
+        <VerfahrenTile id="123" beteiligungen={beteiligungen} />
       </MemoryRouter>,
     );
 
-    expect(
-      (
-        getByRole("link", {
-          name: "Urteil anzeigen",
-        }) as HTMLAnchorElement
-      ).href,
-    ).toContain("/urteile/123");
-
-    // "disabled/muted" appearance
-    expect(
-      container.querySelector("dd.text-kern-layout-text-muted"),
-    ).toBeInTheDocument();
-    expect(
-      container.querySelector(".after\\:bg-kern-layout-background-hued"),
-    ).toBeInTheDocument();
+    expect(getByText("GZ-123")).toBeInTheDocument();
+    expect(getByText("RA Schmidt")).toBeInTheDocument();
   });
 });

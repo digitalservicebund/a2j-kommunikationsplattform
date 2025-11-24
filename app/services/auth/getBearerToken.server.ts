@@ -1,9 +1,5 @@
 import { authorizeToken } from "../api/authorizeToken.server";
-import { refreshAccessToken } from "../api/refreshToken.server";
-import {
-  getUserSession,
-  updateUserSessionWithApiTokens,
-} from "./session.server";
+import { getUserSession, updateUserSession } from "./session.server";
 
 /**
  * getBearerToken
@@ -14,57 +10,48 @@ export async function getBearerToken(request: Request): Promise<string> {
   const userSession = await getUserSession(request);
 
   try {
-    const apiAccessToken = userSession?.apiAccessToken;
+    const accessToken = userSession?.accessToken;
+    const refreshToken = userSession?.refreshToken;
 
-    if (apiAccessToken) {
-      console.log("we have an apiAccessToken");
+    if (refreshToken) {
+      console.log("we have an refreshToken");
+    }
+
+    if (accessToken) {
+      console.log("we have an accessToken");
 
       // if expired throw an error
-      if (new Date(Number(userSession?.apiAccessExpiresAt)) < new Date()) {
-        throw new Error("API access expired", {
-          cause: "expires_in value of API access token has expired",
+      if (userSession?.expiresAt < Date.now()) {
+        throw new Error("access token expired", {
+          cause: "expires in value of API access token has expired",
         });
       }
 
-      // return the token
-      return apiAccessToken;
-    } else {
-      console.log("we don't have an apiAccessToken");
-
-      // if not present, get an api access token
-      const accessToken = userSession?.accessToken ?? "";
       const token = await authorizeToken(accessToken);
 
-      await updateUserSessionWithApiTokens({
-        apiAccessToken: token.access_token,
-        apiAccessExpiresAt: Number(token.expires_in),
-        apiRefreshToken: token.refresh_token,
-        apiRefreshExpiresAt: Number(token.refresh_expires_in),
+      await updateUserSession({
+        accessToken: token.access_token,
+        expiresAt: Number(token.expires_in),
+        refreshToken: token.refresh_token,
         request,
       });
 
-      // return a fresh token (token exchange)
+      // return the token
       return token.access_token;
+    } else {
+      console.log("we don't have an access token so far, throw error");
+
+      throw new Error("no access token", {
+        cause: "access token is needed to authorize API access",
+      });
     }
   } catch (error) {
-    console.log("error 1", error);
+    console.log("error 1", error, JSON.stringify(error));
 
     if (error) {
-      console.log("error 2 is:", JSON.stringify(error));
+      console.log("error 2", error, JSON.stringify(error));
 
-      const apiRefreshToken = userSession?.apiRefreshToken ?? "";
-      const token = await refreshAccessToken(apiRefreshToken);
-
-      await updateUserSessionWithApiTokens({
-        apiAccessToken: token.access_token,
-        apiAccessExpiresAt: Number(token.expires_in),
-        apiRefreshToken: token.refresh_token,
-        apiRefreshExpiresAt: Number(token.refresh_expires_in),
-        request,
-      });
-
-      // return a fresh token (refresh token exchange)
-      return token.access_token;
+      console.log("refresh token handling is needed");
     }
 
     // throw again any unexpected error that could've happened

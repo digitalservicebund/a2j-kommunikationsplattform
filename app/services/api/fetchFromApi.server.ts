@@ -7,7 +7,7 @@ type FetchFromApiOptions = {
 
 // this is a fixed identifier, which will later be replaced by a suitable authentication.
 const userId = "PierreM";
-const baseUrl = `${serverConfig().JUSTIZ_BACKEND_API_URL}/api/v1`;
+const baseUrl = `${serverConfig().KOMPLA_API_URL}/api/v1`;
 
 export async function fetchFromApi(options: FetchFromApiOptions) {
   const url = `${baseUrl}${options.url}`;

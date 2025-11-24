@@ -1,14 +1,13 @@
 import { Suspense } from "react";
 import { Await, useLoaderData } from "react-router";
-import { z } from "zod";
 import Alert from "~/components/Alert";
 import VerfahrenTileSkeleton from "~/components/skeletons/VerfahrenTileSkeleton.static";
-
-import { useVerfahrenState } from "~/components/hooks/useVerfahrenState";
-import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
 import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
 import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
 
+import z from "zod";
+import { useVerfahrenState } from "~/components/hooks/useVerfahrenState";
+import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
 import { VERFAHREN_SKELETONS } from "~/constants/verfahrenSkeletons";
 import VerfahrenSchema from "~/models/VerfahrenSchema";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
@@ -22,19 +21,18 @@ export type VerfahrenLoaderData = {
   hasMoreItems: boolean;
 };
 
-export const VERFAHREN_PAGE_LIMIT = 100;
+export const VERFAHREN_PAGE_LIMIT = 10;
 
 export const loader = withSessionLoader(
   async ({ request }: Route.LoaderArgs) => {
     const url = new URL(request.url);
     const offset = Number(url.searchParams.get("offset")) || 0;
 
-    const verfahrenPromise = fetchVerfahren({
+    const verfahrenPromise = fetchVerfahren(request, {
       // Fetch one more item than the page limit to check for "hasMore"
       limit: VERFAHREN_PAGE_LIMIT + 1,
       offset,
-    }).then((items) => {
-      const { verfahren } = items;
+    }).then((verfahren) => {
       const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
       const paginatedItems = hasMoreItems
         ? verfahren.slice(0, VERFAHREN_PAGE_LIMIT)

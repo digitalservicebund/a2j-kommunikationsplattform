@@ -10,6 +10,7 @@ export function withSessionLoader(
   return async (args) => {
     const { request } = args;
     const userSession = await requireUserSession(request);
+    console.log("withSessionLoader userSession:", JSON.stringify(userSession));
     return loaderFn({ ...args, userSession });
   };
 }

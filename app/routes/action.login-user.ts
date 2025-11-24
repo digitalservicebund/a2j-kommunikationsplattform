@@ -24,6 +24,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.clone().formData();
   const loginType = formData.get("loginType") as LoginType;
 
+  console.log("loginType is", loginType);
+
   if (loginType === LoginType.Developer) {
     return await loginAsDeveloper(request);
   }

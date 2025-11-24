@@ -20,6 +20,9 @@ export const loader: LoaderFunction = async ({ request }) => {
   return authenticator
     .authenticate(authenticationProvider, request)
     .then((authenticationResponse) => {
+      console.log(
+        "authenticator.authenticate auth callback done, redirecting to /",
+      );
       return redirect("/", {
         headers: {
           "Set-Cookie": authenticationResponse.sessionCookieHeader,

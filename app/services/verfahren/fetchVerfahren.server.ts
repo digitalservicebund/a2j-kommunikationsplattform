@@ -1,7 +1,7 @@
 import z from "zod";
-import VerfahrenSchema from "~/models/VerfahrenSchema";
-import { VERFAHREN_PAGE_LIMIT } from "~/routes/verfahren/_index";
-import { fetchFromApi } from "../api/fetchFromApi.server";
+import { serverConfig } from "~/config/config.server";
+import { newVerfahrenSchema } from "~/models/VerfahrenSchema";
+import { getBearerToken } from "~/services/auth/getBearerToken.server";
 
 type FetchVerfahrenOptions = {
   limit?: number;
@@ -10,20 +10,37 @@ type FetchVerfahrenOptions = {
 
 const errorMessage = "Die Verfahren konnten nicht abgerufen werden.";
 
-export default async function (options?: FetchVerfahrenOptions) {
-  const offset = options?.offset || 0;
-  const limit = options?.limit || VERFAHREN_PAGE_LIMIT;
-  const url = `/verfahren?limit=${limit}&offset=${offset}`;
+export default async function (
+  request: Request,
+  options?: FetchVerfahrenOptions,
+) {
+  const bearerToken = await getBearerToken(request);
 
-  const response = await fetchFromApi({
-    url,
-    errorMessage,
+  if (!bearerToken) {
+    throw new Error("No bearer token available");
+  }
+
+  const offset = options?.offset || 0;
+  const limit = options?.limit || 10;
+
+  const url = `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren?limit=${limit}&offset=${offset}`;
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${bearerToken}`,
+    },
   });
 
-  console.log("Fetched Verfahren response:", response);
+  if (!response.ok) {
+    throw new Error(errorMessage, {
+      cause: `Serverantwort war nicht ok (Fehlercode ${response.status} ${response.statusText}).`,
+    });
+  }
+
+  const data = await response.json();
 
   try {
-    return z.object({ verfahren: z.array(VerfahrenSchema) }).parse(response);
+    return z.array(newVerfahrenSchema).parse(data);
   } catch (error) {
     throw new Error(errorMessage, { cause: error });
   }

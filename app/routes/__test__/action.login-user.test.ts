@@ -46,7 +46,8 @@ describe("/action/login-user action", () => {
     const authResponse = {
       authenticationContext: {
         accessToken: "bea-token",
-        expiresAt: Date.now() + 1000,
+        expiresIn: Date.now() + 1000,
+        refreshToken: "refresh-token",
       },
       sessionCookieHeader: "session=abc; Path=/; HttpOnly",
     };

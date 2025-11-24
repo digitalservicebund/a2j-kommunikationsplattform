@@ -27,12 +27,18 @@ export { commitSession, destroySession, getSession };
 export const createUserSession = async (
   accessToken: string,
   expiresAt: number,
+  refreshToken: string,
   request: Request,
 ) => {
   const session = await getSession(request.headers.get("Cookie"));
 
+  console.log("createUserSession accessToken is", accessToken);
+  console.log("createUserSession expiresAt is", expiresAt);
+  console.log("createUserSession refreshToken is", refreshToken);
+
   session.set("accessToken", accessToken);
   session.set("expiresAt", expiresAt);
+  session.set("refreshToken", refreshToken);
 
   try {
     console.log("Creating user session");
@@ -43,39 +49,41 @@ export const createUserSession = async (
   }
 };
 
-interface UpdateUserSessionWithApiTokensResponse {
-  apiAccessToken: string;
-  apiAccessExpiresAt: number;
-  apiRefreshToken: string;
-  apiRefreshExpiresAt: number;
+interface UpdateUserSessionResponse {
+  accessToken: string;
+  expiresAt: number;
+  refreshToken: string;
   request: Request;
 }
 
-// Update user session with API access tokens.
-export const updateUserSessionWithApiTokens = async ({
-  apiAccessToken,
-  apiAccessExpiresAt,
-  apiRefreshToken,
-  apiRefreshExpiresAt,
+// Update user session with new tokens.
+export const updateUserSession = async ({
+  accessToken,
+  expiresAt,
+  refreshToken,
   request,
-}: UpdateUserSessionWithApiTokensResponse): Promise<string | null> => {
+}: UpdateUserSessionResponse): Promise<string | null> => {
   const session = await getSession(request.headers.get("Cookie"));
-  session.set("apiAccessToken", apiAccessToken);
-  session.set("apiAccessExpiresAt", apiAccessExpiresAt);
-  session.set("apiRefreshToken", apiRefreshToken);
-  session.set("apiRefreshExpiresAt", apiRefreshExpiresAt);
+
+  console.log("updateUserSession accessToken is", accessToken);
+  console.log("updateUserSession expiresAt is", expiresAt);
+  console.log("updateUserSession refreshToken is", refreshToken);
+
+  session.set("accessToken", accessToken);
+  session.set("expiresAt", expiresAt);
+  session.set("refreshToken", refreshToken);
 
   try {
-    console.log("Update user session with API tokens");
+    console.log("Updating user session");
     return await commitSession(session);
   } catch (error) {
-    console.error("Error updating user session with API tokens:", error);
+    console.error("Error updating user session:", error);
     throw new Error("Failed to update the user session");
   }
 };
 
 type GetUserSessionResponse = AuthenticationContext &
-  Omit<UpdateUserSessionWithApiTokensResponse, "request">;
+  Omit<UpdateUserSessionResponse, "request">;
 
 // We retrieve the user session from the request headers and ensure that the session has not expired.
 export const getUserSession = async (
@@ -84,14 +92,14 @@ export const getUserSession = async (
   const session = await getSession(request.headers.get("Cookie"));
   const accessToken = session.get("accessToken");
   const expiresAt = session.get("expiresAt");
-  const apiAccessToken = session.get("apiAccessToken");
-  const apiAccessExpiresAt = session.get("apiAccessExpiresAt");
-  const apiRefreshToken = session.get("apiRefreshToken");
-  const apiRefreshExpiresAt = session.get("apiRefreshExpiresAt");
+  const refreshToken = session.get("refreshToken");
 
-  console.log("getUserSession apiAccessToken is", apiAccessToken);
+  console.log("getUserSession accessToken is", accessToken);
+  console.log("getUserSession expiresAt is", expiresAt);
+  console.log("getUserSession refreshToken is", refreshToken);
 
-  if (!accessToken || !expiresAt || expiresAt < Date.now()) {
+  if (!accessToken || expiresAt < Date.now()) {
+    console.log("access has expired, destroy session");
     await destroySession(session);
     return null;
   }
@@ -99,10 +107,7 @@ export const getUserSession = async (
   return {
     accessToken,
     expiresAt,
-    apiAccessToken,
-    apiAccessExpiresAt,
-    apiRefreshToken,
-    apiRefreshExpiresAt,
+    refreshToken,
   };
 };
 
