@@ -142,43 +142,6 @@ const getVerfahren = (id) => {
       };
 };
 
-// http.get(
-//     `${mockJustizBackendApiUrl}/api/v1/verfahren`,
-//     async ({ request }) => {
-//       const url = new URL(request.url);
-//       const offsetParam = url.searchParams.get("offset");
-//       const limitParam = url.searchParams.get("limit");
-//
-//       const allResponse = getVerfahren();
-//       const allVerfahren = allResponse.verfahren || [];
-//       const total = allResponse.total ?? allVerfahren.length;
-//
-//       // parse values safely (fall back to sensible defaults)
-//       const offsetNum = offsetParam ? Number.parseInt(offsetParam, 10) || 0 : 0;
-//       const limitNum = limitParam
-//         ? Number.parseInt(limitParam, 10) || total
-//         : total;
-//
-//       console.log("Received params:", url.searchParams.toString());
-//       console.log(
-//         "Fetching verfahren with offset:",
-//         offsetNum,
-//         "and limit:",
-//         limitNum,
-//       );
-//
-//       const paged = allVerfahren.slice(offsetNum, offsetNum + limitNum);
-//
-//       const getVerfahrenResponse = [
-//         {
-//           verfahren: paged,
-//         },
-//         { status: 200 },
-//       ];
-//       return HttpResponse.json(...getVerfahrenResponse);
-//     },
-//   ),
-
 export const handlers = [
   http.get(
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren`,
