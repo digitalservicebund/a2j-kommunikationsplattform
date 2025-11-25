@@ -141,21 +141,18 @@ jobs:
         if: steps.cache-npm-deps.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Audit used licences
-        run: npm run audit:licences
-
       - name: Send status to Slack
         uses: digitalservicebund/notify-on-failure-gha@814d0c4b2ad6a3443e89c991f8657b10126510bf # v1.5.0
         if: ${{ failure() }}
         with:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-  # vulnerability-scan:
-  #   uses: ./.github/workflows/scan.yml
-  #   secrets: inherit
-  #   permissions:
-  #     contents: read
-  #     security-events: write # trivy scan needs this
+  vulnerability-scan:
+    uses: ./.github/workflows/scan.yml
+    secrets: inherit
+    permissions:
+      contents: read
+      security-events: write # trivy scan needs this
 
   build-and-push-image:
     runs-on: ubuntu-latest
@@ -163,7 +160,7 @@ jobs:
     needs:
       - build
       - audit-licenses
-      # - vulnerability-scan
+      - vulnerability-scan
     permissions:
       contents: read
       id-token: write # This is used to complete the identity challenge with sigstore/fulcio..

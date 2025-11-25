@@ -18,8 +18,7 @@
     "format:check": "prettier --check .",
     "format:fix": "prettier --write --ignore-unknown .",
     "style:check": "npm run format:check && npm run lint:check",
-    "style:fix": "npm run format:fix && npm run lint:fix",
-    "audit:licences": "license-checker --production --excludePrivatePackages --onlyAllow '' --summary"
+    "style:fix": "npm run format:fix && npm run lint:fix"
   },
   "dependencies": {
     "@kern-ux/native": "^2.3.2",
@@ -71,7 +70,6 @@
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.4.0",
     "jsdom": "^27.0.0",
-    "license-checker": "^25.0.1",
     "msw": "^2.11.6",
     "prettier": "^3.6.2",
     "prettier-plugin-organize-imports": "^4.3.0",
@@ -83,6 +81,9 @@
     "vite": "^7.1.12",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
+  },
+  "overrides": {
+    "glob": "11.1.0"
   },
   "engines": {
     "node": ">=24.0.0"
