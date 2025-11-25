@@ -33,7 +33,7 @@ export default function Verfahrendetails() {
     <>
       <h1 className="kern-heading-medium">Verfahrensdetails</h1>
       <Alert
-        type="warning"
+        type="info"
         title={alerts.WORK_IN_PROGRESS_TITLE}
         message={alerts.WORK_IN_PROGRESS_MESSAGE}
       />
