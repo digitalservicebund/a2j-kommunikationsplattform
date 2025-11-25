@@ -1,11 +1,7 @@
 import { Authenticator } from "remix-auth";
 import { CodeChallengeMethod, OAuth2Strategy } from "remix-auth-oauth2";
 import { serverConfig } from "~/config/config.server";
-import {
-  createUserSession,
-  getUserSession,
-  updateUserSession,
-} from "./session.server";
+import { createUserSession, updateUserSession } from "./session.server";
 
 export interface AuthenticationContext {
   accessToken: string;
@@ -68,47 +64,23 @@ const oauth2Strategy = new OAuth2Strategy(
       sessionCookieHeader,
     };
 
-    scheduleRefreshAccessToken(request);
-
     return response;
   },
 );
 
 authenticator.use(oauth2Strategy, AuthenticationProvider.BEA);
 
-let refreshTimeout: NodeJS.Timeout | null = null;
-const refreshMarginInSeconds: number = 30;
-
-const clearRefreshTimeout = () => {
-  if (refreshTimeout) clearTimeout(refreshTimeout);
-  console.log("clear refresh timeout");
-
-  refreshTimeout = null;
-};
-
-async function scheduleRefreshAccessToken(request: Request) {
-  console.log("schedule access token refresh");
-
-  clearRefreshTimeout();
-  const session = await getUserSession(request);
-  if (!session) return;
-  const delay = session.expiresAt - Date.now() - refreshMarginInSeconds * 1000;
-  refreshTimeout = setTimeout(
-    async () => {
-      await refreshAccessToken(request);
-    },
-    Math.max(delay, 0),
-  );
-}
-
-async function refreshAccessToken(request: Request) {
+export async function refreshAccessToken(
+  request: Request,
+  refreshToken: string,
+) {
   console.log("refresh access token");
 
-  const session = await getUserSession(request);
-  if (!session) throw new Error("No session available that could be updated");
+  if (!refreshToken)
+    throw new Error("No refreshToken available to update authentication");
 
   try {
-    const newTokens = await oauth2Strategy.refreshToken(session.refreshToken);
+    const newTokens = await oauth2Strategy.refreshToken(refreshToken);
 
     console.log(
       "BRAK access token was refreshed. hasRefreshToken",
@@ -119,17 +91,15 @@ async function refreshAccessToken(request: Request) {
       newTokens.refreshToken(),
     );
 
-    scheduleRefreshAccessToken(request);
-
     return await updateUserSession({
       accessToken: newTokens.accessToken(),
       refreshToken: newTokens.hasRefreshToken()
         ? newTokens.refreshToken()
-        : session.refreshToken,
+        : refreshToken,
       expiresAt: Date.now() + newTokens.accessTokenExpiresInSeconds() * 1000,
       request,
     });
   } catch (e) {
-    console.error("Refresh failed", e);
+    console.error("Refresh of access token failed", e);
   }
 }
