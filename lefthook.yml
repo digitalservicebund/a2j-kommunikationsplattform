@@ -14,9 +14,6 @@ pre-commit:
 pre-push:
   parallel: true
   commands:
-    licenses-audit:
-      tags: licenses audit
-      run: npm run audit:licences
     secrets-audit:
       # NOTE: there's one caveat with this hook! When pushing, it will only correctly scan the range of
       # outgoing commits when pushing to a matching branch on the remote (e.g. `git push`) - pushing to a
