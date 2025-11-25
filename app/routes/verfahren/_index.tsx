@@ -1,60 +1,99 @@
 import { Suspense } from "react";
-import { Await, LoaderFunctionArgs, useLoaderData } from "react-router";
+import { Await, useLoaderData } from "react-router";
 import Alert from "~/components/Alert";
 import VerfahrenTileSkeleton from "~/components/skeletons/VerfahrenTileSkeleton.static";
-import VerfahrenTile from "~/components/VerfahrenTile";
+import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
+import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
+
+import z from "zod";
+import { useVerfahrenState } from "~/components/hooks/useVerfahrenState";
+import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
+import { VERFAHREN_SKELETONS } from "~/constants/verfahrenSkeletons";
+import { newVerfahrenSchema } from "~/models/VerfahrenSchema";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import { useTranslations } from "~/services/translations/context";
 import fetchVerfahren from "~/services/verfahren/fetchVerfahren.server";
+import { Route } from "./+types/_index";
 
-// Number of skeletons per page (could change in the future)
-const SKELETONS = [
-  { id: "skeleton-1" },
-  { id: "skeleton-2" },
-  { id: "skeleton-3" },
-  { id: "skeleton-4" },
-];
+export type Verfahren = z.infer<typeof newVerfahrenSchema>;
+export type VerfahrenLoaderData = {
+  items: Verfahren[];
+  hasMoreItems: boolean;
+};
+
+export const VERFAHREN_PAGE_LIMIT = 10;
 
 export const loader = withSessionLoader(
-  async ({ request }: LoaderFunctionArgs) => {
+  async ({ request }: Route.LoaderArgs) => {
     const url = new URL(request.url);
-    const limit = Number(url.searchParams.get("limit")) || 10;
     const offset = Number(url.searchParams.get("offset")) || 0;
 
-    const verfahren = fetchVerfahren(request, { limit, offset });
+    const verfahrenPromise = fetchVerfahren(request, {
+      // Fetch one more item than the page limit to check for "hasMore"
+      limit: VERFAHREN_PAGE_LIMIT + 1,
+      offset,
+    }).then((verfahren) => {
+      const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
+      const paginatedItems = hasMoreItems
+        ? verfahren.slice(0, VERFAHREN_PAGE_LIMIT)
+        : verfahren;
 
+      return { items: paginatedItems, hasMoreItems };
+    });
+
+    // If this is a fetcher request (has offset), return resolved data
+    if (offset > 0) {
+      return await verfahrenPromise;
+    }
+    // For initial load, return deferred promise for Suspense
     return {
-      verfahren,
+      verfahren: verfahrenPromise,
     };
   },
 );
 
 export default function Verfahren() {
-  const { verfahren } = useLoaderData<{
-    verfahren: Promise<ReturnType<typeof fetchVerfahren>>;
-  }>();
+  const data = useLoaderData<{ verfahren: Promise<VerfahrenLoaderData> }>();
 
   return (
     <>
       <VerfahrenHeading />
       <div className="my-kern-space-large space-y-kern-space-large flex flex-col">
         <Suspense
-          fallback={SKELETONS.map((s) => (
+          fallback={VERFAHREN_SKELETONS.map((s) => (
             <VerfahrenTileSkeleton key={s.id} />
           ))}
         >
-          <Await resolve={verfahren}>
-            {(resolvedVerfahren) =>
-              resolvedVerfahren.map((data) => (
-                <VerfahrenTile key={data.id} {...data} />
-              ))
-            }
+          <Await resolve={data.verfahren}>
+            {(data) => <VerfahrenContent initialData={data} />}
           </Await>
         </Suspense>
       </div>
     </>
   );
 }
+
+function VerfahrenContent({
+  initialData,
+}: Readonly<{
+  initialData: VerfahrenLoaderData;
+}>) {
+  const { allItems, hasMoreItems, isLoading, handleLoadMore } =
+    useVerfahrenState(initialData);
+
+  return (
+    <>
+      {/* Filters can be added here in the future */}
+      <VerfahrenCountInfo count={allItems.length || 0} />
+      <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
+      {hasMoreItems && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}
+    </>
+  );
+}
+
+const VerfahrenHeading = () => (
+  <h1 className="kern-heading-medium">Verfahren</h1>
+);
 
 export function ErrorBoundary() {
   const { errorMessages } = useTranslations();
@@ -69,7 +108,3 @@ export function ErrorBoundary() {
     </div>
   );
 }
-
-const VerfahrenHeading = () => (
-  <h1 className="kern-heading-medium">Verfahren</h1>
-);

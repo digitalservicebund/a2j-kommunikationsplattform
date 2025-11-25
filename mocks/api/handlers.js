@@ -14,7 +14,6 @@ import {
   mockVerfahrenErstellt,
   mockVerfahrenErstelltAkte,
   mockVerfahrenErstelltId,
-  mockVerfahrenNewAPIDevelop,
   mockVerfahrenNewAPIMain,
 } from "./data.js";
 
@@ -40,10 +39,38 @@ const mockKomplaIdpIssuer = "https://login.kompla-justiz.sinc.de";
 // init Verfahren data
 const verfahren = new Map();
 let verfahrenId = 0;
-verfahren.set(verfahrenId++, mockVerfahrenErstellt);
-verfahren.set(verfahrenId++, mockVerfahrenEingereicht);
-verfahren.set(verfahrenId++, mockVerfahrenEingereicht1);
-verfahren.set(verfahrenId++, mockVerfahrenEingereicht2);
+const seedVerfahren = [
+  mockVerfahrenErstellt,
+  mockVerfahrenEingereicht,
+  mockVerfahrenEingereicht1,
+  mockVerfahrenEingereicht2,
+];
+
+for (const item of seedVerfahren) {
+  verfahren.set(verfahrenId++, item);
+}
+
+// generate additional random verfahren until we have 200 total entries
+const TARGET_VERFAHREN = 500;
+while (verfahren.size < TARGET_VERFAHREN) {
+  const template =
+    seedVerfahren[Math.floor(Math.random() * seedVerfahren.length)];
+
+  const randomAktenId = Math.floor(10000000 + Math.random() * 90000000);
+  // use a 1-based index suffix for the aktenzeichen
+  const indexSuffix = verfahren.size + 1;
+  const aktenzeichen = `JBA-${randomAktenId}-${indexSuffix}`;
+
+  const newVerfahren = {
+    ...template,
+    id: uuidv4(),
+    aktenzeichen,
+    status_changed: new Date().toJSON(),
+    eingereicht_am: new Date().toJSON(),
+  };
+
+  verfahren.set(verfahrenId++, newVerfahren);
+}
 
 // init Akte "eingereicht" data
 const aktenteilDokumenteVerfahrenErstellt = new Map();
@@ -115,13 +142,36 @@ const getVerfahren = (id) => {
 };
 
 export const handlers = [
-  http.get(`${mockJustizBackendApiUrl}/api/v1/verfahren`, async () => {
-    const verfahrenToReturn = {
-      verfahren: mockVerfahrenNewAPIDevelop,
-    };
-    const getVerfahrenResponse = [verfahrenToReturn, { status: 200 }];
-    return HttpResponse.json(...getVerfahrenResponse);
-  }),
+  http.get(
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren`,
+    async ({ request }) => {
+      const url = new URL(request.url);
+      const offsetParam = url.searchParams.get("offset");
+      const limitParam = url.searchParams.get("limit");
+
+      const allVerfahren = mockVerfahrenNewAPIMain;
+      const total = allVerfahren.length;
+
+      // parse values safely (fall back to sensible defaults)
+      const offsetNum = offsetParam ? Number.parseInt(offsetParam, 10) || 0 : 0;
+      const limitNum = limitParam
+        ? Number.parseInt(limitParam, 10) || total
+        : total;
+
+      console.log("Received params:", url.searchParams.toString());
+      console.log(
+        "Fetching verfahren with offset:",
+        offsetNum,
+        "and limit:",
+        limitNum,
+      );
+
+      const paged = allVerfahren.slice(offsetNum, offsetNum + limitNum);
+
+      const getVerfahrenResponse = [paged, { status: 200 }];
+      return HttpResponse.json(...getVerfahrenResponse);
+    },
+  ),
 
   http.post(`${mockJustizBackendApiUrl}/api/v1/verfahren`, async () => {
     // generate random 8 digit number for "aktenzeichen"
@@ -169,25 +219,17 @@ export const handlers = [
 
   // endpoint is not used by the frontend at the moment
   http.get(
-    `${mockJustizBackendApiUrl}/api/v1/verfahren/:verfahrenId`,
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId`,
     async ({ params }) => {
-      let getRequestedVerfahren;
-      for (const [verfahrenKey, verfahrenValue] of verfahren) {
-        for (const [key, value] of Object.entries(verfahrenValue)) {
-          if (key === "id") {
-            if (value === params.verfahrenId) {
-              getRequestedVerfahren = verfahren.get(verfahrenKey);
-            }
-          }
-        }
-      }
+      const requestedVerfahren = mockVerfahrenNewAPIMain.find(
+        (item) => item.id === params.verfahrenId,
+      );
 
-      const getGetApiV1VerfahrenVerfahrenId200Response = [
-        getRequestedVerfahren,
-        { status: 200 },
-      ];
+      console.log("Requested verfahren:", requestedVerfahren);
 
-      return HttpResponse.json(...getGetApiV1VerfahrenVerfahrenId200Response);
+      const resultArray = [requestedVerfahren, { status: 200 }];
+
+      return HttpResponse.json(...resultArray);
     },
   ),
   http.get(
@@ -365,9 +407,4 @@ export const handlers = [
       return HttpResponse.json(...post200Response);
     },
   ),
-
-  http.get(`${mockKomplaApiUrl}/:environment/api/v1/verfahren`, async () => {
-    const getNewVerfahrenResponse = [mockVerfahrenNewAPIMain, { status: 200 }];
-    return HttpResponse.json(...getNewVerfahrenResponse);
-  }),
 ];

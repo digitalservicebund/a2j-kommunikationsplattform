@@ -13,6 +13,7 @@ export const en: Translations = {
     BACK_BUTTON: "Back",
     SHOW_VERFAHREN_DETAILS: "Show case details",
     SHOW_URTEIL: "Show judgment",
+    LOAD_MORE_VERFAHREN: "Load more cases",
   },
   errorMessages: {
     TRY_LATER_MESSAGE: "Please try again later.",
@@ -40,6 +41,12 @@ export const en: Translations = {
     WORK_IN_PROGRESS_TITLE: "Work in progress",
     WORK_IN_PROGRESS_MESSAGE:
       "This page is still under development. Layouts and displays may change at any time.",
+    TOO_MANY_RESULTS_TITLE: "Too many results found",
+    TOO_MANY_RESULTS_MESSAGE:
+      "To get to the desired content faster, please use the filter options or enter a targeted search via the free text search.",
+    NO_VERFAHREN_FOUND_TITLE: "No cases currently available",
+    NO_VERFAHREN_FOUND_MESSAGE:
+      "After a successful submission or assignment, the corresponding cases will be displayed here.",
   },
   labels: {
     FOOTER_ARIA_LABEL: "Legal and further information",
@@ -54,6 +61,7 @@ export const en: Translations = {
     LOGGED_IN_AS_LABEL: "Logged in as:",
     TO_START_PAGE_LABEL: "Home",
     CONTACT_SUPPORT_LABEL: "Contact support",
+    MORE_THAN_100_VERFAHREN_LABEL: "More than 100 cases",
   },
   titles: {
     PLATFORM_TITLE: "Communication Platform | Justice Services",

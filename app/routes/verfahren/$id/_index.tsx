@@ -2,25 +2,23 @@ import { Suspense } from "react";
 import { Await, LoaderFunctionArgs, useLoaderData } from "react-router";
 import Alert from "~/components/Alert";
 import VerfahrenTileSkeleton from "~/components/skeletons/VerfahrenTileSkeleton.static";
-import VerfahrenTile from "~/components/VerfahrenTile";
+import VerfahrenTile from "~/components/verfahren/VerfahrenTile";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import { useTranslations } from "~/services/translations/context";
 import fetchVerfahrenById from "~/services/verfahren/fetchVerfahrenById.server";
 
 export const loader = withSessionLoader(
-  async ({ params }: LoaderFunctionArgs) => {
-    if (params.id) {
-      return {
-        data: fetchVerfahrenById({ id: params.id }),
-      };
-    } else {
-      throw new Response(
-        "Das Verfahrensdetail konnte nicht abgerufen werden.",
-        {
-          status: 500,
-        },
-      );
+  async ({ request, params }: LoaderFunctionArgs) => {
+    const { id } = params;
+    if (!id) {
+      throw new Error("No Verfahren ID provided in params");
     }
+
+    const dataPromise = fetchVerfahrenById(request, { id });
+
+    return {
+      data: dataPromise,
+    };
   },
 );
 
@@ -35,7 +33,7 @@ export default function Verfahrendetails() {
     <>
       <h1 className="kern-heading-medium">Verfahrensdetails</h1>
       <Alert
-        type="warning"
+        type="info"
         title={alerts.WORK_IN_PROGRESS_TITLE}
         message={alerts.WORK_IN_PROGRESS_MESSAGE}
       />
