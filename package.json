@@ -84,6 +84,9 @@
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
   },
+  "overrides": {
+    "glob": "11.1.0"
+  },
   "engines": {
     "node": ">=24.0.0"
   }
