@@ -7,7 +7,7 @@ export default function Uebersicht() {
     <>
       <h1 className="kern-heading-medium">{labels.UEBERSICHT_LABEL}</h1>
       <Alert
-        type="warning"
+        type="info"
         title={alerts.WORK_IN_PROGRESS_TITLE}
         message={alerts.WORK_IN_PROGRESS_MESSAGE}
       />
