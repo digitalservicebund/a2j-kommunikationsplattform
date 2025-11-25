@@ -9,19 +9,29 @@ import { Verfahren } from "~/routes/verfahren/_index";
 const mockVerfahren: Verfahren[] = [
   {
     id: "1",
-    aktenzeichen: "AZ-123",
+    aktenzeichen_gericht: "AZ-123",
     status: "Erstellt",
-    status_changed: "",
-    eingereicht_am: "",
-    gericht_name: null,
+    status_changed: "2025-03-08T05:00:29.659Z",
+    eingereicht_am: "2024-12-29T22:46:29.329Z",
+    gericht: {
+      id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
+      wert: "Landgericht Frankfurt",
+      code: "LG_FFM",
+    },
+    beteiligungen: [],
   },
   {
     id: "2",
-    aktenzeichen: "AZ-456",
+    aktenzeichen_gericht: "AZ-456",
     status: "Eingereicht",
-    status_changed: "",
-    eingereicht_am: "",
-    gericht_name: null,
+    status_changed: "2025-03-08T06:00:29.659Z",
+    eingereicht_am: "2024-12-30T22:46:29.329Z",
+    gericht: {
+      id: "c727131c-0c32-91ba-3eaa-f44405967b6d",
+      wert: "Amtsgericht Berlin",
+      code: "AG_BER",
+    },
+    beteiligungen: [],
   },
 ];
 

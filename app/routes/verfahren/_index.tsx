@@ -9,13 +9,13 @@ import z from "zod";
 import { useVerfahrenState } from "~/components/hooks/useVerfahrenState";
 import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
 import { VERFAHREN_SKELETONS } from "~/constants/verfahrenSkeletons";
-import VerfahrenSchema from "~/models/VerfahrenSchema";
+import { newVerfahrenSchema } from "~/models/VerfahrenSchema";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import { useTranslations } from "~/services/translations/context";
 import fetchVerfahren from "~/services/verfahren/fetchVerfahren.server";
 import { Route } from "./+types/_index";
 
-export type Verfahren = z.infer<typeof VerfahrenSchema>;
+export type Verfahren = z.infer<typeof newVerfahrenSchema>;
 export type VerfahrenLoaderData = {
   items: Verfahren[];
   hasMoreItems: boolean;
