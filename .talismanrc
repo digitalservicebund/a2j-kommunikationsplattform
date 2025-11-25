@@ -12,7 +12,7 @@ fileignoreconfig:
   - filename: .github/workflows/scan.yml
     checksum: f4f260cfa5db3321682210d327d7d525ec7b6c382aef0c241400c7698c4aba8e
   - filename: mocks/api/handlers.js
-    checksum: 14037dd3b38baca6223cd9645bfac82a794c156faa1afb8fa44e83b1f01ec030
+    checksum: 5534a361b65d14549abfc46da4d6bb0730abdb3b1fc8978aa7b8cbdc249130ad
   - filename: app/services/fileUpload.server.ts
     checksum: bc2812232864b6d3b6f9189b95fea278d34952318ddb0deaf41be7ac5fd43d35
   - filename: app/services/auth/oAuth.server.ts
