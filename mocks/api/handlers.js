@@ -14,7 +14,6 @@ import {
   mockVerfahrenErstellt,
   mockVerfahrenErstelltAkte,
   mockVerfahrenErstelltId,
-  mockVerfahrenNewAPIDevelop,
   mockVerfahrenNewAPIMain,
 } from "./data.js";
 
@@ -142,43 +141,6 @@ const getVerfahren = (id) => {
       };
 };
 
-// http.get(
-//     `${mockJustizBackendApiUrl}/api/v1/verfahren`,
-//     async ({ request }) => {
-//       const url = new URL(request.url);
-//       const offsetParam = url.searchParams.get("offset");
-//       const limitParam = url.searchParams.get("limit");
-//
-//       const allResponse = getVerfahren();
-//       const allVerfahren = allResponse.verfahren || [];
-//       const total = allResponse.total ?? allVerfahren.length;
-//
-//       // parse values safely (fall back to sensible defaults)
-//       const offsetNum = offsetParam ? Number.parseInt(offsetParam, 10) || 0 : 0;
-//       const limitNum = limitParam
-//         ? Number.parseInt(limitParam, 10) || total
-//         : total;
-//
-//       console.log("Received params:", url.searchParams.toString());
-//       console.log(
-//         "Fetching verfahren with offset:",
-//         offsetNum,
-//         "and limit:",
-//         limitNum,
-//       );
-//
-//       const paged = allVerfahren.slice(offsetNum, offsetNum + limitNum);
-//
-//       const getVerfahrenResponse = [
-//         {
-//           verfahren: paged,
-//         },
-//         { status: 200 },
-//       ];
-//       return HttpResponse.json(...getVerfahrenResponse);
-//     },
-//   ),
-
 export const handlers = [
   http.get(
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren`,
@@ -187,7 +149,7 @@ export const handlers = [
       const offsetParam = url.searchParams.get("offset");
       const limitParam = url.searchParams.get("limit");
 
-      const allVerfahren = mockVerfahrenNewAPIDevelop;
+      const allVerfahren = mockVerfahrenNewAPIMain;
       const total = allVerfahren.length;
 
       // parse values safely (fall back to sensible defaults)
@@ -257,25 +219,18 @@ export const handlers = [
 
   // endpoint is not used by the frontend at the moment
   http.get(
-    `${mockJustizBackendApiUrl}/api/v1/verfahren/:verfahrenId`,
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId`,
     async ({ params }) => {
-      let getRequestedVerfahren;
-      for (const [verfahrenKey, verfahrenValue] of verfahren) {
-        for (const [key, value] of Object.entries(verfahrenValue)) {
-          if (key === "id") {
-            if (value === params.verfahrenId) {
-              getRequestedVerfahren = verfahren.get(verfahrenKey);
-            }
-          }
-        }
-      }
+      console.log("Fetching verfahren with ID:", params.verfahrenId);
+      const requestedVerfahren = mockVerfahrenNewAPIMain.find(
+        (item) => item.id === params.verfahrenId,
+      );
 
-      const getGetApiV1VerfahrenVerfahrenId200Response = [
-        getRequestedVerfahren,
-        { status: 200 },
-      ];
+      console.log("Requested verfahren:", requestedVerfahren);
 
-      return HttpResponse.json(...getGetApiV1VerfahrenVerfahrenId200Response);
+      const resultArray = [requestedVerfahren, { status: 200 }];
+
+      return HttpResponse.json(...resultArray);
     },
   ),
   http.get(
@@ -453,9 +408,4 @@ export const handlers = [
       return HttpResponse.json(...post200Response);
     },
   ),
-
-  http.get(`${mockKomplaApiUrl}/:environment/api/v1/verfahren`, async () => {
-    const getNewVerfahrenResponse = [mockVerfahrenNewAPIMain, { status: 200 }];
-    return HttpResponse.json(...getNewVerfahrenResponse);
-  }),
 ];

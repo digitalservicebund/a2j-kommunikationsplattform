@@ -8,19 +8,17 @@ import { useTranslations } from "~/services/translations/context";
 import fetchVerfahrenById from "~/services/verfahren/fetchVerfahrenById.server";
 
 export const loader = withSessionLoader(
-  async ({ params }: LoaderFunctionArgs) => {
-    if (params.id) {
-      return {
-        data: fetchVerfahrenById({ id: params.id }),
-      };
-    } else {
-      throw new Response(
-        "Das Verfahrensdetail konnte nicht abgerufen werden.",
-        {
-          status: 500,
-        },
-      );
+  async ({ request, params }: LoaderFunctionArgs) => {
+    const { id } = params;
+    if (!id) {
+      throw new Error("No Verfahren ID provided in params");
     }
+
+    const dataPromise = fetchVerfahrenById(request, { id });
+
+    return {
+      data: dataPromise,
+    };
   },
 );
 
