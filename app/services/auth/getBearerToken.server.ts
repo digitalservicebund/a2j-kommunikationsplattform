@@ -1,5 +1,5 @@
 import { authorizeToken } from "../api/authorizeToken.server";
-import { getUserSession, updateUserSession } from "./session.server";
+import { getUserSession } from "./session.server";
 
 /**
  * getBearerToken
@@ -11,30 +11,18 @@ export async function getBearerToken(request: Request): Promise<string> {
 
   try {
     const accessToken = userSession?.accessToken;
-    const refreshToken = userSession?.refreshToken;
-
-    if (refreshToken) {
-      console.log("we have an refreshToken");
-    }
 
     if (accessToken) {
       console.log("we have an accessToken");
 
-      // if expired throw an error
+      // if access token is expired, throw an error
       if (userSession?.expiresAt < Date.now()) {
         throw new Error("access token expired", {
-          cause: "expires in value of API access token has expired",
+          cause: "access token has been revoked or expired",
         });
       }
 
       const token = await authorizeToken(accessToken);
-
-      await updateUserSession({
-        accessToken: token.access_token,
-        expiresAt: Number(token.expires_in),
-        refreshToken: token.refresh_token,
-        request,
-      });
 
       // return the token
       return token.access_token;

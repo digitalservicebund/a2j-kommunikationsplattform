@@ -43,8 +43,6 @@ export async function authorizeToken(
   params.append("scope", scope);
   params.append("subject_token", idpAccessToken);
 
-  console.log(`debug params: ${params.toString()}`);
-
   const response = await fetch(authorizeTokenEndpoint, {
     method: "POST",
     headers: {
