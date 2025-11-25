@@ -221,7 +221,6 @@ export const handlers = [
   http.get(
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId`,
     async ({ params }) => {
-      console.log("Fetching verfahren with ID:", params.verfahrenId);
       const requestedVerfahren = mockVerfahrenNewAPIMain.find(
         (item) => item.id === params.verfahrenId,
       );

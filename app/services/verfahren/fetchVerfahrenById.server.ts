@@ -26,8 +26,6 @@ export default async function (
     },
   });
 
-  console.log("Fetch Verfahren by ID response status:", response);
-
   if (!response.ok) {
     throw new Error(errorMessage, {
       cause: `Serverantwort war nicht ok (Fehlercode ${response.status} ${response.statusText}).`,
@@ -35,12 +33,10 @@ export default async function (
   }
 
   const data = await response.json();
-  console.log("Fetch Verfahren by ID response data:", data);
 
   try {
     return newVerfahrenSchema.parse(data);
   } catch (error) {
-    console.log("Error parsing Verfahren by ID data:", error);
     throw new Error(errorMessage, { cause: error });
   }
 }
