@@ -119,11 +119,11 @@ export const getUserSession = async (
     if (refreshToken) {
       console.log("try to refresh the access token");
 
-      await refreshAccessToken(request, refreshToken);
-      return null;
+      return await refreshAccessToken(request, refreshToken);
     }
 
     console.log("destroy session");
+
     await destroySession(session);
     return null;
   }

@@ -91,15 +91,22 @@ export async function refreshAccessToken(
       newTokens.refreshToken(),
     );
 
-    return await updateUserSession({
+    const refreshedTokenData = {
       accessToken: newTokens.accessToken(),
       refreshToken: newTokens.hasRefreshToken()
         ? newTokens.refreshToken()
         : refreshToken,
       expiresAt: Date.now() + newTokens.accessTokenExpiresInSeconds() * 1000,
+    };
+
+    await updateUserSession({
+      ...refreshedTokenData,
       request,
     });
+
+    return refreshedTokenData;
   } catch (e) {
     console.error("Refresh of access token failed", e);
+    return null;
   }
 }
