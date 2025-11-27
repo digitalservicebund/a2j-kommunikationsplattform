@@ -7,40 +7,35 @@ import { destroySession, getSession } from "~/services/auth/session.server";
 import { LoginError } from "./action.login-user";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // Fyi: When the authorization server redirects to this route (Redirect URI),
-  // then there is currently a code in the URL that could be used
-  // for further identification
-  // const url = new URL(request.url);
-  // const code = url.searchParams.get("code");
-  // if (code) {
-  //   // do something
-  // }
-
   const authenticationProvider = AuthenticationProvider.BEA;
-  return authenticator
-    .authenticate(authenticationProvider, request)
-    .then((authenticationResponse) => {
-      console.log(
-        "authenticator.authenticate auth callback done, redirecting to /",
-      );
-      return redirect("/", {
-        headers: {
-          "Set-Cookie": authenticationResponse.sessionCookieHeader,
-        },
-      });
-    })
-    .catch(async (error) => {
-      console.log(
-        `Failed to authenticate user via "${authenticationProvider}":`,
-        error,
-      );
 
-      const session = await getSession(request.headers.get("Cookie"));
+  try {
+    const authenticationResponse = await authenticator.authenticate(
+      authenticationProvider,
+      request,
+    );
 
-      return redirect(`login/?status=${LoginError.BeA}`, {
-        headers: {
-          "Set-Cookie": await destroySession(session),
-        },
-      });
+    console.log(
+      "authenticator.authenticate auth callback done, redirecting to /",
+    );
+
+    return redirect("/", {
+      headers: {
+        "Set-Cookie": authenticationResponse.sessionCookieHeader,
+      },
     });
+  } catch (error) {
+    console.error(
+      `Failed to authenticate user via "${authenticationProvider}":`,
+      error,
+    );
+
+    const session = await getSession(request.headers.get("Cookie"));
+
+    return redirect(`/login?status=${LoginError.BeA}`, {
+      headers: {
+        "Set-Cookie": await destroySession(session),
+      },
+    });
+  }
 };
