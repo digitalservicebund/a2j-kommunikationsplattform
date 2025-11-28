@@ -5,6 +5,8 @@ WORKDIR /build-deps
 COPY package.json package-lock.json tsconfig.json vite.config.ts ./
 COPY app ./app/
 COPY public ./public/
+
+RUN npm config set ignore-scripts true
 RUN npm ci
 RUN npm run build
 
@@ -13,6 +15,8 @@ FROM node:24-alpine AS app-dependencies
 
 WORKDIR /app-deps
 COPY package.json package-lock.json ./
+
+RUN npm config set ignore-scripts true
 RUN npm ci --omit=dev --omit=optional
 
 # Prepare kompla app relevant files and folders

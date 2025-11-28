@@ -33,6 +33,9 @@ jobs:
           node-version-file: .tool-versions
           cache: npm
 
+      - name: Disable npm script execution
+        run: npm config set ignore-scripts true
+
       - name: Cache npm dependencies
         id: cache-npm-deps
         uses: actions/cache@v4
@@ -43,7 +46,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Install dependencies
+      - name: Perform a clean install of node dependencies
         if: steps.cache-npm-deps.outputs.cache-hit != 'true'
         run: npm ci
 
@@ -113,40 +116,6 @@ jobs:
         with:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-  audit-licenses:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .tool-versions
-          cache: npm
-
-      - name: Cache npm dependencies
-        id: cache-npm-deps
-        uses: actions/cache@v4
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install dependencies
-        if: steps.cache-npm-deps.outputs.cache-hit != 'true'
-        run: npm ci
-
-      - name: Send status to Slack
-        uses: digitalservicebund/notify-on-failure-gha@814d0c4b2ad6a3443e89c991f8657b10126510bf # v1.5.0
-        if: ${{ failure() }}
-        with:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
   # vulnerability-scan:
   #   uses: ./.github/workflows/scan.yml
   #   secrets: inherit
@@ -159,7 +128,6 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
       - build
-      - audit-licenses
       # - vulnerability-scan
     permissions:
       contents: read
@@ -273,6 +241,9 @@ jobs:
           node-version-file: .tool-versions
           cache: npm
 
+      - name: Disable npm script execution
+        run: npm config set ignore-scripts true
+
       - name: Cache npm dependencies
         id: cache-npm-deps
         uses: actions/cache@v4
@@ -283,7 +254,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Install dependencies
+      - name: Perform a clean install of node dependencies
         if: steps.cache-npm-deps.outputs.cache-hit != 'true'
         run: npm ci
 
