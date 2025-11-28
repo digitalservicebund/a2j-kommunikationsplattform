@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import {
   aktenteileIds,
+  gerichte,
   getDokumentByAktenteilId,
   mockAktenteilDokumente,
   mockKomPlaIdPTokenExchange,
@@ -118,29 +119,6 @@ const verfahrenEingereichtByUserAkte = new Map();
 // verfahrenEingereichtByUserAkte is getting configured on user
 // interaction (e.g. user creates a Verfahren)
 
-const getVerfahren = (id) => {
-  let requestedVerfahren;
-  let allVerfahren = [];
-
-  if (id) {
-    for (const value of verfahren.values()) {
-      if (value.id === id) {
-        requestedVerfahren = value;
-      }
-    }
-  } else {
-    for (const value of verfahren.values()) {
-      allVerfahren.push(value);
-    }
-  }
-
-  return id
-    ? requestedVerfahren
-    : {
-        verfahren: allVerfahren,
-      };
-};
-
 export const handlers = [
   http.get(
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren`,
@@ -172,6 +150,11 @@ export const handlers = [
       return HttpResponse.json(...getVerfahrenResponse);
     },
   ),
+
+  http.get(`${mockKomplaApiUrl}/:environment/api/v1/gerichte`, async () => {
+    const gerichteResponse = [gerichte, { status: 200 }];
+    return HttpResponse.json(...gerichteResponse);
+  }),
 
   http.post(`${mockJustizBackendApiUrl}/api/v1/verfahren`, async () => {
     // generate random 8 digit number for "aktenzeichen"

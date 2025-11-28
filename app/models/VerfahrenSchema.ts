@@ -37,6 +37,12 @@ export default z.object({
  * to https://app.kompla-justiz.sinc.de/dev/swagger/index.html
  */
 
+export const CodeWertSchema = z.object({
+  id: z.guid(),
+  wert: z.string(),
+  code: z.string(),
+});
+
 // based on the new API response from https://app.kompla-justiz.sinc.de/main/swagger/index.html
 export const newVerfahrenSchema = z.object({
   id: z.uuid(),
@@ -44,24 +50,12 @@ export const newVerfahrenSchema = z.object({
   status: z.enum(["Erstellt", "Eingereicht"]),
   status_changed: z.iso.datetime(),
   eingereicht_am: z.nullable(z.iso.datetime()),
-  gericht: z.nullable(
-    z.object({
-      id: z.guid(),
-      wert: z.string(),
-      code: z.string(),
-    }),
-  ),
+  gericht: z.nullable(CodeWertSchema),
   beteiligungen: z.array(
     z.object({
       id: z.uuid(),
       name: z.string(),
-      rollen: z.array(
-        z.object({
-          id: z.guid(),
-          wert: z.string(),
-          code: z.string(),
-        }),
-      ),
+      rollen: z.array(CodeWertSchema),
       prozessbevollmaechtigte: z.array(
         z.object({
           aktenzeichen: z.string(),

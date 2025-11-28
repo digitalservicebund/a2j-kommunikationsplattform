@@ -9,13 +9,15 @@ import z from "zod";
 import { useVerfahrenState } from "~/components/hooks/useVerfahrenState";
 import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
 import { VERFAHREN_SKELETONS } from "~/constants/verfahrenSkeletons";
-import { newVerfahrenSchema } from "~/models/VerfahrenSchema";
+import { CodeWertSchema, newVerfahrenSchema } from "~/models/VerfahrenSchema";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import { useTranslations } from "~/services/translations/context";
+import fetchGerichteService from "~/services/verfahren/fetchGerichte.service";
 import fetchVerfahren from "~/services/verfahren/fetchVerfahren.server";
 import { Route } from "./+types/_index";
 
 export type Verfahren = z.infer<typeof newVerfahrenSchema>;
+export type Gericht = z.infer<typeof CodeWertSchema>;
 export type VerfahrenLoaderData = {
   items: Verfahren[];
   hasMoreItems: boolean;
@@ -41,6 +43,8 @@ export const loader = withSessionLoader(
       return { items: paginatedItems, hasMoreItems };
     });
 
+    const gerichtePromise = fetchGerichteService(request);
+
     // If this is a fetcher request (has offset), return resolved data
     if (offset > 0) {
       return await verfahrenPromise;
@@ -48,12 +52,16 @@ export const loader = withSessionLoader(
     // For initial load, return deferred promise for Suspense
     return {
       verfahren: verfahrenPromise,
+      gerichte: gerichtePromise,
     };
   },
 );
 
 export default function Verfahren() {
-  const data = useLoaderData<{ verfahren: Promise<VerfahrenLoaderData> }>();
+  const data = useLoaderData<{
+    verfahren: Promise<VerfahrenLoaderData>;
+    gerichte: Promise<Gericht[]>;
+  }>();
 
   return (
     <>
@@ -64,8 +72,13 @@ export default function Verfahren() {
             <VerfahrenTileSkeleton key={s.id} />
           ))}
         >
-          <Await resolve={data.verfahren}>
-            {(data) => <VerfahrenContent initialData={data} />}
+          <Await resolve={Promise.all([data.verfahren, data.gerichte])}>
+            {([verfahrenData, gerichteData]) => (
+              <VerfahrenContent
+                initialData={verfahrenData}
+                gerichte={gerichteData}
+              />
+            )}
           </Await>
         </Suspense>
       </div>
@@ -75,9 +88,12 @@ export default function Verfahren() {
 
 function VerfahrenContent({
   initialData,
+  gerichte,
 }: Readonly<{
   initialData: VerfahrenLoaderData;
+  gerichte: Gericht[];
 }>) {
+  console.log("gerichte:", gerichte);
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
     useVerfahrenState(initialData);
 
