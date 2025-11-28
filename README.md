@@ -10,9 +10,15 @@ Additionally we use [Git Hooks](#git-hooks) that can be installed with [Homebrew
 
 ### Dependencies
 
-Install the project dependencies using npm.
+Disable execution of npm scripts to reduce attack surface for supply chain attacks:
 
-```bash
+```sh
+npm config set ignore-scripts true
+```
+
+Then, install npm dependencies:
+
+```sh
 npm install
 ```
 
@@ -20,7 +26,7 @@ npm install
 
 For E2E and a11y testing with [Playwright](https://playwright.dev/docs/intro) you will need to install the supported browsers:
 
-```bash
+```sh
 npx playwright install
 ```
 
@@ -134,7 +140,7 @@ The `.github/workflows/pipeline.yml` GitHub Action includes a `build-and-push-im
 The `docs/adr` directory contains [architecture decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions).
 For adding new records the [adr-tools](https://github.com/npryce/adr-tools) command-line tool is useful but not strictly necessary:
 
-```bash
+```sh
 brew install adr-tools
 ```
 
