@@ -7,6 +7,7 @@ import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMor
 
 import z from "zod";
 import { useVerfahrenState } from "~/components/hooks/useVerfahrenState";
+import InputSelect from "~/components/InputSelect";
 import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
 import { VERFAHREN_SKELETONS } from "~/constants/verfahrenSkeletons";
 import { CodeWertSchema, newVerfahrenSchema } from "~/models/VerfahrenSchema";
@@ -18,20 +19,29 @@ import { Route } from "./+types/_index";
 
 export type Verfahren = z.infer<typeof newVerfahrenSchema>;
 export type Gericht = z.infer<typeof CodeWertSchema>;
+
 export type VerfahrenLoaderData = {
   items: Verfahren[];
   hasMoreItems: boolean;
 };
 
+export type DeferredVerfahrenData = {
+  verfahren: Promise<VerfahrenLoaderData>;
+  gerichte: Gericht[]; // No longer a promise
+};
+
 export const VERFAHREN_PAGE_LIMIT = 10;
 
 export const loader = withSessionLoader(
-  async ({ request }: Route.LoaderArgs) => {
+  async ({
+    request,
+  }: Route.LoaderArgs): Promise<
+    VerfahrenLoaderData | DeferredVerfahrenData
+  > => {
     const url = new URL(request.url);
     const offset = Number(url.searchParams.get("offset")) || 0;
 
     const verfahrenPromise = fetchVerfahren(request, {
-      // Fetch one more item than the page limit to check for "hasMore"
       limit: VERFAHREN_PAGE_LIMIT + 1,
       offset,
     }).then((verfahren) => {
@@ -43,25 +53,22 @@ export const loader = withSessionLoader(
       return { items: paginatedItems, hasMoreItems };
     });
 
-    const gerichtePromise = fetchGerichteService(request);
+    const gerichte = await fetchGerichteService(request); // Await here
 
-    // If this is a fetcher request (has offset), return resolved data
     if (offset > 0) {
-      return await verfahrenPromise;
+      const verfahrenData = await verfahrenPromise;
+      return { ...verfahrenData, gerichte };
     }
-    // For initial load, return deferred promise for Suspense
+
     return {
       verfahren: verfahrenPromise,
-      gerichte: gerichtePromise,
+      gerichte, // Already resolved
     };
   },
 );
 
 export default function Verfahren() {
-  const data = useLoaderData<{
-    verfahren: Promise<VerfahrenLoaderData>;
-    gerichte: Promise<Gericht[]>;
-  }>();
+  const data = useLoaderData<DeferredVerfahrenData>();
 
   return (
     <>
@@ -72,11 +79,11 @@ export default function Verfahren() {
             <VerfahrenTileSkeleton key={s.id} />
           ))}
         >
-          <Await resolve={Promise.all([data.verfahren, data.gerichte])}>
-            {([verfahrenData, gerichteData]) => (
+          <Await resolve={data.verfahren}>
+            {(verfahrenData) => (
               <VerfahrenContent
                 initialData={verfahrenData}
-                gerichte={gerichteData}
+                gerichte={data.gerichte}
               />
             )}
           </Await>
@@ -100,6 +107,11 @@ function VerfahrenContent({
   return (
     <>
       {/* Filters can be added here in the future */}
+      <InputSelect
+        label="Zuständiges Gericht"
+        defaultOption="Alle anzeigen"
+        options={gerichte}
+      />
       <VerfahrenCountInfo count={allItems.length || 0} />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
       {hasMoreItems && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}
