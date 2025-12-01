@@ -17,6 +17,7 @@
     "lint:fix": "npm run lint:check -- --fix",
     "format:check": "prettier --check .",
     "format:fix": "prettier --write --ignore-unknown .",
+    "preinstall": "echo 'Please disable script execution: npm config set ignore-scripts true' && exit 1",
     "style:check": "npm run format:check && npm run lint:check",
     "style:fix": "npm run format:fix && npm run lint:fix"
   },
