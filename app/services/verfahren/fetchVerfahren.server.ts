@@ -6,6 +6,7 @@ import { getBearerToken } from "~/services/auth/getBearerToken.server";
 type FetchVerfahrenOptions = {
   limit?: number;
   offset?: number;
+  gericht?: string;
 };
 
 const errorMessage = "Die Verfahren konnten nicht abgerufen werden.";
@@ -22,8 +23,9 @@ export default async function (
 
   const offset = options?.offset || 0;
   const limit = options?.limit || 10;
+  const gericht = options?.gericht || "";
 
-  const url = `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren?limit=${limit}&offset=${offset}`;
+  const url = `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren?limit=${limit}&offset=${offset}&gericht=${encodeURIComponent(gericht)}`;
 
   const response = await fetch(url, {
     headers: {

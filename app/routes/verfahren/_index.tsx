@@ -6,7 +6,8 @@ import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
 import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
 
 import z from "zod";
-import { useVerfahrenState } from "~/components/hooks/useVerfahrenState";
+import { useLoadMore } from "~/components/hooks/useLoadMore";
+import { useParamsState } from "~/components/hooks/useParamsState";
 import InputSelect from "~/components/InputSelect";
 import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
 import { VERFAHREN_SKELETONS } from "~/constants/verfahrenSkeletons";
@@ -40,10 +41,12 @@ export const loader = withSessionLoader(
   > => {
     const url = new URL(request.url);
     const offset = Number(url.searchParams.get("offset")) || 0;
+    const gericht = url.searchParams.get("gericht") || undefined;
 
     const verfahrenPromise = fetchVerfahren(request, {
       limit: VERFAHREN_PAGE_LIMIT + 1,
       offset,
+      gericht,
     }).then((verfahren) => {
       const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
       const paginatedItems = hasMoreItems
@@ -53,16 +56,19 @@ export const loader = withSessionLoader(
       return { items: paginatedItems, hasMoreItems };
     });
 
-    const gerichte = await fetchGerichteService(request); // Await here
+    const gerichte = await fetchGerichteService(request);
 
+    // Always return resolved data for fetcher requests (offset > 0)
     if (offset > 0) {
       const verfahrenData = await verfahrenPromise;
       return { ...verfahrenData, gerichte };
     }
 
+    // When gericht filter changes, return deferred data
+    // This maintains the same data structure as initial load
     return {
       verfahren: verfahrenPromise,
-      gerichte, // Already resolved
+      gerichte,
     };
   },
 );
@@ -100,17 +106,25 @@ function VerfahrenContent({
   initialData: VerfahrenLoaderData;
   gerichte: Gericht[];
 }>) {
-  console.log("gerichte:", gerichte);
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
-    useVerfahrenState(initialData);
+    useLoadMore(initialData);
+
+  const { params, setParam } = useParamsState({
+    gericht: "",
+    limit: VERFAHREN_PAGE_LIMIT.toString(),
+    offset: "",
+  });
+  console.log("params", params);
 
   return (
     <>
       {/* Filters can be added here in the future */}
       <InputSelect
         label="Zuständiges Gericht"
-        defaultOption="Alle anzeigen"
+        name="gericht"
+        selectedValue={params.gericht || ""}
         options={gerichte}
+        onChange={(e) => setParam("gericht", e.target.value || undefined)}
       />
       <VerfahrenCountInfo count={allItems.length || 0} />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />

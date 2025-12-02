@@ -126,9 +126,19 @@ export const handlers = [
       const url = new URL(request.url);
       const offsetParam = url.searchParams.get("offset");
       const limitParam = url.searchParams.get("limit");
+      const gerichtParam = url.searchParams.get("gericht");
+      console.log("URL Search Params:", url.searchParams.toString());
 
-      const allVerfahren = mockVerfahrenNewAPIMain;
-      const total = allVerfahren.length;
+      let filteredVerfahren = mockVerfahrenNewAPIMain;
+
+      // Apply gericht filter if provided
+      if (gerichtParam) {
+        filteredVerfahren = filteredVerfahren.filter(
+          (verfahren) => verfahren.gericht.id === gerichtParam,
+        );
+      }
+
+      const total = filteredVerfahren.length;
 
       // parse values safely (fall back to sensible defaults)
       const offsetNum = offsetParam ? Number.parseInt(offsetParam, 10) || 0 : 0;
@@ -142,9 +152,11 @@ export const handlers = [
         offsetNum,
         "and limit:",
         limitNum,
+        "gericht:",
+        gerichtParam,
       );
 
-      const paged = allVerfahren.slice(offsetNum, offsetNum + limitNum);
+      const paged = filteredVerfahren.slice(offsetNum, offsetNum + limitNum);
 
       const getVerfahrenResponse = [paged, { status: 200 }];
       return HttpResponse.json(...getVerfahrenResponse);

@@ -1,14 +1,16 @@
+import React from "react";
+
 export default function InputSelect({
   label,
   name,
   options = [],
-  defaultValue,
+  selectedValue,
   onChange,
 }: Readonly<{
   label: string;
   name: string;
   options: Array<{ id: string; wert: string }>;
-  defaultValue?: string;
+  selectedValue?: string;
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }>) {
   return (
@@ -21,12 +23,15 @@ export default function InputSelect({
           className="kern-form-input__select"
           name={name}
           id={name}
-          defaultValue={defaultValue}
           onChange={onChange}
         >
-          <option value="">Bitte auswählen</option>
+          <option selected={!selectedValue}>Bitte auswählen</option>
           {options.map((option) => (
-            <option key={option.id} value={option.id}>
+            <option
+              key={option.id}
+              value={option.id}
+              selected={selectedValue === option.id}
+            >
               {option.wert}
             </option>
           ))}

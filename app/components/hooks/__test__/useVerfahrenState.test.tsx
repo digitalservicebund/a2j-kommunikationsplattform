@@ -3,7 +3,7 @@ import { renderHook, waitFor } from "@testing-library/react";
 import * as ReactRouter from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { VerfahrenLoaderData } from "~/routes/verfahren/_index";
-import { useVerfahrenState } from "../useVerfahrenState";
+import { useLoadMore } from "../useLoadMore";
 
 const mockSetSearchParams = vi.fn();
 const mockSubmit = vi.fn();
@@ -22,7 +22,7 @@ const createFetcherMock = (
     ...options,
   }) as ReturnType<typeof ReactRouter.useFetcher>;
 
-describe("useVerfahrenState", () => {
+describe("useLoadMore", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(ReactRouter.useSearchParams).mockReturnValue([
@@ -56,7 +56,7 @@ describe("useVerfahrenState", () => {
 
   describe("initialization", () => {
     it("initializes with provided data", () => {
-      const { result } = renderHook(() => useVerfahrenState(mockInitialData));
+      const { result } = renderHook(() => useLoadMore(mockInitialData));
 
       expect(result.current.allItems).toEqual(mockInitialData.items);
       expect(result.current.hasMoreItems).toBe(true);
@@ -75,7 +75,7 @@ describe("useVerfahrenState", () => {
         mockSetSearchParams,
       ]);
 
-      const { result } = renderHook(() => useVerfahrenState(mockInitialData));
+      const { result } = renderHook(() => useLoadMore(mockInitialData));
 
       expect(result.current.filters).toEqual({
         search: "test",
@@ -97,7 +97,7 @@ describe("useVerfahrenState", () => {
         mockSetSearchParams,
       ]);
 
-      const { result } = renderHook(() => useVerfahrenState(mockInitialData));
+      const { result } = renderHook(() => useLoadMore(mockInitialData));
 
       result.current.updateFilters({ sortBy: "gericht" });
 
@@ -119,7 +119,7 @@ describe("useVerfahrenState", () => {
         mockSetSearchParams,
       ]);
 
-      const { result } = renderHook(() => useVerfahrenState(mockInitialData));
+      const { result } = renderHook(() => useLoadMore(mockInitialData));
 
       result.current.updateFilters({ search: "" });
 
@@ -131,7 +131,7 @@ describe("useVerfahrenState", () => {
     });
 
     it("clears all filters", () => {
-      const { result } = renderHook(() => useVerfahrenState(mockInitialData));
+      const { result } = renderHook(() => useLoadMore(mockInitialData));
 
       result.current.clearFilters();
 
@@ -151,7 +151,7 @@ describe("useVerfahrenState", () => {
         mockSetSearchParams,
       ]);
 
-      const { result } = renderHook(() => useVerfahrenState(mockInitialData));
+      const { result } = renderHook(() => useLoadMore(mockInitialData));
 
       result.current.handleLoadMore();
 
@@ -177,7 +177,7 @@ describe("useVerfahrenState", () => {
         }),
       );
 
-      const { result } = renderHook(() => useVerfahrenState(mockInitialData));
+      const { result } = renderHook(() => useLoadMore(mockInitialData));
 
       await waitFor(() => {
         expect(result.current.allItems).toHaveLength(3);
@@ -192,7 +192,7 @@ describe("useVerfahrenState", () => {
         }),
       );
 
-      const { result } = renderHook(() => useVerfahrenState(mockInitialData));
+      const { result } = renderHook(() => useLoadMore(mockInitialData));
 
       await waitFor(() => {
         expect(result.current.allItems).toHaveLength(2);
@@ -203,12 +203,9 @@ describe("useVerfahrenState", () => {
 
   describe("data updates", () => {
     it("resets items when initial data changes", async () => {
-      const { result, rerender } = renderHook(
-        ({ data }) => useVerfahrenState(data),
-        {
-          initialProps: { data: mockInitialData },
-        },
-      );
+      const { result, rerender } = renderHook(({ data }) => useLoadMore(data), {
+        initialProps: { data: mockInitialData },
+      });
 
       const newData: VerfahrenLoaderData = {
         items: [
@@ -239,7 +236,7 @@ describe("useVerfahrenState", () => {
         }),
       );
 
-      const { result } = renderHook(() => useVerfahrenState(mockInitialData));
+      const { result } = renderHook(() => useLoadMore(mockInitialData));
 
       expect(result.current.isLoading).toBe(true);
     });
