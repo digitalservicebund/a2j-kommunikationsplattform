@@ -28,10 +28,20 @@ export type VerfahrenLoaderData = {
 
 export type DeferredVerfahrenData = {
   verfahren: Promise<VerfahrenLoaderData>;
-  gerichte: Gericht[]; // No longer a promise
+  gerichte: Gericht[];
 };
 
 export const VERFAHREN_PAGE_LIMIT = 10;
+
+const getAllValuesFromRequestURL = <T extends Record<string, string>>(
+  url: URL,
+): T => {
+  const params = {} as T;
+  for (const [key, value] of url.searchParams) {
+    params[key as keyof T] = value as T[keyof T];
+  }
+  return params;
+};
 
 export const loader = withSessionLoader(
   async ({
@@ -40,13 +50,11 @@ export const loader = withSessionLoader(
     VerfahrenLoaderData | DeferredVerfahrenData
   > => {
     const url = new URL(request.url);
-    const offset = Number(url.searchParams.get("offset")) || 0;
-    const gericht = url.searchParams.get("gericht") || undefined;
+    const params = getAllValuesFromRequestURL(url);
 
     const verfahrenPromise = fetchVerfahren(request, {
       limit: VERFAHREN_PAGE_LIMIT + 1,
-      offset,
-      gericht,
+      ...params,
     }).then((verfahren) => {
       const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
       const paginatedItems = hasMoreItems
@@ -59,12 +67,12 @@ export const loader = withSessionLoader(
     const gerichte = await fetchGerichteService(request);
 
     // Always return resolved data for fetcher requests (offset > 0)
-    if (offset > 0) {
+    if (Number(params.offset) > 0) {
       const verfahrenData = await verfahrenPromise;
       return { ...verfahrenData, gerichte };
     }
 
-    // When gericht filter changes, return deferred data
+    // When filter changes, return deferred data
     // This maintains the same data structure as initial load
     return {
       verfahren: verfahrenPromise,
@@ -116,7 +124,6 @@ function VerfahrenContent({
 
   return (
     <>
-      {/* Filters can be added here in the future */}
       <InputSelect
         label="Zuständiges Gericht"
         name="gericht"

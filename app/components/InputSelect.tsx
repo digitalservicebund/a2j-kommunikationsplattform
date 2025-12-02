@@ -1,4 +1,4 @@
-import React from "react";
+import { ChangeEvent } from "react";
 
 export default function InputSelect({
   placeholder,
@@ -13,7 +13,7 @@ export default function InputSelect({
   name: string;
   options: Array<{ id: string; wert: string }>;
   selectedValue: string;
-  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
 }>) {
   return (
     <div className="kern-form-input">
