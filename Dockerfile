@@ -1,5 +1,14 @@
+# Create an upgraded alpine image to solve CVE vulnerabilities
+# See:
+    # https://scout.docker.com/vulnerabilities/id/CVE-2025-64756
+    # https://stackoverflow.com/a/76440791/1239760
+FROM node:24-alpine AS alpine-upgraded
+
+RUN apk upgrade --no-cache
+FROM scratch
+
 # Download and install the dependencies to build the app.
-FROM node:24-alpine AS build-dependencies
+FROM alpine-upgraded AS build-dependencies
 
 WORKDIR /build-deps
 COPY package.json package-lock.json tsconfig.json vite.config.ts ./
@@ -11,7 +20,7 @@ RUN npm ci
 RUN npm run build
 
 # Download and install the dependencies to run the app.
-FROM node:24-alpine AS app-dependencies
+FROM alpine-upgraded AS app-dependencies
 
 WORKDIR /app-deps
 COPY package.json package-lock.json ./
@@ -30,8 +39,11 @@ COPY server.js package.json ./
 
 # Prepare prod build stage
 FROM kompla AS app-copy
-FROM node:24-alpine AS prod
+FROM alpine-upgraded AS prod
 RUN apk add --no-cache dumb-init && rm -rf /var/cache/apk/*
+
+# Remove npm (has vulnerable glob@10.4.5 installed)
+RUN npm r -g npm
 
 USER node
 # /app-deps has only production relevant packages installed, no dev dependencies
@@ -40,4 +52,5 @@ ENV NODE_ENV=production
 # copy /kompla production app relevant data into folder
 COPY --link --chown=node:node --from=app-copy /kompla/ ./
 EXPOSE 3000
-CMD ["npm", "run", "start"]
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD [ "node", "./server.js" ]
