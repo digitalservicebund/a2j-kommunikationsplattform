@@ -111,8 +111,6 @@ function VerfahrenContent({
 
   const { params, setParam } = useParamsState({
     gericht: "",
-    limit: VERFAHREN_PAGE_LIMIT.toString(),
-    offset: "",
   });
   console.log("params", params);
 
