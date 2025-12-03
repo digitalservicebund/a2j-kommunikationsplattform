@@ -2,18 +2,38 @@ import z from "zod";
 import { serverConfig } from "~/config/config.server";
 import { newVerfahrenSchema } from "~/models/VerfahrenSchema";
 
-import { VERFAHREN_PAGE_LIMIT } from "~/constants/verfahren";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 
 const fetchVerfahrenOptionsSchema = z.object({
-  offset: z.number().int().nonnegative().default(0),
-  limit: z.number().int().positive().default(VERFAHREN_PAGE_LIMIT),
+  offset: z.number().int().nonnegative().optional(),
+  limit: z.number().int().positive().optional(),
   gericht: z.guid().optional().or(z.literal("")),
 });
 
 export type FetchVerfahrenOptions = z.infer<typeof fetchVerfahrenOptionsSchema>;
 
 const ERROR_MESSAGE = "Die Verfahren konnten nicht abgerufen werden.";
+
+function buildSearchParams<T extends Record<string, unknown>>(
+  options: T,
+): URLSearchParams {
+  const params = new URLSearchParams();
+
+  (Object.entries(options) as [keyof T, T[keyof T]][]).forEach(
+    ([key, value]) => {
+      if (
+        value !== undefined &&
+        value !== null &&
+        value !== "" &&
+        typeof value !== "object"
+      ) {
+        params.set(String(key), String(value));
+      }
+    },
+  );
+
+  return params;
+}
 
 export default async function fetchVerfahren(
   request: Request,
@@ -25,15 +45,14 @@ export default async function fetchVerfahren(
     throw new Error("No bearer token available");
   }
 
-  const { limit, offset, gericht } = fetchVerfahrenOptionsSchema.parse(
-    options ?? {},
-  );
+  const parsed = fetchVerfahrenOptionsSchema.parse(options ?? {});
 
   const url = new URL(`${serverConfig().KOMPLA_API_URL}/api/v1/verfahren`);
+  const searchParams = buildSearchParams(parsed);
 
-  url.searchParams.set("limit", String(limit));
-  url.searchParams.set("offset", String(offset));
-  if (gericht) url.searchParams.set("gericht", gericht);
+  searchParams.forEach((value, key) => {
+    url.searchParams.set(key, value);
+  });
 
   const response = await fetch(url.toString(), {
     headers: {
