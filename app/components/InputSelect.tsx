@@ -1,5 +1,20 @@
 import { ChangeEvent } from "react";
 
+type InputSelectOption = {
+  value: string;
+  label: string;
+};
+
+type InputSelectProps = Readonly<{
+  placeholder?: string;
+  label: string;
+  name: string;
+  options?: InputSelectOption[];
+  selectedValue?: string;
+  onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
+  disabled?: boolean;
+}>;
+
 export default function InputSelect({
   placeholder,
   label,
@@ -7,31 +22,30 @@ export default function InputSelect({
   options = [],
   selectedValue,
   onChange,
-}: Readonly<{
-  placeholder?: string;
-  label: string;
-  name: string;
-  options: Array<{ id: string; wert: string }>;
-  selectedValue: string;
-  onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
-}>) {
+  disabled,
+}: InputSelectProps) {
+  const selectId = name;
+
   return (
     <div className="kern-form-input">
-      <label className="kern-label" htmlFor={name}>
+      <label className="kern-label" htmlFor={selectId}>
         {label}
       </label>
+
       <div className="kern-form-input__select-wrapper">
         <select
           className="kern-form-input__select"
           name={name}
-          id={name}
-          value={selectedValue}
+          id={selectId}
+          value={selectedValue ?? ""}
           onChange={onChange}
+          aria-disabled={disabled} // using aria-disabled as recommended in https://www.kern-ux.de/komponenten/form-inputs/#disabled-attribut
         >
-          <option value="">{placeholder || "Bitte auswählen"}</option>
+          <option value="">{placeholder ?? "Bitte auswählen"}</option>
+
           {options.map((option) => (
-            <option key={option.id} value={option.id}>
-              {option.wert}
+            <option key={option.value} value={option.value}>
+              {option.label}
             </option>
           ))}
         </select>

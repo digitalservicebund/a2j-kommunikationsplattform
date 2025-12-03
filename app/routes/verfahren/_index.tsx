@@ -103,6 +103,9 @@ function VerfahrenContent({
   const { params, setParam } = useParamsState({
     gericht: "",
   });
+
+  const gerichteOptions = gerichte.map((g) => ({ value: g.id, label: g.wert }));
+
   console.log("params", params);
 
   return (
@@ -110,9 +113,10 @@ function VerfahrenContent({
       <InputSelect
         label="Zuständiges Gericht"
         name="gericht"
-        selectedValue={params.gericht || ""}
-        options={gerichte}
-        onChange={(e) => setParam("gericht", e.target.value || undefined)}
+        selectedValue={params.gericht || ""} // gerichtID
+        options={gerichteOptions}
+        onChange={(e) => setParam("gericht", e.target.value || "")}
+        disabled={isLoading || gerichteOptions.length === 0} // TODO: add the condition for 0 results in initial load, see https://digitalservicebund.atlassian.net/browse/KOMMPLA-910
       />
       <VerfahrenCountInfo count={allItems.length || 0} />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
