@@ -1,47 +1,43 @@
+import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router";
 
-export const useParamsState = <T extends Record<string, string | undefined>>(
+export function useParamsState<T extends Record<string, string | undefined>>(
   initialParams: T,
-) => {
+) {
   const [searchParams, setSearchParams] = useSearchParams();
+  type Key = keyof T & string;
 
-  const setParam = (key: keyof T, value: string | undefined) => {
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    if (value === undefined) {
-      newSearchParams.delete(key as string);
-    } else {
-      newSearchParams.set(key as string, value);
-    }
-    setSearchParams(newSearchParams);
-  };
+  const setParam = useCallback(
+    (key: Key, value: string | undefined) => {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
 
-  const deleteParam = (key: keyof T) => {
-    const newSearchParams = new URLSearchParams(searchParams.toString());
-    newSearchParams.delete(key as string);
-    setSearchParams(newSearchParams);
-  };
+        if (value === undefined || value === "") {
+          next.delete(key);
+        } else {
+          next.set(key, value);
+        }
 
-  const getParam = (key: keyof T): string | undefined => {
-    return searchParams.get(key as string) || undefined;
-  };
+        return next;
+      });
+    },
+    [setSearchParams],
+  );
+  const params: T = useMemo(() => {
+    const mergedParams = { ...initialParams };
 
-  const clearAllParams = () => {
-    setSearchParams(new URLSearchParams());
-  };
+    (Object.keys(initialParams) as Key[]).forEach((key) => {
+      const value = searchParams.get(key);
+      if (value !== null) {
+        mergedParams[key] = value as T[Key];
+      }
+    });
 
-  const params: T = { ...initialParams };
-  for (const key in initialParams) {
-    const paramValue = searchParams.get(key);
-    if (paramValue !== null) {
-      params[key] = paramValue as T[Extract<keyof T, string>];
-    }
-  }
+    return mergedParams;
+  }, [initialParams, searchParams]);
 
   return {
     params,
     setParam,
-    deleteParam,
-    getParam,
-    clearAllParams,
   } as const;
-};
+}
