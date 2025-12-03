@@ -10,6 +10,7 @@ import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { useParamsState } from "~/components/hooks/useParamsState";
 import InputSelect from "~/components/InputSelect";
 import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
+import { VERFAHREN_PAGE_LIMIT } from "~/constants/verfahren";
 import { VERFAHREN_SKELETONS } from "~/constants/verfahrenSkeletons";
 import { CodeWertSchema, newVerfahrenSchema } from "~/models/VerfahrenSchema";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
@@ -30,8 +31,6 @@ export type LoaderData = {
   verfahren: Promise<VerfahrenLoaderData>;
   gerichte: Gericht[];
 };
-
-export const VERFAHREN_PAGE_LIMIT = 10;
 
 export const loader = withSessionLoader(
   async ({ request }: Route.LoaderArgs): Promise<LoaderData> => {
