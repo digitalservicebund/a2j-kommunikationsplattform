@@ -41,21 +41,20 @@ export const loader = withSessionLoader(
     // We can add more filters here later ⬆️
 
     // Fetch verfahren with one extra item to determine if there are more items
-    const verfahrenPromise: Promise<VerfahrenLoaderData> = fetchVerfahren(
-      request,
-      {
+    const verfahrenPromise: Promise<VerfahrenLoaderData> = (async () => {
+      const verfahren = await fetchVerfahren(request, {
         limit: VERFAHREN_PAGE_LIMIT + 1,
         offset,
         gericht,
-      },
-    ).then((verfahren) => {
+      });
+
       const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
-      const paginatedItems = hasMoreItems
+      const items = hasMoreItems
         ? verfahren.slice(0, VERFAHREN_PAGE_LIMIT)
         : verfahren;
 
-      return { items: paginatedItems, hasMoreItems };
-    });
+      return { items, hasMoreItems };
+    })();
 
     const gerichte = await fetchGerichteService(request);
 
