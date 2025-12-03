@@ -26,36 +26,29 @@ export type VerfahrenLoaderData = {
   hasMoreItems: boolean;
 };
 
-export type DeferredVerfahrenData = {
+export type LoaderData = {
   verfahren: Promise<VerfahrenLoaderData>;
   gerichte: Gericht[];
 };
 
 export const VERFAHREN_PAGE_LIMIT = 10;
 
-const getAllValuesFromRequestURL = <T extends Record<string, string>>(
-  url: URL,
-): T => {
-  const params = {} as T;
-  for (const [key, value] of url.searchParams) {
-    params[key as keyof T] = value as T[keyof T];
-  }
-  return params;
-};
-
 export const loader = withSessionLoader(
-  async ({
-    request,
-  }: Route.LoaderArgs): Promise<
-    VerfahrenLoaderData | DeferredVerfahrenData
-  > => {
+  async ({ request }: Route.LoaderArgs): Promise<LoaderData> => {
     const url = new URL(request.url);
-    const params = getAllValuesFromRequestURL(url);
+    const offset = Number(url.searchParams.get("offset") || "0");
+    const gericht = url.searchParams.get("gericht") || "";
+    // We can add more filters here later ⬆️
 
-    const verfahrenPromise = fetchVerfahren(request, {
-      limit: VERFAHREN_PAGE_LIMIT + 1,
-      ...params,
-    }).then((verfahren) => {
+    // Fetch verfahren with one extra item to determine if there are more items
+    const verfahrenPromise: Promise<VerfahrenLoaderData> = fetchVerfahren(
+      request,
+      {
+        limit: VERFAHREN_PAGE_LIMIT + 1,
+        offset,
+        gericht,
+      },
+    ).then((verfahren) => {
       const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
       const paginatedItems = hasMoreItems
         ? verfahren.slice(0, VERFAHREN_PAGE_LIMIT)
@@ -66,14 +59,6 @@ export const loader = withSessionLoader(
 
     const gerichte = await fetchGerichteService(request);
 
-    // Always return resolved data for fetcher requests (offset > 0)
-    if (Number(params.offset) > 0) {
-      const verfahrenData = await verfahrenPromise;
-      return { ...verfahrenData, gerichte };
-    }
-
-    // When filter changes, return deferred data
-    // This maintains the same data structure as initial load
     return {
       verfahren: verfahrenPromise,
       gerichte,
@@ -82,7 +67,7 @@ export const loader = withSessionLoader(
 );
 
 export default function Verfahren() {
-  const data = useLoaderData<DeferredVerfahrenData>();
+  const data = useLoaderData<LoaderData>();
 
   return (
     <>

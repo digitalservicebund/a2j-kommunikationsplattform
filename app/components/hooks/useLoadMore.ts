@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useFetcher, useSearchParams } from "react-router";
-import { Verfahren, VerfahrenLoaderData } from "~/routes/verfahren/_index";
+import type {
+  LoaderData,
+  Verfahren,
+  VerfahrenLoaderData,
+} from "~/routes/verfahren/_index";
 
 const getFormData = (
   offset: number,
@@ -8,7 +12,6 @@ const getFormData = (
 ): FormData => {
   const formData = new FormData();
   formData.set("offset", String(offset));
-
   // Preserve all current search params
   for (const [key, value] of searchParams) {
     if (key !== "offset") {
@@ -21,34 +24,51 @@ const getFormData = (
 
 export const useLoadMore = (initialData: VerfahrenLoaderData) => {
   const [searchParams] = useSearchParams();
-  const fetcher = useFetcher<VerfahrenLoaderData>();
+  const fetcher = useFetcher<LoaderData>();
+
   const [allItems, setAllItems] = useState<Verfahren[]>(initialData.items);
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(
     initialData.hasMoreItems,
   );
 
+  // Reset when initialData changes (e.g. filter change)
   useEffect(() => {
     setAllItems(initialData.items);
     setHasMoreItems(initialData.hasMoreItems);
-  }, [initialData]);
+  }, [initialData.items, initialData.hasMoreItems]);
 
   // Append fetched items
   useEffect(() => {
-    if (!fetcher.data) return;
-    setAllItems((prev) => [...prev, ...fetcher.data!.items]);
-    setHasMoreItems(fetcher.data.hasMoreItems);
-  }, [fetcher.data]);
+    if (fetcher.state !== "idle" || !fetcher.data?.verfahren) return;
+
+    let cancelled = false;
+
+    const appendItems = async () => {
+      const page = await fetcher.data!.verfahren;
+      if (cancelled) return;
+
+      setAllItems((prev) => [...prev, ...page.items]);
+      setHasMoreItems(page.hasMoreItems);
+    };
+
+    void appendItems();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetcher.state, fetcher.data]);
 
   const handleLoadMore = useCallback(() => {
+    if (!hasMoreItems || fetcher.state !== "idle") return;
+
     const formData = getFormData(allItems.length, searchParams);
-    console.log("formdata", formData.values());
     fetcher.submit(formData, { method: "get" });
-  }, [allItems.length, fetcher, searchParams]);
+  }, [allItems.length, fetcher, hasMoreItems, searchParams, fetcher.state]);
 
   return {
     allItems,
     hasMoreItems,
-    isLoading: fetcher.state === "loading",
+    isLoading: fetcher.state !== "idle",
     handleLoadMore,
   };
 };
