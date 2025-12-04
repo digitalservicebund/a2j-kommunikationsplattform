@@ -5,7 +5,7 @@ import { getBearerToken } from "~/services/auth/getBearerToken.server";
 
 const errorMessage = "Die Gerichte konnten nicht abgerufen werden.";
 
-export default async function (request: Request) {
+export default async function fetchGerichte(request: Request) {
   const bearerToken = await getBearerToken(request);
 
   if (!bearerToken) {
