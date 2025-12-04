@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { authorizeToken } from "../../api/authorizeToken.server";
-import { refreshAccessToken } from "../../api/refreshToken.server";
 import { getBearerToken } from "../getBearerToken.server";
 import { getUserSession, updateUserSession } from "../session.server";
 
@@ -43,7 +42,6 @@ describe.skip("getBearerToken", () => {
 
     expect(token).toBe("existing-token");
     expect(authorizeToken).not.toHaveBeenCalled();
-    expect(refreshAccessToken).not.toHaveBeenCalled();
   });
 
   it("exchanges access token when no API token exists", async () => {
@@ -76,12 +74,9 @@ describe.skip("getBearerToken", () => {
       refreshToken: "refresh-token",
     });
 
-    vi.mocked(refreshAccessToken).mockResolvedValue(mockToken);
-
     const token = await getBearerToken(mockRequest);
 
     expect(token).toBe(mockToken.access_token);
-    expect(refreshAccessToken).toHaveBeenCalledWith("refresh-token");
     expect(updateUserSession).toHaveBeenCalledWith({
       accessToken: mockToken.access_token,
       expiresIn: Number(mockToken.expires_in),
@@ -99,7 +94,6 @@ describe.skip("getBearerToken", () => {
     });
 
     const mockError = new Error("Refresh token invalid");
-    vi.mocked(refreshAccessToken).mockRejectedValue(mockError);
 
     await expect(getBearerToken(mockRequest)).rejects.toThrow(mockError);
   });
