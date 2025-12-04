@@ -1,6 +1,6 @@
 import z from "zod";
 import { serverConfig } from "~/config/config.server";
-import { newVerfahrenSchema } from "~/models/VerfahrenSchema";
+import { VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 
 type FetchVerfahrenOptions = {
@@ -15,14 +15,8 @@ export default async function (
   options?: FetchVerfahrenOptions,
 ) {
   const bearerToken = await getBearerToken(request);
-
-  if (!bearerToken) {
-    throw new Error("No bearer token available");
-  }
-
   const offset = options?.offset || 0;
   const limit = options?.limit || 10;
-
   const url = `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren?limit=${limit}&offset=${offset}`;
 
   const response = await fetch(url, {
@@ -40,7 +34,7 @@ export default async function (
   const data = await response.json();
 
   try {
-    return z.array(newVerfahrenSchema).parse(data);
+    return z.array(VerfahrenSchema).parse(data);
   } catch (error) {
     throw new Error(errorMessage, { cause: error });
   }

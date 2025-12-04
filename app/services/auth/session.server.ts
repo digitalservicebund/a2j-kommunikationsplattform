@@ -23,41 +23,34 @@ const { getSession, commitSession, destroySession } =
 
 export { commitSession, destroySession, getSession };
 
+interface CreateUserSessionProps extends AuthenticationContext {
+  request: Request;
+}
+
 // Once a user has authenticated with the OAuth2 strategy, we create a session for the user.
-export const createUserSession = async (
-  accessToken: string,
-  expiresAt: number,
-  refreshToken: string,
-  request: Request,
-) => {
+export const createUserSession = async ({
+  accessToken,
+  expiresAt,
+  refreshToken,
+  request,
+}: CreateUserSessionProps) => {
   const session = await getSession(request.headers.get("Cookie"));
-
-  console.log(
-    "createUserSession accessToken is",
-    accessToken,
-    "expiresAt is",
-    expiresAt,
-    "refreshToken is",
-    refreshToken,
-  );
-
   session.set("accessToken", accessToken);
   session.set("expiresAt", expiresAt);
   session.set("refreshToken", refreshToken);
 
-  try {
-    console.log("Creating user session");
-    return await commitSession(session);
-  } catch (error) {
-    console.error("Error creating user session:", error);
-    throw new Error("Failed to create user session");
-  }
+  console.log(
+    "createUserSession \naccessToken is",
+    accessToken,
+    "\n---",
+    "\nrefreshToken is",
+    refreshToken,
+  );
+
+  return await commitSession(session);
 };
 
-interface UpdateUserSessionResponse {
-  accessToken: string;
-  expiresAt: number;
-  refreshToken: string;
+interface UpdateUserSessionProps extends AuthenticationContext {
   request: Request;
 }
 
@@ -67,65 +60,32 @@ export const updateUserSession = async ({
   expiresAt,
   refreshToken,
   request,
-}: UpdateUserSessionResponse): Promise<string | null> => {
+}: UpdateUserSessionProps) => {
   const session = await getSession(request.headers.get("Cookie"));
-
-  console.log(
-    "updateUserSession accessToken is",
-    accessToken,
-    "expiresAt is",
-    expiresAt,
-    "refreshToken is",
-    refreshToken,
-  );
-
   session.set("accessToken", accessToken);
   session.set("expiresAt", expiresAt);
   session.set("refreshToken", refreshToken);
 
-  try {
-    console.log("Updating user session");
-    return await commitSession(session);
-  } catch (error) {
-    console.error("Error updating user session:", error);
-    throw new Error("Failed to update the user session");
-  }
-};
+  console.log("updateUserSession: accessToken is", accessToken);
 
-type GetUserSessionResponse = AuthenticationContext &
-  Omit<UpdateUserSessionResponse, "request">;
+  await commitSession(session);
+};
 
 // We retrieve the user session from the request headers and ensure that the session has not expired.
 export const getUserSession = async (
   request: Request,
-): Promise<GetUserSessionResponse | null> => {
+): Promise<AuthenticationContext> => {
   const session = await getSession(request.headers.get("Cookie"));
   const accessToken = session.get("accessToken");
   const expiresAt = session.get("expiresAt");
   const refreshToken = session.get("refreshToken");
 
-  console.log(
-    "getUserSession accessToken is",
-    accessToken,
-    "expiresAt is",
-    expiresAt,
-    "refreshToken is",
-    refreshToken,
-  );
-
   if (!accessToken || expiresAt < Date.now()) {
-    console.log("access has expired");
-
     if (refreshToken) {
-      console.log("try to refresh the access token");
-
       return await refreshAccessToken(request, refreshToken);
     }
 
-    console.log("destroy session");
-
     await destroySession(session);
-    return null;
   }
 
   return {
