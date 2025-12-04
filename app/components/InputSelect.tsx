@@ -1,4 +1,5 @@
 import { ChangeEvent } from "react";
+import { useTranslations } from "~/services/translations/context";
 
 type InputSelectOption = {
   value: string;
@@ -25,6 +26,7 @@ export default function InputSelect({
   disabled,
 }: InputSelectProps) {
   const selectId = name;
+  const { labels } = useTranslations();
 
   return (
     <div className="kern-form-input">
@@ -41,7 +43,7 @@ export default function InputSelect({
           onChange={onChange}
           aria-disabled={disabled} // using aria-disabled as recommended in https://www.kern-ux.de/komponenten/form-inputs/#disabled-attribut
         >
-          <option value="">{placeholder ?? "Bitte auswählen"}</option>
+          <option value="">{placeholder ?? labels.PLEASE_SELECT_LABEL}</option>
 
           {options.map((option) => (
             <option key={option.value} value={option.value}>

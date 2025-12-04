@@ -1,11 +1,16 @@
 // @vitest-environment jsdom
 
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import {
+  getTestTranslations,
+  renderWithTestTranslations,
+} from "~/util/testUtils";
 import InputSelect from "../InputSelect";
 
 describe("InputSelect", () => {
+  const { labels } = getTestTranslations();
   const defaultProps = {
     label: "Test Label",
     name: "test-select",
@@ -18,22 +23,24 @@ describe("InputSelect", () => {
   ];
 
   it("renders with required props", () => {
-    render(<InputSelect {...defaultProps} />);
+    renderWithTestTranslations(<InputSelect {...defaultProps} />);
 
     expect(screen.getByLabelText("Test Label")).toBeInTheDocument();
     expect(screen.getByRole("combobox")).toHaveAttribute("name", "test-select");
   });
 
   it("renders default placeholder when none provided", () => {
-    render(<InputSelect {...defaultProps} />);
+    renderWithTestTranslations(<InputSelect {...defaultProps} />);
 
     expect(
-      screen.getByRole("option", { name: "Bitte auswählen" }),
+      screen.getByRole("option", { name: labels.PLEASE_SELECT_LABEL }),
     ).toBeInTheDocument();
   });
 
   it("renders custom placeholder", () => {
-    render(<InputSelect {...defaultProps} placeholder="Select an option" />);
+    renderWithTestTranslations(
+      <InputSelect {...defaultProps} placeholder="Select an option" />,
+    );
 
     expect(
       screen.getByRole("option", { name: "Select an option" }),
@@ -41,7 +48,9 @@ describe("InputSelect", () => {
   });
 
   it("renders all options", () => {
-    render(<InputSelect {...defaultProps} options={mockOptions} />);
+    renderWithTestTranslations(
+      <InputSelect {...defaultProps} options={mockOptions} />,
+    );
 
     mockOptions.forEach((option) => {
       expect(
@@ -51,7 +60,7 @@ describe("InputSelect", () => {
   });
 
   it("sets selected value", () => {
-    render(
+    renderWithTestTranslations(
       <InputSelect {...defaultProps} options={mockOptions} selectedValue="2" />,
     );
 
@@ -63,7 +72,7 @@ describe("InputSelect", () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
 
-    render(
+    renderWithTestTranslations(
       <InputSelect
         {...defaultProps}
         options={mockOptions}
@@ -79,21 +88,23 @@ describe("InputSelect", () => {
   });
 
   it("applies disabled state via aria-disabled", () => {
-    render(<InputSelect {...defaultProps} disabled={true} />);
+    renderWithTestTranslations(
+      <InputSelect {...defaultProps} disabled={true} />,
+    );
 
     const select = screen.getByRole("combobox");
     expect(select).toHaveAttribute("aria-disabled", "true");
   });
 
   it("renders with empty options array", () => {
-    render(<InputSelect {...defaultProps} options={[]} />);
+    renderWithTestTranslations(<InputSelect {...defaultProps} options={[]} />);
 
     const options = screen.getAllByRole("option");
     expect(options).toHaveLength(1); // Only placeholder
   });
 
   it("associates label with select via id", () => {
-    render(<InputSelect {...defaultProps} />);
+    renderWithTestTranslations(<InputSelect {...defaultProps} />);
 
     const select = screen.getByRole("combobox");
     const label = screen.getByText("Test Label");

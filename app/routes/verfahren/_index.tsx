@@ -97,9 +97,9 @@ function VerfahrenContent({
   initialData: VerfahrenLoaderData;
   gerichte: Gericht[];
 }>) {
+  const { labels } = useTranslations();
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
     useLoadMore(initialData);
-
   const { params, setParam } = useParamsState({
     gericht: "",
   });
@@ -114,6 +114,7 @@ function VerfahrenContent({
         label="Zuständiges Gericht"
         name="gericht"
         selectedValue={params.gericht || ""} // gerichtID
+        placeholder={labels.SHOW_ALL_LABEL}
         options={gerichteOptions}
         onChange={(e) => setParam("gericht", e.target.value || "")}
         disabled={isLoading || gerichteOptions.length === 0} // TODO: add the condition for 0 results in initial load, see https://digitalservicebund.atlassian.net/browse/KOMMPLA-910
