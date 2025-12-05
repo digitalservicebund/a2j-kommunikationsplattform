@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import {
   aktenteileIds,
+  gerichte,
   getDokumentByAktenteilId,
   mockAktenteilDokumente,
   mockKomPlaIdPTokenExchange,
@@ -118,29 +119,6 @@ const verfahrenEingereichtByUserAkte = new Map();
 // verfahrenEingereichtByUserAkte is getting configured on user
 // interaction (e.g. user creates a Verfahren)
 
-const getVerfahren = (id) => {
-  let requestedVerfahren;
-  let allVerfahren = [];
-
-  if (id) {
-    for (const value of verfahren.values()) {
-      if (value.id === id) {
-        requestedVerfahren = value;
-      }
-    }
-  } else {
-    for (const value of verfahren.values()) {
-      allVerfahren.push(value);
-    }
-  }
-
-  return id
-    ? requestedVerfahren
-    : {
-        verfahren: allVerfahren,
-      };
-};
-
 export const handlers = [
   http.get(
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren`,
@@ -148,11 +126,19 @@ export const handlers = [
       const url = new URL(request.url);
       const offsetParam = url.searchParams.get("offset");
       const limitParam = url.searchParams.get("limit");
+      const gerichtParam = url.searchParams.get("gericht");
+      console.log("URL Search Params:", url.searchParams.toString());
 
-      const allVerfahren = mockVerfahrenNewAPIMain;
-      const total = allVerfahren.length;
+      let filteredVerfahren = mockVerfahrenNewAPIMain;
 
-      // parse values safely (fall back to sensible defaults)
+      if (gerichtParam) {
+        filteredVerfahren = filteredVerfahren.filter(
+          (verfahren) => verfahren.gericht.id === gerichtParam,
+        );
+      }
+
+      const total = filteredVerfahren.length;
+
       const offsetNum = offsetParam ? Number.parseInt(offsetParam, 10) || 0 : 0;
       const limitNum = limitParam
         ? Number.parseInt(limitParam, 10) || total
@@ -164,14 +150,21 @@ export const handlers = [
         offsetNum,
         "and limit:",
         limitNum,
+        "gericht:",
+        gerichtParam,
       );
 
-      const paged = allVerfahren.slice(offsetNum, offsetNum + limitNum);
+      const paged = filteredVerfahren.slice(offsetNum, offsetNum + limitNum);
 
       const getVerfahrenResponse = [paged, { status: 200 }];
       return HttpResponse.json(...getVerfahrenResponse);
     },
   ),
+
+  http.get(`${mockKomplaApiUrl}/:environment/api/v1/gerichte`, async () => {
+    const gerichteResponse = [gerichte, { status: 200 }];
+    return HttpResponse.json(...gerichteResponse);
+  }),
 
   http.post(`${mockJustizBackendApiUrl}/api/v1/verfahren`, async () => {
     // generate random 8 digit number for "aktenzeichen"

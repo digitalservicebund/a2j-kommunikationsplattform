@@ -62,6 +62,8 @@ export const en: Translations = {
     TO_START_PAGE_LABEL: "Home",
     CONTACT_SUPPORT_LABEL: "Contact support",
     MORE_THAN_100_VERFAHREN_LABEL: "More than 100 cases",
+    PLEASE_SELECT_LABEL: "Please select",
+    SHOW_ALL_LABEL: "Show all",
   },
   titles: {
     PLATFORM_TITLE: "Communication Platform | Justice Services",

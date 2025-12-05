@@ -61,6 +61,8 @@ export const de = {
     TO_START_PAGE_LABEL: "Zur Startseite",
     CONTACT_SUPPORT_LABEL: "Kontaktieren Sie den Support",
     MORE_THAN_100_VERFAHREN_LABEL: "Mehr als 100 Verfahren",
+    PLEASE_SELECT_LABEL: "Bitte auswählen",
+    SHOW_ALL_LABEL: "Alle anzeigen",
   },
   titles: {
     PLATFORM_TITLE: "Kommunikationsplattform | Justiz-Services",

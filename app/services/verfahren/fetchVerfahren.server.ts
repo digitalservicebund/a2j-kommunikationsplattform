@@ -1,16 +1,41 @@
 import z from "zod";
 import { serverConfig } from "~/config/config.server";
 import { newVerfahrenSchema } from "~/models/VerfahrenSchema";
+
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 
-type FetchVerfahrenOptions = {
-  limit?: number;
-  offset?: number;
-};
+const fetchVerfahrenOptionsSchema = z.object({
+  offset: z.number().int().nonnegative().optional(),
+  limit: z.number().int().positive().optional(),
+  gericht: z.guid().optional().or(z.literal("")),
+});
 
-const errorMessage = "Die Verfahren konnten nicht abgerufen werden.";
+export type FetchVerfahrenOptions = z.infer<typeof fetchVerfahrenOptionsSchema>;
 
-export default async function (
+const ERROR_MESSAGE = "Die Verfahren konnten nicht abgerufen werden.";
+
+function buildSearchParams<T extends Record<string, unknown>>(
+  options: T,
+): URLSearchParams {
+  const params = new URLSearchParams();
+
+  (Object.entries(options) as [keyof T, T[keyof T]][]).forEach(
+    ([key, value]) => {
+      if (
+        value !== undefined &&
+        value !== null &&
+        value !== "" &&
+        typeof value !== "object"
+      ) {
+        params.set(String(key), String(value));
+      }
+    },
+  );
+
+  return params;
+}
+
+export default async function fetchVerfahren(
   request: Request,
   options?: FetchVerfahrenOptions,
 ) {
@@ -20,19 +45,23 @@ export default async function (
     throw new Error("No bearer token available");
   }
 
-  const offset = options?.offset || 0;
-  const limit = options?.limit || 10;
+  const parsed = fetchVerfahrenOptionsSchema.parse(options ?? {});
 
-  const url = `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren?limit=${limit}&offset=${offset}`;
+  const url = new URL(`${serverConfig().KOMPLA_API_URL}/api/v1/verfahren`);
+  const searchParams = buildSearchParams(parsed);
 
-  const response = await fetch(url, {
+  searchParams.forEach((value, key) => {
+    url.searchParams.set(key, value);
+  });
+
+  const response = await fetch(url.toString(), {
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
   });
 
   if (!response.ok) {
-    throw new Error(errorMessage, {
+    throw new Error(ERROR_MESSAGE, {
       cause: `Serverantwort war nicht ok (Fehlercode ${response.status} ${response.statusText}).`,
     });
   }
@@ -40,8 +69,8 @@ export default async function (
   const data = await response.json();
 
   try {
-    return z.array(newVerfahrenSchema).parse(data);
+    return newVerfahrenSchema.array().parse(data);
   } catch (error) {
-    throw new Error(errorMessage, { cause: error });
+    throw new Error(ERROR_MESSAGE, { cause: error });
   }
 }
