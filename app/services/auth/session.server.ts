@@ -80,6 +80,15 @@ export const getUserSession = async (
   const expiresAt = session.get("expiresAt");
   const refreshToken = session.get("refreshToken");
 
+  console.log(
+    "getUserSession accessToken is",
+    accessToken,
+    "expiresAt is",
+    expiresAt,
+    "refreshToken is",
+    refreshToken,
+  );
+
   if (!accessToken || expiresAt < Date.now()) {
     if (refreshToken) {
       return await refreshAccessToken(request, refreshToken);
@@ -97,10 +106,13 @@ export const getUserSession = async (
 
 export const requireUserSession = async (request: Request) => {
   const userSession = await getUserSession(request);
+  const userIsLoggedIn = Boolean(userSession.accessToken);
 
-  if (!userSession) {
+  console.log("requireUserSession userSession", userSession);
+
+  if (!userIsLoggedIn) {
     console.log(
-      `User session not found on ${request.url}. Redirecting to login.`,
+      `No active User session found on "${request.url}" request. Redirecting to login.`,
     );
     throw redirect("/login");
   }
