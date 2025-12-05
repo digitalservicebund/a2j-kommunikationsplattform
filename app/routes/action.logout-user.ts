@@ -1,4 +1,5 @@
 import { redirect, type ActionFunctionArgs } from "react-router";
+import { revokeAccessToken } from "~/services/auth/oAuth.server";
 import { destroySession, getSession } from "~/services/auth/session.server";
 
 export enum LogoutType {
@@ -15,8 +16,12 @@ export enum LogoutType {
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const logoutType = formData.get("logoutType") as LogoutType;
-
   const session = await getSession(request.headers.get("Cookie"));
+  const accessToken = session.get("accessToken");
+
+  if (accessToken) {
+    await revokeAccessToken(accessToken);
+  }
 
   return redirect(`/login?status=${logoutType}`, {
     headers: {
