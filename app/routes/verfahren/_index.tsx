@@ -106,8 +106,6 @@ function VerfahrenContent({
 
   const gerichteOptions = gerichte.map((g) => ({ value: g.id, label: g.wert }));
 
-  console.log("params", params);
-
   return (
     <>
       <InputSelect

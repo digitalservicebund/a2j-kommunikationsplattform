@@ -131,7 +131,6 @@ export const handlers = [
 
       let filteredVerfahren = mockVerfahrenNewAPIMain;
 
-      // Apply gericht filter if provided
       if (gerichtParam) {
         filteredVerfahren = filteredVerfahren.filter(
           (verfahren) => verfahren.gericht.id === gerichtParam,
@@ -140,7 +139,6 @@ export const handlers = [
 
       const total = filteredVerfahren.length;
 
-      // parse values safely (fall back to sensible defaults)
       const offsetNum = offsetParam ? Number.parseInt(offsetParam, 10) || 0 : 0;
       const limitNum = limitParam
         ? Number.parseInt(limitParam, 10) || total
