@@ -1,7 +1,11 @@
 import { createCookieSessionStorage, redirect } from "react-router";
 import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
-import { AuthenticationContext, refreshAccessToken } from "./oAuth.server";
+import {
+  AuthenticationContext,
+  refreshAccessToken,
+  revokeAccessToken,
+} from "./oAuth.server";
 
 const getSecret = () => {
   return config().ENVIRONMENT === "development"
@@ -92,6 +96,10 @@ export const getUserSession = async (
   if (!accessToken || expiresAt < Date.now()) {
     if (refreshToken) {
       return await refreshAccessToken(request, refreshToken);
+    }
+
+    if (accessToken) {
+      await revokeAccessToken(accessToken);
     }
 
     await destroySession(session);

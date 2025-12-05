@@ -84,3 +84,9 @@ export async function refreshAccessToken(
 
   return refreshedTokenData;
 }
+
+export async function revokeAccessToken(token: string) {
+  console.log("revoke access token", token);
+
+  await oauth2Strategy.revokeToken(token);
+}
