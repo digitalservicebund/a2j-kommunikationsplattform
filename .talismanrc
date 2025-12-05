@@ -62,7 +62,7 @@ fileignoreconfig:
   - filename: app/services/api/refreshToken.server.ts
     checksum: 2480389a500b8dbcaebce386fa09dd2f58c58765f0b5d98b7f3e4a15f49f5ba2
   - filename: app/services/auth/session.server.ts
-    checksum: 61cf2f19303f1a56c003c870ae61cdda2ee497d1fe6d21672727f3330720049d
+    checksum: c1e53e68e16e0b62612dc1cfaabb64892b5328cbfd71b18fe899ee7b0aa31262
   - filename: app/components/hooks/useVerfahrenState.ts
     checksum: 7af45c599cf7b64b603cdd24b3dc2340a098eb65c67baab47e7ea40ba524064e
   - filename: app/components/verfahren/VerfahrenList.tsx
