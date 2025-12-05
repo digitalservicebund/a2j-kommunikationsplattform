@@ -59,8 +59,6 @@ fileignoreconfig:
     checksum: 4d5a64b728e2d84b8110c600929039fce752525a232d75cb03f360c384b02208
   - filename: doc/architecture-diagrams/system-architecture.md
     checksum: f1b3e31f256c536c23c41c3b4928860ea2318f3af9c5e4001ab49095019aec25
-  - filename: app/routes/kompla-idp.tsx
-    checksum: 19d171a466d0c00ede4535935144af15e2416642449f952c69597998e254e0de
   - filename: app/services/api/refreshToken.server.ts
     checksum: 2480389a500b8dbcaebce386fa09dd2f58c58765f0b5d98b7f3e4a15f49f5ba2
   - filename: app/services/auth/session.server.ts
