@@ -16,8 +16,6 @@ export default [
     // uebersicht
     route("/", "./routes/_layout.tsx", [
       index("./routes/_index.tsx"),
-      // @TODO: remove, needed for kompla-idp test
-      route("kompla-idp", "./routes/kompla-idp.tsx"),
       // verfahren
       route("verfahren", "./routes/verfahren/_layout.tsx", [
         index("./routes/verfahren/_index.tsx"),
