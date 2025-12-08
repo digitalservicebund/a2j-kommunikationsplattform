@@ -27,52 +27,39 @@ const { getSession, commitSession, destroySession } =
 
 export { commitSession, destroySession, getSession };
 
-interface CreateUserSessionProps extends AuthenticationContext {
+interface SetSessionProps extends AuthenticationContext {
   request: Request;
 }
 
-// Once a user has authenticated with the OAuth2 strategy, we create a session for the user.
-export const createUserSession = async ({
+/**
+ * As soon as a user is authenticated (via OAuth2 framework), we
+ * create/update access related data in session cookie.
+ */
+export const setSession = async ({
   accessToken,
   expiresAt,
   refreshToken,
   request,
-}: CreateUserSessionProps) => {
+}: SetSessionProps) => {
   const session = await getSession(request.headers.get("Cookie"));
   session.set("accessToken", accessToken);
   session.set("expiresAt", expiresAt);
   session.set("refreshToken", refreshToken);
 
   console.log(
-    "createUserSession \naccessToken is",
+    "setSession - accessToken is",
     accessToken,
-    "\n---",
-    "\nrefreshToken is",
+    "refreshToken is",
     refreshToken,
   );
 
-  return await commitSession(session);
-};
-
-interface UpdateUserSessionProps extends AuthenticationContext {
-  request: Request;
-}
-
-// Update user session with new tokens.
-export const updateUserSession = async ({
-  accessToken,
-  expiresAt,
-  refreshToken,
-  request,
-}: UpdateUserSessionProps) => {
-  const session = await getSession(request.headers.get("Cookie"));
-  session.set("accessToken", accessToken);
-  session.set("expiresAt", expiresAt);
-  session.set("refreshToken", refreshToken);
-
-  console.log("updateUserSession: accessToken is", accessToken);
-
-  await commitSession(session);
+  try {
+    console.log("Set/update session");
+    return await commitSession(session);
+  } catch (error) {
+    console.error("Error while setting/updating session:", error);
+    throw new Error("Failed to set/update session");
+  }
 };
 
 // We retrieve the user session from the request headers and ensure that the session has not expired.
