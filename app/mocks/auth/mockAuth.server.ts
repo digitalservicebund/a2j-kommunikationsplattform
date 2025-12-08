@@ -1,4 +1,4 @@
-import { createUserSession } from "~/services/auth/session.server";
+import { setSession } from "~/services/auth/session.server";
 
 export const loginAsDeveloper = async (request: Request) => {
   try {
@@ -7,7 +7,7 @@ export const loginAsDeveloper = async (request: Request) => {
     const devAccessToken = "dev-access-token";
     const expiresAt = Date.now() + 60 * 60 * 1000 * 24 * 14; // 14 days
     const devRefreshToken = "dev-refresh-token";
-    const sessionCookieHeader = await createUserSession({
+    const sessionCookieHeader = await setSession({
       accessToken: devAccessToken,
       expiresAt,
       refreshToken: devRefreshToken,

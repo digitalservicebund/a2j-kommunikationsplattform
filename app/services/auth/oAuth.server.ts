@@ -1,7 +1,7 @@
 import { Authenticator } from "remix-auth";
 import { CodeChallengeMethod, OAuth2Strategy } from "remix-auth-oauth2";
 import { serverConfig } from "~/config/config.server";
-import { createUserSession, updateUserSession } from "./session.server";
+import { setSession } from "./session.server";
 
 export interface AuthenticationContext {
   accessToken: string;
@@ -40,7 +40,7 @@ const oauth2Strategy = new OAuth2Strategy(
 
     console.log("Authenticated via BRAK IdP. accessToken is", accessToken);
 
-    const sessionCookieHeader = await createUserSession({
+    const sessionCookieHeader = await setSession({
       accessToken,
       expiresAt,
       refreshToken,
@@ -65,7 +65,7 @@ authenticator.use(oauth2Strategy, AuthenticationProvider.BEA);
 export async function refreshAccessToken(
   request: Request,
   refreshToken: string,
-): Promise<AuthenticationContext> {
+): Promise<AuthenticationResponse> {
   console.log("refresh access token");
 
   const newTokens = await oauth2Strategy.refreshToken(refreshToken);
@@ -77,12 +77,19 @@ export async function refreshAccessToken(
     expiresAt: Date.now() + newTokens.accessTokenExpiresInSeconds() * 1000,
   };
 
-  await updateUserSession({
+  const sessionCookieHeader = await setSession({
     ...refreshedTokenData,
     request,
   });
 
-  return refreshedTokenData;
+  const response: AuthenticationResponse = {
+    authenticationContext: {
+      ...refreshedTokenData,
+    },
+    sessionCookieHeader,
+  };
+
+  return response;
 }
 
 export async function revokeAccessToken(token: string) {
