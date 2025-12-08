@@ -47,6 +47,9 @@ export const en: Translations = {
     NO_VERFAHREN_FOUND_TITLE: "No cases currently available",
     NO_VERFAHREN_FOUND_MESSAGE:
       "After a successful submission or assignment, the corresponding cases will be displayed here.",
+    NO_VERFAHREN_FOUND_WITH_FILTERS_TITLE: "No matching results found",
+    NO_VERFAHREN_FOUND_WITH_FILTERS_MESSAGE:
+      "No matching results could be found for your search/filter settings. Please check your entries or change the filters to see other results.",
   },
   labels: {
     FOOTER_ARIA_LABEL: "Legal and further information",
@@ -64,6 +67,7 @@ export const en: Translations = {
     MORE_THAN_100_VERFAHREN_LABEL: "More than 100 cases",
     PLEASE_SELECT_LABEL: "Please select",
     SHOW_ALL_LABEL: "Show all",
+    RESULTS_LABEL: "Results",
   },
   titles: {
     PLATFORM_TITLE: "Communication Platform | Justice Services",

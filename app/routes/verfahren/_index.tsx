@@ -104,7 +104,15 @@ function VerfahrenContent({
     gericht: "",
   });
 
+  const hasFilters = Object.values(params).some(Boolean);
+
   const gerichteOptions = gerichte.map((g) => ({ value: g.id, label: g.wert }));
+
+  // isInputSelectDisabled when loading, or no options, or no filters and no items
+  const isInputSelectDisabled =
+    isLoading ||
+    gerichteOptions.length === 0 ||
+    (!hasFilters && allItems.length === 0);
 
   return (
     <>
@@ -115,9 +123,12 @@ function VerfahrenContent({
         placeholder={labels.SHOW_ALL_LABEL}
         options={gerichteOptions}
         onChange={(e) => setParam("gericht", e.target.value || "")}
-        disabled={isLoading || gerichteOptions.length === 0} // TODO: add the condition for 0 results in initial load, see https://digitalservicebund.atlassian.net/browse/KOMMPLA-910
+        disabled={isInputSelectDisabled}
       />
-      <VerfahrenCountInfo count={allItems.length || 0} />
+      <VerfahrenCountInfo
+        count={allItems.length || 0}
+        hasFilters={hasFilters}
+      />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
       {hasMoreItems && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}
     </>
