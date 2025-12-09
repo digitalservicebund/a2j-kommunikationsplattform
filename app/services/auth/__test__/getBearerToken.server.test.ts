@@ -1,28 +1,19 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { authorizeToken } from "../../api/authorizeToken.server";
-import { refreshAccessToken } from "../../api/refreshToken.server";
+import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
 import { getBearerToken } from "../getBearerToken.server";
-import { getUserSession, updateUserSession } from "../session.server";
 
-// Mock dependencies
-vi.mock("../../api/authorizeToken.server");
-vi.mock("../../api/refreshToken.server");
-vi.mock("../session.server");
+// mock module dependencies
+vi.mock("../../api/authorizeToken.server", () => ({
+  authorizeToken: vi.fn(),
+}));
+vi.mock("../session.server", () => ({
+  getUserSession: vi.fn(),
+}));
+
+// import mocks after vi.mock calls so TS sees mocked shapes
+import { authorizeToken } from "../../api/authorizeToken.server";
+import { getUserSession } from "../session.server";
 
 describe.skip("getBearerToken", () => {
-  const mockRequest = new Request("https://example.com");
-  const mockToken = {
-    access_token: "mock-access-token",
-    expires_in: 3600,
-    refresh_token: "mock-refresh-token",
-    refresh_expires_in: 86400,
-    token_type: "Bearer",
-    "not-before-policy": 0,
-    session_state: "a5d3fb",
-    scope: "write",
-    issued_token_type: "urn:ietf",
-  };
-
   beforeEach(() => {
     vi.resetAllMocks();
   });
@@ -31,82 +22,39 @@ describe.skip("getBearerToken", () => {
     vi.restoreAllMocks();
   });
 
-  it("returns existing valid API access token", async () => {
-    // Mock session with valid token
-    vi.mocked(getUserSession).mockResolvedValue({
+  it("returns a bearer token", async () => {
+    const req = new Request("https://cool.auth/request");
+    (vi.mocked(getUserSession) as Mock).mockResolvedValue({
       accessToken: "user-access-token",
-      expiresIn: 300, // 5 mins
-      refreshToken: "refresh-token",
+    });
+    (vi.mocked(authorizeToken) as Mock).mockResolvedValue({
+      access_token: "an-api-access-token",
     });
 
-    const token = await getBearerToken(mockRequest);
-
-    expect(token).toBe("existing-token");
-    expect(authorizeToken).not.toHaveBeenCalled();
-    expect(refreshAccessToken).not.toHaveBeenCalled();
-  });
-
-  it("exchanges access token when no API token exists", async () => {
-    // Mock session without API token
-    vi.mocked(getUserSession).mockResolvedValue({
-      accessToken: "user-access-token",
-      expiresIn: 300, // 5 mins
-      refreshToken: "refresh-token",
-    });
-
-    vi.mocked(authorizeToken).mockResolvedValue(mockToken);
-
-    const token = await getBearerToken(mockRequest);
-
-    expect(token).toBe(mockToken.access_token);
+    const bearerToken = await getBearerToken(req);
+    expect(getUserSession).toHaveBeenCalledWith(req);
     expect(authorizeToken).toHaveBeenCalledWith("user-access-token");
-    expect(updateUserSession).toHaveBeenCalledWith({
-      accessToken: mockToken.access_token,
-      expiresIn: Number(mockToken.expires_in),
-      refreshToken: mockToken.refresh_token,
-      request: mockRequest,
-    });
+    expect(bearerToken).toBe("an-api-access-token");
   });
 
-  it("refreshes token when API access token is expired", async () => {
-    // Mock session with expired token
-    vi.mocked(getUserSession).mockResolvedValue({
+  it("propagates errors from getUserSession", async () => {
+    const req = new Request("https://another.cool/failing/request/");
+    const error = new Error("could not get user session data");
+    (getUserSession as unknown as Mock).mockRejectedValue(error);
+
+    await expect(getBearerToken(req)).rejects.toThrow(error);
+    expect(authorizeToken).not.toHaveBeenCalled();
+  });
+
+  it("propagates errors from authorizeToken", async () => {
+    const req = new Request("https://and.a.cool/request/that/fails");
+    (getUserSession as unknown as Mock).mockResolvedValue({
       accessToken: "user-access-token",
-      expiresIn: 300, // 5 mins
-      refreshToken: "refresh-token",
     });
+    const error = new Error("authorization failed");
+    (authorizeToken as unknown as Mock).mockRejectedValue(error);
 
-    vi.mocked(refreshAccessToken).mockResolvedValue(mockToken);
-
-    const token = await getBearerToken(mockRequest);
-
-    expect(token).toBe(mockToken.access_token);
-    expect(refreshAccessToken).toHaveBeenCalledWith("refresh-token");
-    expect(updateUserSession).toHaveBeenCalledWith({
-      accessToken: mockToken.access_token,
-      expiresIn: Number(mockToken.expires_in),
-      refreshToken: mockToken.refresh_token,
-      request: mockRequest,
-    });
-  });
-
-  it("throws error when refresh token exchange fails", async () => {
-    // Mock session with expired token
-    vi.mocked(getUserSession).mockResolvedValue({
-      accessToken: "XXX",
-      expiresIn: 300,
-      refreshToken: "expired-token",
-    });
-
-    const mockError = new Error("Refresh token invalid");
-    vi.mocked(refreshAccessToken).mockRejectedValue(mockError);
-
-    await expect(getBearerToken(mockRequest)).rejects.toThrow(mockError);
-  });
-
-  it("throws error when no session exists", async () => {
-    vi.mocked(getUserSession).mockResolvedValue(null);
-
-    await expect(getBearerToken(mockRequest)).rejects.toThrow();
+    await expect(getBearerToken(req)).rejects.toThrow(error);
+    expect(authorizeToken).toHaveBeenCalledWith("user-access-token");
   });
 });

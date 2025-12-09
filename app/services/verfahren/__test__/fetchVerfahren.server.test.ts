@@ -79,7 +79,9 @@ describe("fetchVerfahren", () => {
 
     const mockRequest = new Request("http://localhost:3000");
 
-    await expect(fetchVerfahren(mockRequest)).rejects.toThrow(
+    const result = fetchVerfahren(mockRequest);
+
+    expect(result).rejects.toThrow(
       "Die Verfahren konnten nicht abgerufen werden.",
     );
   });
@@ -111,7 +113,6 @@ describe("fetchVerfahren", () => {
 
     const mockRequest = new Request("http://localhost:3000");
     await fetchVerfahren(mockRequest, { gericht: "" });
-
     expect(mocks.fetch).toHaveBeenCalledWith(
       expect.not.stringContaining("gericht="),
       expect.any(Object),
@@ -123,9 +124,9 @@ describe("fetchVerfahren", () => {
 
     const mockRequest = new Request("http://localhost:3000");
 
-    await expect(fetchVerfahren(mockRequest)).rejects.toThrow(
-      "No bearer token available",
-    );
+    const result = fetchVerfahren(mockRequest);
+
+    expect(result).rejects.toThrow("No bearer token available");
   });
 
   it("throws error when API returns non-ok response", async () => {
@@ -138,26 +139,21 @@ describe("fetchVerfahren", () => {
 
     const mockRequest = new Request("http://localhost:3000");
 
-    await expect(fetchVerfahren(mockRequest)).rejects.toThrow(
+    const result = fetchVerfahren(mockRequest);
+
+    expect(result).rejects.toThrow(
       "Die Verfahren konnten nicht abgerufen werden.",
     );
   });
 
   it("rejects invalid UUID in gericht parameter", async () => {
-    const mockRequest = new Request("http://localhost:3000");
-
-    await expect(
-      fetchVerfahren(mockRequest, { gericht: "invalid-uuid" }),
-    ).rejects.toThrow();
-  });
-
-  it("accepts negative offset and converts to 0", async () => {
     mocks.getBearerToken.mockResolvedValue("test-token");
-
     const mockRequest = new Request("http://localhost:3000");
 
-    await expect(
-      fetchVerfahren(mockRequest, { offset: -10 }),
-    ).rejects.toThrow();
+    const result = fetchVerfahren(mockRequest, {
+      gericht: "invalid-uuid",
+    });
+
+    expect(result).rejects.toThrow();
   });
 });

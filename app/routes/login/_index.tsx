@@ -16,7 +16,8 @@ type AlertState =
 
 export async function loader({ request }: { request: Request }) {
   const userSession = await getUserSession(request);
-  if (userSession) {
+  const userIsLoggedIn = Boolean(userSession.authenticationTokens.accessToken);
+  if (userIsLoggedIn) {
     throw redirect("/");
   }
   const environment = config().ENVIRONMENT;

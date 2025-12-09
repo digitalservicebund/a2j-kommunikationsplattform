@@ -44,7 +44,7 @@ describe("/action/login-user action", () => {
     // arrange: mock authenticator.authenticate to return an AuthenticationResponse
     const mockedAuth = vi.mocked(authenticator);
     const authResponse = {
-      authenticationContext: {
+      authenticationTokens: {
         accessToken: "bea-token",
         expiresIn: Date.now() + 1000,
         refreshToken: "refresh-token",

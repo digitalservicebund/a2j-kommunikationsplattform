@@ -1,40 +1,9 @@
 import z from "zod";
 
 /**
- * Currently available on the API: https://kompla.sinc.de/swagger/index.html#/Verfahren/Verfahren_Get
+ * VerfahrenSchema
  *
- * "id": "string",
- * "aktenzeichen": "string",
- * "status": "Erstellt",
- * "status_changed": "2025-09-24T12:53:36.775Z",
- * "eingereicht_am": "2025-09-24T12:53:36.775Z",
- * "gericht_name": "string"
- *
- * All other items are mocked for development (therefor optional for now)
- */
-export default z.object({
-  id: z.uuid(),
-  aktenzeichen: z.nullable(z.string()),
-  status: z.enum(["Erstellt", "Eingereicht"]),
-  status_changed: z.iso.datetime(),
-  eingereicht_am: z.iso.datetime(),
-  gericht_name: z.nullable(z.string()),
-  // START (not available via API)
-  update: z.optional(z.nullable(z.string())),
-  abgeschlossen: z.optional(z.boolean()),
-  urteilsHref: z.optional(z.nullable(z.string())),
-  mandantin: z.optional(z.nullable(z.string())),
-  gegenpartei: z.optional(z.nullable(z.string())),
-  vertretung: z.optional(z.nullable(z.string())),
-  geschaeftszeichen: z.optional(z.nullable(z.string())),
-  // END
-});
-
-/**
- * New Verfahren schema test
- *
- * @TODO: remove default export and use new schema after the switch
- * to https://app.kompla-justiz.sinc.de/dev/swagger/index.html
+ * See Verfahren Schema at: https://app.kompla-justiz.sinc.de/main/swagger/index.html
  */
 
 export const CodeWertSchema = z.object({
@@ -42,20 +11,21 @@ export const CodeWertSchema = z.object({
   wert: z.string(),
   code: z.string(),
 });
+export const GerichtDTO = CodeWertSchema.describe("Gericht DTO");
+export const RollenDTO = CodeWertSchema.describe("Rollen DTO");
 
-// based on the new API response from https://app.kompla-justiz.sinc.de/main/swagger/index.html
-export const newVerfahrenSchema = z.object({
+export const VerfahrenSchema = z.object({
   id: z.uuid(),
   aktenzeichen_gericht: z.nullable(z.string()),
   status: z.enum(["Erstellt", "Eingereicht"]),
   status_changed: z.iso.datetime(),
   eingereicht_am: z.nullable(z.iso.datetime()),
-  gericht: z.nullable(CodeWertSchema),
+  gericht: z.nullable(GerichtDTO),
   beteiligungen: z.array(
     z.object({
       id: z.uuid(),
       name: z.string(),
-      rollen: z.array(CodeWertSchema),
+      rollen: z.array(RollenDTO),
       prozessbevollmaechtigte: z.array(
         z.object({
           aktenzeichen: z.string(),

@@ -97,7 +97,7 @@ describe.skip("oAuth.server", () => {
       });
 
       expect(result).toEqual({
-        authenticationContext: {
+        authenticationTokens: {
           accessToken: accessToken,
           expiresIn: expect.any(Number),
           refreshToken: refreshToken,

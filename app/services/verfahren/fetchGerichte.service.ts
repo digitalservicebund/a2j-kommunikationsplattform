@@ -3,7 +3,8 @@ import { serverConfig } from "~/config/config.server";
 import { CodeWertSchema } from "~/models/VerfahrenSchema";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 
-const errorMessage = "Die Gerichte konnten nicht abgerufen werden.";
+const errorMessage =
+  "Die Daten für das ausgewählte Gericht konnten nicht abgerufen werden.";
 
 export default async function fetchGerichte(request: Request) {
   const bearerToken = await getBearerToken(request);

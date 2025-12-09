@@ -51,7 +51,7 @@ export const useLoadMore = (initialData: VerfahrenLoaderData) => {
       setHasMoreItems(page.hasMoreItems);
     };
 
-    void appendItems();
+    appendItems();
 
     return () => {
       cancelled = true;

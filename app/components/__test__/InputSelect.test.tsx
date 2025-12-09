@@ -94,6 +94,7 @@ describe("InputSelect", () => {
 
     const select = screen.getByRole("combobox");
     expect(select).toHaveAttribute("aria-disabled", "true");
+    expect(select).not.toHaveAttribute("disabled");
   });
 
   it("renders with empty options array", () => {

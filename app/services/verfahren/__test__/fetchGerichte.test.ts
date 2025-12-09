@@ -77,7 +77,7 @@ describe("fetchGerichte", () => {
     const mockRequest = new Request("http://localhost:3000");
 
     await expect(fetchGerichte(mockRequest)).rejects.toThrow(
-      "Die Gerichte konnten nicht abgerufen werden.",
+      "Die Daten für das ausgewählte Gericht konnten nicht abgerufen werden",
     );
   });
 
@@ -91,7 +91,7 @@ describe("fetchGerichte", () => {
     const mockRequest = new Request("http://localhost:3000");
 
     await expect(fetchGerichte(mockRequest)).rejects.toThrow(
-      "Die Gerichte konnten nicht abgerufen werden.",
+      "Die Daten für das ausgewählte Gericht konnten nicht abgerufen werden",
     );
   });
 
