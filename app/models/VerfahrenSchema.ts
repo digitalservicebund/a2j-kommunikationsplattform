@@ -42,6 +42,8 @@ export const CodeWertSchema = z.object({
   wert: z.string(),
   code: z.string(),
 });
+export const GerichtDTO = CodeWertSchema.describe("Gericht DTO");
+export const RollenDTO = CodeWertSchema.describe("Rollen DTO");
 
 // based on the new API response from https://app.kompla-justiz.sinc.de/main/swagger/index.html
 export const newVerfahrenSchema = z.object({
@@ -50,12 +52,12 @@ export const newVerfahrenSchema = z.object({
   status: z.enum(["Erstellt", "Eingereicht"]),
   status_changed: z.iso.datetime(),
   eingereicht_am: z.nullable(z.iso.datetime()),
-  gericht: z.nullable(CodeWertSchema),
+  gericht: z.nullable(GerichtDTO),
   beteiligungen: z.array(
     z.object({
       id: z.uuid(),
       name: z.string(),
-      rollen: z.array(CodeWertSchema),
+      rollen: z.array(RollenDTO),
       prozessbevollmaechtigte: z.array(
         z.object({
           aktenzeichen: z.string(),

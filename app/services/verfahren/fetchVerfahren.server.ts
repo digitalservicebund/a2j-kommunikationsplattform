@@ -3,6 +3,7 @@ import { serverConfig } from "~/config/config.server";
 import { newVerfahrenSchema } from "~/models/VerfahrenSchema";
 
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
+import { buildSearchParams } from "~/util/buildSearchParams";
 
 const fetchVerfahrenOptionsSchema = z.object({
   offset: z.number().int().nonnegative().optional(),
@@ -13,27 +14,6 @@ const fetchVerfahrenOptionsSchema = z.object({
 export type FetchVerfahrenOptions = z.infer<typeof fetchVerfahrenOptionsSchema>;
 
 const ERROR_MESSAGE = "Die Verfahren konnten nicht abgerufen werden.";
-
-function buildSearchParams<T extends Record<string, unknown>>(
-  options: T,
-): URLSearchParams {
-  const params = new URLSearchParams();
-
-  (Object.entries(options) as [keyof T, T[keyof T]][]).forEach(
-    ([key, value]) => {
-      if (
-        value !== undefined &&
-        value !== null &&
-        value !== "" &&
-        typeof value !== "object"
-      ) {
-        params.set(String(key), String(value));
-      }
-    },
-  );
-
-  return params;
-}
 
 export default async function fetchVerfahren(
   request: Request,

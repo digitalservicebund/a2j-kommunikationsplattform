@@ -12,7 +12,7 @@ import InputSelect from "~/components/InputSelect";
 import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
 import { VERFAHREN_PAGE_LIMIT } from "~/constants/verfahren";
 import { VERFAHREN_SKELETONS } from "~/constants/verfahrenSkeletons";
-import { CodeWertSchema, newVerfahrenSchema } from "~/models/VerfahrenSchema";
+import { GerichtDTO, newVerfahrenSchema } from "~/models/VerfahrenSchema";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import { useTranslations } from "~/services/translations/context";
 import fetchGerichteService from "~/services/verfahren/fetchGerichte.service";
@@ -20,7 +20,7 @@ import fetchVerfahren from "~/services/verfahren/fetchVerfahren.server";
 import { Route } from "./+types/_index";
 
 export type Verfahren = z.infer<typeof newVerfahrenSchema>;
-export type Gericht = z.infer<typeof CodeWertSchema>;
+export type Gericht = z.infer<typeof GerichtDTO>;
 
 export type VerfahrenLoaderData = {
   items: Verfahren[];
