@@ -16,7 +16,7 @@ fileignoreconfig:
   - filename: app/services/fileUpload.server.ts
     checksum: bc2812232864b6d3b6f9189b95fea278d34952318ddb0deaf41be7ac5fd43d35
   - filename: app/services/auth/oAuth.server.ts
-    checksum: 51925eefec64a60b0d3211d40ad256876e1167f0624ab56f6977ff46dac1e7c1
+    checksum: 5bdd394b4b60b971f21c7b873d2ed1f2cce29c76cef4bd02b4b42f7fd13b8e6b
   - filename: app/config/config.server.ts
     checksum: 396b77c1534c253a277f93c0b841a7557aa6be598344c36d69f13510cec40e47
   - filename: app/config/__test__/config.server.test.ts
@@ -32,7 +32,7 @@ fileignoreconfig:
   - filename: doc/adr/0002-how-is-the-user-interface-built.md
     checksum: abb41e4f09280b9612f12dc8e6e8b84e8fad25505154df3359c3639ddcaef7ed
   - filename: sonar-project.properties
-    checksum: a376b87e8304f789fe1a158ecf3e053dcb8ef550481f2d9374479ce4f77ef18b
+    checksum: f5b3a87aecb4d2883e6c6275a3d7de3dbff82728d898db1d820d36316fb41964
   - filename: tests/e2e/playwright.config.ts
     checksum: 34cb8aebe7b81824d2e2bca9f098d5efc58aab983f7da91f7bedfcdf8ef0abf6
   - filename: app/components/__test__/ContentPage.test.tsx
@@ -40,7 +40,7 @@ fileignoreconfig:
   - filename: app/components/Navigation.static.tsx
     checksum: 4c670e649ab7d148bf94c7ebfb13b5b2b80782b1f5976e6474e0fd19ef8ebfa6
   - filename: app/routes/verfahren/_index.tsx
-    checksum: fe0d48b7847f8a1e85788cb99512a3fa752a571acfc5c5b340a3bc73fc3a0556
+    checksum: 715b1eb2fed7f1adcd27271be1c2e55a931ddc6408aa4bfded2ff7752e8b69f7
   - filename: app/components/Breadcrumbs.tsx
     checksum: 3afb510de025db16ff8736c58c4cda79db6869083603f5c955d2d46b6a84faf1
   - filename: app/services/security/cspHeader.server.ts
@@ -54,17 +54,15 @@ fileignoreconfig:
   - filename: app/services/translations/index.ts
     checksum: bd9deccfd2a77aa490df3019083baf73a0bff19785a84397f319f6df6ffe195f
   - filename: app/services/auth/__test__/oAuth.server.test.ts
-    checksum: 25e26dfe70f5a1f7810b68382aae7035b0e293342f575c79a580423a39253f8c
+    checksum: 3917d3742369502675ea26fde1a610c285ef5074d93477151aa3f6aea3309b2f
   - filename: app/services/auth/__test__/session.server.test.ts
-    checksum: 4d5a64b728e2d84b8110c600929039fce752525a232d75cb03f360c384b02208
+    checksum: 9c1453ea14be8c3c31461e706ea23a202cd07b71c018ef5639593564a88130a9
   - filename: doc/architecture-diagrams/system-architecture.md
     checksum: f1b3e31f256c536c23c41c3b4928860ea2318f3af9c5e4001ab49095019aec25
-  - filename: app/routes/kompla-idp.tsx
-    checksum: 19d171a466d0c00ede4535935144af15e2416642449f952c69597998e254e0de
   - filename: app/services/api/refreshToken.server.ts
     checksum: 2480389a500b8dbcaebce386fa09dd2f58c58765f0b5d98b7f3e4a15f49f5ba2
   - filename: app/services/auth/session.server.ts
-    checksum: a732ea182e76d6b1408597b642cebb318f64b0613f27d943c414711207749868
+    checksum: 012f7dc230aa5f240c86209cf2834c9a3ce52e507bf54d81bd32f158df26d46c
   - filename: app/components/hooks/useLoadMore.ts
     checksum: 9f147b318731def0ed6f10f664c9a45099d2a626530a650f7b52c9139ec529b1
   - filename: app/components/verfahren/VerfahrenList.tsx

@@ -1,7 +1,12 @@
 import { createCookieSessionStorage, redirect } from "react-router";
 import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
-import { AuthenticationContext, refreshAccessToken } from "./oAuth.server";
+import {
+  AuthenticationResponse,
+  AuthenticationTokens,
+  refreshAccessToken,
+  revokeAccessToken,
+} from "./oAuth.server";
 
 const getSecret = () => {
   return config().ENVIRONMENT === "development"
@@ -23,83 +28,47 @@ const { getSession, commitSession, destroySession } =
 
 export { commitSession, destroySession, getSession };
 
-// Once a user has authenticated with the OAuth2 strategy, we create a session for the user.
-export const createUserSession = async (
-  accessToken: string,
-  expiresAt: number,
-  refreshToken: string,
-  request: Request,
-) => {
-  const session = await getSession(request.headers.get("Cookie"));
-
-  console.log(
-    "createUserSession accessToken is",
-    accessToken,
-    "expiresAt is",
-    expiresAt,
-    "refreshToken is",
-    refreshToken,
-  );
-
-  session.set("accessToken", accessToken);
-  session.set("expiresAt", expiresAt);
-  session.set("refreshToken", refreshToken);
-
-  try {
-    console.log("Creating user session");
-    return await commitSession(session);
-  } catch (error) {
-    console.error("Error creating user session:", error);
-    throw new Error("Failed to create user session");
-  }
-};
-
-interface UpdateUserSessionResponse {
-  accessToken: string;
-  expiresAt: number;
-  refreshToken: string;
+interface SetSessionProps extends AuthenticationTokens {
   request: Request;
 }
 
-// Update user session with new tokens.
-export const updateUserSession = async ({
+/**
+ * As soon as a user is authenticated (via OAuth2 framework), we
+ * create/update access related data in session cookie.
+ */
+export const setSession = async ({
   accessToken,
   expiresAt,
   refreshToken,
   request,
-}: UpdateUserSessionResponse): Promise<string | null> => {
+}: SetSessionProps) => {
   const session = await getSession(request.headers.get("Cookie"));
-
-  console.log(
-    "updateUserSession accessToken is",
-    accessToken,
-    "expiresAt is",
-    expiresAt,
-    "refreshToken is",
-    refreshToken,
-  );
-
   session.set("accessToken", accessToken);
   session.set("expiresAt", expiresAt);
   session.set("refreshToken", refreshToken);
 
+  console.log(
+    "setSession - accessToken is",
+    accessToken,
+    "refreshToken is",
+    refreshToken,
+  );
+
   try {
-    console.log("Updating user session");
+    console.log("Set/update session");
     return await commitSession(session);
   } catch (error) {
-    console.error("Error updating user session:", error);
-    throw new Error("Failed to update the user session");
+    console.error("Error while setting/updating session:", error);
+    throw new Error("Failed to set/update session");
   }
 };
-
-type GetUserSessionResponse = AuthenticationContext &
-  Omit<UpdateUserSessionResponse, "request">;
 
 // We retrieve the user session from the request headers and ensure that the session has not expired.
 export const getUserSession = async (
   request: Request,
-): Promise<GetUserSessionResponse | null> => {
+): Promise<AuthenticationResponse> => {
   const session = await getSession(request.headers.get("Cookie"));
+
   const accessToken = session.get("accessToken");
   const expiresAt = session.get("expiresAt");
   const refreshToken = session.get("refreshToken");
@@ -114,33 +83,38 @@ export const getUserSession = async (
   );
 
   if (!accessToken || expiresAt < Date.now()) {
-    console.log("access has expired");
-
+    // if we need to refresh the token, we return the needed session cookie header
     if (refreshToken) {
-      console.log("try to refresh the access token");
-
-      return await refreshAccessToken(request, refreshToken);
+      const response = await refreshAccessToken(request, refreshToken);
+      return response;
     }
 
-    console.log("destroy session");
+    if (accessToken) {
+      await revokeAccessToken(accessToken);
+    }
 
     await destroySession(session);
-    return null;
   }
 
   return {
-    accessToken,
-    expiresAt,
-    refreshToken,
+    authenticationTokens: {
+      accessToken,
+      expiresAt,
+      refreshToken,
+    },
+    sessionCookieHeader: "",
   };
 };
 
 export const requireUserSession = async (request: Request) => {
   const userSession = await getUserSession(request);
+  const userIsLoggedIn = Boolean(userSession.authenticationTokens.accessToken);
 
-  if (!userSession) {
+  console.log("requireUserSession userSession", userSession);
+
+  if (!userIsLoggedIn) {
     console.log(
-      `User session not found on ${request.url}. Redirecting to login.`,
+      `No active User session found on "${request.url}" request. Redirecting to login.`,
     );
     throw redirect("/login");
   }

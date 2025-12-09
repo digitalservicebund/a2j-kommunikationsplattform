@@ -1,7 +1,6 @@
 import z from "zod";
 import { serverConfig } from "~/config/config.server";
-import { newVerfahrenSchema } from "~/models/VerfahrenSchema";
-
+import { VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import { buildSearchParams } from "~/util/buildSearchParams";
 
@@ -49,7 +48,7 @@ export default async function fetchVerfahren(
   const data = await response.json();
 
   try {
-    return newVerfahrenSchema.array().parse(data);
+    return VerfahrenSchema.array().parse(data);
   } catch (error) {
     throw new Error(ERROR_MESSAGE, { cause: error });
   }

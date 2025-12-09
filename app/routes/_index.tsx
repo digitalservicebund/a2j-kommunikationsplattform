@@ -4,9 +4,9 @@ import { getUserSession } from "~/services/auth/session.server";
 
 export async function loader({ request }: { request: Request }) {
   const userSession = await getUserSession(request);
-  if (userSession) {
-    return null;
-  } else {
+  const userIsLoggedIn = Boolean(userSession.authenticationTokens.accessToken);
+
+  if (!userIsLoggedIn) {
     throw redirect("/login");
   }
 }
