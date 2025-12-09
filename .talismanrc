@@ -40,7 +40,7 @@ fileignoreconfig:
   - filename: app/components/Navigation.static.tsx
     checksum: 4c670e649ab7d148bf94c7ebfb13b5b2b80782b1f5976e6474e0fd19ef8ebfa6
   - filename: app/routes/verfahren/_index.tsx
-    checksum: d0f3cc78b961713c4dc587fda02e98f011adf83034618a2430bd7c5a97c84f11
+    checksum: c00d4c4ae6dad9b51721180bbaa042bd8001d13d8804717f3060cbcd6401ea31
   - filename: app/components/Breadcrumbs.tsx
     checksum: 3afb510de025db16ff8736c58c4cda79db6869083603f5c955d2d46b6a84faf1
   - filename: app/services/security/cspHeader.server.ts
@@ -69,6 +69,8 @@ fileignoreconfig:
     checksum: 626c4040f4fd1f4fe4cae02dc11092399d194c1c85ba3185de3c1c38251c4601
   - filename: app/util/buildSearchParams.ts
     checksum: c94426c1e57f5b3e80979ca1408ff01b1b1d943e5b8941661122409200fd1dfa
+  - filename: app/services/translations/de.ts
+    checksum: af017ce8cb8ef39c50b56a5c3d6228382692c9ad45a67aa5134131366ef5ce5d
 
 version: ""
 scopeconfig:
