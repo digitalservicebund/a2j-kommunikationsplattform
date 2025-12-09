@@ -3,14 +3,14 @@ import { CodeChallengeMethod, OAuth2Strategy } from "remix-auth-oauth2";
 import { serverConfig } from "~/config/config.server";
 import { setSession } from "./session.server";
 
-export interface AuthenticationContext {
+export interface AuthenticationTokens {
   accessToken: string;
   expiresAt: number;
   refreshToken: string;
 }
 
 export interface AuthenticationResponse {
-  authenticationContext: AuthenticationContext;
+  authenticationTokens: AuthenticationTokens;
   sessionCookieHeader: string; // This is the Set-Cookie header that should be set in the response to the client
 }
 
@@ -48,7 +48,7 @@ const oauth2Strategy = new OAuth2Strategy(
     });
 
     const response: AuthenticationResponse = {
-      authenticationContext: {
+      authenticationTokens: {
         accessToken,
         expiresAt,
         refreshToken,
@@ -83,7 +83,7 @@ export async function refreshAccessToken(
   });
 
   const response: AuthenticationResponse = {
-    authenticationContext: {
+    authenticationTokens: {
       ...refreshedTokenData,
     },
     sessionCookieHeader,

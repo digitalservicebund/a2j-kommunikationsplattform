@@ -35,7 +35,7 @@ export type RootLoader = typeof loader;
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userSession = await getUserSession(request);
-  const userIsLoggedIn = Boolean(userSession.accessToken);
+  const userIsLoggedIn = Boolean(userSession.authenticationTokens.accessToken);
   const pathname = new URL(request.url).pathname;
   const isContentPage = contentPages.some(
     (page) => `/${page.path}` === pathname,

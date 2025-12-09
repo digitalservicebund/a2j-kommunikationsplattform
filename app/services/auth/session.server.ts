@@ -2,7 +2,8 @@ import { createCookieSessionStorage, redirect } from "react-router";
 import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
 import {
-  AuthenticationContext,
+  AuthenticationResponse,
+  AuthenticationTokens,
   refreshAccessToken,
   revokeAccessToken,
 } from "./oAuth.server";
@@ -27,7 +28,7 @@ const { getSession, commitSession, destroySession } =
 
 export { commitSession, destroySession, getSession };
 
-interface SetSessionProps extends AuthenticationContext {
+interface SetSessionProps extends AuthenticationTokens {
   request: Request;
 }
 
@@ -65,8 +66,9 @@ export const setSession = async ({
 // We retrieve the user session from the request headers and ensure that the session has not expired.
 export const getUserSession = async (
   request: Request,
-): Promise<AuthenticationContext> => {
+): Promise<AuthenticationResponse> => {
   const session = await getSession(request.headers.get("Cookie"));
+
   const accessToken = session.get("accessToken");
   const expiresAt = session.get("expiresAt");
   const refreshToken = session.get("refreshToken");
@@ -81,8 +83,10 @@ export const getUserSession = async (
   );
 
   if (!accessToken || expiresAt < Date.now()) {
+    // if we need to refresh the token, we return the needed session cookie header
     if (refreshToken) {
-      return await refreshAccessToken(request, refreshToken);
+      const response = await refreshAccessToken(request, refreshToken);
+      return response;
     }
 
     if (accessToken) {
@@ -93,15 +97,18 @@ export const getUserSession = async (
   }
 
   return {
-    accessToken,
-    expiresAt,
-    refreshToken,
+    authenticationTokens: {
+      accessToken,
+      expiresAt,
+      refreshToken,
+    },
+    sessionCookieHeader: "",
   };
 };
 
 export const requireUserSession = async (request: Request) => {
   const userSession = await getUserSession(request);
-  const userIsLoggedIn = Boolean(userSession.accessToken);
+  const userIsLoggedIn = Boolean(userSession.authenticationTokens.accessToken);
 
   console.log("requireUserSession userSession", userSession);
 

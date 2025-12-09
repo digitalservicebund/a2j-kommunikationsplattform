@@ -10,7 +10,7 @@ export async function getBearerToken(request: Request): Promise<string> {
   console.log("getBearerToken");
 
   const userSession = await getUserSession(request);
-  const accessToken = userSession.accessToken;
+  const accessToken = userSession.authenticationTokens.accessToken;
   const token = await authorizeToken(accessToken);
   return token.access_token;
 }

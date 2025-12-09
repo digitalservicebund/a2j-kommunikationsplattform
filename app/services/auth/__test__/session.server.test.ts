@@ -313,7 +313,7 @@ describe.skip("session.server", () => {
     restore();
   });
 
-  it("getUserSession returns AuthenticationContext when valid", async () => {
+  it("getUserSession returns AuthenticationTokens when valid", async () => {
     const { module, reactRouterMock, restore } = await withMocks({});
     const cookie = `accessToken=${accessToken}; expiresAt=${futureTs()}`;
     const req = new Request(requestURL, {
