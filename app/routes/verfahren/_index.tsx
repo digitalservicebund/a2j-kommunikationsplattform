@@ -119,18 +119,14 @@ function VerfahrenContent({
     <>
       <InputSelect
         label="Sortierung"
-        name="sort"
-        selectedValue={params.sort} // sort value
-        placeholder={sortOptions[0].label}
-        // remove first option from sortOptions for placeholder
+        id="sort"
         options={sortOptions}
         onChange={(e) => setParam("sort", e.target.value || "")}
         disabled={isInputSelectDisabled}
       />
       <InputSelect
         label="Zuständiges Gericht"
-        name="gericht"
-        selectedValue={params.gericht || ""} // gerichtID
+        id="gericht"
         placeholder={labels.SHOW_ALL_LABEL}
         options={gerichteOptions}
         onChange={(e) => setParam("gericht", e.target.value || "")}
