@@ -10,7 +10,7 @@ import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { useParamsState } from "~/components/hooks/useParamsState";
 import InputSelect from "~/components/InputSelect";
 import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
-import { VERFAHREN_PAGE_LIMIT } from "~/constants/verfahren";
+import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/constants/verfahren";
 import { VERFAHREN_SKELETONS } from "~/constants/verfahrenSkeletons";
 import { GerichtDTO, VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
@@ -37,7 +37,7 @@ export const loader = withSessionLoader(
     const url = new URL(request.url);
     const offset = Number(url.searchParams.get("offset") || "0");
     const gericht = url.searchParams.get("gericht") || "";
-    // We can add more filters here later ⬆️
+    const sort = url.searchParams.get("sort") || sortOptions[0].value;
 
     // Fetch verfahren with one extra item to determine if there are more items
     const verfahrenPromise: Promise<VerfahrenLoaderData> = (async () => {
@@ -45,6 +45,7 @@ export const loader = withSessionLoader(
         limit: VERFAHREN_PAGE_LIMIT + 1,
         offset,
         gericht,
+        sort,
       });
 
       const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
@@ -100,9 +101,9 @@ function VerfahrenContent({
   const { labels } = useTranslations();
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
     useLoadMore(initialData);
-  const { params, setParam } = useParamsState({
-    gericht: "",
-  });
+  const { params, setParam } = useParamsState();
+
+  console.log("VerfahrenContent params:", params);
 
   const hasFilters = Object.values(params).some(Boolean);
 
@@ -116,6 +117,16 @@ function VerfahrenContent({
 
   return (
     <>
+      <InputSelect
+        label="Sortierung"
+        name="sort"
+        selectedValue={params.sort} // sort value
+        placeholder={sortOptions[0].label}
+        // remove first option from sortOptions for placeholder
+        options={sortOptions}
+        onChange={(e) => setParam("sort", e.target.value || "")}
+        disabled={isInputSelectDisabled}
+      />
       <InputSelect
         label="Zuständiges Gericht"
         name="gericht"

@@ -127,6 +127,9 @@ export const handlers = [
       const offsetParam = url.searchParams.get("offset");
       const limitParam = url.searchParams.get("limit");
       const gerichtParam = url.searchParams.get("gericht");
+      const sortParam = url.searchParams.get("sort");
+
+      console.log("URL Sort Param:", sortParam);
       console.log("URL Search Params:", url.searchParams.toString());
 
       let filteredVerfahren = mockVerfahrenNewAPIMain;
@@ -135,6 +138,17 @@ export const handlers = [
         filteredVerfahren = filteredVerfahren.filter(
           (verfahren) => verfahren.gericht.id === gerichtParam,
         );
+      }
+
+      if (sortParam) {
+        const isDescending = sortParam.startsWith("-");
+        const sortField = isDescending ? sortParam.slice(1) : sortParam;
+
+        filteredVerfahren.sort((a, b) => {
+          if (a[sortField] < b[sortField]) return isDescending ? 1 : -1;
+          if (a[sortField] > b[sortField]) return isDescending ? -1 : 1;
+          return 0;
+        });
       }
 
       const total = filteredVerfahren.length;

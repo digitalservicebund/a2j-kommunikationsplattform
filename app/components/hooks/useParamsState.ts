@@ -1,11 +1,9 @@
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router";
 
-export function useParamsState<T extends Record<string, string | undefined>>(
-  initialParams: T,
-) {
+export function useParamsState() {
   const [searchParams, setSearchParams] = useSearchParams();
-  type Key = keyof T & string;
+  type Key = string;
 
   const setParam = useCallback(
     (key: Key, value: string | undefined) => {
@@ -23,18 +21,18 @@ export function useParamsState<T extends Record<string, string | undefined>>(
     },
     [setSearchParams],
   );
-  const params: T = useMemo(() => {
-    const mergedParams = { ...initialParams };
+  const params = useMemo(() => {
+    const entries: Record<Key, string | undefined> = {} as Record<
+      Key,
+      string | undefined
+    >;
 
-    (Object.keys(initialParams) as Key[]).forEach((key) => {
-      const value = searchParams.get(key);
-      if (value !== null) {
-        mergedParams[key] = value as T[Key];
-      }
+    searchParams.forEach((value, key) => {
+      entries[key as Key] = value;
     });
 
-    return mergedParams;
-  }, [initialParams, searchParams]);
+    return entries;
+  }, [searchParams]);
 
   return {
     params,

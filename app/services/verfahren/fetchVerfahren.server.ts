@@ -8,6 +8,7 @@ const fetchVerfahrenOptionsSchema = z.object({
   offset: z.number().int().nonnegative().optional(),
   limit: z.number().int().positive().optional(),
   gericht: z.guid().optional().or(z.literal("")),
+  sort: z.string().or(z.literal("")),
 });
 
 export type FetchVerfahrenOptions = z.infer<typeof fetchVerfahrenOptionsSchema>;
@@ -24,6 +25,7 @@ export default async function fetchVerfahren(
     throw new Error("No bearer token available");
   }
 
+  console.log("fetchVerfahren called with options:", options);
   const parsed = fetchVerfahrenOptionsSchema.parse(options ?? {});
 
   const url = new URL(`${serverConfig().KOMPLA_API_URL}/api/v1/verfahren`);
