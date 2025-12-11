@@ -1,8 +1,7 @@
 import { InputSelectOption } from "~/components/InputSelect";
 
-const VERFAHREN_PAGE_LIMIT = 10;
+const VERFAHREN_PAGE_LIMIT = 100;
 const TOO_MANY_RESULTS_THRESHOLD = 50;
-const MAX_EXACT_COUNT_DISPLAY = 100;
 
 const sortOptions: InputSelectOption[] = [
   { value: "eingereicht_am", label: "Neuste Einreichungen zuerst" },
@@ -11,9 +10,4 @@ const sortOptions: InputSelectOption[] = [
   { value: "-aktenzeichen_gericht", label: "Aktenzeichen des Gerichts (Z↓A)" },
 ];
 
-export {
-  MAX_EXACT_COUNT_DISPLAY,
-  sortOptions,
-  TOO_MANY_RESULTS_THRESHOLD,
-  VERFAHREN_PAGE_LIMIT,
-};
+export { sortOptions, TOO_MANY_RESULTS_THRESHOLD, VERFAHREN_PAGE_LIMIT };

@@ -1,13 +1,13 @@
 // @vitest-environment jsdom
 
 import { describe, expect, it } from "vitest";
-import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
+import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
 import {
   getTestTranslations,
   renderWithTestTranslations,
 } from "~/util/testUtils";
 
-describe("VerfahrenCountInfo", () => {
+describe("VerfahrenCounter", () => {
   const { labels, alerts } = getTestTranslations();
   let container: HTMLElement;
   let getByText: ReturnType<typeof renderWithTestTranslations>["getByText"];
@@ -15,7 +15,7 @@ describe("VerfahrenCountInfo", () => {
 
   const renderComponent = (count: number, hasFilters: boolean) => {
     const rendered = renderWithTestTranslations(
-      <VerfahrenCountInfo count={count} hasFilters={hasFilters} />,
+      <VerfahrenCounter count={count} hasFilters={hasFilters} />,
     );
     container = rendered.container;
     getByText = rendered.getByText;

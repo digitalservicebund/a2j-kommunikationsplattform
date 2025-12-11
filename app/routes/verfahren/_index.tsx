@@ -9,7 +9,7 @@ import z from "zod";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { useParamsState } from "~/components/hooks/useParamsState";
 import InputSelect from "~/components/InputSelect";
-import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
+import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
 import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/constants/verfahren";
 import { VERFAHREN_SKELETONS } from "~/constants/verfahrenSkeletons";
 import { GerichtDTO, VerfahrenSchema } from "~/models/VerfahrenSchema";
@@ -132,10 +132,7 @@ function VerfahrenContent({
         onChange={(e) => setParam("gericht", e.target.value || "")}
         disabled={isInputSelectDisabled}
       />
-      <VerfahrenCountInfo
-        count={allItems.length || 0}
-        hasFilters={hasFilters}
-      />
+      <VerfahrenCounter count={allItems.length || 0} hasFilters={hasFilters} />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
       {hasMoreItems && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}
     </>
