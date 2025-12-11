@@ -21,7 +21,7 @@ function getResultDisplayState(
   return "default";
 }
 
-export function VerfahrenCountInfo({
+export function VerfahrenCounter({
   count,
   hasFilters,
 }: Readonly<{
