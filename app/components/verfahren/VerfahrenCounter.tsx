@@ -5,20 +5,24 @@ import {
 } from "~/constants/verfahren";
 import { useTranslations } from "~/services/translations/context";
 
-type ResultDisplayState =
-  | "emptyNoFilters"
-  | "emptyWithFilters"
-  | "tooManyResults"
-  | "default";
+enum CounterState {
+  NoVerfahren = "NO_VERFAHREN",
+  NoResult = "NO_RESULT",
+  TooMany = "TOO_MANY",
+  Default = "DEFAULT",
+}
 
-function getResultDisplayState(
-  count: number,
-  hasFilters: boolean,
-): ResultDisplayState {
-  if (count === 0 && !hasFilters) return "emptyNoFilters";
-  if (count === 0 && hasFilters) return "emptyWithFilters";
-  if (count > TOO_MANY_RESULTS_THRESHOLD) return "tooManyResults";
-  return "default";
+function getCounterState(count: number, hasFilters: boolean): CounterState {
+  if (count === 0) {
+    if (hasFilters) {
+      return CounterState.NoResult;
+    }
+    return CounterState.NoVerfahren;
+  }
+
+  if (count > TOO_MANY_RESULTS_THRESHOLD) return CounterState.TooMany;
+
+  return CounterState.Default;
 }
 
 export function VerfahrenCounter({
@@ -30,7 +34,7 @@ export function VerfahrenCounter({
 }>) {
   const { labels, alerts } = useTranslations();
 
-  const displayState = getResultDisplayState(count, hasFilters);
+  const displayState = getCounterState(count, hasFilters);
 
   const formattedCount =
     count >= VERFAHREN_PAGE_LIMIT
@@ -42,28 +46,28 @@ export function VerfahrenCounter({
   let alertMessage: string | null = null;
 
   switch (displayState) {
-    case "emptyNoFilters": {
+    case CounterState.NoVerfahren: {
       countInfo = `0 ${labels.VERFAHREN_LABEL}`;
       alertTitle = alerts.NO_VERFAHREN_FOUND_TITLE;
       alertMessage = alerts.NO_VERFAHREN_FOUND_MESSAGE;
       break;
     }
 
-    case "emptyWithFilters": {
+    case CounterState.NoResult: {
       countInfo = `0 ${labels.RESULTS_LABEL}`;
       alertTitle = alerts.NO_VERFAHREN_FOUND_WITH_FILTERS_TITLE;
       alertMessage = alerts.NO_VERFAHREN_FOUND_WITH_FILTERS_MESSAGE;
       break;
     }
 
-    case "tooManyResults": {
+    case CounterState.TooMany: {
       countInfo = formattedCount;
       alertTitle = alerts.TOO_MANY_RESULTS_TITLE;
       alertMessage = alerts.TOO_MANY_RESULTS_MESSAGE;
       break;
     }
 
-    case "default":
+    case CounterState.Default:
     default: {
       countInfo = formattedCount;
       break;
