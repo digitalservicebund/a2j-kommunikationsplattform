@@ -12,6 +12,7 @@ interface InputSelectProps {
   options?: InputSelectOption[];
   onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
   disabled?: boolean;
+  selectedValue: string;
 }
 
 export default function InputSelect({
@@ -21,6 +22,7 @@ export default function InputSelect({
   onChange,
   disabled,
   id,
+  selectedValue,
 }: Readonly<InputSelectProps>) {
   return (
     <div className="kern-form-input">
@@ -42,7 +44,11 @@ export default function InputSelect({
             </option>
           )}
           {options.map((option) => (
-            <option key={option.value} value={option.value}>
+            <option
+              key={option.value}
+              value={option.value}
+              selected={option.value === selectedValue}
+            >
               {option.label}
             </option>
           ))}

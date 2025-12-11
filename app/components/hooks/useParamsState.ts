@@ -1,38 +1,30 @@
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { useSearchParams } from "react-router";
+import { URLSearchParamsInit } from "react-router-dom";
 
-export function useParamsState() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  type Key = string;
+export function useParamsState<T extends URLSearchParamsInit>(
+  initialParams: T,
+) {
+  const [searchParams, setSearchParams] = useSearchParams(initialParams);
 
-  const setParam = useCallback(
-    (key: Key, value: string | undefined) => {
-      setSearchParams((prev) => {
-        const next = new URLSearchParams(prev);
-
-        if (value === undefined || value === "") {
-          next.delete(key);
-        } else {
-          next.set(key, value);
-        }
-
-        return next;
-      });
-    },
-    [setSearchParams],
+  const params = useMemo(
+    (): Record<keyof T, string> =>
+      Object.fromEntries(Array.from(searchParams.entries())) as Record<
+        keyof T,
+        string
+      >,
+    [searchParams],
   );
-  const params = useMemo(() => {
-    const entries: Record<Key, string | undefined> = {} as Record<
-      Key,
-      string | undefined
-    >;
 
-    searchParams.forEach((value, key) => {
-      entries[key as Key] = value;
-    });
-
-    return entries;
-  }, [searchParams]);
+  const setParam = (key: string, value: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (value) {
+      newParams.set(key, value);
+    } else {
+      newParams.delete(key);
+    }
+    setSearchParams(newParams);
+  };
 
   return {
     params,

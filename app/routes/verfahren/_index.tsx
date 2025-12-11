@@ -101,11 +101,13 @@ function VerfahrenContent({
   const { labels } = useTranslations();
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
     useLoadMore(initialData);
-  const { params, setParam } = useParamsState();
+  const { params, setParam } = useParamsState({
+    sort: sortOptions[0].value, // default sort=eingereicht_am
+    gericht: "",
+  });
 
-  console.log("VerfahrenContent params:", params);
-
-  const hasFilters = Object.values(params).some(Boolean);
+  const hasFilters = false;
+  console.log("hasFilters:", hasFilters);
 
   const gerichteOptions = gerichte.map((g) => ({ value: g.id, label: g.wert }));
 
@@ -115,14 +117,17 @@ function VerfahrenContent({
     gerichteOptions.length === 0 ||
     (!hasFilters && allItems.length === 0);
 
+  console.log("paramsObject", params);
+
   return (
     <>
       <InputSelect
         label="Sortierung"
         id="sort"
         options={sortOptions}
-        onChange={(e) => setParam("sort", e.target.value || "")}
+        onChange={(e) => setParam("sort", e.target.value)}
         disabled={isInputSelectDisabled}
+        selectedValue={params.sort || sortOptions[0].value}
       />
       <InputSelect
         label="Zuständiges Gericht"
@@ -131,6 +136,7 @@ function VerfahrenContent({
         options={gerichteOptions}
         onChange={(e) => setParam("gericht", e.target.value || "")}
         disabled={isInputSelectDisabled}
+        selectedValue={params.gericht || ""}
       />
       <VerfahrenCounter count={allItems.length || 0} hasFilters={hasFilters} />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
