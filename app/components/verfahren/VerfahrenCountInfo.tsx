@@ -1,7 +1,7 @@
 import Alert from "~/components/Alert";
 import {
-  MAX_EXACT_COUNT_DISPLAY,
   TOO_MANY_RESULTS_THRESHOLD,
+  VERFAHREN_PAGE_LIMIT,
 } from "~/constants/verfahren";
 import { useTranslations } from "~/services/translations/context";
 
@@ -33,7 +33,7 @@ export function VerfahrenCountInfo({
   const displayState = getResultDisplayState(count, hasFilters);
 
   const formattedCount =
-    count >= MAX_EXACT_COUNT_DISPLAY
+    count >= VERFAHREN_PAGE_LIMIT
       ? labels.MORE_THAN_100_VERFAHREN_LABEL
       : `${count} ${labels.VERFAHREN_LABEL}`;
 
