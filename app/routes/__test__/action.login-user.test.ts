@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("mocks/auth/mockAuth.server", () => ({
+vi.mock("~/services/auth/loginAsDeveloper.server", () => ({
   loginAsDeveloper: vi.fn(),
 }));
 
@@ -9,8 +9,8 @@ vi.mock("~/services/auth/oAuth.server", () => ({
   AuthenticationProvider: { BEA: "bea" },
 }));
 
-import { loginAsDeveloper } from "mocks/auth/mockAuth.server";
 import { action, LoginType } from "~/routes/action.login-user";
+import { loginAsDeveloper } from "~/services/auth/loginAsDeveloper.server";
 import { authenticator } from "~/services/auth/oAuth.server";
 
 describe("/action/login-user action", () => {

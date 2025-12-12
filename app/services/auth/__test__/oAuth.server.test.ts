@@ -10,13 +10,13 @@ vi.mock("~/config/config.server", () => ({
   }),
 }));
 
-import { loginAsDeveloper } from "mocks/auth/mockAuth.server";
+import { loginAsDeveloper } from "~/services/auth/loginAsDeveloper.server";
 import {
   AuthenticationProvider,
   authenticator,
   type AuthenticationResponse,
 } from "~/services/auth/oAuth.server";
-import { createUserSession } from "~/services/auth/session.server";
+import { setSession } from "~/services/auth/session.server";
 
 type VerifyArgs = {
   tokens: { accessToken: () => string; hasRefreshToken: () => boolean };
@@ -29,7 +29,7 @@ type AuthWithStrategies = {
   strategies: Map<string, StrategyResponse>;
 };
 
-const mockedCreateUserSession = vi.mocked(createUserSession);
+const mockedCreateUserSession = vi.mocked(setSession);
 
 const requestURL = "http://localhost/oauth-test";
 const accessToken = "test-access-token-oauth";
@@ -104,7 +104,7 @@ describe.skip("oAuth.server", () => {
         },
         sessionCookieHeader: "mock-cookie",
       });
-      expect(createUserSession).toHaveBeenCalledWith(
+      expect(setSession).toHaveBeenCalledWith(
         accessToken,
         expect.any(Number),
         mockRequest,
