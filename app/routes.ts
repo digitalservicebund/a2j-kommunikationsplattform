@@ -1,5 +1,5 @@
 import { index, layout, route, RouteConfig } from "@react-router/dev/routes";
-import { contentPages } from "./constants/contentPages";
+import { CONTENT_PAGES } from "./config/contentPages";
 
 export default [
   // auth
@@ -29,7 +29,7 @@ export default [
       ]),
     ]),
     // static content pages
-    ...contentPages.map((page) => route(page.path, page.file)),
+    ...CONTENT_PAGES.map((page) => route(page.path, page.file)),
   ]),
 
   // Kubernetes health check
