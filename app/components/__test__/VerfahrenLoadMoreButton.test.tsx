@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 import { MemoryRouter } from "react-router";
-import { beforeEach, vi } from "vitest";
-import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "~/util/testUtils";
+} from "tests/util/translationsUtil";
+import { beforeEach, it, vi } from "vitest";
+import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
 
 describe("VerfahrenLoadMoreButton", () => {
   let onLoadMore: ReturnType<typeof vi.fn>;
