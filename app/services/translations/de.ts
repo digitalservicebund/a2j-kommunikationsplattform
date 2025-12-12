@@ -46,6 +46,10 @@ export const de = {
     NO_VERFAHREN_FOUND_TITLE: "Aktuell liegen keine Verfahren vor",
     NO_VERFAHREN_FOUND_MESSAGE:
       "Nach einer erfolgreichen Einreichung oder Zuteilung werden die entsprechenden Verfahren hier angezeigt.",
+    NO_VERFAHREN_FOUND_WITH_FILTERS_TITLE:
+      "Keine passenden Ergebnisse gefunden",
+    NO_VERFAHREN_FOUND_WITH_FILTERS_MESSAGE:
+      "Es konnten keine passenden Ergebnisse für Ihre Suche/Filtereinstellungen gefunden werden. Bitte überprüfen Sie Ihre Eingaben oder ändern Sie die Filter, um andere Ergebnisse zu sehen.",
   },
   labels: {
     FOOTER_ARIA_LABEL: "Rechtliche und weiterführende Informationen",
@@ -61,6 +65,9 @@ export const de = {
     TO_START_PAGE_LABEL: "Zur Startseite",
     CONTACT_SUPPORT_LABEL: "Kontaktieren Sie den Support",
     MORE_THAN_100_VERFAHREN_LABEL: "Mehr als 100 Verfahren",
+    PLEASE_SELECT_LABEL: "Bitte auswählen",
+    SHOW_ALL_LABEL: "Alle anzeigen",
+    RESULTS_LABEL: "Ergebnisse",
   },
   titles: {
     PLATFORM_TITLE: "Kommunikationsplattform | Justiz-Services",
