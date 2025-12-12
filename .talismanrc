@@ -66,7 +66,7 @@ fileignoreconfig:
   - filename: app/components/hooks/useLoadMore.ts
     checksum: 9f147b318731def0ed6f10f664c9a45099d2a626530a650f7b52c9139ec529b1
   - filename: app/components/verfahren/VerfahrenList.tsx
-    checksum: 626c4040f4fd1f4fe4cae02dc11092399d194c1c85ba3185de3c1c38251c4601
+    checksum: 8a0994a34608e1f5e8dd89d77cad04ff851c567634ab0b30ca9be1adb23368f0
   - filename: app/util/buildSearchParams.ts
     checksum: c94426c1e57f5b3e80979ca1408ff01b1b1d943e5b8941661122409200fd1dfa
   - filename: app/services/translations/de.ts
