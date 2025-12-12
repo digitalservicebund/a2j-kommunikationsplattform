@@ -1,4 +1,4 @@
-export const contentPages = [
+export const CONTENT_PAGES = [
   { path: "datenschutz", file: "./routes/datenschutz.tsx" },
   { path: "barrierefreiheit", file: "./routes/barrierefreiheit.tsx" },
   { path: "impressum", file: "./routes/impressum.tsx" },

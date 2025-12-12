@@ -1,6 +1,6 @@
 import { isRouteErrorResponse } from "react-router";
 import { dictionaries } from "~/services/translations";
-import { Route } from "../+types/root";
+import { Route } from "../../+types/root";
 
 export type ErrorContent = {
   label: string;

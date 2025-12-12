@@ -2,11 +2,11 @@
 
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "~/util/testUtils";
+} from "tests/util/translationsUtil";
+import { describe, expect, it, vi } from "vitest";
 import InputSelect from "../InputSelect";
 
 describe("InputSelect", () => {
