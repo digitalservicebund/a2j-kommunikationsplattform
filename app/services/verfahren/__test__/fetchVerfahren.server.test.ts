@@ -15,9 +15,17 @@ vi.mock("~/services/auth/getBearerToken.server", () => ({
 global.fetch = mocks.fetch;
 
 describe("fetchVerfahren", () => {
+  const originalEnv = process.env.KOMPLA_API_URL;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    process.env.KOMPLA_API_URL = "http://localhost:8080";
   });
+
+  afterEach(() => {
+    process.env.KOMPLA_API_URL = originalEnv;
+  });
+
   it("calls fetchFromApi with correct arguments", async () => {
     const mockVerfahren = [
       {
@@ -47,8 +55,11 @@ describe("fetchVerfahren", () => {
       offset: 123,
     });
 
+    const calledUrl = mocks.fetch.mock.calls[0][0] as string;
+    expect(calledUrl).toContain("limit=99");
+    expect(calledUrl).toContain("offset=123");
     expect(mocks.fetch).toHaveBeenCalledWith(
-      expect.stringContaining("/verfahren?limit=99&offset=123"),
+      expect.any(String),
       expect.objectContaining({
         headers: {
           Authorization: "Bearer test-token",
@@ -68,8 +79,81 @@ describe("fetchVerfahren", () => {
 
     const mockRequest = new Request("http://localhost:3000");
 
-    await expect(fetchVerfahren(mockRequest)).rejects.toThrow(
+    const result = fetchVerfahren(mockRequest);
+
+    expect(result).rejects.toThrow(
       "Die Verfahren konnten nicht abgerufen werden.",
     );
+  });
+
+  it("includes gericht parameter when provided", async () => {
+    mocks.getBearerToken.mockResolvedValue("test-token");
+    mocks.fetch.mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    });
+
+    const mockRequest = new Request("http://localhost:3000");
+    await fetchVerfahren(mockRequest, {
+      gericht: "b727131c-0c32-91ba-3eaa-f44405967b6d",
+    });
+
+    expect(mocks.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("gericht=b727131c-0c32-91ba-3eaa-f44405967b6d"),
+      expect.any(Object),
+    );
+  });
+
+  it("excludes gericht parameter when empty string", async () => {
+    mocks.getBearerToken.mockResolvedValue("test-token");
+    mocks.fetch.mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    });
+
+    const mockRequest = new Request("http://localhost:3000");
+    await fetchVerfahren(mockRequest, { gericht: "" });
+    expect(mocks.fetch).toHaveBeenCalledWith(
+      expect.not.stringContaining("gericht="),
+      expect.any(Object),
+    );
+  });
+
+  it("throws error when bearer token is not available", async () => {
+    mocks.getBearerToken.mockResolvedValue(null);
+
+    const mockRequest = new Request("http://localhost:3000");
+
+    const result = fetchVerfahren(mockRequest);
+
+    expect(result).rejects.toThrow("No bearer token available");
+  });
+
+  it("throws error when API returns non-ok response", async () => {
+    mocks.getBearerToken.mockResolvedValue("test-token");
+    mocks.fetch.mockResolvedValue({
+      ok: false,
+      status: 500,
+      statusText: "Internal Server Error",
+    });
+
+    const mockRequest = new Request("http://localhost:3000");
+
+    const result = fetchVerfahren(mockRequest);
+
+    expect(result).rejects.toThrow(
+      "Die Verfahren konnten nicht abgerufen werden.",
+    );
+  });
+
+  it("rejects invalid UUID in gericht parameter", async () => {
+    mocks.getBearerToken.mockResolvedValue("test-token");
+    const mockRequest = new Request("http://localhost:3000");
+
+    const result = fetchVerfahren(mockRequest, {
+      gericht: "invalid-uuid",
+    });
+
+    expect(result).rejects.toThrow();
   });
 });

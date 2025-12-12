@@ -6,54 +6,66 @@ import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
 import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
 
 import z from "zod";
-import { useVerfahrenState } from "~/components/hooks/useVerfahrenState";
-import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
+import { useLoadMore } from "~/components/hooks/useLoadMore";
+import { useParamsState } from "~/components/hooks/useParamsState";
+import InputSelect from "~/components/InputSelect";
+import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
+import { VERFAHREN_PAGE_LIMIT } from "~/constants/verfahren";
 import { VERFAHREN_SKELETONS } from "~/constants/verfahrenSkeletons";
-import { VerfahrenSchema } from "~/models/VerfahrenSchema";
+import { GerichtDTO, VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import { useTranslations } from "~/services/translations/context";
+import fetchGerichteService from "~/services/verfahren/fetchGerichte.service";
 import fetchVerfahren from "~/services/verfahren/fetchVerfahren.server";
 import { Route } from "./+types/_index";
 
 export type Verfahren = z.infer<typeof VerfahrenSchema>;
+export type Gericht = z.infer<typeof GerichtDTO>;
+
 export type VerfahrenLoaderData = {
   items: Verfahren[];
   hasMoreItems: boolean;
 };
 
-export const VERFAHREN_PAGE_LIMIT = 10;
+export type LoaderData = {
+  verfahren: Promise<VerfahrenLoaderData>;
+  gerichte: Gericht[];
+};
 
 export const loader = withSessionLoader(
-  async ({ request }: Route.LoaderArgs) => {
+  async ({ request }: Route.LoaderArgs): Promise<LoaderData> => {
     const url = new URL(request.url);
-    const offset = Number(url.searchParams.get("offset")) || 0;
+    const offset = Number(url.searchParams.get("offset") || "0");
+    const gericht = url.searchParams.get("gericht") || "";
+    // We can add more filters here later ⬆️
 
-    const verfahrenPromise = fetchVerfahren(request, {
-      // Fetch one more item than the page limit to check for "hasMore"
-      limit: VERFAHREN_PAGE_LIMIT + 1,
-      offset,
-    }).then((verfahren) => {
+    // Fetch verfahren with one extra item to determine if there are more items
+    const verfahrenPromise: Promise<VerfahrenLoaderData> = (async () => {
+      const verfahren = await fetchVerfahren(request, {
+        limit: VERFAHREN_PAGE_LIMIT + 1,
+        offset,
+        gericht,
+      });
+
       const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
-      const paginatedItems = hasMoreItems
+      const items = hasMoreItems
         ? verfahren.slice(0, VERFAHREN_PAGE_LIMIT)
         : verfahren;
 
-      return { items: paginatedItems, hasMoreItems };
-    });
+      return { items, hasMoreItems };
+    })();
 
-    // If this is a fetcher request (has offset), return resolved data
-    if (offset > 0) {
-      return await verfahrenPromise;
-    }
-    // For initial load, return deferred promise for Suspense
+    const gerichte = await fetchGerichteService(request);
+
     return {
       verfahren: verfahrenPromise,
+      gerichte,
     };
   },
 );
 
 export default function Verfahren() {
-  const data = useLoaderData<{ verfahren: Promise<VerfahrenLoaderData> }>();
+  const data = useLoaderData<LoaderData>();
 
   return (
     <>
@@ -65,7 +77,12 @@ export default function Verfahren() {
           ))}
         >
           <Await resolve={data.verfahren}>
-            {(data) => <VerfahrenContent initialData={data} />}
+            {(verfahrenData) => (
+              <VerfahrenContent
+                initialData={verfahrenData}
+                gerichte={data.gerichte}
+              />
+            )}
           </Await>
         </Suspense>
       </div>
@@ -75,16 +92,40 @@ export default function Verfahren() {
 
 function VerfahrenContent({
   initialData,
+  gerichte,
 }: Readonly<{
   initialData: VerfahrenLoaderData;
+  gerichte: Gericht[];
 }>) {
+  const { labels } = useTranslations();
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
-    useVerfahrenState(initialData);
+    useLoadMore(initialData);
+  const { params, setParam } = useParamsState({
+    gericht: "",
+  });
+
+  const hasFilters = Object.values(params).some(Boolean);
+
+  const gerichteOptions = gerichte.map((g) => ({ value: g.id, label: g.wert }));
+
+  // isInputSelectDisabled when loading, or no options, or no filters and no items
+  const isInputSelectDisabled =
+    isLoading ||
+    gerichteOptions.length === 0 ||
+    (!hasFilters && allItems.length === 0);
 
   return (
     <>
-      {/* Filters can be added here in the future */}
-      <VerfahrenCountInfo count={allItems.length || 0} />
+      <InputSelect
+        label="Zuständiges Gericht"
+        name="gericht"
+        selectedValue={params.gericht || ""} // gerichtID
+        placeholder={labels.SHOW_ALL_LABEL}
+        options={gerichteOptions}
+        onChange={(e) => setParam("gericht", e.target.value || "")}
+        disabled={isInputSelectDisabled}
+      />
+      <VerfahrenCounter count={allItems.length || 0} hasFilters={hasFilters} />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
       {hasMoreItems && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}
     </>
