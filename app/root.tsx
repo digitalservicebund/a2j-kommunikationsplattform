@@ -19,7 +19,7 @@ import Header from "~/components/Header";
 import ErrorBox from "~/components/ErrorBox";
 import Logo from "~/components/Logo.static";
 import PageFooter from "~/components/PageFooter";
-import { buildErrorContext } from "~/errorHandling/buildErrorContext";
+import { buildErrorContext } from "~/services/error/buildErrorContext";
 import { useNonce } from "~/services/security/nonce";
 import { dictionaries } from "~/services/translations";
 import { TranslationsContext } from "~/services/translations/context";
