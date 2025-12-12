@@ -8,7 +8,7 @@ import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMor
 import z from "zod";
 import { useVerfahrenState } from "~/components/hooks/useVerfahrenState";
 import { VerfahrenCountInfo } from "~/components/verfahren/VerfahrenCountInfo";
-import { VERFAHREN_SKELETONS } from "~/constants/verfahrenSkeletons";
+import { VERFAHREN_SKELETONS } from "~/config/verfahrenSkeletons";
 import { VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
 import { useTranslations } from "~/services/translations/context";
