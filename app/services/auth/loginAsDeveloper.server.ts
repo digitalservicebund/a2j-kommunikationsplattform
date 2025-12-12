@@ -14,8 +14,6 @@ export const loginAsDeveloper = async (request: Request) => {
       request,
     });
 
-    if (!sessionCookieHeader) return;
-
     return new Response(null, {
       status: 302,
       headers: {

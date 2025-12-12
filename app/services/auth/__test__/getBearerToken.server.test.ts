@@ -13,7 +13,7 @@ vi.mock("../session.server", () => ({
 import { authorizeToken } from "../../api/authorizeToken.server";
 import { getUserSession } from "../session.server";
 
-describe.skip("getBearerToken", () => {
+describe("getBearerToken", () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
@@ -25,7 +25,9 @@ describe.skip("getBearerToken", () => {
   it("returns a bearer token", async () => {
     const req = new Request("https://cool.auth/request");
     (vi.mocked(getUserSession) as Mock).mockResolvedValue({
-      accessToken: "user-access-token",
+      authenticationTokens: {
+        accessToken: "user-access-token",
+      },
     });
     (vi.mocked(authorizeToken) as Mock).mockResolvedValue({
       access_token: "an-api-access-token",
@@ -38,7 +40,7 @@ describe.skip("getBearerToken", () => {
   });
 
   it("propagates errors from getUserSession", async () => {
-    const req = new Request("https://another.cool/failing/request/");
+    const req = new Request("https://another.cool/request");
     const error = new Error("could not get user session data");
     (getUserSession as unknown as Mock).mockRejectedValue(error);
 
@@ -47,9 +49,11 @@ describe.skip("getBearerToken", () => {
   });
 
   it("propagates errors from authorizeToken", async () => {
-    const req = new Request("https://and.a.cool/request/that/fails");
+    const req = new Request("https://one.more/request");
     (getUserSession as unknown as Mock).mockResolvedValue({
-      accessToken: "user-access-token",
+      authenticationTokens: {
+        accessToken: "user-access-token",
+      },
     });
     const error = new Error("authorization failed");
     (authorizeToken as unknown as Mock).mockRejectedValue(error);
