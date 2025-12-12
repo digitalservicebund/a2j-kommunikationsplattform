@@ -10,7 +10,7 @@ vi.mock("~/config/config.server", () => ({
   }),
 }));
 
-import { loginAsDeveloper } from "~/mocks/auth/mockAuth.server";
+import { loginAsDeveloper } from "mocks/auth/mockAuth.server";
 import {
   AuthenticationProvider,
   authenticator,

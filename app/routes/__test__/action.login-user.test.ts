@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("~/mocks/auth/mockAuth.server", () => ({
+vi.mock("mocks/auth/mockAuth.server", () => ({
   loginAsDeveloper: vi.fn(),
 }));
 
@@ -9,8 +9,8 @@ vi.mock("~/services/auth/oAuth.server", () => ({
   AuthenticationProvider: { BEA: "bea" },
 }));
 
-import { loginAsDeveloper } from "~/mocks/auth/mockAuth.server";
-import { LoginType, action } from "~/routes/action.login-user";
+import { loginAsDeveloper } from "mocks/auth/mockAuth.server";
+import { action, LoginType } from "~/routes/action.login-user";
 import { authenticator } from "~/services/auth/oAuth.server";
 
 describe("/action/login-user action", () => {
@@ -21,6 +21,7 @@ describe("/action/login-user action", () => {
   it('redirects to "/" on developer login', async () => {
     // arrange: mock loginAsDeveloper to return a redirect response
     const mockedLogin = vi.mocked(loginAsDeveloper);
+
     mockedLogin.mockResolvedValue(
       new Response(null, { status: 302, headers: { Location: "/" } }),
     );
