@@ -10,7 +10,6 @@ vi.mock("~/config/config.server", () => ({
   }),
 }));
 
-import { loginAsDeveloper } from "~/services/auth/loginAsDeveloper.server";
 import {
   AuthenticationProvider,
   authenticator,
@@ -19,7 +18,11 @@ import {
 import { setSession } from "~/services/auth/session.server";
 
 type VerifyArgs = {
-  tokens: { accessToken: () => string; hasRefreshToken: () => boolean };
+  tokens: {
+    accessToken: () => string;
+    hasRefreshToken: () => boolean;
+    refreshToken: () => string;
+  };
   request: Request;
 };
 type StrategyResponse = {
@@ -29,7 +32,7 @@ type AuthWithStrategies = {
   strategies: Map<string, StrategyResponse>;
 };
 
-const mockedCreateUserSession = vi.mocked(setSession);
+const mockedSetUpdateSession = vi.mocked(setSession);
 
 const requestURL = "http://localhost/oauth-test";
 const accessToken = "test-access-token-oauth";
@@ -45,79 +48,50 @@ function getBEAStrategy(): StrategyResponse {
   return strategy;
 }
 
-describe.skip("oAuth.server", () => {
+describe("oAuth.server", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe("loginAsDeveloper", () => {
-    const mockRequest = new Request(`${requestURL}/dev-login`);
+  const mockRequest = new Request(`${requestURL}/callback`);
+  const mockTokens = {
+    accessToken: () => accessToken,
+    refreshToken: () => refreshToken,
+    hasRefreshToken: () => hasRefreshToken,
+    accessTokenExpiresInSeconds: () => accessTokenExpiresInSeconds,
+  };
 
-    it("redirects to / with correct cookie", async () => {
-      mockedCreateUserSession.mockResolvedValueOnce("session-cookie");
-      const response = await loginAsDeveloper(mockRequest);
+  it("returns AuthenticationResponse with session cookie", async () => {
+    mockedSetUpdateSession.mockResolvedValueOnce("mock-cookie");
 
-      expect(response).toBeInstanceOf(Response);
-      expect(response?.status).toBe(302);
-      expect(response?.headers.get("Location")).toBe("/");
-      expect(response?.headers.get("Set-Cookie")).toContain("session-cookie");
+    const strategy = getBEAStrategy();
+    const result = await strategy.verify({
+      tokens: mockTokens,
+      request: mockRequest,
     });
 
-    it("returns undefined if sessionCookieHeader is falsy", async () => {
-      mockedCreateUserSession.mockResolvedValueOnce("");
-      const response = await loginAsDeveloper(mockRequest);
-      expect(response).toBeUndefined();
+    expect(result).toEqual({
+      authenticationTokens: {
+        accessToken: accessToken,
+        expiresAt: expect.any(Number),
+        refreshToken: refreshToken,
+      },
+      sessionCookieHeader: "mock-cookie",
     });
-
-    it("returns 500 response on error", async () => {
-      mockedCreateUserSession.mockRejectedValueOnce(new Error("error"));
-      const response = await loginAsDeveloper(mockRequest);
-
-      expect(response).toBeInstanceOf(Response);
-      expect(response?.status).toBe(500);
-      await expect(response?.text()).resolves.toBe("Dev login failed");
+    expect(setSession).toHaveBeenCalledWith({
+      accessToken: accessToken,
+      expiresAt: expect.any(Number),
+      refreshToken: refreshToken,
+      request: mockRequest,
     });
   });
 
-  describe("OAuth2Strategy callback", () => {
-    const mockRequest = new Request(`${requestURL}/callback`);
-    const mockTokens = {
-      accessToken: () => accessToken,
-      hasRefreshToken: () => hasRefreshToken,
-      accessTokenExpiresInSeconds: () => accessTokenExpiresInSeconds,
-    };
+  it("throws error if setSession fails", async () => {
+    mockedSetUpdateSession.mockRejectedValueOnce(new Error("fail"));
+    const strategy = getBEAStrategy();
 
-    it("returns AuthenticationResponse with session cookie", async () => {
-      mockedCreateUserSession.mockResolvedValueOnce("mock-cookie");
-
-      const strategy = getBEAStrategy();
-      const result = await strategy.verify({
-        tokens: mockTokens,
-        request: mockRequest,
-      });
-
-      expect(result).toEqual({
-        authenticationTokens: {
-          accessToken: accessToken,
-          expiresIn: expect.any(Number),
-          refreshToken: refreshToken,
-        },
-        sessionCookieHeader: "mock-cookie",
-      });
-      expect(setSession).toHaveBeenCalledWith(
-        accessToken,
-        expect.any(Number),
-        mockRequest,
-      );
-    });
-
-    it("throws error if createUserSession fails", async () => {
-      mockedCreateUserSession.mockRejectedValueOnce(new Error("fail"));
-      const strategy = getBEAStrategy();
-
-      await expect(
-        strategy.verify({ tokens: mockTokens, request: mockRequest }),
-      ).rejects.toThrow("fail");
-    });
+    await expect(
+      strategy.verify({ tokens: mockTokens, request: mockRequest }),
+    ).rejects.toThrow("fail");
   });
 });
