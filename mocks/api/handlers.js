@@ -142,32 +142,40 @@ export const handlers = [
       }
 
       if (searchParam) {
-        const searchTextLower = searchParam.toLowerCase();
+        const searchLower = searchParam.toLowerCase();
 
-        const isMatch = (value) => {
-          if (typeof value === "string") {
-            return value.toLowerCase().includes(searchTextLower);
-          }
-          if (Array.isArray(value)) {
-            return value.some((item) => isMatch(item));
-          }
-          if (typeof value === "object" && value !== null) {
-            return Object.values(value).some((v) => isMatch(v));
-          }
-          return false;
-        };
+        const matchesString = (val) =>
+          typeof val === "string" && val.toLowerCase().includes(searchLower);
 
         filteredVerfahren = filteredVerfahren.filter((verfahren) => {
-          // Search top-level fields explicitly
+          // Top-level string fields
           if (
-            isMatch(verfahren.aktenzeichen_gericht) ||
-            isMatch(verfahren.gericht?.wert)
+            matchesString(verfahren.aktenzeichen_gericht) ||
+            matchesString(verfahren.gericht?.wert) ||
+            matchesString(verfahren.gericht?.id)
           ) {
             return true;
           }
 
-          // Search all beteiligungen recursively
-          return isMatch(verfahren.beteiligungen);
+          // Beteiligungen and nested fields
+          return verfahren.beteiligungen?.some((b) => {
+            // Beteiligung itself
+            if (matchesString(b.name) || matchesString(b.id)) return true;
+
+            // Rollen
+            if (b.rollen?.some((r) => matchesString(r.id))) return true;
+
+            // Prozessbevollmaechtigte
+            return b.prozessbevollmaechtigte?.some((p) => {
+              const bev = p.bevollmaechtigter;
+              return (
+                matchesString(p.aktenzeichen) ||
+                matchesString(bev?.id) ||
+                matchesString(bev?.safe_id) ||
+                matchesString(bev?.name)
+              );
+            });
+          });
         });
       }
 

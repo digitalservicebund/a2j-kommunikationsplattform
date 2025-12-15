@@ -4144,7 +4144,7 @@ export const mockVerfahrenNewAPIMain = [
           {
             aktenzeichen: "B 7566 06/2026",
             bevollmaechtigter: {
-              id: "019aa757-27d2-7e21-9460-7b45a06266e3",
+              id: "019aa757-27d2-7e21-9460-7b45a06266e4",
               safe_id: "DE.BRAK_SPT.54e1f8d7-8b23-4a96-9c01-2f3e7a6d5b82.5b9a",
               name: "Paula Krüger",
             },
