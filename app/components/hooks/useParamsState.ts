@@ -9,33 +9,31 @@ export function useParamsState<T extends URLSearchParamsInit>(
 
   const getParamValue = useCallback(
     (key: keyof T) => {
-      return searchParams.get(String(key)) ?? null;
+      return searchParams.get(String(key));
     },
     [searchParams],
   );
 
-  const updateParams = (
-    updates: Record<string, string | null>,
-    replace = false,
-  ) => {
-    setSearchParams(
-      (searchParams) => {
-        Object.entries(updates).forEach(([key, value]) => {
-          if (value !== null) {
-            searchParams.set(key, value);
-          } else {
-            searchParams.delete(key);
-          }
-        });
-        return searchParams;
-      },
-      { replace },
-    );
-  };
+  const updateParam = useCallback(
+    (key: keyof T, value: string | null) => {
+      setSearchParams((prev) => {
+        const newParam = new URLSearchParams(prev);
+
+        if (value === null || value === "") {
+          newParam.delete(String(key));
+        } else {
+          newParam.set(String(key), value);
+        }
+
+        return newParam;
+      });
+    },
+    [setSearchParams],
+  );
 
   return {
     searchParams,
     getParamValue,
-    updateParams,
+    updateParam,
   } as const;
 }

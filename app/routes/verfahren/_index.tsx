@@ -102,34 +102,28 @@ function VerfahrenContent({
   const { labels } = useTranslations();
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
     useLoadMore(initialData);
-  const { getParamValue, updateParams, searchParams } = useParamsState({
+  const { getParamValue, updateParam } = useParamsState({
     sort: sortOptions[0].value, // default sort=eingereicht_am
     gericht: "",
     search_text: "",
   });
 
-  const hasFilters = false;
-  console.log("hasFilters:", hasFilters);
-
   const gerichteOptions = gerichte.map((g) => ({ value: g.id, label: g.wert }));
 
-  // isInputSelectDisabled when loading, or no options, or no filters and no items
-  const isInputSelectDisabled =
-    isLoading ||
-    gerichteOptions.length === 0 ||
-    (!hasFilters && allItems.length === 0);
-
-  console.log(
-    "paramsObject",
-    Object.fromEntries(Array.from(searchParams.entries())),
+  const hasFilters = Boolean(
+    getParamValue("search_text") || Boolean(getParamValue("gericht")),
   );
+
+  // isInputSelectDisabled when loading, or when no items have been returned and no filters are applied
+  const shouldDisableInputs =
+    isLoading || (!hasFilters && allItems.length === 0);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const value = formData.get("search_text") || "";
+    const value = formData.get("search_text") || null;
 
-    updateParams({ search_text: (value as string) || null }, true); // we don't accept files here, so it's safe to cast a string
+    updateParam("search_text", (value as string) || null); // we don't accept files here, so it's safe to cast a string
   };
 
   console.log("params.search_text", getParamValue(`search_text`));
@@ -139,12 +133,17 @@ function VerfahrenContent({
       <search>
         <form onSubmit={handleSubmit}>
           <InputText
+            onFocus={(e) => e.currentTarget.select()}
             label="Suche"
             placeholder="Freie Textsuche zum Beispiel nach Aktenzeichen, Parteien, Gerichten, ..."
             id="search_text"
             defaultValue={getParamValue(`search_text`) || ""}
           />
-          <button type="submit" className="kern-btn kern-btn--primary">
+          <button
+            type="submit"
+            className="kern-btn kern-btn--primary"
+            disabled={shouldDisableInputs}
+          >
             <span
               className="kern-icon kern-icon--search kern-icon--default"
               aria-hidden="true"
@@ -158,9 +157,9 @@ function VerfahrenContent({
         id="sort"
         options={sortOptions}
         onChange={(e) =>
-          updateParams({ sort: e.target.value || sortOptions[0].value })
+          updateParam("sort", e.target.value || sortOptions[0].value)
         }
-        disabled={isInputSelectDisabled}
+        disabled={shouldDisableInputs}
         selectedValue={getParamValue("sort") || sortOptions[0].value}
       />
       <InputSelect
@@ -168,8 +167,8 @@ function VerfahrenContent({
         id="gericht"
         placeholder={labels.SHOW_ALL_LABEL}
         options={gerichteOptions}
-        onChange={(e) => updateParams({ gericht: e.target.value || null })}
-        disabled={isInputSelectDisabled}
+        onChange={(e) => updateParam("gericht", e.target.value || null)}
+        disabled={shouldDisableInputs}
         selectedValue={getParamValue("gericht") || ""}
       />
       <VerfahrenCounter count={allItems.length || 0} hasFilters={hasFilters} />

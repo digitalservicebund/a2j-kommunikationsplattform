@@ -9,6 +9,8 @@ export default function InputText({
   id,
   disabled,
   placeholder,
+  onFocus,
+  defaultValue,
 }: Readonly<InputTextProps>) {
   return (
     <div className="kern-form-input">
@@ -16,6 +18,8 @@ export default function InputText({
         {label}
       </label>
       <input
+        defaultValue={defaultValue}
+        onFocus={onFocus}
         className="kern-form-input__input"
         id={id}
         name={id}

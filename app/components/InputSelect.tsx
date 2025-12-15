@@ -35,6 +35,7 @@ export default function InputSelect({
           className="kern-form-input__select"
           name={id}
           id={id}
+          value={selectedValue}
           onChange={onChange}
           aria-disabled={disabled} // using aria-disabled as recommended in https://www.kern-ux.de/komponenten/form-inputs/#disabled-attribut
         >
@@ -44,11 +45,7 @@ export default function InputSelect({
             </option>
           )}
           {options.map((option) => (
-            <option
-              key={option.value}
-              value={option.value}
-              selected={option.value === selectedValue}
-            >
+            <option key={option.value} value={option.value}>
               {option.label}
             </option>
           ))}
