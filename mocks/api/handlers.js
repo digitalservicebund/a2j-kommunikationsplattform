@@ -128,6 +128,7 @@ export const handlers = [
       const limitParam = url.searchParams.get("limit");
       const gerichtParam = url.searchParams.get("gericht");
       const sortParam = url.searchParams.get("sort");
+      const searchParam = url.searchParams.get("search_text");
 
       console.log("URL Sort Param:", sortParam);
       console.log("URL Search Params:", url.searchParams.toString());
@@ -138,6 +139,97 @@ export const handlers = [
         filteredVerfahren = filteredVerfahren.filter(
           (verfahren) => verfahren.gericht.id === gerichtParam,
         );
+      }
+
+      if (searchParam) {
+        filteredVerfahren = filteredVerfahren.filter((verfahren) => {
+          const searchTextLower = searchParam.toLowerCase();
+
+          // Search in aktenzeichen_gericht
+          if (
+            verfahren.aktenzeichen_gericht
+              ?.toLowerCase()
+              .includes(searchTextLower)
+          ) {
+            return true;
+          }
+
+          // Search in gericht name
+          if (
+            verfahren.gericht?.wert?.toLowerCase().includes(searchTextLower)
+          ) {
+            return true;
+          }
+
+          // Search in beteiligungen names
+          if (
+            verfahren.beteiligungen?.some((b) =>
+              b.name?.toLowerCase().includes(searchTextLower),
+            )
+          ) {
+            return true;
+          }
+
+          // Search in beteiligungen IDs
+          if (
+            verfahren.beteiligungen?.some((b) =>
+              b.id?.toLowerCase().includes(searchTextLower),
+            )
+          ) {
+            return true;
+          }
+
+          // search in beteiligungen rollen
+          if (
+            verfahren.beteiligungen?.some((b) =>
+              b.rollen?.some((r) =>
+                r.id?.toLowerCase().includes(searchTextLower),
+              ),
+            )
+          ) {
+            return true;
+          }
+
+          // search in prozessbevollmaechtigte.aktenzeichen
+          if (
+            verfahren.beteiligungen.prozessbevollmaechtigte?.some((p) =>
+              p.aktenzeichen?.toLowerCase().includes(searchTextLower),
+            )
+          ) {
+            return true;
+          }
+
+          // search in prozessbevollmaechtigte.bevollmaechtigter.id
+          if (
+            verfahren.beteiligungen.prozessbevollmaechtigte?.some((p) =>
+              p.bevollmaechtigter.id?.toLowerCase().includes(searchTextLower),
+            )
+          ) {
+            return true;
+          }
+
+          // search in prozessbevollmaechtigte.bevollmaechtigter.safe_id
+          if (
+            verfahren.beteiligungen.prozessbevollmaechtigte?.some((p) =>
+              p.bevollmaechtigter.safe_id
+                ?.toLowerCase()
+                .includes(searchTextLower),
+            )
+          ) {
+            return true;
+          }
+
+          // search in prozessbevollmaechtigte.bevollmaechtigter.name
+          if (
+            verfahren.beteiligungen.prozessbevollmaechtigte?.some((p) =>
+              p.bevollmaechtigter.name?.toLowerCase().includes(searchTextLower),
+            )
+          ) {
+            return true;
+          }
+
+          return false;
+        });
       }
 
       if (sortParam) {

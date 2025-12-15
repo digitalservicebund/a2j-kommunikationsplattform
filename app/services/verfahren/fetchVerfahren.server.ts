@@ -9,6 +9,7 @@ const fetchVerfahrenOptionsSchema = z.object({
   limit: z.number().int().positive().optional(),
   gericht: z.guid().optional().or(z.literal("")),
   sort: z.string().or(z.literal("")),
+  search_text: z.string().or(z.literal("")).optional(),
 });
 
 export type FetchVerfahrenOptions = z.infer<typeof fetchVerfahrenOptionsSchema>;

@@ -39,7 +39,9 @@ export const loader = withSessionLoader(
     const offset = Number(url.searchParams.get("offset") || "0");
     const gericht = url.searchParams.get("gericht") || "";
     const sort = url.searchParams.get("sort") || sortOptions[0].value;
+    const search_text = url.searchParams.get("search_text") || "";
 
+    console.log("search_text", search_text);
     // Fetch verfahren with one extra item to determine if there are more items
     const verfahrenPromise: Promise<VerfahrenLoaderData> = (async () => {
       const verfahren = await fetchVerfahren(request, {
@@ -47,6 +49,7 @@ export const loader = withSessionLoader(
         offset,
         gericht,
         sort,
+        search_text,
       });
 
       const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
