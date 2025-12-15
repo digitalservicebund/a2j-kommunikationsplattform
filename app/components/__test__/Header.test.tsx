@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
 
 import { MemoryRouter } from "react-router";
-import { beforeEach, it, vi } from "vitest";
-import Header from "~/components/Header";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "~/util/testUtils";
+} from "tests/util/translationsUtil";
+import { beforeEach, it, vi } from "vitest";
+import Header from "~/components/Header";
 
 vi.mock("react-router", async () => {
   const actual =

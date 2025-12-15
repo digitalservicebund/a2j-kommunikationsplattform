@@ -1,11 +1,10 @@
 // @vitest-environment jsdom
-
-import { describe, expect, it } from "vitest";
-import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "~/util/testUtils";
+} from "tests/util/translationsUtil";
+import { describe, expect, it } from "vitest";
+import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
 
 describe("VerfahrenCounter", () => {
   const { labels, alerts } = getTestTranslations();

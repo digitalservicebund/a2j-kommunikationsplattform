@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 
 import { MemoryRouter } from "react-router";
-import { it } from "vitest";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "~/util/testUtils";
+} from "tests/util/translationsUtil";
+import { it } from "vitest";
 import VerfahrenTile, { VerfahrenTileProps } from "../verfahren/VerfahrenTile";
 
 const mockVerfahren: VerfahrenTileProps = {

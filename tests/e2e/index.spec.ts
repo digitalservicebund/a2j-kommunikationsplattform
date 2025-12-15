@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { getTestTranslations } from "tests/util/translationsUtil";
 import { LoginError } from "~/routes/action.login-user";
 import { LogoutType } from "~/routes/action.logout-user";
-import { getTestTranslations } from "~/util/testUtils";
 
 test.describe("Homepage (_index route)", () => {
   const { titles, buttons, alerts, errorMessages } = getTestTranslations();

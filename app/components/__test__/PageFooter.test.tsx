@@ -2,11 +2,11 @@
 
 import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { it } from "vitest";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "~/util/testUtils";
+} from "tests/util/translationsUtil";
+import { it } from "vitest";
 import PageFooter from "../PageFooter";
 
 describe("PageFooter", () => {

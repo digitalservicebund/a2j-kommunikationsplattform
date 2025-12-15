@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import { screen } from "@testing-library/react";
+import { it } from "vitest";
 
 import { useTranslations } from "~/services/translations/context";
-import { renderWithTestTranslations } from "~/util/testUtils";
+import { renderWithTestTranslations } from "./translationsUtil";
 
 function TestComponent() {
   const { labels } = useTranslations();

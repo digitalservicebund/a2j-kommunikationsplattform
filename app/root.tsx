@@ -19,14 +19,14 @@ import Header from "~/components/Header";
 import ErrorBox from "~/components/ErrorBox";
 import Logo from "~/components/Logo.static";
 import PageFooter from "~/components/PageFooter";
-import { contentPages } from "~/constants/contentPages";
-import { buildErrorContext } from "~/errorHandling/buildErrorContext";
+import { buildErrorContext } from "~/services/error/buildErrorContext";
 import { useNonce } from "~/services/security/nonce";
 import { dictionaries } from "~/services/translations";
 import { TranslationsContext } from "~/services/translations/context";
 import type { Route } from "./+types/root";
 import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
 import { config } from "./config/config";
+import { CONTENT_PAGES } from "./config/contentPages";
 import { getUserSession } from "./services/auth/session.server";
 import styles from "./styles.css?url";
 
@@ -37,7 +37,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userSession = await getUserSession(request);
   const userIsLoggedIn = Boolean(userSession.authenticationTokens.accessToken);
   const pathname = new URL(request.url).pathname;
-  const isContentPage = contentPages.some(
+  const isContentPage = CONTENT_PAGES.some(
     (page) => `/${page.path}` === pathname,
   );
   return data({ userIsLoggedIn, isContentPage });
