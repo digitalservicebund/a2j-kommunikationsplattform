@@ -9,7 +9,7 @@ import z from "zod";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { useParamsState } from "~/components/hooks/useParamsState";
 import InputSelect from "~/components/InputSelect";
-import InputText from "~/components/InputText";
+import Search from "~/components/Search";
 import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
 import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/constants/verfahren";
 import { VERFAHREN_SKELETONS } from "~/constants/verfahrenSkeletons";
@@ -118,10 +118,9 @@ function VerfahrenContent({
   );
 
   // isInputSelectDisabled when loading, or when no items have been returned and no filters are applied
-  const shouldDisableInputs =
-    isLoading || (!hasFilters && allItems.length === 0);
+  const isInputDisabled = isLoading || (!hasFilters && allItems.length === 0);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const value = formData.get("search_text") || null;
@@ -133,28 +132,11 @@ function VerfahrenContent({
 
   return (
     <>
-      <search>
-        <form onSubmit={handleSubmit}>
-          <InputText
-            onFocus={(e) => e.currentTarget.select()}
-            label="Suche"
-            placeholder="Freie Textsuche zum Beispiel nach Aktenzeichen, Parteien, Gerichten, ..."
-            id="search_text"
-            defaultValue={getParamValue(`search_text`) || ""}
-          />
-          <button
-            type="submit"
-            className="kern-btn kern-btn--primary"
-            disabled={shouldDisableInputs}
-          >
-            <span
-              className="kern-icon kern-icon--search kern-icon--default"
-              aria-hidden="true"
-            ></span>
-            <span className="kern-label">Suchen</span>
-          </button>
-        </form>
-      </search>
+      <Search
+        submit={handleSearch}
+        disabled={isInputDisabled}
+        defaultValue={getParamValue(`search_text`) || ""}
+      />
       <InputSelect
         label="Sortierung"
         id="sort"
@@ -162,7 +144,7 @@ function VerfahrenContent({
         onChange={(e) =>
           updateParam("sort", e.target.value || sortOptions[0].value)
         }
-        disabled={shouldDisableInputs}
+        disabled={isInputDisabled}
         selectedValue={getParamValue("sort") || sortOptions[0].value}
       />
       <InputSelect
@@ -171,7 +153,7 @@ function VerfahrenContent({
         placeholder={labels.SHOW_ALL_LABEL}
         options={gerichteOptions}
         onChange={(e) => updateParam("gericht", e.target.value || null)}
-        disabled={shouldDisableInputs}
+        disabled={isInputDisabled}
         selectedValue={getParamValue("gericht") || ""}
       />
       <VerfahrenCounter count={allItems.length || 0} hasFilters={hasFilters} />
