@@ -9,6 +9,7 @@ import z from "zod";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { useParamsState } from "~/components/hooks/useParamsState";
 import InputSelect from "~/components/InputSelect";
+import InputText from "~/components/InputText";
 import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
 import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/constants/verfahren";
 import { VERFAHREN_SKELETONS } from "~/constants/verfahrenSkeletons";
@@ -101,9 +102,10 @@ function VerfahrenContent({
   const { labels } = useTranslations();
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
     useLoadMore(initialData);
-  const { params, setParam } = useParamsState({
+  const { getParamValue, updateParams, searchParams } = useParamsState({
     sort: sortOptions[0].value, // default sort=eingereicht_am
     gericht: "",
+    search_text: "",
   });
 
   const hasFilters = false;
@@ -117,26 +119,58 @@ function VerfahrenContent({
     gerichteOptions.length === 0 ||
     (!hasFilters && allItems.length === 0);
 
-  console.log("paramsObject", params);
+  console.log(
+    "paramsObject",
+    Object.fromEntries(Array.from(searchParams.entries())),
+  );
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const value = formData.get("search_text") || "";
+
+    updateParams({ search_text: (value as string) || null }, true); // we don't accept files here, so it's safe to cast a string
+  };
+
+  console.log("params.search_text", getParamValue(`search_text`));
 
   return (
     <>
+      <search>
+        <form onSubmit={handleSubmit}>
+          <InputText
+            label="Suche"
+            placeholder="Freie Textsuche zum Beispiel nach Aktenzeichen, Parteien, Gerichten, ..."
+            id="search_text"
+            defaultValue={getParamValue(`search_text`) || ""}
+          />
+          <button type="submit" className="kern-btn kern-btn--primary">
+            <span
+              className="kern-icon kern-icon--search kern-icon--default"
+              aria-hidden="true"
+            ></span>
+            <span className="kern-label">Suchen</span>
+          </button>
+        </form>
+      </search>
       <InputSelect
         label="Sortierung"
         id="sort"
         options={sortOptions}
-        onChange={(e) => setParam("sort", e.target.value)}
+        onChange={(e) =>
+          updateParams({ sort: e.target.value || sortOptions[0].value })
+        }
         disabled={isInputSelectDisabled}
-        selectedValue={params.sort || sortOptions[0].value}
+        selectedValue={getParamValue("sort") || sortOptions[0].value}
       />
       <InputSelect
         label="Zuständiges Gericht"
         id="gericht"
         placeholder={labels.SHOW_ALL_LABEL}
         options={gerichteOptions}
-        onChange={(e) => setParam("gericht", e.target.value || "")}
+        onChange={(e) => updateParams({ gericht: e.target.value || null })}
         disabled={isInputSelectDisabled}
-        selectedValue={params.gericht || ""}
+        selectedValue={getParamValue("gericht") || ""}
       />
       <VerfahrenCounter count={allItems.length || 0} hasFilters={hasFilters} />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
