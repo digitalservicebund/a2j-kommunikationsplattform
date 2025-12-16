@@ -1,26 +1,42 @@
 import { Suspense } from "react";
-import { Await, LoaderFunctionArgs, useLoaderData } from "react-router";
+import {
+  Await,
+  href,
+  LoaderFunctionArgs,
+  redirect,
+  useLoaderData,
+} from "react-router";
 import Alert from "~/components/Alert";
 import VerfahrenTileSkeleton from "~/components/skeletons/VerfahrenTileSkeleton.static";
 import VerfahrenTile from "~/components/verfahren/VerfahrenTile";
-import { withSessionLoader } from "~/services/auth/withSessionLoader";
+import { getAuthData } from "~/services/auth/authSession.server";
 import { useTranslations } from "~/services/translations/context";
 import fetchVerfahrenById from "~/services/verfahren/fetchVerfahrenById.server";
 
-export const loader = withSessionLoader(
-  async ({ request, params }: LoaderFunctionArgs) => {
-    const { id } = params;
-    if (!id) {
-      throw new Error("No Verfahren ID provided in params");
-    }
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
+  // @TODO start: solve via middleware
+  const authData = await getAuthData(request);
+  const userIsLoggedIn = Boolean(authData.authenticationTokens.accessToken);
 
-    const dataPromise = fetchVerfahrenById(request, { id });
+  if (!userIsLoggedIn) {
+    console.log(
+      `No active auth data found on "${request.url}" request. Redirecting to login route.`,
+    );
+    throw redirect(href("/login"));
+  }
+  // @TODO end
 
-    return {
-      data: dataPromise,
-    };
-  },
-);
+  const { id } = params;
+  if (!id) {
+    throw new Error("No Verfahren ID provided in params");
+  }
+
+  const dataPromise = fetchVerfahrenById(request, { id });
+
+  return {
+    data: dataPromise,
+  };
+};
 
 export default function Verfahrendetails() {
   const { data } = useLoaderData<{

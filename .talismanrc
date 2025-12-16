@@ -55,14 +55,10 @@ fileignoreconfig:
     checksum: bd9deccfd2a77aa490df3019083baf73a0bff19785a84397f319f6df6ffe195f
   - filename: app/services/auth/__test__/oAuth.server.test.ts
     checksum: 321bdf9c37283025a0b5afe3a94812c3c9fdd0ed2352301916d97317fc82b557
-  - filename: app/services/auth/__test__/session.server.test.ts
-    checksum: 9c1453ea14be8c3c31461e706ea23a202cd07b71c018ef5639593564a88130a9
   - filename: doc/architecture-diagrams/system-architecture.md
     checksum: f1b3e31f256c536c23c41c3b4928860ea2318f3af9c5e4001ab49095019aec25
   - filename: app/services/api/refreshToken.server.ts
     checksum: 2480389a500b8dbcaebce386fa09dd2f58c58765f0b5d98b7f3e4a15f49f5ba2
-  - filename: app/services/auth/session.server.ts
-    checksum: 012f7dc230aa5f240c86209cf2834c9a3ce52e507bf54d81bd32f158df26d46c
   - filename: app/components/hooks/useLoadMore.ts
     checksum: 9f147b318731def0ed6f10f664c9a45099d2a626530a650f7b52c9139ec529b1
   - filename: app/components/verfahren/VerfahrenList.tsx

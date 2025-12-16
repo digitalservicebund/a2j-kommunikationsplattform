@@ -1,5 +1,11 @@
 import { Suspense } from "react";
-import { Await, useLoaderData } from "react-router";
+import {
+  Await,
+  href,
+  LoaderFunctionArgs,
+  redirect,
+  useLoaderData,
+} from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
@@ -13,11 +19,10 @@ import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMor
 import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/config/verfahren";
 import { VERFAHREN_SKELETONS } from "~/config/verfahrenSkeletons";
 import { GerichtDTO, VerfahrenSchema } from "~/models/VerfahrenSchema";
-import { withSessionLoader } from "~/services/auth/withSessionLoader";
+import { getAuthData } from "~/services/auth/authSession.server";
 import { useTranslations } from "~/services/translations/context";
 import fetchGerichteService from "~/services/verfahren/fetchGerichte.service";
 import fetchVerfahren from "~/services/verfahren/fetchVerfahren.server";
-import { Route } from "./+types/_index";
 
 export type Verfahren = z.infer<typeof VerfahrenSchema>;
 export type Gericht = z.infer<typeof GerichtDTO>;
@@ -32,41 +37,51 @@ export type LoaderData = {
   gerichte: Gericht[];
 };
 
-export const loader = withSessionLoader(
-  async ({ request }: Route.LoaderArgs): Promise<LoaderData> => {
-    const url = new URL(request.url);
-    const offset = Number(url.searchParams.get("offset") || "0");
-    const gericht = url.searchParams.get("gericht");
-    const sort = url.searchParams.get("sort") || sortOptions[0].value;
-    const search_text = url.searchParams.get("search_text");
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  // @TODO start: solve via middleware
+  const authData = await getAuthData(request);
+  const userIsLoggedIn = Boolean(authData.authenticationTokens.accessToken);
 
-    console.log("search_text", search_text);
-    // Fetch verfahren with one extra item to determine if there are more items
-    const verfahrenPromise: Promise<VerfahrenLoaderData> = (async () => {
-      const verfahren = await fetchVerfahren(request, {
-        limit: VERFAHREN_PAGE_LIMIT + 1,
-        offset,
-        gericht,
-        sort,
-        search_text,
-      });
+  if (!userIsLoggedIn) {
+    console.log(
+      `No active auth data found on "${request.url}" request. Redirecting to login route.`,
+    );
+    throw redirect(href("/login"));
+  }
+  // @TODO end
 
-      const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
-      const items = hasMoreItems
-        ? verfahren.slice(0, VERFAHREN_PAGE_LIMIT)
-        : verfahren;
+  const url = new URL(request.url);
+  const offset = Number(url.searchParams.get("offset") || "0");
+  const gericht = url.searchParams.get("gericht");
+  const sort = url.searchParams.get("sort") || sortOptions[0].value;
+  const search_text = url.searchParams.get("search_text");
 
-      return { items, hasMoreItems };
-    })();
+  console.log("search_text", search_text);
+  // Fetch verfahren with one extra item to determine if there are more items
+  const verfahrenPromise: Promise<VerfahrenLoaderData> = (async () => {
+    const verfahren = await fetchVerfahren(request, {
+      limit: VERFAHREN_PAGE_LIMIT + 1,
+      offset,
+      gericht,
+      sort,
+      search_text,
+    });
 
-    const gerichte = await fetchGerichteService(request);
+    const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
+    const items = hasMoreItems
+      ? verfahren.slice(0, VERFAHREN_PAGE_LIMIT)
+      : verfahren;
 
-    return {
-      verfahren: verfahrenPromise,
-      gerichte,
-    };
-  },
-);
+    return { items, hasMoreItems };
+  })();
+
+  const gerichte = await fetchGerichteService(request);
+
+  return {
+    verfahren: verfahrenPromise,
+    gerichte,
+  };
+};
 
 export default function Verfahren() {
   const data = useLoaderData<LoaderData>();

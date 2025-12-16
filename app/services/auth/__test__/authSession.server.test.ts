@@ -8,7 +8,7 @@ import {
   type Mock,
 } from "vitest";
 
-const MODULE_PATH = "../session.server";
+const MODULE_PATH = "../authSession.server";
 const requestURL = "http://localhost/session-test";
 const accessToken = "test-access-token-session";
 
@@ -20,7 +20,7 @@ type SessionModule = {
     expiresAt: number,
     request: Request,
   ) => Promise<string>;
-  getUserSession: (
+  getAuthData: (
     request: Request,
   ) => Promise<{ accessToken: string; expiresAt: number } | null>;
   updateUserSession: (opts: {
@@ -30,9 +30,6 @@ type SessionModule = {
     apiRefreshExpiresAt: number;
     request: Request;
   }) => Promise<string | null>;
-  requireUserSession: (
-    request: Request,
-  ) => Promise<{ accessToken: string; expiresAt: number }>;
 };
 
 interface CookieOptions {
@@ -166,7 +163,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe.skip("session.server", () => {
+describe.skip("authSession.server", () => {
   it("uses default secret in development", async () => {
     const { reactRouterMock, restore } = await withMocks({
       env: "development",
@@ -283,14 +280,14 @@ describe.skip("session.server", () => {
     restore();
   });
 
-  it("getUserSession returns null and destroys session if no accessToken is available", async () => {
+  it("getAuthData returns null and destroys session if no accessToken is available", async () => {
     const { module, reactRouterMock, restore } = await withMocks({});
 
     const req = new Request(requestURL, {
       headers: { Cookie: "" },
     });
 
-    const result = await module.getUserSession(req);
+    const result = await module.getAuthData(req);
 
     expect(result).toBeNull();
     expect(reactRouterMock.destroySession).toHaveBeenCalledTimes(1);
@@ -298,14 +295,14 @@ describe.skip("session.server", () => {
     restore();
   });
 
-  it("getUserSession returns null and destroys session if it is expired", async () => {
+  it("getAuthData returns null and destroys session if it is expired", async () => {
     const { module, reactRouterMock, restore } = await withMocks({});
     const cookie = `accessToken=testToken; expiresAt=${pastTs()}`;
     const req = new Request(requestURL, {
       headers: { Cookie: cookie },
     });
 
-    const result = await module.getUserSession(req);
+    const result = await module.getAuthData(req);
 
     expect(result).toBeNull();
     expect(reactRouterMock.destroySession).toHaveBeenCalledTimes(1);
@@ -313,14 +310,14 @@ describe.skip("session.server", () => {
     restore();
   });
 
-  it("getUserSession returns AuthenticationTokens when valid", async () => {
+  it("getAuthData returns AuthenticationTokens when valid", async () => {
     const { module, reactRouterMock, restore } = await withMocks({});
     const cookie = `accessToken=${accessToken}; expiresAt=${futureTs()}`;
     const req = new Request(requestURL, {
       headers: { Cookie: cookie },
     });
 
-    const ctx = await module.getUserSession(req);
+    const ctx = await module.getAuthData(req);
 
     expect(ctx).toEqual({
       accessToken: accessToken,
@@ -330,49 +327,9 @@ describe.skip("session.server", () => {
 
     restore();
   });
-
-  it("requireUserSession returns the session when present", async () => {
-    const { module, restore } = await withMocks({});
-    const cookie = `accessToken=${accessToken}; expiresAt=${futureTs()}`;
-    const req = new Request(requestURL, {
-      headers: { Cookie: cookie },
-    });
-
-    const res = await module.requireUserSession(req);
-    expect(res).toEqual({
-      accessToken: accessToken,
-      expiresAt: expect.any(Number),
-    });
-
-    restore();
-  });
-
-  it("requireUserSession triggers a redirect to /login if it is missing.", async () => {
-    const { module, restore } = await withMocks({});
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    const req = new Request(requestURL, {
-      headers: { Cookie: "" },
-    });
-
-    try {
-      await module.requireUserSession(req);
-      throw new Error("Expected redirect to be thrown");
-    } catch (error) {
-      // Type safety guard for Response
-      if (error instanceof Response) {
-        expect(error.status).toBe(302);
-        expect(error.headers.get("Location")).toBe("/login");
-        expect(logSpy).toHaveBeenCalled();
-      } else {
-        throw error; // rethrow if not a Response
-      }
-    }
-    restore();
-  });
 });
 
-describe.skip("session.server - api token helpers", () => {
+describe.skip("authSession.server - api token helpers", () => {
   it("updateUserSession commits a session with API tokens", async () => {
     const { module, reactRouterMock, restore } = await withMocks({});
 
@@ -422,14 +379,14 @@ describe.skip("session.server - api token helpers", () => {
     restore();
   });
 
-  it("getUserSession returns API tokens when present in the session", async () => {
+  it("getAuthData returns API tokens when present in the session", async () => {
     const { module, reactRouterMock, restore } = await withMocks({});
     const cookie = `accessToken=${accessToken}; expiresAt=${futureTs()}; apiAccessToken=apiA; apiAccessExpiresAt=111; apiRefreshToken=apiR; apiRefreshExpiresAt=222`;
     const req = new Request(requestURL, {
       headers: { Cookie: cookie },
     });
 
-    const ctx = await module.getUserSession(req);
+    const ctx = await module.getAuthData(req);
 
     expect(ctx).toEqual({
       accessToken: accessToken,
