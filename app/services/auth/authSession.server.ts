@@ -48,9 +48,13 @@ export const setAuthSession = async ({
   session.set("refreshToken", refreshToken);
 
   console.log(
-    "setAuthSession - accessToken is",
+    "setAuthSession for request.url:",
+    request.url,
+    "\n--accessToken is",
     accessToken,
-    "refreshToken is",
+    "\n--expiresAt is",
+    expiresAt,
+    "\n--refreshToken is",
     refreshToken,
   );
 
