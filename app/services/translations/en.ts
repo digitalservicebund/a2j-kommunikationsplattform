@@ -14,6 +14,7 @@ export const en: Translations = {
     SHOW_VERFAHREN_DETAILS: "Show case details",
     SHOW_URTEIL: "Show judgment",
     LOAD_MORE_VERFAHREN: "Load more cases",
+    SEARCH_BUTTON: "Search",
   },
   errorMessages: {
     TRY_LATER_MESSAGE: "Please try again later.",
@@ -67,6 +68,9 @@ export const en: Translations = {
     MORE_THAN_100_VERFAHREN_LABEL: "More than 100 cases",
     PLEASE_SELECT_LABEL: "Please select",
     SHOW_ALL_LABEL: "Show all",
+    SORT_LABEL: "Sort by",
+    COURT_LABEL: "Court",
+    SEARCH_LABEL: "Search",
     RESULTS_LABEL: "Results",
   },
   titles: {
@@ -93,6 +97,9 @@ export const en: Translations = {
     HILFE_UND_KONTAKT_LINK_LABEL: "Help and contact",
     OPEN_SOURCE_CODE_LINK_LABEL: "Open source code",
     IMPRESSUM_LINK_LABEL: "Imprint",
+  },
+  placeholders: {
+    SEARCH_PLACEHOLDER: "Search for case number, party name, etc.",
   },
 } as const;
 

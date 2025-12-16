@@ -105,11 +105,11 @@ function VerfahrenContent({
   const { labels } = useTranslations();
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
     useLoadMore(initialData);
-  const { getParamValue, updateParam } = useParamsState({
-    sort: sortOptions[0].value, // default sort=eingereicht_am
-    gericht: "",
-    search_text: "",
-  });
+  const { getParamValue, updateParam } = useParamsState<{
+    sort: "";
+    gericht: "";
+    search_text: "";
+  }>();
 
   const gerichteOptions = gerichte.map((g) => ({ value: g.id, label: g.wert }));
 
@@ -128,8 +128,6 @@ function VerfahrenContent({
     updateParam("search_text", (value as string) || null); // we don't accept files here, so it's safe to cast a string
   };
 
-  console.log("params.search_text", getParamValue(`search_text`));
-
   return (
     <>
       <Search
@@ -138,7 +136,7 @@ function VerfahrenContent({
         defaultValue={getParamValue(`search_text`) || ""}
       />
       <InputSelect
-        label="Sortierung"
+        label={labels.SORT_LABEL}
         id="sort"
         options={sortOptions}
         onChange={(e) =>
@@ -148,7 +146,7 @@ function VerfahrenContent({
         selectedValue={getParamValue("sort") || sortOptions[0].value}
       />
       <InputSelect
-        label="Zuständiges Gericht"
+        label={labels.COURT_LABEL}
         id="gericht"
         placeholder={labels.SHOW_ALL_LABEL}
         options={gerichteOptions}

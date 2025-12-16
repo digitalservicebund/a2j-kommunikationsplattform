@@ -2,10 +2,8 @@ import { useCallback } from "react";
 import { useSearchParams } from "react-router";
 import { URLSearchParamsInit } from "react-router-dom";
 
-export function useParamsState<T extends URLSearchParamsInit>(
-  initialParams: T,
-) {
-  const [searchParams, setSearchParams] = useSearchParams(initialParams);
+export function useParamsState<T extends URLSearchParamsInit>() {
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const getParamValue = useCallback(
     (key: keyof T) => {

@@ -12,6 +12,7 @@ export const de = {
     SHOW_VERFAHREN_DETAILS: "Verfahrensdetails anzeigen",
     SHOW_URTEIL: "Urteil anzeigen",
     LOAD_MORE_VERFAHREN: "Weitere Verfahren laden",
+    SEARCH_BUTTON: "Suchen",
   },
   errorMessages: {
     TRY_LATER_MESSAGE: "Bitte versuchen Sie es später erneut.",
@@ -68,6 +69,9 @@ export const de = {
     PLEASE_SELECT_LABEL: "Bitte auswählen",
     SHOW_ALL_LABEL: "Alle anzeigen",
     RESULTS_LABEL: "Ergebnisse",
+    SEARCH_LABEL: "Suche",
+    SORT_LABEL: "Sortierung",
+    COURT_LABEL: "Zuständiges Gericht",
   },
   titles: {
     PLATFORM_TITLE: "Kommunikationsplattform | Justiz-Services",
@@ -93,6 +97,10 @@ export const de = {
     HILFE_UND_KONTAKT_LINK_LABEL: "Hilfe und Kontakt",
     OPEN_SOURCE_CODE_LINK_LABEL: "Open Source Code",
     IMPRESSUM_LINK_LABEL: "Impressum",
+  },
+  placeholders: {
+    SEARCH_PLACEHOLDER:
+      "Freie Textsuche zum Beispiel nach Aktenzeichen, Parteien, Gerichten, ...",
   },
 } as const;
 
