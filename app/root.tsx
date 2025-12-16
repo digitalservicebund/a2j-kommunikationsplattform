@@ -33,7 +33,6 @@ export { headers } from "./rootHeaders";
 export type RootLoader = typeof loader;
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  console.log("root.tsx loader");
   const authData = await getAuthData(request);
   const userIsLoggedIn = Boolean(authData.authenticationTokens.accessToken);
   const pathname = new URL(request.url).pathname;

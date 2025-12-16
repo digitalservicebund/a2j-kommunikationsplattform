@@ -15,7 +15,6 @@ type AlertState =
   | LoginError.BeA;
 
 export async function loader({ request }: { request: Request }) {
-  console.log("login/_index.tsx loader");
   const authData = await getAuthData(request);
   const userIsLoggedIn = Boolean(authData.authenticationTokens.accessToken);
   if (userIsLoggedIn) {
