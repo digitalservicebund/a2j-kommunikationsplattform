@@ -37,9 +37,9 @@ export const loader = withSessionLoader(
   async ({ request }: Route.LoaderArgs): Promise<LoaderData> => {
     const url = new URL(request.url);
     const offset = Number(url.searchParams.get("offset") || "0");
-    const gericht = url.searchParams.get("gericht") || undefined;
+    const gericht = url.searchParams.get("gericht");
     const sort = url.searchParams.get("sort") || sortOptions[0].value;
-    const search_text = url.searchParams.get("search_text") || undefined;
+    const search_text = url.searchParams.get("search_text");
 
     console.log("search_text", search_text);
     // Fetch verfahren with one extra item to determine if there are more items
@@ -123,7 +123,7 @@ function VerfahrenContent({
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const value = formData.get("search_text") || null;
+    const value = formData.get("search_text");
 
     updateParam("search_text", (value as string) || null); // we don't accept files here, so it's safe to cast a string
   };

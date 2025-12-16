@@ -139,14 +139,14 @@ describe("fetchVerfahren", () => {
       );
     });
 
-    it("excludes gericht parameter when undefined", async () => {
+    it("excludes gericht parameter when null", async () => {
       mocks.getBearerToken.mockResolvedValue("test-token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => [],
       });
       const mockRequest = new Request("http://localhost:3000");
-      await fetchVerfahren(mockRequest, { gericht: undefined });
+      await fetchVerfahren(mockRequest, { gericht: null });
       expect(mocks.fetch).toHaveBeenCalledWith(
         expect.not.stringContaining("gericht="),
         expect.any(Object),
@@ -223,14 +223,14 @@ describe("fetchVerfahren", () => {
         expect.any(Object),
       );
     });
-    it("excludes search_text parameter when undefined", async () => {
+    it("excludes search_text parameter when null", async () => {
       mocks.getBearerToken.mockResolvedValue("test-token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => [],
       });
       const mockRequest = new Request("http://localhost:3000");
-      await fetchVerfahren(mockRequest, { search_text: undefined });
+      await fetchVerfahren(mockRequest, { search_text: null });
       expect(mocks.fetch).toHaveBeenCalledWith(
         expect.not.stringContaining("search_text="),
         expect.any(Object),

@@ -142,10 +142,9 @@ export const handlers = [
       }
 
       if (searchParam) {
-        const searchLower = searchParam.toLowerCase();
-
         const matchesString = (val) =>
-          typeof val === "string" && val.toLowerCase().includes(searchLower);
+          typeof val === "string" &&
+          val.toLowerCase().includes(searchParam.toLowerCase());
 
         filteredVerfahren = filteredVerfahren.filter((verfahren) => {
           // Top-level string fields
