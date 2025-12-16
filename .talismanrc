@@ -42,7 +42,7 @@ fileignoreconfig:
   - filename: app/components/Navigation.static.tsx
     checksum: 4c670e649ab7d148bf94c7ebfb13b5b2b80782b1f5976e6474e0fd19ef8ebfa6
   - filename: app/routes/verfahren/_index.tsx
-    checksum: 2ab1009055d10a21e13f2acf7ac308b8aa1ee4026fe60868569a6c689cfb7a3c
+    checksum: 9f473abc55ebdf354f49b7461c8392be8f9fbe0b5077231b431319ad0b8d90ea
   - filename: app/components/Breadcrumbs.tsx
     checksum: 3afb510de025db16ff8736c58c4cda79db6869083603f5c955d2d46b6a84faf1
   - filename: app/services/security/cspHeader.server.ts
