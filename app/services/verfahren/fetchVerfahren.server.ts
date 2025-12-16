@@ -1,5 +1,6 @@
 import z from "zod";
 import { serverConfig } from "~/config/config.server";
+import { sortOptions } from "~/config/verfahren";
 import { VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import { buildSearchParams } from "~/util/buildSearchParams";
@@ -7,9 +8,11 @@ import { buildSearchParams } from "~/util/buildSearchParams";
 const fetchVerfahrenOptionsSchema = z.object({
   offset: z.number().int().nonnegative().optional(),
   limit: z.number().int().positive().optional(),
-  gericht: z.guid().optional().or(z.literal("")),
-  sort: z.string().or(z.literal("")),
-  search_text: z.string().or(z.literal("")).optional(),
+  gericht: z.guid().optional(),
+  sort: z
+    .union([z.enum(sortOptions.map((s) => s.value)), z.literal("")])
+    .optional(),
+  search_text: z.string().trim().optional(),
 });
 
 export type FetchVerfahrenOptions = z.infer<typeof fetchVerfahrenOptionsSchema>;
