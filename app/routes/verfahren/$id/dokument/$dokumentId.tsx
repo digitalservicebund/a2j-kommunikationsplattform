@@ -8,7 +8,7 @@ import { MatchHandle } from "~/components/Breadcrumbs";
 import { getAuthData } from "~/services/auth/authSession.server";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  // @TODO start: solve via middleware
+  // @TODO start: solve via middleware https://digitalservicebund.atlassian.net/browse/KOMMPLA-941
   const authData = await getAuthData(request);
   const userIsLoggedIn = Boolean(authData.authenticationTokens.accessToken);
 

@@ -38,7 +38,7 @@ export type LoaderData = {
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  // @TODO start: solve via middleware
+  // @TODO start: solve via middleware https://digitalservicebund.atlassian.net/browse/KOMMPLA-941
   const authData = await getAuthData(request);
   const userIsLoggedIn = Boolean(authData.authenticationTokens.accessToken);
 
