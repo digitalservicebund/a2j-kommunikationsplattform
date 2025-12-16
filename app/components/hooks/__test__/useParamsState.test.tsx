@@ -1,15 +1,15 @@
 // @vitest-environment jsdom
 import { act, renderHook } from "@testing-library/react";
+import { useSearchParams } from "react-router";
 import type { URLSearchParamsInit } from "react-router-dom"; // optional, ignore if not in your deps
-import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
+import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
+import { useParamsState } from "~/components/hooks/useParamsState";
+
 vi.mock("react-router", () => {
   return {
     useSearchParams: vi.fn(),
   };
 });
-
-import { useSearchParams } from "react-router";
-import { useParamsState } from "~/components/hooks/useParamsState";
 
 const mockedUseSearchParams = useSearchParams as unknown as Mock;
 
@@ -23,8 +23,7 @@ const setupSearchParamsMock = (initial: string | URLSearchParamsInit = "") => {
       updater: URLSearchParams | ((prev: URLSearchParams) => URLSearchParams),
     ) => {
       if (typeof updater === "function") {
-        const next = updater(current);
-        current = next;
+        current = updater(current);
       } else {
         current = new URLSearchParams(updater);
       }
