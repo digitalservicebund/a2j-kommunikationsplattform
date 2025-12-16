@@ -2,6 +2,7 @@ export interface InputTextProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   id: string;
+  className?: string;
 }
 
 export default function InputText({
@@ -11,9 +12,10 @@ export default function InputText({
   placeholder,
   onFocus,
   defaultValue,
+  className = "",
 }: Readonly<InputTextProps>) {
   return (
-    <div className="kern-form-input">
+    <div className={`kern-form-input ${className}`}>
       <label className="kern-label" htmlFor={id}>
         {label}
       </label>

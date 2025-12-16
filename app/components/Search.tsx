@@ -15,24 +15,29 @@ export default function Search({
   return (
     <search>
       <form onSubmit={handleSearch}>
-        <InputText
-          onFocus={(e) => e.currentTarget.select()} // Select all text on focus - useful for quick replacement
-          label={labels.SEARCH_LABEL}
-          placeholder={placeholders.SEARCH_PLACEHOLDER}
-          id="search_text"
-          defaultValue={defaultValue}
-        />
-        <button
-          type="submit"
-          className="kern-btn kern-btn--primary"
-          disabled={shouldDisableInputs}
-        >
-          <span
-            className="kern-icon kern-icon--search kern-icon--default"
-            aria-hidden="true"
-          ></span>
-          <span className="kern-label">{buttons.SEARCH_BUTTON}</span>
-        </button>
+        <div className="space-x-kern-space-x-large flex items-start justify-between">
+          {/* using type text as there is no search input in KERN yet*/}
+          <InputText
+            onFocus={(e) => e.currentTarget.select()} // Select all text on focus - useful for quick replacement
+            label={labels.SEARCH_LABEL}
+            placeholder={placeholders.SEARCH_PLACEHOLDER}
+            id="search_text"
+            defaultValue={defaultValue}
+            className="grow"
+            disabled={shouldDisableInputs}
+          />
+          <button
+            type="submit"
+            className="kern-btn kern-btn--primary h-max flex-none self-end"
+            disabled={shouldDisableInputs}
+          >
+            <span
+              className="kern-icon kern-icon--search kern-icon--default"
+              aria-hidden="true"
+            ></span>
+            <span className="kern-label">{buttons.SEARCH_BUTTON}</span>
+          </button>
+        </div>
       </form>
     </search>
   );

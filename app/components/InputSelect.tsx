@@ -13,6 +13,7 @@ interface InputSelectProps {
   onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
   disabled?: boolean;
   selectedValue: string;
+  className?: string;
 }
 
 export default function InputSelect({
@@ -23,9 +24,10 @@ export default function InputSelect({
   disabled,
   id,
   selectedValue,
+  className = "",
 }: Readonly<InputSelectProps>) {
   return (
-    <div className="kern-form-input">
+    <div className={`kern-form-input ${className}`}>
       <label className="kern-label" htmlFor={id}>
         {label}
       </label>
