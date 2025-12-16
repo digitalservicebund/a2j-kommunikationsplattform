@@ -26,15 +26,16 @@ import Header from "./components/Header";
 import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
 import { config } from "./config/config";
 import { CONTENT_PAGES } from "./config/contentPages";
-import { getUserSession } from "./services/auth/session.server";
+import { getAuthData } from "./services/auth/authSession.server";
 import styles from "./styles.css?url";
 
 export { headers } from "./rootHeaders";
 export type RootLoader = typeof loader;
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const userSession = await getUserSession(request);
-  const userIsLoggedIn = Boolean(userSession.authenticationTokens.accessToken);
+  console.log("root.tsx loader");
+  const authData = await getAuthData(request);
+  const userIsLoggedIn = Boolean(authData.authenticationTokens.accessToken);
   const pathname = new URL(request.url).pathname;
   const isContentPage = CONTENT_PAGES.some(
     (page) => `/${page.path}` === pathname,

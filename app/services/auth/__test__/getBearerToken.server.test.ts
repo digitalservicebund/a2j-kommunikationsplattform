@@ -5,13 +5,13 @@ import { getBearerToken } from "../getBearerToken.server";
 vi.mock("../../api/authorizeToken.server", () => ({
   authorizeToken: vi.fn(),
 }));
-vi.mock("../session.server", () => ({
-  getUserSession: vi.fn(),
+vi.mock("../authSession.server", () => ({
+  getAuthData: vi.fn(),
 }));
 
 // import mocks after vi.mock calls so TS sees mocked shapes
 import { authorizeToken } from "../../api/authorizeToken.server";
-import { getUserSession } from "../session.server";
+import { getAuthData } from "../authSession.server";
 
 describe("getBearerToken", () => {
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe("getBearerToken", () => {
 
   it("returns a bearer token", async () => {
     const req = new Request("https://cool.auth/request");
-    (vi.mocked(getUserSession) as Mock).mockResolvedValue({
+    (vi.mocked(getAuthData) as Mock).mockResolvedValue({
       authenticationTokens: {
         accessToken: "user-access-token",
       },
@@ -34,15 +34,15 @@ describe("getBearerToken", () => {
     });
 
     const bearerToken = await getBearerToken(req);
-    expect(getUserSession).toHaveBeenCalledWith(req);
+    expect(getAuthData).toHaveBeenCalledWith(req);
     expect(authorizeToken).toHaveBeenCalledWith("user-access-token");
     expect(bearerToken).toBe("an-api-access-token");
   });
 
-  it("propagates errors from getUserSession", async () => {
+  it("propagates errors from getAuthData", async () => {
     const req = new Request("https://another.cool/request");
     const error = new Error("could not get user session data");
-    (getUserSession as unknown as Mock).mockRejectedValue(error);
+    (getAuthData as unknown as Mock).mockRejectedValue(error);
 
     await expect(getBearerToken(req)).rejects.toThrow(error);
     expect(authorizeToken).not.toHaveBeenCalled();
@@ -50,7 +50,7 @@ describe("getBearerToken", () => {
 
   it("propagates errors from authorizeToken", async () => {
     const req = new Request("https://one.more/request");
-    (getUserSession as unknown as Mock).mockResolvedValue({
+    (getAuthData as unknown as Mock).mockResolvedValue({
       authenticationTokens: {
         accessToken: "user-access-token",
       },

@@ -2,7 +2,7 @@ import { Form, redirect, useLoaderData, useSearchParams } from "react-router";
 import Logo from "~/components/Logo.static";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
-import { getUserSession } from "~/services/auth/session.server";
+import { getAuthData } from "~/services/auth/authSession.server";
 import { useTranslations } from "~/services/translations/context";
 import { LoginError, LoginType } from "../action.login-user";
 import { LogoutType } from "../action.logout-user";
@@ -15,8 +15,9 @@ type AlertState =
   | LoginError.BeA;
 
 export async function loader({ request }: { request: Request }) {
-  const userSession = await getUserSession(request);
-  const userIsLoggedIn = Boolean(userSession.authenticationTokens.accessToken);
+  console.log("login/_index.tsx loader");
+  const authData = await getAuthData(request);
+  const userIsLoggedIn = Boolean(authData.authenticationTokens.accessToken);
   if (userIsLoggedIn) {
     throw redirect("/");
   }

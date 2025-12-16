@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("~/services/auth/session.server");
+vi.mock("~/services/auth/authSession.server");
 vi.mock("~/config/config.server", () => ({
   serverConfig: () => ({
     BRAK_IDP_OIDC_CLIENT_ID: "client-id",
@@ -15,7 +15,7 @@ import {
   authenticator,
   type AuthenticationResponse,
 } from "~/services/auth/oAuth.server";
-import { setSession } from "~/services/auth/session.server";
+import { setAuthSession } from "../authSession.server";
 
 type VerifyArgs = {
   tokens: {
@@ -32,7 +32,7 @@ type AuthWithStrategies = {
   strategies: Map<string, StrategyResponse>;
 };
 
-const mockedSetUpdateSession = vi.mocked(setSession);
+const mockedSetUpdateSession = vi.mocked(setAuthSession);
 
 const requestURL = "http://localhost/oauth-test";
 const accessToken = "test-access-token-oauth";
@@ -62,6 +62,7 @@ describe("oAuth.server", () => {
   };
 
   it("returns AuthenticationResponse with session cookie", async () => {
+    console.log("test 1");
     mockedSetUpdateSession.mockResolvedValueOnce("mock-cookie");
 
     const strategy = getBEAStrategy();
@@ -78,7 +79,7 @@ describe("oAuth.server", () => {
       },
       sessionCookieHeader: "mock-cookie",
     });
-    expect(setSession).toHaveBeenCalledWith({
+    expect(setAuthSession).toHaveBeenCalledWith({
       accessToken: accessToken,
       expiresAt: expect.any(Number),
       refreshToken: refreshToken,
@@ -86,7 +87,8 @@ describe("oAuth.server", () => {
     });
   });
 
-  it("throws error if setSession fails", async () => {
+  it("throws error if setAuthSession fails", async () => {
+    console.log("test 2");
     mockedSetUpdateSession.mockRejectedValueOnce(new Error("fail"));
     const strategy = getBEAStrategy();
 
