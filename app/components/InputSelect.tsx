@@ -6,10 +6,10 @@ export interface InputSelectOption {
 }
 
 interface InputSelectProps {
-  placeholder?: string;
   label: string;
   id: string;
-  options?: InputSelectOption[];
+  options: InputSelectOption[];
+  placeholder?: string;
   onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
   disabled?: boolean;
   selectedValue: string;

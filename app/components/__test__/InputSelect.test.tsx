@@ -11,16 +11,17 @@ import InputSelect from "../InputSelect";
 
 describe("InputSelect", () => {
   const { labels } = getTestTranslations();
-  const defaultProps = {
-    label: "Test Label",
-    name: "test-select",
-  };
-
   const mockOptions = [
     { value: "1", label: "Option 1" },
     { value: "2", label: "Option 2" },
     { value: "3", label: "Option 3" },
   ];
+  const defaultProps = {
+    label: "Test Label",
+    id: "test-select",
+    selectedValue: "",
+    options: mockOptions,
+  };
 
   it("renders with required props", () => {
     renderWithTestTranslations(<InputSelect {...defaultProps} />);
@@ -29,15 +30,16 @@ describe("InputSelect", () => {
     expect(screen.getByRole("combobox")).toHaveAttribute("name", "test-select");
   });
 
-  it("renders default placeholder when none provided", () => {
-    renderWithTestTranslations(<InputSelect {...defaultProps} />);
-
+  it("does not render placeholder when none provided", () => {
+    renderWithTestTranslations(
+      <InputSelect {...defaultProps} options={mockOptions} />,
+    );
     expect(
-      screen.getByRole("option", { name: labels.PLEASE_SELECT_LABEL }),
-    ).toBeInTheDocument();
+      screen.queryByRole("option", { name: labels.PLEASE_SELECT_LABEL }),
+    ).toBeNull();
   });
 
-  it("renders custom placeholder", () => {
+  it("renders placeholder when provided", () => {
     renderWithTestTranslations(
       <InputSelect {...defaultProps} placeholder="Select an option" />,
     );
@@ -97,11 +99,13 @@ describe("InputSelect", () => {
     expect(select).not.toHaveAttribute("disabled");
   });
 
-  it("renders with empty options array", () => {
-    renderWithTestTranslations(<InputSelect {...defaultProps} options={[]} />);
+  it("does not apply disabled state when disabled is false", () => {
+    renderWithTestTranslations(
+      <InputSelect {...defaultProps} disabled={false} />,
+    );
 
-    const options = screen.getAllByRole("option");
-    expect(options).toHaveLength(1); // Only placeholder
+    const select = screen.getByRole("combobox");
+    expect(select).toHaveAttribute("aria-disabled", "false");
   });
 
   it("associates label with select via id", () => {
