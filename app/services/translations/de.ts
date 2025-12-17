@@ -72,6 +72,10 @@ export const de = {
     SEARCH_LABEL: "Suche",
     SORT_LABEL: "Sortierung",
     COURT_LABEL: "Zuständiges Gericht",
+    VERFAHREN_EINREICHUNGEN_LATEST_FIRST_LABEL: "Neuste Einreichungen zuerst",
+    VERFAHREN_EINREICHUNGEN_OLDEST_FIRST_LABEL: "Älteste Einreichungen zuerst",
+    VERFAHREN_AKTENZEICHEN_ASC_LABEL: "Aktenzeichen des Gerichts (A↓Z)",
+    VERFAHREN_AKTENZEICHEN_DESC_LABEL: "Aktenzeichen des Gerichts (Z↓A)",
   },
   titles: {
     PLATFORM_TITLE: "Kommunikationsplattform | Justiz-Services",

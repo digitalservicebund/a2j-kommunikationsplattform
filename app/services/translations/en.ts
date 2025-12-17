@@ -72,6 +72,10 @@ export const en: Translations = {
     COURT_LABEL: "Court",
     SEARCH_LABEL: "Search",
     RESULTS_LABEL: "Results",
+    VERFAHREN_EINREICHUNGEN_LATEST_FIRST_LABEL: "Latest submissions first",
+    VERFAHREN_EINREICHUNGEN_OLDEST_FIRST_LABEL: "Oldest submissions first",
+    VERFAHREN_AKTENZEICHEN_ASC_LABEL: "Court case number (A↓Z)",
+    VERFAHREN_AKTENZEICHEN_DESC_LABEL: "Court case number (Z↓A)",
   },
   titles: {
     PLATFORM_TITLE: "Communication Platform | Justice Services",
