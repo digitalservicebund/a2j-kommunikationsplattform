@@ -125,7 +125,7 @@ function VerfahrenContent({
     const formData = new FormData(e.currentTarget);
     const value = formData.get("search_text");
 
-    updateParam("search_text", (value as string) || null); // we don't accept files here, so it's safe to cast a string
+    updateParam("search_text", (value as string) || null);
   };
 
   return (

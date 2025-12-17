@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, renderHook } from "@testing-library/react";
 import { useSearchParams } from "react-router";
-import type { URLSearchParamsInit } from "react-router-dom"; // optional, ignore if not in your deps
+import type { URLSearchParamsInit } from "react-router-dom";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import { useParamsState } from "~/components/hooks/useParamsState";
 

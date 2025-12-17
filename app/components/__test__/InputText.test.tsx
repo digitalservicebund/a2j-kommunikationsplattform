@@ -1,4 +1,3 @@
-// File: `app/components/__test__/InputText.test.tsx`
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";

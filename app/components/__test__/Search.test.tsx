@@ -1,7 +1,4 @@
-// typescript
-// File: `app/components/__test__/Search.test.tsx`
 // @vitest-environment jsdom
-
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FormEvent } from "react";

@@ -17,12 +17,12 @@ interface InputSelectProps {
 }
 
 export default function InputSelect({
-  placeholder,
   label,
+  id,
   options = [],
+  placeholder,
   onChange,
   disabled,
-  id,
   selectedValue,
   className = "",
 }: Readonly<InputSelectProps>) {

@@ -8,11 +8,11 @@ import { buildSearchParams } from "~/util/buildSearchParams";
 const fetchVerfahrenOptionsSchema = z.object({
   offset: z.number().int().nonnegative().optional(),
   limit: z.number().int().positive().optional(),
-  gericht: z.nullish(z.guid()), // nullish allows null and optional
+  gericht: z.nullish(z.guid()),
   sort: z
     .union([z.enum(sortOptions.map((s) => s.value)), z.literal("")])
     .optional(),
-  search_text: z.nullish(z.string().trim()), // trim will make sure white spaces are removed when parsing the options
+  search_text: z.nullish(z.string().trim()),
 });
 
 export type FetchVerfahrenOptions = z.infer<typeof fetchVerfahrenOptionsSchema>;
