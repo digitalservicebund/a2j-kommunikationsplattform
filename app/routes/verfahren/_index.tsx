@@ -134,6 +134,7 @@ function VerfahrenContent({
         handleSearch={handleSearch}
         disabled={isInputDisabled}
         defaultValue={getParamValue(`search_text`) || ""}
+        id="search_text"
       />
       <div className="space-x-kern-space-x-large flex items-start justify-between">
         <InputSelect

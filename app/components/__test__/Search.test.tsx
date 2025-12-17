@@ -11,6 +11,7 @@ import Search from "../Search";
 
 describe("Search", () => {
   const { placeholders, labels, buttons } = getTestTranslations();
+  const searchId = "test-search-input";
 
   it("renders input and submit button with translations and defaultValue", () => {
     renderWithTestTranslations(
@@ -18,6 +19,7 @@ describe("Search", () => {
         handleSearch={() => {}}
         disabled={false}
         defaultValue="initial"
+        id={searchId}
       />,
     );
 
@@ -38,7 +40,12 @@ describe("Search", () => {
     });
 
     renderWithTestTranslations(
-      <Search handleSearch={handleSearch} disabled={false} defaultValue="" />,
+      <Search
+        handleSearch={handleSearch}
+        disabled={false}
+        defaultValue=""
+        id={searchId}
+      />,
     );
 
     const button = screen.getByRole("button", { name: buttons.SEARCH_BUTTON });
@@ -49,7 +56,12 @@ describe("Search", () => {
 
   it("disables submit button when disabled prop is true", () => {
     renderWithTestTranslations(
-      <Search handleSearch={() => {}} disabled={true} defaultValue="" />,
+      <Search
+        handleSearch={() => {}}
+        disabled={true}
+        defaultValue=""
+        id={searchId}
+      />,
     );
 
     const button = screen.getByRole("button", { name: buttons.SEARCH_BUTTON });
@@ -62,6 +74,7 @@ describe("Search", () => {
         handleSearch={() => {}}
         disabled={false}
         defaultValue="select-me"
+        id={searchId}
       />,
     );
 

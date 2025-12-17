@@ -5,11 +5,13 @@ export interface SearchProps {
   handleSearch: (event: React.FormEvent<HTMLFormElement>) => void;
   disabled: boolean;
   defaultValue: string;
+  id: string;
 }
 export default function Search({
   handleSearch,
   disabled: shouldDisableInputs,
   defaultValue,
+  id,
 }: Readonly<SearchProps>) {
   const { placeholders, labels, buttons } = useTranslations();
   return (
@@ -21,7 +23,7 @@ export default function Search({
             onFocus={(e) => e.currentTarget.select()} // Select all text on focus - useful for quick replacement
             label={labels.SEARCH_LABEL}
             placeholder={placeholders.SEARCH_PLACEHOLDER}
-            id="search_text"
+            id={id}
             defaultValue={defaultValue}
             className="grow"
             disabled={shouldDisableInputs}
