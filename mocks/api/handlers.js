@@ -15,8 +15,8 @@ import {
   mockVerfahrenErstellt,
   mockVerfahrenErstelltAkte,
   mockVerfahrenErstelltId,
-  mockVerfahrenNewAPIMain,
 } from "./data.js";
+import { verfahrenMockData } from "./data/verfahren.js";
 
 /**
  * All defined Handlers intercept a request and handle its response
@@ -133,7 +133,7 @@ export const handlers = [
       console.log("URL Sort Param:", sortParam);
       console.log("URL Search Params:", url.searchParams.toString());
 
-      let filteredVerfahren = mockVerfahrenNewAPIMain;
+      let filteredVerfahren = verfahrenMockData;
 
       if (gerichtParam) {
         filteredVerfahren = filteredVerfahren.filter(
@@ -266,7 +266,7 @@ export const handlers = [
   http.get(
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId`,
     async ({ params }) => {
-      const requestedVerfahren = mockVerfahrenNewAPIMain.find(
+      const requestedVerfahren = verfahrenMockData.find(
         (item) => item.id === params.verfahrenId,
       );
 
