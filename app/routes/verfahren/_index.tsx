@@ -137,6 +137,16 @@ function VerfahrenContent({
       />
       <div className="space-x-kern-space-x-large flex items-start justify-between">
         <InputSelect
+          label={labels.COURT_LABEL}
+          id="gericht"
+          placeholder={labels.SHOW_ALL_LABEL}
+          options={gerichteOptions}
+          onChange={(e) => updateParam("gericht", e.target.value || null)}
+          disabled={isInputDisabled}
+          selectedValue={getParamValue("gericht") || ""}
+          className="grow"
+        />
+        <InputSelect
           label={labels.SORT_LABEL}
           id="sort"
           options={sortOptions}
@@ -145,16 +155,6 @@ function VerfahrenContent({
           }
           disabled={isInputDisabled}
           selectedValue={getParamValue("sort") || sortOptions[0].value}
-          className="grow"
-        />
-        <InputSelect
-          label={labels.COURT_LABEL}
-          id="gericht"
-          placeholder={labels.SHOW_ALL_LABEL}
-          options={gerichteOptions}
-          onChange={(e) => updateParam("gericht", e.target.value || null)}
-          disabled={isInputDisabled}
-          selectedValue={getParamValue("gericht") || ""}
           className="grow"
         />
       </div>
