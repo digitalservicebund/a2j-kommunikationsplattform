@@ -127,6 +127,10 @@ export const handlers = [
       const offsetParam = url.searchParams.get("offset");
       const limitParam = url.searchParams.get("limit");
       const gerichtParam = url.searchParams.get("gericht");
+      const sortParam = url.searchParams.get("sort");
+      const searchParam = url.searchParams.get("search_text");
+
+      console.log("URL Sort Param:", sortParam);
       console.log("URL Search Params:", url.searchParams.toString());
 
       let filteredVerfahren = mockVerfahrenNewAPIMain;
@@ -135,6 +139,54 @@ export const handlers = [
         filteredVerfahren = filteredVerfahren.filter(
           (verfahren) => verfahren.gericht.id === gerichtParam,
         );
+      }
+
+      if (searchParam) {
+        const matchesString = (val) =>
+          typeof val === "string" &&
+          val.toLowerCase().includes(searchParam.toLowerCase());
+
+        filteredVerfahren = filteredVerfahren.filter((verfahren) => {
+          // Top-level string fields
+          if (
+            matchesString(verfahren.aktenzeichen_gericht) ||
+            matchesString(verfahren.gericht?.wert) ||
+            matchesString(verfahren.gericht?.id)
+          ) {
+            return true;
+          }
+
+          // Beteiligungen and nested fields
+          return verfahren.beteiligungen?.some((b) => {
+            // Beteiligung itself
+            if (matchesString(b.name) || matchesString(b.id)) return true;
+
+            // Rollen
+            if (b.rollen?.some((r) => matchesString(r.id))) return true;
+
+            // Prozessbevollmaechtigte
+            return b.prozessbevollmaechtigte?.some((p) => {
+              const bev = p.bevollmaechtigter;
+              return (
+                matchesString(p.aktenzeichen) ||
+                matchesString(bev?.id) ||
+                matchesString(bev?.safe_id) ||
+                matchesString(bev?.name)
+              );
+            });
+          });
+        });
+      }
+
+      if (sortParam) {
+        const isDescending = sortParam.startsWith("-");
+        const sortField = isDescending ? sortParam.slice(1) : sortParam;
+
+        filteredVerfahren.sort((a, b) => {
+          if (a[sortField] < b[sortField]) return isDescending ? 1 : -1;
+          if (a[sortField] > b[sortField]) return isDescending ? -1 : 1;
+          return 0;
+        });
       }
 
       const total = filteredVerfahren.length;

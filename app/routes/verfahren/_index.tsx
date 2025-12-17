@@ -9,8 +9,9 @@ import z from "zod";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { useParamsState } from "~/components/hooks/useParamsState";
 import InputSelect from "~/components/InputSelect";
+import Search from "~/components/Search";
 import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
-import { VERFAHREN_PAGE_LIMIT } from "~/config/verfahren";
+import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/config/verfahren";
 import { VERFAHREN_SKELETONS } from "~/config/verfahrenSkeletons";
 import { GerichtDTO, VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { withSessionLoader } from "~/services/auth/withSessionLoader";
@@ -36,15 +37,19 @@ export const loader = withSessionLoader(
   async ({ request }: Route.LoaderArgs): Promise<LoaderData> => {
     const url = new URL(request.url);
     const offset = Number(url.searchParams.get("offset") || "0");
-    const gericht = url.searchParams.get("gericht") || "";
-    // We can add more filters here later ⬆️
+    const gericht = url.searchParams.get("gericht");
+    const sort = url.searchParams.get("sort") || sortOptions[0].value;
+    const search_text = url.searchParams.get("search_text");
 
+    console.log("search_text", search_text);
     // Fetch verfahren with one extra item to determine if there are more items
     const verfahrenPromise: Promise<VerfahrenLoaderData> = (async () => {
       const verfahren = await fetchVerfahren(request, {
         limit: VERFAHREN_PAGE_LIMIT + 1,
         offset,
         gericht,
+        sort,
+        search_text,
       });
 
       const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
@@ -100,31 +105,60 @@ function VerfahrenContent({
   const { labels } = useTranslations();
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
     useLoadMore(initialData);
-  const { params, setParam } = useParamsState({
-    gericht: "",
-  });
-
-  const hasFilters = Object.values(params).some(Boolean);
+  const { getParamValue, updateParam } = useParamsState<{
+    sort: "";
+    gericht: "";
+    search_text: "";
+  }>();
 
   const gerichteOptions = gerichte.map((g) => ({ value: g.id, label: g.wert }));
 
-  // isInputSelectDisabled when loading, or no options, or no filters and no items
-  const isInputSelectDisabled =
-    isLoading ||
-    gerichteOptions.length === 0 ||
-    (!hasFilters && allItems.length === 0);
+  const hasFilters = Boolean(
+    getParamValue("search_text") || Boolean(getParamValue("gericht")),
+  );
+
+  // isInputSelectDisabled when loading, or when no items have been returned and no filters are applied
+  const isInputDisabled = isLoading || (!hasFilters && allItems.length === 0);
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const value = formData.get("search_text");
+
+    updateParam("search_text", (value as string) || null);
+  };
 
   return (
     <>
-      <InputSelect
-        label="Zuständiges Gericht"
-        name="gericht"
-        selectedValue={params.gericht || ""} // gerichtID
-        placeholder={labels.SHOW_ALL_LABEL}
-        options={gerichteOptions}
-        onChange={(e) => setParam("gericht", e.target.value || "")}
-        disabled={isInputSelectDisabled}
+      <Search
+        handleSearch={handleSearch}
+        disabled={isInputDisabled}
+        defaultValue={getParamValue(`search_text`) || ""}
+        id="search_text"
       />
+      <div className="space-x-kern-space-x-large flex items-start justify-between">
+        <InputSelect
+          label={labels.COURT_LABEL}
+          id="gericht"
+          placeholder={labels.SHOW_ALL_LABEL}
+          options={gerichteOptions}
+          onChange={(e) => updateParam("gericht", e.target.value || null)}
+          disabled={isInputDisabled}
+          selectedValue={getParamValue("gericht") || ""}
+          className="grow"
+        />
+        <InputSelect
+          label={labels.SORT_LABEL}
+          id="sort"
+          options={sortOptions}
+          onChange={(e) =>
+            updateParam("sort", e.target.value || sortOptions[0].value)
+          }
+          disabled={isInputDisabled}
+          selectedValue={getParamValue("sort") || sortOptions[0].value}
+          className="grow"
+        />
+      </div>
       <VerfahrenCounter count={allItems.length || 0} hasFilters={hasFilters} />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
       {hasMoreItems && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}

@@ -1,17 +1,21 @@
 // @vitest-environment jsdom
 import { act, renderHook } from "@testing-library/react";
-import type { URLSearchParamsInit } from "react-router-dom"; // optional, ignore if not in your deps
-import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
+import { useSearchParams } from "react-router";
+import type { URLSearchParamsInit } from "react-router-dom";
+import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
+import { useParamsState } from "~/components/hooks/useParamsState";
+
 vi.mock("react-router", () => {
   return {
     useSearchParams: vi.fn(),
   };
 });
 
-import { useSearchParams } from "react-router";
-import { useParamsState } from "~/components/hooks/useParamsState";
-
 const mockedUseSearchParams = useSearchParams as unknown as Mock;
+
+const getParamObject = (params: URLSearchParams) => {
+  return Object.fromEntries(params.entries());
+};
 const setupSearchParamsMock = (initial: string | URLSearchParamsInit = "") => {
   let current = new URLSearchParams(initial as string);
   const setSearchParamsMock = vi.fn(
@@ -19,8 +23,7 @@ const setupSearchParamsMock = (initial: string | URLSearchParamsInit = "") => {
       updater: URLSearchParams | ((prev: URLSearchParams) => URLSearchParams),
     ) => {
       if (typeof updater === "function") {
-        const next = updater(current);
-        current = next;
+        current = updater(current);
       } else {
         current = new URLSearchParams(updater);
       }
@@ -41,45 +44,27 @@ describe("useParamsState", () => {
     setupSearchParamsMock(""); // no query params
 
     const { result } = renderHook(() =>
-      useParamsState({
-        gericht: "",
-        someParam: "test-param",
-      }),
+      useParamsState<{
+        sort: "";
+        gericht: "";
+        search_text: "";
+      }>(),
     );
 
-    expect(result.current.params).toEqual({
-      gericht: "",
-      someParam: "test-param",
-    });
-  });
-
-  it("overrides initialParams with values from searchParams", () => {
-    setupSearchParamsMock("gericht=123&foo=baz");
-
-    const { result } = renderHook(() =>
-      useParamsState({
-        gericht: "",
-        someParam: "test-param",
-      }),
-    );
-
-    expect(result.current.params).toEqual({
-      gericht: "123",
-      someParam: "test-param",
-    });
+    expect(getParamObject(result.current.searchParams)).toEqual({});
   });
 
   it("setParam adds a new param to searchParams", () => {
     const { getCurrent, setSearchParamsMock } = setupSearchParamsMock("");
 
-    const { result } = renderHook(() =>
-      useParamsState({
-        gericht: "",
-      }),
-    );
+    const { result } = renderHook(() => {
+      return useParamsState<{
+        gericht: "";
+      }>();
+    });
 
     act(() => {
-      result.current.setParam("gericht", "abcd-uuid");
+      result.current.updateParam("gericht", "abcd-uuid");
     });
 
     expect(setSearchParamsMock).toHaveBeenCalledTimes(1);
@@ -97,14 +82,14 @@ describe("useParamsState", () => {
     const { getCurrent, setSearchParamsMock } =
       setupSearchParamsMock("gericht=old");
 
-    const { result } = renderHook(() =>
-      useParamsState({
-        gericht: "",
-      }),
-    );
+    const { result } = renderHook(() => {
+      return useParamsState<{
+        gericht: "";
+      }>();
+    });
 
     act(() => {
-      result.current.setParam("gericht", "new");
+      result.current.updateParam("gericht", "new");
     });
 
     const updater = setSearchParamsMock.mock.calls[0][0] as (
@@ -112,21 +97,22 @@ describe("useParamsState", () => {
     ) => URLSearchParams;
     const updated = updater(getCurrent());
 
+    expect(updated.get("gericht")).not.toBe("old");
     expect(updated.get("gericht")).toBe("new");
   });
 
-  it("setParam deletes a param when value is undefined", () => {
+  it("setParam deletes a param when value is null", () => {
     const { getCurrent, setSearchParamsMock } =
       setupSearchParamsMock("gericht=to-delete");
 
-    const { result } = renderHook(() =>
-      useParamsState({
-        gericht: "",
-      }),
-    );
+    const { result } = renderHook(() => {
+      return useParamsState<{
+        gericht: "";
+      }>();
+    });
 
     act(() => {
-      result.current.setParam("gericht", undefined);
+      result.current.updateParam("gericht", null);
     });
 
     const updater = setSearchParamsMock.mock.calls[0][0] as (
@@ -141,14 +127,14 @@ describe("useParamsState", () => {
     const { getCurrent, setSearchParamsMock } =
       setupSearchParamsMock("gericht=to-delete");
 
-    const { result } = renderHook(() =>
-      useParamsState({
-        gericht: "",
-      }),
-    );
+    const { result } = renderHook(() => {
+      return useParamsState<{
+        gericht: "";
+      }>();
+    });
 
     act(() => {
-      result.current.setParam("gericht", "");
+      result.current.updateParam("gericht", "");
     });
 
     const updater = setSearchParamsMock.mock.calls[0][0] as (
@@ -157,5 +143,21 @@ describe("useParamsState", () => {
     const updated = updater(getCurrent());
 
     expect(updated.get("gericht")).toBeNull();
+  });
+  it("getParamValue retrieves the correct value", () => {
+    setupSearchParamsMock("gericht=some-uuid&sort=-eingereicht_am");
+
+    const { result } = renderHook(() => {
+      return useParamsState<{
+        sort: "";
+        gericht: "";
+      }>();
+    });
+
+    const gerichtValue = result.current.getParamValue("gericht");
+    const sortValue = result.current.getParamValue("sort");
+
+    expect(gerichtValue).toBe("some-uuid");
+    expect(sortValue).toBe("-eingereicht_am");
   });
 });

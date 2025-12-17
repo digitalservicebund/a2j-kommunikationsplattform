@@ -1,50 +1,51 @@
 import { ChangeEvent } from "react";
-import { useTranslations } from "~/services/translations/context";
 
-type InputSelectOption = {
+export interface InputSelectOption {
   value: string;
   label: string;
-};
+}
 
-type InputSelectProps = Readonly<{
-  placeholder?: string;
+interface InputSelectProps {
   label: string;
-  name: string;
-  options?: InputSelectOption[];
-  selectedValue?: string;
+  id: string;
+  options: InputSelectOption[];
+  placeholder?: string;
   onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
   disabled?: boolean;
-}>;
+  selectedValue: string;
+  className?: string;
+}
 
 export default function InputSelect({
-  placeholder,
   label,
-  name,
+  id,
   options = [],
-  selectedValue,
+  placeholder,
   onChange,
   disabled,
-}: InputSelectProps) {
-  const selectId = name;
-  const { labels } = useTranslations();
-
+  selectedValue,
+  className = "",
+}: Readonly<InputSelectProps>) {
   return (
-    <div className="kern-form-input">
-      <label className="kern-label" htmlFor={selectId}>
+    <div className={`kern-form-input ${className}`}>
+      <label className="kern-label" htmlFor={id}>
         {label}
       </label>
 
       <div className="kern-form-input__select-wrapper">
         <select
           className="kern-form-input__select"
-          name={name}
-          id={selectId}
-          value={selectedValue ?? ""}
+          name={id}
+          id={id}
+          value={selectedValue}
           onChange={onChange}
           aria-disabled={disabled} // using aria-disabled as recommended in https://www.kern-ux.de/komponenten/form-inputs/#disabled-attribut
         >
-          <option value="">{placeholder ?? labels.PLEASE_SELECT_LABEL}</option>
-
+          {placeholder && (
+            <option key={placeholder} value="">
+              {placeholder}
+            </option>
+          )}
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

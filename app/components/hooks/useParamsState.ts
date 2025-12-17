@@ -1,43 +1,37 @@
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { useSearchParams } from "react-router";
+import { URLSearchParamsInit } from "react-router-dom";
 
-export function useParamsState<T extends Record<string, string | undefined>>(
-  initialParams: T,
-) {
+export function useParamsState<T extends URLSearchParamsInit>() {
   const [searchParams, setSearchParams] = useSearchParams();
-  type Key = keyof T & string;
 
-  const setParam = useCallback(
-    (key: Key, value: string | undefined) => {
+  const getParamValue = useCallback(
+    (key: keyof T) => {
+      return searchParams.get(String(key));
+    },
+    [searchParams],
+  );
+
+  const updateParam = useCallback(
+    (key: keyof T, value: string | null) => {
       setSearchParams((prev) => {
-        const next = new URLSearchParams(prev);
+        const newParam = new URLSearchParams(prev);
 
-        if (value === undefined || value === "") {
-          next.delete(key);
+        if (value === null || value === "") {
+          newParam.delete(String(key));
         } else {
-          next.set(key, value);
+          newParam.set(String(key), value);
         }
 
-        return next;
+        return newParam;
       });
     },
     [setSearchParams],
   );
-  const params: T = useMemo(() => {
-    const mergedParams = { ...initialParams };
-
-    (Object.keys(initialParams) as Key[]).forEach((key) => {
-      const value = searchParams.get(key);
-      if (value !== null) {
-        mergedParams[key] = value as T[Key];
-      }
-    });
-
-    return mergedParams;
-  }, [initialParams, searchParams]);
 
   return {
-    params,
-    setParam,
+    searchParams,
+    getParamValue,
+    updateParam,
   } as const;
 }

@@ -26,7 +26,7 @@ export default function Navigation() {
     {
       name: labels.VERFAHREN_LABEL,
       iconName: "kern-icon--icon--storage",
-      url: `/verfahren`,
+      url: "/verfahren?sort=eingereicht_am", // setting default sorting for seachParams
     },
     {
       name: labels.MITTEILUNGEN_LABEL,
