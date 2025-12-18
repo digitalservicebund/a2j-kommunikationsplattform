@@ -1,21 +1,7 @@
 import { http, HttpResponse } from "msw";
-import { v4 as uuidv4 } from "uuid";
 
-import {
-  aktenteileIds,
-  gerichte,
-  getDokumentByAktenteilId,
-  mockAktenteilDokumente,
-  mockKomPlaIdPTokenExchange,
-  mockVerfahrenEingereicht,
-  mockVerfahrenEingereicht1,
-  mockVerfahrenEingereicht2,
-  mockVerfahrenEingereichtAkte,
-  mockVerfahrenEingereichtId,
-  mockVerfahrenErstellt,
-  mockVerfahrenErstelltAkte,
-  mockVerfahrenErstelltId,
-} from "./data.js";
+import { gerichte } from "./data/gerichte.js";
+import { mockKomPlaIdPTokenExchange } from "./data/tokenExchange.js";
 import { verfahrenMockData } from "./data/verfahren.js";
 
 /**
@@ -28,98 +14,13 @@ import { verfahrenMockData } from "./data/verfahren.js";
  * @see https://mswjs.io/docs/basics/mocking-responses
  */
 
-// JUSTIZ_BACKEND_API_URL
-const mockJustizBackendApiUrl = "https://kompla.sinc.de";
 // KOMPLA_API_URL
 const mockKomplaApiUrl = "https://app.kompla-justiz.sinc.de";
 // KOMPLA_IDP_ISSUER
 const mockKomplaIdpIssuer = "https://login.kompla-justiz.sinc.de";
 
-// Let's keep a map of all mocked Verfahren and its Dokumente and Aktenteile in memory.
-// At the beginning, we add some default data to each mocked Verfahren (e.g. Aktenteile & Dokumente).
-// init Verfahren data
-const verfahren = new Map();
-let verfahrenId = 0;
-const seedVerfahren = [
-  mockVerfahrenErstellt,
-  mockVerfahrenEingereicht,
-  mockVerfahrenEingereicht1,
-  mockVerfahrenEingereicht2,
-];
-
-for (const item of seedVerfahren) {
-  verfahren.set(verfahrenId++, item);
-}
-
-// generate additional random verfahren until we have 200 total entries
-const TARGET_VERFAHREN = 500;
-while (verfahren.size < TARGET_VERFAHREN) {
-  const template =
-    seedVerfahren[Math.floor(Math.random() * seedVerfahren.length)];
-
-  const randomAktenId = Math.floor(10000000 + Math.random() * 90000000);
-  // use a 1-based index suffix for the aktenzeichen
-  const indexSuffix = verfahren.size + 1;
-  const aktenzeichen = `JBA-${randomAktenId}-${indexSuffix}`;
-
-  const newVerfahren = {
-    ...template,
-    id: uuidv4(),
-    aktenzeichen,
-    status_changed: new Date().toJSON(),
-    eingereicht_am: new Date().toJSON(),
-  };
-
-  verfahren.set(verfahrenId++, newVerfahren);
-}
-
-// init Akte "eingereicht" data
-const aktenteilDokumenteVerfahrenErstellt = new Map();
-const aktenteilId_1 = aktenteileIds.mockVerfahrenErstelltAkte[0];
-aktenteilDokumenteVerfahrenErstellt.set(
-  aktenteilId_1,
-  getDokumentByAktenteilId(aktenteilId_1),
-);
-const aktenteilId_2 = aktenteileIds.mockVerfahrenErstelltAkte[1];
-aktenteilDokumenteVerfahrenErstellt.set(
-  aktenteilId_2,
-  getDokumentByAktenteilId(aktenteilId_2),
-);
-const aktenteilId_3 = aktenteileIds.mockVerfahrenErstelltAkte[2];
-aktenteilDokumenteVerfahrenErstellt.set(
-  aktenteilId_3,
-  getDokumentByAktenteilId(aktenteilId_3),
-);
-const aktenteilId_4 = aktenteileIds.mockVerfahrenErstelltAkte[3];
-aktenteilDokumenteVerfahrenErstellt.set(
-  aktenteilId_4,
-  getDokumentByAktenteilId(aktenteilId_4),
-);
-const aktenteilId_5 = aktenteileIds.mockVerfahrenErstelltAkte[4];
-aktenteilDokumenteVerfahrenErstellt.set(
-  aktenteilId_5,
-  getDokumentByAktenteilId(aktenteilId_5),
-);
-// init Akte "erstellt" data
-const aktenteilDokumenteVerfahrenEingereicht = new Map();
-const aktenteilId_6 = aktenteileIds.mockVerfahrenEingereichtAkte[0];
-aktenteilDokumenteVerfahrenEingereicht.set(
-  aktenteilId_6,
-  getDokumentByAktenteilId(aktenteilId_6),
-);
-
-const akteErstelltId = "akte-erstellt";
-const verfahrenErstelltAkte = new Map();
-verfahrenErstelltAkte.set(akteErstelltId, mockVerfahrenErstelltAkte);
-const akteEingereichtId = "akte-eingereicht";
-const verfahrenEingereichtAkte = new Map();
-verfahrenEingereichtAkte.set(akteEingereichtId, mockVerfahrenEingereichtAkte);
-const akteCreatedByUserId = "akte-created-by-user";
-const verfahrenEingereichtByUserAkte = new Map();
-// verfahrenEingereichtByUserAkte is getting configured on user
-// interaction (e.g. user creates a Verfahren)
-
 export const handlers = [
+  // Verfahren
   http.get(
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren`,
     async ({ request }) => {
@@ -218,50 +119,6 @@ export const handlers = [
     return HttpResponse.json(...gerichteResponse);
   }),
 
-  http.post(`${mockJustizBackendApiUrl}/api/v1/verfahren`, async () => {
-    // generate random 8 digit number for "aktenzeichen"
-    const randomAktenId = Math.floor(10000000 + Math.random() * 900000);
-    const aktenzeichen = `JBA-${randomAktenId}`;
-    const dateTimeNow = new Date().toJSON();
-    // create a new "Verfahren"
-    const randomNewVerfahren = {
-      id: uuidv4(),
-      aktenzeichen: aktenzeichen,
-      status: "Eingereicht",
-      status_changed: dateTimeNow,
-      eingereicht_am: dateTimeNow,
-      gericht_name: "Landgericht Berlin",
-    };
-    // increment verfahrenId
-    verfahrenId++;
-    // add the randomNewVerfahren to the verfahren Map
-    verfahren.set(verfahrenId, randomNewVerfahren);
-    const getAddedVerfahren = verfahren.get(verfahrenId);
-
-    // lastly, create and save a few random documents for this new verfahren
-    const randomAktenteilId = uuidv4();
-    aktenteilDokumenteVerfahrenEingereicht.set(
-      randomAktenteilId,
-      getDokumentByAktenteilId(randomAktenteilId),
-    );
-
-    verfahrenEingereichtByUserAkte.set(akteCreatedByUserId, {
-      id: uuidv4(),
-      aktenzeichen: aktenzeichen,
-      aktenteile: [
-        {
-          id: aktenteileIds.mockVerfahrenEingereichtAkte[0],
-          name: "Vorakte",
-          parent_id: "",
-        },
-      ],
-    });
-
-    const postVerfahrenResponse = [getAddedVerfahren, { status: 201 }];
-
-    return HttpResponse.json(...postVerfahrenResponse);
-  }),
-
   // endpoint is not used by the frontend at the moment
   http.get(
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId`,
@@ -277,174 +134,8 @@ export const handlers = [
       return HttpResponse.json(...resultArray);
     },
   ),
-  http.get(
-    `${mockJustizBackendApiUrl}/api/v1/verfahren/:verfahrenId/akte`,
-    async ({ params }) => {
-      let returnAkteByVerfahrenId;
 
-      if (params.verfahrenId === mockVerfahrenErstelltId) {
-        returnAkteByVerfahrenId = verfahrenErstelltAkte.get(akteErstelltId);
-      } else if (params.verfahrenId === mockVerfahrenEingereichtId) {
-        returnAkteByVerfahrenId =
-          verfahrenEingereichtAkte.get(akteEingereichtId);
-      } else {
-        // we have a user created verfahren
-        returnAkteByVerfahrenId =
-          verfahrenEingereichtByUserAkte.get(akteCreatedByUserId);
-      }
-
-      const resultArray = [[returnAkteByVerfahrenId, { status: 200 }]];
-
-      return HttpResponse.json(...resultArray[0]);
-    },
-  ),
-  http.get(
-    `${mockJustizBackendApiUrl}/api/v1/verfahren/:verfahrenId/akte/:aktenteilId/dokumente`,
-    async ({ params }) => {
-      let dokumente;
-
-      if (params.verfahrenId === mockVerfahrenErstelltId) {
-        dokumente = aktenteilDokumenteVerfahrenErstellt.get(params.aktenteilId);
-      } else {
-        dokumente = aktenteilDokumenteVerfahrenEingereicht.get(
-          params.aktenteilId,
-        );
-      }
-
-      const getDokumente200Response = {
-        verfahren_id: params.verfahrenId,
-        dokumente: dokumente,
-        count: dokumente.length,
-      };
-
-      const resultArray = [getDokumente200Response, { status: 200 }];
-
-      return HttpResponse.json(...resultArray);
-    },
-  ),
-
-  http.get(
-    `${mockJustizBackendApiUrl}/api/v1/verfahren/:verfahrenId/akte/dokumente/:dokumentId`,
-    async ({ params }) => {
-      const getDokumentId200Response = `${params.dokumentId}.pdf`;
-
-      const resultArray = [getDokumentId200Response, { status: 200 }];
-
-      return HttpResponse.json(...resultArray);
-    },
-  ),
-
-  /**
-   * Custom dokumente upload response implementations for all
-   * possible Verfahren use cases:
-   *
-   * - akte with status "Eingereicht"
-   * - akte with status "Erstellt"
-   * - akte that has been created by a user with "Eingereicht" status
-   */
-  http.post(
-    `${mockJustizBackendApiUrl}/api/v1/verfahren/:verfahrenId/dokumente`,
-    async ({ params }) => {
-      let akteById;
-      let aktenId;
-
-      if (params.verfahrenId === mockVerfahrenErstelltId) {
-        aktenId = akteErstelltId;
-        akteById = verfahrenErstelltAkte.get(aktenId);
-
-        const hasInbox = akteById.aktenteile.find((element) => {
-          return element.name === "Eingänge";
-        });
-
-        if (hasInbox) {
-          const aktenteilId = hasInbox.id;
-          const currentDokumente =
-            aktenteilDokumenteVerfahrenErstellt.get(aktenteilId);
-
-          // add "Dokument_uploaded.pdf" to "Eingänge" aktenteil
-          aktenteilDokumenteVerfahrenErstellt.set(aktenteilId, [
-            ...currentDokumente,
-            ...mockAktenteilDokumente[5],
-          ]);
-        }
-        // this verfahren has a mocked inbox "Eingänge" aktenteil
-        // by default, no else handling needed so far
-      } else if (params.verfahrenId === mockVerfahrenEingereichtId) {
-        aktenId = akteEingereichtId;
-        akteById = verfahrenEingereichtAkte.get(aktenId);
-
-        const hasInbox = akteById.aktenteile.find((element) => {
-          return element.name === "Eingänge";
-        });
-
-        if (hasInbox) {
-          const aktenteilId = hasInbox.id;
-          const currentDokumente =
-            aktenteilDokumenteVerfahrenEingereicht.get(aktenteilId);
-
-          // add "Dokument_uploaded.pdf" to "Eingänge" aktenteil
-          aktenteilDokumenteVerfahrenEingereicht.set(aktenteilId, [
-            ...currentDokumente,
-            ...mockAktenteilDokumente[5],
-          ]);
-        } else {
-          const randomAktenteileId = uuidv4();
-          akteById.aktenteile.push({
-            id: randomAktenteileId,
-            name: "Eingänge",
-            parent_id: "",
-          });
-
-          verfahrenEingereichtAkte.set(aktenId, akteById);
-
-          aktenteilDokumenteVerfahrenEingereicht.set(
-            randomAktenteileId,
-            mockAktenteilDokumente[5],
-          );
-        }
-      } else {
-        // we have a user created verfahren
-        aktenId = akteCreatedByUserId;
-        akteById = verfahrenEingereichtByUserAkte.get(aktenId);
-
-        const hasInbox = akteById.aktenteile.find((element) => {
-          return element.name === "Eingänge";
-        });
-
-        if (hasInbox) {
-          const aktenteilId = hasInbox.id;
-          const currentDokumente =
-            aktenteilDokumenteVerfahrenEingereicht.get(aktenteilId);
-
-          // add "Dokument_uploaded.pdf" to "Eingänge" aktenteil
-          aktenteilDokumenteVerfahrenEingereicht.set(aktenteilId, [
-            ...currentDokumente,
-            ...mockAktenteilDokumente[5],
-          ]);
-        } else {
-          const randomAktenteileId = uuidv4();
-          akteById.aktenteile.push({
-            id: randomAktenteileId,
-            name: "Eingänge",
-            parent_id: "",
-          });
-
-          verfahrenEingereichtByUserAkte.set(aktenId, akteById);
-
-          aktenteilDokumenteVerfahrenEingereicht.set(
-            randomAktenteileId,
-            mockAktenteilDokumente[5],
-          );
-        }
-      }
-
-      // we always show the same "Dokument_uploaded.pdf" for this upload action
-      const post201Response = [mockAktenteilDokumente[5], { status: 201 }];
-
-      return HttpResponse.json(...post201Response);
-    },
-  ),
-
+  // KomPla IdP Token Exchange
   http.post(
     `${mockKomplaIdpIssuer}/realms/:environment/protocol/openid-connect/token`,
     () => {
