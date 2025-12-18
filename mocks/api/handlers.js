@@ -1,8 +1,15 @@
 import { http, HttpResponse } from "msw";
 
-import { gerichte } from "./data/gerichte.js";
-import { mockKomPlaIdPTokenExchange } from "./data/tokenExchange.js";
-import { verfahrenMockData } from "./data/verfahren.js";
+import { getGerichte } from "./controllers/gerichte.js";
+import { getAuthTokens } from "./controllers/tokenExchange.js";
+import {
+  filterVerfahrenByGericht,
+  getAllVerfahren,
+  getVerfahrenById,
+  paginateVerfahren,
+  searchVerfahren,
+  sortVerfahren,
+} from "./controllers/verfahren.js";
 
 /**
  * All defined Handlers intercept a request and handle its response
@@ -31,91 +38,36 @@ export const handlers = [
       const sortParam = url.searchParams.get("sort");
       const searchParam = url.searchParams.get("search_text");
 
-      console.log("URL Sort Param:", sortParam);
-      console.log("URL Search Params:", url.searchParams.toString());
-
-      let filteredVerfahren = verfahrenMockData;
+      let filteredVerfahren = getAllVerfahren();
 
       if (gerichtParam) {
-        filteredVerfahren = filteredVerfahren.filter(
-          (verfahren) => verfahren.gericht.id === gerichtParam,
+        filteredVerfahren = filterVerfahrenByGericht(
+          filteredVerfahren,
+          gerichtParam,
         );
       }
 
       if (searchParam) {
-        const matchesString = (val) =>
-          typeof val === "string" &&
-          val.toLowerCase().includes(searchParam.toLowerCase());
-
-        filteredVerfahren = filteredVerfahren.filter((verfahren) => {
-          // Top-level string fields
-          if (
-            matchesString(verfahren.aktenzeichen_gericht) ||
-            matchesString(verfahren.gericht?.wert) ||
-            matchesString(verfahren.gericht?.id)
-          ) {
-            return true;
-          }
-
-          // Beteiligungen and nested fields
-          return verfahren.beteiligungen?.some((b) => {
-            // Beteiligung itself
-            if (matchesString(b.name) || matchesString(b.id)) return true;
-
-            // Rollen
-            if (b.rollen?.some((r) => matchesString(r.id))) return true;
-
-            // Prozessbevollmaechtigte
-            return b.prozessbevollmaechtigte?.some((p) => {
-              const bev = p.bevollmaechtigter;
-              return (
-                matchesString(p.aktenzeichen) ||
-                matchesString(bev?.id) ||
-                matchesString(bev?.safe_id) ||
-                matchesString(bev?.name)
-              );
-            });
-          });
-        });
+        filteredVerfahren = searchVerfahren(filteredVerfahren, searchParam);
       }
 
       if (sortParam) {
-        const isDescending = sortParam.startsWith("-");
-        const sortField = isDescending ? sortParam.slice(1) : sortParam;
-
-        filteredVerfahren.sort((a, b) => {
-          if (a[sortField] < b[sortField]) return isDescending ? 1 : -1;
-          if (a[sortField] > b[sortField]) return isDescending ? -1 : 1;
-          return 0;
-        });
+        filteredVerfahren = sortVerfahren(filteredVerfahren, sortParam);
       }
 
-      const total = filteredVerfahren.length;
-
-      const offsetNum = offsetParam ? Number.parseInt(offsetParam, 10) || 0 : 0;
-      const limitNum = limitParam
-        ? Number.parseInt(limitParam, 10) || total
-        : total;
-
-      console.log("Received params:", url.searchParams.toString());
-      console.log(
-        "Fetching verfahren with offset:",
-        offsetNum,
-        "and limit:",
-        limitNum,
-        "gericht:",
-        gerichtParam,
+      const paginatedVerfahren = paginateVerfahren(
+        filteredVerfahren,
+        offsetParam,
+        limitParam,
       );
 
-      const paged = filteredVerfahren.slice(offsetNum, offsetNum + limitNum);
-
-      const getVerfahrenResponse = [paged, { status: 200 }];
+      const getVerfahrenResponse = [paginatedVerfahren, { status: 200 }];
       return HttpResponse.json(...getVerfahrenResponse);
     },
   ),
 
   http.get(`${mockKomplaApiUrl}/:environment/api/v1/gerichte`, async () => {
-    const gerichteResponse = [gerichte, { status: 200 }];
+    const gerichteResponse = [getGerichte(), { status: 200 }];
     return HttpResponse.json(...gerichteResponse);
   }),
 
@@ -123,9 +75,7 @@ export const handlers = [
   http.get(
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId`,
     async ({ params }) => {
-      const requestedVerfahren = verfahrenMockData.find(
-        (item) => item.id === params.verfahrenId,
-      );
+      const requestedVerfahren = getVerfahrenById(params.verfahrenId);
 
       console.log("Requested verfahren:", requestedVerfahren);
 
@@ -139,7 +89,7 @@ export const handlers = [
   http.post(
     `${mockKomplaIdpIssuer}/realms/:environment/protocol/openid-connect/token`,
     () => {
-      const post200Response = [mockKomPlaIdPTokenExchange, { status: 200 }];
+      const post200Response = [getAuthTokens(), { status: 200 }];
       return HttpResponse.json(...post200Response);
     },
   ),
