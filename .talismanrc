@@ -70,7 +70,11 @@ fileignoreconfig:
   - filename: app/components/InputSelect.tsx
     checksum: ab11f4fee6731a474add62afe1ea117cc90e1bc78e1a294ba02a5d721a11c8ed
   - filename: app/components/hooks/useParamsState.ts
-    checksum: c0fe4e5fe632d1281551f4ecb473ec280c4e85cab0803fe71fe545ba38e44a2d
+    checksum: 9c5e13c0e5be107c61cf34670b328902c59728e1c7de28ef368f62177b57c0cb
+  - filename: app/services/auth/authSession.server.ts
+    checksum: 783b3cfa8eb2933024fa1888b6b7968c0323bebbde8f6c5c83904ec15ee1ba26
+  - filename: app/services/auth/__test__/authSession.server.test.ts
+    checksum: 9cdd3f077cf9d2b14d80420133620e7519d81c102f21ffa7c08cd26bd0174845
 
 version: ""
 scopeconfig:
