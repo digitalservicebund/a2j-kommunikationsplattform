@@ -18,11 +18,11 @@ export const getCspHeader = (args: {
     "font-src": ["'self'"],
     "connect-src": [
       "'self'",
-      serverConfig().JUSTIZ_BACKEND_API_URL,
+      serverConfig().KOMPLA_API_URL,
       serverConfig().BRAK_IDP_OIDC_ISSUER,
       ...(args.additionalConnectSrc ?? []),
     ],
-    "img-src": ["'self'", serverConfig().JUSTIZ_BACKEND_API_URL, "data:"],
+    "img-src": ["'self'", serverConfig().KOMPLA_API_URL, "data:"],
     "form-action": ["'self'"],
     "object-src": ["'none'"],
     "base-uri": ["'none'"],

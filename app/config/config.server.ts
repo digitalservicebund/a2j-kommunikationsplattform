@@ -5,7 +5,6 @@ interface ServerConfig {
   BRAK_IDP_OIDC_CLIENT_SECRET: string;
   BRAK_IDP_OIDC_ISSUER: string;
   BRAK_IDP_OIDC_REDIRECT_URI: string;
-  JUSTIZ_BACKEND_API_URL: string;
   KOMPLA_API_URL: string;
   KOMPLA_IDP_CLIENT_ID: string;
   KOMPLA_IDP_ISSUER: string;
@@ -26,7 +25,6 @@ export function serverConfig(): ServerConfig {
     BRAK_IDP_OIDC_ISSUER: process.env.BRAK_IDP_OIDC_ISSUER?.trim() ?? "",
     BRAK_IDP_OIDC_REDIRECT_URI:
       process.env.BRAK_IDP_OIDC_REDIRECT_URI?.trim() ?? "",
-    JUSTIZ_BACKEND_API_URL: process.env.JUSTIZ_BACKEND_API_URL?.trim() ?? "",
     KOMPLA_API_URL: process.env.KOMPLA_API_URL?.trim() ?? "",
     KOMPLA_IDP_CLIENT_ID: process.env.KOMPLA_IDP_CLIENT_ID?.trim() ?? "",
     KOMPLA_IDP_ISSUER: process.env.KOMPLA_IDP_ISSUER?.trim() ?? "",
