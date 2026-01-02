@@ -5,7 +5,6 @@ import {
   AuthenticationResponse,
   AuthenticationTokens,
   refreshAccessToken,
-  revokeAccessToken,
 } from "./oAuth.server";
 
 const getSecret = () => {
@@ -96,10 +95,6 @@ export const getAuthData = async (
     if (refreshToken) {
       const response = await refreshAccessToken(request, refreshToken);
       return response;
-    }
-
-    if (accessToken) {
-      await revokeAccessToken(accessToken);
     }
 
     await destroySession(session);
