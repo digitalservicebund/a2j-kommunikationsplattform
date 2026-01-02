@@ -99,6 +99,6 @@ export async function revokeAccessToken(token: string) {
     await oauth2Strategy.revokeToken(token);
   } catch (error) {
     console.error("revoke access token error:", error);
-    return new Response("Not cool", { status: 500 });
+    return new Response("Could not revoke the access token", { status: 500 });
   }
 }

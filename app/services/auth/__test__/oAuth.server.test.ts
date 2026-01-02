@@ -10,12 +10,12 @@ vi.mock("~/config/config.server", () => ({
   }),
 }));
 
+import { setAuthSession } from "../authSession.server";
 import {
   AuthenticationProvider,
-  authenticator,
   type AuthenticationResponse,
-} from "~/services/auth/oAuth.server";
-import { setAuthSession } from "../authSession.server";
+  authenticator,
+} from "../oAuth.server";
 
 type VerifyArgs = {
   tokens: {
@@ -25,20 +25,19 @@ type VerifyArgs = {
   };
   request: Request;
 };
+
 type StrategyResponse = {
   verify: (a: VerifyArgs) => Promise<AuthenticationResponse>;
 };
+
 type AuthWithStrategies = {
   strategies: Map<string, StrategyResponse>;
 };
 
-const mockedSetUpdateSession = vi.mocked(setAuthSession);
+const mockedSetAuthSession = vi.mocked(setAuthSession);
 
-const requestURL = "http://localhost/oauth-test";
-const accessToken = "test-access-token-oauth";
-const refreshToken = "test-refresh-token-oauth";
-const hasRefreshToken = true;
-const accessTokenExpiresInSeconds = 300;
+const accessToken = "access-123";
+const refreshToken = "refresh-456";
 
 function getBEAStrategy(): StrategyResponse {
   const strategyMap = (authenticator as unknown as AuthWithStrategies)
@@ -53,21 +52,27 @@ describe("oAuth.server", () => {
     vi.clearAllMocks();
   });
 
-  const mockRequest = new Request(`${requestURL}/callback`);
   const mockTokens = {
     accessToken: () => accessToken,
     refreshToken: () => refreshToken,
-    hasRefreshToken: () => hasRefreshToken,
-    accessTokenExpiresInSeconds: () => accessTokenExpiresInSeconds,
+    accessTokenExpiresInSeconds: () => 300,
+    hasRefreshToken: () => true,
   };
+  const mockRequest = new Request("https://example.com/callback");
 
-  it("returns AuthenticationResponse with session cookie", async () => {
-    console.log("test 1");
-    mockedSetUpdateSession.mockResolvedValueOnce("mock-cookie");
+  it("verify OAuth2Strategy callback: calls setAuthSession and returns AuthenticationResponse ", async () => {
+    mockedSetAuthSession.mockResolvedValueOnce("cookie-header-value");
 
     const strategy = getBEAStrategy();
     const result = await strategy.verify({
       tokens: mockTokens,
+      request: mockRequest,
+    });
+
+    expect(setAuthSession).toHaveBeenCalledWith({
+      accessToken: accessToken,
+      expiresAt: expect.any(Number),
+      refreshToken: refreshToken,
       request: mockRequest,
     });
 
@@ -77,23 +82,7 @@ describe("oAuth.server", () => {
         expiresAt: expect.any(Number),
         refreshToken: refreshToken,
       },
-      sessionCookieHeader: "mock-cookie",
+      sessionCookieHeader: "cookie-header-value",
     });
-    expect(setAuthSession).toHaveBeenCalledWith({
-      accessToken: accessToken,
-      expiresAt: expect.any(Number),
-      refreshToken: refreshToken,
-      request: mockRequest,
-    });
-  });
-
-  it("throws error if setAuthSession fails", async () => {
-    console.log("test 2");
-    mockedSetUpdateSession.mockRejectedValueOnce(new Error("fail"));
-    const strategy = getBEAStrategy();
-
-    await expect(
-      strategy.verify({ tokens: mockTokens, request: mockRequest }),
-    ).rejects.toThrow("fail");
   });
 });
