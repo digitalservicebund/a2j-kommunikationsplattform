@@ -1,10 +1,10 @@
 import { redirect } from "react-router";
 import Uebersicht from "~/components/Uebersicht.static";
-import { getUserSession } from "~/services/auth/session.server";
+import { getAuthData } from "~/services/auth/authSession.server";
 
 export async function loader({ request }: { request: Request }) {
-  const userSession = await getUserSession(request);
-  const userIsLoggedIn = Boolean(userSession.authenticationTokens.accessToken);
+  const authData = await getAuthData(request);
+  const userIsLoggedIn = Boolean(authData.authenticationTokens.accessToken);
 
   if (!userIsLoggedIn) {
     throw redirect("/login");
