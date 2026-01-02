@@ -1,175 +1,138 @@
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-  type Mock,
-} from "vitest";
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const MODULE_PATH = "../authSession.server";
 const requestURL = "http://localhost/session-test";
-const accessToken = "test-access-token-session";
-
-type CookieSameSite = "lax" | "strict" | "none";
-
-type SessionModule = {
-  createUserSession: (
-    accessToken: string,
-    expiresAt: number,
-    request: Request,
-  ) => Promise<string>;
-  getAuthData: (
-    request: Request,
-  ) => Promise<{ accessToken: string; expiresAt: number } | null>;
-  updateUserSession: (opts: {
-    apiAccessToken: string;
-    apiAccessExpiresAt: number;
-    apiRefreshToken: string;
-    apiRefreshExpiresAt: number;
-    request: Request;
-  }) => Promise<string | null>;
-};
-
-interface CookieOptions {
-  name: string;
-  sameSite: CookieSameSite;
-  path: string;
-  httpOnly: boolean;
-  secrets: string[];
-  secure: boolean;
-}
-interface CookieSessionStorageInit {
-  cookie: CookieOptions;
-}
-
-type SessionValue = string | number | null | undefined;
-
-type MockSession = {
-  get: (k: string) => SessionValue;
-  set: (k: string, v: SessionValue) => void;
-};
-
-type GetSessionMock = Mock<(cookieStr: string | null) => Promise<MockSession>>;
-type CommitSessionMock = Mock<(session: MockSession) => Promise<string>>;
-type DestroySessionMock = Mock<(session: MockSession) => Promise<void>>;
-
-interface ReactRouterMock {
-  lastOptions: CookieSessionStorageInit | null;
-  getSession: GetSessionMock;
-  commitSession: CommitSessionMock;
-  destroySession: DestroySessionMock;
-  redirect: (url: string) => Response;
-}
 
 async function withMocks({
   env = "development",
   serverSecret = "server-secret-123",
   nodeEnv = "test",
+  refreshResponse = null,
 }: {
-  env?: "development" | "production" | string;
+  env?: string;
   serverSecret?: string;
   nodeEnv?: string;
-}) {
+  refreshResponse?: {
+    authenticationTokens: {
+      accessToken: string;
+      expiresAt: number;
+      refreshToken: string;
+    };
+    sessionCookieHeader: string;
+  } | null;
+} = {}) {
   vi.resetModules();
 
-  vi.doMock("~/config/config", () => {
-    return { config: () => ({ ENVIRONMENT: env }) };
-  });
+  vi.doMock("~/config/config", () => ({
+    config: () => ({ ENVIRONMENT: env }),
+  }));
 
-  vi.doMock("~/config/config.server", () => {
-    return {
-      serverConfig: () => ({ BRAK_IDP_OIDC_CLIENT_SECRET: serverSecret }),
-    };
-  });
+  vi.doMock("~/config/config.server", () => ({
+    serverConfig: () => ({ BRAK_IDP_OIDC_CLIENT_SECRET: serverSecret }),
+  }));
 
   const prevNodeEnv = process.env.NODE_ENV;
   process.env.NODE_ENV = nodeEnv;
 
-  const parseCookie = (cookieStr: string | null) => {
+  const parseCookie = (cookieStr: any) => {
     const out: Record<string, string> = {};
     if (!cookieStr) return out;
-    cookieStr.split(";").forEach((part) => {
-      const [k, v] = part.split("=").map((s) => s.trim());
+    cookieStr.split(";").forEach((part: any) => {
+      const [k, v] = part.split("=").map((s: any) => s.trim());
       if (k) out[k] = v ?? "";
     });
     return out;
   };
 
-  const reactRouterMock: ReactRouterMock = {
-    lastOptions: null,
-    getSession: vi.fn(
-      async (cookieStr: string | null): Promise<MockSession> => {
-        const store = new Map<string, SessionValue>(
-          Object.entries(parseCookie(cookieStr)),
-        );
-        if (store.has("expiresAt")) {
-          const raw = store.get("expiresAt");
-          const num = Number(raw);
-          store.set("expiresAt", Number.isNaN(num) ? raw : num);
-        }
-        return {
-          get: (k: string) => store.get(k),
-          set: (k: string, v: SessionValue) => {
-            store.set(k, v);
-          },
-        };
-      },
-    ),
+  const reactRouterMock = {
+    lastOptions: null as CookieSessionStorageOptions | null,
+    getSession: vi.fn(async (cookieStr) => {
+      const store = new Map<string, string | number>(
+        Object.entries(parseCookie(cookieStr)),
+      );
+      if (store.has("expiresAt")) {
+        const raw = store.get("expiresAt");
+        const num = Number(raw);
+        store.set("expiresAt", Number.isNaN(num) ? (raw ?? "") : num);
+      }
+      return {
+        get: (k: string) => store.get(k),
+        set: (k: string, v: string | number) => store.set(k, v),
+      } as const;
+    }),
     commitSession: vi.fn(async () => "mock-set-cookie=1"),
     destroySession: vi.fn(async () => {}),
-    redirect: (url: string) =>
-      new Response(null, { status: 302, headers: { Location: url } }),
   };
 
-  vi.doMock("react-router", () => {
-    return {
-      createCookieSessionStorage: (options: CookieSessionStorageInit) => {
-        reactRouterMock.lastOptions = options;
-        return {
-          getSession: reactRouterMock.getSession,
-          commitSession: reactRouterMock.commitSession,
-          destroySession: reactRouterMock.destroySession,
-        };
-      },
-      redirect: reactRouterMock.redirect,
-      __mock: reactRouterMock, // exposes internals for assertions
-    } as const;
-  });
+  interface SessionStore {
+    get: (key: string) => string | number | undefined;
+    set: (key: string, value: string | number) => void;
+  }
 
-  // Types for dynamic imports to avoid using 'any'
-  const module = (await import(MODULE_PATH)) as SessionModule;
-  const reactRouter = (await import("react-router")) as unknown as {
-    __mock: ReactRouterMock;
-  };
+  interface CookieSessionStorageOptions {
+    cookie: {
+      name: string;
+      sameSite: string;
+      path: string;
+      httpOnly: boolean;
+      secure: boolean;
+      secrets: string[];
+    };
+  }
+
+  interface CookieSessionStorage {
+    getSession: (cookieStr: string | null) => Promise<SessionStore>;
+    commitSession: () => Promise<string>;
+    destroySession: () => Promise<void>;
+  }
+
+  vi.doMock("react-router", () => ({
+    createCookieSessionStorage: (
+      options: CookieSessionStorageOptions,
+    ): CookieSessionStorage => {
+      reactRouterMock.lastOptions = options;
+      return {
+        getSession: reactRouterMock.getSession,
+        commitSession: reactRouterMock.commitSession,
+        destroySession: reactRouterMock.destroySession,
+      };
+    },
+  }));
+
+  // mock oAuth helpers used by authSession.server
+  const refreshAccessTokenMock = vi.fn(async () => refreshResponse);
+  const revokeAccessTokenMock = vi.fn(async () => undefined);
+  // mock the oAuth helpers relative to this test file's location
+  vi.doMock("../oAuth.server", () => ({
+    refreshAccessToken: refreshAccessTokenMock,
+    revokeAccessToken: revokeAccessTokenMock,
+  }));
+
+  const mod = await import(MODULE_PATH);
 
   return {
-    module,
-    reactRouterMock: reactRouter.__mock,
+    module: mod,
+    reactRouterMock,
+    mocks: { refreshAccessTokenMock, revokeAccessTokenMock },
     restore: () => {
       process.env.NODE_ENV = prevNodeEnv;
     },
   };
 }
 
-const futureTs = (): number => Date.now() + 60_000;
-const pastTs = (): number => Date.now() - 60_000;
+const futureTs = () => Date.now() + 60_000;
+const pastTs = () => Date.now() - 60_000;
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
-afterEach(() => {
-  vi.restoreAllMocks();
-});
 
-describe.skip("authSession.server", () => {
+describe("authSession.server", () => {
   it("uses default secret in development", async () => {
     const { reactRouterMock, restore } = await withMocks({
       env: "development",
-      nodeEnv: "test",
     });
-
     expect(reactRouterMock.lastOptions).not.toBeNull();
     const { cookie } = reactRouterMock.lastOptions!;
     expect(cookie.name).toBe("__session");
@@ -178,226 +141,103 @@ describe.skip("authSession.server", () => {
     expect(cookie.httpOnly).toBe(true);
     expect(cookie.secure).toBe(false);
     expect(cookie.secrets).toEqual(["default-secret"]);
-
     restore();
   });
 
-  it("uses server secret when ENVIRONMENT is not development", async () => {
+  it("uses server secret in production", async () => {
     const { reactRouterMock, restore } = await withMocks({
       env: "production",
-      serverSecret: "super-secret-from-server",
+      serverSecret: "prod-secret",
       nodeEnv: "production",
     });
-
-    expect(reactRouterMock.lastOptions).not.toBeNull();
     const { cookie } = reactRouterMock.lastOptions!;
     expect(cookie.secure).toBe(true);
-    expect(cookie.secrets).toEqual(["super-secret-from-server"]);
-
+    expect(cookie.secrets).toEqual(["prod-secret"]);
     restore();
   });
 
-  it("createUserSession commits a session with accessToken & expiresAt", async () => {
-    const { module, reactRouterMock, restore } = await withMocks({});
-
-    const req = new Request(requestURL, {
-      headers: { Cookie: "" },
-    });
-    const result = await module.createUserSession(accessToken, futureTs(), req);
-
-    expect(reactRouterMock.commitSession).toHaveBeenCalledTimes(1);
-    const calledWithSession = reactRouterMock.commitSession.mock.calls[0][0];
-    expect(calledWithSession.get("accessToken")).toBe(accessToken);
-    expect(typeof calledWithSession.get("expiresAt")).toBe("number");
-    expect(result).toBe("mock-set-cookie=1");
-
-    restore();
-  });
-
-  it("createUserSession throws a wrapped error if commitSession fails", async () => {
-    const { module, reactRouterMock, restore } = await withMocks({});
-    reactRouterMock.commitSession.mockImplementationOnce(async () => {
-      throw new Error("Failed to create user session");
-    });
-
-    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const req = new Request(requestURL);
-
-    await expect(
-      module.createUserSession(accessToken, futureTs(), req),
-    ).rejects.toThrow("Failed to create user session");
-    expect(errSpy).toHaveBeenCalled();
-
-    restore();
-  });
-
-  it("updateUserSession commits a session with API tokens", async () => {
-    const { module, reactRouterMock, restore } = await withMocks({});
-
-    const req = new Request(requestURL, {
-      headers: { Cookie: "" },
-    });
-
-    const result = await module.updateUserSession({
-      apiAccessToken: "api-access-1",
-      apiAccessExpiresAt: 1_234_567,
-      apiRefreshToken: "api-refresh-1",
-      apiRefreshExpiresAt: 7_654_321,
+  it("setAuthSession commits session and returns header", async () => {
+    const { module, reactRouterMock, restore } = await withMocks();
+    const req = new Request(requestURL, { headers: { Cookie: "" } });
+    const res = await module.setAuthSession({
+      accessToken: "a1",
+      expiresAt: futureTs(),
+      refreshToken: "r1",
       request: req,
     });
-
     expect(reactRouterMock.commitSession).toHaveBeenCalledTimes(1);
-    const calledWithSession = reactRouterMock.commitSession.mock.calls[0][0];
-    expect(calledWithSession.get("apiAccessToken")).toBe("api-access-1");
-    expect(calledWithSession.get("apiAccessExpiresAt")).toBe(1_234_567);
-    expect(calledWithSession.get("apiRefreshToken")).toBe("api-refresh-1");
-    expect(calledWithSession.get("apiRefreshExpiresAt")).toBe(7_654_321);
-    expect(result).toBe("mock-set-cookie=1");
-
+    expect(res).toBe("mock-set-cookie=1");
     restore();
   });
 
-  it("updateUserSession throws a wrapped error if commitSession fails", async () => {
-    const { module, reactRouterMock, restore } = await withMocks({});
+  it("setAuthSession throws error when commitSession fails", async () => {
+    const { module, reactRouterMock, restore } = await withMocks();
     reactRouterMock.commitSession.mockImplementationOnce(async () => {
-      throw new Error("Failed to update session");
+      throw new Error("commit failed");
     });
-
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const req = new Request(requestURL);
-
     await expect(
-      module.updateUserSession({
-        apiAccessToken: "api-access-1",
-        apiAccessExpiresAt: 1_234_567,
-        apiRefreshToken: "api-refresh-1",
-        apiRefreshExpiresAt: 7_654_321,
+      module.setAuthSession({
+        accessToken: "a1",
+        expiresAt: futureTs(),
+        refreshToken: "r1",
         request: req,
       }),
-    ).rejects.toThrow("Failed to update the user session");
+    ).rejects.toThrow("Failed to set/update session");
     expect(errSpy).toHaveBeenCalled();
-
     restore();
   });
 
-  it("getAuthData returns null and destroys session if no accessToken is available", async () => {
-    const { module, reactRouterMock, restore } = await withMocks({});
-
-    const req = new Request(requestURL, {
-      headers: { Cookie: "" },
-    });
-
-    const result = await module.getAuthData(req);
-
-    expect(result).toBeNull();
-    expect(reactRouterMock.destroySession).toHaveBeenCalledTimes(1);
-
-    restore();
-  });
-
-  it("getAuthData returns null and destroys session if it is expired", async () => {
-    const { module, reactRouterMock, restore } = await withMocks({});
-    const cookie = `accessToken=testToken; expiresAt=${pastTs()}`;
-    const req = new Request(requestURL, {
-      headers: { Cookie: cookie },
-    });
-
-    const result = await module.getAuthData(req);
-
-    expect(result).toBeNull();
-    expect(reactRouterMock.destroySession).toHaveBeenCalledTimes(1);
-
-    restore();
-  });
-
-  it("getAuthData returns AuthenticationTokens when valid", async () => {
-    const { module, reactRouterMock, restore } = await withMocks({});
-    const cookie = `accessToken=${accessToken}; expiresAt=${futureTs()}`;
-    const req = new Request(requestURL, {
-      headers: { Cookie: cookie },
-    });
-
-    const ctx = await module.getAuthData(req);
-
-    expect(ctx).toEqual({
-      accessToken: accessToken,
-      expiresAt: expect.any(Number),
+  it("getAuthData returns tokens when valid and does not destroy session", async () => {
+    const { module, reactRouterMock, restore } = await withMocks();
+    const cookie = `accessToken=tok; expiresAt=${futureTs()}; refreshToken=ref`;
+    const req = new Request(requestURL, { headers: { Cookie: cookie } });
+    const res = await module.getAuthData(req);
+    expect(res).toEqual({
+      authenticationTokens: {
+        accessToken: "tok",
+        expiresAt: expect.any(Number),
+        refreshToken: "ref",
+      },
+      sessionCookieHeader: "",
     });
     expect(reactRouterMock.destroySession).not.toHaveBeenCalled();
-
-    restore();
-  });
-});
-
-describe.skip("authSession.server - api token helpers", () => {
-  it("updateUserSession commits a session with API tokens", async () => {
-    const { module, reactRouterMock, restore } = await withMocks({});
-
-    const req = new Request(requestURL, {
-      headers: { Cookie: "" },
-    });
-
-    const result = await module.updateUserSession({
-      apiAccessToken: "api-access-1",
-      apiAccessExpiresAt: 1_234_567,
-      apiRefreshToken: "api-refresh-1",
-      apiRefreshExpiresAt: 7_654_321,
-      request: req,
-    });
-
-    expect(reactRouterMock.commitSession).toHaveBeenCalledTimes(1);
-    const calledWithSession = reactRouterMock.commitSession.mock.calls[0][0];
-    expect(calledWithSession.get("apiAccessToken")).toBe("api-access-1");
-    expect(calledWithSession.get("apiAccessExpiresAt")).toBe(1_234_567);
-    expect(calledWithSession.get("apiRefreshToken")).toBe("api-refresh-1");
-    expect(calledWithSession.get("apiRefreshExpiresAt")).toBe(7_654_321);
-    expect(result).toBe("mock-set-cookie=1");
-
     restore();
   });
 
-  it("updateUserSession throws a wrapped error if commitSession fails", async () => {
-    const { module, reactRouterMock, restore } = await withMocks({});
-    reactRouterMock.commitSession.mockImplementationOnce(async () => {
-      throw new Error("Failed to update session");
-    });
-
-    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const req = new Request(requestURL);
-
-    await expect(
-      module.updateUserSession({
-        apiAccessToken: "api-access-1",
-        apiAccessExpiresAt: 1_234_567,
-        apiRefreshToken: "api-refresh-1",
-        apiRefreshExpiresAt: 7_654_321,
-        request: req,
-      }),
-    ).rejects.toThrow("Failed to update the user session");
-    expect(errSpy).toHaveBeenCalled();
-
+  it("getAuthData calls refreshAccessToken when expired and refreshToken is present", async () => {
+    const refreshResponse = {
+      authenticationTokens: {
+        accessToken: "new",
+        expiresAt: 1,
+        refreshToken: "newref",
+      },
+      sessionCookieHeader: "hdr",
+    };
+    const { module, mocks, restore } = await withMocks({ refreshResponse });
+    const cookie = `accessToken=tok; expiresAt=${pastTs()}; refreshToken=present`;
+    const req = new Request(requestURL, { headers: { Cookie: cookie } });
+    const res = await module.getAuthData(req);
+    expect(mocks.refreshAccessTokenMock).toHaveBeenCalledWith(req, "present");
+    expect(res).toEqual(refreshResponse);
     restore();
   });
 
-  it("getAuthData returns API tokens when present in the session", async () => {
-    const { module, reactRouterMock, restore } = await withMocks({});
-    const cookie = `accessToken=${accessToken}; expiresAt=${futureTs()}; apiAccessToken=apiA; apiAccessExpiresAt=111; apiRefreshToken=apiR; apiRefreshExpiresAt=222`;
-    const req = new Request(requestURL, {
-      headers: { Cookie: cookie },
+  it("getAuthData destroys session when expired and no refreshToken is present", async () => {
+    const { module, reactRouterMock, restore } = await withMocks();
+    const cookie = `accessToken=tok; expiresAt=${pastTs()}`;
+    const req = new Request(requestURL, { headers: { Cookie: cookie } });
+    const res = await module.getAuthData(req);
+    expect(reactRouterMock.destroySession).toHaveBeenCalled();
+    expect(res).toEqual({
+      authenticationTokens: {
+        accessToken: "tok",
+        expiresAt: expect.any(Number),
+        refreshToken: undefined,
+      },
+      sessionCookieHeader: "",
     });
-
-    const ctx = await module.getAuthData(req);
-
-    expect(ctx).toEqual({
-      accessToken: accessToken,
-      expiresAt: expect.any(Number),
-      apiAccessToken: "apiA",
-      apiAccessExpiresAt: "111",
-      apiRefreshToken: "apiR",
-      apiRefreshExpiresAt: "222",
-    });
-    expect(reactRouterMock.destroySession).not.toHaveBeenCalled();
-
     restore();
   });
 });
