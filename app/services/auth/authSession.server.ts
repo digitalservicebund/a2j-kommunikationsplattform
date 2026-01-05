@@ -46,16 +46,7 @@ export const setAuthSession = async ({
   session.set("expiresAt", expiresAt);
   session.set("refreshToken", refreshToken);
 
-  console.log(
-    "setAuthSession for request.url:",
-    request.url,
-    "\n--accessToken is",
-    accessToken,
-    "\n--expiresAt is",
-    expiresAt,
-    "\n--refreshToken is",
-    refreshToken,
-  );
+  console.log("setAuthSession for request.url:", request.url);
 
   try {
     console.log("Set/update session");
@@ -79,16 +70,7 @@ export const getAuthData = async (
   const expiresAt = session.get("expiresAt");
   const refreshToken = session.get("refreshToken");
 
-  console.log(
-    "getAuthData for request.url:",
-    request.url,
-    "\n--accessToken is",
-    accessToken,
-    "\n--expiresAt is",
-    expiresAt,
-    "\n--refreshToken is",
-    refreshToken,
-  );
+  console.log("getAuthData for request.url:", request.url);
 
   if (!accessToken || expiresAt < Date.now()) {
     // if we need to refresh the token, we return the needed session cookie header
