@@ -1,5 +1,5 @@
-import { mockKomPlaIdPTokenExchange } from "../data/tokenExchange.js";
+import { mockTokenExchange } from "../data/tokenExchange.js";
 
 export const getAuthTokens = () => {
-  return mockKomPlaIdPTokenExchange;
+  return mockTokenExchange;
 };

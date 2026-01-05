@@ -1,4 +1,4 @@
-export const mockKomPlaIdPTokenExchange = {
+export const mockTokenExchange = {
   access_token: "xxx",
   expires_in: 300,
   refresh_expires_in: 1800,

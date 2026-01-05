@@ -1,5 +1,5 @@
 // fresh copy of GET /verfahren resonse from https://app.kompla-justiz.sinc.de/main/swagger/index.html
-export const verfahrenMockData = [
+export const mockVerfahren = [
   {
     id: "019abafa-7d81-75de-9550-3f29ff744915",
     aktenzeichen_gericht: "F 3374 09/2026",

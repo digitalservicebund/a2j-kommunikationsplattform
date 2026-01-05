@@ -1,11 +1,11 @@
-import { verfahrenMockData } from "../data/verfahren.js";
+import { mockVerfahren } from "../data/verfahren.js";
 
 export const getAllVerfahren = () => {
-  return verfahrenMockData;
+  return mockVerfahren;
 };
 
 export const getVerfahrenById = (id) => {
-  return verfahrenMockData.find((verfahren) => verfahren.id === id);
+  return mockVerfahren.find((verfahren) => verfahren.id === id);
 };
 
 export const filterVerfahrenByGericht = (verfahren, gerichtId) => {

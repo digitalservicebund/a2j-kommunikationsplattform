@@ -1,5 +1,5 @@
-import { gerichte } from "../data/gerichte.js";
+import { mockGerichte } from "../data/mockGerichte.js";
 
 export const getGerichte = () => {
-  return gerichte;
+  return mockGerichte;
 };
