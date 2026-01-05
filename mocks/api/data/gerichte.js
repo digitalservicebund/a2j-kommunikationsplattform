@@ -1,4 +1,4 @@
-// fresh copy of GET /verfahren response from https://app.kompla-justiz.sinc.de/develop/swagger/index.html
+// fresh copy of GET /verfahren response from https://app.kompla-justiz.sinc.de/main/swagger/index.html
 export const gerichte = [
   {
     id: "1e4d18ee-8101-9aed-1e7d-134ec4cb4531",
