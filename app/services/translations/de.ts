@@ -36,7 +36,8 @@ export const de = {
     LOGOUT_AUTOMATIC_MESSAGE:
       "Aus Sicherheitsgründen wurden Sie nach 60 Minuten Inaktivität automatisch abgemeldet. Bitte melden Sie sich erneut an.",
     LOGOUT_BY_USER_MESSAGE: "Erfolgreich abgemeldet",
-    LOGIN_ERROR_MESSAGE_BEA:
+    LOGIN_ERROR_BEA_TITLE: "Fehler bei der Anmeldung",
+    LOGIN_ERROR_BEA_MESSAGE:
       "Die Anmeldung über beA ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
     WORK_IN_PROGRESS_TITLE: "Work in progress",
     WORK_IN_PROGRESS_MESSAGE:

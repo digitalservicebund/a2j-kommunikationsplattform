@@ -20,10 +20,10 @@ const HeaderWrapper = ({ children }: { children: ReactNode }) => (
 export default function Header({
   userIsLoggedIn,
   isContentPage,
-}: {
+}: Readonly<{
   userIsLoggedIn: boolean;
   isContentPage: boolean;
-}) {
+}>) {
   const navigate = useNavigate();
   const { buttons } = useTranslations();
 

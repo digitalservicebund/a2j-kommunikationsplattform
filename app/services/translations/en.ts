@@ -38,7 +38,8 @@ export const en: Translations = {
     LOGOUT_AUTOMATIC_MESSAGE:
       "For security reasons, you have been automatically logged out after 60 minutes of inactivity. Please log in again.",
     LOGOUT_BY_USER_MESSAGE: "Successfully logged out",
-    LOGIN_ERROR_MESSAGE_BEA: "Login via beA failed. Please try again.",
+    LOGIN_ERROR_BEA_TITLE: "Error during login",
+    LOGIN_ERROR_BEA_MESSAGE: "Login via beA failed. Please try again.",
     WORK_IN_PROGRESS_TITLE: "Work in progress",
     WORK_IN_PROGRESS_MESSAGE:
       "This page is still under development. Layouts and displays may change at any time.",

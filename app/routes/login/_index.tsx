@@ -83,10 +83,10 @@ export default function LoginPage() {
               className="kern-icon kern-icon--danger kern-icon--small"
               aria-hidden
             ></span>
-            <span className="kern-title">Fehler bei der Anmeldung</span>
+            <span className="kern-title">{alerts.LOGIN_ERROR_BEA_TITLE}</span>
           </div>
           <div className="kern-alert__body">
-            <p className="kern-body">{alerts.LOGIN_ERROR_MESSAGE_BEA}</p>
+            <p className="kern-body">{alerts.LOGIN_ERROR_BEA_MESSAGE}</p>
           </div>
         </div>
       )}
