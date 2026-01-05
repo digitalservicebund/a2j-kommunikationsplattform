@@ -38,7 +38,7 @@ jobs:
 
       - name: Cache npm dependencies
         id: cache-npm-deps
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             **/node_modules
@@ -64,7 +64,7 @@ jobs:
 
       - name: Cache Playwright dependencies
         id: cache-playwright-deps
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
@@ -83,7 +83,7 @@ jobs:
           # See https://github.com/digitalservicebund/typescript-vite-application-template/actions/runs/3486985178/jobs/5834089375
           VITE_PORT: 4183
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: ${{ failure() }}
         with:
           name: playwright-a11y-test-results
@@ -91,7 +91,7 @@ jobs:
 
       - name: Cache Docker image
         id: cache-docker-image
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             /tmp/.docker-cache
@@ -138,7 +138,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Restore Docker image cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             /tmp/.docker-cache
@@ -246,7 +246,7 @@ jobs:
 
       - name: Cache npm dependencies
         id: cache-npm-deps
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             **/node_modules
@@ -260,7 +260,7 @@ jobs:
 
       - name: Cache Playwright dependencies
         id: cache-playwright-deps
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
@@ -277,7 +277,7 @@ jobs:
           HTTP_CREDENTIALS_PASSWORD: ${{ secrets.HTTP_CREDENTIALS_PASSWORD }}
         run: npm run test:e2e
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: ${{ failure() }}
         with:
           name: playwright-e2e-test-results

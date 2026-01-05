@@ -1,5 +1,5 @@
 import { authorizeToken } from "../api/authorizeToken.server";
-import { getUserSession } from "./session.server";
+import { getAuthData } from "./authSession.server";
 
 /**
  * getBearerToken
@@ -9,8 +9,8 @@ import { getUserSession } from "./session.server";
 export async function getBearerToken(request: Request): Promise<string> {
   console.log("getBearerToken");
 
-  const userSession = await getUserSession(request);
-  const accessToken = userSession.authenticationTokens.accessToken;
+  const authData = await getAuthData(request);
+  const accessToken = authData.authenticationTokens.accessToken;
   const token = await authorizeToken(accessToken);
   return token.access_token;
 }
