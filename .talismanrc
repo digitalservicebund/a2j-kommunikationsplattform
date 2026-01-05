@@ -4,7 +4,7 @@ fileignoreconfig:
   - filename: .github/workflows/pipeline.yml
     checksum: 85f02b3d97904e0d777e243ecf2502139a44a16e16790ac6e37adee141aaf363
   - filename: .env.example
-    checksum: 72ad061c28763fc8aaff5f65ec053b4dec6e5d5e71d509b52ba7c8223aadf9a4
+    checksum: e29ce44b8e2006a942f2b906507bf087ddb18bb55e24715ad2e653fecc5c4b2c
   - filename: package-lock.json
     checksum: a044669d1a393a3dd293d0db8656d69349d9d5f752ca371ca6a51d34c99b71c7
   - filename: .github/workflows/secrets-check.yml

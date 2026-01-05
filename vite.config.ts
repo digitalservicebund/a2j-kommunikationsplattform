@@ -45,8 +45,6 @@ export default defineConfig((config) => {
           "app/routes.ts",
           // exclude all files from constants directory
           "app/constants/**",
-          // exclude prototype files
-          "app/**/prototype.*.{ts,tsx}",
           // exclude mock files
           "app/mocks/**/*.{ts,tsx}",
         ],
