@@ -36,10 +36,10 @@ export default function LoginPage() {
     [LoginType.Developer]: buttons.LOGIN_BUTTON_DEVELOPER,
   };
 
-  return (
-    <>
-      <PageMetadata />
-      {alertStatus === LogoutType.Automatic && (
+  let alertMarkup = null;
+  switch (alertStatus) {
+    case LogoutType.Automatic:
+      alertMarkup = (
         <div
           className="kern-alert kern-alert--warning my-kern-space-default"
           role="alert"
@@ -55,9 +55,10 @@ export default function LoginPage() {
             <p className="kern-body">{alerts.LOGOUT_AUTOMATIC_MESSAGE}</p>
           </div>
         </div>
-      )}
-
-      {alertStatus === LogoutType.ByUser && (
+      );
+      break;
+    case LogoutType.ByUser:
+      alertMarkup = (
         <div
           className="kern-alert kern-alert--success my-kern-space-default"
           role="alert"
@@ -70,9 +71,10 @@ export default function LoginPage() {
             <span className="kern-title">{alerts.LOGOUT_BY_USER_MESSAGE}</span>
           </div>
         </div>
-      )}
-
-      {alertStatus === LoginError.BeA && (
+      );
+      break;
+    case LoginError.BeA:
+      alertMarkup = (
         <div
           className="kern-alert kern-alert--danger my-kern-space-default"
           role="alert"
@@ -88,56 +90,58 @@ export default function LoginPage() {
             <p className="kern-body">{alerts.LOGIN_ERROR_BEA_MESSAGE}</p>
           </div>
         </div>
-      )}
+      );
+      break;
+  }
 
-      <div className="pt-kern-space-default">
-        <div className="flex items-center justify-center">
-          <div className="max-w-[512px]">
-            <p className="kern-subline my-kern-space-default text-center">
-              {titles.WELCOME_TITLE}
-            </p>
+  return (
+    <>
+      <PageMetadata />
 
-            <Form method="post" action="/action/login-user">
-              <div className="py-kern-space-large gap-kern-space-default flex flex-row flex-wrap items-start self-stretch">
-                <input
-                  type="hidden"
-                  name="loginType"
-                  value={currentLoginType}
-                />
+      <div className="flex items-center justify-center">
+        <div className="max-w-[512px]">
+          {alertMarkup}
+
+          <p className="kern-subline my-kern-space-default text-center">
+            {titles.WELCOME_TITLE}
+          </p>
+
+          <Form method="post" action="/action/login-user">
+            <div className="py-kern-space-large gap-kern-space-default flex flex-row flex-wrap items-start self-stretch">
+              <input type="hidden" name="loginType" value={currentLoginType} />
+              <button
+                type="submit"
+                className="kern-btn kern-btn--block kern-btn--primary"
+              >
+                <span className="kern-label">
+                  {loginButtonLabels[currentLoginType]}
+                </span>
+              </button>
+
+              <button
+                className="kern-btn kern-btn--primary kern-btn--block"
+                disabled
+              >
+                <span className="kern-label">
+                  {buttons.LOGIN_BUTTON_GERICHTE}
+                </span>
+              </button>
+
+              {/* only render "Testzugang" demo link for non production environments */}
+              {environment !== "production" && (
                 <button
-                  type="submit"
-                  className="kern-btn kern-btn--block kern-btn--primary"
-                >
-                  <span className="kern-label">
-                    {loginButtonLabels[currentLoginType]}
-                  </span>
-                </button>
-
-                <button
-                  className="kern-btn kern-btn--primary kern-btn--block"
+                  className="kern-btn kern-btn--block kern-btn--secondary"
+                  data-testid="demo-button"
                   disabled
+                  aria-disabled={"true"}
                 >
                   <span className="kern-label">
-                    {buttons.LOGIN_BUTTON_GERICHTE}
+                    {buttons.LOGIN_BUTTON_TEST_ZUGANG}
                   </span>
                 </button>
-
-                {/* only render "Testzugang" demo link for non production environments */}
-                {environment !== "production" && (
-                  <button
-                    className="kern-btn kern-btn--block kern-btn--secondary"
-                    data-testid="demo-button"
-                    disabled
-                    aria-disabled={"true"}
-                  >
-                    <span className="kern-label">
-                      {buttons.LOGIN_BUTTON_TEST_ZUGANG}
-                    </span>
-                  </button>
-                )}
-              </div>
-            </Form>
-          </div>
+              )}
+            </div>
+          </Form>
         </div>
       </div>
     </>
