@@ -60,12 +60,12 @@ const Breadcrumb = ({ title, url, disabled }: Omit<BreadcrumbItem, "id">) => {
   return (
     <div className="gap-kern-space-small flex items-center">
       {disabled ? (
-        <p className="kern-body--muted">{title}</p>
+        <p className="kern-body kern-body--muted">{title}</p>
       ) : (
         <>
           <a
             href={url}
-            className="text-kern-layout-text-muted visited:text-kern-layout-text-muted no-underline hover:underline"
+            className="kern-body text-kern-layout-text-muted visited:text-kern-layout-text-muted no-underline hover:underline"
           >
             {title}
           </a>

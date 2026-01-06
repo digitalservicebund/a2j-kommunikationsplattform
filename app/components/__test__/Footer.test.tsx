@@ -7,14 +7,14 @@ import {
   renderWithTestTranslations,
 } from "tests/util/translationsUtil";
 import { it } from "vitest";
-import PageFooter from "../PageFooter";
+import Footer from "../Footer";
 
-describe("PageFooter", () => {
+describe("Footer", () => {
   const { labels, descriptions, contentLinkLabels } = getTestTranslations();
   it("should render a <nav/> with links and a project info", () => {
     const { getByLabelText, getByRole } = renderWithTestTranslations(
       <MemoryRouter>
-        <PageFooter />
+        <Footer />
       </MemoryRouter>,
     );
     // check if nav is being rendered

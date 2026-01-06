@@ -1,10 +1,13 @@
 import { Link } from "react-router";
 import { useTranslations } from "~/services/translations/context";
 
-export default function PageFooter() {
+export default function Footer() {
   const { labels, descriptions, contentLinkLabels } = useTranslations();
   return (
-    <footer className="mt-kern-space-x-large">
+    <footer className="kern-container">
+      <div className="py-kern-space-large">
+        <hr className="kern-divider" aria-hidden="true" />
+      </div>
       <nav
         className="gap-x-kern-space-default flex flex-row flex-wrap justify-between"
         aria-label={labels.FOOTER_ARIA_LABEL}

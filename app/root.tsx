@@ -2,7 +2,6 @@ import FiraSansMedium from "@kern-ux/native/dist/fonts/fira-sans/FiraSans-Medium
 import FiraSansRegular from "@kern-ux/native/dist/fonts/fira-sans/FiraSans-Regular.woff2?url";
 import FiraSansSemiBold from "@kern-ux/native/dist/fonts/fira-sans/FiraSans-SemiBold.woff2?url";
 import * as Sentry from "@sentry/react-router";
-import { ReactNode } from "react";
 import {
   data,
   Links,
@@ -15,18 +14,18 @@ import {
 } from "react-router";
 import { Breadcrumbs } from "~/components/Breadcrumbs";
 import ErrorBox from "~/components/ErrorBox";
-import Logo from "~/components/Logo.static";
-import PageFooter from "~/components/PageFooter";
 import { buildErrorContext } from "~/services/error/buildErrorContext";
 import { useNonce } from "~/services/security/nonce";
 import { dictionaries } from "~/services/translations";
 import { TranslationsContext } from "~/services/translations/context";
 import type { Route } from "./+types/root";
+import Footer from "./components/Footer";
 import Header from "./components/Header";
 import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
 import { config } from "./config/config";
-import { CONTENT_PAGES } from "./config/contentPages";
+import { META_PAGES } from "./config/contentPages";
 import { getAuthData } from "./services/auth/authSession.server";
+import de from "./services/translations/de";
 import styles from "./styles.css?url";
 
 export { headers } from "./rootHeaders";
@@ -36,9 +35,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const authData = await getAuthData(request);
   const userIsLoggedIn = Boolean(authData.authenticationTokens.accessToken);
   const pathname = new URL(request.url).pathname;
-  const isContentPage = CONTENT_PAGES.some(
-    (page) => `/${page.path}` === pathname,
-  );
+  const isContentPage = META_PAGES.some((page) => `/${page.path}` === pathname);
   return data({ userIsLoggedIn, isContentPage });
 };
 
@@ -68,12 +65,10 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
 ];
 
-export function Layout({ children }: { children: ReactNode }) {
-  const loaderData = useLoaderData<RootLoader>();
+export default function App() {
+  const { userIsLoggedIn, isContentPage } = useLoaderData<RootLoader>();
   const nonce = useNonce();
 
-  const userIsLoggedIn = loaderData?.userIsLoggedIn ?? false;
-  const isContentPage = loaderData?.isContentPage ?? false;
   return (
     <html lang="de">
       <head>
@@ -90,26 +85,25 @@ export function Layout({ children }: { children: ReactNode }) {
         />
       </head>
       <body>
-        <Header userIsLoggedIn={userIsLoggedIn} isContentPage={isContentPage} />
-        {children}
-        <ScrollRestoration nonce={nonce} />
-        <Scripts nonce={nonce} />
+        {/* we currently only support German, so we hardcode the dictionary to "de" here,
+        in the future we can do this dynamically via language detection, for example */}
+        <TranslationsContext.Provider value={dictionaries.de}>
+          <LogoutInactiveUserWrapper handleInactivity={userIsLoggedIn}>
+            <Header
+              userIsLoggedIn={userIsLoggedIn}
+              isContentPage={isContentPage}
+            />
+            <Breadcrumbs />
+            <main className="kern-container">
+              <Outlet />
+            </main>
+            <Footer />
+          </LogoutInactiveUserWrapper>
+          <ScrollRestoration nonce={nonce} />
+          <Scripts nonce={nonce} />
+        </TranslationsContext.Provider>
       </body>
     </html>
-  );
-}
-
-export default function App() {
-  const { userIsLoggedIn } = useLoaderData<RootLoader>();
-
-  return (
-    // we currently only support German, so we hardcode the dictionary here, but in the future we cab make this dynamic and correct language from the backend
-    <TranslationsContext.Provider value={dictionaries.de}>
-      <LogoutInactiveUserWrapper handleInactivity={userIsLoggedIn}>
-        <Breadcrumbs />
-        <Outlet />
-      </LogoutInactiveUserWrapper>
-    </TranslationsContext.Provider>
   );
 }
 
@@ -124,16 +118,23 @@ export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
   }
 
   return (
-    <main>
-      <div className="kern-container py-kern-space-large">
-        <div className="space-y-kern-space-large">
-          <Logo />
-          <hr className="kern-divider" aria-hidden="true" />
-          <ErrorBox {...errorContent} />
-          <hr className="kern-divider" aria-hidden="true" />
-        </div>
-        <PageFooter />
-      </div>
-    </main>
+    <html lang="de">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta property="og:type" content="website" />
+        <title>{de.titles.PLATFORM_TITLE}</title>
+        <Links />
+      </head>
+      <body>
+        <Header />
+        <main className="kern-container">
+          <div className="space-y-kern-space-large py-kern-space-large">
+            <ErrorBox {...errorContent} />
+          </div>
+        </main>
+        <Footer />
+      </body>
+    </html>
   );
 }

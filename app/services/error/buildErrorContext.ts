@@ -19,7 +19,8 @@ export function buildErrorContext(
   error: Route.ErrorBoundaryProps["error"],
   isDev: boolean,
 ): ErrorContext {
-  // load translations statically as, for some errors, useTranslations hook might not be reachable inside ErrorBoundary, eg when an error happens before App component mounts
+  // load translations statically, as in some errors the useTranslations hook within
+  // ErrorBoundary may not be reachable, e.g. if an error occurs before the app component mounts.
   const { errorMessages, labels } = dictionaries["de"];
 
   let errorContent: ErrorContent = {

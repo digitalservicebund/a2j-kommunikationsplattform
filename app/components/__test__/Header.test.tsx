@@ -61,9 +61,6 @@ describe("Header", () => {
         expect(container.querySelector(".kern-kopfzeile")).toBeInTheDocument();
       });
       it("should not render header's Logo, UserProfile or Navigation ", () => {
-        expect(
-          container.querySelector(".kern-icon--network_node"),
-        ).not.toBeInTheDocument();
         expect(container).not.toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
       });
     });
@@ -113,9 +110,6 @@ describe("Header", () => {
         expect(container.querySelector(".kern-kopfzeile")).toBeInTheDocument();
       });
       it("should render header's Logo, UserProfile or Navigation ", () => {
-        expect(
-          container.querySelector(".kern-icon--network_node"),
-        ).toBeInTheDocument();
         expect(container).toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
       });
     });

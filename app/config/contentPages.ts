@@ -1,4 +1,4 @@
-export const CONTENT_PAGES = [
+export const META_PAGES = [
   { path: "datenschutz", file: "./routes/datenschutz.tsx" },
   { path: "barrierefreiheit", file: "./routes/barrierefreiheit.tsx" },
   { path: "impressum", file: "./routes/impressum.tsx" },

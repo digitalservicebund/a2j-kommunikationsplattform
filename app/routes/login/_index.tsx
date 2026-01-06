@@ -1,5 +1,4 @@
 import { Form, redirect, useLoaderData, useSearchParams } from "react-router";
-import Logo from "~/components/Logo.static";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
 import { getAuthData } from "~/services/auth/authSession.server";
@@ -92,54 +91,53 @@ export default function LoginPage() {
       )}
 
       <div className="pt-kern-space-default">
-        {/* Target the first child element for centering */}
-        <div className="flex flex-col items-center text-center">
-          <Logo />
+        <div className="flex items-center justify-center">
+          <div className="max-w-[512px]">
+            <p className="kern-subline my-kern-space-default text-center">
+              {titles.WELCOME_TITLE}
+            </p>
 
-          <hr className="kern-divider mt-kern-space-default" aria-hidden />
-
-          <p className="kern-subline my-kern-space-default">
-            {titles.WELCOME_TITLE}
-          </p>
-
-          <Form method="post" action="/action/login-user">
-            <div className="py-kern-space-large gap-kern-space-default flex flex-row flex-wrap items-start self-stretch">
-              <input type="hidden" name="loginType" value={currentLoginType} />
-              <button
-                type="submit"
-                className="kern-btn kern-btn--block kern-btn--primary"
-              >
-                <span className="kern-label">
-                  {loginButtonLabels[currentLoginType]}
-                </span>
-              </button>
-
-              <button
-                className="kern-btn kern-btn--primary kern-btn--block"
-                disabled
-              >
-                <span className="kern-label">
-                  {buttons.LOGIN_BUTTON_GERICHTE}
-                </span>
-              </button>
-
-              {/* only render "Testzugang" demo link for non production environments */}
-              {environment !== "production" && (
+            <Form method="post" action="/action/login-user">
+              <div className="py-kern-space-large gap-kern-space-default flex flex-row flex-wrap items-start self-stretch">
+                <input
+                  type="hidden"
+                  name="loginType"
+                  value={currentLoginType}
+                />
                 <button
-                  className="kern-btn kern-btn--block kern-btn--secondary"
-                  data-testid="demo-button"
-                  disabled
-                  aria-disabled={"true"}
+                  type="submit"
+                  className="kern-btn kern-btn--block kern-btn--primary"
                 >
                   <span className="kern-label">
-                    {buttons.LOGIN_BUTTON_TEST_ZUGANG}
+                    {loginButtonLabels[currentLoginType]}
                   </span>
                 </button>
-              )}
-            </div>
-          </Form>
 
-          <hr className="kern-divider my-kern-space-default" aria-hidden />
+                <button
+                  className="kern-btn kern-btn--primary kern-btn--block"
+                  disabled
+                >
+                  <span className="kern-label">
+                    {buttons.LOGIN_BUTTON_GERICHTE}
+                  </span>
+                </button>
+
+                {/* only render "Testzugang" demo link for non production environments */}
+                {environment !== "production" && (
+                  <button
+                    className="kern-btn kern-btn--block kern-btn--secondary"
+                    data-testid="demo-button"
+                    disabled
+                    aria-disabled={"true"}
+                  >
+                    <span className="kern-label">
+                      {buttons.LOGIN_BUTTON_TEST_ZUGANG}
+                    </span>
+                  </button>
+                )}
+              </div>
+            </Form>
+          </div>
         </div>
       </div>
     </>

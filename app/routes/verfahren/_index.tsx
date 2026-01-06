@@ -89,7 +89,7 @@ export default function Verfahren() {
   return (
     <>
       <VerfahrenHeading />
-      <div className="my-kern-space-large space-y-kern-space-large flex flex-col">
+      <div className="mt-kern-space-large space-y-kern-space-large flex flex-col">
         <Suspense
           fallback={VERFAHREN_SKELETONS.map((s) => (
             <VerfahrenTileSkeleton key={s.id} />
