@@ -1,14 +1,20 @@
+import { href, Link } from "react-router";
 import { useTranslations } from "~/services/translations/context";
 
 export default function Logo() {
   const { labels } = useTranslations();
+
   return (
-    <div className="gap-kern-space-small flex flex-row flex-wrap items-center justify-center break-all">
+    <Link
+      to={href("/")}
+      className="gap-kern-space-small kern-heading-large flex flex-row items-center justify-center break-all no-underline hover:underline"
+      aria-label={labels.LOGO_ARIA_LABEL}
+    >
       <span
         className="kern-icon kern-icon--network_node kern-icon--large"
         aria-hidden
       />
-      <h1 className="kern-heading-large">{labels.LOGO_LABEL}</h1>
-    </div>
+      {labels.LOGO_LABEL}
+    </Link>
   );
 }
