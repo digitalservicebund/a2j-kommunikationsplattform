@@ -64,7 +64,6 @@ describe("Header", () => {
         expect(
           container.querySelector(".kern-icon--network_node"),
         ).not.toBeInTheDocument();
-        expect(container.querySelector("nav")).not.toBeInTheDocument();
         expect(container).not.toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
       });
     });
@@ -85,7 +84,6 @@ describe("Header", () => {
           container.querySelector(".kern-icon--network_node"),
         ).toBeInTheDocument();
         expect(container).toHaveTextContent(buttons.ANMELDEN_BUTTON);
-        expect(container.querySelector("nav")).not.toBeInTheDocument();
         expect(container).not.toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
       });
       it('should render Anmelden button and, when clicked, navigate to "/login" ', () => {
@@ -118,7 +116,6 @@ describe("Header", () => {
         expect(
           container.querySelector(".kern-icon--network_node"),
         ).toBeInTheDocument();
-        expect(container.querySelector("nav")).toBeInTheDocument();
         expect(container).toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
       });
     });
@@ -143,7 +140,6 @@ describe("Header", () => {
         expect(
           container.querySelector(".kern-icon--network_node"),
         ).toBeInTheDocument();
-        expect(container.querySelector("nav")).not.toBeInTheDocument();
         expect(container).not.toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
       });
       it("should render Zurück button and, when clicked, navigate back one step in history", () => {

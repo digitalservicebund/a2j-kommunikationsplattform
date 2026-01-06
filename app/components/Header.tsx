@@ -25,47 +25,49 @@ export default function Header({
   isContentPage: boolean;
 }>) {
   const navigate = useNavigate();
-  const { buttons } = useTranslations();
+  const { buttons, labels } = useTranslations();
 
   return (
     <header>
       <Kopfzeile />
-      {isContentPage ? (
-        <HeaderWrapper>
-          <div className="gap-kern-space-small flex flex-col items-center justify-between xl:flex-row">
-            <Logo />
-            {userIsLoggedIn ? (
-              <button
-                type="button"
-                className="kern-link cursor-pointer bg-transparent"
-                onClick={() => navigate(-1)}
-              >
-                <span className="kern-icon kern-icon--arrow-back kern-icon--default"></span>
-                <span>{buttons.BACK_BUTTON}</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="kern-link cursor-pointer bg-transparent"
-                onClick={() => navigate("/login")}
-              >
-                <span className="kern-icon kern-icon--logout kern-icon--default"></span>
-                <span>{buttons.ANMELDEN_BUTTON}</span>
-              </button>
-            )}
-          </div>
-        </HeaderWrapper>
-      ) : (
-        userIsLoggedIn && (
+      <nav aria-label={labels.HEADER_ARIA_LABEL}>
+        {isContentPage ? (
           <HeaderWrapper>
-            <UserProfile />
             <div className="gap-kern-space-small flex flex-col items-center justify-between xl:flex-row">
               <Logo />
-              <Navigation />
+              {userIsLoggedIn ? (
+                <button
+                  type="button"
+                  className="kern-link cursor-pointer bg-transparent"
+                  onClick={() => navigate(-1)}
+                >
+                  <span className="kern-icon kern-icon--arrow-back kern-icon--default"></span>
+                  <span>{buttons.BACK_BUTTON}</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="kern-link cursor-pointer bg-transparent"
+                  onClick={() => navigate("/login")}
+                >
+                  <span className="kern-icon kern-icon--logout kern-icon--default"></span>
+                  <span>{buttons.ANMELDEN_BUTTON}</span>
+                </button>
+              )}
             </div>
           </HeaderWrapper>
-        )
-      )}
+        ) : (
+          userIsLoggedIn && (
+            <HeaderWrapper>
+              <UserProfile />
+              <div className="gap-kern-space-small flex flex-col items-center justify-between xl:flex-row">
+                <Logo />
+                <Navigation />
+              </div>
+            </HeaderWrapper>
+          )
+        )}
+      </nav>
     </header>
   );
 }

@@ -40,26 +40,24 @@ export default function Navigation() {
     },
   ];
   return (
-    <nav>
-      <ul className="gap-kern-space-x-large my-0 list-none items-center justify-between pl-0 md:flex xl:flex-wrap">
-        {navigationLinksList.map((link) => (
-          <li key={link.name}>
-            <a
-              href={link.url}
-              className="kern-link visited:text-kern-action-default"
-            >
-              <span
-                className={`kern-icon ${link.iconName} bg-current`}
-                aria-hidden="true"
-              ></span>
-              {link.name}
-            </a>
-          </li>
-        ))}
-        <li>
-          <LogoutButton />
+    <ul className="gap-kern-space-x-large my-0 list-none items-center justify-between pl-0 md:flex xl:flex-wrap">
+      {navigationLinksList.map((link) => (
+        <li key={link.name}>
+          <a
+            href={link.url}
+            className="kern-link visited:text-kern-action-default"
+          >
+            <span
+              className={`kern-icon ${link.iconName} bg-current`}
+              aria-hidden="true"
+            ></span>
+            {link.name}
+          </a>
         </li>
-      </ul>
-    </nav>
+      ))}
+      <li>
+        <LogoutButton />
+      </li>
+    </ul>
   );
 }
