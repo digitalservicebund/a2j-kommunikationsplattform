@@ -52,6 +52,8 @@ export default function Header({
   // (4b)
   const platformNavigation = userIsLoggedIn ? <Navigation /> : null;
 
+  const isLoginPage = !isContentPage && !userIsLoggedIn;
+
   return (
     <header>
       {/* (1) */}
@@ -61,7 +63,9 @@ export default function Header({
           <div className="gap-kern-space-small pt-kern-space-large flex flex-col">
             {/* (2) */}
             {!isContentPage && userProfile}
-            <div className="gap-kern-space-small flex flex-col items-center justify-between xl:flex-row">
+            <div
+              className={`gap-kern-space-small flex flex-col justify-between xl:flex-row ${isLoginPage ? "self-center" : "items-center"}`}
+            >
               {/* (3) */}
               <Logo />
               {/* (4) */}
