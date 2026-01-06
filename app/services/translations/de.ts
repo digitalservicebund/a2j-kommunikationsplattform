@@ -54,6 +54,7 @@ export const de = {
       "Es konnten keine passenden Ergebnisse für Ihre Suche/Filtereinstellungen gefunden werden. Bitte überprüfen Sie Ihre Eingaben oder ändern Sie die Filter, um andere Ergebnisse zu sehen.",
   },
   labels: {
+    HEADER_ARIA_LABEL: "Hauptmenü",
     FOOTER_ARIA_LABEL: "Rechtliche und weiterführende Informationen",
     UEBERSICHT_LABEL: "Übersicht",
     VERFAHREN_LABEL: "Verfahren",
@@ -63,6 +64,7 @@ export const de = {
     DATEIANSICHT_LABEL: "Dateiansicht",
     KOPFZEILE_LABEL: "Offizielle Website – Bundesrepublik Deutschland",
     LOGO_LABEL: "Kommunikationsplattform",
+    LOGO_ARIA_LABEL: "Kommmunikationsplattform - Zurück zur Startseite",
     LOGGED_IN_AS_LABEL: "Angemeldet als:",
     TO_START_PAGE_LABEL: "Zur Startseite",
     CONTACT_SUPPORT_LABEL: "Kontaktieren Sie den Support",

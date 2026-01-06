@@ -54,6 +54,7 @@ export const en: Translations = {
       "No matching results could be found for your search/filter settings. Please check your entries or change the filters to see other results.",
   },
   labels: {
+    HEADER_ARIA_LABEL: "Main menu",
     FOOTER_ARIA_LABEL: "Legal and further information",
     UEBERSICHT_LABEL: "Overview",
     VERFAHREN_LABEL: "Cases",
@@ -63,6 +64,7 @@ export const en: Translations = {
     DATEIANSICHT_LABEL: "File view",
     KOPFZEILE_LABEL: "Official website – Federal Republic of Germany",
     LOGO_LABEL: "Kommunikationsplattform",
+    LOGO_ARIA_LABEL: "Kommmunikationsplattform - Back to home page",
     LOGGED_IN_AS_LABEL: "Logged in as:",
     TO_START_PAGE_LABEL: "Home",
     CONTACT_SUPPORT_LABEL: "Contact support",
