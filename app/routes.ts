@@ -1,5 +1,5 @@
 import { index, route, RouteConfig } from "@react-router/dev/routes";
-import { META_PAGES } from "./config/contentPages";
+import { META_PAGES } from "./config/metaPages";
 
 export default [
   // Kubernetes health check

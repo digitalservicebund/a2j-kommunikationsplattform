@@ -23,7 +23,7 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
 import { config } from "./config/config";
-import { META_PAGES } from "./config/contentPages";
+import { META_PAGES } from "./config/metaPages";
 import { getAuthData } from "./services/auth/authSession.server";
 import de from "./services/translations/de";
 import styles from "./styles.css?url";
