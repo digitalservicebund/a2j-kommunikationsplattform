@@ -80,10 +80,13 @@ export const en: Translations = {
     VERFAHREN_AKTENZEICHEN_ASC_LABEL: "Court case number (A↓Z)",
     VERFAHREN_AKTENZEICHEN_DESC_LABEL: "Court case number (Z↓A)",
   },
-  titles: {
+  routes: {
+    login: {
+      headline: "Login",
+      introduction:
+        "Welcome to the pilot platform for digital exchange between courts and parties involved in proceedings.",
+    },
     PLATFORM_TITLE: "Communication Platform | Justice Services",
-    WELCOME_TITLE:
-      "Welcome to the pilot platform for digital exchange between courts and parties involved in proceedings.",
     DATENSCHUTZ_TITLE: "Privacy Policy for the Website",
     WEITERE_INFORMATIONEN_TITLE: "Further Information",
     BARRIEREFREIHEIT_TITLE: "Accessibility Statement",

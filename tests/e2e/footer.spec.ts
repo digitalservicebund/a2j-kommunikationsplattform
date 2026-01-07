@@ -1,38 +1,38 @@
 import { expect, test } from "@playwright/test";
 import { getTestTranslations } from "tests/util/translationsUtil";
 
-const { contentLinkLabels, titles } = getTestTranslations();
+const { contentLinkLabels, routes } = getTestTranslations();
 
 const links = [
   {
     label: contentLinkLabels.DATENSCHUTZ_LINK_LABEL,
     url: "/datenschutz",
-    h1: titles.DATENSCHUTZ_TITLE,
+    h1: routes.DATENSCHUTZ_TITLE,
   },
   {
     label: contentLinkLabels.WEITERE_INFORMATIONEN_LINK_LABEL,
     url: "/weitere-informationen",
-    h1: titles.WEITERE_INFORMATIONEN_TITLE,
+    h1: routes.WEITERE_INFORMATIONEN_TITLE,
   },
   {
     label: contentLinkLabels.BARRIEREFREIHEIT_LINK_LABEL,
     url: "/barrierefreiheit",
-    h1: titles.BARRIEREFREIHEIT_TITLE,
+    h1: routes.BARRIEREFREIHEIT_TITLE,
   },
   {
     label: contentLinkLabels.HILFE_UND_KONTAKT_LINK_LABEL,
     url: "/hilfe-und-kontakt",
-    h1: titles.HILFE_UND_KONTAKT_TITLE,
+    h1: routes.HILFE_UND_KONTAKT_TITLE,
   },
   {
     label: contentLinkLabels.OPEN_SOURCE_CODE_LINK_LABEL,
     url: "/open-source",
-    h1: titles.OPEN_SOURCE_CODE_TITLE,
+    h1: routes.OPEN_SOURCE_CODE_TITLE,
   },
   {
     label: contentLinkLabels.IMPRESSUM_LINK_LABEL,
     url: "/impressum",
-    h1: titles.IMPRESSUM_TITLE,
+    h1: routes.IMPRESSUM_TITLE,
   },
 ];
 

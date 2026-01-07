@@ -2,9 +2,9 @@ import ContentPage from "~/components/ContentPage";
 import { useTranslations } from "~/services/translations/context";
 
 export default function HilfeUndKontaktPage() {
-  const { titles } = useTranslations();
+  const { routes } = useTranslations();
   return (
-    <ContentPage title={titles.HILFE_UND_KONTAKT_TITLE}>
+    <ContentPage title={routes.HILFE_UND_KONTAKT_TITLE}>
       <p className="kern-body kern-body--large">
         Donec sodales erat facilisis turpis hendrerit rhoncus. Donec vel
         sollicitudin diam, et dictum libero. In tempor sem sit amet efficitur

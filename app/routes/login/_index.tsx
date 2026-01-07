@@ -29,7 +29,7 @@ export default function LoginPage() {
   const alertStatus = searchParams.get("status") as AlertState;
   const isDevelopment = environment === "development";
   const currentLoginType = isDevelopment ? LoginType.Developer : LoginType.BeA;
-  const { alerts, buttons, titles } = useTranslations();
+  const { alerts, buttons, routes } = useTranslations();
 
   const loginButtonLabels: Record<LoginType, string> = {
     [LoginType.BeA]: buttons.LOGIN_BUTTON_BEA,
@@ -102,8 +102,12 @@ export default function LoginPage() {
         <div className="max-w-[512px]">
           {alertMarkup}
 
+          <h1 className="kern-heading-medium text-center">
+            {routes.login.headline}
+          </h1>
+
           <p className="kern-subline my-kern-space-default text-center">
-            {titles.WELCOME_TITLE}
+            {routes.login.introduction}
           </p>
 
           <Form method="post" action="/action/login-user">

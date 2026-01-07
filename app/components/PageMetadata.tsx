@@ -5,13 +5,16 @@ export type PageMetadataOptions = {
   description?: string;
 };
 
-export function PageMetadata({ title, description }: PageMetadataOptions) {
-  const { titles, descriptions } = useTranslations();
+export function PageMetadata({
+  title,
+  description,
+}: Readonly<PageMetadataOptions>) {
+  const { routes, descriptions } = useTranslations();
   function pageTitle(text?: string) {
     if (text) {
-      return `${text} | ${titles.PLATFORM_TITLE}`;
+      return `${text} | ${routes.PLATFORM_TITLE}`;
     } else {
-      return titles.PLATFORM_TITLE;
+      return routes.PLATFORM_TITLE;
     }
   }
   return (

@@ -2,9 +2,9 @@ import ContentPage from "~/components/ContentPage";
 import { useTranslations } from "~/services/translations/context";
 
 export default function DatenschutzPage() {
-  const { titles } = useTranslations();
+  const { routes } = useTranslations();
   return (
-    <ContentPage title={titles.DATENSCHUTZ_TITLE}>
+    <ContentPage title={routes.DATENSCHUTZ_TITLE}>
       <p className="kern-body kern-body--large">
         Nam non pulvinar enim. Nullam orci nunc, fermentum nec gravida sit amet,
         ultricies sed nibh. Aliquam commodo ultricies sodales. Nunc ligula

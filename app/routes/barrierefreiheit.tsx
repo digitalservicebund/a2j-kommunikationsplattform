@@ -2,9 +2,9 @@ import ContentPage from "~/components/ContentPage";
 import { useTranslations } from "~/services/translations/context";
 
 export default function BarrierefreiheitPage() {
-  const { titles } = useTranslations();
+  const { routes } = useTranslations();
   return (
-    <ContentPage title={titles.BARRIEREFREIHEIT_TITLE}>
+    <ContentPage title={routes.BARRIEREFREIHEIT_TITLE}>
       <p className="kern-body kern-body--large">
         Suspendisse et condimentum tellus. Etiam sagittis consectetur
         scelerisque. Mauris ut viverra ipsum, ac tincidunt nibh. Nam sit amet

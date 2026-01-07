@@ -4,12 +4,14 @@ import { LoginError } from "~/routes/action.login-user";
 import { LogoutType } from "~/routes/action.logout-user";
 
 test.describe("Homepage (_index route)", () => {
-  const { titles, buttons, alerts, errorMessages } = getTestTranslations();
+  const { routes, buttons, alerts, errorMessages } = getTestTranslations();
   test("has title, shows headline and introduction text", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveTitle("Kommunikationsplattform | Justiz-Services");
     await expect(page.locator("text=Kommunikationsplattform")).toBeVisible();
-    await expect(page.locator(`text=${titles.WELCOME_TITLE}`)).toBeVisible();
+    await expect(
+      page.locator(`text=${routes.login.introduction}`),
+    ).toBeVisible();
   });
 
   test('redirects to beA-Portal when using the "Anmeldung Anwaltschaft" login option', async ({

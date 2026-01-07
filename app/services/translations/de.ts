@@ -80,10 +80,13 @@ export const de = {
     VERFAHREN_AKTENZEICHEN_ASC_LABEL: "Aktenzeichen des Gerichts (A↓Z)",
     VERFAHREN_AKTENZEICHEN_DESC_LABEL: "Aktenzeichen des Gerichts (Z↓A)",
   },
-  titles: {
+  routes: {
+    login: {
+      headline: "Anmeldung",
+      introduction:
+        "Willkommen auf der Pilotplattform für den digitalen Austausch zwischen Gerichten und Verfahrensbeteiligten.",
+    },
     PLATFORM_TITLE: "Kommunikationsplattform | Justiz-Services",
-    WELCOME_TITLE:
-      "Willkommen auf der Pilotplattform für den digitalen Austausch zwischen Gerichten und Verfahrensbeteiligten.",
     DATENSCHUTZ_TITLE: "Datenschutzerklärung zur Webseite",
     WEITERE_INFORMATIONEN_TITLE: "Weitere Informationen",
     BARRIEREFREIHEIT_TITLE: "Erklärung zur Barrierefreiheit",

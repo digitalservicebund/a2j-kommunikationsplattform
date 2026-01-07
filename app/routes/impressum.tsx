@@ -2,9 +2,9 @@ import ContentPage from "~/components/ContentPage";
 import { useTranslations } from "~/services/translations/context";
 
 export default function ImpressumPage() {
-  const { titles } = useTranslations();
+  const { routes } = useTranslations();
   return (
-    <ContentPage title={titles.IMPRESSUM_TITLE}>
+    <ContentPage title={routes.IMPRESSUM_TITLE}>
       <p className="kern-body kern-body--large">
         Praesent non consectetur felis. Vestibulum vel vulputate urna.
       </p>

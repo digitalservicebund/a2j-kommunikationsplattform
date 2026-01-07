@@ -2,9 +2,9 @@ import ContentPage from "~/components/ContentPage";
 import { useTranslations } from "~/services/translations/context";
 
 export default function WeitereInformationenPage() {
-  const { titles } = useTranslations();
+  const { routes } = useTranslations();
   return (
-    <ContentPage title={titles.WEITERE_INFORMATIONEN_TITLE}>
+    <ContentPage title={routes.WEITERE_INFORMATIONEN_TITLE}>
       <p className="kern-body kern-body--large">
         Donec fermentum varius dui, vel congue risus maximus a. Ut vulputate,
         enim sit amet congue vulputate, orci enim condimentum velit.

@@ -2,9 +2,9 @@ import ContentPage from "~/components/ContentPage";
 import { useTranslations } from "~/services/translations/context";
 
 export default function OpenSourcePage() {
-  const { titles } = useTranslations();
+  const { routes } = useTranslations();
   return (
-    <ContentPage title={titles.OPEN_SOURCE_CODE_TITLE}>
+    <ContentPage title={routes.OPEN_SOURCE_CODE_TITLE}>
       <p className="kern-body kern-body--large">
         Fusce vitae augue arcu. Suspendisse ornare et tellus a pretium. Orci
         varius natoque penatibus et magnis dis parturient montes, nascetur
