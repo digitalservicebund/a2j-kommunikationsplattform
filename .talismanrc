@@ -66,7 +66,7 @@ fileignoreconfig:
   - filename: app/util/buildSearchParams.ts
     checksum: c94426c1e57f5b3e80979ca1408ff01b1b1d943e5b8941661122409200fd1dfa
   - filename: app/services/translations/de.ts
-    checksum: defd4b3fa7b0c7f709fc051f66a250ba8c6d385a457afca59556359023f130a9
+    checksum: ac6b06c0eed8b85ebb9aa016fb800a17c470172a02c8b2b989bf539dcebe81a3
   - filename: app/components/InputSelect.tsx
     checksum: ab11f4fee6731a474add62afe1ea117cc90e1bc78e1a294ba02a5d721a11c8ed
   - filename: app/components/hooks/useParamsState.ts
