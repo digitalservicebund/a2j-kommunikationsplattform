@@ -177,6 +177,21 @@ describe("oAuth.server", () => {
     expect(result.sessionCookieHeader).toBe("sc-header-2");
   });
 
+  it("refreshAccessToken throws when OAuth2Strategy.refreshToken fails", async () => {
+    oAuthMocks.refreshTokenMock.mockRejectedValue(new Error("refresh failed"));
+
+    const fakeRequest = new Request("https://example.test/refresh-fail");
+
+    await expect(
+      refreshAccessToken(fakeRequest, "bad-refresh-token"),
+    ).rejects.toThrow("Failed to refresh the access token");
+
+    expect(oAuthMocks.refreshTokenMock).toHaveBeenCalledWith(
+      "bad-refresh-token",
+    );
+    expect(setAuthSession).not.toHaveBeenCalled();
+  });
+
   it("revokeAccessToken succeeds when strategy resolves", async () => {
     oAuthMocks.revokeTokenMock.mockResolvedValue(undefined);
 
