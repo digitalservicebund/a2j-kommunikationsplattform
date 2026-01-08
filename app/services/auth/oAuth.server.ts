@@ -66,9 +66,16 @@ export async function refreshAccessToken(
   request: Request,
   refreshToken: string,
 ): Promise<AuthenticationResponse> {
-  console.log("refresh access token");
+  let newTokens;
 
-  const newTokens = await oauth2Strategy.refreshToken(refreshToken);
+  try {
+    console.log("refresh access token");
+    newTokens = await oauth2Strategy.refreshToken(refreshToken);
+  } catch (error) {
+    console.error("Error while refreshing the access token:", error);
+    throw new Error("Failed to refresh the access token");
+  }
+
   const refreshedTokenData = {
     accessToken: newTokens.accessToken(),
     refreshToken: newTokens.hasRefreshToken()
