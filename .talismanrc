@@ -72,9 +72,9 @@ fileignoreconfig:
   - filename: app/components/hooks/useParamsState.ts
     checksum: c0fe4e5fe632d1281551f4ecb473ec280c4e85cab0803fe71fe545ba38e44a2d
   - filename: app/services/auth/authSession.server.ts
-    checksum: 4e8037a51b3b3f1217c36813fe3172cffb250ffabff617cdb540443cea55e41a
+    checksum: 50bfe212080a1578c06ba9e64c6ea7e2db816a9131bcac4578a878eed1ed3fda
   - filename: app/services/auth/__test__/authSession.server.test.ts
-    checksum: 9cdd3f077cf9d2b14d80420133620e7519d81c102f21ffa7c08cd26bd0174845
+    checksum: 102852b8db58d0e3e5670fa747c63c21516472287b6c79a32777ff8e60506062
 
 version: ""
 scopeconfig:
