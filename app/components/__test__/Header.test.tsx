@@ -8,17 +8,6 @@ import {
 import { beforeEach, it, vi } from "vitest";
 import Header from "~/components/Header";
 
-vi.mock("react-router", async () => {
-  const actual =
-    await vi.importActual<typeof import("react-router")>("react-router");
-  return {
-    ...actual,
-    Form: ({ children, ...props }: React.ComponentProps<"form">) => (
-      <form {...props}>{children}</form>
-    ),
-  };
-});
-
 const mockNavigate = vi.fn();
 vi.mock("react-router", async () => {
   const actual =
