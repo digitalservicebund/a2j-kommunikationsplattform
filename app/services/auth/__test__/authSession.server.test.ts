@@ -63,8 +63,6 @@ async function withMocks({
     }),
     commitSession: vi.fn(async () => "mock-set-cookie=1"),
     destroySession: vi.fn(async () => {}),
-    navigate: vi.fn(),
-    useNavigate: vi.fn(() => reactRouterMock.navigate),
   };
 
   interface SessionStore {
