@@ -1,4 +1,4 @@
-import { createCookieSessionStorage, useNavigate } from "react-router";
+import { createCookieSessionStorage, redirect } from "react-router";
 import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
 import { LogoutType } from "~/routes/action.logout-user";
@@ -74,23 +74,27 @@ export const getAuthData = async (
   console.log("getAuthData for request.url:", request.url);
 
   if (!accessToken || expiresAt < Date.now()) {
-    const navigate = useNavigate();
     // If a token refresh is not successful, we log the person out of
-    // the app. Example use case: a token expired after a user has been
-    // locked his screen for longer then 2 hours. Session will be
-    // destroyed within "action.logout-user.ts".
+    // the app. Example use case: A token expires after a user has
+    // locked their screen for more than two hours. Session will be
+    // destroyed similar to "action.logout-user.ts".
     if (refreshToken) {
       try {
         console.log("try to refresh the access token");
         const response = await refreshAccessToken(request, refreshToken);
         return response;
       } catch (error) {
-        console.error("access token refresh did not work", error);
+        console.error(
+          "access token refresh not possible, redirect user to login and destroy the session",
+          error,
+        );
+        throw redirect(`/login?status=${LogoutType.Automatic}`, {
+          headers: {
+            "Set-Cookie": await destroySession(session),
+          },
+        });
       }
     }
-
-    console.log("user will be logged out");
-    navigate(`/login?status=${LogoutType.Automatic}`);
   }
 
   return {

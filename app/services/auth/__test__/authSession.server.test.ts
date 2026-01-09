@@ -89,6 +89,14 @@ async function withMocks({
     destroySession: () => Promise<void>;
   }
 
+  const redirectError = (url: string, init?: ResponseInit) => {
+    const error = new Error(`redirect to ${url}`) as any;
+    error.status = 302;
+    error.location = url;
+    error.init = init;
+    return error;
+  };
+
   vi.doMock("react-router", () => ({
     createCookieSessionStorage: (
       options: CookieSessionStorageOptions,
@@ -100,7 +108,9 @@ async function withMocks({
         destroySession: reactRouterMock.destroySession,
       };
     },
-    useNavigate: reactRouterMock.useNavigate,
+    redirect: vi.fn((url: string, init?: ResponseInit) =>
+      redirectError(url, init),
+    ),
   }));
 
   // mock oAuth helpers used by authSession.server
@@ -227,51 +237,31 @@ describe("authSession.server", () => {
     restore();
   });
 
-  it("getAuthData handles token refresh error by logging it via console.error and navigating the user back to the login page", async () => {
+  it("getAuthData handles token refresh errors via login page redirect and destroys session", async () => {
     const { module, mocks, reactRouterMock, restore } = await withMocks();
     mocks.refreshAccessTokenMock.mockImplementationOnce(async () => {
       throw new Error("Refresh token expired");
     });
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
     const cookie = `accessToken=tok; expiresAt=${pastTs()}; refreshToken=expired`;
     const req = new Request(requestURL, { headers: { Cookie: cookie } });
-    const res = await module.getAuthData(req);
+    await expect(module.getAuthData(req)).rejects.toThrow("redirect to");
     expect(mocks.refreshAccessTokenMock).toHaveBeenCalledWith(req, "expired");
     expect(errSpy).toHaveBeenCalledWith(
-      "access token refresh did not work",
+      "access token refresh not possible, redirect user to login and destroy the session",
       expect.any(Error),
     );
-    expect(logSpy).toHaveBeenCalledWith("user will be logged out");
-    expect(reactRouterMock.useNavigate).toHaveBeenCalled();
-    expect(reactRouterMock.navigate).toHaveBeenCalledWith(
-      "/login?status=auto-logged-out",
-    );
-    expect(res).toEqual({
-      authenticationTokens: {
-        accessToken: "tok",
-        expiresAt: expect.any(Number),
-        refreshToken: "expired",
-      },
-      sessionCookieHeader: "",
-    });
+    expect(reactRouterMock.destroySession).toHaveBeenCalled();
     errSpy.mockRestore();
-    logSpy.mockRestore();
     restore();
   });
 
-  it("getAuthData skips token refresh when access token is expired and refreshToken is missing", async () => {
-    const { module, mocks, reactRouterMock, restore } = await withMocks();
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+  it("getAuthData returns current token data when a token is expired and no refreshToken available", async () => {
+    const { module, mocks, restore } = await withMocks();
     const cookie = `accessToken=tok; expiresAt=${pastTs()}`;
     const req = new Request(requestURL, { headers: { Cookie: cookie } });
     const res = await module.getAuthData(req);
     expect(mocks.refreshAccessTokenMock).not.toHaveBeenCalled();
-    expect(logSpy).toHaveBeenCalledWith("user will be logged out");
-    expect(reactRouterMock.useNavigate).toHaveBeenCalled();
-    expect(reactRouterMock.navigate).toHaveBeenCalledWith(
-      "/login?status=auto-logged-out",
-    );
     expect(res).toEqual({
       authenticationTokens: {
         accessToken: "tok",
@@ -280,7 +270,6 @@ describe("authSession.server", () => {
       },
       sessionCookieHeader: "",
     });
-    logSpy.mockRestore();
     restore();
   });
 });
