@@ -213,13 +213,14 @@ jobs:
     needs: build-and-push-image # Will only run if the build and push job succeded
     steps:
       - name: Deploy latest container image
-        uses: digitalservicebund/argocd-deploy@4fac1bb67c92ed168f6d9b22f8779ce241a9e412 # v1.0.0
+        uses: digitalservicebund/argocd-deploy@4e758f584953506c571951ffcba33d6a6246e856 # v1.0.0
         with:
           environment: staging
           version: ${{ env.CONTAINER_IMAGE_VERSION }}
           deploying_repo: ${{ github.event.repository.name }}
           infra_repo: ${{ github.event.repository.name }}-infra
-          deploy_key: ${{ secrets.DEPLOY_KEY }}
+          github_app_id: ${{ secrets.GITOPS_A2J_APP_ID }}
+          github_app_private_key: ${{ secrets.GITOPS_A2J_APP_PRIVATE_KEY }}
           app: ${{ github.event.repository.name }}-staging
           argocd_pipeline_password: ${{ secrets.ARGOCD_PIPELINE_PASSWORD }}
           argocd_server: ${{ secrets.ARGOCD_SERVER }}
