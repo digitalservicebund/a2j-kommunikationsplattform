@@ -17,7 +17,7 @@ export default defineConfig((config) => {
         {
           authToken: process.env.SENTRY_AUTH_TOKEN,
           org: "digitalservice",
-          project: "a2j_kompla",
+          project: "a2j-kompla",
         },
         config,
       ),
