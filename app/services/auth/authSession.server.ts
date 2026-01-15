@@ -87,15 +87,13 @@ export const getAuthData = async (
 
   // Token expired but no refresh token available
   if (!refreshToken) {
+    console.log("No refresh token available, destroying session");
     await destroySession(session);
     return null;
   }
 
-  // Try to refresh the token
+  // Try to refresh the token (production only)
   try {
-    if (config().ENVIRONMENT === "development") {
-      return await refreshTokensDev(request);
-    }
     return await refreshAccessToken(request, refreshToken);
   } catch (error) {
     console.error("Token refresh failed, destroying session", error);
@@ -103,18 +101,4 @@ export const getAuthData = async (
       headers: { "Set-Cookie": await destroySession(session) },
     });
   }
-};
-
-const refreshTokensDev = async (
-  request: Request,
-): Promise<AuthenticationResponse> => {
-  const tokens = {
-    accessToken: "dev-access-token-refreshed",
-    expiresAt: Date.now() + 60 * 1000,
-    refreshToken: "dev-refresh-token-refreshed",
-  };
-
-  const sessionCookieHeader = await setAuthSession({ ...tokens, request });
-
-  return { authenticationTokens: tokens, sessionCookieHeader };
 };
