@@ -217,7 +217,7 @@ describe("authSession.server", () => {
     restore();
   });
 
-  it("getAuthData calls refreshAccessToken when expired and a refreshToken is available (production)", async () => {
+  it("getAuthData calls refreshAccessToken when expired and a refreshToken is available", async () => {
     const refreshResponse = {
       authenticationTokens: {
         accessToken: "new",
@@ -226,10 +226,7 @@ describe("authSession.server", () => {
       },
       sessionCookieHeader: "hdr",
     };
-    const { module, mocks, restore } = await withMocks({
-      env: "production",
-      refreshResponse,
-    });
+    const { module, mocks, restore } = await withMocks({ refreshResponse });
     const cookie = `accessToken=tok; expiresAt=${pastTs()}; refreshToken=present`;
     const req = new Request(requestURL, { headers: { Cookie: cookie } });
     const res = await module.getAuthData(req);
@@ -239,9 +236,7 @@ describe("authSession.server", () => {
   });
 
   it("getAuthData handles token refresh errors via login page redirect and destroys session", async () => {
-    const { module, mocks, reactRouterMock, restore } = await withMocks({
-      env: "production",
-    });
+    const { module, mocks, reactRouterMock, restore } = await withMocks();
     mocks.refreshAccessTokenMock.mockImplementationOnce(async () => {
       throw new Error("Refresh token expired");
     });
@@ -259,10 +254,8 @@ describe("authSession.server", () => {
     restore();
   });
 
-  it("getAuthData returns null and destroys session when token expired and no refreshToken (production)", async () => {
-    const { module, mocks, reactRouterMock, restore } = await withMocks({
-      env: "production",
-    });
+  it("getAuthData returns null and destroys session when token expired and no refreshToken", async () => {
+    const { module, mocks, reactRouterMock, restore } = await withMocks();
     const cookie = `accessToken=tok; expiresAt=${pastTs()}`;
     const req = new Request(requestURL, { headers: { Cookie: cookie } });
     const res = await module.getAuthData(req);
