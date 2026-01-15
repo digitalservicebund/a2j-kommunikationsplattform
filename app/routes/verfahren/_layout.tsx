@@ -12,6 +12,7 @@ export const handle: MatchHandle = {
 
 export const middleware: Route.MiddlewareFunction[] = [
   async ({ request, context }, next) => {
+    console.log("MIDDLEWARE FILTER:", request.url);
     const authSession = await getAuthData(request);
 
     if (!authSession) {
@@ -23,7 +24,13 @@ export const middleware: Route.MiddlewareFunction[] = [
     const response = await next();
 
     if (authSession.sessionCookieHeader) {
-      response.headers.append("Set-Cookie", authSession.sessionCookieHeader);
+      const newResponse = new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: new Headers(response.headers),
+      });
+      newResponse.headers.append("Set-Cookie", authSession.sessionCookieHeader);
+      return newResponse;
     }
 
     return response;
