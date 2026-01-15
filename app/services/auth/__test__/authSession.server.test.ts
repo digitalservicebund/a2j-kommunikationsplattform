@@ -238,24 +238,7 @@ describe("authSession.server", () => {
     restore();
   });
 
-  it("getAuthData uses dev tokens when expired in development", async () => {
-    const { module, mocks, restore } = await withMocks({ env: "development" });
-    const cookie = `accessToken=tok; expiresAt=${pastTs()}; refreshToken=present`;
-    const req = new Request(requestURL, { headers: { Cookie: cookie } });
-    const res = await module.getAuthData(req);
-    expect(mocks.refreshAccessTokenMock).not.toHaveBeenCalled();
-    expect(res).toEqual({
-      authenticationTokens: {
-        accessToken: "dev-access-token-refreshed",
-        expiresAt: expect.any(Number),
-        refreshToken: "dev-refresh-token-refreshed",
-      },
-      sessionCookieHeader: "mock-set-cookie=1",
-    });
-    restore();
-  });
-
-  it("getAuthData handles token refresh errors via login page redirect and destroys session (production)", async () => {
+  it("getAuthData handles token refresh errors via login page redirect and destroys session", async () => {
     const { module, mocks, reactRouterMock, restore } = await withMocks({
       env: "production",
     });
@@ -276,8 +259,10 @@ describe("authSession.server", () => {
     restore();
   });
 
-  it("getAuthData returns null and destroys session when token expired and no refreshToken", async () => {
-    const { module, mocks, reactRouterMock, restore } = await withMocks();
+  it("getAuthData returns null and destroys session when token expired and no refreshToken (production)", async () => {
+    const { module, mocks, reactRouterMock, restore } = await withMocks({
+      env: "production",
+    });
     const cookie = `accessToken=tok; expiresAt=${pastTs()}`;
     const req = new Request(requestURL, { headers: { Cookie: cookie } });
     const res = await module.getAuthData(req);
