@@ -65,6 +65,10 @@ export const setAuthSession = async ({
 export const getAuthData = async (
   request: Request,
 ): Promise<AuthenticationResponse | null> => {
+  // If a token refresh is not successful, we log the person out of
+  // the app. Example use case: A token expires after a user has
+  // locked their screen for more than two hours. Session will be
+  // destroyed similar to "action.logout-user.ts".
   const session = await getSession(request.headers.get("Cookie"));
 
   const accessToken = session.get("accessToken");
