@@ -33,7 +33,7 @@ export type RootLoader = typeof loader;
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const authData = await getAuthData(request);
-  const userIsLoggedIn = Boolean(authData.authenticationTokens.accessToken);
+  const userIsLoggedIn = Boolean(authData);
   const pathname = new URL(request.url).pathname;
   const isContentPage = META_PAGES.some((page) => `/${page.path}` === pathname);
   return data({ userIsLoggedIn, isContentPage });

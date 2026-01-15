@@ -1,25 +1,7 @@
-import {
-  href,
-  LoaderFunctionArgs,
-  redirect,
-  useLoaderData,
-} from "react-router";
+import { LoaderFunctionArgs, useLoaderData } from "react-router";
 import { MatchHandle } from "~/components/Breadcrumbs";
-import { getAuthData } from "~/services/auth/authSession.server";
 
-export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  // @TODO start: solve via middleware https://digitalservicebund.atlassian.net/browse/KOMMPLA-941
-  const authData = await getAuthData(request);
-  const userIsLoggedIn = Boolean(authData.authenticationTokens.accessToken);
-
-  if (!userIsLoggedIn) {
-    console.log(
-      `No active auth data found on "${request.url}" request. Redirecting to login route.`,
-    );
-    throw redirect(href("/login"));
-  }
-  // @TODO end
-
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { id, dokumentId } = params;
   return { id, dokumentId };
 };

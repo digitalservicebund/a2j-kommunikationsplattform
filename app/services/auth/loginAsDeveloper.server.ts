@@ -5,7 +5,8 @@ export const loginAsDeveloper = async (request: Request) => {
     console.log("loginAsDeveloper");
 
     const devAccessToken = "dev-access-token";
-    const expiresAt = Date.now() + 60 * 60 * 1000 * 24 * 14; // 14 days
+    // const expiresAt = Date.now() + 60 * 60 * 1000 * 24 * 14; // 14 days
+    const expiresAt = Date.now() + 60 * 1000; // 1 minute for testing
     const devRefreshToken = "dev-refresh-token";
     const sessionCookieHeader = await setAuthSession({
       accessToken: devAccessToken,
