@@ -1,4 +1,4 @@
-import { Outlet, redirect } from "react-router";
+import { href, Outlet, redirect } from "react-router";
 import { MatchHandle } from "~/components/Breadcrumbs";
 import { authContext } from "~/services/auth/auth.context";
 import { getAuthData } from "~/services/auth/authSession.server";
@@ -12,10 +12,11 @@ export const handle: MatchHandle = {
 
 export const middleware: Route.MiddlewareFunction[] = [
   async ({ request, context }, next) => {
-    console.log("MW TRIGGERED FOR VERFAHREN LAYOUT");
     const authSession = await getAuthData(request);
 
-    if (!authSession) throw redirect("/login");
+    if (!authSession) {
+      throw redirect(href("/login"));
+    }
 
     context.set(authContext, authSession);
 

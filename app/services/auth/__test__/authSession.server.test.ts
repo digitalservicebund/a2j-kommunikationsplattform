@@ -217,7 +217,7 @@ describe("authSession.server", () => {
     restore();
   });
 
-  it("getAuthData calls refreshAccessToken when expired and a refreshToken is available", async () => {
+  it("getAuthData calls refreshAccessToken when expired and a refreshToken is available (production)", async () => {
     const refreshResponse = {
       authenticationTokens: {
         accessToken: "new",
@@ -226,7 +226,10 @@ describe("authSession.server", () => {
       },
       sessionCookieHeader: "hdr",
     };
-    const { module, mocks, restore } = await withMocks({ refreshResponse });
+    const { module, mocks, restore } = await withMocks({
+      env: "production",
+      refreshResponse,
+    });
     const cookie = `accessToken=tok; expiresAt=${pastTs()}; refreshToken=present`;
     const req = new Request(requestURL, { headers: { Cookie: cookie } });
     const res = await module.getAuthData(req);
@@ -235,8 +238,27 @@ describe("authSession.server", () => {
     restore();
   });
 
-  it("getAuthData handles token refresh errors via login page redirect and destroys session", async () => {
-    const { module, mocks, reactRouterMock, restore } = await withMocks();
+  it("getAuthData uses dev tokens when expired in development", async () => {
+    const { module, mocks, restore } = await withMocks({ env: "development" });
+    const cookie = `accessToken=tok; expiresAt=${pastTs()}; refreshToken=present`;
+    const req = new Request(requestURL, { headers: { Cookie: cookie } });
+    const res = await module.getAuthData(req);
+    expect(mocks.refreshAccessTokenMock).not.toHaveBeenCalled();
+    expect(res).toEqual({
+      authenticationTokens: {
+        accessToken: "dev-access-token-refreshed",
+        expiresAt: expect.any(Number),
+        refreshToken: "dev-refresh-token-refreshed",
+      },
+      sessionCookieHeader: "mock-set-cookie=1",
+    });
+    restore();
+  });
+
+  it("getAuthData handles token refresh errors via login page redirect and destroys session (production)", async () => {
+    const { module, mocks, reactRouterMock, restore } = await withMocks({
+      env: "production",
+    });
     mocks.refreshAccessTokenMock.mockImplementationOnce(async () => {
       throw new Error("Refresh token expired");
     });
@@ -246,7 +268,7 @@ describe("authSession.server", () => {
     await expect(module.getAuthData(req)).rejects.toThrow("redirect to");
     expect(mocks.refreshAccessTokenMock).toHaveBeenCalledWith(req, "expired");
     expect(errSpy).toHaveBeenCalledWith(
-      "access token refresh not possible, redirect user to login and destroy the session",
+      "Token refresh failed, destroying session",
       expect.any(Error),
     );
     expect(reactRouterMock.destroySession).toHaveBeenCalled();
@@ -254,20 +276,23 @@ describe("authSession.server", () => {
     restore();
   });
 
-  it("getAuthData returns current token data when a token is expired and no refreshToken available", async () => {
-    const { module, mocks, restore } = await withMocks();
+  it("getAuthData returns null and destroys session when token expired and no refreshToken", async () => {
+    const { module, mocks, reactRouterMock, restore } = await withMocks();
     const cookie = `accessToken=tok; expiresAt=${pastTs()}`;
     const req = new Request(requestURL, { headers: { Cookie: cookie } });
     const res = await module.getAuthData(req);
     expect(mocks.refreshAccessTokenMock).not.toHaveBeenCalled();
-    expect(res).toEqual({
-      authenticationTokens: {
-        accessToken: "tok",
-        expiresAt: expect.any(Number),
-        refreshToken: undefined,
-      },
-      sessionCookieHeader: "",
-    });
+    expect(res).toBeNull();
+    expect(reactRouterMock.destroySession).toHaveBeenCalled();
+    restore();
+  });
+
+  it("getAuthData returns null and destroys session when no tokens at all", async () => {
+    const { module, reactRouterMock, restore } = await withMocks();
+    const req = new Request(requestURL, { headers: { Cookie: "" } });
+    const res = await module.getAuthData(req);
+    expect(res).toBeNull();
+    expect(reactRouterMock.destroySession).toHaveBeenCalled();
     restore();
   });
 });
