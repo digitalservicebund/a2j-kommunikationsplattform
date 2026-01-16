@@ -15,23 +15,23 @@ export async function authMiddleware(
   { request, context }: MiddlewareArgs,
   next: () => Promise<Response>,
 ) {
-  const authSession = await getAuthData(request);
+  const authData = await getAuthData(request);
 
-  if (!authSession) {
+  if (!authData) {
     throw redirect(href("/login"));
   }
 
-  context.set(authContext, authSession);
+  context.set(authContext, authData);
 
   const response = await next();
 
-  if (authSession.sessionCookieHeader) {
+  if (authData.sessionCookieHeader) {
     const newResponse = new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
       headers: new Headers(response.headers),
     });
-    newResponse.headers.append("Set-Cookie", authSession.sessionCookieHeader);
+    newResponse.headers.append("Set-Cookie", authData.sessionCookieHeader);
     return newResponse;
   }
 

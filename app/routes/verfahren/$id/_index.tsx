@@ -8,6 +8,7 @@ import fetchVerfahrenById from "~/services/verfahren/fetchVerfahrenById.server";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { id } = params;
+
   if (!id) {
     throw new Error("No Verfahren ID provided in params");
   }
