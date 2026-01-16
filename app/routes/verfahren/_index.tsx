@@ -1,11 +1,5 @@
 import { Suspense } from "react";
-import {
-  Await,
-  href,
-  LoaderFunctionArgs,
-  redirect,
-  useLoaderData,
-} from "react-router";
+import { Await, LoaderFunctionArgs, useLoaderData } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
@@ -19,7 +13,6 @@ import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMor
 import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/config/verfahren";
 import { VERFAHREN_SKELETONS } from "~/config/verfahrenSkeletons";
 import { GerichtDTO, VerfahrenSchema } from "~/models/VerfahrenSchema";
-import { getAuthData } from "~/services/auth/authSession.server";
 import { useTranslations } from "~/services/translations/context";
 import fetchGerichteService from "~/services/verfahren/fetchGerichte.service";
 import fetchVerfahren from "~/services/verfahren/fetchVerfahren.server";
@@ -38,18 +31,6 @@ export type LoaderData = {
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  // @TODO start: solve via middleware https://digitalservicebund.atlassian.net/browse/KOMMPLA-941
-  const authData = await getAuthData(request);
-  const userIsLoggedIn = Boolean(authData.authenticationTokens.accessToken);
-
-  if (!userIsLoggedIn) {
-    console.log(
-      `No active auth data found on "${request.url}" request. Redirecting to login route.`,
-    );
-    throw redirect(href("/login"));
-  }
-  // @TODO end
-
   const url = new URL(request.url);
   const offset = Number(url.searchParams.get("offset") || "0");
   const gericht = url.searchParams.get("gericht");

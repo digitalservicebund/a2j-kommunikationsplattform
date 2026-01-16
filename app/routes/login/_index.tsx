@@ -14,11 +14,12 @@ type AlertState =
   | LoginError.BeA;
 
 export async function loader({ request }: { request: Request }) {
-  const authData = await getAuthData(request);
-  const userIsLoggedIn = Boolean(authData.authenticationTokens.accessToken);
+  const userIsLoggedIn = await getAuthData(request);
+
   if (userIsLoggedIn) {
     throw redirect("/");
   }
+
   const environment = config().ENVIRONMENT;
   return { environment };
 }

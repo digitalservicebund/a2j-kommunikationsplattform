@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import express from "express";
 import morgan from "morgan";
 import logger from "pino-http";
+import { RouterContextProvider } from "react-router";
 
 /**
  * @see: https://github.com/dotenv-org/examples/blob/master/usage/dotenv-express/index.mjs
@@ -51,7 +52,10 @@ const viteDevServer = isProduction
 const reactRouterHandler = createRequestHandler({
   build: viteDevServer
     ? () => viteDevServer.ssrLoadModule("virtual:react-router/server-build")
-    : await import("./build/server/index.js"),
+    : () => import("./build/server/index.js"),
+  getLoadContext() {
+    return new RouterContextProvider();
+  },
 });
 
 const app = express();
