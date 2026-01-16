@@ -12,7 +12,6 @@ import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
 import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
 import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/config/verfahren";
 import { VERFAHREN_SKELETONS } from "~/config/verfahrenSkeletons";
-import { authContext } from "~/middleware/auth.server";
 import { GerichtDTO, VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { useTranslations } from "~/services/translations/context";
 import fetchGerichteService from "~/services/verfahren/fetchGerichte.service";
@@ -31,10 +30,7 @@ export type LoaderData = {
   gerichte: Gericht[];
 };
 
-export const loader = async ({ request, context }: LoaderFunctionArgs) => {
-  console.log("context in verfahren loader", context.get(authContext));
-  const headersCookie = request.headers.get("Cookie") || "";
-  console.log("headersCookie in verfahren loader", headersCookie);
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const offset = Number(url.searchParams.get("offset") || "0");
   const gericht = url.searchParams.get("gericht");
