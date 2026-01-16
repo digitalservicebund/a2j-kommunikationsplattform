@@ -14,9 +14,9 @@ type AlertState =
   | LoginError.BeA;
 
 export async function loader({ request }: { request: Request }) {
-  const authData = await getAuthData(request);
+  const userIsLoggedIn = await getAuthData(request);
 
-  if (authData) {
+  if (userIsLoggedIn) {
     throw redirect("/");
   }
 
