@@ -234,12 +234,13 @@ jobs:
     permissions:
       contents: read
     concurrency: deploy
+    environment: staging
     needs: [build-and-push-image] # Will only run if the build and push job succeded
     steps:
       - name: Deploy latest container image to StackIT
         uses: digitalservicebund/argocd-deploy@auth-token # Use the auth-token branch for STACKIT
         with:
-          environment: staging
+          environment: staging-stackit
           version: ${{ env.CONTAINER_IMAGE_VERSION }}
           deploying_repo: ${{ env.CONTAINER_SHORT_IMAGE_NAME }}
           infra_repo: ${{ github.event.repository.name }}-infra
