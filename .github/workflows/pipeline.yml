@@ -11,6 +11,7 @@ on:
 env:
   IMAGE_NAME: ${{ github.repository }}
   CONTAINER_IMAGE_VERSION: ${{ github.sha }}
+  CONTAINER_SHORT_IMAGE_NAME: kompla
 
 jobs:
   sonarqube:
@@ -209,6 +210,7 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     permissions:
       contents: read
+    concurrency: deploy
     environment: staging
     needs: build-and-push-image # Will only run if the build and push job succeded
     steps:
@@ -225,6 +227,28 @@ jobs:
           argocd_pipeline_password: ${{ secrets.ARGOCD_PIPELINE_PASSWORD }}
           argocd_server: ${{ secrets.ARGOCD_SERVER }}
           argocd_sync_timeout: 600
+
+  deploy-staging-stackit:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    permissions:
+      contents: read
+    concurrency: deploy
+    environment: staging
+    needs: [build-and-push-image] # Will only run if the build and push job succeded
+    steps:
+      - name: Deploy latest container image to StackIT
+        uses: digitalservicebund/argocd-deploy@auth-token # Use the auth-token branch for STACKIT
+        with:
+          environment: staging
+          version: ${{ env.CONTAINER_IMAGE_VERSION }}
+          deploying_repo: ${{ env.CONTAINER_SHORT_IMAGE_NAME }}
+          infra_repo: ${{ github.event.repository.name }}-infra
+          github_app_private_key: ${{ secrets.GITOPS_A2J_APP_PRIVATE_KEY }}
+          github_app_id: ${{ secrets.GITOPS_A2J_APP_ID }}
+          app: a2j-kompla-staging
+          argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
+          argocd_server: ${{ secrets.ARGOCD_SERVER_STACKIT }}
 
   e2e-test-staging:
     runs-on: ubuntu-latest
