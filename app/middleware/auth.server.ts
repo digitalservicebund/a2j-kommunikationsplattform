@@ -26,13 +26,15 @@ export async function authMiddleware(
   const response = await next();
 
   if (authData.sessionCookieHeader) {
-    const newResponse = new Response(response.body, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: new Headers(response.headers),
+    // Cloning response so that it can be read multiple times
+    const clonedResponse = response.clone();
+    const newHeaders = new Headers(clonedResponse.headers);
+    newHeaders.append("Set-Cookie", authData.sessionCookieHeader);
+    return new Response(clonedResponse.body, {
+      status: clonedResponse.status,
+      statusText: clonedResponse.statusText,
+      headers: newHeaders,
     });
-    newResponse.headers.append("Set-Cookie", authData.sessionCookieHeader);
-    return newResponse;
   }
 
   return response;
