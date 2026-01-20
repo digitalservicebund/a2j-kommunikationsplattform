@@ -210,6 +210,7 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     permissions:
       contents: read
+    concurrency: deploy
     environment: staging
     needs: build-and-push-image # Will only run if the build and push job succeded
     steps:
