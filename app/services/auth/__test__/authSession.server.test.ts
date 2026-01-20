@@ -254,7 +254,7 @@ describe("authSession.server", () => {
     restore();
   });
 
-  it("getAuthData returns null and destroys session when token expired and no refreshToken", async () => {
+  it("getAuthData returns null and destroys session when token expired", async () => {
     const { module, mocks, reactRouterMock, restore } = await withMocks();
     const cookie = `accessToken=tok; expiresAt=${pastTs()}`;
     const req = new Request(requestURL, { headers: { Cookie: cookie } });
@@ -265,9 +265,19 @@ describe("authSession.server", () => {
     restore();
   });
 
-  it("getAuthData returns null and destroys session when no tokens at all", async () => {
+  it("getAuthData returns null and destroys session when no access token", async () => {
     const { module, reactRouterMock, restore } = await withMocks();
-    const req = new Request(requestURL, { headers: { Cookie: "" } });
+    const cookie = `expiresAt=${futureTs()}; refreshToken=ref`;
+    const req = new Request(requestURL, { headers: { Cookie: cookie } });
+    const res = await module.getAuthData(req);
+    expect(res).toBeNull();
+    expect(reactRouterMock.destroySession).toHaveBeenCalled();
+    restore();
+  });
+  it("getAuthData returns null and destroys session when no refresh token", async () => {
+    const { module, reactRouterMock, restore } = await withMocks();
+    const cookie = `accessToken=tok; expiresAt=${futureTs()}`;
+    const req = new Request(requestURL, { headers: { Cookie: cookie } });
     const res = await module.getAuthData(req);
     expect(res).toBeNull();
     expect(reactRouterMock.destroySession).toHaveBeenCalled();
