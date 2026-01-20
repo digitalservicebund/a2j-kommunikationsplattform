@@ -34,9 +34,6 @@ export type RootLoader = typeof loader;
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const authData = await getAuthData(request);
   const userIsLoggedIn = Boolean(authData);
-  console.log("authData", JSON.stringify(authData));
-  console.log("Boolean(authData)", Boolean(authData));
-  console.log("userIsLoggedIn", userIsLoggedIn);
   const pathname = new URL(request.url).pathname;
   const isContentPage = META_PAGES.some((page) => `/${page.path}` === pathname);
   return data({ userIsLoggedIn, isContentPage });

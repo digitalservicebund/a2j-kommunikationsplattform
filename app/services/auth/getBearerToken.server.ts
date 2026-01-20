@@ -12,8 +12,7 @@ export async function getBearerToken(request: Request): Promise<string> {
   const authData = await getAuthData(request);
 
   if (!authData) {
-    // throw new Error("No auth data available");
-    return "";
+    throw new Error("No auth data available");
   }
 
   const accessToken = authData.authenticationTokens.accessToken;
