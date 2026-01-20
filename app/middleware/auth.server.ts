@@ -25,16 +25,29 @@ export async function authMiddleware(
 
   const response = await next();
 
+  console.log(
+    "Middleware: sessionCookieHeader =",
+    authData.sessionCookieHeader ? "present" : "empty",
+  );
+
   if (authData.sessionCookieHeader) {
-    // Cloning response so that it can be read multiple times
-    const clonedResponse = response.clone();
-    const newHeaders = new Headers(clonedResponse.headers);
-    newHeaders.append("Set-Cookie", authData.sessionCookieHeader);
-    return new Response(clonedResponse.body, {
-      status: clonedResponse.status,
-      statusText: clonedResponse.statusText,
-      headers: newHeaders,
-    });
+    // Try to modify headers directly in next() response first
+    try {
+      response.headers.append("Set-Cookie", authData.sessionCookieHeader);
+      console.log("Middleware: appended cookie directly to response.headers");
+      return response;
+    } catch (e) {
+      // If headers are immutable, create a new Response
+      console.log("Middleware: headers immutable, creating new Response", e);
+      // Headers are immutable, need to create a new Response
+      const newHeaders = new Headers(response.headers);
+      newHeaders.append("Set-Cookie", authData.sessionCookieHeader);
+      return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: newHeaders,
+      });
+    }
   }
 
   return response;
