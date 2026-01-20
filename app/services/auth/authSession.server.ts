@@ -76,7 +76,10 @@ export const getAuthData = async (
   const refreshToken = session.get("refreshToken");
 
   // No tokens at all - not authenticated
-  if (!accessToken && !refreshToken) {
+  if (!accessToken || !refreshToken) {
+    console.log(
+      "No valid access or refresh token available, destroying session",
+    );
     await destroySession(session);
     return null;
   }
@@ -87,13 +90,6 @@ export const getAuthData = async (
       authenticationTokens: { accessToken, expiresAt, refreshToken },
       sessionCookieHeader: "",
     };
-  }
-
-  // Token expired but no refresh token available
-  if (!refreshToken) {
-    console.log("No refresh token available, destroying session");
-    await destroySession(session);
-    return null;
   }
 
   // Try to refresh the token (production only)
