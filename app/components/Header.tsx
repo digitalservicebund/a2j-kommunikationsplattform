@@ -52,7 +52,6 @@ export default function Header({
   // (4b)
   const platformNavigation = userIsLoggedIn ? <Navigation /> : null;
 
-  console.log("userIsLoggedIn", userIsLoggedIn);
   const isLoginPage = !isContentPage && !userIsLoggedIn;
 
   return (
