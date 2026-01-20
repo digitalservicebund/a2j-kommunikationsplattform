@@ -8,7 +8,7 @@ type FetchVerfahrenByIdOptions = {
 
 const errorMessage = "Das Verfahren konnte nicht abgerufen werden.";
 
-export default async function (
+export default async function fetchVerfahrenById(
   request: Request,
   options: FetchVerfahrenByIdOptions,
 ) {
