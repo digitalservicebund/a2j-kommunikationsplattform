@@ -59,50 +59,46 @@ export const setAuthSession = async ({
 };
 
 /**
- * We retrieve the authentication data from the request headers and
- * ensure that the access token is not expired.
+ * Retrieves authentication data from the session cookie.
+ * Returns null if no valid session exists, allowing middleware to handle redirects.
  */
 export const getAuthData = async (
   request: Request,
-): Promise<AuthenticationResponse> => {
+): Promise<AuthenticationResponse | null> => {
+  // If a token refresh is not successful, we log the person out of
+  // the app. Example use case: A token expires after a user has
+  // locked their screen for more than two hours. Session will be
+  // destroyed similar to "action.logout-user.ts".
   const session = await getSession(request.headers.get("Cookie"));
 
   const accessToken = session.get("accessToken");
   const expiresAt = session.get("expiresAt");
   const refreshToken = session.get("refreshToken");
 
-  console.log("getAuthData for request.url:", request.url);
-
-  if (!accessToken || expiresAt < Date.now()) {
-    // If a token refresh is not successful, we log the person out of
-    // the app. Example use case: A token expires after a user has
-    // locked their screen for more than two hours. Session will be
-    // destroyed similar to "action.logout-user.ts".
-    if (refreshToken) {
-      try {
-        console.log("try to refresh the access token");
-        const response = await refreshAccessToken(request, refreshToken);
-        return response;
-      } catch (error) {
-        console.error(
-          "access token refresh not possible, redirect user to login and destroy the session",
-          error,
-        );
-        throw redirect(`/login?status=${LogoutType.Automatic}`, {
-          headers: {
-            "Set-Cookie": await destroySession(session),
-          },
-        });
-      }
-    }
+  // No tokens at all - not authenticated
+  if (!accessToken || !refreshToken) {
+    console.log(
+      "No valid access or refresh token available, destroying session",
+    );
+    await destroySession(session);
+    return null;
   }
 
-  return {
-    authenticationTokens: {
-      accessToken,
-      expiresAt,
-      refreshToken,
-    },
-    sessionCookieHeader: "",
-  };
+  // Token still valid
+  if (accessToken && expiresAt > Date.now()) {
+    return {
+      authenticationTokens: { accessToken, expiresAt, refreshToken },
+      sessionCookieHeader: "",
+    };
+  }
+
+  // Try to refresh the token (production only)
+  try {
+    return await refreshAccessToken(request, refreshToken);
+  } catch (error) {
+    console.error("Token refresh failed, destroying session", error);
+    throw redirect(`/login?status=${LogoutType.Automatic}`, {
+      headers: { "Set-Cookie": await destroySession(session) },
+    });
+  }
 };
