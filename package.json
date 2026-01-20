@@ -64,9 +64,9 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
-    "@vitest/coverage-istanbul": "^3.2.4",
+    "@vitest/coverage-istanbul": "^4.0.17",
     "@vitest/eslint-plugin": "^1.5.4",
-    "@vitest/expect": "^3.2.4",
+    "@vitest/expect": "^4.0.17",
     "eslint": "^9.38.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.4.0",
@@ -81,7 +81,7 @@
     "typescript-eslint": "^8.46.2",
     "vite": "^7.3.0",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.17"
   },
   "overrides": {
     "glob": "11.1.0",
