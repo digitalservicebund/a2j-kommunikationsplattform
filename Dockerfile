@@ -11,7 +11,7 @@ FROM scratch
 FROM alpine-upgraded AS build-dependencies
 
 WORKDIR /build-deps
-COPY package.json package-lock.json tsconfig.json vite.config.ts ./
+COPY package.json package-lock.json tsconfig.json vite.config.ts react-router.config.ts ./
 COPY app ./app/
 COPY public ./public/
 
