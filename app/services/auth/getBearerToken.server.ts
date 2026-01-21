@@ -1,18 +1,19 @@
 import { authorizeToken } from "../api/authorizeToken.server";
-import type { AuthenticationResponse } from "./oAuth.server";
+import { getAuthData } from "./authSession.server";
 
 /**
  * getBearerToken
  *
- * Uses auth data from middleware context instead of re-fetching from session.
- * This prevents double token refresh attempts when the token no,
- *
  * @see: https://sergiodxa.com/articles/working-with-refresh-tokens-in-remix
  */
-export async function getBearerToken(
-  authData: AuthenticationResponse,
-): Promise<string> {
+export async function getBearerToken(request: Request): Promise<string> {
   console.log("getBearerToken");
+
+  const authData = await getAuthData(request);
+
+  if (!authData) {
+    throw new Error("No auth data available");
+  }
 
   const accessToken = authData.authenticationTokens.accessToken;
   const token = await authorizeToken(accessToken);

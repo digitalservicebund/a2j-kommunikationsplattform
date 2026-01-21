@@ -3,23 +3,17 @@ import { Await, LoaderFunctionArgs, useLoaderData } from "react-router";
 import Alert from "~/components/Alert";
 import VerfahrenTileSkeleton from "~/components/skeletons/VerfahrenTileSkeleton.static";
 import VerfahrenTile from "~/components/verfahren/VerfahrenTile";
-import { authContext } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 import fetchVerfahrenById from "~/services/verfahren/fetchVerfahrenById.server";
 
-export const loader = async ({ context, params }: LoaderFunctionArgs) => {
-  const authData = context.get(authContext);
-  if (!authData) {
-    throw new Error("No auth data in context");
-  }
-
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { id } = params;
 
   if (!id) {
     throw new Error("No Verfahren ID provided in params");
   }
 
-  const dataPromise = fetchVerfahrenById(authData, { id });
+  const dataPromise = fetchVerfahrenById(request, { id });
 
   return {
     data: dataPromise,

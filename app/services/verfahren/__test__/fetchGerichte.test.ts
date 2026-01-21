@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 import fetchGerichte from "~/services/verfahren/fetchGerichte.service";
 
 const mocks = vi.hoisted(() => {
@@ -14,15 +13,6 @@ vi.mock("~/services/auth/getBearerToken.server", () => ({
 }));
 
 global.fetch = mocks.fetch;
-
-const mockAuthData: AuthenticationResponse = {
-  authenticationTokens: {
-    accessToken: "user-access-token",
-    expiresAt: Date.now() + 60000,
-    refreshToken: "refresh-token",
-  },
-  sessionCookieHeader: "",
-};
 
 describe("fetchGerichte", () => {
   const originalEnv = process.env.KOMPLA_API_URL;
@@ -51,7 +41,8 @@ describe("fetchGerichte", () => {
       json: async () => mockGerichte,
     });
 
-    const result = await fetchGerichte(mockAuthData);
+    const mockRequest = new Request("http://localhost:3000");
+    const result = await fetchGerichte(mockRequest);
 
     expect(mocks.fetch).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/gerichte",
@@ -68,7 +59,9 @@ describe("fetchGerichte", () => {
   it("throws error when bearer token is not available", async () => {
     mocks.getBearerToken.mockResolvedValue(null);
 
-    await expect(fetchGerichte(mockAuthData)).rejects.toThrow(
+    const mockRequest = new Request("http://localhost:3000");
+
+    await expect(fetchGerichte(mockRequest)).rejects.toThrow(
       "No bearer token available",
     );
   });
@@ -81,7 +74,9 @@ describe("fetchGerichte", () => {
       statusText: "Not Found",
     });
 
-    await expect(fetchGerichte(mockAuthData)).rejects.toThrow(
+    const mockRequest = new Request("http://localhost:3000");
+
+    await expect(fetchGerichte(mockRequest)).rejects.toThrow(
       "Die Daten für das ausgewählte Gericht konnten nicht abgerufen werden",
     );
   });
@@ -93,7 +88,9 @@ describe("fetchGerichte", () => {
       json: async () => [{ invalid: true }],
     });
 
-    await expect(fetchGerichte(mockAuthData)).rejects.toThrow(
+    const mockRequest = new Request("http://localhost:3000");
+
+    await expect(fetchGerichte(mockRequest)).rejects.toThrow(
       "Die Daten für das ausgewählte Gericht konnten nicht abgerufen werden",
     );
   });
@@ -105,7 +102,8 @@ describe("fetchGerichte", () => {
       json: async () => [],
     });
 
-    const result = await fetchGerichte(mockAuthData);
+    const mockRequest = new Request("http://localhost:3000");
+    const result = await fetchGerichte(mockRequest);
 
     expect(result).toEqual([]);
   });

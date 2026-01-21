@@ -1,7 +1,6 @@
 import { serverConfig } from "~/config/config.server";
 import { VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 
 type FetchVerfahrenByIdOptions = {
   id: string;
@@ -10,10 +9,10 @@ type FetchVerfahrenByIdOptions = {
 const errorMessage = "Das Verfahren konnte nicht abgerufen werden.";
 
 export default async function fetchVerfahrenById(
-  authData: AuthenticationResponse,
+  request: Request,
   options: FetchVerfahrenByIdOptions,
 ) {
-  const bearerToken = await getBearerToken(authData);
+  const bearerToken = await getBearerToken(request);
   const url = `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren/${options.id}`;
 
   const response = await fetch(url, {

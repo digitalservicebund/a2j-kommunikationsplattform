@@ -3,7 +3,6 @@ import { serverConfig } from "~/config/config.server";
 import { sortOptions } from "~/config/verfahren";
 import { VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 import { buildSearchParams } from "~/util/buildSearchParams";
 
 const fetchVerfahrenOptionsSchema = z.object({
@@ -21,10 +20,10 @@ export type FetchVerfahrenOptions = z.infer<typeof fetchVerfahrenOptionsSchema>;
 const ERROR_MESSAGE = "Die Verfahren konnten nicht abgerufen werden.";
 
 export default async function fetchVerfahren(
-  authData: AuthenticationResponse,
+  request: Request,
   options?: FetchVerfahrenOptions,
 ) {
-  const bearerToken = await getBearerToken(authData);
+  const bearerToken = await getBearerToken(request);
 
   if (!bearerToken) {
     throw new Error("No bearer token available");
