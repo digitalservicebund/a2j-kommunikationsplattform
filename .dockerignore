@@ -13,3 +13,4 @@
 !tsconfig.json
 !postcss.config.mjs
 !vite.config.ts
+!react-router.config.ts
