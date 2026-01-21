@@ -15,6 +15,7 @@ export async function authMiddleware(
   { request, context }: MiddlewareArgs,
   next: () => Promise<Response>,
 ) {
+  console.log("Middleware triggered for:", request.url);
   const authData = await getAuthData(request);
 
   if (!authData) {
