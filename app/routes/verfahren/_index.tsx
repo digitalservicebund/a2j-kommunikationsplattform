@@ -12,6 +12,7 @@ import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
 import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
 import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/config/verfahren";
 import { VERFAHREN_SKELETONS } from "~/config/verfahrenSkeletons";
+import { authContext } from "~/middleware/auth.server";
 import { GerichtDTO, VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { useTranslations } from "~/services/translations/context";
 import fetchGerichteService from "~/services/verfahren/fetchGerichte.service";
@@ -30,7 +31,12 @@ export type LoaderData = {
   gerichte: Gericht[];
 };
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request, context }: LoaderFunctionArgs) => {
+  const authData = context.get(authContext);
+  if (!authData) {
+    throw new Error("No auth data in context");
+  }
+
   const url = new URL(request.url);
   const offset = Number(url.searchParams.get("offset") || "0");
   const gericht = url.searchParams.get("gericht");
@@ -40,7 +46,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   console.log("search_text", search_text);
   // Fetch verfahren with one extra item to determine if there are more items
   const verfahrenPromise: Promise<VerfahrenLoaderData> = (async () => {
-    const verfahren = await fetchVerfahren(request, {
+    const verfahren = await fetchVerfahren(authData, {
       limit: VERFAHREN_PAGE_LIMIT + 1,
       offset,
       gericht,
@@ -56,7 +62,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return { items, hasMoreItems };
   })();
 
-  const gerichte = await fetchGerichteService(request);
+  const gerichte = await fetchGerichteService(authData);
 
   return {
     verfahren: verfahrenPromise,
