@@ -32,23 +32,13 @@ export async function authMiddleware(
   );
 
   if (authData.sessionCookieHeader) {
-    // Try to modify headers directly in next() response first
-    try {
-      response.headers.append("Set-Cookie", authData.sessionCookieHeader);
-      console.log("Middleware: appended cookie directly to response.headers");
-      return response;
-    } catch (e) {
-      // If headers are immutable, create a new Response
-      console.log("Middleware: headers immutable, creating new Response", e);
-      // Headers are immutable, need to create a new Response
-      const newHeaders = new Headers(response.headers);
-      newHeaders.append("Set-Cookie", authData.sessionCookieHeader);
-      return new Response(response.body, {
-        status: response.status,
-        statusText: response.statusText,
-        headers: newHeaders,
-      });
-    }
+    const newResponse = new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: new Headers(response.headers),
+    });
+    newResponse.headers.append("Set-Cookie", authData.sessionCookieHeader);
+    return newResponse;
   }
 
   return response;
