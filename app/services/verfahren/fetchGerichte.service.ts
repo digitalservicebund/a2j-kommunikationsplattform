@@ -2,13 +2,12 @@ import z from "zod";
 import { serverConfig } from "~/config/config.server";
 import { CodeWertSchema } from "~/models/VerfahrenSchema";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 
 const errorMessage =
   "Die Daten für das ausgewählte Gericht konnten nicht abgerufen werden.";
 
-export default async function fetchGerichte(authData: AuthenticationResponse) {
-  const bearerToken = await getBearerToken(authData);
+export default async function fetchGerichte(request: Request) {
+  const bearerToken = await getBearerToken(request);
 
   if (!bearerToken) {
     throw new Error("No bearer token available");

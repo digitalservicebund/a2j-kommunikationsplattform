@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, it, vi } from "vitest";
 import { sortOptions } from "~/config/verfahren";
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 import fetchVerfahren from "../fetchVerfahren.server";
 
 const mocks = vi.hoisted(() => {
@@ -15,15 +14,6 @@ vi.mock("~/services/auth/getBearerToken.server", () => ({
 }));
 
 global.fetch = mocks.fetch;
-
-const mockAuthData: AuthenticationResponse = {
-  authenticationTokens: {
-    accessToken: "user-access-token",
-    expiresAt: Date.now() + 60000,
-    refreshToken: "refresh-token",
-  },
-  sessionCookieHeader: "",
-};
 
 describe("fetchVerfahren", () => {
   const originalEnv = process.env.KOMPLA_API_URL;
@@ -60,7 +50,8 @@ describe("fetchVerfahren", () => {
       json: async () => mockVerfahren,
     });
 
-    const result = await fetchVerfahren(mockAuthData, {
+    const mockRequest = new Request("http://localhost:3000");
+    const result = await fetchVerfahren(mockRequest, {
       limit: 99,
       offset: 123,
       search_text: "test-search",
@@ -89,7 +80,9 @@ describe("fetchVerfahren", () => {
       json: async () => [{ invalid: true }],
     });
 
-    const result = fetchVerfahren(mockAuthData, { sort: sortOptions[0].value });
+    const mockRequest = new Request("http://localhost:3000");
+
+    const result = fetchVerfahren(mockRequest, { sort: sortOptions[0].value });
 
     expect(result).rejects.toThrow(
       "Die Verfahren konnten nicht abgerufen werden.",
@@ -99,7 +92,9 @@ describe("fetchVerfahren", () => {
   it("throws error when bearer token is not available", async () => {
     mocks.getBearerToken.mockResolvedValue(null);
 
-    const result = fetchVerfahren(mockAuthData);
+    const mockRequest = new Request("http://localhost:3000");
+
+    const result = fetchVerfahren(mockRequest);
 
     expect(result).rejects.toThrow("No bearer token available");
   });
@@ -112,7 +107,9 @@ describe("fetchVerfahren", () => {
       statusText: "Internal Server Error",
     });
 
-    const result = fetchVerfahren(mockAuthData);
+    const mockRequest = new Request("http://localhost:3000");
+
+    const result = fetchVerfahren(mockRequest);
 
     expect(result).rejects.toThrow(
       "Die Verfahren konnten nicht abgerufen werden.",
@@ -127,7 +124,8 @@ describe("fetchVerfahren", () => {
         json: async () => [],
       });
 
-      await fetchVerfahren(mockAuthData, {
+      const mockRequest = new Request("http://localhost:3000");
+      await fetchVerfahren(mockRequest, {
         gericht: "b727131c-0c32-91ba-3eaa-f44405967b6d",
         limit: 99,
         offset: 123,
@@ -147,7 +145,8 @@ describe("fetchVerfahren", () => {
         ok: true,
         json: async () => [],
       });
-      await fetchVerfahren(mockAuthData, { gericht: null });
+      const mockRequest = new Request("http://localhost:3000");
+      await fetchVerfahren(mockRequest, { gericht: null });
       expect(mocks.fetch).toHaveBeenCalledWith(
         expect.not.stringContaining("gericht="),
         expect.any(Object),
@@ -156,8 +155,9 @@ describe("fetchVerfahren", () => {
 
     it("rejects invalid UUID in gericht parameter", async () => {
       mocks.getBearerToken.mockResolvedValue("test-token");
+      const mockRequest = new Request("http://localhost:3000");
 
-      const result = fetchVerfahren(mockAuthData, {
+      const result = fetchVerfahren(mockRequest, {
         gericht: "invalid-uuid",
       });
 
@@ -171,7 +171,8 @@ describe("fetchVerfahren", () => {
         json: async () => [],
       });
 
-      await fetchVerfahren(mockAuthData, {
+      const mockRequest = new Request("http://localhost:3000");
+      await fetchVerfahren(mockRequest, {
         sort: sortOptions[1].value,
       });
 
@@ -188,7 +189,8 @@ describe("fetchVerfahren", () => {
         ok: true,
         json: async () => [],
       });
-      await fetchVerfahren(mockAuthData, { sort: "" });
+      const mockRequest = new Request("http://localhost:3000");
+      await fetchVerfahren(mockRequest, { sort: "" });
       expect(mocks.fetch).toHaveBeenCalledWith(
         expect.not.stringContaining("sort="),
         expect.any(Object),
@@ -196,8 +198,9 @@ describe("fetchVerfahren", () => {
     });
     it("rejects invalid sort parameter", async () => {
       mocks.getBearerToken.mockResolvedValue("test-token");
+      const mockRequest = new Request("http://localhost:3000");
 
-      const result = fetchVerfahren(mockAuthData, {
+      const result = fetchVerfahren(mockRequest, {
         sort: "invalid-sort-value",
       });
 
@@ -210,7 +213,8 @@ describe("fetchVerfahren", () => {
         json: async () => [],
       });
 
-      await fetchVerfahren(mockAuthData, {
+      const mockRequest = new Request("http://localhost:3000");
+      await fetchVerfahren(mockRequest, {
         search_text: "legal case",
       });
 
@@ -225,7 +229,8 @@ describe("fetchVerfahren", () => {
         ok: true,
         json: async () => [],
       });
-      await fetchVerfahren(mockAuthData, { search_text: null });
+      const mockRequest = new Request("http://localhost:3000");
+      await fetchVerfahren(mockRequest, { search_text: null });
       expect(mocks.fetch).toHaveBeenCalledWith(
         expect.not.stringContaining("search_text="),
         expect.any(Object),
@@ -238,7 +243,8 @@ describe("fetchVerfahren", () => {
         json: async () => [],
       });
 
-      await fetchVerfahren(mockAuthData, {
+      const mockRequest = new Request("http://localhost:3000");
+      await fetchVerfahren(mockRequest, {
         search_text: "   trimmed search   ",
       });
 

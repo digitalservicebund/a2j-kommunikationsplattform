@@ -1,5 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
+import { it, vi } from "vitest";
 import fetchVerfahrenById from "../fetchVerfahrenById.server";
 
 const mocks = vi.hoisted(() => {
@@ -14,15 +13,6 @@ vi.mock("~/services/auth/getBearerToken.server", () => ({
 }));
 
 global.fetch = mocks.fetch;
-
-const mockAuthData: AuthenticationResponse = {
-  authenticationTokens: {
-    accessToken: "user-access-token",
-    expiresAt: Date.now() + 60000,
-    refreshToken: "refresh-token",
-  },
-  sessionCookieHeader: "",
-};
 
 const mockVerfahren = {
   id: "2ab3cbc7-d00a-48bf-95a1-4d6f07406196",
@@ -75,7 +65,8 @@ describe("fetchVerfahrenById", () => {
       json: async () => mockVerfahren,
     });
 
-    const result = await fetchVerfahrenById(mockAuthData, {
+    const mockRequest = new Request("http://localhost:3000");
+    const result = await fetchVerfahrenById(mockRequest, {
       id: mockVerfahren.id,
     });
 
@@ -97,8 +88,10 @@ describe("fetchVerfahrenById", () => {
       json: async () => ({ invalid: true }),
     });
 
+    const mockRequest = new Request("http://localhost:3000");
+
     await expect(
-      fetchVerfahrenById(mockAuthData, { id: mockVerfahren.id }),
+      fetchVerfahrenById(mockRequest, { id: mockVerfahren.id }),
     ).rejects.toThrow();
   });
 });
