@@ -20,7 +20,7 @@ fileignoreconfig:
   - filename: app/services/auth/oAuth.server.ts
     checksum: d9ab236b32b4373b3d7080c7e007dcf2d27a8169a43efdb03cc9fdeadee7dbf9
   - filename: app/config/config.server.ts
-    checksum: 7f1b2fae598564864e4290c248396ce6e6ec88b55cfc735d3137c18d1dfed7ec
+    checksum: 2cbaa7b857f09566d12af0c211520b977aa40541913f1b07d65eab723480d39d
   - filename: app/config/__test__/config.server.test.ts
     checksum: 55ff306d55c77f5317c6a4b03cebe9685b34f65a7c1983376d09ecaaf6c54e60
   - filename: tests/a11y/playwright.config.ts
