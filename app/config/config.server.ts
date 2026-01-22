@@ -12,8 +12,7 @@ interface ServerConfig {
   SENTRY_DSN: string;
 }
 
-const oidcClientSecretFilePath =
-  "/etc/brak-idp-secrets/BRAK_IDP_OIDC_CLIENT_SECRET";
+const oidcClientSecretFilePath = "/etc/secrets/BRAK_IDP_OIDC_CLIENT_SECRET";
 const oidcClientSecretFileExists = existsSync(oidcClientSecretFilePath);
 
 export function serverConfig(): ServerConfig {
