@@ -72,7 +72,7 @@
     "globals": "^17.0.0",
     "jsdom": "^27.0.0",
     "msw": "^2.11.6",
-    "prettier": "^3.7.4",
+    "prettier": "^3.8.0",
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "react-router-devtools": "^6.2.0",
