@@ -11,7 +11,7 @@ on:
 env:
   IMAGE_NAME: ${{ github.repository }}
   CONTAINER_IMAGE_VERSION: ${{ github.sha }}
-  CONTAINER_SHORT_IMAGE_NAME: kompla
+  # CONTAINER_SHORT_IMAGE_NAME: kompla
 
 jobs:
   sonarqube:
@@ -242,7 +242,8 @@ jobs:
         with:
           environment: staging-stackit
           version: ${{ env.CONTAINER_IMAGE_VERSION }}
-          deploying_repo: ${{ env.CONTAINER_SHORT_IMAGE_NAME }}
+          # deploying_repo: ${{ env.CONTAINER_SHORT_IMAGE_NAME }}
+          deploying_repo: ${{ github.event.repository.name }}
           infra_repo: ${{ github.event.repository.name }}-infra
           github_app_private_key: ${{ secrets.GITOPS_A2J_APP_PRIVATE_KEY }}
           github_app_id: ${{ secrets.GITOPS_A2J_APP_ID }}
