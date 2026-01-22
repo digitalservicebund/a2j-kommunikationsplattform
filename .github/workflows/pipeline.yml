@@ -247,7 +247,8 @@ jobs:
           infra_repo: ${{ github.event.repository.name }}-infra
           github_app_private_key: ${{ secrets.GITOPS_A2J_APP_PRIVATE_KEY }}
           github_app_id: ${{ secrets.GITOPS_A2J_APP_ID }}
-          app: a2j-kompla-staging
+          # app: a2j-kompla-staging
+          app: ${{ github.event.repository.name }}-staging
           argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
           argocd_server: ${{ secrets.ARGOCD_SERVER_STACKIT }}
 
