@@ -37,7 +37,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const sort = url.searchParams.get("sort") || sortOptions[0].value;
   const search_text = url.searchParams.get("search_text");
 
-  console.log("search_text", search_text);
   // Fetch verfahren with one extra item to determine if there are more items
   const verfahrenPromise: Promise<VerfahrenLoaderData> = (async () => {
     const verfahren = await fetchVerfahren(request, {

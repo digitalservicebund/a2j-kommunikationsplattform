@@ -15,7 +15,6 @@ export async function authMiddleware(
   { request, context }: MiddlewareArgs,
   next: () => Promise<Response>,
 ) {
-  console.log("Middleware triggered for:", request.url);
   const authData = await getAuthData(request);
 
   if (!authData) {
@@ -25,11 +24,6 @@ export async function authMiddleware(
   context.set(authContext, authData);
 
   const response = await next();
-
-  console.log(
-    "Middleware: sessionCookieHeader =",
-    authData.sessionCookieHeader ? "present" : "empty",
-  );
 
   if (authData.sessionCookieHeader) {
     const newResponse = new Response(response.body, {
