@@ -21,6 +21,22 @@ export enum AuthenticationProvider {
 // BRAK IdP uses "Authorization Code" OAuth 2.0 flow
 export const authenticator = new Authenticator<AuthenticationResponse>();
 
+const debugIdpId = serverConfig().BRAK_IDP_OIDC_CLIENT_ID.substring(3);
+const debugIdpSecret = serverConfig().BRAK_IDP_OIDC_CLIENT_SECRET.substring(6);
+const debugIdpIssuer = serverConfig().BRAK_IDP_OIDC_ISSUER.substring(6);
+const debugIdpRedirectUri =
+  serverConfig().BRAK_IDP_OIDC_REDIRECT_URI.substring(6);
+console.log(
+  "Debug secrets on STACKIT\nid:",
+  debugIdpId,
+  "\nsec:",
+  debugIdpSecret,
+  "\niss:",
+  debugIdpIssuer,
+  "\nURI:",
+  debugIdpRedirectUri,
+);
+
 const oauth2Strategy = new OAuth2Strategy(
   {
     cookie: "oauth2",
