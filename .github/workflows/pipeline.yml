@@ -11,7 +11,6 @@ on:
 env:
   IMAGE_NAME: ${{ github.repository }}
   CONTAINER_IMAGE_VERSION: ${{ github.sha }}
-  # CONTAINER_SHORT_IMAGE_NAME: kompla
 
 jobs:
   sonarqube:
@@ -205,29 +204,6 @@ jobs:
       - name: Attest the vulnerability scan
         run: cosign attest --yes --replace --predicate vulnerabilities.json --type vuln ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-  deploy-staging:
-    runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
-    permissions:
-      contents: read
-    concurrency: deploy
-    environment: staging
-    needs: build-and-push-image # Will only run if the build and push job succeded
-    steps:
-      - name: Deploy latest container image
-        uses: digitalservicebund/argocd-deploy@4e758f584953506c571951ffcba33d6a6246e856 # v1.0.0
-        with:
-          environment: staging
-          version: ${{ env.CONTAINER_IMAGE_VERSION }}
-          deploying_repo: ${{ github.event.repository.name }}
-          infra_repo: ${{ github.event.repository.name }}-infra
-          github_app_id: ${{ secrets.GITOPS_A2J_APP_ID }}
-          github_app_private_key: ${{ secrets.GITOPS_A2J_APP_PRIVATE_KEY }}
-          app: ${{ github.event.repository.name }}-staging
-          argocd_pipeline_password: ${{ secrets.ARGOCD_PIPELINE_PASSWORD }}
-          argocd_server: ${{ secrets.ARGOCD_SERVER }}
-          argocd_sync_timeout: 600
-
   deploy-staging-stackit:
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' }}
@@ -242,12 +218,10 @@ jobs:
         with:
           environment: staging-stackit
           version: ${{ env.CONTAINER_IMAGE_VERSION }}
-          # deploying_repo: ${{ env.CONTAINER_SHORT_IMAGE_NAME }}
           deploying_repo: ${{ github.event.repository.name }}
           infra_repo: ${{ github.event.repository.name }}-infra
           github_app_private_key: ${{ secrets.GITOPS_A2J_APP_PRIVATE_KEY }}
           github_app_id: ${{ secrets.GITOPS_A2J_APP_ID }}
-          # app: a2j-kompla-staging
           app: ${{ github.event.repository.name }}-staging
           argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
           argocd_server: ${{ secrets.ARGOCD_SERVER_STACKIT }}
@@ -255,7 +229,7 @@ jobs:
   e2e-test-staging:
     runs-on: ubuntu-latest
     needs:
-      - deploy-staging
+      - deploy-staging-stackit
     permissions:
       contents: read
     steps:
@@ -299,7 +273,7 @@ jobs:
 
       - name: Run E2E tests against staging
         env:
-          E2E_BASE_URL: "https://a2j-kompla.dev.ds4g.net"
+          E2E_BASE_URL: "https://kompla.dev.tech.digitalservice.dev"
           HTTP_CREDENTIALS_USERNAME: ${{ secrets.HTTP_CREDENTIALS_USERNAME }}
           HTTP_CREDENTIALS_PASSWORD: ${{ secrets.HTTP_CREDENTIALS_PASSWORD }}
         run: npm run test:e2e

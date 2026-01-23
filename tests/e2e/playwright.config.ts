@@ -48,7 +48,7 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto("/")`. */
     baseURL,
     /* See https://playwright.dev/docs/test-use-options#network-options.
-    Fix for: Refused to send form data to 'https://a2j-kompla.dev.ds4g.net/action/login-user' because
+    Fix for: Refused to send form data to 'https://kompla.dev.tech.digitalservice.dev/action/login-user' because
     it violates the following Content Security Policy directive: "form-action 'self'". */
     bypassCSP: true,
     /* Credentials for HTTP authentication. See https://playwright.dev/docs/api/class-testoptions#test-options-http-credentials */
