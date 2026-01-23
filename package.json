@@ -26,7 +26,7 @@
     "@react-router/express": "^7.12.0",
     "@react-router/node": "^7.12.0",
     "@react-router/serve": "^7.12.0",
-    "@sentry/react-router": "^10.22.0",
+    "@sentry/react-router": "^10.35.0",
     "clsx": "^2.1.1",
     "compression": "^1.8.1",
     "cross-env": "^10.1.0",
