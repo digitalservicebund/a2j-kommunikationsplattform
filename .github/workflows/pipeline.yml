@@ -225,6 +225,7 @@ jobs:
           app: ${{ github.event.repository.name }}-staging
           argocd_auth_token: ${{ secrets.ARGOCD_AUTH_TOKEN }}
           argocd_server: ${{ secrets.ARGOCD_SERVER_STACKIT }}
+          argocd_sync_timeout: 600
 
   e2e-test-staging:
     runs-on: ubuntu-latest
