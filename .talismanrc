@@ -4,7 +4,7 @@ fileignoreconfig:
   - filename: .github/workflows/pipeline.yml
     checksum: 7151d28af925f60621093c6c84981f74d68d2b679dd3729e17e2c500a35eb18c
   - filename: .env.example
-    checksum: e29ce44b8e2006a942f2b906507bf087ddb18bb55e24715ad2e653fecc5c4b2c
+    checksum: 6e690897cc5b9b8e85c32fb558863f719387fc7f0c7cd2948a168762171f6f62
   - filename: package-lock.json
     checksum: a044669d1a393a3dd293d0db8656d69349d9d5f752ca371ca6a51d34c99b71c7
   - filename: .github/workflows/secrets-check.yml
@@ -36,7 +36,7 @@ fileignoreconfig:
   - filename: sonar-project.properties
     checksum: a69a9e324b26f69adf623a466375522795ffdf46ac9c4b33dac2cb056af8b369
   - filename: tests/e2e/playwright.config.ts
-    checksum: 34cb8aebe7b81824d2e2bca9f098d5efc58aab983f7da91f7bedfcdf8ef0abf6
+    checksum: 1e2d8ae8c3c6952ec770c0f6d732599a5cabbe6a71bb1bb89ccc1f3cb2d86622
   - filename: app/components/__test__/ContentPage.test.tsx
     checksum: a2c62ce36ce3ceea9fcc6757afc6d0d1fb5d4c8a5dbad2b5236d09bfff4e7a75
   - filename: app/components/Navigation.static.tsx
