@@ -138,7 +138,6 @@ export default function LoginPage() {
                   className="kern-btn kern-btn--block kern-btn--secondary"
                   data-testid="demo-button"
                   disabled
-                  aria-disabled={"true"}
                 >
                   <span className="kern-label">
                     {buttons.LOGIN_BUTTON_TEST_ZUGANG}
