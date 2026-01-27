@@ -76,7 +76,7 @@ fileignoreconfig:
   - filename: app/services/auth/__test__/authSession.server.test.ts
     checksum: 84269bf9235d2519270bd8ae32c4a429db19857c5a7492b18208fa40b6b7a0f1
   - filename: doc/adr/0004-how-we-do-user-and-api-authentication.md
-    checksum: d7bc2cfd19d747f948b8144bbade32e790dbc4c70bb24ed94dbfdc4e27a8abb1
+    checksum: 0df27dd53dd609707e98adfccbb084ffe46e677904d173730645c8f8e4a4bd1d
 
 version: ""
 scopeconfig:
