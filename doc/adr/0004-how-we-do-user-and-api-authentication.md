@@ -1,6 +1,7 @@
 # 4. How we do user and API authentication
 
 - 2026-01-27: Drafted
+- 2026-01-27: Accepted
 
 ## Status
 
