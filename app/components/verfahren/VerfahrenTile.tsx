@@ -112,7 +112,6 @@ export default function VerfahrenTile({
 
   const cssClasses = clsx(
     "relative",
-    "after:border-y-1 sm:after:border-x-1 sm:after:rounded-kern-default after:border-kern-layout-border",
     "after:absolute after:-z-1 after:top-0 after:-right-16 after:bottom-0 after:-left-16",
   );
 
@@ -145,17 +144,17 @@ export default function VerfahrenTile({
         />
       </dl>
 
-      <hr
-        className="kern-divider mb-kern-space-large mt-kern-space-small"
-        aria-hidden
-      />
-
       <div className="mb-kern-space-large gap-kern-space-x-large flex flex-wrap">
         <Link to={`/verfahren/${id}`} className="kern-btn kern-btn--primary">
           <span className="kern-icon kern-icon--open-in-new" aria-hidden />
           <span className="kern-label">{buttons.SHOW_VERFAHREN_DETAILS}</span>
         </Link>
       </div>
+
+      <hr
+        className="kern-divider mb-kern-space-large mt-kern-space-small"
+        aria-hidden
+      />
     </article>
   );
 }
