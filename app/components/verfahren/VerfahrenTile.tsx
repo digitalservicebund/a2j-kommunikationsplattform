@@ -1,4 +1,3 @@
-import { clsx } from "clsx";
 import { Link } from "react-router";
 import { useTranslations } from "~/services/translations/context";
 
@@ -40,30 +39,7 @@ function getBeteiligungByRoleCode(
   return beteiligungen.find((b) => b.rollen.some((r) => r.code === roleCode));
 }
 
-function getVertretungNamesByRoleCode(
-  beteiligungen: VerfahrenTileProps["beteiligungen"],
-  roleCode: string,
-) {
-  return beteiligungen
-    .filter((b) => b.rollen.some((r) => r.code === roleCode))
-    .flatMap((b) => b.prozessbevollmaechtigte)
-    .map((p) => p.bevollmaechtigter?.name)
-    .filter(Boolean);
-}
-
-function getGeschaeftszeichenByRoleCode(
-  beteiligungen: VerfahrenTileProps["beteiligungen"],
-  roleCode: string,
-) {
-  return (
-    getBeteiligungByRoleCode(
-      beteiligungen,
-      roleCode,
-    )?.prozessbevollmaechtigte.find((p) => p.aktenzeichen)?.aktenzeichen || null
-  );
-}
-
-function VerfahrenTileDataItem({
+function DataItem({
   label,
   value,
 }: {
@@ -71,9 +47,28 @@ function VerfahrenTileDataItem({
   readonly value: string;
 }) {
   return (
-    <div className="kern-col kern-col-12 kern-col-md-6 kern-col-lg-4">
+    <div className="">
       <dt className="kern-body kern-body--muted">{label}</dt>
       <dd className="kern-label m-0">{value}</dd>
+    </div>
+  );
+}
+
+function DataCard({
+  label,
+  children,
+}: {
+  readonly label: string;
+  readonly children: React.ReactNode;
+}) {
+  return (
+    <div className="p-kern-space-default gap-kern-space-large rounded-kern-border-radius-default bg-kern-neutral-025 flex min-h-352 flex-col items-start overflow-hidden">
+      <h4 className="kern-heading-medium">{label}</h4>
+      <hr
+        className="kern-divider border-kern-layout-border w-full"
+        aria-hidden="true"
+      />
+      {children}
     </div>
   );
 }
@@ -88,60 +83,65 @@ export default function VerfahrenTile({
 }: VerfahrenTileProps) {
   const { buttons } = useTranslations();
 
-  // TODO: when we refactor this component, we will need to make the below variables more dynamic depending on the User Role, e.g., Kläger:in or Beklagte:r
-
   // Extract values from beteiligungen based on rollen codes
-  const klaegerin =
-    getBeteiligungByRoleCode(beteiligungen, ROLLE_CODE_KLAEGERIN)?.name || null;
-  const beklagte =
-    getBeteiligungByRoleCode(beteiligungen, ROLLE_CODE_BEKLAGTE)?.name || null;
+  const klaegerinData =
+    getBeteiligungByRoleCode(beteiligungen, ROLLE_CODE_KLAEGERIN) || null;
+  const beklagteData =
+    getBeteiligungByRoleCode(beteiligungen, ROLLE_CODE_BEKLAGTE) || null;
 
-  const gegenparteiVertretungNames = getVertretungNamesByRoleCode(
-    beteiligungen,
-    ROLLE_CODE_BEKLAGTE,
-  );
-  const gegenparteiVertretung =
-    gegenparteiVertretungNames.length > 0
-      ? gegenparteiVertretungNames.join(", ")
-      : null;
-
-  const geschaeftszeichen = getGeschaeftszeichenByRoleCode(
-    beteiligungen,
-    ROLLE_CODE_KLAEGERIN,
-  );
-
-  const cssClasses = clsx(
-    "relative",
-    "after:absolute after:-z-1 after:top-0 after:-right-16 after:bottom-0 after:-left-16",
-  );
+  const prozessbevollmaechtigteKlaegerin =
+    klaegerinData?.prozessbevollmaechtigte || [];
+  const prozessbevollmaechtigteBeklagte =
+    beklagteData?.prozessbevollmaechtigte || [];
 
   return (
-    <article className={cssClasses}>
-      <dl className="kern-row my-0">
-        <VerfahrenTileDataItem
-          label="Kläger:in"
-          value={klaegerin || notAvailable}
-        />
-        <VerfahrenTileDataItem
-          label="Beklagte:r"
-          value={beklagte || notAvailable}
-        />
-        <VerfahrenTileDataItem
-          label="Anwaltliche Vertretung Gegenpartei-en"
-          value={gegenparteiVertretung || notAvailable}
-        />
-        <VerfahrenTileDataItem
-          label="Eigenes Geschäftszeichen"
-          value={geschaeftszeichen || notAvailable}
-        />
-        <VerfahrenTileDataItem
-          label="Zuständiges Gericht"
-          value={gericht?.wert || notAvailable}
-        />
-        <VerfahrenTileDataItem
-          label="Aktenzeichen des Gerichts"
-          value={aktenzeichen_gericht || notAvailable}
-        />
+    <article className="gap-kern-space-large flex flex-col">
+      <h2 className="kern-heading-medium">
+        Placeholder for Kläger:in ./. Beklagte:r
+      </h2>
+      <dl className="gap-kern-space-large my-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <DataCard label="Kläger:in">
+          <DataItem label="Name" value={klaegerinData?.name || notAvailable} />
+          {prozessbevollmaechtigteKlaegerin.map((p) => (
+            <>
+              <DataItem
+                key={p.bevollmaechtigter.id}
+                label="Geschäftszeichen"
+                value={p.aktenzeichen || notAvailable}
+              />
+              <DataItem
+                label="Anwaltliche Vertretung"
+                value={p.bevollmaechtigter.name || notAvailable}
+              />
+            </>
+          ))}
+        </DataCard>
+        <DataCard label="Beklagte:r">
+          <DataItem label="Name" value={beklagteData?.name || notAvailable} />
+          {prozessbevollmaechtigteBeklagte.map((p) => (
+            <>
+              <DataItem
+                key={p.bevollmaechtigter.id}
+                label="Geschäftszeichen"
+                value={p.aktenzeichen || notAvailable}
+              />
+              <DataItem
+                label="Anwaltliche Vertretung"
+                value={p.bevollmaechtigter.name || notAvailable}
+              />
+            </>
+          ))}
+        </DataCard>
+        <DataCard label="Gericht">
+          <DataItem
+            label="Zuständiges Gericht"
+            value={gericht?.wert || notAvailable}
+          />
+          <DataItem
+            label="Aktenzeichen des Gerichts"
+            value={aktenzeichen_gericht || notAvailable}
+          />
+        </DataCard>
       </dl>
 
       <div className="mb-kern-space-large gap-kern-space-x-large flex flex-wrap">
