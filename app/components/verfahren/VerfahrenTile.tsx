@@ -1,4 +1,6 @@
 import { Link } from "react-router";
+import DraftIcon from "~/components/icons/DraftIcon";
+import FolderInfoIcon from "~/components/icons/FolderAlertIcon";
 import { useTranslations } from "~/services/translations/context";
 
 const ROLLE_CODE_KLAEGERIN = "101";
@@ -62,7 +64,7 @@ function DataCard({
   readonly children: React.ReactNode;
 }) {
   return (
-    <div className="p-kern-space-default gap-kern-space-large rounded-kern-border-radius-default bg-kern-neutral-025 flex min-h-352 flex-col items-start overflow-hidden">
+    <div className="p-kern-space-default gap-kern-space-large rounded-kern-border-radius-default bg-kern-layout-background-hued flex min-h-352 flex-col items-start overflow-hidden">
       <h4 className="kern-heading-medium">{label}</h4>
       <hr
         className="kern-divider border-kern-layout-border w-full"
@@ -144,11 +146,26 @@ export default function VerfahrenTile({
         </DataCard>
       </dl>
 
-      <div className="mb-kern-space-large gap-kern-space-x-large flex flex-wrap">
-        <Link to={`/verfahren/${id}`} className="kern-btn kern-btn--primary">
-          <span className="kern-icon kern-icon--open-in-new" aria-hidden />
-          <span className="kern-label">{buttons.SHOW_VERFAHREN_DETAILS}</span>
-        </Link>
+      <div className="gap-kern-space-large my-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mb-kern-space-large gap-kern-space-large">
+          <Link
+            to={`/verfahren/${id}`}
+            className="kern-btn kern-btn--primary w-full"
+          >
+            <FolderInfoIcon />
+            <span className="kern-label">{buttons.SHOW_VERFAHREN_DETAILS}</span>
+          </Link>
+        </div>
+
+        <div className="mb-kern-space-large gap-kern-space-large">
+          <Link
+            to={`/verfahren/${id}`}
+            className="kern-btn kern-btn kern-btn--secondary w-full"
+          >
+            <DraftIcon />
+            <span className="kern-label">Weitere Funktion</span>
+          </Link>
+        </div>
       </div>
 
       <hr
