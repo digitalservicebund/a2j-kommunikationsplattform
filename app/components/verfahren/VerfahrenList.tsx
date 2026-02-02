@@ -10,7 +10,6 @@ export function VerfahrenList({
   isLoading: boolean;
   verfahrenItems: Verfahren[];
 }>) {
-  console.log("Rendering VerfahrenList with items:", verfahrenItems[0]);
   return (
     <>
       {verfahrenItems.map((data) => (
