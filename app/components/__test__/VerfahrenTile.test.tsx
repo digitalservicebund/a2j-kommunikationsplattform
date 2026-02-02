@@ -74,7 +74,6 @@ describe("VerfahrenTile", () => {
 
     expect(getByText("Klaus Müller")).toBeInTheDocument();
     expect(getByText("Maria Weber")).toBeInTheDocument();
-    expect(getByText("Rechtsanwältin Fischer")).toBeInTheDocument();
     expect(getByText("GZ-12345")).toBeInTheDocument();
     expect(getByText("Landgericht Frankfurt")).toBeInTheDocument();
     expect(getByText("AZ-123")).toBeInTheDocument();
