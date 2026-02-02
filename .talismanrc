@@ -4,6 +4,10 @@ scopeconfig:
 allowed_patterns:
   - key
   - uses:\ ([A-z0-9\-]+\/)*[A-z0-9\-]+@[a-fA-F0-9]{40}
+  - TRIVY_PASSWORD:\ \${{\ secrets.GITHUB_TOKEN\ }}
+  - secrets:\ inherit
+  - password:\ \${{\ secrets.GITHUB_TOKEN\ }}
+  - HTTP_CREDENTIALS_PASSWORD:\ \${{\ secrets.HTTP_CREDENTIALS_PASSWORD\ }}
 
 fileignoreconfig:
   - filename: .env.example
