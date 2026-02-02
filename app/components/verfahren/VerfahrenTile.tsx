@@ -65,11 +65,13 @@ function DataCard({
 }) {
   return (
     <div className="p-kern-space-default gap-kern-space-large rounded-kern-border-radius-default bg-kern-layout-background-hued flex min-h-352 flex-col items-start overflow-hidden">
-      <h4 className="kern-heading-medium">{label}</h4>
-      <hr
-        className="kern-divider border-kern-layout-border w-full"
-        aria-hidden="true"
-      />
+      <div className="space-y-kern-space-default w-full">
+        <h4 className="kern-heading-small">{label}</h4>
+        <hr
+          className="kern-divider border-kern-layout-border w-full"
+          aria-hidden="true"
+        />
+      </div>
       {children}
     </div>
   );
@@ -159,8 +161,9 @@ export default function VerfahrenTile({
 
         <div className="mb-kern-space-large gap-kern-space-large">
           <Link
-            to={`/verfahren/${id}`}
+            to="#"
             className="kern-btn kern-btn kern-btn--secondary w-full"
+            aria-disabled
           >
             <DraftIcon />
             <span className="kern-label">Weitere Funktion</span>
