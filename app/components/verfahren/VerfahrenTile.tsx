@@ -105,36 +105,25 @@ export default function VerfahrenTile({
       </h2>
       <dl className="gap-kern-space-large my-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <DataCard label="Kläger:in">
+          {/* TODO: display Vorname & Nachname using separate DataItem when these data points are available. See https://digitalservicebund.atlassian.net/browse/KOMMPLA-987 */}
           <DataItem label="Name" value={klaegerinData?.name || notAvailable} />
-          {prozessbevollmaechtigteKlaegerin.map((p) => (
-            <>
-              <DataItem
-                key={p.bevollmaechtigter.id}
-                label="Geschäftszeichen"
-                value={p.aktenzeichen || notAvailable}
-              />
-              <DataItem
-                label="Anwaltliche Vertretung"
-                value={p.bevollmaechtigter.name || notAvailable}
-              />
-            </>
-          ))}
+          <DataItem
+            key={prozessbevollmaechtigteKlaegerin[0]?.bevollmaechtigter?.id}
+            label="Geschäftszeichen"
+            value={
+              prozessbevollmaechtigteKlaegerin[0]?.aktenzeichen || notAvailable
+            }
+          />
         </DataCard>
         <DataCard label="Beklagte:r">
           <DataItem label="Name" value={beklagteData?.name || notAvailable} />
-          {prozessbevollmaechtigteBeklagte.map((p) => (
-            <>
-              <DataItem
-                key={p.bevollmaechtigter.id}
-                label="Geschäftszeichen"
-                value={p.aktenzeichen || notAvailable}
-              />
-              <DataItem
-                label="Anwaltliche Vertretung"
-                value={p.bevollmaechtigter.name || notAvailable}
-              />
-            </>
-          ))}
+          <DataItem
+            key={prozessbevollmaechtigteBeklagte[0]?.bevollmaechtigter?.id}
+            label="Geschäftszeichen"
+            value={
+              prozessbevollmaechtigteBeklagte[0]?.aktenzeichen || notAvailable
+            }
+          />
         </DataCard>
         <DataCard label="Gericht">
           <DataItem
