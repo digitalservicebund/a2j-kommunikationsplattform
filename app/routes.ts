@@ -16,6 +16,9 @@ export default [
   // login
   route("login", "./routes/login/_index.tsx"),
 
+  // kitchensink (component playground)
+  route("kitchensink", "./routes/kitchensink.tsx"),
+
   // meta pages (imprint, for example)
   ...META_PAGES.map((page) => route(page.path, page.file)),
 
