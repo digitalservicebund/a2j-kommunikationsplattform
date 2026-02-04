@@ -1,4 +1,4 @@
-import { ComponentWrapper } from "~/components/kitchensink/ComponentWrapper";
+import { KitchensinkWrapper } from "~/components/kitchensink/KitchensinkWrapper";
 import VerfahrenTile, {
   VerfahrenTileProps,
 } from "~/components/verfahren/VerfahrenTile";
@@ -71,15 +71,15 @@ const mockVerfahrenPartial: VerfahrenTileProps = {
 export function VerfagrenTileKitchensink() {
   return (
     <>
-      <ComponentWrapper label="VerfahrenTile - All data available">
+      <KitchensinkWrapper label="VerfahrenTile - All data available">
         <VerfahrenTile {...mockVerfahrenComplete} />
-      </ComponentWrapper>
-      <ComponentWrapper label="VerfahrenTile - Minimal data available (no Beteiligungen)">
+      </KitchensinkWrapper>
+      <KitchensinkWrapper label="VerfahrenTile - Minimal data available (no Beteiligungen)">
         <VerfahrenTile {...mockVerfahrenMinimal} />
-      </ComponentWrapper>
-      <ComponentWrapper label="VerfahrenTile - Partial data available">
+      </KitchensinkWrapper>
+      <KitchensinkWrapper label="VerfahrenTile - Partial data available">
         <VerfahrenTile {...mockVerfahrenPartial} />
-      </ComponentWrapper>
+      </KitchensinkWrapper>
     </>
   );
 }

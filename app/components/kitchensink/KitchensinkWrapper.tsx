@@ -1,4 +1,4 @@
-export function ComponentWrapper({
+export function KitchensinkWrapper({
   label,
   children,
 }: Readonly<{

@@ -1,13 +1,13 @@
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react";
-import { ComponentWrapper } from "../ComponentWrapper";
+import { KitchensinkWrapper } from "../KitchensinkWrapper";
 
-describe("ComponentWrapper", () => {
+describe("KitchensinkWrapper", () => {
   it("renders the label text", () => {
     render(
-      <ComponentWrapper label="Test Label">
+      <KitchensinkWrapper label="Test Label">
         <div>Child content</div>
-      </ComponentWrapper>,
+      </KitchensinkWrapper>,
     );
 
     expect(screen.getByText("Test Label")).toBeInTheDocument();
@@ -15,9 +15,9 @@ describe("ComponentWrapper", () => {
 
   it("renders children content", () => {
     render(
-      <ComponentWrapper label="Test Label">
+      <KitchensinkWrapper label="Test Label">
         <div>Child content</div>
-      </ComponentWrapper>,
+      </KitchensinkWrapper>,
     );
 
     expect(screen.getByText("Child content")).toBeInTheDocument();
@@ -25,9 +25,9 @@ describe("ComponentWrapper", () => {
 
   it("applies pointer-events-none to children wrapper", () => {
     const { container } = render(
-      <ComponentWrapper label="Test Label">
+      <KitchensinkWrapper label="Test Label">
         <div>Child content</div>
-      </ComponentWrapper>,
+      </KitchensinkWrapper>,
     );
 
     const childWrapper = container.querySelector("section > div:nth-child(2)");
@@ -36,10 +36,10 @@ describe("ComponentWrapper", () => {
 
   it("renders multiple children", () => {
     render(
-      <ComponentWrapper label="Test Label">
+      <KitchensinkWrapper label="Test Label">
         <div>First child</div>
         <div>Second child</div>
-      </ComponentWrapper>,
+      </KitchensinkWrapper>,
     );
 
     expect(screen.getByText("First child")).toBeInTheDocument();
@@ -47,7 +47,7 @@ describe("ComponentWrapper", () => {
   });
 
   it("renders with empty children", () => {
-    render(<ComponentWrapper label="Test Label">{null}</ComponentWrapper>);
+    render(<KitchensinkWrapper label="Test Label">{null}</KitchensinkWrapper>);
 
     expect(screen.getByText("Test Label")).toBeInTheDocument();
   });
