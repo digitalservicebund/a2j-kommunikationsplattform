@@ -2,6 +2,7 @@ import { KitchensinkWrapper } from "~/components/kitchensink/KitchensinkWrapper"
 import VerfahrenTile, {
   VerfahrenTileProps,
 } from "~/components/verfahren/VerfahrenTile";
+import { useTranslations } from "~/services/translations/context";
 
 const mockVerfahrenComplete: VerfahrenTileProps = {
   id: "123",
@@ -69,15 +70,22 @@ const mockVerfahrenPartial: VerfahrenTileProps = {
 };
 
 export function VerfagrenTileKitchensink() {
+  const {
+    routes: { kitchensink },
+  } = useTranslations();
   return (
     <>
-      <KitchensinkWrapper label="VerfahrenTile - All data available">
+      <KitchensinkWrapper label={kitchensink.verfahrenTile.allDataAvailable}>
         <VerfahrenTile {...mockVerfahrenComplete} />
       </KitchensinkWrapper>
-      <KitchensinkWrapper label="VerfahrenTile - Minimal data available (no Beteiligungen)">
+      <KitchensinkWrapper
+        label={kitchensink.verfahrenTile.minimalDataAvailable}
+      >
         <VerfahrenTile {...mockVerfahrenMinimal} />
       </KitchensinkWrapper>
-      <KitchensinkWrapper label="VerfahrenTile - Partial data available">
+      <KitchensinkWrapper
+        label={kitchensink.verfahrenTile.partialDataAvailable}
+      >
         <VerfahrenTile {...mockVerfahrenPartial} />
       </KitchensinkWrapper>
     </>

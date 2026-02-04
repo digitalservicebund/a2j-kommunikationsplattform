@@ -7,10 +7,13 @@ export const loader = async () => {
 };
 
 export default function Kitchensink() {
-  const { alerts } = useTranslations();
+  const {
+    alerts,
+    routes: { kitchensink },
+  } = useTranslations();
   return (
     <div className="space-y-kern-dimension-large">
-      <h1 className="kern-heading-medium">Kitchensink</h1>
+      <h1 className="kern-heading-medium">{kitchensink.headline}</h1>
       <Alert
         type="info"
         title={alerts.WORK_IN_PROGRESS_TITLE}

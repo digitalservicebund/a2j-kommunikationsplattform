@@ -86,6 +86,15 @@ export const en: Translations = {
       introduction:
         "Welcome to the pilot platform for digital exchange between courts and parties involved in proceedings.",
     },
+    kitchensink: {
+      headline: "Kitchensink",
+      verfahrenTile: {
+        allDataAvailable: "VerfahrenTile - All data available",
+        minimalDataAvailable:
+          "VerfahrenTile - Minimal data available (no Beteiligungen)",
+        partialDataAvailable: "VerfahrenTile - Partial data available",
+      },
+    },
     PLATFORM_TITLE: "Communication Platform | Justice Services",
     DATENSCHUTZ_TITLE: "Privacy Policy for the Website",
     WEITERE_INFORMATIONEN_TITLE: "Further Information",
