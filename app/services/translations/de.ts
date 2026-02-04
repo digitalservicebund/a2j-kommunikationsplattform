@@ -86,6 +86,15 @@ export const de = {
       introduction:
         "Willkommen auf der Pilotplattform für den digitalen Austausch zwischen Gerichten und Verfahrensbeteiligten.",
     },
+    kitchensink: {
+      headline: "Kitchensink",
+      verfahrenTile: {
+        allDataAvailable: "VerfahrenTile - All data available",
+        minimalDataAvailable:
+          "VerfahrenTile - Minimal data available (no Beteiligungen)",
+        partialDataAvailable: "VerfahrenTile - Partial data available",
+      },
+    },
     PLATFORM_TITLE: "Kommunikationsplattform | Justiz-Services",
     DATENSCHUTZ_TITLE: "Datenschutzerklärung zur Webseite",
     WEITERE_INFORMATIONEN_TITLE: "Weitere Informationen",

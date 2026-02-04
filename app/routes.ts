@@ -34,5 +34,9 @@ export default [
         ),
       ]),
     ]),
+    // kitchensink (component playground)
+    route("kitchensink", "./routes/kitchensink/_layout.tsx", [
+      index("./routes/kitchensink/_index.tsx"),
+    ]),
   ]),
 ] satisfies RouteConfig;
