@@ -1,3 +1,4 @@
+import { ComponentWrapper } from "~/components/kitchensink/ComponentWrapper";
 import VerfahrenTile, {
   VerfahrenTileProps,
 } from "~/components/verfahren/VerfahrenTile";
@@ -67,37 +68,18 @@ const mockVerfahrenPartial: VerfahrenTileProps = {
   ],
 };
 
-export default function Kitchensink() {
+export function VerfagrenTileKitchensink() {
   return (
-    <div className="space-y-kern-space-x-large">
-      <h1 className="kern-heading-large">Kitchensink</h1>
-      <p className="kern-body">
-        Diese Seite zeigt Komponenten in verschiedenen Zuständen für
-        Design-Reviews.
-      </p>
-
-      <section className="space-y-kern-space-large">
-        <h2 className="kern-heading-medium">VerfahrenTile</h2>
-
-        <div className="space-y-kern-space-default">
-          <h3 className="kern-heading-small">Vollständige Daten</h3>
-          <VerfahrenTile {...mockVerfahrenComplete} />
-        </div>
-
-        <div className="space-y-kern-space-default">
-          <h3 className="kern-heading-small">
-            Minimale Daten (keine Beteiligungen)
-          </h3>
-          <VerfahrenTile {...mockVerfahrenMinimal} />
-        </div>
-
-        <div className="space-y-kern-space-default">
-          <h3 className="kern-heading-small">
-            Teilweise Daten (nur Kläger:in)
-          </h3>
-          <VerfahrenTile {...mockVerfahrenPartial} />
-        </div>
-      </section>
-    </div>
+    <>
+      <ComponentWrapper label="VerfahrenTile - All data available">
+        <VerfahrenTile {...mockVerfahrenComplete} />
+      </ComponentWrapper>
+      <ComponentWrapper label="VerfahrenTile - Minimal data available (no Beteiligungen)">
+        <VerfahrenTile {...mockVerfahrenMinimal} />
+      </ComponentWrapper>
+      <ComponentWrapper label="VerfahrenTile - Partial data available">
+        <VerfahrenTile {...mockVerfahrenPartial} />
+      </ComponentWrapper>
+    </>
   );
 }
