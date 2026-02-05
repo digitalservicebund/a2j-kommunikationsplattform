@@ -83,6 +83,9 @@
     "vite-tsconfig-paths": "^6.0.4",
     "vitest": "^3.2.4"
   },
+  "overrides": {
+    "@isaacs/brace-expansion": "5.0.1"
+  },
   "engines": {
     "node": ">=24.13.0"
   }
