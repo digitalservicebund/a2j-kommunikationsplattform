@@ -124,34 +124,36 @@ function VerfahrenContent({
 
   return (
     <>
-      <Search
-        handleSearch={handleSearch}
-        disabled={isInputDisabled}
-        defaultValue={getParamValue(`search_text`) || ""}
-        id="search_text"
-      />
-      <div className="space-x-kern-space-x-large flex items-start justify-between">
-        <InputSelect
-          label={labels.COURT_LABEL}
-          id="gericht"
-          placeholder={labels.SHOW_ALL_LABEL}
-          options={gerichteOptions}
-          onChange={(e) => updateParam("gericht", e.target.value || null)}
-          disabled={isInputDisabled}
-          selectedValue={getParamValue("gericht") || ""}
-          className="grow"
-        />
-        <InputSelect
-          label={labels.SORT_LABEL}
-          id="sort"
-          options={sortOptions}
-          onChange={(e) =>
-            updateParam("sort", e.target.value || sortOptions[0].value)
-          }
-          disabled={isInputDisabled}
-          selectedValue={getParamValue("sort") || sortOptions[0].value}
-          className="grow"
-        />
+      <div className="sticky top-0 z-40 bg-white">
+        <div className="gap-kern-space-x-large grid grid-cols-1 items-start lg:grid-cols-4">
+          <div className="lg:col-span-2">
+            <Search
+              handleSearch={handleSearch}
+              disabled={isInputDisabled}
+              defaultValue={getParamValue(`search_text`) || ""}
+              id="search_text"
+            />
+          </div>
+          <InputSelect
+            label={labels.COURT_LABEL}
+            id="gericht"
+            placeholder={labels.SHOW_ALL_LABEL}
+            options={gerichteOptions}
+            onChange={(e) => updateParam("gericht", e.target.value || null)}
+            disabled={isInputDisabled}
+            selectedValue={getParamValue("gericht") || ""}
+          />
+          <InputSelect
+            label={labels.SORT_LABEL}
+            id="sort"
+            options={sortOptions}
+            onChange={(e) =>
+              updateParam("sort", e.target.value || sortOptions[0].value)
+            }
+            disabled={isInputDisabled}
+            selectedValue={getParamValue("sort") || sortOptions[0].value}
+          />
+        </div>
       </div>
       <VerfahrenCounter count={allItems.length || 0} hasFilters={hasFilters} />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
