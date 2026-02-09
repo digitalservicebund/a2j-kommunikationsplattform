@@ -69,7 +69,7 @@ export default function Verfahren() {
   return (
     <>
       <VerfahrenHeading />
-      <div className="mt-kern-space-large space-y-kern-space-large flex flex-col">
+      <div className="space-y-kern-space-large flex flex-col">
         <Suspense
           fallback={VERFAHREN_SKELETONS.map((s) => (
             <VerfahrenTileSkeleton key={s.id} />
@@ -124,7 +124,8 @@ function VerfahrenContent({
 
   return (
     <>
-      <div className="sticky top-0 z-40 bg-white">
+      <div className="bg-kern-layout-background-default gap-kern-space-large sticky top-0 z-40 flex flex-col pt-4">
+        <div className="h-4" aria-hidden="true"></div>
         <div className="gap-kern-space-x-large grid grid-cols-1 items-start lg:grid-cols-4">
           <div className="lg:col-span-2">
             <Search
@@ -154,6 +155,10 @@ function VerfahrenContent({
             selectedValue={getParamValue("sort") || sortOptions[0].value}
           />
         </div>
+        <hr
+          className="kern-divider border-kern-layout-border w-full"
+          aria-hidden="true"
+        />
       </div>
       <VerfahrenCounter count={allItems.length || 0} hasFilters={hasFilters} />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
