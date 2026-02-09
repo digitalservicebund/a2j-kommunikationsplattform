@@ -124,8 +124,7 @@ function VerfahrenContent({
 
   return (
     <>
-      <div className="bg-kern-layout-background-default gap-kern-space-large sticky top-0 z-40 flex flex-col pt-4">
-        <div className="h-4" aria-hidden="true"></div>
+      <div className="bg-kern-layout-background-default pt-kern-space-large space-y-kern-space-large sticky top-0 z-40 flex flex-col">
         <div className="gap-kern-space-x-large grid grid-cols-1 items-start lg:grid-cols-4">
           <div className="lg:col-span-2">
             <Search
@@ -156,7 +155,7 @@ function VerfahrenContent({
           />
         </div>
         <hr
-          className="kern-divider border-kern-layout-border w-full"
+          className="kern-divider border-kern-layout-border mb-kern-space-large w-full"
           aria-hidden="true"
         />
       </div>
