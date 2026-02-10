@@ -49,7 +49,7 @@ function DataItem({
   readonly value: string;
 }) {
   return (
-    <div className="">
+    <div>
       <dt className="kern-body kern-body--muted">{label}</dt>
       <dd className="kern-label m-0">{value}</dd>
     </div>

@@ -13,6 +13,7 @@ export const de = {
     SHOW_URTEIL: "Urteil anzeigen",
     LOAD_MORE_VERFAHREN: "Weitere Verfahren laden",
     SEARCH_BUTTON: "Suchen",
+    SCROLL_TO_TOP_BUTTON: "Zum Seitenanfang",
   },
   errorMessages: {
     TRY_LATER_MESSAGE: "Bitte versuchen Sie es später erneut.",

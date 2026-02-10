@@ -5,6 +5,7 @@ import Alert from "~/components/Alert";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { useParamsState } from "~/components/hooks/useParamsState";
 import InputSelect from "~/components/InputSelect";
+import ScrollToTopButton from "~/components/ScrollToTopButton";
 import Search from "~/components/Search";
 import VerfahrenTileSkeleton from "~/components/skeletons/VerfahrenTileSkeleton.static";
 import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
@@ -161,6 +162,7 @@ function VerfahrenContent({
       </div>
       <VerfahrenCounter count={allItems.length || 0} hasFilters={hasFilters} />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
+      <ScrollToTopButton />
       {hasMoreItems && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}
     </>
   );
