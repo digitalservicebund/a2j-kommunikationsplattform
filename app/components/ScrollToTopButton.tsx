@@ -38,7 +38,7 @@ export default function ScrollToTopButton() {
       <button
         type="button"
         onClick={scrollToTop}
-        className="kern-btn kern-btn--secondary"
+        className="kern-btn kern-btn--secondary bg-kern-layout-background-default"
       >
         <span
           className="kern-icon kern-icon--arrow-up kern-icon--default"
