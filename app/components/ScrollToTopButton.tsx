@@ -1,37 +1,13 @@
-import { useEffect, useState } from "react";
+import { useScrolledPastThreshold } from "~/components/hooks/useScrollPosition";
 import { useTranslations } from "~/services/translations/context";
 
 export default function ScrollToTopButton() {
-  const [isVisible, setIsVisible] = useState(false);
+  const isScrolled = useScrolledPastThreshold();
   const { buttons } = useTranslations();
 
-  useEffect(() => {
-    const toggleVisibility = () => {
-      // Show button when page is scrolled down 300px
-      if (window.scrollY > 300) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
-    };
+  if (!isScrolled) return null;
 
-    window.addEventListener("scroll", toggleVisibility);
-
-    return () => {
-      window.removeEventListener("scroll", toggleVisibility);
-    };
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
-  if (!isVisible) {
-    return null;
-  }
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   return (
     <div className="bottom-kern-space-large sticky z-40 flex justify-end">
@@ -39,11 +15,13 @@ export default function ScrollToTopButton() {
         type="button"
         onClick={scrollToTop}
         className="kern-btn kern-btn--secondary bg-kern-layout-background-default"
+        aria-label={buttons.SCROLL_TO_TOP_BUTTON}
+        title={buttons.SCROLL_TO_TOP_BUTTON}
       >
         <span
           className="kern-icon kern-icon--arrow-up kern-icon--default"
           aria-hidden="true"
-        ></span>
+        />
         <span className="kern-label">{buttons.SCROLL_TO_TOP_BUTTON}</span>
       </button>
     </div>
