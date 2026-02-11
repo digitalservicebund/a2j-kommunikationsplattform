@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
-import { fireEvent, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { RefObject } from "react";
 import {
   getTestTranslations,
   renderWithTestTranslations,
@@ -8,97 +9,98 @@ import {
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ScrollToTopButton from "../ScrollToTopButton";
 
+vi.mock("~/components/hooks/useScrolledPastThreshold", () => ({
+  useScrolledPastThreshold: vi.fn(),
+}));
+
+import { useScrolledPastThreshold } from "~/components/hooks/useScrolledPastThreshold";
+
+const mockUseScrolledPastThreshold = useScrolledPastThreshold as ReturnType<
+  typeof vi.fn
+>;
+
 describe("ScrollToTopButton", () => {
   const { buttons } = getTestTranslations();
+  let mockRef: RefObject<HTMLHeadingElement>;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    window.scrollY = 0;
+    mockRef = {
+      current: document.createElement("h1"),
+    };
+
+    // Mock window.scrollTo
+    window.scrollTo = vi.fn();
   });
 
-  it("does not render when scroll position is less than 300px", () => {
-    window.scrollY = 100;
-    renderWithTestTranslations(<ScrollToTopButton />);
+  it("should not render when not scrolled past threshold", () => {
+    mockUseScrolledPastThreshold.mockReturnValue(false);
 
-    const button = screen.queryByRole("button", {
-      name: buttons.SCROLL_TO_TOP_BUTTON,
-    });
-    expect(button).not.toBeInTheDocument();
+    const { container } = renderWithTestTranslations(
+      <ScrollToTopButton refElement={mockRef} />,
+    );
+
+    expect(container.firstChild).toBeNull();
   });
 
-  it("renders when scroll position is greater than 300px", () => {
-    window.scrollY = 400;
-    renderWithTestTranslations(<ScrollToTopButton />);
+  it("should render when scrolled past threshold", () => {
+    mockUseScrolledPastThreshold.mockReturnValue(true);
 
-    fireEvent.scroll(window);
-
-    const button = screen.queryByRole("button", {
-      name: buttons.SCROLL_TO_TOP_BUTTON,
-    });
-    expect(button).toBeInTheDocument();
-  });
-
-  it("shows button when scrolling down past 300px", () => {
-    renderWithTestTranslations(<ScrollToTopButton />);
-
-    expect(
-      screen.queryByRole("button", { name: buttons.SCROLL_TO_TOP_BUTTON }),
-    ).not.toBeInTheDocument();
-
-    window.scrollY = 400;
-    fireEvent.scroll(window);
+    renderWithTestTranslations(<ScrollToTopButton refElement={mockRef} />);
 
     expect(
       screen.getByRole("button", { name: buttons.SCROLL_TO_TOP_BUTTON }),
     ).toBeInTheDocument();
   });
 
-  it("hides button when scrolling back up to less than 300px", () => {
-    window.scrollY = 400;
-    renderWithTestTranslations(<ScrollToTopButton />);
-
-    fireEvent.scroll(window);
-    expect(
-      screen.getByRole("button", { name: buttons.SCROLL_TO_TOP_BUTTON }),
-    ).toBeInTheDocument();
-
-    window.scrollY = 100;
-    fireEvent.scroll(window);
-
-    expect(
-      screen.queryByRole("button", { name: buttons.SCROLL_TO_TOP_BUTTON }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("scrolls to top with smooth behavior when clicked", async () => {
+  it("should scroll to top when clicked", async () => {
     const user = userEvent.setup();
-    const scrollToMock = vi.fn();
-    window.scrollTo = scrollToMock;
-    window.scrollY = 500;
+    mockUseScrolledPastThreshold.mockReturnValue(true);
 
-    renderWithTestTranslations(<ScrollToTopButton />);
-    fireEvent.scroll(window);
+    renderWithTestTranslations(<ScrollToTopButton refElement={mockRef} />);
 
     const button = screen.getByRole("button", {
       name: buttons.SCROLL_TO_TOP_BUTTON,
     });
+
     await user.click(button);
 
-    expect(scrollToMock).toHaveBeenCalledWith({
+    expect(window.scrollTo).toHaveBeenCalledWith({
       top: 0,
       behavior: "smooth",
     });
   });
 
-  it("has proper accessibility attributes", () => {
-    window.scrollY = 400;
-    renderWithTestTranslations(<ScrollToTopButton />);
-    fireEvent.scroll(window);
+  it("should have correct accessibility attributes", () => {
+    mockUseScrolledPastThreshold.mockReturnValue(true);
+
+    renderWithTestTranslations(<ScrollToTopButton refElement={mockRef} />);
 
     const button = screen.getByRole("button", {
       name: buttons.SCROLL_TO_TOP_BUTTON,
     });
+
+    expect(button).toHaveAttribute("type", "button");
     expect(button).toHaveAttribute("aria-label", buttons.SCROLL_TO_TOP_BUTTON);
     expect(button).toHaveAttribute("title", buttons.SCROLL_TO_TOP_BUTTON);
+  });
+
+  it("should render arrow-up icon", () => {
+    mockUseScrolledPastThreshold.mockReturnValue(true);
+
+    const { container } = renderWithTestTranslations(
+      <ScrollToTopButton refElement={mockRef} />,
+    );
+
+    const icon = container.querySelector(".kern-icon--arrow-up");
+    expect(icon).toBeInTheDocument();
+    expect(icon).toHaveAttribute("aria-hidden", "true");
+  });
+
+  it("should call useScrolledPastThreshold with refElement", () => {
+    mockUseScrolledPastThreshold.mockReturnValue(false);
+
+    renderWithTestTranslations(<ScrollToTopButton refElement={mockRef} />);
+
+    expect(mockUseScrolledPastThreshold).toHaveBeenCalledWith(mockRef);
   });
 });
