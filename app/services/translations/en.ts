@@ -15,6 +15,7 @@ export const en: Translations = {
     SHOW_URTEIL: "Show judgment",
     LOAD_MORE_VERFAHREN: "Load more cases",
     SEARCH_BUTTON: "Search",
+    SCROLL_TO_TOP_BUTTON: "Scroll to top",
   },
   errorMessages: {
     TRY_LATER_MESSAGE: "Please try again later.",
