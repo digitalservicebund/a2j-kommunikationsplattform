@@ -1,5 +1,5 @@
 import { RefObject } from "react";
-import { useScrolledPastThreshold } from "~/components/hooks/useScrollPosition";
+import { useScrolledPastThreshold } from "~/components/hooks/useScrolledPastThreshold";
 import { useTranslations } from "~/services/translations/context";
 
 export default function ScrollToTopButton({
