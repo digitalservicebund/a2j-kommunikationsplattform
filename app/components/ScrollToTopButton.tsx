@@ -1,8 +1,13 @@
+import { Ref } from "react";
 import { useScrolledPastThreshold } from "~/components/hooks/useScrollPosition";
 import { useTranslations } from "~/services/translations/context";
 
-export default function ScrollToTopButton() {
-  const isScrolled = useScrolledPastThreshold();
+export default function ScrollToTopButton({
+  refElement,
+}: Readonly<{
+  refElement: Ref<HTMLHeadingElement>;
+}>) {
+  const isScrolled = useScrolledPastThreshold(refElement);
   const { buttons } = useTranslations();
 
   if (!isScrolled) return null;

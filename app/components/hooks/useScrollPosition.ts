@@ -1,16 +1,26 @@
-import { useEffect, useState } from "react";
+import { Ref, useEffect, useState } from "react";
 
-export function useScrolledPastThreshold(threshold = 0.3): boolean {
+export function useScrolledPastThreshold(
+  refElement: Ref<HTMLHeadingElement>,
+): boolean {
   const [isPast, setIsPast] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsPast(window.scrollY > window.innerHeight * threshold);
-    };
+    const element = refElement?.current;
+    if (!element) return;
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [threshold]);
+    const obsercer = new IntersectionObserver(
+      ([entry]) => {
+        setIsPast(!entry.isIntersecting);
+      },
+      { threshold: 0 },
+    );
+
+    obsercer.observe(element);
+    return () => {
+      obsercer.disconnect();
+    };
+  }, [refElement]);
 
   return isPast;
 }

@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { FormEvent, Ref, Suspense, useRef } from "react";
 import { Await, LoaderFunctionArgs, useLoaderData } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
@@ -66,10 +66,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function Verfahren() {
   const data = useLoaderData<LoaderData>();
+  const headingRef = useRef<HTMLHeadingElement>(null);
 
   return (
     <>
-      <VerfahrenHeading />
+      <VerfahrenHeading ref={headingRef} />
       <div className="space-y-kern-space-large flex flex-col">
         <Suspense
           fallback={VERFAHREN_SKELETONS.map((s) => (
@@ -81,6 +82,7 @@ export default function Verfahren() {
               <VerfahrenContent
                 initialData={verfahrenData}
                 gerichte={data.gerichte}
+                ref={headingRef}
               />
             )}
           </Await>
@@ -93,9 +95,11 @@ export default function Verfahren() {
 function VerfahrenContent({
   initialData,
   gerichte,
+  ref,
 }: Readonly<{
   initialData: VerfahrenLoaderData;
   gerichte: Gericht[];
+  ref: Ref<HTMLHeadingElement>;
 }>) {
   const { labels } = useTranslations();
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
@@ -115,7 +119,7 @@ function VerfahrenContent({
   // isInputSelectDisabled when loading, or when no items have been returned and no filters are applied
   const isInputDisabled = isLoading || (!hasFilters && allItems.length === 0);
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const value = formData.get("search_text");
@@ -162,14 +166,16 @@ function VerfahrenContent({
       </div>
       <VerfahrenCounter count={allItems.length || 0} hasFilters={hasFilters} />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
-      <ScrollToTopButton />
+      <ScrollToTopButton refElement={ref} />
       {hasMoreItems && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}
     </>
   );
 }
 
-const VerfahrenHeading = () => (
-  <h1 className="kern-heading-medium">Verfahren</h1>
+const VerfahrenHeading = ({ ref }: { ref?: Ref<HTMLHeadingElement> }) => (
+  <h1 ref={ref} className="kern-heading-medium">
+    Verfahren
+  </h1>
 );
 
 export function ErrorBoundary() {
