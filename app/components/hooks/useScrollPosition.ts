@@ -1,7 +1,7 @@
-import { Ref, useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 
 export function useScrolledPastThreshold(
-  refElement: Ref<HTMLHeadingElement>,
+  refElement: RefObject<HTMLHeadingElement | null>,
 ): boolean {
   const [isPast, setIsPast] = useState(false);
 

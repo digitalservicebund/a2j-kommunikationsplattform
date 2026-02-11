@@ -1,4 +1,4 @@
-import { FormEvent, Ref, Suspense, useRef } from "react";
+import { FormEvent, Ref, RefObject, Suspense, useRef } from "react";
 import { Await, LoaderFunctionArgs, useLoaderData } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
@@ -99,7 +99,7 @@ function VerfahrenContent({
 }: Readonly<{
   initialData: VerfahrenLoaderData;
   gerichte: Gericht[];
-  ref: Ref<HTMLHeadingElement>;
+  ref: RefObject<HTMLHeadingElement | null>;
 }>) {
   const { labels } = useTranslations();
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
