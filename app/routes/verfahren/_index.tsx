@@ -1,10 +1,11 @@
-import { Suspense } from "react";
+import { FormEvent, Ref, RefObject, Suspense, useRef } from "react";
 import { Await, LoaderFunctionArgs, useLoaderData } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { useParamsState } from "~/components/hooks/useParamsState";
 import InputSelect from "~/components/InputSelect";
+import ScrollToTopButton from "~/components/ScrollToTopButton";
 import Search from "~/components/Search";
 import VerfahrenTileSkeleton from "~/components/skeletons/VerfahrenTileSkeleton.static";
 import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
@@ -65,11 +66,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function Verfahren() {
   const data = useLoaderData<LoaderData>();
+  const headingRef = useRef<HTMLHeadingElement>(null);
 
   return (
     <>
-      <VerfahrenHeading />
-      <div className="mt-kern-space-large space-y-kern-space-large flex flex-col">
+      <VerfahrenHeading ref={headingRef} />
+      <div className="space-y-kern-space-large flex flex-col">
         <Suspense
           fallback={VERFAHREN_SKELETONS.map((s) => (
             <VerfahrenTileSkeleton key={s.id} />
@@ -80,6 +82,7 @@ export default function Verfahren() {
               <VerfahrenContent
                 initialData={verfahrenData}
                 gerichte={data.gerichte}
+                ref={headingRef}
               />
             )}
           </Await>
@@ -92,9 +95,11 @@ export default function Verfahren() {
 function VerfahrenContent({
   initialData,
   gerichte,
+  ref,
 }: Readonly<{
   initialData: VerfahrenLoaderData;
   gerichte: Gericht[];
+  ref: RefObject<HTMLHeadingElement | null>;
 }>) {
   const { labels } = useTranslations();
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
@@ -114,7 +119,7 @@ function VerfahrenContent({
   // isInputSelectDisabled when loading, or when no items have been returned and no filters are applied
   const isInputDisabled = isLoading || (!hasFilters && allItems.length === 0);
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const value = formData.get("search_text");
@@ -124,44 +129,53 @@ function VerfahrenContent({
 
   return (
     <>
-      <Search
-        handleSearch={handleSearch}
-        disabled={isInputDisabled}
-        defaultValue={getParamValue(`search_text`) || ""}
-        id="search_text"
-      />
-      <div className="space-x-kern-space-x-large flex items-start justify-between">
-        <InputSelect
-          label={labels.COURT_LABEL}
-          id="gericht"
-          placeholder={labels.SHOW_ALL_LABEL}
-          options={gerichteOptions}
-          onChange={(e) => updateParam("gericht", e.target.value || null)}
-          disabled={isInputDisabled}
-          selectedValue={getParamValue("gericht") || ""}
-          className="grow"
-        />
-        <InputSelect
-          label={labels.SORT_LABEL}
-          id="sort"
-          options={sortOptions}
-          onChange={(e) =>
-            updateParam("sort", e.target.value || sortOptions[0].value)
-          }
-          disabled={isInputDisabled}
-          selectedValue={getParamValue("sort") || sortOptions[0].value}
-          className="grow"
+      <div className="bg-kern-layout-background-default pt-kern-space-large space-y-kern-space-large sticky top-0 z-40 flex flex-col">
+        <div className="gap-kern-space-x-large grid grid-cols-1 items-start lg:grid-cols-4">
+          <div className="lg:col-span-2">
+            <Search
+              handleSearch={handleSearch}
+              disabled={isInputDisabled}
+              defaultValue={getParamValue(`search_text`) || ""}
+              id="search_text"
+            />
+          </div>
+          <InputSelect
+            label={labels.COURT_LABEL}
+            id="gericht"
+            placeholder={labels.SHOW_ALL_LABEL}
+            options={gerichteOptions}
+            onChange={(e) => updateParam("gericht", e.target.value || null)}
+            disabled={isInputDisabled}
+            selectedValue={getParamValue("gericht") || ""}
+          />
+          <InputSelect
+            label={labels.SORT_LABEL}
+            id="sort"
+            options={sortOptions}
+            onChange={(e) =>
+              updateParam("sort", e.target.value || sortOptions[0].value)
+            }
+            disabled={isInputDisabled}
+            selectedValue={getParamValue("sort") || sortOptions[0].value}
+          />
+        </div>
+        <hr
+          className="kern-divider border-kern-layout-border mb-kern-space-large w-full"
+          aria-hidden="true"
         />
       </div>
       <VerfahrenCounter count={allItems.length || 0} hasFilters={hasFilters} />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
+      <ScrollToTopButton refElement={ref} />
       {hasMoreItems && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}
     </>
   );
 }
 
-const VerfahrenHeading = () => (
-  <h1 className="kern-heading-medium">Verfahren</h1>
+const VerfahrenHeading = ({ ref }: { ref?: Ref<HTMLHeadingElement> }) => (
+  <h1 ref={ref} className="kern-heading-medium">
+    Verfahren
+  </h1>
 );
 
 export function ErrorBoundary() {
