@@ -65,7 +65,7 @@
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.53.1",
     "@vitest/coverage-istanbul": "^3.2.4",
-    "@vitest/eslint-plugin": "^1.5.4",
+    "@vitest/eslint-plugin": "^1.6.7",
     "@vitest/expect": "^3.2.4",
     "eslint": "^9.38.0",
     "eslint-plugin-react": "^7.37.5",
