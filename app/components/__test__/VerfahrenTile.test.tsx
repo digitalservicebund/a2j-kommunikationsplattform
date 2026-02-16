@@ -105,14 +105,14 @@ describe("VerfahrenTile", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("should render 'nicht verfügbar' for missing data", () => {
+  it("should render 'Unbekannt' for missing data", () => {
     const { getAllByText } = renderWithTestTranslations(
       <MemoryRouter>
         <VerfahrenTile id="123" beteiligungen={[]} />
       </MemoryRouter>,
     );
 
-    const notAvailableElements = getAllByText("nicht verfügbar");
+    const notAvailableElements = getAllByText("Unbekannt");
     expect(notAvailableElements.length).toBeGreaterThan(0);
   });
 });
