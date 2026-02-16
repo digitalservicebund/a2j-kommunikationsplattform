@@ -77,7 +77,7 @@ function DataCard({
   );
 }
 
-const notAvailable = "nicht verfügbar";
+const notAvailable = "Unbekannt";
 
 export default function VerfahrenTile({
   id,
@@ -104,7 +104,7 @@ export default function VerfahrenTile({
         Placeholder for Kläger:in ./. Beklagte:r
       </h2>
       <dl className="gap-kern-space-large my-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        <DataCard label="Kläger:in">
+        <DataCard label="Klagende Partei">
           {/* TODO: display Vorname & Nachname using separate DataItem when these data points are available. See https://digitalservicebund.atlassian.net/browse/KOMMPLA-987 */}
           <DataItem label="Name" value={klaegerinData?.name || notAvailable} />
           <DataItem
@@ -115,7 +115,7 @@ export default function VerfahrenTile({
             }
           />
         </DataCard>
-        <DataCard label="Beklagte:r">
+        <DataCard label="Beklagte Partei">
           <DataItem label="Name" value={beklagteData?.name || notAvailable} />
           <DataItem
             key={prozessbevollmaechtigteBeklagte[0]?.bevollmaechtigter?.id}
