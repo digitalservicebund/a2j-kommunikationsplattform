@@ -45,12 +45,12 @@ RUN apk add --no-cache dumb-init && rm -rf /var/cache/apk/*
 # Remove npm (has vulnerable glob@10.4.5 installed)
 RUN npm r -g npm
 
-USER node
+USER 1000
 # /app-deps has only production relevant packages installed, no dev dependencies
 WORKDIR /app-deps
 ENV NODE_ENV=production
 # copy /kompla production app relevant data into folder
-COPY --link --chown=node:node --from=app-copy /kompla/ ./
+COPY --link --chown=1000:1000 --from=app-copy /kompla/ ./
 EXPOSE 3000
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD [ "node", "./server.js" ]
