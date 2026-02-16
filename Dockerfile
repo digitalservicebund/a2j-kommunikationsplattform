@@ -45,12 +45,18 @@ RUN apk add --no-cache dumb-init && rm -rf /var/cache/apk/*
 # Remove npm (has vulnerable glob@10.4.5 installed)
 RUN npm r -g npm
 
-USER node
+# Use numeric UID instead of username for portability across build stages
+# The node user in node:24-alpine has UID 1000 by default
+# See:
+    # https://www.docker.com/blog/understanding-the-docker-user-instruction/#:~:text=Specify%20user%20by%20UID%20and%20GID
+    # https://github.com/docker/buildx/issues/1526#issuecomment-1396768545
+USER 1000
+
 # /app-deps has only production relevant packages installed, no dev dependencies
 WORKDIR /app-deps
 ENV NODE_ENV=production
 # copy /kompla production app relevant data into folder
-COPY --link --chown=node:node --from=app-copy /kompla/ ./
+COPY --link --chown=1000:1000 --from=app-copy /kompla/ ./
 EXPOSE 3000
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD [ "node", "./server.js" ]
