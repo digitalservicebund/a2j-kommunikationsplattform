@@ -6,10 +6,7 @@ export const getAllVerfahren = () => {
 
 export const getVerfahrenById = (id) => {
   try {
-    const verfahrenById = mockVerfahren.find(
-      (verfahren) => verfahren.id === id,
-    );
-    return verfahrenById;
+    return mockVerfahren.find((verfahren) => verfahren.id === id);
   } catch (error) {
     console.error("Error fetching verfahren by id:", error);
     return null;
@@ -18,10 +15,7 @@ export const getVerfahrenById = (id) => {
 
 export const filterVerfahrenByGericht = (verfahren, gerichtId) => {
   try {
-    const filteredVerfahren = verfahren.filter(
-      (v) => v.gericht?.id === gerichtId,
-    );
-    return filteredVerfahren;
+    return verfahren.filter((v) => v.gericht?.id === gerichtId);
   } catch (error) {
     console.error("Error filtering verfahren by gericht:", error);
     return [];
