@@ -39,15 +39,21 @@ export default async function fetchVerfahren(
     url.searchParams.set(key, value);
   });
 
+  console.log("Fetching URL:", url.toString());
+
   const response = await fetch(url.toString(), {
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
   });
 
+  console.log("Response status:", response.status);
+
   if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("Error response body:", errorBody);
     throw new Error(ERROR_MESSAGE, {
-      cause: `Serverantwort war nicht ok (Fehlercode ${response.status} ${response.statusText}).`,
+      cause: `Serverantwort war nicht ok (Fehlercode ${response.status} ${response.statusText}). Body: ${errorBody}`,
     });
   }
 
