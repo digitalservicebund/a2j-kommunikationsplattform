@@ -105,6 +105,7 @@ describe("fetchVerfahren", () => {
       ok: false,
       status: 500,
       statusText: "Internal Server Error",
+      text: async () => "",
     });
 
     const mockRequest = new Request("http://localhost:3000");
