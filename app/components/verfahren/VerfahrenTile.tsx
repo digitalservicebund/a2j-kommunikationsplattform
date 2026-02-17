@@ -1,41 +1,15 @@
 import { Link } from "react-router";
 import DraftIcon from "~/components/icons/DraftIcon";
 import FolderInfoIcon from "~/components/icons/FolderAlertIcon";
+import type { Verfahren } from "~/routes/verfahren/_index";
 import { useTranslations } from "~/services/translations/context";
 
 const ROLLE_CODE_KLAEGERIN = "101";
 const ROLLE_CODE_BEKLAGTE = "028";
 
-export type VerfahrenTileProps = {
-  readonly id: string;
-  readonly aktenzeichen_gericht?: string | null;
-  readonly gericht?: {
-    readonly id: string;
-    readonly wert: string;
-    readonly code: string;
-  } | null;
-  readonly beteiligungen: Array<{
-    readonly id: string;
-    readonly name: string;
-    readonly rollen: Array<{
-      readonly id: string;
-      readonly wert: string;
-      readonly code: string;
-    }>;
-    readonly prozessbevollmaechtigte: Array<{
-      readonly aktenzeichen: string;
-      readonly bevollmaechtigter: {
-        readonly id: string;
-        readonly safe_id: string;
-        readonly name: string;
-      };
-    }>;
-  }>;
-};
-
 // Helper functions to extract data based on role codes - we can move these to a separate utils file and create tests for them later
 function getBeteiligungByRoleCode(
-  beteiligungen: VerfahrenTileProps["beteiligungen"],
+  beteiligungen: Verfahren["beteiligungen"],
   roleCode: string,
 ) {
   return beteiligungen.find((b) => b.rollen.some((r) => r.code === roleCode));
@@ -84,7 +58,7 @@ export default function VerfahrenTile({
   aktenzeichen_gericht,
   gericht,
   beteiligungen,
-}: VerfahrenTileProps) {
+}: Verfahren) {
   const { buttons } = useTranslations();
 
   // Extract values from beteiligungen based on rollen codes
@@ -108,7 +82,7 @@ export default function VerfahrenTile({
           {/* TODO: display Vorname & Nachname using separate DataItem when these data points are available. See https://digitalservicebund.atlassian.net/browse/KOMMPLA-987 */}
           <DataItem label="Name" value={klaegerinData?.name || notAvailable} />
           <DataItem
-            key={prozessbevollmaechtigteKlaegerin[0]?.bevollmaechtigter?.id}
+            key={prozessbevollmaechtigteKlaegerin[0]?.id}
             label="Geschäftszeichen"
             value={
               prozessbevollmaechtigteKlaegerin[0]?.aktenzeichen || notAvailable
@@ -118,7 +92,7 @@ export default function VerfahrenTile({
         <DataCard label="Beklagte Partei">
           <DataItem label="Name" value={beklagteData?.name || notAvailable} />
           <DataItem
-            key={prozessbevollmaechtigteBeklagte[0]?.bevollmaechtigter?.id}
+            key={prozessbevollmaechtigteBeklagte[0]?.id}
             label="Geschäftszeichen"
             value={
               prozessbevollmaechtigteBeklagte[0]?.aktenzeichen || notAvailable

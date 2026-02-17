@@ -32,7 +32,7 @@ describe("fetchVerfahren", () => {
       {
         id: "2ab3cbc7-d00a-48bf-95a1-4d6f07406196",
         aktenzeichen_gericht: "JBA-82746242",
-        status: "Erstellt",
+        status: "ERSTELLT",
         status_changed: "2025-03-08T05:00:29.659Z",
         eingereicht_am: "2024-12-29T22:46:29.329Z",
         gericht: {

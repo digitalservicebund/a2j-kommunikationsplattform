@@ -5,12 +5,21 @@ export const getAllVerfahren = () => {
 };
 
 export const getVerfahrenById = (id) => {
-  return mockVerfahren.find((verfahren) => verfahren.id === id);
+  try {
+    return mockVerfahren.find((verfahren) => verfahren.id === id);
+  } catch (error) {
+    console.error("Error fetching verfahren by id:", error);
+    return null;
+  }
 };
 
 export const filterVerfahrenByGericht = (verfahren, gerichtId) => {
-  const filteredVerfahren = verfahren.filter((v) => v.gericht.id === gerichtId);
-  return filteredVerfahren;
+  try {
+    return verfahren.filter((v) => v.gericht?.id === gerichtId);
+  } catch (error) {
+    console.error("Error filtering verfahren by gericht:", error);
+    return [];
+  }
 };
 
 export const searchVerfahren = (verfahren, searchParam) => {
@@ -23,29 +32,25 @@ export const searchVerfahren = (verfahren, searchParam) => {
     // Top-level string fields
     if (
       matchesString(verfahren.aktenzeichen_gericht) ||
+      matchesString(verfahren.status) ||
       matchesString(verfahren.gericht?.wert) ||
-      matchesString(verfahren.gericht?.id)
+      matchesString(verfahren.gericht?.code)
     ) {
       return true;
     }
 
     // Beteiligungen and nested fields
     return verfahren.beteiligungen?.some((b) => {
-      // Beteiligung itself
+      // Beteiligung name and id
       if (matchesString(b.name) || matchesString(b.id)) return true;
 
       // Rollen
-      if (b.rollen?.some((r) => matchesString(r.id))) return true;
+      if (b.rollen?.some((r) => matchesString(r.wert) || matchesString(r.code)))
+        return true;
 
       // Prozessbevollmaechtigte
       return b.prozessbevollmaechtigte?.some((p) => {
-        const bev = p.bevollmaechtigter;
-        return (
-          matchesString(p.aktenzeichen) ||
-          matchesString(bev?.id) ||
-          matchesString(bev?.safe_id) ||
-          matchesString(bev?.name)
-        );
+        return matchesString(p.name) || matchesString(p.aktenzeichen);
       });
     });
   });
