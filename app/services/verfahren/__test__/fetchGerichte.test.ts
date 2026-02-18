@@ -72,6 +72,7 @@ describe("fetchGerichte", () => {
       ok: false,
       status: 404,
       statusText: "Not Found",
+      text: async () => "Not Found",
     });
 
     const mockRequest = new Request("http://localhost:3000");
