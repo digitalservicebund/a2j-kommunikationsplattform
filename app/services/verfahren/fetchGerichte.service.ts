@@ -23,7 +23,7 @@ export default async function fetchGerichte(request: Request) {
     },
   });
 
-  console.log("Gerichte response status:", response.status);
+  console.log("/gerichte response status:", response.status);
 
   if (!response.ok) {
     const errorBody = await response.text();

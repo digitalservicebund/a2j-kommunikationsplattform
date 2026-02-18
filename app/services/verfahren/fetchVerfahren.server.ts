@@ -47,7 +47,7 @@ export default async function fetchVerfahren(
     },
   });
 
-  console.log("Response status:", response.status);
+  console.log("/verfahren response status:", response.status);
 
   if (!response.ok) {
     const errorBody = await response.text();
