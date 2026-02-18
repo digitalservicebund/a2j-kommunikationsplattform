@@ -20,8 +20,10 @@ import { getCspHeader } from "~/services/security/cspHeader.server";
 import { originFromUrlString } from "~/util/originFromUrlString";
 import { NonceContext } from "./services/security/nonce";
 
-// Reject/cancel all pending promises after 5 seconds
-export const streamTimeout = 5000;
+// Reject/cancel all pending promises after 15 seconds
+// Increased to handle token refresh (which happens on expired cookies)
+// + multiple API calls without causing stream timeouts that result in 502 errors
+export const streamTimeout = 15000;
 const CONNECT_SOURCES = [originFromUrlString(config().SENTRY_DSN)].filter(
   (origin) => origin !== undefined,
 );
@@ -104,9 +106,14 @@ function handleBotRequest(
       },
     );
 
-    // Automatically timeout the React renderer after 6 seconds, which ensures
+    // Automatically timeout the React renderer after 16 seconds, which ensures
     // React has enough time to flush down the rejected boundary contents
-    setTimeout(abort, streamTimeout + 1000);
+    setTimeout(() => {
+      console.error(
+        `Bot request stream timeout after ${streamTimeout + 1000}ms for ${request.url}`,
+      );
+      abort();
+    }, streamTimeout + 1000);
   });
 }
 
@@ -168,8 +175,13 @@ function handleBrowserRequest(
       },
     );
 
-    // Automatically timeout the React renderer after 6 seconds, which ensures
+    // Automatically timeout the React renderer after 16 seconds, which ensures
     // React has enough time to flush down the rejected boundary contents
-    setTimeout(abort, streamTimeout + 1000);
+    setTimeout(() => {
+      console.error(
+        `Browser request stream timeout after ${streamTimeout + 1000}ms for ${request.url}`,
+      );
+      abort();
+    }, streamTimeout + 1000);
   });
 }
