@@ -56,11 +56,26 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return { items, hasMoreItems };
   })();
 
-  const gerichte = await fetchGerichteService(request);
+  const gerichtePromise = fetchGerichteService(request);
+
+  // Use Promise.allSettled to track both promises
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled
+  const [verfahrenResult, gerichteResult] = await Promise.allSettled([
+    verfahrenPromise,
+    gerichtePromise,
+  ]);
+
+  if (gerichteResult.status === "rejected") {
+    throw gerichteResult.reason;
+  }
+
+  if (verfahrenResult.status === "rejected") {
+    throw verfahrenResult.reason;
+  }
 
   return {
-    verfahren: verfahrenPromise,
-    gerichte,
+    verfahren: Promise.resolve(verfahrenResult.value),
+    gerichte: gerichteResult.value,
   };
 };
 
