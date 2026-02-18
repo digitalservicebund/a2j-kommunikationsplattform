@@ -28,7 +28,7 @@ export type VerfahrenLoaderData = {
 
 export type LoaderData = {
   verfahren: Promise<VerfahrenLoaderData>;
-  gerichte: Gericht[];
+  gerichte: Promise<Gericht[]>;
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -58,29 +58,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   const gerichtePromise = fetchGerichteService(request);
 
-  // Use Promise.allSettled to track both promises
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled
-  const [verfahrenResult, gerichteResult] = await Promise.allSettled([
-    verfahrenPromise,
-    gerichtePromise,
-  ]);
-
-  if (gerichteResult.status === "rejected") {
-    throw gerichteResult.reason;
-  }
-
-  if (verfahrenResult.status === "rejected") {
-    throw verfahrenResult.reason;
-  }
-
   return {
-    verfahren: Promise.resolve(verfahrenResult.value),
-    gerichte: gerichteResult.value,
+    data: Promise.all([verfahrenPromise, gerichtePromise]),
   };
 };
 
 export default function Verfahren() {
-  const data = useLoaderData<LoaderData>();
+  const { data } = useLoaderData<{
+    data: Promise<[VerfahrenLoaderData, Gericht[]]>;
+  }>();
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   return (
@@ -92,11 +78,11 @@ export default function Verfahren() {
             <VerfahrenTileSkeleton key={s.id} />
           ))}
         >
-          <Await resolve={data.verfahren}>
-            {(verfahrenData) => (
+          <Await resolve={data}>
+            {([verfahrenData, gerichte]) => (
               <VerfahrenContent
                 initialData={verfahrenData}
-                gerichte={data.gerichte}
+                gerichte={gerichte}
                 ref={headingRef}
               />
             )}
