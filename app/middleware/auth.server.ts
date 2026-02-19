@@ -18,6 +18,7 @@ export async function authMiddleware(
   const authData = await getAuthData(request);
 
   if (!authData) {
+    console.log("authMiddleware: No auth data found, redirecting to login");
     throw redirect(href("/login"));
   }
 
@@ -26,6 +27,9 @@ export async function authMiddleware(
   const response = await next();
 
   if (authData.sessionCookieHeader) {
+    console.log(
+      "authMiddleware: sessionCookieHeader found, appending to response headers",
+    );
     const newResponse = new Response(response.body, {
       status: response.status,
       statusText: response.statusText,

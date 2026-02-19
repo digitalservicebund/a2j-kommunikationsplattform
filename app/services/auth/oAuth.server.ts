@@ -69,7 +69,7 @@ export async function refreshAccessToken(
   let newTokens;
 
   try {
-    console.log("refresh access token");
+    console.log("refreshAccessToken: refreshing access token");
     newTokens = await oauth2Strategy.refreshToken(refreshToken);
   } catch (error) {
     console.error("Error while refreshing the access token:", error);

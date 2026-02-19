@@ -72,8 +72,38 @@ export const getAuthData = async (
   const session = await getSession(request.headers.get("Cookie"));
 
   const accessToken = session.get("accessToken");
-  const expiresAt = session.get("expiresAt");
+  let expiresAt = session.get("expiresAt");
   const refreshToken = session.get("refreshToken");
+
+  // Log token values for debugging
+  console.log(
+    "getAuthData: accessToken:",
+    !!accessToken,
+    "expiresAt:",
+    expiresAt,
+    "refreshToken:",
+    !!refreshToken,
+  );
+
+  // Check expiresAt type and parse if needed
+  if (typeof expiresAt === "string") {
+    const parsed = parseInt(expiresAt, 10);
+    if (!isNaN(parsed)) {
+      expiresAt = parsed;
+    } else {
+      console.warn(
+        "getAuthData: expiresAt is not a valid number, destroying session",
+      );
+      await destroySession(session);
+      return null;
+    }
+  }
+
+  // Log session cookie size for debugging
+  const cookieHeader = request.headers.get("Cookie") || "";
+  if (cookieHeader.length > 3500) {
+    console.warn("Session cookie size is large:", cookieHeader.length);
+  }
 
   // No tokens at all - not authenticated
   if (!accessToken || !refreshToken) {
@@ -86,6 +116,7 @@ export const getAuthData = async (
 
   // Token still valid
   if (accessToken && expiresAt > Date.now()) {
+    console.log("getAuthData: Token is still valid");
     return {
       authenticationTokens: { accessToken, expiresAt, refreshToken },
       sessionCookieHeader: "",
@@ -94,6 +125,7 @@ export const getAuthData = async (
 
   // Try to refresh the token (production only)
   try {
+    console.log("getAuthData: Token expired, attempting refresh");
     return await refreshAccessToken(request, refreshToken);
   } catch (error) {
     console.error("Token refresh failed, destroying session", error);

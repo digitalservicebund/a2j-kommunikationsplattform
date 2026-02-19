@@ -8,6 +8,12 @@ allowed_patterns:
   - secrets:\ inherit
   - password:\ \${{\ secrets.GITHUB_TOKEN\ }}
   - HTTP_CREDENTIALS_PASSWORD:\ \${{\ secrets.HTTP_CREDENTIALS_PASSWORD\ }}
+  - getSecret\(\)
+  - clientSecret:\ \${{\ secrets.[A-Z0-9_]+ }}
+  - BRAK_IDP_OIDC_CLIENT_SECRET
+  - 'clientSecret:\s*serverConfig\(\)\.BRAK_IDP_OIDC_CLIENT_SECRET'
+  - 'const getSecret = \(\) => \{'
+  - 'clientSecret:\s*serverConfig\(\).*'
 
 fileignoreconfig:
   - filename: .env.example
