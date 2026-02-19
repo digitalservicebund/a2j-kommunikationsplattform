@@ -84,7 +84,8 @@
     "vitest": "^3.2.4"
   },
   "overrides": {
-    "@isaacs/brace-expansion": "5.0.1"
+    "@isaacs/brace-expansion": "5.0.1",
+    "minimatch": "10.2.1"
   },
   "engines": {
     "node": ">=24.13.0"
