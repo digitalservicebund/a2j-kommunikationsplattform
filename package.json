@@ -85,7 +85,7 @@
   },
   "overrides": {
     "@isaacs/brace-expansion": "5.0.1",
-    "minimatch": "10.2.1"
+    "minimatch": "10.2.3"
   },
   "engines": {
     "node": ">=24.13.0"
