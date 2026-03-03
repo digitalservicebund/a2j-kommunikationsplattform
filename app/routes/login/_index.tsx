@@ -1,4 +1,10 @@
-import { Form, redirect, useLoaderData, useSearchParams } from "react-router";
+import {
+  Form,
+  Link,
+  redirect,
+  useLoaderData,
+  useSearchParams,
+} from "react-router";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
 import { getAuthData } from "~/services/auth/authSession.server";
@@ -11,7 +17,8 @@ type AlertState =
   | ""
   | LogoutType.Automatic
   | LogoutType.ByUser
-  | LoginError.BeA;
+  | LoginError.BeA
+  | LoginError.Demo;
 
 export async function loader({ request }: { request: Request }) {
   const userIsLoggedIn = await getAuthData(request);
@@ -35,6 +42,7 @@ export default function LoginPage() {
   const loginButtonLabels: Record<LoginType, string> = {
     [LoginType.BeA]: buttons.LOGIN_BUTTON_BEA,
     [LoginType.Developer]: buttons.LOGIN_BUTTON_DEVELOPER,
+    [LoginType.Demo]: buttons.LOGIN_BUTTON_TEST_ZUGANG,
   };
 
   let alertMarkup = null;
@@ -93,6 +101,25 @@ export default function LoginPage() {
         </div>
       );
       break;
+    case LoginError.Demo:
+      alertMarkup = (
+        <div
+          className="kern-alert kern-alert--danger my-kern-space-default"
+          role="alert"
+        >
+          <div className="kern-alert__header">
+            <span
+              className="kern-icon kern-icon--danger kern-icon--small"
+              aria-hidden
+            ></span>
+            <span className="kern-title">{alerts.LOGIN_ERROR_DEMO_TITLE}</span>
+          </div>
+          <div className="kern-alert__body">
+            <p className="kern-body">{alerts.LOGIN_ERROR_DEMO_MESSAGE}</p>
+          </div>
+        </div>
+      );
+      break;
   }
 
   return (
@@ -132,17 +159,17 @@ export default function LoginPage() {
                 </span>
               </button>
 
-              {/* only render "Testzugang" demo link for non production environments */}
+              {/* only render "Testzugang" demo button for non production environments */}
               {environment !== "production" && (
-                <button
-                  className="kern-btn kern-btn--block kern-btn--secondary"
+                <Link
+                  to="/auth/start-demo-login"
+                  className="kern-btn kern-btn--block kern-btn--secondary w-full"
                   data-testid="demo-button"
-                  disabled
                 >
                   <span className="kern-label">
                     {buttons.LOGIN_BUTTON_TEST_ZUGANG}
                   </span>
-                </button>
+                </Link>
               )}
             </div>
           </Form>

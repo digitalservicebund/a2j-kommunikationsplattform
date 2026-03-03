@@ -1,21 +1,18 @@
 import { Authenticator } from "remix-auth";
 import { CodeChallengeMethod, OAuth2Strategy } from "remix-auth-oauth2";
 import { serverConfig } from "~/config/config.server";
+import { MagicLinkStrategy } from "./MagicLinkStrategy.server";
 import { setAuthSession } from "./authSession.server";
 
-export interface AuthenticationTokens {
-  accessToken: string;
-  expiresAt: number;
-  refreshToken: string;
-}
-
-export interface AuthenticationResponse {
-  authenticationTokens: AuthenticationTokens;
-  sessionCookieHeader: string; // This is the Set-Cookie header that should be set in the response to the client
-}
+import type {
+  AuthenticationResponse,
+  AuthenticationTokens,
+} from "./auth.types";
+export type { AuthenticationResponse, AuthenticationTokens };
 
 export enum AuthenticationProvider {
   BEA = "bea",
+  DEMO = "demo",
 }
 
 // BRAK IdP uses "Authorization Code" OAuth 2.0 flow
@@ -61,6 +58,53 @@ const oauth2Strategy = new OAuth2Strategy(
 );
 
 authenticator.use(oauth2Strategy, AuthenticationProvider.BEA);
+
+const magicLinkStrategy = new MagicLinkStrategy(
+  {
+    idpIssuer: serverConfig().KOMPLA_DEMO_IDP_ISSUER,
+    serviceClientId: serverConfig().KOMPLA_DEMO_SERVICE_CLIENT_ID,
+    serviceClientSecret: serverConfig().KOMPLA_DEMO_SERVICE_CLIENT_SECRET,
+    clientId: serverConfig().KOMPLA_DEMO_CLIENT_ID,
+    redirectUri: serverConfig().KOMPLA_DEMO_REDIRECT_URI,
+    username: serverConfig().KOMPLA_DEMO_USERNAME,
+    email: serverConfig().KOMPLA_DEMO_EMAIL,
+  },
+  async ({ tokens, request }) => {
+    console.log("MagicLinkStrategy: verify — creating session");
+    const sessionCookieHeader = await setAuthSession({
+      ...tokens,
+      request,
+      isDemo: true,
+    });
+    const response: AuthenticationResponse = {
+      authenticationTokens: tokens,
+      sessionCookieHeader,
+    };
+    return response;
+  },
+);
+
+authenticator.use(magicLinkStrategy, AuthenticationProvider.DEMO);
+
+export async function getDemoMagicLinkUrl(): Promise<string> {
+  return magicLinkStrategy.getMagicLinkUrl();
+}
+
+export async function refreshDemoToken(
+  request: Request,
+  refreshToken: string,
+): Promise<AuthenticationResponse> {
+  const tokens = await magicLinkStrategy.refreshAccessToken(refreshToken);
+  const sessionCookieHeader = await setAuthSession({
+    ...tokens,
+    request,
+    isDemo: true,
+  });
+  return {
+    authenticationTokens: tokens,
+    sessionCookieHeader,
+  };
+}
 
 export async function refreshAccessToken(
   request: Request,

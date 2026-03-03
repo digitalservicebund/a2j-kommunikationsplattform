@@ -9,6 +9,8 @@ export default [
   route("action/login-user", "./routes/action.login-user.ts"),
   route("action/logout-user", "./routes/action.logout-user.ts"),
   route("auth/callback", "./routes/auth.callback.tsx"),
+  route("auth/magic-link-callback", "./routes/auth.magic-link-callback.tsx"),
+  route("auth/start-demo-login", "./routes/auth.start-demo-login.ts"),
 
   // errors
   route("error", "./routes/error.tsx"),

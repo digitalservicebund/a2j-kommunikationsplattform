@@ -9,6 +9,13 @@ interface ServerConfig {
   KOMPLA_IDP_CLIENT_ID: string;
   KOMPLA_IDP_ISSUER: string;
   KOMPLA_IDP_SUBJECT_ISSUER: string;
+  KOMPLA_DEMO_IDP_ISSUER: string;
+  KOMPLA_DEMO_SERVICE_CLIENT_ID: string;
+  KOMPLA_DEMO_SERVICE_CLIENT_SECRET: string;
+  KOMPLA_DEMO_CLIENT_ID: string;
+  KOMPLA_DEMO_REDIRECT_URI: string;
+  KOMPLA_DEMO_USERNAME: string;
+  KOMPLA_DEMO_EMAIL: string;
   SENTRY_DSN: string;
 }
 
@@ -29,6 +36,16 @@ export function serverConfig(): ServerConfig {
     KOMPLA_IDP_ISSUER: process.env.KOMPLA_IDP_ISSUER?.trim() ?? "",
     KOMPLA_IDP_SUBJECT_ISSUER:
       process.env.KOMPLA_IDP_SUBJECT_ISSUER?.trim() ?? "",
+    KOMPLA_DEMO_IDP_ISSUER: process.env.KOMPLA_DEMO_IDP_ISSUER?.trim() ?? "",
+    KOMPLA_DEMO_SERVICE_CLIENT_ID:
+      process.env.KOMPLA_DEMO_SERVICE_CLIENT_ID?.trim() ?? "",
+    KOMPLA_DEMO_SERVICE_CLIENT_SECRET:
+      process.env.KOMPLA_DEMO_SERVICE_CLIENT_SECRET?.trim() ?? "",
+    KOMPLA_DEMO_CLIENT_ID: process.env.KOMPLA_DEMO_CLIENT_ID?.trim() ?? "",
+    KOMPLA_DEMO_REDIRECT_URI:
+      process.env.KOMPLA_DEMO_REDIRECT_URI?.trim() ?? "",
+    KOMPLA_DEMO_USERNAME: process.env.KOMPLA_DEMO_USERNAME?.trim() ?? "",
+    KOMPLA_DEMO_EMAIL: process.env.KOMPLA_DEMO_EMAIL?.trim() ?? "",
     SENTRY_DSN: process.env.SENTRY_DSN?.trim() ?? "",
   };
 }
