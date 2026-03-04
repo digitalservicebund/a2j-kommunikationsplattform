@@ -10,11 +10,11 @@ export interface MagicLinkVerifyOptions {
 }
 
 interface MagicLinkConfig {
-  idpIssuer: string; // base URL, e.g. https://auth.kompla-justiz.sinc.de/realms/kompla-dev
-  serviceClientId: string; // client for client_credentials grant, e.g. magic-link-service
+  idpIssuer: string;
+  serviceClientId: string;
   serviceClientSecret: string;
-  clientId: string; // client_id sent in magic link body, e.g. magic-link
-  redirectUri: string; // must be registered in Keycloak and match APP_URL/auth/magic-link-callback
+  clientId: string;
+  redirectUri: string;
   username: string;
   email: string;
 }
@@ -71,6 +71,7 @@ export class MagicLinkStrategy extends Strategy<
     return this.verify({ tokens, request });
   }
 
+  // Helper to ensure all required config values are present before making requests.
   private assertConfig() {
     const missing = (
       [

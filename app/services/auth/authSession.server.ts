@@ -132,8 +132,10 @@ export const getAuthData = async (
   try {
     console.log("getAuthData: Token expired, attempting refresh");
     if (isDemo) {
+      console.log("getAuthData: Refreshing demo token");
       return await refreshDemoToken(request, refreshToken);
     }
+    console.log("getAuthData: Refreshing regular KomPla IdP token");
     return await refreshAccessToken(request, refreshToken);
   } catch (error) {
     console.error("Token refresh failed, destroying session", error);

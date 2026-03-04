@@ -159,18 +159,15 @@ export default function LoginPage() {
                 </span>
               </button>
 
-              {/* only render "Testzugang" demo button for non production environments */}
-              {environment !== "production" && (
-                <Link
-                  to="/auth/start-demo-login"
-                  className="kern-btn kern-btn--block kern-btn--secondary w-full"
-                  data-testid="demo-button"
-                >
-                  <span className="kern-label">
-                    {buttons.LOGIN_BUTTON_TEST_ZUGANG}
-                  </span>
-                </Link>
-              )}
+              <Link
+                to="/auth/start-demo-login"
+                className="kern-btn kern-btn--block kern-btn--secondary w-full"
+                data-testid="demo-button"
+              >
+                <span className="kern-label">
+                  {buttons.LOGIN_BUTTON_TEST_ZUGANG}
+                </span>
+              </Link>
             </div>
           </Form>
         </div>
