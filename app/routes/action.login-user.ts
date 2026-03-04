@@ -7,11 +7,13 @@ import {
 
 export enum LoginError {
   BeA = "bea-login-error",
+  Demo = "demo-login-error",
 }
 
 export enum LoginType {
   BeA = "bea-login",
   Developer = "developer-login",
+  Demo = "demo-login",
 }
 
 /**
@@ -36,5 +38,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       request,
     );
   }
+
   return new Response("Invalid login type", { status: 400 });
 };

@@ -6,6 +6,7 @@ import {
   AuthenticationResponse,
   AuthenticationTokens,
   refreshAccessToken,
+  refreshDemoToken,
 } from "./oAuth.server";
 
 const getSecret = () => {
@@ -30,6 +31,7 @@ export { commitSession, destroySession, getSession };
 
 interface SetAuthSessionProps extends AuthenticationTokens {
   request: Request;
+  isDemo?: boolean;
 }
 
 /**
@@ -41,11 +43,13 @@ export const setAuthSession = async ({
   expiresAt,
   refreshToken,
   request,
+  isDemo = false,
 }: SetAuthSessionProps) => {
   const session = await getSession(request.headers.get("Cookie"));
   session.set("accessToken", accessToken);
   session.set("expiresAt", expiresAt);
   session.set("refreshToken", refreshToken);
+  session.set("isDemo", isDemo);
 
   console.log("setAuthSession for request.url:", request.url);
 
@@ -74,6 +78,7 @@ export const getAuthData = async (
   const accessToken = session.get("accessToken");
   let expiresAt = session.get("expiresAt");
   const refreshToken = session.get("refreshToken");
+  const isDemo = session.get("isDemo") === true;
 
   // Log token values for debugging
   console.log(
@@ -123,9 +128,14 @@ export const getAuthData = async (
     };
   }
 
-  // Try to refresh the token (production only)
+  // Try to refresh the token using the appropriate IdP
   try {
     console.log("getAuthData: Token expired, attempting refresh");
+    if (isDemo) {
+      console.log("getAuthData: Refreshing demo token");
+      return await refreshDemoToken(request, refreshToken);
+    }
+    console.log("getAuthData: Refreshing regular KomPla IdP token");
     return await refreshAccessToken(request, refreshToken);
   } catch (error) {
     console.error("Token refresh failed, destroying session", error);

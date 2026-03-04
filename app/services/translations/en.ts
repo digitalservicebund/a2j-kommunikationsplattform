@@ -41,6 +41,8 @@ export const en: Translations = {
     LOGOUT_BY_USER_MESSAGE: "Successfully logged out",
     LOGIN_ERROR_BEA_TITLE: "Error during login",
     LOGIN_ERROR_BEA_MESSAGE: "Login via beA failed. Please try again.",
+    LOGIN_ERROR_DEMO_TITLE: "Test access error",
+    LOGIN_ERROR_DEMO_MESSAGE: "Login via test access failed. Please try again.",
     WORK_IN_PROGRESS_TITLE: "Work in progress",
     WORK_IN_PROGRESS_MESSAGE:
       "This page is still under development. Layouts and displays may change at any time.",

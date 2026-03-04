@@ -40,6 +40,9 @@ export const de = {
     LOGIN_ERROR_BEA_TITLE: "Fehler bei der Anmeldung",
     LOGIN_ERROR_BEA_MESSAGE:
       "Die Anmeldung über beA ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    LOGIN_ERROR_DEMO_TITLE: "Fehler beim Testzugang",
+    LOGIN_ERROR_DEMO_MESSAGE:
+      "Die Anmeldung über den Testzugang ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
     WORK_IN_PROGRESS_TITLE: "Work in progress",
     WORK_IN_PROGRESS_MESSAGE:
       "Diese Seite ist noch in der Entwicklung. Darstellungen und Layouts können sich jederzeit ändern.",
