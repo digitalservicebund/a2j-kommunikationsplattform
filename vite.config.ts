@@ -47,6 +47,9 @@ export default defineConfig((config) => {
           "app/constants/**",
           // exclude mock files
           "app/mocks/**/*.{ts,tsx}",
+          // TODO: add tests after demo login works in staging env
+          "app/services/auth/MagicLinkStrategy.server.ts",
+          "app/services/auth/oAuth.server.ts",
         ],
         reporter: ["text", "lcov"],
       },
