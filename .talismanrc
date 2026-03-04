@@ -19,5 +19,7 @@ allowed_patterns:
 fileignoreconfig:
   - filename: .env.example
     ignore_detectors: [filename]
+  - filename: app/config/config.server.ts
+    ignore_detectors: [filecontent]
   - filename: app/services/translations/de.ts
     ignore_detectors: [filecontent]

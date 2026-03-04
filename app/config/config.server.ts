@@ -22,6 +22,12 @@ interface ServerConfig {
 const oidcClientSecretFilePath = "/etc/secrets/BRAK_IDP_OIDC_CLIENT_SECRET";
 const oidcClientSecretFileExists = existsSync(oidcClientSecretFilePath);
 
+const demoServiceClientSecretFilePath =
+  "/etc/secrets/KOMPLA_DEMO_SERVICE_CLIENT_SECRET";
+const demoServiceClientSecretFileExists = existsSync(
+  demoServiceClientSecretFilePath,
+);
+
 export function serverConfig(): ServerConfig {
   return {
     BRAK_IDP_OIDC_CLIENT_ID: process.env.BRAK_IDP_OIDC_CLIENT_ID?.trim() ?? "",
@@ -39,8 +45,9 @@ export function serverConfig(): ServerConfig {
     KOMPLA_DEMO_IDP_ISSUER: process.env.KOMPLA_DEMO_IDP_ISSUER?.trim() ?? "",
     KOMPLA_DEMO_SERVICE_CLIENT_ID:
       process.env.KOMPLA_DEMO_SERVICE_CLIENT_ID?.trim() ?? "",
-    KOMPLA_DEMO_SERVICE_CLIENT_SECRET:
-      process.env.KOMPLA_DEMO_SERVICE_CLIENT_SECRET?.trim() ?? "",
+    KOMPLA_DEMO_SERVICE_CLIENT_SECRET: demoServiceClientSecretFileExists
+      ? readFileSync(demoServiceClientSecretFilePath, "utf-8")?.trim()
+      : "",
     KOMPLA_DEMO_CLIENT_ID: process.env.KOMPLA_DEMO_CLIENT_ID?.trim() ?? "",
     KOMPLA_DEMO_REDIRECT_URI:
       process.env.KOMPLA_DEMO_REDIRECT_URI?.trim() ?? "",
