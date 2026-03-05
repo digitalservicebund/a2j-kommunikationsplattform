@@ -103,6 +103,7 @@ export async function refreshDemoToken(
   return {
     authenticationTokens: tokens,
     sessionCookieHeader,
+    isDemo: true,
   };
 }
 
