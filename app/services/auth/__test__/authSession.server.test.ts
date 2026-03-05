@@ -213,6 +213,7 @@ describe("authSession.server", () => {
         refreshToken: "ref",
       },
       sessionCookieHeader: "",
+      isDemo: false,
     });
     restore();
   });
