@@ -47,7 +47,7 @@ export function serverConfig(): ServerConfig {
       process.env.KOMPLA_DEMO_SERVICE_CLIENT_ID?.trim() ?? "",
     KOMPLA_DEMO_SERVICE_CLIENT_SECRET: demoServiceClientSecretFileExists
       ? readFileSync(demoServiceClientSecretFilePath, "utf-8")?.trim()
-      : "",
+      : (process.env.KOMPLA_DEMO_SERVICE_CLIENT_SECRET?.trim() ?? ""),
     KOMPLA_DEMO_CLIENT_ID: process.env.KOMPLA_DEMO_CLIENT_ID?.trim() ?? "",
     KOMPLA_DEMO_REDIRECT_URI:
       process.env.KOMPLA_DEMO_REDIRECT_URI?.trim() ?? "",

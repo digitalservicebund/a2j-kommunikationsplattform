@@ -125,6 +125,7 @@ export const getAuthData = async (
     return {
       authenticationTokens: { accessToken, expiresAt, refreshToken },
       sessionCookieHeader: "",
+      isDemo,
     };
   }
 

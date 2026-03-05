@@ -7,4 +7,5 @@ export interface AuthenticationTokens {
 export interface AuthenticationResponse {
   authenticationTokens: AuthenticationTokens;
   sessionCookieHeader: string;
+  isDemo?: boolean;
 }

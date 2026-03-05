@@ -16,6 +16,11 @@ export async function getBearerToken(request: Request): Promise<string> {
   }
 
   const accessToken = authData.authenticationTokens.accessToken;
+
+  if (authData.isDemo) {
+    return accessToken;
+  }
+
   const token = await authorizeToken(accessToken);
   return token.access_token;
 }
