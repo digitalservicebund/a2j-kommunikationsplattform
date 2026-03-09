@@ -290,4 +290,54 @@ describe("authSession.server", () => {
     expect(reactRouterMock.destroySession).toHaveBeenCalled();
     restore();
   });
+
+  it("getAuthData returns null and destroys session when expiresAt is a non-numeric string", async () => {
+    const { module, reactRouterMock, restore } = await withMocks();
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const cookie = `accessToken=tok; expiresAt=not-a-number; refreshToken=ref`;
+    const req = new Request(requestURL, { headers: { Cookie: cookie } });
+    const res = await module.getAuthData(req);
+    expect(res).toBeNull();
+    expect(reactRouterMock.destroySession).toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledWith(
+      "getAuthData: expiresAt is not a valid number, destroying session",
+    );
+    warnSpy.mockRestore();
+    restore();
+  });
+
+  it("getAuthData warns when session cookie is large", async () => {
+    const { module, restore } = await withMocks();
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const padding = "x".repeat(3500);
+    const cookie = `accessToken=tok; expiresAt=${futureTs()}; refreshToken=ref; padding=${padding}`;
+    const req = new Request(requestURL, { headers: { Cookie: cookie } });
+    await module.getAuthData(req);
+    expect(warnSpy).toHaveBeenCalledWith(
+      "Session cookie size is large:",
+      expect.any(Number),
+    );
+    warnSpy.mockRestore();
+    restore();
+  });
+
+  it("getAuthData calls refreshDemoToken (not refreshAccessToken) when provider is DEMO and token is expired", async () => {
+    const refreshResponse = {
+      authenticationTokens: {
+        accessToken: "new-demo",
+        expiresAt: Date.now() + 60_000,
+        refreshToken: "new-demo-rt",
+      },
+      sessionCookieHeader: "hdr",
+      provider: "demo" as const,
+    };
+    const { module, mocks, restore } = await withMocks({ refreshResponse });
+    const cookie = `accessToken=tok; expiresAt=${pastTs()}; refreshToken=demo-rt; provider=demo`;
+    const req = new Request(requestURL, { headers: { Cookie: cookie } });
+    const res = await module.getAuthData(req);
+    expect(mocks.refreshDemoTokenMock).toHaveBeenCalledWith(req, "demo-rt");
+    expect(mocks.refreshAccessTokenMock).not.toHaveBeenCalled();
+    expect(res).toEqual(refreshResponse);
+    restore();
+  });
 });

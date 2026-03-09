@@ -52,8 +52,6 @@ export const setAuthSession = async ({
   session.set("refreshToken", refreshToken);
   session.set("provider", provider);
 
-  console.log("setAuthSession for request.url:", request.url);
-
   try {
     console.log("Set/update session");
     return await commitSession(session);
@@ -82,16 +80,6 @@ export const getAuthData = async (
   const provider =
     (session.get("provider") as AuthenticationProvider) ??
     AuthenticationProvider.BEA;
-
-  // Log token values for debugging
-  console.log(
-    "getAuthData: accessToken:",
-    !!accessToken,
-    "expiresAt:",
-    expiresAt,
-    "refreshToken:",
-    !!refreshToken,
-  );
 
   // Check expiresAt type and parse if needed
   if (typeof expiresAt === "string") {
