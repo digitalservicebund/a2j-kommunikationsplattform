@@ -1,16 +1,6 @@
 import { it, vi } from "vitest";
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 import fetchVerfahrenById from "../fetchVerfahrenById.server";
-
-const mockAuthData: AuthenticationResponse = {
-  authenticationTokens: {
-    accessToken: "user-access-token",
-    expiresAt: Date.now() + 60_000,
-    refreshToken: "refresh-token",
-  },
-  sessionCookieHeader: "",
-  provider: "bea" as const,
-};
+import { mockAuthData } from "./helpers";
 
 const mocks = vi.hoisted(() => {
   return {
