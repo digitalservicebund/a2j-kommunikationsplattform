@@ -2,6 +2,7 @@ import { createCookieSessionStorage, redirect } from "react-router";
 import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
 import { LogoutType } from "~/routes/action.logout-user";
+import { AuthenticationProvider } from "./auth.types";
 import {
   AuthenticationResponse,
   AuthenticationTokens,
@@ -31,7 +32,7 @@ export { commitSession, destroySession, getSession };
 
 interface SetAuthSessionProps extends AuthenticationTokens {
   request: Request;
-  isDemo?: boolean;
+  provider: AuthenticationProvider;
 }
 
 /**
@@ -43,13 +44,13 @@ export const setAuthSession = async ({
   expiresAt,
   refreshToken,
   request,
-  isDemo = false,
+  provider,
 }: SetAuthSessionProps) => {
   const session = await getSession(request.headers.get("Cookie"));
   session.set("accessToken", accessToken);
   session.set("expiresAt", expiresAt);
   session.set("refreshToken", refreshToken);
-  session.set("isDemo", isDemo);
+  session.set("provider", provider);
 
   console.log("setAuthSession for request.url:", request.url);
 
@@ -78,7 +79,9 @@ export const getAuthData = async (
   const accessToken = session.get("accessToken");
   let expiresAt = session.get("expiresAt");
   const refreshToken = session.get("refreshToken");
-  const isDemo = session.get("isDemo") === true;
+  const provider =
+    (session.get("provider") as AuthenticationProvider) ??
+    AuthenticationProvider.BEA;
 
   // Log token values for debugging
   console.log(
@@ -125,14 +128,14 @@ export const getAuthData = async (
     return {
       authenticationTokens: { accessToken, expiresAt, refreshToken },
       sessionCookieHeader: "",
-      isDemo,
+      provider,
     };
   }
 
   // Try to refresh the token using the appropriate IdP
   try {
     console.log("getAuthData: Token expired, attempting refresh");
-    if (isDemo) {
+    if (provider === AuthenticationProvider.DEMO) {
       console.log("getAuthData: Refreshing demo token");
       return await refreshDemoToken(request, refreshToken);
     }

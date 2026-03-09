@@ -4,16 +4,13 @@ import { serverConfig } from "~/config/config.server";
 import { MagicLinkStrategy } from "./MagicLinkStrategy.server";
 import { setAuthSession } from "./authSession.server";
 
-import type {
-  AuthenticationResponse,
-  AuthenticationTokens,
+import {
+  AuthenticationProvider,
+  type AuthenticationResponse,
+  type AuthenticationTokens,
 } from "./auth.types";
+export { AuthenticationProvider };
 export type { AuthenticationResponse, AuthenticationTokens };
-
-export enum AuthenticationProvider {
-  BEA = "bea",
-  DEMO = "demo",
-}
 
 // BRAK IdP uses "Authorization Code" OAuth 2.0 flow
 export const authenticator = new Authenticator<AuthenticationResponse>();
@@ -42,6 +39,7 @@ const oauth2Strategy = new OAuth2Strategy(
       expiresAt,
       refreshToken,
       request,
+      provider: AuthenticationProvider.BEA,
     });
 
     const response: AuthenticationResponse = {
@@ -51,6 +49,7 @@ const oauth2Strategy = new OAuth2Strategy(
         refreshToken,
       },
       sessionCookieHeader,
+      provider: AuthenticationProvider.BEA,
     };
 
     return response;
@@ -74,11 +73,12 @@ const magicLinkStrategy = new MagicLinkStrategy(
     const sessionCookieHeader = await setAuthSession({
       ...tokens,
       request,
-      isDemo: true,
+      provider: AuthenticationProvider.DEMO,
     });
     const response: AuthenticationResponse = {
       authenticationTokens: tokens,
       sessionCookieHeader,
+      provider: AuthenticationProvider.DEMO,
     };
     return response;
   },
@@ -98,12 +98,12 @@ export async function refreshDemoToken(
   const sessionCookieHeader = await setAuthSession({
     ...tokens,
     request,
-    isDemo: true,
+    provider: AuthenticationProvider.DEMO,
   });
   return {
     authenticationTokens: tokens,
     sessionCookieHeader,
-    isDemo: true,
+    provider: AuthenticationProvider.DEMO,
   };
 }
 
@@ -132,6 +132,7 @@ export async function refreshAccessToken(
   const sessionCookieHeader = await setAuthSession({
     ...refreshedTokenData,
     request,
+    provider: AuthenticationProvider.BEA,
   });
 
   const response: AuthenticationResponse = {
@@ -139,6 +140,7 @@ export async function refreshAccessToken(
       ...refreshedTokenData,
     },
     sessionCookieHeader,
+    provider: AuthenticationProvider.BEA,
   };
 
   return response;

@@ -1,3 +1,4 @@
+import { AuthenticationProvider } from "./auth.types";
 import { setAuthSession } from "./authSession.server";
 
 export const loginAsDeveloper = async (request: Request) => {
@@ -12,6 +13,7 @@ export const loginAsDeveloper = async (request: Request) => {
       expiresAt,
       refreshToken: devRefreshToken,
       request,
+      provider: AuthenticationProvider.DEVELOPMENT,
     });
 
     return new Response(null, {

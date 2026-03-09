@@ -1,4 +1,5 @@
 import { authorizeToken } from "../api/authorizeToken.server";
+import { AuthenticationProvider } from "./auth.types";
 import { getAuthData } from "./authSession.server";
 
 /**
@@ -17,7 +18,10 @@ export async function getBearerToken(request: Request): Promise<string> {
 
   const accessToken = authData.authenticationTokens.accessToken;
 
-  if (authData.isDemo) {
+  if (
+    authData.provider === AuthenticationProvider.DEMO ||
+    authData.provider === AuthenticationProvider.DEVELOPMENT
+  ) {
     return accessToken;
   }
 

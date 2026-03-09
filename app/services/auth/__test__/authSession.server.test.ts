@@ -113,10 +113,12 @@ async function withMocks({
 
   // mock oAuth helpers used by authSession.server
   const refreshAccessTokenMock = vi.fn(async () => refreshResponse);
+  const refreshDemoTokenMock = vi.fn(async () => refreshResponse);
   const revokeAccessTokenMock = vi.fn(async () => undefined);
   // mock the oAuth helpers relative to this test file's location
   vi.doMock("../oAuth.server", () => ({
     refreshAccessToken: refreshAccessTokenMock,
+    refreshDemoToken: refreshDemoTokenMock,
     revokeAccessToken: revokeAccessTokenMock,
   }));
 
@@ -125,7 +127,11 @@ async function withMocks({
   return {
     module: mod,
     reactRouterMock,
-    mocks: { refreshAccessTokenMock, revokeAccessTokenMock },
+    mocks: {
+      refreshAccessTokenMock,
+      refreshDemoTokenMock,
+      revokeAccessTokenMock,
+    },
     restore: () => {
       process.env.NODE_ENV = prevNodeEnv;
       vi.clearAllMocks();
@@ -213,7 +219,7 @@ describe("authSession.server", () => {
         refreshToken: "ref",
       },
       sessionCookieHeader: "",
-      isDemo: false,
+      provider: "bea",
     });
     restore();
   });

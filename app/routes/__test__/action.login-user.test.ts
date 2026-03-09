@@ -1,3 +1,4 @@
+import type { ActionFunctionArgs } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("~/services/auth/loginAsDeveloper.server", () => ({
@@ -11,7 +12,10 @@ vi.mock("~/services/auth/oAuth.server", () => ({
 
 import { action, LoginType } from "~/routes/action.login-user";
 import { loginAsDeveloper } from "~/services/auth/loginAsDeveloper.server";
-import { authenticator } from "~/services/auth/oAuth.server";
+import {
+  AuthenticationProvider,
+  authenticator,
+} from "~/services/auth/oAuth.server";
 
 describe("/action/login-user action", () => {
   beforeEach(() => {
@@ -34,7 +38,11 @@ describe("/action/login-user action", () => {
       body: formData,
     });
 
-    const response = await action({ request, params: {}, context: {} });
+    const response = await action({
+      request,
+      params: {},
+      context: {},
+    } as ActionFunctionArgs);
     const res = response as Response;
 
     expect(res.status).toBe(302);
@@ -47,10 +55,11 @@ describe("/action/login-user action", () => {
     const authResponse = {
       authenticationTokens: {
         accessToken: "bea-token",
-        expiresIn: Date.now() + 1000,
+        expiresAt: Date.now() + 1000,
         refreshToken: "refresh-token",
       },
       sessionCookieHeader: "session=abc; Path=/; HttpOnly",
+      provider: AuthenticationProvider.BEA,
     };
     mockedAuth.authenticate.mockResolvedValue(authResponse);
 
@@ -62,7 +71,11 @@ describe("/action/login-user action", () => {
       body: formData,
     });
 
-    const response = await action({ request, params: {}, context: {} });
+    const response = await action({
+      request,
+      params: {},
+      context: {},
+    } as ActionFunctionArgs);
     // action should return the AuthenticationResponse from authenticator
     expect(response).toEqual(authResponse);
   });
@@ -76,7 +89,11 @@ describe("/action/login-user action", () => {
       body: formData,
     });
 
-    const response = await action({ request, params: {}, context: {} });
+    const response = await action({
+      request,
+      params: {},
+      context: {},
+    } as ActionFunctionArgs);
     const res = response as Response;
 
     expect(res.status).toBe(400);

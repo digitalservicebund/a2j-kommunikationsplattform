@@ -1,3 +1,9 @@
+export enum AuthenticationProvider {
+  BEA = "bea",
+  DEMO = "demo",
+  DEVELOPMENT = "development",
+}
+
 export interface AuthenticationTokens {
   accessToken: string;
   expiresAt: number;
@@ -7,5 +13,5 @@ export interface AuthenticationTokens {
 export interface AuthenticationResponse {
   authenticationTokens: AuthenticationTokens;
   sessionCookieHeader: string;
-  isDemo?: boolean;
+  provider: AuthenticationProvider;
 }

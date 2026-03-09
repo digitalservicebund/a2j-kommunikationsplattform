@@ -118,6 +118,7 @@ describe("oAuth.server", () => {
       expiresAt: expect.any(Number),
       refreshToken: refreshToken,
       request: mockRequest,
+      provider: "bea",
     });
 
     expect(result).toEqual({
@@ -127,6 +128,7 @@ describe("oAuth.server", () => {
         refreshToken: refreshToken,
       },
       sessionCookieHeader: "cookie-header-value",
+      provider: "bea",
     });
   });
 
