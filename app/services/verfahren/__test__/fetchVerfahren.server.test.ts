@@ -1,6 +1,17 @@
 import { describe, it, vi } from "vitest";
 import { sortOptions } from "~/config/verfahren";
+import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 import fetchVerfahren from "../fetchVerfahren.server";
+
+const mockAuthData: AuthenticationResponse = {
+  authenticationTokens: {
+    accessToken: "user-access-token",
+    expiresAt: Date.now() + 60_000,
+    refreshToken: "refresh-token",
+  },
+  sessionCookieHeader: "",
+  provider: "bea" as const,
+};
 
 const mocks = vi.hoisted(() => {
   return {
@@ -50,7 +61,7 @@ describe("fetchVerfahren", () => {
       json: async () => mockVerfahren,
     });
 
-    const mockRequest = new Request("http://localhost:3000");
+    const mockRequest = mockAuthData;
     const result = await fetchVerfahren(mockRequest, {
       limit: 99,
       offset: 123,
@@ -80,7 +91,7 @@ describe("fetchVerfahren", () => {
       json: async () => [{ invalid: true }],
     });
 
-    const mockRequest = new Request("http://localhost:3000");
+    const mockRequest = mockAuthData;
 
     const result = fetchVerfahren(mockRequest, { sort: sortOptions[0].value });
 
@@ -92,7 +103,7 @@ describe("fetchVerfahren", () => {
   it("throws error when bearer token is not available", async () => {
     mocks.getBearerToken.mockResolvedValue(null);
 
-    const mockRequest = new Request("http://localhost:3000");
+    const mockRequest = mockAuthData;
 
     const result = fetchVerfahren(mockRequest);
 
@@ -108,7 +119,7 @@ describe("fetchVerfahren", () => {
       text: async () => "",
     });
 
-    const mockRequest = new Request("http://localhost:3000");
+    const mockRequest = mockAuthData;
 
     const result = fetchVerfahren(mockRequest);
 
@@ -125,7 +136,7 @@ describe("fetchVerfahren", () => {
         json: async () => [],
       });
 
-      const mockRequest = new Request("http://localhost:3000");
+      const mockRequest = mockAuthData;
       await fetchVerfahren(mockRequest, {
         gericht: "b727131c-0c32-91ba-3eaa-f44405967b6d",
         limit: 99,
@@ -146,7 +157,7 @@ describe("fetchVerfahren", () => {
         ok: true,
         json: async () => [],
       });
-      const mockRequest = new Request("http://localhost:3000");
+      const mockRequest = mockAuthData;
       await fetchVerfahren(mockRequest, { gericht: null });
       expect(mocks.fetch).toHaveBeenCalledWith(
         expect.not.stringContaining("gericht="),
@@ -156,7 +167,7 @@ describe("fetchVerfahren", () => {
 
     it("rejects invalid UUID in gericht parameter", async () => {
       mocks.getBearerToken.mockResolvedValue("test-token");
-      const mockRequest = new Request("http://localhost:3000");
+      const mockRequest = mockAuthData;
 
       const result = fetchVerfahren(mockRequest, {
         gericht: "invalid-uuid",
@@ -172,7 +183,7 @@ describe("fetchVerfahren", () => {
         json: async () => [],
       });
 
-      const mockRequest = new Request("http://localhost:3000");
+      const mockRequest = mockAuthData;
       await fetchVerfahren(mockRequest, {
         sort: sortOptions[1].value,
       });
@@ -190,7 +201,7 @@ describe("fetchVerfahren", () => {
         ok: true,
         json: async () => [],
       });
-      const mockRequest = new Request("http://localhost:3000");
+      const mockRequest = mockAuthData;
       await fetchVerfahren(mockRequest, { sort: "" });
       expect(mocks.fetch).toHaveBeenCalledWith(
         expect.not.stringContaining("sort="),
@@ -199,7 +210,7 @@ describe("fetchVerfahren", () => {
     });
     it("rejects invalid sort parameter", async () => {
       mocks.getBearerToken.mockResolvedValue("test-token");
-      const mockRequest = new Request("http://localhost:3000");
+      const mockRequest = mockAuthData;
 
       const result = fetchVerfahren(mockRequest, {
         sort: "invalid-sort-value",
@@ -214,7 +225,7 @@ describe("fetchVerfahren", () => {
         json: async () => [],
       });
 
-      const mockRequest = new Request("http://localhost:3000");
+      const mockRequest = mockAuthData;
       await fetchVerfahren(mockRequest, {
         search_text: "legal case",
       });
@@ -230,7 +241,7 @@ describe("fetchVerfahren", () => {
         ok: true,
         json: async () => [],
       });
-      const mockRequest = new Request("http://localhost:3000");
+      const mockRequest = mockAuthData;
       await fetchVerfahren(mockRequest, { search_text: null });
       expect(mocks.fetch).toHaveBeenCalledWith(
         expect.not.stringContaining("search_text="),
@@ -244,7 +255,7 @@ describe("fetchVerfahren", () => {
         json: async () => [],
       });
 
-      const mockRequest = new Request("http://localhost:3000");
+      const mockRequest = mockAuthData;
       await fetchVerfahren(mockRequest, {
         search_text: "   trimmed search   ",
       });

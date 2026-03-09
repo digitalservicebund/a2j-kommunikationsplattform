@@ -1,5 +1,16 @@
 import { it, vi } from "vitest";
+import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 import fetchVerfahrenById from "../fetchVerfahrenById.server";
+
+const mockAuthData: AuthenticationResponse = {
+  authenticationTokens: {
+    accessToken: "user-access-token",
+    expiresAt: Date.now() + 60_000,
+    refreshToken: "refresh-token",
+  },
+  sessionCookieHeader: "",
+  provider: "bea" as const,
+};
 
 const mocks = vi.hoisted(() => {
   return {
@@ -65,7 +76,7 @@ describe("fetchVerfahrenById", () => {
       json: async () => mockVerfahren,
     });
 
-    const mockRequest = new Request("http://localhost:3000");
+    const mockRequest = mockAuthData;
     const result = await fetchVerfahrenById(mockRequest, {
       id: mockVerfahren.id,
     });
@@ -88,7 +99,7 @@ describe("fetchVerfahrenById", () => {
       json: async () => ({ invalid: true }),
     });
 
-    const mockRequest = new Request("http://localhost:3000");
+    const mockRequest = mockAuthData;
 
     await expect(
       fetchVerfahrenById(mockRequest, { id: mockVerfahren.id }),
