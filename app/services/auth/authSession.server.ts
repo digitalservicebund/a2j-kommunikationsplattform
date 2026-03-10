@@ -77,9 +77,7 @@ export const getAuthData = async (
   const accessToken = session.get("accessToken");
   let expiresAt = session.get("expiresAt");
   const refreshToken = session.get("refreshToken");
-  const provider =
-    (session.get("provider") as AuthenticationProvider) ??
-    AuthenticationProvider.BEA;
+  const provider = session.get("provider") as AuthenticationProvider;
 
   // Check expiresAt type and parse if needed
   if (typeof expiresAt === "string") {
