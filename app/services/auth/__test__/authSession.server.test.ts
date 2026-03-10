@@ -20,6 +20,7 @@ async function withMocks({
       refreshToken: string;
     };
     sessionCookieHeader: string;
+    provider: string;
   } | null;
 } = {}) {
   vi.resetModules();
@@ -209,7 +210,7 @@ describe("authSession.server", () => {
 
   it("getAuthData returns tokens when valid", async () => {
     const { module, restore } = await withMocks();
-    const cookie = `accessToken=tok; expiresAt=${futureTs()}; refreshToken=ref`;
+    const cookie = `accessToken=tok; expiresAt=${futureTs()}; refreshToken=ref; provider=bea`;
     const req = new Request(requestURL, { headers: { Cookie: cookie } });
     const res = await module.getAuthData(req);
     expect(res).toEqual({
@@ -232,6 +233,7 @@ describe("authSession.server", () => {
         refreshToken: "newref",
       },
       sessionCookieHeader: "hdr",
+      provider: "bea",
     };
     const { module, mocks, restore } = await withMocks({ refreshResponse });
     const cookie = `accessToken=tok; expiresAt=${pastTs()}; refreshToken=present`;
