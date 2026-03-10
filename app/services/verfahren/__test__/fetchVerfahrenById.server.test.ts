@@ -1,5 +1,6 @@
 import { it, vi } from "vitest";
 import fetchVerfahrenById from "../fetchVerfahrenById.server";
+import { mockAuthData } from "./helpers";
 
 const mocks = vi.hoisted(() => {
   return {
@@ -65,7 +66,7 @@ describe("fetchVerfahrenById", () => {
       json: async () => mockVerfahren,
     });
 
-    const mockRequest = new Request("http://localhost:3000");
+    const mockRequest = mockAuthData;
     const result = await fetchVerfahrenById(mockRequest, {
       id: mockVerfahren.id,
     });
@@ -88,7 +89,7 @@ describe("fetchVerfahrenById", () => {
       json: async () => ({ invalid: true }),
     });
 
-    const mockRequest = new Request("http://localhost:3000");
+    const mockRequest = mockAuthData;
 
     await expect(
       fetchVerfahrenById(mockRequest, { id: mockVerfahren.id }),

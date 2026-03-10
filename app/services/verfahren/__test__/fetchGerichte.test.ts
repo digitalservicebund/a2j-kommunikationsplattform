@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import fetchGerichte from "~/services/verfahren/fetchGerichte.service";
+import { mockAuthData } from "./helpers";
 
 const mocks = vi.hoisted(() => {
   return {
@@ -41,7 +42,7 @@ describe("fetchGerichte", () => {
       json: async () => mockGerichte,
     });
 
-    const mockRequest = new Request("http://localhost:3000");
+    const mockRequest = mockAuthData;
     const result = await fetchGerichte(mockRequest);
 
     expect(mocks.fetch).toHaveBeenCalledWith(
@@ -59,7 +60,7 @@ describe("fetchGerichte", () => {
   it("throws error when bearer token is not available", async () => {
     mocks.getBearerToken.mockResolvedValue(null);
 
-    const mockRequest = new Request("http://localhost:3000");
+    const mockRequest = mockAuthData;
 
     await expect(fetchGerichte(mockRequest)).rejects.toThrow(
       "No bearer token available",
@@ -75,7 +76,7 @@ describe("fetchGerichte", () => {
       text: async () => "Not Found",
     });
 
-    const mockRequest = new Request("http://localhost:3000");
+    const mockRequest = mockAuthData;
 
     await expect(fetchGerichte(mockRequest)).rejects.toThrow(
       "Die Daten für das ausgewählte Gericht konnten nicht abgerufen werden",
@@ -89,7 +90,7 @@ describe("fetchGerichte", () => {
       json: async () => [{ invalid: true }],
     });
 
-    const mockRequest = new Request("http://localhost:3000");
+    const mockRequest = mockAuthData;
 
     await expect(fetchGerichte(mockRequest)).rejects.toThrow(
       "Die Daten für das ausgewählte Gericht konnten nicht abgerufen werden",
@@ -103,7 +104,7 @@ describe("fetchGerichte", () => {
       json: async () => [],
     });
 
-    const mockRequest = new Request("http://localhost:3000");
+    const mockRequest = mockAuthData;
     const result = await fetchGerichte(mockRequest);
 
     expect(result).toEqual([]);

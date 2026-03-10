@@ -1,17 +1,32 @@
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
 import { getBearerToken } from "../getBearerToken.server";
+import type { AuthenticationResponse } from "../oAuth.server";
 
-// mock module dependencies
 vi.mock("../../api/authorizeToken.server", () => ({
   authorizeToken: vi.fn(),
 }));
-vi.mock("../authSession.server", () => ({
-  getAuthData: vi.fn(),
-}));
 
-// import mocks after vi.mock calls so TS sees mocked shapes
 import { authorizeToken } from "../../api/authorizeToken.server";
-import { getAuthData } from "../authSession.server";
+
+const beaAuthData: AuthenticationResponse = {
+  authenticationTokens: {
+    accessToken: "user-access-token",
+    expiresAt: Date.now() + 60_000,
+    refreshToken: "refresh-token",
+  },
+  sessionCookieHeader: "",
+  provider: "bea" as const,
+};
+
+const demoAuthData: AuthenticationResponse = {
+  ...beaAuthData,
+  provider: "demo" as const,
+};
+
+const devAuthData: AuthenticationResponse = {
+  ...beaAuthData,
+  provider: "development" as const,
+};
 
 describe("getBearerToken", () => {
   beforeEach(() => {
@@ -22,43 +37,35 @@ describe("getBearerToken", () => {
     vi.restoreAllMocks();
   });
 
-  it("returns a bearer token", async () => {
-    const req = new Request("https://cool.auth/request");
-    (vi.mocked(getAuthData) as Mock).mockResolvedValue({
-      authenticationTokens: {
-        accessToken: "user-access-token",
-      },
-    });
+  it("calls authorizeToken and returns access_token for BEA provider", async () => {
     (vi.mocked(authorizeToken) as Mock).mockResolvedValue({
       access_token: "an-api-access-token",
     });
 
-    const bearerToken = await getBearerToken(req);
-    expect(getAuthData).toHaveBeenCalledWith(req);
+    const token = await getBearerToken(beaAuthData);
+
     expect(authorizeToken).toHaveBeenCalledWith("user-access-token");
-    expect(bearerToken).toBe("an-api-access-token");
+    expect(token).toBe("an-api-access-token");
   });
 
-  it("propagates errors from getAuthData", async () => {
-    const req = new Request("https://another.cool/request");
-    const error = new Error("could not get user session data");
-    (getAuthData as unknown as Mock).mockRejectedValue(error);
+  it("returns accessToken directly for DEMO provider without calling authorizeToken", async () => {
+    const token = await getBearerToken(demoAuthData);
 
-    await expect(getBearerToken(req)).rejects.toThrow(error);
     expect(authorizeToken).not.toHaveBeenCalled();
+    expect(token).toBe("user-access-token");
+  });
+
+  it("returns accessToken directly for DEVELOPMENT provider without calling authorizeToken", async () => {
+    const token = await getBearerToken(devAuthData);
+
+    expect(authorizeToken).not.toHaveBeenCalled();
+    expect(token).toBe("user-access-token");
   });
 
   it("propagates errors from authorizeToken", async () => {
-    const req = new Request("https://one.more/request");
-    (getAuthData as unknown as Mock).mockResolvedValue({
-      authenticationTokens: {
-        accessToken: "user-access-token",
-      },
-    });
     const error = new Error("authorization failed");
     (authorizeToken as unknown as Mock).mockRejectedValue(error);
 
-    await expect(getBearerToken(req)).rejects.toThrow(error);
-    expect(authorizeToken).toHaveBeenCalledWith("user-access-token");
+    await expect(getBearerToken(beaAuthData)).rejects.toThrow(error);
   });
 });

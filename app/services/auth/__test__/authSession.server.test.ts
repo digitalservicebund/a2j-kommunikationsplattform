@@ -20,6 +20,7 @@ async function withMocks({
       refreshToken: string;
     };
     sessionCookieHeader: string;
+    provider: string;
   } | null;
 } = {}) {
   vi.resetModules();
@@ -113,10 +114,12 @@ async function withMocks({
 
   // mock oAuth helpers used by authSession.server
   const refreshAccessTokenMock = vi.fn(async () => refreshResponse);
+  const refreshDemoTokenMock = vi.fn(async () => refreshResponse);
   const revokeAccessTokenMock = vi.fn(async () => undefined);
   // mock the oAuth helpers relative to this test file's location
   vi.doMock("../oAuth.server", () => ({
     refreshAccessToken: refreshAccessTokenMock,
+    refreshDemoToken: refreshDemoTokenMock,
     revokeAccessToken: revokeAccessTokenMock,
   }));
 
@@ -125,7 +128,11 @@ async function withMocks({
   return {
     module: mod,
     reactRouterMock,
-    mocks: { refreshAccessTokenMock, revokeAccessTokenMock },
+    mocks: {
+      refreshAccessTokenMock,
+      refreshDemoTokenMock,
+      revokeAccessTokenMock,
+    },
     restore: () => {
       process.env.NODE_ENV = prevNodeEnv;
       vi.clearAllMocks();
@@ -203,7 +210,7 @@ describe("authSession.server", () => {
 
   it("getAuthData returns tokens when valid", async () => {
     const { module, restore } = await withMocks();
-    const cookie = `accessToken=tok; expiresAt=${futureTs()}; refreshToken=ref`;
+    const cookie = `accessToken=tok; expiresAt=${futureTs()}; refreshToken=ref; provider=bea`;
     const req = new Request(requestURL, { headers: { Cookie: cookie } });
     const res = await module.getAuthData(req);
     expect(res).toEqual({
@@ -213,7 +220,7 @@ describe("authSession.server", () => {
         refreshToken: "ref",
       },
       sessionCookieHeader: "",
-      isDemo: false,
+      provider: "bea",
     });
     restore();
   });
@@ -226,6 +233,7 @@ describe("authSession.server", () => {
         refreshToken: "newref",
       },
       sessionCookieHeader: "hdr",
+      provider: "bea",
     };
     const { module, mocks, restore } = await withMocks({ refreshResponse });
     const cookie = `accessToken=tok; expiresAt=${pastTs()}; refreshToken=present`;
@@ -282,6 +290,56 @@ describe("authSession.server", () => {
     const res = await module.getAuthData(req);
     expect(res).toBeNull();
     expect(reactRouterMock.destroySession).toHaveBeenCalled();
+    restore();
+  });
+
+  it("getAuthData returns null and destroys session when expiresAt is a non-numeric string", async () => {
+    const { module, reactRouterMock, restore } = await withMocks();
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const cookie = `accessToken=tok; expiresAt=not-a-number; refreshToken=ref`;
+    const req = new Request(requestURL, { headers: { Cookie: cookie } });
+    const res = await module.getAuthData(req);
+    expect(res).toBeNull();
+    expect(reactRouterMock.destroySession).toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledWith(
+      "getAuthData: expiresAt is not a valid number, destroying session",
+    );
+    warnSpy.mockRestore();
+    restore();
+  });
+
+  it("getAuthData warns when session cookie is large", async () => {
+    const { module, restore } = await withMocks();
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const padding = "x".repeat(3500);
+    const cookie = `accessToken=tok; expiresAt=${futureTs()}; refreshToken=ref; padding=${padding}`;
+    const req = new Request(requestURL, { headers: { Cookie: cookie } });
+    await module.getAuthData(req);
+    expect(warnSpy).toHaveBeenCalledWith(
+      "Session cookie size is large:",
+      expect.any(Number),
+    );
+    warnSpy.mockRestore();
+    restore();
+  });
+
+  it("getAuthData calls refreshDemoToken (not refreshAccessToken) when provider is DEMO and token is expired", async () => {
+    const refreshResponse = {
+      authenticationTokens: {
+        accessToken: "new-demo",
+        expiresAt: Date.now() + 60_000,
+        refreshToken: "new-demo-rt",
+      },
+      sessionCookieHeader: "hdr",
+      provider: "demo" as const,
+    };
+    const { module, mocks, restore } = await withMocks({ refreshResponse });
+    const cookie = `accessToken=tok; expiresAt=${pastTs()}; refreshToken=demo-rt; provider=demo`;
+    const req = new Request(requestURL, { headers: { Cookie: cookie } });
+    const res = await module.getAuthData(req);
+    expect(mocks.refreshDemoTokenMock).toHaveBeenCalledWith(req, "demo-rt");
+    expect(mocks.refreshAccessTokenMock).not.toHaveBeenCalled();
+    expect(res).toEqual(refreshResponse);
     restore();
   });
 });

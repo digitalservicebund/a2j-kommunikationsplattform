@@ -8,8 +8,39 @@ vi.mock("~/config/config.server", () => ({
     BRAK_IDP_OIDC_CLIENT_SECRET: "client-secret",
     BRAK_IDP_OIDC_ISSUER: "https://issuer.example",
     BRAK_IDP_OIDC_REDIRECT_URI: "https://redirect.example",
+    KOMPLA_DEMO_IDP_ISSUER: "https://demo-issuer.example",
+    KOMPLA_DEMO_SERVICE_CLIENT_ID: "demo-service-client",
+    KOMPLA_DEMO_SERVICE_CLIENT_SECRET: "demo-service-secret",
+    KOMPLA_DEMO_CLIENT_ID: "demo-client",
+    KOMPLA_DEMO_REDIRECT_URI: "https://demo-redirect.example",
+    KOMPLA_DEMO_USERNAME: "demo",
+    KOMPLA_DEMO_EMAIL: "demo@example.com",
   }),
 }));
+
+// Mock MagicLinkStrategy to expose controllable mocks
+vi.mock("../MagicLinkStrategy.server", () => {
+  const getMagicLinkUrlMock = vi.fn();
+  const refreshAccessTokenMock = vi.fn();
+
+  class MagicLinkStrategy {
+    verify: any;
+    constructor(_opts: any, _verify: any) {
+      this.verify = _verify;
+    }
+    getMagicLinkUrl() {
+      return getMagicLinkUrlMock();
+    }
+    refreshAccessToken(refreshToken: string) {
+      return refreshAccessTokenMock(refreshToken);
+    }
+  }
+
+  return {
+    MagicLinkStrategy,
+    __mocks__: { getMagicLinkUrlMock, refreshAccessTokenMock },
+  };
+});
 
 // Mock remix-auth-oauth2 and create controllable mocks inside the factory
 vi.mock("remix-auth-oauth2", () => {
@@ -45,6 +76,7 @@ vi.mock("../authSession.server", () => ({
 import {
   AuthenticationProvider,
   type AuthenticationResponse,
+  type AuthenticationTokens,
   authenticator,
 } from "../oAuth.server";
 
@@ -62,6 +94,15 @@ type StrategyResponse = {
   verify: (a: VerifyArgs) => Promise<AuthenticationResponse>;
 };
 
+type DemoVerifyArgs = {
+  tokens: AuthenticationTokens;
+  request: Request;
+};
+
+type DemoStrategyResponse = {
+  verify: (a: DemoVerifyArgs) => Promise<AuthenticationResponse>;
+};
+
 type AuthWithStrategies = {
   strategies: Map<string, StrategyResponse>;
 };
@@ -76,15 +117,33 @@ function getBeaStrategy(): StrategyResponse {
   return strategy;
 }
 
+function getDemoStrategy(): DemoStrategyResponse {
+  const strategyMap = (authenticator as unknown as AuthWithStrategies)
+    .strategies;
+  const strategy = strategyMap.get(AuthenticationProvider.DEMO);
+  if (!strategy) throw new Error("demo strategy not registered");
+  return strategy as unknown as DemoStrategyResponse;
+}
+
 import { setAuthSession } from "../authSession.server";
-import { refreshAccessToken, revokeAccessToken } from "../oAuth.server";
+import {
+  getDemoMagicLinkUrl,
+  refreshAccessToken,
+  refreshDemoToken,
+  revokeAccessToken,
+} from "../oAuth.server";
 
 // `remix-auth-oauth2` does not export `__mocks__` in its types —
 // import it dynamically to access the mock created above at runtime.
 let oAuthMocks: any;
+let demoMocks: any;
 beforeAll(async () => {
-  const mod: any = await import("remix-auth-oauth2");
-  oAuthMocks = mod.__mocks__;
+  const [oAuthMod, demoMod] = await Promise.all([
+    import("remix-auth-oauth2"),
+    import("../MagicLinkStrategy.server"),
+  ]);
+  oAuthMocks = (oAuthMod as any).__mocks__;
+  demoMocks = (demoMod as any).__mocks__;
 });
 
 describe("oAuth.server", () => {
@@ -118,6 +177,7 @@ describe("oAuth.server", () => {
       expiresAt: expect.any(Number),
       refreshToken: refreshToken,
       request: mockRequest,
+      provider: "bea",
     });
 
     expect(result).toEqual({
@@ -127,6 +187,7 @@ describe("oAuth.server", () => {
         refreshToken: refreshToken,
       },
       sessionCookieHeader: "cookie-header-value",
+      provider: "bea",
     });
   });
 
@@ -209,5 +270,62 @@ describe("oAuth.server", () => {
     expect(res).toBeInstanceOf(Response);
     // @ts-expect-error Response may be undefined in success case, but here we expect it
     expect(res.status).toBe(500);
+  });
+
+  it("verify MagicLinkStrategy callback: calls setAuthSession with provider DEMO and returns AuthenticationResponse", async () => {
+    mockedSetAuthSession.mockResolvedValueOnce("demo-cookie-header");
+
+    const strategy = getDemoStrategy();
+    const tokens = {
+      accessToken: "demo-at",
+      expiresAt: Date.now() + 60_000,
+      refreshToken: "demo-rt",
+    };
+
+    const result = await strategy.verify({ tokens, request: mockRequest });
+
+    expect(setAuthSession).toHaveBeenCalledWith({
+      ...tokens,
+      request: mockRequest,
+      provider: "demo",
+    });
+    expect(result).toEqual({
+      authenticationTokens: tokens,
+      sessionCookieHeader: "demo-cookie-header",
+      provider: "demo",
+    });
+  });
+
+  it("getDemoMagicLinkUrl delegates to magicLinkStrategy.getMagicLinkUrl", async () => {
+    demoMocks.getMagicLinkUrlMock.mockResolvedValue("https://magic-link-url");
+
+    const url = await getDemoMagicLinkUrl();
+
+    expect(demoMocks.getMagicLinkUrlMock).toHaveBeenCalled();
+    expect(url).toBe("https://magic-link-url");
+  });
+
+  it("refreshDemoToken calls magicLinkStrategy.refreshAccessToken and returns AuthenticationResponse with provider DEMO", async () => {
+    const tokens = {
+      accessToken: "new-demo-at",
+      expiresAt: Date.now() + 60_000,
+      refreshToken: "new-demo-rt",
+    };
+    demoMocks.refreshAccessTokenMock.mockResolvedValue(tokens);
+    mockedSetAuthSession.mockResolvedValueOnce("demo-refresh-cookie");
+
+    const result = await refreshDemoToken(mockRequest, "old-rt");
+
+    expect(demoMocks.refreshAccessTokenMock).toHaveBeenCalledWith("old-rt");
+    expect(setAuthSession).toHaveBeenCalledWith({
+      ...tokens,
+      request: mockRequest,
+      provider: "demo",
+    });
+    expect(result).toEqual({
+      authenticationTokens: tokens,
+      sessionCookieHeader: "demo-refresh-cookie",
+      provider: "demo",
+    });
   });
 });

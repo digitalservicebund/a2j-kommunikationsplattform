@@ -1,26 +1,22 @@
 import { authorizeToken } from "../api/authorizeToken.server";
-import { getAuthData } from "./authSession.server";
+import { AuthenticationProvider } from "./auth.types";
+import type { AuthenticationResponse } from "./oAuth.server";
 
 /**
  * getBearerToken
  *
  * @see: https://sergiodxa.com/articles/working-with-refresh-tokens-in-remix
  */
-export async function getBearerToken(request: Request): Promise<string> {
-  console.log("getBearerToken");
-
-  const authData = await getAuthData(request);
-
-  if (!authData) {
-    throw new Error("No auth data available");
+export async function getBearerToken(
+  authData: AuthenticationResponse,
+): Promise<string> {
+  if (
+    authData.provider === AuthenticationProvider.DEMO ||
+    authData.provider === AuthenticationProvider.DEVELOPMENT
+  ) {
+    return authData.authenticationTokens.accessToken;
   }
 
-  const accessToken = authData.authenticationTokens.accessToken;
-
-  if (authData.isDemo) {
-    return accessToken;
-  }
-
-  const token = await authorizeToken(accessToken);
+  const token = await authorizeToken(authData.authenticationTokens.accessToken);
   return token.access_token;
 }
