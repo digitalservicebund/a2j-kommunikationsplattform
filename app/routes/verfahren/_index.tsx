@@ -33,7 +33,12 @@ export type LoaderData = {
 };
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
-  const authData = context.get(authContext)!;
+  const authData = context.get(authContext);
+
+  if (!authData) {
+    throw new Error("No auth data available in loader");
+  }
+
   const url = new URL(request.url);
   const offset = Number(url.searchParams.get("offset") || "0");
   const gericht = url.searchParams.get("gericht");

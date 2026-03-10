@@ -8,7 +8,12 @@ import { useTranslations } from "~/services/translations/context";
 import fetchVerfahrenById from "~/services/verfahren/fetchVerfahrenById.server";
 
 export const loader = async ({ context, params }: LoaderFunctionArgs) => {
-  const authData = context.get(authContext)!;
+  const authData = context.get(authContext);
+
+  if (!authData) {
+    throw new Error("No auth data available in loader");
+  }
+
   const { id } = params;
 
   if (!id) {
