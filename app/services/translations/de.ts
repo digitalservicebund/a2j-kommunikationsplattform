@@ -83,6 +83,10 @@ export const de = {
     VERFAHREN_EINREICHUNGEN_OLDEST_FIRST_LABEL: "Älteste Einreichungen zuerst",
     VERFAHREN_AKTENZEICHEN_ASC_LABEL: "Aktenzeichen des Gerichts (A↓Z)",
     VERFAHREN_AKTENZEICHEN_DESC_LABEL: "Aktenzeichen des Gerichts (Z↓A)",
+    TESTZUGANG_BANNER_LABEL_PRE: "Sie befinden sich aktuell in der ",
+    TESTZUGANG_BANNER_LABEL_BOLD: "öffentlichen Testumgebung",
+    TESTZUGANG_BANNER_LABEL_POST:
+      ". Die angezeigten Daten sind zufällig generiert und entsprechen nicht realen Vorgängen.",
   },
   routes: {
     login: {
