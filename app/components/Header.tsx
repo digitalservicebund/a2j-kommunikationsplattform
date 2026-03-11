@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router";
 import Kopfzeile from "~/components/Kopfzeile.static";
 import Logo from "~/components/Logo.static";
+import TestzugangBanner from "~/components/TestzugangBanner";
 import UserProfile from "~/components/UserProfile.static";
+import { config } from "~/config/config";
 import { useTranslations } from "~/services/translations/context";
 import Navigation from "./Navigation.static";
 
@@ -54,9 +56,14 @@ export default function Header({
 
   const isLoginPage = !isContentPage && !userIsLoggedIn;
 
+  const showTestzugangBanner =
+    config().ENVIRONMENT === "staging" ||
+    config().ENVIRONMENT === "development";
+
   return (
     <header>
       {/* (1) */}
+      {showTestzugangBanner && <TestzugangBanner />}
       <Kopfzeile />
       <nav aria-label={labels.HEADER_ARIA_LABEL}>
         <div className="kern-container">

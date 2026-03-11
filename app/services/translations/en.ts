@@ -82,6 +82,10 @@ export const en: Translations = {
     VERFAHREN_EINREICHUNGEN_OLDEST_FIRST_LABEL: "Oldest submissions first",
     VERFAHREN_AKTENZEICHEN_ASC_LABEL: "Court case number (A↓Z)",
     VERFAHREN_AKTENZEICHEN_DESC_LABEL: "Court case number (Z↓A)",
+    TESTZUGANG_BANNER_LABEL_PRE: "You are currently in the ",
+    TESTZUGANG_BANNER_LABEL_BOLD: "public test environment",
+    TESTZUGANG_BANNER_LABEL_POST:
+      ". The displayed data is randomly generated and does not correspond to real cases.",
   },
   routes: {
     login: {
