@@ -83,7 +83,7 @@ jobs:
           # See https://github.com/digitalservicebund/typescript-vite-application-template/actions/runs/3486985178/jobs/5834089375
           VITE_PORT: 4183
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: ${{ failure() }}
         with:
           name: playwright-a11y-test-results
@@ -291,7 +291,7 @@ jobs:
           HTTP_CREDENTIALS_PASSWORD: ${{ secrets.HTTP_CREDENTIALS_PASSWORD }}
         run: npm run test:e2e
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: ${{ failure() }}
         with:
           name: playwright-e2e-test-results
