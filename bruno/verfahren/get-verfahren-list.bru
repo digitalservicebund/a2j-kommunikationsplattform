@@ -1,0 +1,19 @@
+meta {
+  name: Get Verfahren List
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{BASE_URL}}/api/v1/verfahren
+  body: none
+  auth: inherit
+}
+
+query {
+  ~limit: 10
+  ~offset: 0
+  ~sort: eingereicht_am
+  ~search_text:
+  ~gericht:
+}

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:nachricht.klaver.klageverfahren.3500001
+  xmlns:tns="http://www.xjustiz.de"
+  xmlns:xoev-lc="http://xoev.de/latinchars/1_1/datatypes"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.xjustiz.de xjustiz_3500_klaver_1_0.xsd">
+
+  <tns:nachrichtenkopf xjustizVersion="3.6.2">
+    <tns:erstellungszeitpunkt>2026-03-16T10:00:00</tns:erstellungszeitpunkt>
+    <tns:absender>
+      <tns:informationen>
+        <tns:auswahl_kommunikationspartner>
+          <tns:gericht listVersionID="3.6">
+            <code>B2802</code>
+          </tns:gericht>
+        </tns:auswahl_kommunikationspartner>
+      </tns:informationen>
+      <tns:aktenzeichen>TEST-001-AZ</tns:aktenzeichen>
+      <tns:eigeneNachrichtenID>A1B2C3D4-E5F6-7890-ABCD-EF1234567890</tns:eigeneNachrichtenID>
+    </tns:absender>
+    <tns:empfaenger>
+      <tns:informationen>
+        <tns:auswahl_kommunikationspartner>
+          <tns:gericht listVersionID="3.6">
+            <code>R3200</code>
+          </tns:gericht>
+        </tns:auswahl_kommunikationspartner>
+      </tns:informationen>
+      <tns:auswahl_aktenzeichen>
+        <tns:aktenzeichen.freitext>TEST-002-AZ</tns:aktenzeichen.freitext>
+      </tns:auswahl_aktenzeichen>
+      <tns:fremdeNachrichtenID>B2C3D4E5-F6A7-8901-BCDE-F12345678901</tns:fremdeNachrichtenID>
+    </tns:empfaenger>
+    <tns:nachrichtenuebergreifenderProzess>
+      <tns:prozessID>C3D4E5F6-A7B8-9012-CDEF-123456789012</tns:prozessID>
+    </tns:nachrichtenuebergreifenderProzess>
+    <tns:ereignis listVersionID="3.6">
+      <code>Test</code>
+    </tns:ereignis>
+    <tns:herstellerinformation>
+      <tns:nameDesProdukts>KomPla Test</tns:nameDesProdukts>
+      <tns:herstellerDesProdukts>DigitalService</tns:herstellerDesProdukts>
+      <tns:version>1.0.0</tns:version>
+    </tns:herstellerinformation>
+  </tns:nachrichtenkopf>
+
+  <tns:grunddaten>
+    <tns:verfahrensdaten>
+      <tns:instanzdaten>
+        <tns:instanznummer>1</tns:instanznummer>
+        <tns:sachgebiet listVersionID="2.3">
+          <code>001</code>
+        </tns:sachgebiet>
+        <tns:auswahl_instanzbehoerde>
+          <tns:gericht listVersionID="3.6">
+            <code>R3200</code>
+          </tns:gericht>
+        </tns:auswahl_instanzbehoerde>
+        <tns:kurzrubrum>Testsache Mustermann ./. Musterfrau</tns:kurzrubrum>
+      </tns:instanzdaten>
+      <tns:beteiligung>
+        <tns:rolle>
+          <tns:rollenbezeichnung listVersionID="3.5">
+            <code>028</code>
+          </tns:rollenbezeichnung>
+        </tns:rolle>
+        <tns:beteiligter>
+          <tns:auswahl_beteiligter>
+            <tns:natuerlichePerson>
+              <tns:vollerName>
+                <tns:vorname>Max</tns:vorname>
+                <tns:nachname>Mustermann</tns:nachname>
+              </tns:vollerName>
+            </tns:natuerlichePerson>
+          </tns:auswahl_beteiligter>
+        </tns:beteiligter>
+      </tns:beteiligung>
+    </tns:verfahrensdaten>
+  </tns:grunddaten>
+
+  <tns:schriftgutobjekte/>
+
+  <tns:inhaltsdaten>
+    <tns:auswahl_begruendetheit>
+      <tns:anderesKlageverfahren>
+        <tns:vortrag>
+          <tns:schlagwort>Sachverhalt</tns:schlagwort>
+          <tns:vortragsID>D4E5F6A7-B8C9-0123-DEFA-234567890123</tns:vortragsID>
+          <tns:ausfuehrungen/>
+        </tns:vortrag>
+      </tns:anderesKlageverfahren>
+    </tns:auswahl_begruendetheit>
+  </tns:inhaltsdaten>
+
+</tns:nachricht.klaver.klageverfahren.3500001>

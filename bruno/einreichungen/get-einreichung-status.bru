@@ -1,0 +1,11 @@
+meta {
+  name: Get Einreichung Status
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/status
+  body: none
+  auth: inherit
+}

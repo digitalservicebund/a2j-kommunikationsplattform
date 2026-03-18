@@ -1,0 +1,16 @@
+meta {
+  name: Upload Dokument
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/dokumente
+  body: multipart-form
+  auth: inherit
+}
+
+body:multipart-form {
+  file: @file(../../data/xjustiz/sample_klaver_3500001.xml)
+  type: ANHANG
+}

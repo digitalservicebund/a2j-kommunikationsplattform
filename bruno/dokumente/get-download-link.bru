@@ -1,0 +1,11 @@
+meta {
+  name: Get Download Link
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/dokumente/{{DOKUMENT_ID}}/download-link
+  body: none
+  auth: inherit
+}

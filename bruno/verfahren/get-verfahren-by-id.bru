@@ -1,0 +1,11 @@
+meta {
+  name: Get Verfahren By ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}
+  body: none
+  auth: inherit
+}

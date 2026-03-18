@@ -1,0 +1,15 @@
+meta {
+  name: Delete Dokument
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/dokumente/{{DOKUMENT_ID}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  If-Match: {{ETAG}}
+}
