@@ -14,12 +14,12 @@ import {
 } from "react-router";
 import Alert from "~/components/Alert";
 import { authContext } from "~/middleware/auth.server";
-import createEinreichung from "~/services/verfahren/createEinreichung.server";
-import createVerfahren from "~/services/verfahren/createVerfahren.server";
+import createEinreichung from "~/services/verfahren/prototype.createEinreichung.server";
+import createVerfahren from "~/services/verfahren/prototype.createVerfahren.server";
 import getEinreichungStatus, {
   type EinreichungValidationStatus,
-} from "~/services/verfahren/getEinreichungStatus.server";
-import uploadDokument from "~/services/verfahren/uploadDokument.server";
+} from "~/services/verfahren/prototype.getEinreichungStatus.server";
+import uploadDokument from "~/services/verfahren/prototype.uploadDokument.server";
 
 type ActionSuccess = {
   success: true;

@@ -28,7 +28,7 @@ export default [
     // verfahren pages
     route("verfahren", "./routes/verfahren/_layout.tsx", [
       index("./routes/verfahren/_index.tsx"),
-      route("new", "./routes/verfahren/new.tsx"),
+      route("new", "./routes/verfahren/prototype.new.tsx"),
       route(":id", "./routes/verfahren/$id/_layout.tsx", [
         index("./routes/verfahren/$id/_index.tsx"),
         route(
