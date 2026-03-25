@@ -19,7 +19,7 @@ describe("useScrolledPastThreshold", () => {
       unobserve: vi.fn(),
     };
 
-    global.IntersectionObserver = vi.fn((callback) => {
+    global.IntersectionObserver = vi.fn(function (callback) {
       observerCallback = callback;
       return mockObserver as unknown as IntersectionObserver;
     }) as unknown as typeof IntersectionObserver;
