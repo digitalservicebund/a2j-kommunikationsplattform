@@ -2,8 +2,7 @@ import { serverConfig } from "~/config/config.server";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 
-// API observation: validation_messages is always an empty array even when status is ROT.
-// This appears to be an API bug — validation fails but provides no error details.
+// API observation: validation_messages is always an empty array even and status is ROT because the feature is still a work in progress
 export type EinreichungValidationStatus = {
   status: "GRUEN" | "GELB" | "ROT";
   validation_messages: string[];

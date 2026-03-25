@@ -4,7 +4,7 @@ import { VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 
-// API bug: POST /verfahren returns an array [{...}] instead of a single object.
+// API issue/bug: POST /verfahren returns an array [{...}] instead of a single object.
 // We take the first element as a workaround.
 export type Verfahren = z.infer<typeof VerfahrenSchema>;
 

@@ -2,7 +2,7 @@ import { serverConfig } from "~/config/config.server";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 
-// API observation: `erstellt_von` is always an empty string — not populated from token claims.
+// API observation: `erstellt_von` is always an empty string — not populated from tokens
 export type Einreichung = {
   id: string;
   verfahren_id: string;

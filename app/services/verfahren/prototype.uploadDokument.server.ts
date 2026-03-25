@@ -12,8 +12,6 @@ export type Dokument = {
   type: DokumentType;
 };
 
-// IMPORTANT: Do NOT set Content-Type header — fetch must set it automatically
-// with the multipart boundary, otherwise the API rejects the request.
 export default async function uploadDokument(
   authData: AuthenticationResponse,
   verfahrenId: string,
@@ -33,7 +31,6 @@ export default async function uploadDokument(
       method: "POST",
       headers: {
         Authorization: `Bearer ${bearerToken}`,
-        // Content-Type intentionally omitted — let fetch set multipart boundary
       },
       body: formData,
     },
