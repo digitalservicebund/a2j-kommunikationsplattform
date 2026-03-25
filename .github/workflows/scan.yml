@@ -64,13 +64,13 @@ jobs:
           fi
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@b1bff81932f5cdfc8695c7752dcee935dcd061c8 # v3.29.5
+        uses: github/codeql-action/upload-sarif@38697555549f1db7851b81482ff19f1fa5c4fedc # v3.29.5
         if: always() # Bypass non-zero exit code..
         with:
           sarif_file: "trivy-results.sarif"
 
       - name: Send status to Slack
-        uses: digitalservicebund/notify-on-failure-gha@30386cb269b2406ec23f67ff77a20ce28ab0057c # v1.6.0
+        uses: digitalservicebund/notify-on-failure-gha@671832f192aee0a068fd92b2f6deb975df794a84 # v1.6.1
         if: ${{ failure() }}
         with:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

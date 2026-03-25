@@ -25,38 +25,5 @@ export default defineConfig((config) => {
       tsconfigPaths(),
     ],
     server: { port: 3000 },
-    test: {
-      coverage: {
-        provider: "istanbul",
-        include: ["app/**"],
-        exclude: [
-          "app/entry.client.tsx",
-          "app/entry.server.tsx",
-          "app/root.tsx",
-          // exclude routes (pages) - we test them via e2e tests, see /tests/e2e/**
-          "app/routes/**",
-          // include routes (actions)
-          "!app/routes/action.*.ts",
-          // test files
-          "app/**/__test__/*.test.{ts,tsx}",
-          // exclude static files
-          "app/**/*.static.tsx",
-          // exclude routes.ts
-          "app/routes.ts",
-          // exclude all files from constants directory
-          "app/constants/**",
-          // exclude mock files
-          "app/mocks/**/*.{ts,tsx}",
-        ],
-        reporter: ["text", "lcov"],
-      },
-      environment: "node",
-      globals: true,
-      include: ["./app/**/__test__/*.test.{ts,tsx}"],
-      // For in-source testing
-      includeSource: ["./app/**/*.{js,ts}"],
-      pool: "threads",
-      setupFiles: ["vitest.setup.ts"],
-    },
   };
 });
