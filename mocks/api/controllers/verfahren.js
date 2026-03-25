@@ -1,12 +1,28 @@
 import { mockVerfahren } from "../data/verfahren.js";
 
+const verfahrenStore = [...mockVerfahren];
+
 export const getAllVerfahren = () => {
-  return mockVerfahren;
+  return verfahrenStore;
+};
+
+export const createVerfahren = () => {
+  const newVerfahren = {
+    id: crypto.randomUUID(),
+    aktenzeichen_gericht: null,
+    status: "ERSTELLT",
+    status_changed: new Date().toISOString(),
+    eingereicht_am: null,
+    gericht: null,
+    beteiligungen: [],
+  };
+  verfahrenStore.unshift(newVerfahren);
+  return newVerfahren;
 };
 
 export const getVerfahrenById = (id) => {
   try {
-    return mockVerfahren.find((verfahren) => verfahren.id === id);
+    return verfahrenStore.find((verfahren) => verfahren.id === id);
   } catch (error) {
     console.error("Error fetching verfahren by id:", error);
     return null;
