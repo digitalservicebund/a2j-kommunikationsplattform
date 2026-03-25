@@ -3,6 +3,14 @@ import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 
 // API observation: `erstellt_von` is always an empty string — not populated from token claims.
+export type Einreichung = {
+  id: string;
+  verfahren_id: string;
+  status: "ENTWURF" | "EINGEREICHT";
+  erstellt_am: string;
+  erstellt_von: string;
+};
+
 export default async function createEinreichung(
   authData: AuthenticationResponse,
   verfahrenId: string,
@@ -28,5 +36,5 @@ export default async function createEinreichung(
     );
   }
 
-  return response.json();
+  return response.json() as Promise<Einreichung>;
 }

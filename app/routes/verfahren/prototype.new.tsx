@@ -1,10 +1,7 @@
-// SPIKE: Minimal UI to validate Verfahren → Einreichung → Dokument API integration.
-// This UI is a placeholder — design TBD. Layout and components will change.
-//
-// Known API quirks discovered during spike:
-// - POST /verfahren returns an array [{...}] instead of a single object (bug)
-// - POST /einreichungen: `erstellt_von` is always "" — not populated from token (bug)
-// - GET /einreichungen/{id}/status: `validation_messages` always [] even when ROT (bug)
+// Known API issues discovered during spike:
+// - POST /verfahren returns an array [{...}] instead of a single object (potential bug or design choice)
+// - POST /einreichungen: `erstellt_von` is always "" — not populated from token (would be useful if it contained user info)
+// - GET /einreichungen/{id}/status: `validation_messages` always [] and `status` always ROT regardless of actual document content (SINC confirmed it's work in progress anf will be fixed when the feature is fully implemented)
 
 import {
   ActionFunctionArgs,
@@ -19,7 +16,9 @@ import createVerfahren from "~/services/verfahren/prototype.createVerfahren.serv
 import getEinreichungStatus, {
   type EinreichungValidationStatus,
 } from "~/services/verfahren/prototype.getEinreichungStatus.server";
-import uploadDokument from "~/services/verfahren/prototype.uploadDokument.server";
+import uploadDokument, {
+  type DokumentType,
+} from "~/services/verfahren/prototype.uploadDokument.server";
 
 type ActionSuccess = {
   success: true;
@@ -61,21 +60,23 @@ export const action = async ({
     return { success: false, error: "Bitte einen Dokumenttyp auswählen." };
   }
 
+  const dokumentType = type as DokumentType;
+
   try {
     const verfahren = await createVerfahren(authData);
-    const verfahrenId: string = verfahren.id;
+    const verfahrenId = verfahren.id;
 
     const einreichung = await createEinreichung(authData, verfahrenId);
-    const einreichungId: string = einreichung.id;
+    const einreichungId = einreichung.id;
 
     const dokument = await uploadDokument(
       authData,
       verfahrenId,
       einreichungId,
       file,
-      type,
+      dokumentType,
     );
-    const dokumentId: string = dokument.id;
+    const dokumentId = dokument.id;
 
     const validationStatus = await getEinreichungStatus(
       authData,

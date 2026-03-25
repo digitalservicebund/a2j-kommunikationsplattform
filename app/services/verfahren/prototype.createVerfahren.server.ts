@@ -1,12 +1,16 @@
+import z from "zod";
 import { serverConfig } from "~/config/config.server";
+import { VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 
 // API bug: POST /verfahren returns an array [{...}] instead of a single object.
 // We take the first element as a workaround.
+export type Verfahren = z.infer<typeof VerfahrenSchema>;
+
 export default async function createVerfahren(
   authData: AuthenticationResponse,
-) {
+): Promise<Verfahren> {
   const bearerToken = await getBearerToken(authData);
 
   const response = await fetch(
@@ -29,5 +33,6 @@ export default async function createVerfahren(
   }
 
   const data = await response.json();
-  return Array.isArray(data) ? data[0] : data;
+  const parsed = Array.isArray(data) ? data[0] : data;
+  return VerfahrenSchema.parse(parsed);
 }

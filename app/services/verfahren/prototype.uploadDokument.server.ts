@@ -2,6 +2,16 @@ import { serverConfig } from "~/config/config.server";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 
+export type DokumentType = "XJUSTIZ" | "ANHANG" | "SCHRIFTSTUECK";
+
+export type Dokument = {
+  id: string;
+  einreichung_id: string;
+  status: string;
+  name: string;
+  type: DokumentType;
+};
+
 // IMPORTANT: Do NOT set Content-Type header — fetch must set it automatically
 // with the multipart boundary, otherwise the API rejects the request.
 export default async function uploadDokument(
@@ -9,8 +19,8 @@ export default async function uploadDokument(
   verfahrenId: string,
   einreichungId: string,
   file: File,
-  type: string,
-) {
+  type: DokumentType,
+): Promise<Dokument> {
   const bearerToken = await getBearerToken(authData);
 
   const formData = new FormData();
@@ -36,5 +46,5 @@ export default async function uploadDokument(
     );
   }
 
-  return response.json();
+  return response.json() as Promise<Dokument>;
 }

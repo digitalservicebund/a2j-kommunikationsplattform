@@ -32,5 +32,5 @@ export default async function getEinreichungStatus(
     );
   }
 
-  return response.json();
+  return response.json() as Promise<EinreichungValidationStatus>;
 }
