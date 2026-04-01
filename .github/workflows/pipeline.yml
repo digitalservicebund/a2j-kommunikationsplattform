@@ -25,10 +25,10 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
         with:
           node-version-file: .tool-versions
           cache: npm
@@ -38,7 +38,7 @@ jobs:
 
       - name: Cache npm dependencies
         id: cache-npm-deps
-        uses: actions/cache@v5
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           path: |
             **/node_modules
@@ -64,7 +64,7 @@ jobs:
 
       - name: Cache Playwright dependencies
         id: cache-playwright-deps
-        uses: actions/cache@v5
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
@@ -83,7 +83,7 @@ jobs:
           # See https://github.com/digitalservicebund/typescript-vite-application-template/actions/runs/3486985178/jobs/5834089375
           VITE_PORT: 4183
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: ${{ failure() }}
         with:
           name: playwright-a11y-test-results
@@ -91,7 +91,7 @@ jobs:
 
       - name: Cache Docker image
         id: cache-docker-image
-        uses: actions/cache@v5
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           path: |
             /tmp/.docker-cache
@@ -135,10 +135,10 @@ jobs:
       packages: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Restore Docker image cache
-        uses: actions/cache@v5
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           path: |
             /tmp/.docker-cache
@@ -220,7 +220,7 @@ jobs:
     needs: [build-and-push-image] # Will only run if the build and push job succeded
     steps:
       - name: Deploy latest container image to StackIT
-        uses: digitalservicebund/argocd-deploy@auth-token # Use the auth-token branch for STACKIT
+        uses: digitalservicebund/argocd-deploy@050e50ee533ead763aa61d2e511ae5ae9e769593 # auth-token branch
         with:
           environment: staging-stackit
           version: ${{ env.CONTAINER_IMAGE_VERSION }}
@@ -247,10 +247,10 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
         with:
           node-version-file: .tool-versions
           cache: npm
@@ -260,7 +260,7 @@ jobs:
 
       - name: Cache npm dependencies
         id: cache-npm-deps
-        uses: actions/cache@v5
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           path: |
             **/node_modules
@@ -274,7 +274,7 @@ jobs:
 
       - name: Cache Playwright dependencies
         id: cache-playwright-deps
-        uses: actions/cache@v5
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
@@ -291,7 +291,7 @@ jobs:
           HTTP_CREDENTIALS_PASSWORD: ${{ secrets.HTTP_CREDENTIALS_PASSWORD }}
         run: npm run test:e2e
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: ${{ failure() }}
         with:
           name: playwright-e2e-test-results
