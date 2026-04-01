@@ -128,7 +128,7 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
       - build
-        - vulnerability-scan
+      - vulnerability-scan
     permissions:
       contents: read
       id-token: write # This is used to complete the identity challenge with sigstore/fulcio..
