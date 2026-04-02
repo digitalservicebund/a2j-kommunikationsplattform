@@ -3,6 +3,7 @@ import { http, HttpResponse } from "msw";
 import { getGerichte } from "./controllers/gerichte.js";
 import { getAuthTokens } from "./controllers/tokenExchange.js";
 import {
+  createVerfahren,
   filterVerfahrenByGericht,
   getAllVerfahren,
   getVerfahrenById,
@@ -82,6 +83,59 @@ export const handlers = [
       const resultArray = [requestedVerfahren, { status: 200 }];
 
       return HttpResponse.json(...resultArray);
+    },
+  ),
+
+  // Create Verfahren
+  http.post(`${mockKomplaApiUrl}/:environment/api/v1/verfahren`, () => {
+    const newVerfahren = createVerfahren();
+    // API returns array (known bug)
+    return HttpResponse.json([newVerfahren], { status: 201 });
+  }),
+
+  // Create Einreichung
+  http.post(
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen`,
+    ({ params }) => {
+      const newEinreichung = {
+        id: crypto.randomUUID(),
+        verfahren_id: params.verfahrenId,
+        status: "ENTWURF",
+        erstellt_am: new Date().toISOString(),
+        erstellt_von: "",
+      };
+      return HttpResponse.json(newEinreichung, { status: 201 });
+    },
+  ),
+
+  // Upload Dokument
+  http.post(
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen/:einreichungId/dokumente`,
+    ({ params }) => {
+      const newDokument = {
+        id: crypto.randomUUID(),
+        einreichung_id: params.einreichungId,
+        status: "ERSTELLT",
+        name: "sample_klaver_3500001.xml",
+        size_in_bytes: 3481,
+        type: "XJUSTIZ",
+        gesendet_am: null,
+        eingereicht_am: null,
+        erstellt_von: "",
+        erstellt_am: new Date().toISOString(),
+      };
+      return HttpResponse.json([newDokument], { status: 201 });
+    },
+  ),
+
+  // Get Einreichung Status
+  http.get(
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen/:einreichungId/status`,
+    () => {
+      return HttpResponse.json(
+        { status: "GRUEN", validation_messages: [] },
+        { status: 200 },
+      );
     },
   ),
 
