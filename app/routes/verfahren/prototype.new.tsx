@@ -26,7 +26,8 @@ type ActionSuccess = {
   einreichungId: string;
   dokumentId: string;
   dokumentStatus: string;
-  validationStatus: EinreichungValidationStatus;
+  validationStatus: EinreichungValidationStatus | null;
+  validationStatusError: string | null;
 };
 
 type ActionError = {
@@ -80,11 +81,18 @@ export const action = async ({
     const dokumentId = dokument.id;
     const dokumentStatus = dokument.status;
 
-    const validationStatus = await getEinreichungStatus(
-      authData,
-      verfahrenId,
-      einreichungId,
-    );
+    let validationStatus: EinreichungValidationStatus | null = null;
+    let validationStatusError: string | null = null;
+    try {
+      validationStatus = await getEinreichungStatus(
+        authData,
+        verfahrenId,
+        einreichungId,
+      );
+    } catch (err) {
+      // Status endpoint is WIP — not yet available on all environments
+      validationStatusError = err instanceof Error ? err.message : String(err);
+    }
 
     return {
       success: true,
@@ -93,6 +101,7 @@ export const action = async ({
       dokumentId,
       dokumentStatus,
       validationStatus,
+      validationStatusError,
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -129,6 +138,14 @@ export default function NeuesVerfahren() {
         <Alert type="success" title="Einreichung erfolgreich erstellt" />
       )}
 
+      {actionData && actionData.success && actionData.validationStatusError && (
+        <Alert
+          type="info"
+          title="Validierungsstatus nicht verfügbar"
+          message={actionData.validationStatusError}
+        />
+      )}
+
       {actionData && actionData.success && (
         <div className="gap-y-kern-space-default flex flex-col">
           <dl className="gap-y-kern-space-small flex flex-col">
@@ -152,25 +169,30 @@ export default function NeuesVerfahren() {
               </dt>
               <dd className="kern-body">{actionData.dokumentStatus}</dd>
             </div>
-            <div className="gap-x-kern-space-default flex">
-              <dt className="kern-body min-w-48 font-semibold">
-                Validierungsstatus
-              </dt>
-              <dd className="kern-body">
-                {statusLabels[actionData.validationStatus.status]}
-              </dd>
-            </div>
+            {actionData.validationStatus && (
+              <div className="gap-x-kern-space-default flex">
+                <dt className="kern-body min-w-48 font-semibold">
+                  Validierungsstatus
+                </dt>
+                <dd className="kern-body">
+                  {statusLabels[actionData.validationStatus.status]}
+                </dd>
+              </div>
+            )}
           </dl>
 
-          {actionData.validationStatus.validation_messages.length > 0 && (
-            <ul className="gap-y-kern-space-small flex flex-col">
-              {actionData.validationStatus.validation_messages.map((msg, i) => (
-                <li key={i} className="kern-body">
-                  {msg}
-                </li>
-              ))}
-            </ul>
-          )}
+          {actionData.validationStatus &&
+            actionData.validationStatus.validation_messages.length > 0 && (
+              <ul className="gap-y-kern-space-small flex flex-col">
+                {actionData.validationStatus.validation_messages.map(
+                  (msg, i) => (
+                    <li key={i} className="kern-body">
+                      {msg}
+                    </li>
+                  ),
+                )}
+              </ul>
+            )}
         </div>
       )}
 
