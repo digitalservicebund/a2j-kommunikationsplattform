@@ -115,11 +115,16 @@ export const handlers = [
       const newDokument = {
         id: crypto.randomUUID(),
         einreichung_id: params.einreichungId,
-        status: "CREATED",
+        status: "ERSTELLT",
         name: "sample_klaver_3500001.xml",
+        size_in_bytes: 3481,
         type: "XJUSTIZ",
+        gesendet_am: null,
+        eingereicht_am: null,
+        erstellt_von: "",
+        erstellt_am: new Date().toISOString(),
       };
-      return HttpResponse.json(newDokument, { status: 201 });
+      return HttpResponse.json([newDokument], { status: 201 });
     },
   ),
 

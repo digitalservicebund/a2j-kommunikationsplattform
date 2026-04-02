@@ -9,7 +9,12 @@ export type Dokument = {
   einreichung_id: string;
   status: string;
   name: string;
+  size_in_bytes: number;
   type: DokumentType;
+  gesendet_am: string | null;
+  eingereicht_am: string | null;
+  erstellt_von: string;
+  erstellt_am: string;
 };
 
 export default async function uploadDokument(
@@ -43,5 +48,7 @@ export default async function uploadDokument(
     );
   }
 
-  return response.json() as Promise<Dokument>;
+  // API observation: POST /dokumente returns an array [{...}] instead of a single object
+  const data = await response.json();
+  return (Array.isArray(data) ? data[0] : data) as Dokument;
 }

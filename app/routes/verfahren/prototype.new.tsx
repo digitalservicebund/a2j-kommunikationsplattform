@@ -25,6 +25,7 @@ type ActionSuccess = {
   verfahrenId: string;
   einreichungId: string;
   dokumentId: string;
+  dokumentStatus: string;
   validationStatus: EinreichungValidationStatus;
 };
 
@@ -77,6 +78,7 @@ export const action = async ({
       dokumentType,
     );
     const dokumentId = dokument.id;
+    const dokumentStatus = dokument.status;
 
     const validationStatus = await getEinreichungStatus(
       authData,
@@ -89,6 +91,7 @@ export const action = async ({
       verfahrenId,
       einreichungId,
       dokumentId,
+      dokumentStatus,
       validationStatus,
     };
   } catch (err) {
@@ -142,6 +145,12 @@ export default function NeuesVerfahren() {
             <div className="gap-x-kern-space-default flex">
               <dt className="kern-body min-w-48 font-semibold">Dokument-ID</dt>
               <dd className="kern-body">{actionData.dokumentId}</dd>
+            </div>
+            <div className="gap-x-kern-space-default flex">
+              <dt className="kern-body min-w-48 font-semibold">
+                Dokumentstatus
+              </dt>
+              <dd className="kern-body">{actionData.dokumentStatus}</dd>
             </div>
             <div className="gap-x-kern-space-default flex">
               <dt className="kern-body min-w-48 font-semibold">
