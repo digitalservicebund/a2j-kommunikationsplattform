@@ -79,7 +79,7 @@ export default function Verfahren() {
   return (
     <>
       <VerfahrenHeading ref={headingRef} />
-      <Link to="/verfahren/new" className="kern-btn kern-btn--primary my-2.5">
+      <Link to="/verfahren/neu" className="kern-btn kern-btn--primary my-2.5">
         <span className="kern-label">Neues Verfahren anlegen</span>
       </Link>
       <div className="space-y-kern-space-large flex flex-col">
