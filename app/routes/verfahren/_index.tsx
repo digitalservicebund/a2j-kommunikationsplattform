@@ -1,5 +1,5 @@
 import { FormEvent, Ref, RefObject, Suspense, useRef } from "react";
-import { Await, LoaderFunctionArgs, useLoaderData } from "react-router";
+import { Await, Link, LoaderFunctionArgs, useLoaderData } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
@@ -79,6 +79,9 @@ export default function Verfahren() {
   return (
     <>
       <VerfahrenHeading ref={headingRef} />
+      <Link to="/verfahren/new" className="kern-btn kern-btn--primary my-2.5">
+        <span className="kern-label">Neues Verfahren anlegen</span>
+      </Link>
       <div className="space-y-kern-space-large flex flex-col">
         <Suspense
           fallback={VERFAHREN_SKELETONS.map((s) => (

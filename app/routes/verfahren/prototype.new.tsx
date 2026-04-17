@@ -3,6 +3,7 @@
 // - POST /einreichungen: `erstellt_von` is always "" — not populated from token (would be useful if it contained user info)
 // - GET /einreichungen/{id}/status: `validation_messages` always [] and `status` always ROT regardless of actual document content (SINC confirmed it's work in progress anf will be fixed when the feature is fully implemented)
 
+import { useState } from "react";
 import {
   ActionFunctionArgs,
   Form,
@@ -119,11 +120,10 @@ export default function NeuesVerfahren() {
   const actionData = useActionData<ActionResult>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
+  const [step, setStep] = useState<"selection" | "upload">("selection");
 
   return (
     <div className="gap-y-kern-space-large flex flex-col">
-      <h1 className="kern-heading-medium">Neues Verfahren einreichen</h1>
-
       <Alert
         type="info"
         title="Vorläufige Ansicht"
@@ -180,7 +180,6 @@ export default function NeuesVerfahren() {
               </div>
             )}
           </dl>
-
           {actionData.validationStatus &&
             actionData.validationStatus.validation_messages.length > 0 && (
               <ul className="gap-y-kern-space-small flex flex-col">
@@ -196,55 +195,81 @@ export default function NeuesVerfahren() {
         </div>
       )}
 
-      <Form
-        method="post"
-        encType="multipart/form-data"
-        className="gap-y-kern-space-default flex flex-col"
-      >
-        <div className="kern-form-input">
-          <label className="kern-label" htmlFor="file">
-            XJustiz-Dokument (.xml)
-          </label>
-          <input
-            className="kern-form-input__input"
-            id="file"
-            name="file"
-            type="file"
-            accept=".xml"
-            required
-          />
-        </div>
-
-        <div className="kern-form-input">
-          <label className="kern-label" htmlFor="type">
-            Dokumenttyp
-          </label>
-          <div className="kern-form-input__select-wrapper">
-            <select
-              className="kern-form-input__select"
-              id="type"
-              name="type"
-              defaultValue="XJUSTIZ"
+      {step === "selection" && (
+        <div className="border-kern-layout-border gap-y-kern-space-default flex flex-col rounded-lg border p-8">
+          <h2 className="kern-heading-small">Verfahren anlegen</h2>
+          <p className="kern-body">
+            Hier haben Sie die Möglichkeit ein neues Verfahren in der KomPla
+            anzulegen – über zwei Wege entweder Upload oder manuelle Eingabe:
+          </p>
+          <div className="gap-kern-space-default flex flex-wrap">
+            <button
+              type="button"
+              className="kern-btn kern-btn--primary"
+              onClick={() => setStep("upload")}
             >
-              <option value="XJUSTIZ">XJUSTIZ</option>
-              <option value="ANHANG">ANHANG</option>
-              <option value="SCHRIFTSTUECK">SCHRIFTSTÜCK</option>
-            </select>
+              <span className="kern-label">xJustiz Datensatz hochladen</span>
+            </button>
+            <button
+              type="button"
+              className="kern-btn kern-btn--secondary"
+              aria-disabled={true}
+            >
+              <span className="kern-label">Klage manuell erstellen</span>
+            </button>
           </div>
         </div>
+      )}
 
-        <div>
-          <button
-            type="submit"
-            className="kern-btn kern-btn--primary"
-            disabled={isSubmitting}
+      {step === "upload" && (
+        <div className="border-kern-layout-border gap-y-kern-space-default flex flex-col rounded-lg border p-8">
+          <h2 className="kern-heading-small">xJustiz Datensatz hochladen</h2>
+          <p className="kern-body">
+            Laden Sie von Ihrem Computer eine gültige xJustiz Datei hoch.
+            Unterstütztes Format: .xml. Die maximale Dateigröße beträgt 10 MB.
+          </p>
+          <Form
+            method="post"
+            encType="multipart/form-data"
+            className="gap-y-kern-space-default flex flex-col"
           >
-            <span className="kern-label">
-              {isSubmitting ? "Wird eingereicht…" : "Verfahren einreichen"}
-            </span>
-          </button>
+            <input type="hidden" name="type" value="XJUSTIZ" />
+            <div className="kern-form-input">
+              <label className="kern-label" htmlFor="file">
+                xJustiz-Datei (.xml)
+              </label>
+              <input
+                className="kern-form-input__input"
+                id="file"
+                name="file"
+                type="file"
+                accept=".xml"
+                required
+              />
+            </div>
+            <div className="gap-kern-space-default flex flex-wrap">
+              <button
+                type="button"
+                className="kern-btn kern-btn--secondary"
+                onClick={() => setStep("selection")}
+              >
+                <span className="kern-label">Zurück</span>
+              </button>
+              <button
+                type="submit"
+                className="kern-btn kern-btn--primary"
+                disabled={isSubmitting}
+              >
+                <span className="kern-label">
+                  {isSubmitting
+                    ? "Wird hochgeladen…"
+                    : "xJustiz Datensatz hochladen"}
+                </span>
+              </button>
+            </div>
+          </Form>
         </div>
-      </Form>
+      )}
     </div>
   );
 }
