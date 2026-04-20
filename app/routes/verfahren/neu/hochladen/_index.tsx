@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 // Known API issues discovered during spike:
 // - POST /verfahren returns an array [{...}] instead of a single object (potential bug or design choice)
 // - POST /einreichungen: `erstellt_von` is always "" — not populated from token (would be useful if it contained user info)
@@ -7,6 +9,7 @@ import {
   ActionFunctionArgs,
   Form,
   Link,
+  redirect,
   useActionData,
   useNavigation,
 } from "react-router";
@@ -38,10 +41,7 @@ type ActionError = {
 
 type ActionResult = ActionSuccess | ActionError;
 
-export const action = async ({
-  request,
-  context,
-}: ActionFunctionArgs): Promise<ActionResult> => {
+export const action = async ({ request, context }: ActionFunctionArgs) => {
   const authData = context.get(authContext);
 
   if (!authData) {
@@ -84,6 +84,14 @@ export const action = async ({
 
     let validationStatus: EinreichungValidationStatus | null = null;
     let validationStatusError: string | null = null;
+
+    // @TODO: add a possibility to show a Virus check within the UI
+    // - where?
+    // - goal: show off, that this may take a lot of time, but user can continue
+    // - we may add a loading spinner!?
+    // - maybe we add a banner "XJustiz file is being processed (validated)"
+    // - we want to show off the validierungsstatus somehow
+
     try {
       validationStatus = await getEinreichungStatus(
         authData,
@@ -95,16 +103,9 @@ export const action = async ({
       validationStatusError = err instanceof Error ? err.message : String(err);
     }
 
-    return {
-      success: true,
-      verfahrenId,
-      einreichungId,
-      dokumentId,
-      dokumentStatus,
-      validationStatus,
-      validationStatusError,
-    };
+    return redirect(`/verfahren/${verfahrenId}`); // Redirect to the new verfahren page on success
   } catch (err) {
+    // @TODO: refactor to show alert box
     const message = err instanceof Error ? err.message : String(err);
     return { success: false, error: message };
   }
