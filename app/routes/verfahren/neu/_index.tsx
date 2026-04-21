@@ -28,7 +28,7 @@ export default function NeuesVerfahren() {
             className="kern-btn kern-btn--secondary"
             aria-disabled={true}
           >
-            <span className="kern-label">Klage manuell erstellen</span>
+            <span className="kern-label">Klage manuell erstellen.</span>
           </button>
         </div>
       </div>
