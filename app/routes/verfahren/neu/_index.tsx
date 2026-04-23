@@ -23,13 +23,13 @@ export default function NeuesVerfahren() {
           >
             <span className="kern-label">xJustiz Datensatz hochladen</span>
           </Link>
-          <button
-            type="button"
-            className="kern-btn kern-btn--secondary"
+          <Link
+            to="/verfahren/neu/erstellen"
+            className="kern-btn kern-btn--secondary my-2.5"
             aria-disabled={true}
           >
-            <span className="kern-label">Klage manuell erstellen.</span>
-          </button>
+            <span className="kern-label">Klage manuell erstellen</span>
+          </Link>
         </div>
       </div>
     </div>
