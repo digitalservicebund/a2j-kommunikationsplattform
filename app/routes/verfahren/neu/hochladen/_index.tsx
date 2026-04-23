@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 // Known API issues discovered during spike:
 // - POST /verfahren returns an array [{...}] instead of a single object (potential bug or design choice)
 // - POST /einreichungen: `erstellt_von` is always "" — not populated from token (would be useful if it contained user info)
@@ -8,7 +6,6 @@
 import {
   ActionFunctionArgs,
   redirect,
-  useActionData,
   useNavigation,
   useRouteError,
 } from "react-router";
@@ -17,29 +14,9 @@ import { authContext } from "~/middleware/auth.server";
 import { UploadForm } from "~/routes/verfahren/neu/hochladen/components/UploadForm";
 import createEinreichung from "~/services/verfahren/prototype.createEinreichung.server";
 import createVerfahren from "~/services/verfahren/prototype.createVerfahren.server";
-import getEinreichungStatus, {
-  ValidationStatus,
-} from "~/services/verfahren/prototype.getEinreichungStatus.server";
 import uploadDokument, {
   type DokumentType,
 } from "~/services/verfahren/prototype.uploadDokument.server";
-
-type ActionSuccess = {
-  success: true;
-  verfahrenId: string;
-  einreichungId: string;
-  dokumentId: string;
-  dokumentStatus: string;
-  validationStatus: ValidationStatus | null;
-  validationStatusError: string | null;
-};
-
-type ActionError = {
-  success: false;
-  error: string;
-};
-
-type ActionResult = ActionSuccess | ActionError;
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
   const authData = context.get(authContext);
@@ -71,18 +48,13 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
   const einreichung = await createEinreichung(authData, verfahrenId);
   const einreichungId = einreichung.id;
 
-  const dokument = await uploadDokument(
+  await uploadDokument(
     authData,
     verfahrenId,
     einreichungId,
     file,
     dokumentType,
   );
-  const dokumentId = dokument.id;
-  const dokumentStatus = dokument.status;
-
-  let validationStatus: ValidationStatus | null = null;
-  let validationStatusError: string | null = null;
 
   // @TODO: add a possibility to show a Virus check within the UI
   // - where?
@@ -91,22 +63,10 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
   // - maybe we add a banner "XJustiz file is being processed (validated)"
   // - we want to show off the validierungsstatus somehow
 
-  try {
-    validationStatus = await getEinreichungStatus(
-      authData,
-      verfahrenId,
-      einreichungId,
-    );
-  } catch (err) {
-    // Status endpoint is WIP — not yet available on all environments
-    validationStatusError = err instanceof Error ? err.message : String(err);
-  }
-
   return redirect(`/verfahren/${verfahrenId}`); // Redirect to the new verfahren page on success
 };
 
 export default function XJustitzHochladen() {
-  const actionData = useActionData<ActionResult>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
@@ -117,23 +77,6 @@ export default function XJustitzHochladen() {
         title="Vorläufige Ansicht"
         message="Diese Seite ist ein vorläufiger Prototyp zur API-Validierung. Das endgültige Design folgt."
       />
-
-      {actionData && actionData.success && (
-        <div className="gap-y-kern-space-default flex flex-col">
-          {actionData.validationStatus &&
-            actionData.validationStatus.validation_messages.length > 0 && (
-              <ul className="gap-y-kern-space-small flex flex-col">
-                {actionData.validationStatus.validation_messages.map(
-                  (msg, i) => (
-                    <li key={i} className="kern-body">
-                      {msg}
-                    </li>
-                  ),
-                )}
-              </ul>
-            )}
-        </div>
-      )}
       <UploadForm isSubmitting={isSubmitting} />
     </div>
   );
@@ -153,7 +96,7 @@ export function ErrorBoundary() {
       />
       <Alert
         type="error"
-        title="Ein Fehler ist aufgetreten"
+        title="Ein Fehler ist aufgetreten beim Hochladen der XJustitz Datei"
         message={error instanceof Error ? error.message : String(error)}
       />
       <UploadForm isSubmitting={isSubmitting} />
