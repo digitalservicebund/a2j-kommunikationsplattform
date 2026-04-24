@@ -1,5 +1,6 @@
 import { useRouteError } from "react-router";
 import Alert from "~/components/Alert";
+import { KlageErstellenForm } from "~/routes/verfahren/neu/erstellen/components/KlageErstellenForm";
 
 // TODO: Add an action below to handle form submission for creating a new Klage (when API is ready)
 
@@ -11,6 +12,7 @@ export default function KlageErstellen() {
         title="Vorläufige Ansicht"
         message="Diese Seite ist ein vorläufiger Prototyp zur API-Validierung. Das endgültige Design folgt."
       />
+      <KlageErstellenForm />
     </div>
   );
 }
