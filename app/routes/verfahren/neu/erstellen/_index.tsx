@@ -22,6 +22,7 @@ export default function KlageErstellen() {
         title="Vorläufige Ansicht"
         message="Diese Seite ist ein vorläufiger Prototyp zur API-Validierung. Das endgültige Design folgt."
       />
+      {/* We can print the form inputs on the alert message to verify the action is working*/}
       {data?.status === "success" ? (
         <Alert
           type="success"
