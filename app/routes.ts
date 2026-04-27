@@ -30,9 +30,6 @@ export default [
       index("./routes/verfahren/_index.tsx"),
       route("neu", "./routes/verfahren/neu/_layout.tsx", [
         index("./routes/verfahren/neu/_index.tsx"),
-        route("hochladen", "./routes/verfahren/neu/hochladen/_layout.tsx", [
-          index("./routes/verfahren/neu/hochladen/_index.tsx"),
-        ]),
         route("erstellen", "./routes/verfahren/neu/erstellen/_layout.tsx", [
           index("./routes/verfahren/neu/erstellen/_index.tsx"),
         ]),

@@ -3,7 +3,7 @@ import { Form, Link } from "react-router";
 export function UploadForm({ isSubmitting }: { isSubmitting: boolean }) {
   return (
     <div className="border-kern-layout-border gap-y-kern-space-default flex flex-col rounded-lg border p-8">
-      <h2 className="kern-heading-small">xJustiz Datensatz hochladen</h2>
+      <h2 className="kern-heading-small">Klageschrift hochladen</h2>
       <p className="kern-body">
         Laden Sie von Ihrem Computer eine gültige xJustiz Datei hoch. Hier steht
         dann noch maximale Größe und .xml und so – weiterführende Informationen

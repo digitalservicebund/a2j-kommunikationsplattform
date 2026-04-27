@@ -15,15 +15,8 @@ export function KlageErstellenForm() {
   const isSubmitting = false; // Placeholder for actual submission state
   return (
     <div className="border-kern-layout-border gap-y-kern-space-default flex flex-col rounded-lg border p-8">
-      <h2 className="kern-heading-small">xJustiz Datensatz hochladen</h2>
-      <p className="kern-body">
-        Erstellen Sie hier manuell eine neue Klage, indem Sie die erforderlichen
-      </p>
-      <Form
-        method="post"
-        encType="multipart/form-data"
-        className="gap-y-kern-space-default flex flex-col"
-      >
+      <h2 className="kern-heading-small">Verfahrensbeteiligte & Details</h2>
+      <Form method="post" className="gap-y-kern-space-default flex flex-col">
         <h4 className="kern-title kern-title--small">
           Einreichende Person / Partei
         </h4>
@@ -75,9 +68,7 @@ export function KlageErstellenForm() {
             disabled={isSubmitting}
           >
             <span className="kern-label">
-              {isSubmitting
-                ? "Wird hochgeladen…"
-                : "xJustiz Datensatz hochladen"}
+              {isSubmitting ? "Wird hochgeladen…" : "Weiter zur Überprüfung"}
             </span>
           </button>
         </div>
