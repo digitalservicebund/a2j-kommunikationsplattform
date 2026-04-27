@@ -5,9 +5,9 @@ import { KlageErstellenForm } from "~/routes/verfahren/neu/erstellen/components/
 // TODO: Add an action below to handle form submission for creating a new Klage (when API is ready)
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  console.log("action request formData");
   const formData = await request.formData();
-  return { status: "success", data: formData };
+  console.log("action request formData", Object.fromEntries(formData));
+  return { status: "success", data: Object.fromEntries(formData) };
 };
 
 export default function KlageErstellen() {
@@ -22,8 +22,12 @@ export default function KlageErstellen() {
         title="Vorläufige Ansicht"
         message="Diese Seite ist ein vorläufiger Prototyp zur API-Validierung. Das endgültige Design folgt."
       />
-      {data.status === "success" ? (
-        <Alert type="success" title="Überprüfung ausstehend" />
+      {data?.status === "success" ? (
+        <Alert
+          type="success"
+          title="Überprüfung ausstehend"
+          message={JSON.stringify(data.data)}
+        />
       ) : (
         <KlageErstellenForm />
       )}
