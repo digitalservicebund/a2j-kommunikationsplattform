@@ -1,15 +1,19 @@
 meta {
-  name: Delete Dokument
+  name: Patch Dokument
   type: http
-  seq: 7
+  seq: 4
 }
 
-delete {
+patch {
   url: {{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/dokumente/{{DOKUMENT_ID}}
-  body: none
+  body: json
   auth: inherit
 }
 
 headers {
   If-Match: {{ETAG}}
+}
+
+body:json {
+  "XJUSTIZ"
 }

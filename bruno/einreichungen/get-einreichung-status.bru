@@ -1,11 +1,11 @@
 meta {
-  name: Get Einreichung Status
+  name: Get Einreichung Validierungsstatus
   type: http
   seq: 4
 }
 
 get {
-  url: {{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/status
+  url: {{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/validierungsstatus
   body: none
   auth: inherit
 }

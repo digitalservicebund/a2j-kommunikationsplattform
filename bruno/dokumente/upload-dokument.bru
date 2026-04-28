@@ -1,7 +1,7 @@
 meta {
   name: Upload Dokument
   type: http
-  seq: 2
+  seq: 3
 }
 
 post {
@@ -10,6 +10,10 @@ post {
   auth: inherit
 }
 
+query {
+  ~type: XJUSTIZ
+}
+
 body:multipart-form {
-  files: @file(../../data/xjustiz/sample_klaver_3500001.xml)
+  file: @file(../../data/xjustiz/sample_klaver_3500001.xml)
 }

@@ -1,15 +1,11 @@
 meta {
-  name: Delete Dokument
+  name: Get Dokument By ID
   type: http
-  seq: 7
+  seq: 2
 }
 
-delete {
+get {
   url: {{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/dokumente/{{DOKUMENT_ID}}
   body: none
   auth: inherit
-}
-
-headers {
-  If-Match: {{ETAG}}
 }
