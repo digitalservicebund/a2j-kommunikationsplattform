@@ -3,10 +3,10 @@ import { MatchHandle } from "~/components/Breadcrumbs";
 
 export const handle: MatchHandle = {
   breadcrumb: {
-    title: "Klageschrift erstellen",
+    title: "Verfahren bearbeiten",
   },
 };
 
-export default function VerfahrenLayout() {
+export default function VerfahrenBasisdatenLayout() {
   return <Outlet />;
 }

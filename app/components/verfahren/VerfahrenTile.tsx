@@ -12,7 +12,7 @@ function getBeteiligungByRoleCode(
   beteiligungen: Verfahren["beteiligungen"],
   roleCode: string,
 ) {
-  return beteiligungen.find((b) => b.rollen.some((r) => r.code === roleCode));
+  return beteiligungen?.find((b) => b.rollen.some((r) => r.code === roleCode));
 }
 
 function DataItem({
@@ -58,12 +58,9 @@ export default function VerfahrenTile({
   aktenzeichen_gericht,
   gericht,
   beteiligungen,
-  status,
 }: Verfahren) {
   const { buttons } = useTranslations();
 
-  const badgeModifier =
-    status === "ERSTELLT" ? "kern-badge--info" : "kern-badge--warning";
   // Extract values from beteiligungen based on rollen codes
   const klaegerinData =
     getBeteiligungByRoleCode(beteiligungen, ROLLE_CODE_KLAEGERIN) || null;
@@ -79,13 +76,6 @@ export default function VerfahrenTile({
     <article className="gap-kern-space-large flex flex-col">
       <h2 className="kern-heading-medium">
         Placeholder for Kläger:in ./. Beklagte:r
-        <div>
-          <span className={`kern-badge ${badgeModifier}`}>
-            <span className="kern-label kern-label--small">
-              VerfahrenStatus: {status}
-            </span>
-          </span>
-        </div>
       </h2>
       <dl className="gap-kern-space-large my-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <DataCard label="Klagende Partei">

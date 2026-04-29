@@ -30,9 +30,6 @@ export default [
       index("./routes/verfahren/_index.tsx"),
       route("neu", "./routes/verfahren/neu/_layout.tsx", [
         index("./routes/verfahren/neu/_index.tsx"),
-        route("erstellen", "./routes/verfahren/neu/erstellen/_layout.tsx", [
-          index("./routes/verfahren/neu/erstellen/_index.tsx"),
-        ]),
       ]),
       route(":id", "./routes/verfahren/$id/_layout.tsx", [
         index("./routes/verfahren/$id/_index.tsx"),
@@ -40,6 +37,9 @@ export default [
           "dokument/:dokumentId",
           "./routes/verfahren/$id/dokument/$dokumentId.tsx",
         ),
+        route("bearbeiten", "./routes/verfahren/$id/bearbeiten/_layout.tsx", [
+          index("./routes/verfahren/$id/bearbeiten/_index.tsx"),
+        ]),
       ]),
     ]),
     // kitchensink (component playground)

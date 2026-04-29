@@ -1,0 +1,65 @@
+import { Suspense } from "react";
+import { Await, Link, LoaderFunctionArgs, useLoaderData } from "react-router";
+import Alert from "~/components/Alert";
+import VerfahrenTileSkeleton from "~/components/skeletons/VerfahrenTileSkeleton.static";
+import { authContext } from "~/middleware/auth.server";
+import { useTranslations } from "~/services/translations/context";
+import fetchVerfahrenById from "~/services/verfahren/fetchVerfahrenById.server";
+
+export const loader = async ({ context, params }: LoaderFunctionArgs) => {
+  const authData = context.get(authContext);
+
+  if (!authData) {
+    throw new Error("No auth data available in loader");
+  }
+
+  const { id } = params;
+
+  if (!id) {
+    throw new Error("No Verfahren ID provided in params");
+  }
+
+  const dataPromise = fetchVerfahrenById(authData, { id });
+
+  return {
+    data: dataPromise,
+  };
+};
+
+export default function VerfahrendetailsBearbeiten() {
+  const { data } = useLoaderData<{
+    data: Promise<ReturnType<typeof fetchVerfahrenById>>;
+  }>();
+
+  const { alerts } = useTranslations();
+
+  return (
+    <>
+      <h1 className="kern-heading-medium">Verfahrensbeteiligte & Details</h1>
+      <Alert
+        type="info"
+        title={alerts.WORK_IN_PROGRESS_TITLE}
+        message={alerts.WORK_IN_PROGRESS_MESSAGE}
+      />
+      <div className="my-kern-space-large gap-y-kern-space-large flex flex-col">
+        <Suspense fallback={<VerfahrenTileSkeleton />}>
+          <Await resolve={data}>
+            {(resolvedData) => (
+              <div className="space-y-kern-space-large gap-kern-space-small flex flex-wrap">
+                <code className="whitespace-pre-wrap">
+                  {JSON.stringify(resolvedData)}
+                </code>
+                <Link
+                  to={`/verfahren/${resolvedData.id}`}
+                  className="kern-btn kern-btn--primary"
+                >
+                  <span className="kern-label">Weiter zur Überprüfung</span>
+                </Link>
+              </div>
+            )}
+          </Await>
+        </Suspense>
+      </div>
+    </>
+  );
+}

@@ -5,9 +5,8 @@ export function UploadForm({ isSubmitting }: { isSubmitting: boolean }) {
     <div className="border-kern-layout-border gap-y-kern-space-default flex flex-col rounded-lg border p-8">
       <h2 className="kern-heading-small">Klageschrift hochladen</h2>
       <p className="kern-body">
-        Laden Sie von Ihrem Computer eine gültige xJustiz Datei hoch. Hier steht
-        dann noch maximale Größe und .xml und so – weiterführende Informationen
-        halt.
+        Laden Sie Ihre Klageschrift als PDF oder Wodrd-Datei hoch. Wir
+        extrahieren die wichtigsten Daten automatisch für Sie.
       </p>
       <Form
         method="post"
@@ -17,14 +16,13 @@ export function UploadForm({ isSubmitting }: { isSubmitting: boolean }) {
         <input type="hidden" name="type" value="XJUSTIZ" />
         <div className="kern-form-input">
           <label className="kern-label" htmlFor="file">
-            xJustiz-Datei (.xml)
+            Datei hier hochladen (PDF, DOCX)
           </label>
           <input
             className="kern-form-input__input"
             id="file"
             name="file"
             type="file"
-            accept=".xml"
             required
           />
         </div>
@@ -40,7 +38,7 @@ export function UploadForm({ isSubmitting }: { isSubmitting: boolean }) {
             <span className="kern-label">
               {isSubmitting
                 ? "Wird hochgeladen…"
-                : "xJustiz Datensatz hochladen"}
+                : "Datei hochladen und weiter"}
             </span>
           </button>
         </div>

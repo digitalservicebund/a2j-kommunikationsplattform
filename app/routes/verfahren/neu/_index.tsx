@@ -63,7 +63,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
   // - maybe we add a banner "XJustiz file is being processed (validated)"
   // - we want to show off the validierungsstatus somehow
 
-  return redirect(`/verfahren/neu/erstellen`); // Redirect to the new verfahren page on success
+  return redirect(`/verfahren/${verfahrenId}/bearbeiten`);
 };
 
 export default function VerfahrenNeu() {
