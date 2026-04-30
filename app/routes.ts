@@ -28,13 +28,18 @@ export default [
     // verfahren pages
     route("verfahren", "./routes/verfahren/_layout.tsx", [
       index("./routes/verfahren/_index.tsx"),
-      route("new", "./routes/verfahren/prototype.new.tsx"),
+      route("neu", "./routes/verfahren/neu/_layout.tsx", [
+        index("./routes/verfahren/neu/_index.tsx"),
+      ]),
       route(":id", "./routes/verfahren/$id/_layout.tsx", [
         index("./routes/verfahren/$id/_index.tsx"),
         route(
           "dokument/:dokumentId",
           "./routes/verfahren/$id/dokument/$dokumentId.tsx",
         ),
+        route("bearbeiten", "./routes/verfahren/$id/bearbeiten/_layout.tsx", [
+          index("./routes/verfahren/$id/bearbeiten/_index.tsx"),
+        ]),
       ]),
     ]),
     // kitchensink (component playground)
