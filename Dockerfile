@@ -1,8 +1,6 @@
 # Create an upgraded alpine image to solve CVE vulnerabilities
-# See:
-    # https://scout.docker.com/vulnerabilities/id/CVE-2025-64756
-    # https://stackoverflow.com/a/76440791/1239760
-FROM node:24-alpine AS alpine-upgraded
+# See: https://stackoverflow.com/a/76440791/1239760
+FROM node:24.15.0-alpine3.23 AS alpine-upgraded
 
 RUN apk upgrade --no-cache
 FROM scratch
