@@ -1,0 +1,20 @@
+name: KomPla API
+version: "1"
+auth:
+  type: oauth2
+  grantType: authorization_code
+  callbackUrl: http://localhost
+  authorizationUrl: https://auth.kompla-justiz.sinc.de/realms/kompla-dev/protocol/openid-connect/auth
+  accessTokenUrl: https://auth.kompla-justiz.sinc.de/realms/kompla-dev/protocol/openid-connect/token
+  refreshTokenUrl: ""
+  clientId: "{{OAUTH_CLIENT_ID}}"
+  clientSecret: "{{OAUTH_CLIENT_SECRET}}"
+  scope: kompla.verfahren.read kompla.verfahren.write kompla.gericht.read
+  state: ""
+  pkce: true
+  credentialsPlacement: body
+  credentialsId: credentials
+  tokenPlacement: header
+  tokenHeaderPrefix: Bearer
+  autoFetchToken: true
+  autoRefreshToken: true

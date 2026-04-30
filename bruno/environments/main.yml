@@ -1,0 +1,23 @@
+name: main
+variables:
+  - name: BASE_URL
+    value: https://app.kompla-justiz.sinc.de/main
+    secret: false
+  - name: OAUTH_CLIENT_ID
+    value: kompla-dev
+    secret: false
+  - name: VERFAHREN_ID
+    value: ""
+    secret: false
+  - name: EINREICHUNG_ID
+    value: ""
+    secret: false
+  - name: DOKUMENT_ID
+    value: ""
+    secret: false
+  - name: ETAG
+    value: ""
+    secret: false
+  - name: OAUTH_CLIENT_SECRET
+    value: ""
+    secret: true

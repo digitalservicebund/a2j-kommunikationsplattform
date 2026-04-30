@@ -1,0 +1,19 @@
+info:
+  name: Patch Dokument
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/dokumente/{{DOKUMENT_ID}}"
+  headers:
+    - name: If-Match
+      value: "{{ETAG}}"
+  body:
+    type: json
+    data: |-
+      "XJUSTIZ"
+  auth: inherit
+
+settings:
+  encodeUrl: true

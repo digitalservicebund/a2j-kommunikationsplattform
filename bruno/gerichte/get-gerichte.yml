@@ -1,0 +1,12 @@
+info:
+  name: Get Gerichte
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/api/v1/gerichte"
+  auth: inherit
+
+settings:
+  encodeUrl: true

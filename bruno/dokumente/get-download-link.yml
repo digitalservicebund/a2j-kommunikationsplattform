@@ -1,0 +1,17 @@
+info:
+  name: Get Download Link
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/dokumente/{{DOKUMENT_ID}}/downloadlink"
+  params:
+    - name: ttl
+      value: "300"
+      type: query
+      disabled: true
+  auth: inherit
+
+settings:
+  encodeUrl: true

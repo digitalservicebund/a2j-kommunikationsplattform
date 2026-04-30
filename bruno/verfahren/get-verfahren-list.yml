@@ -1,0 +1,33 @@
+info:
+  name: Get Verfahren List
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/api/v1/verfahren"
+  params:
+    - name: limit
+      value: "10"
+      type: query
+      disabled: true
+    - name: offset
+      value: "0"
+      type: query
+      disabled: true
+    - name: sort
+      value: eingereicht_am
+      type: query
+      disabled: true
+    - name: search_text
+      value: ""
+      type: query
+      disabled: true
+    - name: gericht
+      value: ""
+      type: query
+      disabled: true
+  auth: inherit
+
+settings:
+  encodeUrl: true

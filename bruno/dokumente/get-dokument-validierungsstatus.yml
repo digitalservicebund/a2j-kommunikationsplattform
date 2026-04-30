@@ -1,0 +1,12 @@
+info:
+  name: Get Dokument Validierungsstatus
+  type: http
+  seq: 6
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/dokumente/{{DOKUMENT_ID}}/validierungsstatus"
+  auth: inherit
+
+settings:
+  encodeUrl: true

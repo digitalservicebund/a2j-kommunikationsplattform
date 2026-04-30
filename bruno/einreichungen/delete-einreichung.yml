@@ -1,0 +1,15 @@
+info:
+  name: Delete Einreichung
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}"
+  headers:
+    - name: If-Match
+      value: "{{ETAG}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
