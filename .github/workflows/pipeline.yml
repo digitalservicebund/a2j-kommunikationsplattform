@@ -195,7 +195,8 @@ jobs:
           docker push --all-tags ghcr.io/${{ env.IMAGE_NAME }}
 
       - name: Create SBOM
-        uses: digitalservicebund/create-sbom@9535ef832c2895b44b7266f84e16ad7598d1ead9 # v1.2.1
+        # https://github.com/digitalservicebund/create-sbom
+        uses: digitalservicebund/create-sbom@ff8348b5648266dccbdd00310c84950ad48d0c1b # main branch, latest full commit SHA
         with:
           image_name: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
