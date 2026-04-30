@@ -21,18 +21,20 @@ export const VerfahrenSchema = z.object({
   status_changed: z.iso.datetime(),
   eingereicht_am: z.nullable(z.iso.datetime()),
   gericht: z.nullable(GerichtDTO),
-  beteiligungen: z.array(
-    z.object({
-      id: z.string(),
-      name: z.string(),
-      rollen: z.array(RollenDTO),
-      prozessbevollmaechtigte: z.array(
-        z.object({
-          aktenzeichen: z.string(),
-          id: z.string(),
-          name: z.string(),
-        }),
-      ),
-    }),
+  beteiligungen: z.nullable(
+    z.array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        rollen: z.array(RollenDTO),
+        prozessbevollmaechtigte: z.array(
+          z.object({
+            aktenzeichen: z.string(),
+            id: z.string(),
+            name: z.string(),
+          }),
+        ),
+      }),
+    ),
   ),
 });

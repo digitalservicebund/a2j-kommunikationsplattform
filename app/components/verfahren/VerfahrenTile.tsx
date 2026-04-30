@@ -12,7 +12,7 @@ function getBeteiligungByRoleCode(
   beteiligungen: Verfahren["beteiligungen"],
   roleCode: string,
 ) {
-  return beteiligungen.find((b) => b.rollen.some((r) => r.code === roleCode));
+  return beteiligungen?.find((b) => b.rollen.some((r) => r.code === roleCode));
 }
 
 function DataItem({

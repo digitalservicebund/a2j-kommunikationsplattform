@@ -37,6 +37,8 @@ export default defineConfig({
         "app/constants/**",
         // exclude mock files
         "app/mocks/**/*.{ts,tsx}",
+        // exclude prototype/spike files
+        "app/**/prototype.*.{ts,tsx}",
       ],
       reporter: ["text", "lcov"],
     },

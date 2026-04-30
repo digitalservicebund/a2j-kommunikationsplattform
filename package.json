@@ -26,7 +26,7 @@
     "@react-router/express": "^7.13.1",
     "@react-router/node": "^7.13.1",
     "@react-router/serve": "^7.13.1",
-    "@sentry/react-router": "^10.43.0",
+    "@sentry/react-router": "^10.45.0",
     "clsx": "^2.1.1",
     "compression": "^1.8.1",
     "cross-env": "^10.1.0",
@@ -41,7 +41,6 @@
     "react-router-dom": "^7.13.1",
     "remix-auth": "^4.2.0",
     "remix-auth-oauth2": "^3.4.1",
-    "uuid": "^13.0.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -75,7 +74,6 @@
     "prettier": "^3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
-    "react-router-devtools": "^6.2.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.55.0",
@@ -85,9 +83,15 @@
   },
   "overrides": {
     "@isaacs/brace-expansion": "5.0.1",
-    "minimatch": "10.2.3"
+    "minimatch": "10.2.3",
+    "@react-router/serve": {
+      "path-to-regexp": "0.1.13"
+    },
+    "router": {
+      "path-to-regexp": "8.4.0"
+    }
   },
   "engines": {
-    "node": ">=24.13.0"
+    "node": ">=24.15.0"
   }
 }
