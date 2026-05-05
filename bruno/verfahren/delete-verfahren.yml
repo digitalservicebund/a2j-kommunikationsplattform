@@ -1,0 +1,15 @@
+info:
+  name: Delete Verfahren
+  type: http
+  seq: 4
+
+http:
+  method: DELETE
+  url: "{{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}"
+  headers:
+    - name: If-Match
+      value: "{{ETAG}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true

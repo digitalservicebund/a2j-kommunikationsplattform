@@ -1,0 +1,16 @@
+name: develop
+variables:
+  - name: BASE_URL
+    value: https://app.kompla-justiz.sinc.de/develop
+  - name: OAUTH_CLIENT_ID
+    value: kompla-dev
+  - name: VERFAHREN_ID
+    value: 019dde63-d42c-7141-ad04-aa1b511d01d0
+  - name: EINREICHUNG_ID
+    value: 019dde64-08b7-7a23-8c1a-2892a1a6f640
+  - name: DOKUMENT_ID
+    value: 019dde64-5a90-7704-997f-5925057817bd
+  - name: ETAG
+    value: ""
+  - secret: true
+    name: OAUTH_CLIENT_SECRET

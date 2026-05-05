@@ -1,0 +1,12 @@
+info:
+  name: Get Dokumente
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/dokumente"
+  auth: inherit
+
+settings:
+  encodeUrl: true

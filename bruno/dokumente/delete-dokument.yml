@@ -1,0 +1,15 @@
+info:
+  name: Delete Dokument
+  type: http
+  seq: 7
+
+http:
+  method: DELETE
+  url: "{{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/dokumente/{{DOKUMENT_ID}}"
+  headers:
+    - name: If-Match
+      value: "{{ETAG}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
