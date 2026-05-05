@@ -15,7 +15,7 @@ allowed_patterns:
   - 'const getSecret = \(\) => \{'
   - 'clientSecret:\s*serverConfig\(\).*'
   - 'sonar\.projectKey=digitalservicebund_a2j-kommunikationsplattform'
-  - clientSecret: \"{{OAUTH_CLIENT_SECRET}}\"
+  - clientSecret:\ \"{{OAUTH_CLIENT_SECRET}}\"
 
 fileignoreconfig:
   - filename: .env.example
