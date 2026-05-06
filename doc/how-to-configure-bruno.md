@@ -1,6 +1,6 @@
 # How to configure Bruno
 
-If the Auth configuration is not being applied automatically within Bruno, follow the steps as described [here](https://github.com/digitalservicebund/a2j-kommunikationsplattform/tree/main/doc/how-to-configure-bruno.md).
+If the Auth configuration is not being applied automatically within Bruno, follow these steps:
 
 1. Switch to Settings of the imported Collection (three dots next to the name of the Collection `KomPla API`)
 2. Select the \*Auth tab
