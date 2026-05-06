@@ -8,10 +8,10 @@ export const TranslationsContext = React.createContext<Translations>(
 export function TranslationsProvider({
   children,
   value = dictionaries.de,
-}: {
+}: Readonly<{
   children: React.ReactNode;
   value?: Translations;
-}) {
+}>) {
   return (
     <TranslationsContext.Provider value={value}>
       {children}
