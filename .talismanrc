@@ -16,7 +16,6 @@ allowed_patterns:
   - 'clientSecret:\s*serverConfig\(\).*'
   - 'sonar\.projectKey=digitalservicebund_a2j-kommunikationsplattform'
   - clientSecret:\ \"{{OAUTH_CLIENT_SECRET}}\"
-  - OAUTH_CLIENT_SECRET
 
 fileignoreconfig:
   - filename: .env.example
@@ -28,4 +27,6 @@ fileignoreconfig:
   - filename: app/services/auth/__test__/authSession.server.test.ts
     ignore_detectors: [filecontent]
   - filename: app/services/translations/de.ts
+    ignore_detectors: [filecontent]
+  - filename: doc/how-to-configure-bruno.md
     ignore_detectors: [filecontent]
