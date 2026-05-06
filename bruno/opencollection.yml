@@ -1,20 +1,46 @@
-name: KomPla API
-version: "1"
-auth:
-  type: oauth2
-  grantType: authorization_code
-  callbackUrl: http://localhost
-  authorizationUrl: https://auth.kompla-justiz.sinc.de/realms/kompla-dev/protocol/openid-connect/auth
-  accessTokenUrl: https://auth.kompla-justiz.sinc.de/realms/kompla-dev/protocol/openid-connect/token
-  refreshTokenUrl: ""
-  clientId: "{{OAUTH_CLIENT_ID}}"
-  clientSecret: "{{OAUTH_CLIENT_SECRET}}"
-  scope: kompla.verfahren.read kompla.verfahren.write kompla.gericht.read
-  state: ""
-  pkce: true
-  credentialsPlacement: body
-  credentialsId: credentials
-  tokenPlacement: header
-  tokenHeaderPrefix: Bearer
-  autoFetchToken: true
-  autoRefreshToken: true
+opencollection: 1.0.0
+
+info:
+  name: KomPla API
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+
+request:
+  auth:
+    type: oauth2
+    flow: authorization_code
+    authorizationUrl: https://auth.kompla-justiz.sinc.de/realms/kompla-dev/protocol/openid-connect/auth
+    accessTokenUrl: https://auth.kompla-justiz.sinc.de/realms/kompla-dev/protocol/openid-connect/token
+    callbackUrl: http://localhost
+    credentials:
+      clientId: "{{OAUTH_CLIENT_ID}}"
+      clientSecret: "{{OAUTH_CLIENT_SECRET}}"
+      placement: body
+    scope: kompla.verfahren.read kompla.verfahren.write kompla.gericht.read
+    pkce: {}
+    tokenConfig:
+      id: credentials
+      placement:
+        header: Bearer
+      source: access_token
+    settings:
+      autoFetchToken: true
+      autoRefreshToken: false
+
+docs:
+  content: |-
+    # How to configure Bruno
+
+    If the Auth configuration is not being applied automatically within Bruno, follow the steps as described [here](https://github.com/digitalservicebund/a2j-kommunikationsplattform/tree/main/doc/how-to-configure-bruno.md).
+  type: text/markdown
+bundled: false
+extensions: {}
