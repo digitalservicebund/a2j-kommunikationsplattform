@@ -1,6 +1,6 @@
 # How to configure Bruno
 
-If the Auth configuration is not being applied automatically within Bruno, follow these steps:
+If the Auth configuration is not being applied automatically within Bruno, there is a known issue with that [matter](https://github.com/usebruno/bruno/issues/5636), follow these steps:
 
 1. Switch to Settings of the imported Collection (three dots next to the name of the Collection `KomPla API`)
 2. Select the \*Auth tab
