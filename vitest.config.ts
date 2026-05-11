@@ -14,18 +14,17 @@ export default defineConfig({
         // exclude route pages/layouts - tested via e2e, see /tests/e2e/**
         // action.*.ts files are intentionally kept for unit test coverage
         "app/routes/_index.tsx",
-        "app/routes/_layout.tsx",
-        "app/routes/error.tsx",
-        "app/routes/readyz.ts",
         "app/routes/auth.**",
-        "app/routes/login/**",
-        "app/routes/verfahren/**",
-        "app/routes/kitchensink/**",
         "app/routes/barrierefreiheit.tsx",
         "app/routes/datenschutz.tsx",
+        "app/routes/error.tsx",
         "app/routes/hilfe-und-kontakt.tsx",
         "app/routes/impressum.tsx",
+        "app/routes/kitchensink.tsx",
+        "app/routes/login.tsx",
         "app/routes/open-source.tsx",
+        "app/routes/readyz.ts",
+        "app/routes/verfahren.*",
         "app/routes/weitere-informationen.tsx",
         // test files
         "app/**/__test__/*.test.{ts,tsx}",

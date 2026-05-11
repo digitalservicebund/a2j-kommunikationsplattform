@@ -10,16 +10,23 @@ import {
   useRouteError,
 } from "react-router";
 import Alert from "~/components/Alert";
-import { authContext } from "~/middleware/auth.server";
-import { UploadForm } from "~/routes/verfahren/neu/components/UploadForm";
+import { VerfahrenUploadForm } from "~/components/verfahren/VerfahrenUploadForm";
+import { authContext, authMiddleware } from "~/middleware/auth.server";
 import createEinreichung from "~/services/verfahren/prototype.createEinreichung.server";
 import createVerfahren from "~/services/verfahren/prototype.createVerfahren.server";
 import uploadDokument, {
   type DokumentType,
 } from "~/services/verfahren/prototype.uploadDokument.server";
 
+// this route requires users to be logged in
+export const middleware = [authMiddleware];
+
 export const action = async ({ request, context }: ActionFunctionArgs) => {
+  console.log("action context", context);
+
   const authData = context.get(authContext);
+
+  console.log("action authData", authData);
 
   if (!authData) {
     return {
@@ -47,6 +54,8 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
   const einreichung = await createEinreichung(authData, verfahrenId);
   const einreichungId = einreichung.id;
+
+  console.log("action einreichungId", einreichungId);
 
   await uploadDokument(
     authData,
@@ -77,7 +86,7 @@ export default function VerfahrenNeu() {
         title="Vorläufige Ansicht"
         message="Diese Seite ist ein vorläufiger Prototyp zur API-Validierung. Das endgültige Design folgt."
       />
-      <UploadForm isSubmitting={isSubmitting} />
+      <VerfahrenUploadForm isSubmitting={isSubmitting} />
     </div>
   );
 }
@@ -99,7 +108,7 @@ export function ErrorBoundary() {
         title="Ein Fehler ist aufgetreten beim Hochladen der XJustitz Datei"
         message={error instanceof Error ? error.message : String(error)}
       />
-      <UploadForm isSubmitting={isSubmitting} />
+      <VerfahrenUploadForm isSubmitting={isSubmitting} />
     </div>
   );
 }

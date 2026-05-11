@@ -120,6 +120,13 @@ export const de = {
     SEARCH_PLACEHOLDER:
       "Freie Textsuche zum Beispiel nach Aktenzeichen, Parteien, Gerichten, ...",
   },
+  breadcrumb: {
+    START: "Start",
+    VERFAHREN: "Verfahren",
+    VERFAHREN_NEU: "Klageschrift erstellen",
+    VERFAHREN_ID: "Details",
+    VERFAHREN_ID_BEARBEITEN: "Verfahren bearbeiten",
+  },
 } as const;
 
 export default de;

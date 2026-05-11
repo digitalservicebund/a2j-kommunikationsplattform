@@ -1,4 +1,4 @@
-import { index, route, RouteConfig } from "@react-router/dev/routes";
+import { index, prefix, route, RouteConfig } from "@react-router/dev/routes";
 import { config } from "./config/config";
 import { META_PAGES } from "./config/metaPages";
 
@@ -17,32 +17,29 @@ export default [
   route("error", "./routes/error.tsx"),
 
   // login
-  route("login", "./routes/login/_index.tsx"),
+  route("login", "./routes/login.tsx"),
 
   // meta pages (imprint, for example)
   ...META_PAGES.map((page) => route(page.path, page.file)),
 
-  // all "user is logged in" routes
-  route("/", "./routes/_layout.tsx", [
-    // overview page
-    index("./routes/_index.tsx"),
-    // verfahren pages
-    route("verfahren", "./routes/verfahren/_layout.tsx", [
-      index("./routes/verfahren/_index.tsx"),
-      route("neu", "./routes/verfahren/neu/_layout.tsx", [
-        index("./routes/verfahren/neu/_index.tsx"),
-      ]),
-      route(":id", "./routes/verfahren/$id/_layout.tsx", [
-        index("./routes/verfahren/$id/_index.tsx"),
-        route("bearbeiten", "./routes/verfahren/$id/bearbeiten/_layout.tsx", [
-          index("./routes/verfahren/$id/bearbeiten/_index.tsx"),
-        ]),
-      ]),
-    ]),
+  // dashboard route (user is logged in)
+  route("/", "./routes/_index.tsx"),
 
-    // exclude route(s) from production environment
-    ...(config().ENVIRONMENT === "production"
-      ? []
-      : [route("kitchensink", "./routes/kitchensink.tsx")]),
+  // verfahren routes
+  ...prefix("verfahren", [
+    index("./routes/verfahren.tsx"),
+    route("neu", "./routes/verfahren.neu.tsx"),
+    route(":id", "./routes/verfahren.$id.tsx"),
+    route(":id/bearbeiten", "./routes/verfahren.$id.bearbeiten.tsx"),
   ]),
+
+  // verfahren
+  // verfahren/neu
+  // verfahren/{id}
+  // verfahren/{id}/bearbeiten
+
+  // exclude route(s) from production environment
+  ...(config().ENVIRONMENT === "production"
+    ? []
+    : [route("kitchensink", "./routes/kitchensink.tsx")]),
 ] satisfies RouteConfig;

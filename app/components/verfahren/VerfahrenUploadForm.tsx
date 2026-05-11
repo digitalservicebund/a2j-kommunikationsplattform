@@ -1,6 +1,8 @@
 import { Form, Link } from "react-router";
 
-export function UploadForm({ isSubmitting }: { isSubmitting: boolean }) {
+export function VerfahrenUploadForm({
+  isSubmitting,
+}: Readonly<{ isSubmitting: boolean }>) {
   return (
     <div className="border-kern-layout-border gap-y-kern-space-default flex flex-col rounded-lg border p-8">
       <h2 className="kern-heading-small">Klageschrift hochladen</h2>

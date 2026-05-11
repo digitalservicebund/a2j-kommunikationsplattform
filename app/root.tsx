@@ -12,13 +12,13 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "react-router";
-import { Breadcrumbs } from "~/components/Breadcrumbs";
 import ErrorBox from "~/components/ErrorBox";
 import { buildErrorContext } from "~/services/error/buildErrorContext";
 import { useNonce } from "~/services/security/nonce";
 import { dictionaries } from "~/services/translations";
 import { TranslationsContext } from "~/services/translations/context";
 import type { Route } from "./+types/root";
+import { Breadcrumb } from "./components/breadcrumb/Breadcrumb";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
@@ -93,7 +93,7 @@ export default function App() {
               userIsLoggedIn={userIsLoggedIn}
               isContentPage={isContentPage}
             />
-            <Breadcrumbs />
+            <Breadcrumb />
             <main className="kern-container">
               <Outlet />
             </main>

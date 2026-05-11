@@ -2,9 +2,12 @@ import { Suspense } from "react";
 import { Await, Link, LoaderFunctionArgs, useLoaderData } from "react-router";
 import Alert from "~/components/Alert";
 import VerfahrenTileSkeleton from "~/components/VerfahrenTileSkeleton.static";
-import { authContext } from "~/middleware/auth.server";
+import { authContext, authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 import fetchVerfahrenById from "~/services/verfahren/fetchVerfahrenById.server";
+
+// this route requires users to be logged in
+export const middleware = [authMiddleware];
 
 export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   const authData = context.get(authContext);

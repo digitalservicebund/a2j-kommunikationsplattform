@@ -13,7 +13,7 @@ import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMor
 import VerfahrenTileSkeleton from "~/components/VerfahrenTileSkeleton.static";
 import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/config/verfahren";
 import { VERFAHREN_SKELETONS } from "~/config/verfahrenSkeletons";
-import { authContext } from "~/middleware/auth.server";
+import { authContext, authMiddleware } from "~/middleware/auth.server";
 import { GerichtDTO, VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { useTranslations } from "~/services/translations/context";
 import fetchGerichteService from "~/services/verfahren/fetchGerichte.service";
@@ -31,6 +31,9 @@ export type LoaderData = {
   verfahren: Promise<VerfahrenLoaderData>;
   gerichte: Promise<Gericht[]>;
 };
+
+// this route requires users to be logged in
+export const middleware = [authMiddleware];
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   const authData = context.get(authContext);
@@ -70,7 +73,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   };
 };
 
-export default function Verfahren() {
+export default function VerfahrenRoute() {
   const { data } = useLoaderData<{
     data: Promise<[VerfahrenLoaderData, Gericht[]]>;
   }>();
