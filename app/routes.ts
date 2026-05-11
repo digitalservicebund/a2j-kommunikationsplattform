@@ -33,11 +33,6 @@ export default [
     route(":id/bearbeiten", "./routes/verfahren.$id.bearbeiten.tsx"),
   ]),
 
-  // verfahren
-  // verfahren/neu
-  // verfahren/{id}
-  // verfahren/{id}/bearbeiten
-
   // exclude route(s) from production environment
   ...(config().ENVIRONMENT === "production"
     ? []
