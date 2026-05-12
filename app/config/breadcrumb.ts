@@ -2,7 +2,7 @@ import { dictionaries } from "~/services/translations";
 
 export interface BreadcrumbConfig {
   [key: string]: {
-    label: string | ((params: Record<string, string>) => string);
+    label: string;
     parent?: string;
   };
 }
@@ -23,11 +23,4 @@ export const breadcrumbConfig: BreadcrumbConfig = {
     label: dictionaries.de.breadcrumb.VERFAHREN_ID_BEARBEITEN,
     parent: "/verfahren/:id",
   },
-
-  //   for later, an example with a passed param:
-
-  //   "/products/:id/reviews/:reviewId": {
-  //     label: (params) => `Review by ${params.reviewId}`,
-  //     parent: "/products/:id/reviews",
-  //   },
 };

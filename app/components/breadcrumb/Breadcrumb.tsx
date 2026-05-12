@@ -60,15 +60,9 @@ export const Breadcrumb = () => {
 
   /**
    * Get label for a breadcrumb item
-   * Handles both static and dynamic labels
    */
   const getLabel = (configPath: string): string => {
     const config = breadcrumbConfig[configPath];
-
-    if (typeof config.label === "function") {
-      return config.label(params as Record<string, string>);
-    }
-
     return config.label;
   };
 
