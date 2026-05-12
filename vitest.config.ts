@@ -6,7 +6,7 @@ export default defineConfig({
   test: {
     coverage: {
       provider: "istanbul",
-      include: ["app/**"],
+      include: ["app/**/**.{ts,tsx}"],
       exclude: [
         "app/entry.client.tsx",
         "app/entry.server.tsx",
