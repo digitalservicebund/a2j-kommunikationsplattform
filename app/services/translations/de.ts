@@ -1,5 +1,3 @@
-// German translations
-
 export const de = {
   buttons: {
     LOGIN_BUTTON_BEA: "Anmeldung Anwaltschaft (über beA Login)",
