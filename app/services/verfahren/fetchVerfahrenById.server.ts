@@ -1,7 +1,7 @@
 import { serverConfig } from "~/config/config.server";
-import { VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
+import { VerfahrenSchema } from "./verfahrenSchema";
 
 type FetchVerfahrenByIdOptions = {
   id: string;

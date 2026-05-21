@@ -11,7 +11,9 @@ export const CodeWertSchema = z.object({
   wert: z.string(),
   code: z.string(),
 });
+
 export const GerichtDTO = CodeWertSchema.describe("Gericht DTO");
+
 export const RollenDTO = CodeWertSchema.describe("Rollen DTO");
 
 export const VerfahrenSchema = z.object({

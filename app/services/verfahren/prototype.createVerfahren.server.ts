@@ -1,8 +1,8 @@
 import z from "zod";
 import { serverConfig } from "~/config/config.server";
-import { VerfahrenSchema } from "~/models/VerfahrenSchema";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
+import { VerfahrenSchema } from "./verfahrenSchema";
 
 // API issue/bug: POST /verfahren returns an array [{...}] instead of a single object.
 // We take the first element as a workaround.
