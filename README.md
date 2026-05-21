@@ -1,5 +1,7 @@
 # A2J - Kommunikationsplattform
 
+- [How this project is stuctured](./doc/project-structure.md)
+
 ## Prerequisites
 
 ### Node.js and Homebrew
