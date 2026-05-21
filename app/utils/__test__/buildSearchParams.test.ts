@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSearchParams } from "~/util/buildSearchParams";
+import { buildSearchParams } from "~/utils/buildSearchParams";
 
 describe("buildSearchParams", () => {
   it("converts object to URLSearchParams", () => {

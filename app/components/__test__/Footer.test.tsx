@@ -5,7 +5,7 @@ import { MemoryRouter } from "react-router";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "tests/util/translationsUtil";
+} from "tests/utils/translationsUtil";
 import { it } from "vitest";
 import Footer from "../Footer";
 

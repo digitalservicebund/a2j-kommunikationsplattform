@@ -3,7 +3,7 @@ import { serverConfig } from "~/config/config.server";
 import { sortOptions } from "~/config/verfahren";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
-import { buildSearchParams } from "~/util/buildSearchParams";
+import { buildSearchParams } from "~/utils/buildSearchParams";
 import { VerfahrenSchema } from "./verfahrenSchema";
 
 const fetchVerfahrenOptionsSchema = z.object({

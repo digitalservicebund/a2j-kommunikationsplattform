@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "tests/util/translationsUtil";
+} from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
 import InputSelect from "../InputSelect";
 

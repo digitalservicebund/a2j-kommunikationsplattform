@@ -13,14 +13,14 @@ import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMor
 import VerfahrenTileSkeleton from "~/components/VerfahrenTileSkeleton.static";
 import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/config/verfahren";
 import { VERFAHREN_SKELETONS } from "~/config/verfahrenSkeletons";
-import { authContext, authMiddleware } from "~/middleware/auth.server";
-import { useTranslations } from "~/services/translations/context";
-import fetchGerichteService from "~/services/verfahren/fetchGerichte.service";
-import fetchVerfahren from "~/services/verfahren/fetchVerfahren.server";
+import fetchGerichteService from "~/domains/verfahren/fetchGerichte.service";
+import fetchVerfahren from "~/domains/verfahren/fetchVerfahren.server";
 import {
   GerichtDTO,
   VerfahrenSchema,
-} from "~/services/verfahren/verfahrenSchema";
+} from "~/domains/verfahren/verfahrenSchema";
+import { authContext, authMiddleware } from "~/middleware/auth.server";
+import { useTranslations } from "~/services/translations/context";
 
 export type Verfahren = z.infer<typeof VerfahrenSchema>;
 export type Gericht = z.infer<typeof GerichtDTO>;

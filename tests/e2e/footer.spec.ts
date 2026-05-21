@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { getTestTranslations } from "tests/util/translationsUtil";
+import { getTestTranslations } from "tests/utils/translationsUtil";
 
 const { contentLinkLabels, routes } = getTestTranslations();
 

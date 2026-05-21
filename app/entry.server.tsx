@@ -17,7 +17,7 @@ import { generateNonce } from "~/services/security/nonce.server";
 
 import { config } from "~/config/config";
 import { getCspHeader } from "~/services/security/cspHeader.server";
-import { originFromUrlString } from "~/util/originFromUrlString";
+import { originFromUrlString } from "~/utils/originFromUrlString";
 import { NonceContext } from "./services/security/nonce";
 
 // Reject/cancel all pending promises after 15 seconds

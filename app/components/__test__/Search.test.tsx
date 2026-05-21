@@ -5,7 +5,7 @@ import { FormEvent } from "react";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "tests/util/translationsUtil";
+} from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
 import Search from "../Search";
 

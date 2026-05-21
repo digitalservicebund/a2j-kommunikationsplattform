@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "tests/util/translationsUtil";
+} from "tests/utils/translationsUtil";
 import { it } from "vitest";
 import VerfahrenTile, { VerfahrenTileProps } from "../verfahren/VerfahrenTile";
 

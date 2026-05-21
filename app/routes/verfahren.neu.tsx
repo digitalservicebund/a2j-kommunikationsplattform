@@ -11,12 +11,12 @@ import {
 } from "react-router";
 import Alert from "~/components/Alert";
 import { VerfahrenUploadForm } from "~/components/verfahren/VerfahrenUploadForm";
-import { authContext, authMiddleware } from "~/middleware/auth.server";
-import createEinreichung from "~/services/verfahren/prototype.createEinreichung.server";
-import createVerfahren from "~/services/verfahren/prototype.createVerfahren.server";
+import createEinreichung from "~/domains/verfahren/prototype.createEinreichung.server";
+import createVerfahren from "~/domains/verfahren/prototype.createVerfahren.server";
 import uploadDokument, {
   type DokumentType,
-} from "~/services/verfahren/prototype.uploadDokument.server";
+} from "~/domains/verfahren/prototype.uploadDokument.server";
+import { authContext, authMiddleware } from "~/middleware/auth.server";
 
 // this route requires users to be logged in
 export const middleware = [authMiddleware];

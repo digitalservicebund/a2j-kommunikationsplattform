@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import fetchGerichte from "~/services/verfahren/fetchGerichte.service";
+import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
 import { mockAuthData } from "./helpers";
 
 const mocks = vi.hoisted(() => {

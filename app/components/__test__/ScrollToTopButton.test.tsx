@@ -5,7 +5,7 @@ import { RefObject } from "react";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "tests/util/translationsUtil";
+} from "tests/utils/translationsUtil";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ScrollToTopButton from "../ScrollToTopButton";
 
