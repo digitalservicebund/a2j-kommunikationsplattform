@@ -6,11 +6,14 @@ import {
   renderWithTestTranslations,
 } from "tests/utils/translationsUtil";
 import { it } from "vitest";
-import VerfahrenTile, { VerfahrenTileProps } from "../verfahren/VerfahrenTile";
+import VerfahrenTile, { VerfahrenTileProps } from "../VerfahrenTile";
 
 const mockVerfahren: VerfahrenTileProps = {
   id: "123",
   aktenzeichen_gericht: "AZ-123",
+  status: "EINGEREICHT",
+  status_changed: "2026-05-22T14:02:31.832Z",
+  eingereicht_am: "2026-05-22T14:02:31.832Z",
   gericht: {
     id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
     wert: "Landgericht Frankfurt",
@@ -30,11 +33,8 @@ const mockVerfahren: VerfahrenTileProps = {
       prozessbevollmaechtigte: [
         {
           aktenzeichen: "GZ-12345",
-          bevollmaechtigter: {
-            id: "bev-1",
-            safe_id: "safe-1",
-            name: "Rechtsanwalt Schmidt",
-          },
+          id: "bev-1",
+          name: "Rechtsanwalt Schmidt",
         },
       ],
     },
@@ -51,15 +51,26 @@ const mockVerfahren: VerfahrenTileProps = {
       prozessbevollmaechtigte: [
         {
           aktenzeichen: "GZ-67890",
-          bevollmaechtigter: {
-            id: "bev-2",
-            safe_id: "safe-2",
-            name: "Rechtsanwältin Fischer",
-          },
+          id: "bev-2",
+          name: "Rechtsanwältin Fischer",
         },
       ],
     },
   ],
+};
+
+const mockVerfahrenWithMissingData: VerfahrenTileProps = {
+  id: "456",
+  aktenzeichen_gericht: "AZ-456",
+  status: "EINGEREICHT",
+  status_changed: "2026-05-22T14:02:31.832Z",
+  eingereicht_am: "2026-05-22T14:02:31.832Z",
+  gericht: {
+    id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
+    wert: "Landgericht Frankfurt",
+    code: "LG_FFM",
+  },
+  beteiligungen: null,
 };
 
 describe("VerfahrenTile", () => {
@@ -108,7 +119,7 @@ describe("VerfahrenTile", () => {
   it("should render 'Unbekannt' for missing data", () => {
     const { getAllByText } = renderWithTestTranslations(
       <MemoryRouter>
-        <VerfahrenTile id="123" beteiligungen={[]} />
+        <VerfahrenTile {...mockVerfahrenWithMissingData} />
       </MemoryRouter>,
     );
 

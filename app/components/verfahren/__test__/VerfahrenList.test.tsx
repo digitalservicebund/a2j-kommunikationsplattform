@@ -4,13 +4,13 @@ import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { describe } from "vitest";
 import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
-import { Verfahren } from "~/routes/verfahren/_index";
+import { Verfahren } from "~/routes/verfahren";
 
 const mockVerfahren: Verfahren[] = [
   {
     id: "1",
     aktenzeichen_gericht: "AZ-123",
-    status: "Erstellt",
+    status: "ERSTELLT",
     status_changed: "2025-03-08T05:00:29.659Z",
     eingereicht_am: "2024-12-29T22:46:29.329Z",
     gericht: {
@@ -23,7 +23,7 @@ const mockVerfahren: Verfahren[] = [
   {
     id: "2",
     aktenzeichen_gericht: "AZ-456",
-    status: "Eingereicht",
+    status: "EINGEREICHT",
     status_changed: "2025-03-08T06:00:29.659Z",
     eingereicht_am: "2024-12-30T22:46:29.329Z",
     gericht: {

@@ -4,7 +4,7 @@ import {
   renderWithTestTranslations,
 } from "tests/utils/translationsUtil";
 import { describe, expect, it } from "vitest";
-import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
+import { VerfahrenCounter } from "../VerfahrenCounter";
 
 describe("VerfahrenCounter", () => {
   const { labels, alerts } = getTestTranslations();

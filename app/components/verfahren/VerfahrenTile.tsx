@@ -1,7 +1,8 @@
+import { ComponentProps } from "react";
 import { Link } from "react-router";
 import DraftIcon from "~/components/icons/DraftIcon";
 import FolderInfoIcon from "~/components/icons/FolderAlertIcon";
-import type { Verfahren } from "~/routes/verfahren/_index";
+import type { Verfahren } from "~/routes/verfahren";
 import { useTranslations } from "~/services/translations/context";
 
 const ROLLE_CODE_KLAEGERIN = "101";
@@ -12,7 +13,7 @@ function getBeteiligungByRoleCode(
   beteiligungen: Verfahren["beteiligungen"],
   roleCode: string,
 ) {
-  return beteiligungen?.find((b) => b.rollen.some((r) => r.code === roleCode));
+  return beteiligungen?.find((b) => b.rollen?.some((r) => r.code === roleCode));
 }
 
 function DataItem({
@@ -53,12 +54,14 @@ function DataCard({
 
 const notAvailable = "Unbekannt";
 
+export type VerfahrenTileProps = ComponentProps<typeof VerfahrenTile>;
+
 export default function VerfahrenTile({
   id,
   aktenzeichen_gericht,
   gericht,
   beteiligungen,
-}: Verfahren) {
+}: Readonly<Verfahren>) {
   const { buttons } = useTranslations();
 
   // Extract values from beteiligungen based on rollen codes

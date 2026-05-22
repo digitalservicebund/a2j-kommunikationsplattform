@@ -5,14 +5,14 @@ import {
   renderWithTestTranslations,
 } from "tests/utils/translationsUtil";
 import { beforeEach, it, vi } from "vitest";
-import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
+import { VerfahrenLoadMoreButton } from "../VerfahrenLoadMoreButton";
 
 describe("VerfahrenLoadMoreButton", () => {
-  let onLoadMore: ReturnType<typeof vi.fn>;
+  let onLoadMore: ReturnType<typeof vi.fn<() => void>>;
   let button: HTMLButtonElement;
 
   beforeEach(() => {
-    onLoadMore = vi.fn();
+    onLoadMore = vi.fn<() => void>();
     const { container } = renderWithTestTranslations(
       <MemoryRouter>
         <VerfahrenLoadMoreButton loadMore={onLoadMore} />
