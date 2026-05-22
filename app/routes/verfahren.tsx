@@ -1,4 +1,4 @@
-import { FormEvent, Ref, RefObject, Suspense, useRef } from "react";
+import React, { Ref, RefObject, Suspense, useRef } from "react";
 import { Await, Link, LoaderFunctionArgs, useLoaderData } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
@@ -136,7 +136,7 @@ function VerfahrenContent({
   // isInputSelectDisabled when loading, or when no items have been returned and no filters are applied
   const isInputDisabled = isLoading || (!hasFilters && allItems.length === 0);
 
-  const handleSearch = (e: FormEvent<HTMLFormElement>) => {
+  const handleSearch = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const value = formData.get("search_text");

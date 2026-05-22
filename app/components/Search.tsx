@@ -2,7 +2,7 @@ import InputText from "~/components/InputText";
 import { useTranslations } from "~/services/translations/context";
 
 export interface SearchProps {
-  handleSearch: (event: React.FormEvent<HTMLFormElement>) => void;
+  handleSearch: (event: React.SubmitEvent<HTMLFormElement>) => void;
   disabled: boolean;
   defaultValue: string;
   id: string;

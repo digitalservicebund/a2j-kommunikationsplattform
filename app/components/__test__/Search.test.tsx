@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { FormEvent } from "react";
+import { SyntheticEvent } from "react";
 import {
   getTestTranslations,
   renderWithTestTranslations,
@@ -34,7 +34,7 @@ describe("Search", () => {
 
   it("calls handleSearch when form is submitted", async () => {
     const user = userEvent.setup();
-    const handleSearch = vi.fn((e: FormEvent<HTMLFormElement>) => {
+    const handleSearch = vi.fn<(event: SyntheticEvent) => void>((e) => {
       // prevent actual navigation in test
       e.preventDefault?.();
     });
