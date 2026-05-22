@@ -10,7 +10,7 @@ import Search from "~/components/Search";
 import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
 import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
 import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
-import VerfahrenTileSkeleton from "~/components/VerfahrenTileSkeleton.static";
+import VerfahrenTileSkeleton from "~/components/verfahren/VerfahrenTileSkeleton.static";
 import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/config/verfahren";
 import { VERFAHREN_SKELETONS } from "~/config/verfahrenSkeletons";
 import fetchGerichteService from "~/domains/verfahren/fetchGerichte.service";
