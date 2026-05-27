@@ -41,7 +41,7 @@ export const de = {
     LOGIN_ERROR_DEMO_TITLE: "Fehler beim Testzugang",
     LOGIN_ERROR_DEMO_MESSAGE:
       "Die Anmeldung über den Testzugang ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
-    WORK_IN_PROGRESS_TITLE: "Work in progress",
+    WORK_IN_PROGRESS_TITLE: "Vorläufige Ansicht",
     WORK_IN_PROGRESS_MESSAGE:
       "Diese Seite ist noch in der Entwicklung. Darstellungen und Layouts können sich jederzeit ändern.",
     TOO_MANY_RESULTS_TITLE: "Es wurden sehr viele Ergebnisse gefunden",

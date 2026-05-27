@@ -85,9 +85,11 @@ export default function VerfahrenRoute() {
   return (
     <>
       <VerfahrenHeading ref={headingRef} />
-      <Link to="/verfahren/neu" className="kern-btn kern-btn--primary my-2.5">
-        <span className="kern-label">Neues Verfahren anlegen</span>
-      </Link>
+      <div className="pt-kern-space-default pb-kern-space-default flex flex-wrap">
+        <Link to="/verfahren/neu" className="kern-btn kern-btn--primary my-2.5">
+          <span className="kern-label">Neues Verfahren anlegen</span>
+        </Link>
+      </div>
       <div className="space-y-kern-space-large flex flex-col">
         <Suspense
           fallback={VERFAHREN_SKELETONS.map((s) => (
@@ -177,7 +179,7 @@ function VerfahrenContent({
           />
         </div>
         <hr
-          className="kern-divider border-kern-layout-border mb-kern-space-large w-full"
+          className="kern-divider border-kern-layout-border w-full"
           aria-hidden="true"
         />
       </div>

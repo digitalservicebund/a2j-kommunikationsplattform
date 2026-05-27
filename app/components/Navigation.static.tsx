@@ -7,8 +7,8 @@ const LogoutButton = () => {
   return (
     <Form method="post" action="/action/logout-user">
       <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
-      <button type="submit" className="kern-btn kern-btn--tertiary">
-        <span className="kern-icon kern-icon--close"></span>
+      <button type="submit" className="kern-btn kern-btn--secondary">
+        <span className="kern-icon kern-icon--logout"></span>
         <span className="kern-label">{buttons.ABMELDEN_BUTTON}</span>
       </button>
     </Form>
@@ -31,16 +31,16 @@ export default function Navigation() {
     {
       name: labels.MITTEILUNGEN_LABEL,
       iconName: "kern-icon--mail",
-      url: "#",
+      url: "/",
     },
     {
       name: labels.KALENDER_LABEL,
       iconName: "kern-icon--calendar-today",
-      url: "#",
+      url: "/",
     },
   ];
   return (
-    <ul className="gap-kern-space-x-large my-0 list-none items-center justify-between pl-0 md:flex xl:flex-wrap">
+    <ul className="gap-kern-space-small md:gap-kern-space-x-large my-0 flex list-none flex-col items-center justify-between pl-0 text-center md:flex-row md:text-left xl:flex-wrap">
       {navigationLinksList.map((link) => (
         <li key={link.name}>
           <a

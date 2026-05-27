@@ -1,10 +1,7 @@
-// Known API issues discovered during spike:
-// - POST /verfahren returns an array [{...}] instead of a single object (potential bug or design choice)
-// - POST /einreichungen: `erstellt_von` is always "" — not populated from token (would be useful if it contained user info)
-// - GET /einreichungen/{id}/status: `validation_messages` always [] and `status` always ROT regardless of actual document content (SINC confirmed it's work in progress anf will be fixed when the feature is fully implemented)
-
 import {
   ActionFunctionArgs,
+  Form,
+  Link,
   redirect,
   useNavigation,
   useRouteError,
@@ -22,11 +19,7 @@ import { authContext, authMiddleware } from "~/middleware/auth.server";
 export const middleware = [authMiddleware];
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
-  console.log("action context", context);
-
   const authData = context.get(authContext);
-
-  console.log("action authData", authData);
 
   if (!authData) {
     return {
@@ -55,8 +48,6 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
   const einreichung = await createEinreichung(authData, verfahrenId);
   const einreichungId = einreichung.id;
 
-  console.log("action einreichungId", einreichungId);
-
   await uploadDokument(
     authData,
     verfahrenId,
@@ -64,13 +55,6 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
     file,
     dokumentType,
   );
-
-  // @TODO: add a possibility to show a Virus check within the UI
-  // - where?
-  // - goal: show off, that this may take a lot of time, but user can continue
-  // - we may add a loading spinner!?
-  // - maybe we add a banner "XJustiz file is being processed (validated)"
-  // - we want to show off the validierungsstatus somehow
 
   return redirect(`/verfahren/${verfahrenId}/bearbeiten`);
 };
@@ -80,14 +64,73 @@ export default function VerfahrenNeu() {
   const isSubmitting = navigation.state === "submitting";
 
   return (
-    <div className="gap-y-kern-space-large flex flex-col">
-      <Alert
-        type="info"
-        title="Vorläufige Ansicht"
-        message="Diese Seite ist ein vorläufiger Prototyp zur API-Validierung. Das endgültige Design folgt."
-      />
-      <VerfahrenUploadForm isSubmitting={isSubmitting} />
-    </div>
+    <>
+      <h1 className="kern-heading-medium">Klageschrift hochladen</h1>
+      <div className="kern-row">
+        <div className="kern-col-12 kern-col-md-8 kern-col-md-offset-2 kern-col-lg-6 kern-col-lg-offset-3">
+          <div className="gap-y-kern-space-large flex flex-col">
+            <Alert
+              type="info"
+              title="Vorläufige Ansicht"
+              message="Diese Seite ist ein vorläufiger Prototyp zur API-Validierung. Das endgültige Design folgt."
+            />
+            <p className="kern-body">
+              Laden Sie Ihre Klageschrift als PDF oder Wodrd-Datei hoch. Wir
+              extrahieren die wichtigsten Daten automatisch für Sie.
+            </p>
+            <Form
+              method="post"
+              encType="multipart/form-data"
+              className="gap-y-kern-space-default flex flex-col"
+            >
+              <input type="hidden" name="type" value="XJUSTIZ" />
+              <div className="kern-form-input">
+                <label className="kern-label" htmlFor="file">
+                  Datei hier hochladen (PDF, DOCX)
+                </label>
+                <input
+                  className="kern-form-input__input"
+                  id="file"
+                  name="file"
+                  type="file"
+                  required
+                />
+              </div>
+              <div className="kern-form-checkbox">
+                <input
+                  className="kern-form-checkbox__input"
+                  id="enable-analysis"
+                  name="enableAnalysis"
+                  type="checkbox"
+                />
+                <label
+                  className="kern-form-checkbox__label"
+                  htmlFor="enable-analysis"
+                >
+                  Automatische Analyse der Klageschrift aktivieren
+                </label>
+              </div>
+              <div className="gap-kern-space-default flex flex-wrap">
+                <Link to="/verfahren" className="kern-btn kern-btn--secondary">
+                  <span className="kern-label">Zurück</span>
+                </Link>
+                <button
+                  type="submit"
+                  className="kern-btn kern-btn--primary"
+                  disabled={isSubmitting}
+                >
+                  <span className="kern-label">
+                    {isSubmitting
+                      ? "Wird hochgeladen…"
+                      : "Datei hochladen und weiter"}
+                  </span>
+                </button>
+              </div>
+            </Form>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 
