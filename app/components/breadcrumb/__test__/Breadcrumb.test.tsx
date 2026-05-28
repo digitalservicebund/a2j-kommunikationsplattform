@@ -73,7 +73,7 @@ describe("Breadcrumb component", () => {
     expect(links[0]).toHaveAttribute("href", "/");
     expect(links[0]).toHaveTextContent("Start");
 
-    expect(screen.getByText("Verfahren")).toBeInTheDocument();
+    expect(screen.getByText("Übersichtsseite Verfahren")).toBeInTheDocument();
   });
 
   it("renders breadcrumb chain for /verfahren/neu", () => {
