@@ -4,7 +4,7 @@ import { useTranslations } from "~/services/translations/context";
 export default function Footer() {
   const { labels, descriptions, contentLinkLabels } = useTranslations();
   return (
-    <footer className="kern-container">
+    <footer className="kern-container mt-kern-dimension-5x-large">
       <div className="py-kern-space-large">
         <hr className="kern-divider" aria-hidden="true" />
       </div>
