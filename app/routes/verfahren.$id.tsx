@@ -35,11 +35,13 @@ export default function Verfahrendetails() {
     data: Promise<ReturnType<typeof fetchVerfahrenById>>;
   }>();
 
-  const { alerts } = useTranslations();
+  const { alerts, routes } = useTranslations();
 
   return (
     <>
-      <h1 className="kern-heading-medium">Verfahrensdetails</h1>
+      <h1 className="kern-heading-medium">
+        {routes.verfahrenDetails.headline}
+      </h1>
       <Alert
         type="info"
         title={alerts.WORK_IN_PROGRESS_TITLE}

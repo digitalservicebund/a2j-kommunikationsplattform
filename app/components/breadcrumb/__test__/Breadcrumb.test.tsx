@@ -89,13 +89,13 @@ describe("Breadcrumb component", () => {
     const nav = screen.getByRole("navigation", { name: "Breadcrumb" });
     expect(nav).toBeInTheDocument();
 
-    // Should have Start -> Verfahren -> Klageschrift erstellen
+    // Should have Start -> Übersichtsseite Verfahren -> Neues Verfahren anlegen
     const links = screen.getAllByRole("link");
     expect(links).toHaveLength(2);
     expect(links[0]).toHaveAttribute("href", "/");
     expect(links[0]).toHaveTextContent("Start");
     expect(links[1]).toHaveAttribute("href", "/verfahren");
-    expect(links[1]).toHaveTextContent("Verfahren");
+    expect(links[1]).toHaveTextContent("Übersichtsseite Verfahren");
 
     expect(screen.getByText("Klageschrift erstellen")).toBeInTheDocument();
   });
@@ -113,15 +113,15 @@ describe("Breadcrumb component", () => {
     const nav = screen.getByRole("navigation", { name: "Breadcrumb" });
     expect(nav).toBeInTheDocument();
 
-    // Should have Start -> Verfahren -> Details
+    // Should have Start -> Übersichtsseite Verfahren -> Verfahren
     const links = screen.getAllByRole("link");
     expect(links).toHaveLength(2);
     expect(links[0]).toHaveAttribute("href", "/");
     expect(links[0]).toHaveTextContent("Start");
     expect(links[1]).toHaveAttribute("href", "/verfahren");
-    expect(links[1]).toHaveTextContent("Verfahren");
+    expect(links[1]).toHaveTextContent("Übersichtsseite Verfahren");
 
-    expect(screen.getByText("Details")).toBeInTheDocument();
+    expect(screen.getByText("Verfahren")).toBeInTheDocument();
   });
 
   it("renders breadcrumb for nested dynamic route /verfahren/:id/bearbeiten", () => {
@@ -137,16 +137,16 @@ describe("Breadcrumb component", () => {
     const nav = screen.getByRole("navigation", { name: "Breadcrumb" });
     expect(nav).toBeInTheDocument();
 
-    // Should have Start -> Verfahren -> Details -> Verfahren bearbeiten
+    // Should have Start -> Übersichtsseite Verfahren -> Verfahren -> Bearbeitung
     const links = screen.getAllByRole("link");
     expect(links).toHaveLength(3);
     expect(links[0]).toHaveAttribute("href", "/");
     expect(links[0]).toHaveTextContent("Start");
     expect(links[1]).toHaveAttribute("href", "/verfahren");
-    expect(links[1]).toHaveTextContent("Verfahren");
+    expect(links[1]).toHaveTextContent("Übersichtsseite Verfahren");
     expect(links[2]).toHaveAttribute("href", "/verfahren/123");
-    expect(links[2]).toHaveTextContent("Details");
+    expect(links[2]).toHaveTextContent("Verfahren");
 
-    expect(screen.getByText("Verfahren bearbeiten")).toBeInTheDocument();
+    expect(screen.getByText("Bearbeitung")).toBeInTheDocument();
   });
 });

@@ -95,6 +95,9 @@ export const de = {
     verfahren: {
       headline: "Alle Verfahren in der Übersicht",
     },
+    verfahrenDetails: {
+      headline: "Verfahrensdetailseite",
+    },
     PLATFORM_TITLE: "Kommunikationsplattform | Justiz-Services",
     DATENSCHUTZ_TITLE: "Datenschutzerklärung zur Webseite",
     WEITERE_INFORMATIONEN_TITLE: "Weitere Informationen",
@@ -125,8 +128,8 @@ export const de = {
     START: "Start",
     VERFAHREN: "Übersichtsseite Verfahren",
     VERFAHREN_NEU: "Klageschrift erstellen",
-    VERFAHREN_ID: "Details",
-    VERFAHREN_ID_BEARBEITEN: "Verfahren bearbeiten",
+    VERFAHREN_ID: "Verfahren",
+    VERFAHREN_ID_BEARBEITEN: "Bearbeitung",
   },
 } as const;
 
