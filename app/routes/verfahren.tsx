@@ -86,8 +86,15 @@ export default function VerfahrenRoute() {
     <>
       <VerfahrenHeading ref={headingRef} />
       <div className="pt-kern-space-default pb-kern-space-default flex flex-wrap">
-        <Link to="/verfahren/neu" className="kern-btn kern-btn--primary my-2.5">
+        <Link
+          to="/verfahren/neu"
+          className="kern-btn kern-btn--secondary my-2.5"
+        >
           <span className="kern-label">Neues Verfahren anlegen</span>
+          <span
+            className="kern-icon kern-icon--arrow-forward"
+            aria-hidden="true"
+          ></span>
         </Link>
       </div>
       <div className="space-y-kern-space-large flex flex-col">
@@ -129,7 +136,10 @@ function VerfahrenContent({
     search_text: "";
   }>();
 
-  const gerichteOptions = gerichte.map((g) => ({ value: g.id, label: g.wert }));
+  const gerichteOptions = gerichte.map((g) => ({
+    value: g.id,
+    label: g.wert || "",
+  }));
 
   const hasFilters = Boolean(
     getParamValue("search_text") || Boolean(getParamValue("gericht")),
@@ -191,11 +201,14 @@ function VerfahrenContent({
   );
 }
 
-const VerfahrenHeading = ({ ref }: { ref?: Ref<HTMLHeadingElement> }) => (
-  <h1 ref={ref} className="kern-heading-medium">
-    Verfahren
-  </h1>
-);
+const VerfahrenHeading = ({ ref }: { ref?: Ref<HTMLHeadingElement> }) => {
+  const { routes } = useTranslations();
+  return (
+    <h1 ref={ref} className="kern-heading-medium">
+      {routes.verfahren.headline}
+    </h1>
+  );
+};
 
 export function ErrorBoundary() {
   const { errorMessages } = useTranslations();
