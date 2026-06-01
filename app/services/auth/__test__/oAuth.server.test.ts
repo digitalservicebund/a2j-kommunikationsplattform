@@ -83,6 +83,7 @@ import {
 type VerifyArgs = {
   tokens: {
     accessToken: () => string;
+    idToken: () => string;
     hasRefreshToken: () => boolean;
     refreshToken: () => string | undefined;
     accessTokenExpiresInSeconds?: () => number;
@@ -152,6 +153,7 @@ describe("oAuth.server", () => {
   });
 
   const accessToken = "access-123";
+  const idToken = "id-token-789";
   const refreshToken = "refresh-456";
   const mockRequest = new Request("https://example.com/callback");
 
@@ -162,6 +164,7 @@ describe("oAuth.server", () => {
 
     const mockTokens = {
       accessToken: () => accessToken,
+      idToken: () => idToken,
       refreshToken: () => refreshToken,
       accessTokenExpiresInSeconds: () => 300,
       hasRefreshToken: () => true,
@@ -174,6 +177,7 @@ describe("oAuth.server", () => {
 
     expect(setAuthSession).toHaveBeenCalledWith({
       accessToken: accessToken,
+      idToken: idToken,
       expiresAt: expect.any(Number),
       refreshToken: refreshToken,
       request: mockRequest,
@@ -183,6 +187,7 @@ describe("oAuth.server", () => {
     expect(result).toEqual({
       authenticationTokens: {
         accessToken: accessToken,
+        idToken: idToken,
         expiresAt: expect.any(Number),
         refreshToken: refreshToken,
       },
