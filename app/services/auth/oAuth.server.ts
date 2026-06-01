@@ -29,6 +29,7 @@ const oauth2Strategy = new OAuth2Strategy(
   async ({ tokens, request }) => {
     const acessTokenExpiresInSeconds = tokens.accessTokenExpiresInSeconds();
     const accessToken = tokens.accessToken();
+    const idToken = tokens.idToken();
     const expiresAt = Date.now() + acessTokenExpiresInSeconds * 1000; // 300 seconds
     const refreshToken = tokens.refreshToken();
 
@@ -43,6 +44,7 @@ const oauth2Strategy = new OAuth2Strategy(
 
     const sessionCookieHeader = await setAuthSession({
       accessToken,
+      idToken,
       expiresAt,
       refreshToken,
       request,
@@ -52,6 +54,7 @@ const oauth2Strategy = new OAuth2Strategy(
     const response: AuthenticationResponse = {
       authenticationTokens: {
         accessToken,
+        idToken,
         expiresAt,
         refreshToken,
       },

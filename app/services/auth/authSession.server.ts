@@ -41,6 +41,7 @@ interface SetAuthSessionProps extends AuthenticationTokens {
  */
 export const setAuthSession = async ({
   accessToken,
+  idToken,
   expiresAt,
   refreshToken,
   request,
@@ -48,9 +49,12 @@ export const setAuthSession = async ({
 }: SetAuthSessionProps) => {
   const session = await getSession(request.headers.get("Cookie"));
   session.set("accessToken", accessToken);
+  session.set("idToken", idToken);
   session.set("expiresAt", expiresAt);
   session.set("refreshToken", refreshToken);
   session.set("provider", provider);
+
+  console.log("setAuthSession: idToken is", idToken);
 
   try {
     console.log("Set/update session");
@@ -75,9 +79,12 @@ export const getAuthData = async (
   const session = await getSession(request.headers.get("Cookie"));
 
   const accessToken = session.get("accessToken");
+  const idToken = session.get("idToken");
   let expiresAt = session.get("expiresAt");
   const refreshToken = session.get("refreshToken");
   const provider = session.get("provider") as AuthenticationProvider;
+
+  console.log("getAuthData: idToken is", idToken);
 
   // Check expiresAt type and parse if needed
   if (typeof expiresAt === "string") {
@@ -112,7 +119,7 @@ export const getAuthData = async (
   if (accessToken && expiresAt > Date.now()) {
     console.log("getAuthData: Token is still valid");
     return {
-      authenticationTokens: { accessToken, expiresAt, refreshToken },
+      authenticationTokens: { accessToken, idToken, expiresAt, refreshToken },
       sessionCookieHeader: "",
       provider,
     };

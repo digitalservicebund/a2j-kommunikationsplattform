@@ -16,6 +16,7 @@ async function withMocks({
   refreshResponse?: {
     authenticationTokens: {
       accessToken: string;
+      idToken?: string;
       expiresAt: number;
       refreshToken: string;
     };

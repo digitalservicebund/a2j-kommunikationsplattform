@@ -8,6 +8,7 @@ async function withMocks({
   authData?: {
     authenticationTokens: {
       accessToken: string;
+      idToken: string;
       expiresAt: number;
       refreshToken: string;
     };
@@ -79,6 +80,7 @@ describe("authMiddleware", () => {
     const authData = {
       authenticationTokens: {
         accessToken: "token",
+        idToken: "id-token",
         expiresAt: Date.now() + 60000, // 1 minute in the future
         refreshToken: "refresh",
       },
@@ -106,6 +108,7 @@ describe("authMiddleware", () => {
     const authData = {
       authenticationTokens: {
         accessToken: "token",
+        idToken: "id-token",
         expiresAt: Date.now() + 60000,
         refreshToken: "refresh",
       },
@@ -139,6 +142,7 @@ describe("authMiddleware", () => {
     const authData = {
       authenticationTokens: {
         accessToken: "token",
+        idToken: "id-token",
         expiresAt: Date.now() + 60000,
         refreshToken: "refresh",
       },

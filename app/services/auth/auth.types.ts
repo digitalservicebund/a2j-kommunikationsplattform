@@ -6,6 +6,7 @@ export enum AuthenticationProvider {
 
 export interface AuthenticationTokens {
   accessToken: string;
+  idToken?: string;
   expiresAt: number;
   refreshToken: string;
 }

@@ -55,6 +55,7 @@ describe("/action/login-user action", () => {
     const authResponse = {
       authenticationTokens: {
         accessToken: "bea-token",
+        idToken: "id-token",
         expiresAt: Date.now() + 1000,
         refreshToken: "refresh-token",
       },
