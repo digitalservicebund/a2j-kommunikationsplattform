@@ -35,24 +35,16 @@ const oauth2Strategy = new OAuth2Strategy(
     const expiresAt = Date.now() + acessTokenExpiresInSeconds * 1000; // 300 seconds
     const refreshToken = tokens.refreshToken();
 
-    console.log(
-      "OAuth2Strategy: authenticated via BRAK IdP",
-      tokens.data,
-      tokens?.idToken(),
-    );
-
-    console.log("accessToken is", accessToken);
-    console.log("idToken is", idToken);
     const base64Url = idToken.split(".")[1];
-    console.log("base64Url is", base64Url);
     const base64 = base64Url.replaceAll("-", "+").replaceAll("_", "/");
-    const decodedPayload = JSON.parse(atob(base64)) as DecodedJWT;
-    console.log("Decoded JWT payload:", JSON.stringify(decodedPayload));
-    console.log("Grab safe-id:", decodedPayload["safe-id"]);
+    const decodedIdToken = JSON.parse(atob(base64)) as DecodedJWT;
+    const safeId = decodedIdToken["safe-id"] as string;
+
+    console.log("OAuth2Strategy: authenticated via BRAK IdP, safeId:", safeId);
 
     const sessionCookieHeader = await setAuthSession({
       accessToken,
-      idToken: "DE.BRAK_SPT.XXX",
+      idToken: safeId,
       expiresAt,
       refreshToken,
       request,

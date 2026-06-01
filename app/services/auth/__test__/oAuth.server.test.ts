@@ -154,7 +154,7 @@ describe("oAuth.server", () => {
 
   const accessToken = "access-123";
   const idToken =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMiwic2FmZS1pZCI6IkRFLkJSQUtfU1BULnJhbmRvbS1kMTExLTBmZmYtYWIzMy1mNzE4ZmQyZTRhMDMuMTllNyJ9.6An55ZDzM8qx4ylZaeTQwm3pi1oyOkY9OxfCsYkVMK8";
   const refreshToken = "refresh-456";
   const mockRequest = new Request("https://example.com/callback");
 
