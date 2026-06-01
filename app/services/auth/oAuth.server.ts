@@ -32,12 +32,14 @@ const oauth2Strategy = new OAuth2Strategy(
     const expiresAt = Date.now() + acessTokenExpiresInSeconds * 1000; // 300 seconds
     const refreshToken = tokens.refreshToken();
 
-    console.log(
-      "OAuth2Strategy: authenticated via BRAK IdP",
-      tokens.data,
-      tokens.idToken(),
-      tokens.tokenType(),
-    );
+    if (process.env.NODE_ENV !== "test") {
+      console.log(
+        "OAuth2Strategy: authenticated via BRAK IdP",
+        tokens.data,
+        tokens?.idToken(),
+        tokens?.tokenType(),
+      );
+    }
 
     const sessionCookieHeader = await setAuthSession({
       accessToken,
