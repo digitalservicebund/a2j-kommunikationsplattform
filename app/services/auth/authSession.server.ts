@@ -88,8 +88,8 @@ export const getAuthData = async (
 
   // Check expiresAt type and parse if needed
   if (typeof expiresAt === "string") {
-    const parsed = parseInt(expiresAt, 10);
-    if (!isNaN(parsed)) {
+    const parsed = Number.parseInt(expiresAt, 10);
+    if (Number.isFinite(parsed)) {
       expiresAt = parsed;
     } else {
       console.warn(
