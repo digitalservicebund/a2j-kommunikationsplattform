@@ -35,8 +35,8 @@ const oauth2Strategy = new OAuth2Strategy(
     console.log(
       "OAuth2Strategy: authenticated via BRAK IdP",
       tokens.data,
-      tokens.idToken,
-      tokens.tokenType,
+      tokens.idToken(),
+      tokens.tokenType(),
     );
 
     const sessionCookieHeader = await setAuthSession({
