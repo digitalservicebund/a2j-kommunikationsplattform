@@ -12,6 +12,8 @@ import {
 export { AuthenticationProvider };
 export type { AuthenticationResponse, AuthenticationTokens };
 
+type DecodedJWT = Record<string, unknown>;
+
 // BRAK IdP uses "Authorization Code" OAuth 2.0 flow
 export const authenticator = new Authenticator<AuthenticationResponse>();
 
@@ -39,9 +41,15 @@ const oauth2Strategy = new OAuth2Strategy(
       tokens?.idToken(),
     );
 
+    const base64Url = idToken.split(".")[1];
+    const base64 = base64Url.replaceAll("-", "+").replaceAll("_", "/");
+    const decodedPayload = JSON.parse(atob(base64)) as DecodedJWT;
+    console.log("Decoded JWT payload:", JSON.stringify(decodedPayload));
+    console.log("Grab safe-id:", decodedPayload["safe-id"]);
+
     const sessionCookieHeader = await setAuthSession({
       accessToken,
-      idToken,
+      idToken: "DE.BRAK_SPT.XXX",
       expiresAt,
       refreshToken,
       request,
