@@ -27,6 +27,8 @@ fileignoreconfig:
     ignore_detectors: [filecontent]
   - filename: app/services/auth/__test__/authSession.server.test.ts
     ignore_detectors: [filecontent]
+  - filename: app/services/auth/__test__/oAuth.server.test.ts
+    ignore_detectors: [filecontent]
   - filename: app/services/translations/de.ts
     ignore_detectors: [filecontent]
   - filename: doc/how-to-configure-bruno.md
