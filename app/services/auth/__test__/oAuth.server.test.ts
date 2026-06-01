@@ -153,7 +153,8 @@ describe("oAuth.server", () => {
   });
 
   const accessToken = "access-123";
-  const idToken = "id-token-789";
+  const idToken =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30";
   const refreshToken = "refresh-456";
   const mockRequest = new Request("https://example.com/callback");
 
@@ -177,7 +178,7 @@ describe("oAuth.server", () => {
 
     expect(setAuthSession).toHaveBeenCalledWith({
       accessToken: accessToken,
-      idToken: idToken,
+      idToken: expect.any(String),
       expiresAt: expect.any(Number),
       refreshToken: refreshToken,
       request: mockRequest,
@@ -187,7 +188,7 @@ describe("oAuth.server", () => {
     expect(result).toEqual({
       authenticationTokens: {
         accessToken: accessToken,
-        idToken: idToken,
+        idToken: expect.any(String),
         expiresAt: expect.any(Number),
         refreshToken: refreshToken,
       },

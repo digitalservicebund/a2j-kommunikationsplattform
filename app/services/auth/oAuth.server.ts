@@ -41,7 +41,10 @@ const oauth2Strategy = new OAuth2Strategy(
       tokens?.idToken(),
     );
 
+    console.log("accessToken is", accessToken);
+    console.log("idToken is", idToken);
     const base64Url = idToken.split(".")[1];
+    console.log("base64Url is", base64Url);
     const base64 = base64Url.replaceAll("-", "+").replaceAll("_", "/");
     const decodedPayload = JSON.parse(atob(base64)) as DecodedJWT;
     console.log("Decoded JWT payload:", JSON.stringify(decodedPayload));
