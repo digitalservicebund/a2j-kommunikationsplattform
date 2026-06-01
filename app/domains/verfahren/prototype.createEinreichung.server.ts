@@ -25,7 +25,7 @@ export default async function createEinreichung(
         Authorization: `Bearer ${bearerToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({}),
+      body: JSON.stringify({ name: "Name der Einreichung" }),
     },
   );
 
