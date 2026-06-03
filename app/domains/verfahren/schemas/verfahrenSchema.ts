@@ -12,17 +12,16 @@ export const CodeWertSchema = z.object({
   code: z.nullable(z.string()),
 });
 
-export const GerichtDTO = CodeWertSchema.describe("Gericht DTO");
-
-export const RollenDTO = CodeWertSchema.describe("Rollen DTO");
+export const GerichtDTO = CodeWertSchema;
+export const RollenDTO = CodeWertSchema;
 
 export const VerfahrenSchema = z.object({
   id: z.string(),
   aktenzeichen_gericht: z.nullable(z.string()),
-  status: z.optional(z.enum(["ERSTELLT", "EINGEREICHT"])),
+  status: z.enum(["ERSTELLT", "EINGEREICHT"]),
   status_changed: z.iso.datetime(),
   eingereicht_am: z.nullable(z.iso.datetime()),
-  gericht: z.nullable(GerichtDTO),
+  gericht: GerichtDTO,
   beteiligungen: z.nullable(
     z.array(
       z.object({
@@ -32,9 +31,9 @@ export const VerfahrenSchema = z.object({
         prozessbevollmaechtigte: z.nullable(
           z.array(
             z.object({
-              aktenzeichen: z.string(),
               id: z.string(),
-              name: z.string(),
+              name: z.nullable(z.string()),
+              aktenzeichen: z.nullable(z.string()),
             }),
           ),
         ),

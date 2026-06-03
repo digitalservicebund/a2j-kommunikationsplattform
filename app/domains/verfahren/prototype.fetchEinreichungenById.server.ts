@@ -1,25 +1,23 @@
 import { serverConfig } from "~/config/config.server";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
-import { VerfahrenSchema } from "./schemas/verfahrenSchema";
+import { EinreichungenSchema } from "./schemas/einreichungSchema";
 
-type FetchVerfahrenByIdOptions = {
+type fetchEinreichungenByIdOptions = {
   id: string;
 };
 
-const errorMessage = "Das Verfahren konnte nicht abgerufen werden.";
+const errorMessage = (id: string) =>
+  "Die Einreichungen für das Verfahren mit der ID " +
+  id +
+  " konnten nicht abgerufen werden.";
 
-export default async function fetchVerfahrenById(
+export default async function fetchEinreichungenById(
   authData: AuthenticationResponse,
-  options: FetchVerfahrenByIdOptions,
+  options: fetchEinreichungenByIdOptions,
 ) {
   const bearerToken = await getBearerToken(authData);
-
-  if (!bearerToken) {
-    throw new Error("No bearer token available");
-  }
-
-  const url = `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren/${options.id}`;
+  const url = `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren/${options.id}/einreichungen`;
 
   const response = await fetch(url, {
     headers: {
@@ -28,7 +26,7 @@ export default async function fetchVerfahrenById(
   });
 
   if (!response.ok) {
-    throw new Error(errorMessage, {
+    throw new Error(errorMessage(options.id), {
       cause: `Serverantwort war nicht ok (Fehlercode ${response.status} ${response.statusText}).`,
     });
   }
@@ -36,8 +34,8 @@ export default async function fetchVerfahrenById(
   const data = await response.json();
 
   try {
-    return VerfahrenSchema.parse(data);
+    return EinreichungenSchema.parse(data);
   } catch (error) {
-    throw new Error(errorMessage, { cause: error });
+    throw new Error(errorMessage(options.id), { cause: error });
   }
 }

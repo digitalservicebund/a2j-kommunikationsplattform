@@ -18,7 +18,7 @@ import fetchVerfahren from "~/domains/verfahren/fetchVerfahren.server";
 import {
   GerichtDTO,
   VerfahrenSchema,
-} from "~/domains/verfahren/verfahrenSchema";
+} from "~/domains/verfahren/schemas/verfahrenSchema";
 import { authContext, authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
@@ -73,19 +73,21 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 
   return {
     data: Promise.all([verfahrenPromise, gerichtePromise]),
+    showDebugInfo: url.searchParams.get("showDebug") === "true",
   };
 };
 
 export default function VerfahrenRoute() {
-  const { data } = useLoaderData<{
+  const { data, showDebugInfo } = useLoaderData<{
     data: Promise<[VerfahrenLoaderData, Gericht[]]>;
+    showDebugInfo: boolean;
   }>();
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   return (
     <>
-      <VerfahrenHeading ref={headingRef} />
-      <div className="pt-kern-space-default pb-kern-space-default flex flex-wrap">
+      <div className="mb-kern-dimension-small flex justify-between">
+        <VerfahrenHeading ref={headingRef} />
         <Link
           to="/verfahren/neu"
           className="kern-btn kern-btn--secondary my-2.5"
@@ -105,11 +107,31 @@ export default function VerfahrenRoute() {
         >
           <Await resolve={data}>
             {([verfahrenData, gerichte]) => (
-              <VerfahrenContent
-                initialData={verfahrenData}
-                gerichte={gerichte}
-                ref={headingRef}
-              />
+              <>
+                {showDebugInfo && (
+                  <>
+                    verfahren
+                    <br />
+                    <code>{JSON.stringify(verfahrenData, null, 2)}</code>
+                    <hr
+                      className="kern-divider border-kern-layout-border w-full"
+                      aria-hidden="true"
+                    />
+                    gerichte
+                    <br />
+                    <code>{JSON.stringify(gerichte, null, 2)}</code>
+                    <hr
+                      className="kern-divider border-kern-layout-border w-full"
+                      aria-hidden="true"
+                    />
+                  </>
+                )}
+                <VerfahrenContent
+                  initialData={verfahrenData}
+                  gerichte={gerichte}
+                  ref={headingRef}
+                />
+              </>
             )}
           </Await>
         </Suspense>

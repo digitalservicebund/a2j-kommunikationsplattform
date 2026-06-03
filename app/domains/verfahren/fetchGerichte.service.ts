@@ -2,7 +2,7 @@ import z from "zod";
 import { serverConfig } from "~/config/config.server";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
-import { CodeWertSchema } from "./verfahrenSchema";
+import { CodeWertSchema } from "./schemas/verfahrenSchema";
 
 const errorMessage =
   "Die Daten für das ausgewählte Gericht konnten nicht abgerufen werden.";

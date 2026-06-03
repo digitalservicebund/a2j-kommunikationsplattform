@@ -4,7 +4,7 @@ import { sortOptions } from "~/config/verfahren";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 import { buildSearchParams } from "~/utils/buildSearchParams";
-import { VerfahrenSchema } from "./verfahrenSchema";
+import { VerfahrenSchema } from "./schemas/verfahrenSchema";
 
 const fetchVerfahrenOptionsSchema = z.object({
   offset: z.number().int().nonnegative().optional(),
