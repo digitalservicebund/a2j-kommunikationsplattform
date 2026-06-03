@@ -6,16 +6,11 @@ export const mockVerfahren = [
     status: "ERSTELLT",
     status_changed: "2026-02-13T13:22:31.082452Z",
     eingereicht_am: null,
-    gericht: null,
-    beteiligungen: [],
-  },
-  {
-    id: "019c5740-36de-7089-a3db-530407ee6684",
-    aktenzeichen_gericht: null,
-    status: "ERSTELLT",
-    status_changed: "2026-02-13T13:45:52.075976Z",
-    eingereicht_am: null,
-    gericht: null,
+    gericht: {
+      id: "a8122807-8430-69ad-9d16-36b4b2675017",
+      wert: "Amtsgericht Charlottenburg",
+      code: "F1103",
+    },
     beteiligungen: [],
   },
   {

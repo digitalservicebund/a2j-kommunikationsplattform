@@ -1,5 +1,10 @@
 import { http, HttpResponse } from "msw";
 
+import { getAllDokumenteByIds } from "./controllers/dokumente.js";
+import {
+  getAllEinreichungen,
+  getEinreichungStatusByIds,
+} from "./controllers/einreichung.js";
 import { getGerichte } from "./controllers/gerichte.js";
 import { getAuthTokens } from "./controllers/tokenExchange.js";
 import {
@@ -128,14 +133,57 @@ export const handlers = [
     },
   ),
 
-  // Get Einreichung Status
+  // Get Einreichungen for a Verfahren
   http.get(
-    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen/:einreichungId/status`,
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen`,
     () => {
-      return HttpResponse.json(
-        { status: "GRUEN", validation_messages: [] },
-        { status: 200 },
+      const requestedEinreichungen = getAllEinreichungen();
+
+      console.log("Requested einreichungen:", requestedEinreichungen);
+
+      const resultArray = [requestedEinreichungen, { status: 200 }];
+
+      return HttpResponse.json(...resultArray);
+    },
+  ),
+
+  // Get the status of a specfic Einreichung for a Verfahren
+  http.get(
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen/:einreichungId/validierungsstatus`,
+    async ({ params }) => {
+      const requestedEinreichungStatus = getEinreichungStatusByIds(
+        params.verfahrenId,
+        params.einreichungId,
       );
+
+      console.log(
+        "Requested validierungsstatus for einreichung:",
+        requestedEinreichungStatus,
+      );
+
+      const resultArray = [requestedEinreichungStatus, { status: 200 }];
+
+      return HttpResponse.json(...resultArray);
+    },
+  ),
+
+  // Get all dokumente of a specfic Einreichung for a Verfahren
+  http.get(
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen/:einreichungId/dokumente`,
+    async ({ params }) => {
+      const requestedDokumenteForEinreichung = getAllDokumenteByIds(
+        params.verfahrenId,
+        params.einreichungId,
+      );
+
+      console.log(
+        "Requested all dokumente for einreichung:",
+        requestedDokumenteForEinreichung,
+      );
+
+      const resultArray = [requestedDokumenteForEinreichung, { status: 200 }];
+
+      return HttpResponse.json(...resultArray);
     },
   ),
 
