@@ -13,17 +13,15 @@ import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMor
 import VerfahrenTileSkeleton from "~/components/verfahren/VerfahrenTileSkeleton.static";
 import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/config/verfahren";
 import { VERFAHREN_SKELETONS } from "~/config/verfahrenSkeletons";
-import fetchGerichteService from "~/domains/verfahren/fetchGerichte.service";
+import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
 import fetchVerfahren from "~/domains/verfahren/fetchVerfahren.server";
-import {
-  GerichtDTO,
-  VerfahrenSchema,
-} from "~/domains/verfahren/schemas/verfahrenSchema";
+import { GerichtSchema } from "~/domains/verfahren/schemas/gerichtSchema";
+import { VerfahrenSchema } from "~/domains/verfahren/schemas/verfahrenSchema";
 import { authContext, authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
 export type Verfahren = z.infer<typeof VerfahrenSchema>;
-export type Gericht = z.infer<typeof GerichtDTO>;
+export type Gericht = z.infer<typeof GerichtSchema>;
 
 export type VerfahrenLoaderData = {
   items: Verfahren[];
@@ -69,7 +67,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
     return { items, hasMoreItems };
   })();
 
-  const gerichtePromise = fetchGerichteService(authData);
+  const gerichtePromise = fetchGerichte(authData);
 
   return {
     data: Promise.all([verfahrenPromise, gerichtePromise]),

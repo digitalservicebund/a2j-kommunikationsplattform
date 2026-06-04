@@ -63,15 +63,13 @@ export const loader = async ({
       }
 
       return dokumente;
-      // return Array.isArray(dokumente) ? dokumente : [dokumente];
     }),
   );
 
   console.log("Loader: Fetching data for Verfahren ID", id);
   console.log("Loader: Verfahren data promise", verfahrenDataPromise);
-  console.log("Loader: Einreichungen data promise", einreichungenDataPromise);
   console.log(
-    "Loader: Einreichungen für dieses Verfahren",
+    "Loader: Einreichungen with Status for this Verfahren",
     einreichungenWithStatus,
   );
 
@@ -145,10 +143,8 @@ export default function Verfahrendetails() {
                         type="submit"
                         className="kern-btn kern-btn--primary"
                         onClick={() =>
-                          alert(
-                            "Klageeinreichung - Funktion noch nicht implementiert",
-                          )
-                        } // Placeholder for actual submission handler
+                          alert("API-Aufruf ist noch nicht implementiert")
+                        }
                       >
                         <span className="kern-label">
                           Klage einreichen & Abgabe ans Gericht
