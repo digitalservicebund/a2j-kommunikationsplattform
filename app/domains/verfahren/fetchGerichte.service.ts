@@ -1,8 +1,7 @@
-import z from "zod";
 import { serverConfig } from "~/config/config.server";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
-import { CodeWertSchema } from "./schemas/verfahrenSchema";
+import { GerichtSchema } from "./schemas/gerichtSchema";
 
 const errorMessage =
   "Die Daten für das ausgewählte Gericht konnten nicht abgerufen werden.";
@@ -16,15 +15,11 @@ export default async function fetchGerichte(authData: AuthenticationResponse) {
 
   const url = `${serverConfig().KOMPLA_API_URL}/api/v1/gerichte`;
 
-  console.log("Fetching Gerichte from URL:", url);
-
   const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
   });
-
-  console.log("/gerichte response status:", response.status);
 
   if (!response.ok) {
     const errorBody = await response.text();
@@ -37,7 +32,7 @@ export default async function fetchGerichte(authData: AuthenticationResponse) {
   const data = await response.json();
 
   try {
-    return z.array(CodeWertSchema).parse(data);
+    return GerichtSchema.array().parse(data);
   } catch (error) {
     throw new Error(errorMessage, { cause: error });
   }
