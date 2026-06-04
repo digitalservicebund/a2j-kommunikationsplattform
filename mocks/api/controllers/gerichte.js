@@ -1,4 +1,4 @@
-import { mockGerichte } from "../data/mockGerichte.js";
+import { mockGerichte } from "../data/gerichte.js";
 
 export const getGerichte = () => {
   return mockGerichte;

@@ -2,6 +2,61 @@
 export const mockVerfahren = [
   {
     id: "019c572a-d6d4-77a8-aad7-ae4496fa2463",
+    aktenzeichen_gericht: "56 C 5574/25",
+    status: "ERSTELLT",
+    status_changed: "2025-04-10T04:47:34.416853Z",
+    eingereicht_am: "2025-01-18T12:00:00Z",
+    gericht: {
+      id: "d58d2e36-7b5e-4b35-20a1-1f49ea275c0a",
+      wert: "Amtsgericht Düsseldorf",
+      code: "R1101",
+    },
+    beteiligungen: [
+      {
+        id: "91933aec-be5c-548d-7d02-a5c6baca01fb",
+        name: "Tobias-Mara Kühn",
+        rollen: [
+          {
+            id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
+            wert: "Beklagte(r)",
+            code: "028",
+          },
+        ],
+        prozessbevollmaechtigte: [
+          {
+            id: "1a5c1a2e-a215-e784-fffe-d61d89516752",
+            name: "Rechtsanwalt Friedrich Scholz",
+            aktenzeichen: "W 1747 06/2026",
+          },
+          {
+            id: "779b1212-2480-2742-46ce-0c1a369fd899",
+            name: "Rechtsanwalt Dr. Friedrich-Alexander-Johannes von Hohenstein-Bär-Krüger-Schäfer",
+            aktenzeichen: "I 9600 10/2025",
+          },
+        ],
+      },
+      {
+        id: "dcf675b3-e7a9-dc70-cc9d-37e03d799aa9",
+        name: "Daniela Brück",
+        rollen: [
+          {
+            id: "c53dd226-7bd9-4da5-19da-5302595a9469",
+            wert: "Kläger(in)",
+            code: "101",
+          },
+        ],
+        prozessbevollmaechtigte: [
+          {
+            id: "febb560c-31d9-f007-3f46-c44238992406",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
+            aktenzeichen: "E 5109 01/2026",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "b3bf3324-6019-11f1-9b69-325096b39f47",
     aktenzeichen_gericht: null,
     status: "ERSTELLT",
     status_changed: "2026-02-13T13:22:31.082452Z",

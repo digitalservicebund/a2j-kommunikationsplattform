@@ -102,13 +102,15 @@ export const handlers = [
   http.post(
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen`,
     ({ params }) => {
+      const id = crypto.randomUUID();
       const newEinreichung = {
-        id: crypto.randomUUID(),
+        id: id,
         verfahren_id: params.verfahrenId,
         status: "ENTWURF",
         erstellt_am: new Date().toISOString(),
         erstellt_von: "",
       };
+      console.log("POST einreichung with id", id);
       return HttpResponse.json(newEinreichung, { status: 201 });
     },
   ),
@@ -129,6 +131,7 @@ export const handlers = [
         erstellt_von: "",
         erstellt_am: new Date().toISOString(),
       };
+      console.log("POST dokumente with {einreichung-id}", params.einreichungId);
       return HttpResponse.json([newDokument], { status: 201 });
     },
   ),
