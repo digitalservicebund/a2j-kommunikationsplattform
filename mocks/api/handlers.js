@@ -136,6 +136,24 @@ export const handlers = [
     },
   ),
 
+  // Delete Dokument
+  http.delete(
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen/:einreichungId/dokumente/:dokumentId`,
+    ({ params }) => {
+      console.log(
+        "DELETE dokument with {verfahren-id}",
+        params.verfahrenId,
+        "{einreichung-id}",
+        params.einreichungId,
+        "{dokument-id}",
+        params.dokumentId,
+      );
+
+      const gerichteResponse = [{ status: 204 }];
+      return HttpResponse.json(...gerichteResponse);
+    },
+  ),
+
   // Get Einreichungen for a Verfahren
   http.get(
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen`,
