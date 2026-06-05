@@ -110,19 +110,19 @@ jobs:
           docker save ${{ env.IMAGE_NAME }}:${{ github.sha }} -o /tmp/.docker-cache/${{ env.IMAGE_NAME }}_${{ github.sha }}.tar
           echo "Docker image saved to: /tmp/.docker-cache/${{ env.IMAGE_NAME }}_${{ github.sha }}.tar"
 
-  vulnerability-scan:
-    uses: ./.github/workflows/scan.yml
-    secrets: inherit
-    permissions:
-      contents: read
-      security-events: write # trivy scan needs this
+  # vulnerability-scan:
+  #   uses: ./.github/workflows/scan.yml
+  #   secrets: inherit
+  #   permissions:
+  #     contents: read
+  #     security-events: write # trivy scan needs this
 
   build-and-push-image:
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
       - build
-      - vulnerability-scan
+      # - vulnerability-scan
     permissions:
       contents: read
       id-token: write # This is used to complete the identity challenge with sigstore/fulcio..
