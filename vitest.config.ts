@@ -11,25 +11,16 @@ export default defineConfig({
         "app/entry.client.tsx",
         "app/entry.server.tsx",
         "app/root.tsx",
-        // exclude route pages/layouts - tested via e2e, see /tests/e2e/**
-        // action.*.ts files are intentionally kept for unit test coverage
-        "app/routes/_index.tsx",
-        "app/routes/auth.**",
-        "app/routes/barrierefreiheit.tsx",
-        "app/routes/datenschutz.tsx",
-        "app/routes/error.tsx",
-        "app/routes/hilfe-und-kontakt.tsx",
-        "app/routes/impressum.tsx",
-        "app/routes/kitchensink.tsx",
-        "app/routes/login.tsx",
-        "app/routes/open-source.tsx",
-        "app/routes/readyz.ts",
-        "app/routes/verfahren.*",
-        "app/routes/weitere-informationen.tsx",
+        // exclude all routes by default - will be tested via e2e, see /tests/e2e/**
+        // action.*.ts files are intentionally kept for unit test coverage within
+        // includes config
+        "app/routes/*.{ts,tsx}",
         // test files
         "app/**/__test__/*.test.{ts,tsx}",
         // exclude static files
         "app/**/*.static.tsx",
+        // exclude schema files
+        "app/**/schemas/*.ts",
         // exclude routes.ts
         "app/routes.ts",
         // exclude all files from constants directory
@@ -43,7 +34,7 @@ export default defineConfig({
     },
     environment: "node",
     globals: true,
-    include: ["./app/**/__test__/*.test.{ts,tsx}"],
+    include: ["./app/**/__test__/*.test.{ts,tsx}", "app/routes/action.*.tsx"],
     // For in-source testing
     includeSource: ["./app/**/*.{js,ts}"],
     pool: "threads",

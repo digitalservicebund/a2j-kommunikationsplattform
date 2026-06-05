@@ -4,7 +4,7 @@ import { sortOptions } from "~/config/verfahren";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 import { buildSearchParams } from "~/utils/buildSearchParams";
-import { VerfahrenSchema } from "./verfahrenSchema";
+import { VerfahrenSchema } from "./schemas/verfahrenSchema";
 
 const fetchVerfahrenOptionsSchema = z.object({
   offset: z.number().int().nonnegative().optional(),
@@ -30,7 +30,6 @@ export default async function fetchVerfahren(
     throw new Error("No bearer token available");
   }
 
-  console.log("fetchVerfahren called with options:", options);
   const parsed = fetchVerfahrenOptionsSchema.parse(options ?? {});
 
   const url = new URL(`${serverConfig().KOMPLA_API_URL}/api/v1/verfahren`);
@@ -40,15 +39,11 @@ export default async function fetchVerfahren(
     url.searchParams.set(key, value);
   });
 
-  console.log("Fetching URL:", url.toString());
-
   const response = await fetch(url.toString(), {
     headers: {
       Authorization: `Bearer ${bearerToken}`,
     },
   });
-
-  console.log("/verfahren response status:", response.status);
 
   if (!response.ok) {
     const errorBody = await response.text();

@@ -7,7 +7,7 @@ const LogoutButton = () => {
   return (
     <Form method="post" action="/action/logout-user">
       <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
-      <button type="submit" className="kern-btn kern-btn--secondary">
+      <button type="submit" className="kern-btn kern-btn--tertiary">
         <span className="kern-icon kern-icon--logout"></span>
         <span className="kern-label">{buttons.ABMELDEN_BUTTON}</span>
       </button>
@@ -27,16 +27,6 @@ export default function Navigation() {
       name: labels.VERFAHREN_LABEL,
       iconName: "kern-icon--icon--storage",
       url: "/verfahren?sort=eingereicht_am", // setting default sorting for seachParams
-    },
-    {
-      name: labels.MITTEILUNGEN_LABEL,
-      iconName: "kern-icon--mail",
-      url: "/",
-    },
-    {
-      name: labels.KALENDER_LABEL,
-      iconName: "kern-icon--calendar-today",
-      url: "/",
     },
   ];
   return (

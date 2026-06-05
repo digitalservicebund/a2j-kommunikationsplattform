@@ -1,5 +1,10 @@
 import { http, HttpResponse } from "msw";
 
+import { getAllDokumenteByIds } from "./controllers/dokumente.js";
+import {
+  getAllEinreichungen,
+  getEinreichungStatusByIds,
+} from "./controllers/einreichung.js";
 import { getGerichte } from "./controllers/gerichte.js";
 import { getAuthTokens } from "./controllers/tokenExchange.js";
 import {
@@ -97,13 +102,15 @@ export const handlers = [
   http.post(
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen`,
     ({ params }) => {
+      const id = crypto.randomUUID();
       const newEinreichung = {
-        id: crypto.randomUUID(),
+        id: id,
         verfahren_id: params.verfahrenId,
         status: "ENTWURF",
         erstellt_am: new Date().toISOString(),
         erstellt_von: "",
       };
+      console.log("POST einreichung with id", id);
       return HttpResponse.json(newEinreichung, { status: 201 });
     },
   ),
@@ -124,18 +131,80 @@ export const handlers = [
         erstellt_von: "",
         erstellt_am: new Date().toISOString(),
       };
+      console.log("POST dokumente with {einreichung-id}", params.einreichungId);
       return HttpResponse.json([newDokument], { status: 201 });
     },
   ),
 
-  // Get Einreichung Status
-  http.get(
-    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen/:einreichungId/status`,
-    () => {
-      return HttpResponse.json(
-        { status: "GRUEN", validation_messages: [] },
-        { status: 200 },
+  // Delete Dokument
+  http.delete(
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen/:einreichungId/dokumente/:dokumentId`,
+    ({ params }) => {
+      console.log(
+        "DELETE dokument with {verfahren-id}",
+        params.verfahrenId,
+        "{einreichung-id}",
+        params.einreichungId,
+        "{dokument-id}",
+        params.dokumentId,
       );
+
+      const gerichteResponse = [{ status: 204 }];
+      return HttpResponse.json(...gerichteResponse);
+    },
+  ),
+
+  // Get Einreichungen for a Verfahren
+  http.get(
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen`,
+    () => {
+      const requestedEinreichungen = getAllEinreichungen();
+
+      console.log("Requested einreichungen:", requestedEinreichungen);
+
+      const resultArray = [requestedEinreichungen, { status: 200 }];
+
+      return HttpResponse.json(...resultArray);
+    },
+  ),
+
+  // Get the status of a specfic Einreichung for a Verfahren
+  http.get(
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen/:einreichungId/validierungsstatus`,
+    async ({ params }) => {
+      const requestedEinreichungStatus = getEinreichungStatusByIds(
+        params.verfahrenId,
+        params.einreichungId,
+      );
+
+      console.log(
+        "Requested validierungsstatus for einreichung:",
+        requestedEinreichungStatus,
+      );
+
+      const resultArray = [requestedEinreichungStatus, { status: 200 }];
+
+      return HttpResponse.json(...resultArray);
+    },
+  ),
+
+  // Get all dokumente of a specfic Einreichung for a Verfahren
+  http.get(
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen/:einreichungId/dokumente`,
+    async ({ params }) => {
+      const requestedDokumenteForEinreichung = getAllDokumenteByIds(
+        params.verfahrenId,
+        params.einreichungId,
+      );
+
+      console.log(
+        "Requested all dokumente for einreichung:",
+        requestedDokumenteForEinreichung,
+      );
+
+      const resultArray = [requestedDokumenteForEinreichung, { status: 200 }];
+
+      return HttpResponse.json(...resultArray);
     },
   ),
 

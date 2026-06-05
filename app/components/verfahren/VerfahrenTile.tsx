@@ -1,6 +1,4 @@
-import { ComponentProps } from "react";
 import { Link } from "react-router";
-import DraftIcon from "~/components/icons/DraftIcon";
 import FolderInfoIcon from "~/components/icons/FolderAlertIcon";
 import type { Verfahren } from "~/routes/verfahren";
 import { useTranslations } from "~/services/translations/context";
@@ -54,14 +52,20 @@ function DataCard({
 
 const notAvailable = "Unbekannt";
 
-export type VerfahrenTileProps = ComponentProps<typeof VerfahrenTile>;
+type VerfahrenTileProps = Readonly<Verfahren> & {
+  withoutDetailsLink?: boolean;
+};
+
+export type { VerfahrenTileProps };
 
 export default function VerfahrenTile({
   id,
   aktenzeichen_gericht,
   gericht,
   beteiligungen,
-}: Readonly<Verfahren>) {
+  status,
+  withoutDetailsLink = false,
+}: VerfahrenTileProps) {
   const { buttons } = useTranslations();
 
   // Extract values from beteiligungen based on rollen codes
@@ -76,13 +80,39 @@ export default function VerfahrenTile({
     beklagteData?.prozessbevollmaechtigte || [];
 
   return (
-    <article className="gap-kern-space-large flex flex-col">
-      <h2 className="kern-heading-medium">
-        Placeholder for Kläger:in ./. Beklagte:r
-      </h2>
+    <article className="gap-kern-space-large border-t-kern-layout-border pt-kern-dimension-x-large flex flex-col border-t-1 first-of-type:border-0 first-of-type:pt-0">
+      <div className="flex flex-col justify-between md:flex-row">
+        <h2 className="kern-heading-medium">Platzhalter</h2>
+        <div className="gap-kern-space-large inline-flex">
+          {!withoutDetailsLink && (
+            <>
+              <div className="flex">
+                <span
+                  className={`kern-badge grow-0 ${status === "ERSTELLT" ? "kern-badge--info" : "kern-badge--warning"}`}
+                >
+                  <span className="kern-label kern-label--small">
+                    {status === "ERSTELLT"
+                      ? "Klage noch nicht eingereicht"
+                      : "Klage eingereicht"}
+                  </span>
+                </span>
+              </div>
+
+              <Link
+                to={`/verfahren/${id}`}
+                className="kern-btn kern-btn--primary my-2.5"
+              >
+                <FolderInfoIcon />
+                <span className="kern-label">
+                  {buttons.SHOW_VERFAHREN_DETAILS}
+                </span>
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
       <dl className="gap-kern-space-large my-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <DataCard label="Klagende Partei">
-          {/* TODO: display Vorname & Nachname using separate DataItem when these data points are available. See https://digitalservicebund.atlassian.net/browse/KOMMPLA-987 */}
           <DataItem label="Name" value={klaegerinData?.name || notAvailable} />
           <DataItem
             key={prozessbevollmaechtigteKlaegerin[0]?.id}
@@ -113,34 +143,6 @@ export default function VerfahrenTile({
           />
         </DataCard>
       </dl>
-
-      <div className="gap-kern-space-large my-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        <div className="mb-kern-space-large gap-kern-space-large">
-          <Link
-            to={`/verfahren/${id}`}
-            className="kern-btn kern-btn--primary w-full"
-          >
-            <FolderInfoIcon />
-            <span className="kern-label">{buttons.SHOW_VERFAHREN_DETAILS}</span>
-          </Link>
-        </div>
-
-        <div className="mb-kern-space-large gap-kern-space-large">
-          <Link
-            to="#"
-            className="kern-btn kern-btn kern-btn--secondary w-full"
-            aria-disabled
-          >
-            <DraftIcon />
-            <span className="kern-label">Weitere Funktion</span>
-          </Link>
-        </div>
-      </div>
-
-      <hr
-        className="kern-divider mb-kern-space-large mt-kern-space-small"
-        aria-hidden
-      />
     </article>
   );
 }

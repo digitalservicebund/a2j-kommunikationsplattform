@@ -50,8 +50,13 @@ const mockVerfahrenMinimal: VerfahrenTileProps = {
   status: "ERSTELLT",
   status_changed: "2026-04-09T12:22:30.657924Z",
   eingereicht_am: null,
-  gericht: null,
+  gericht: {
+    id: "gericht-2",
+    wert: "Amtsgericht Berlin-Mitte",
+    code: "AG_BLN",
+  },
   beteiligungen: [],
+  withoutDetailsLink: true,
 };
 
 const mockVerfahrenPartial: VerfahrenTileProps = {

@@ -104,8 +104,9 @@ describe("VerfahrenTile", () => {
       }),
     ).not.toBeInTheDocument();
 
-    // no badge
-    expect(container.querySelector(".kern-badge")).not.toBeInTheDocument();
+    // badge is shown for submitted cases
+    expect(container.querySelector(".kern-badge")).toBeInTheDocument();
+    expect(getByText("Klage eingereicht")).toBeInTheDocument();
 
     // no "disabled/muted" appearance
     expect(

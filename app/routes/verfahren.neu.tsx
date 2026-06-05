@@ -62,7 +62,11 @@ export default function VerfahrenNeu() {
     e.preventDefault();
     setIsSubmitting("submitting");
 
-    // @TODO: remove this timeout, when the real API has been connected
+    // @TODO:
+    // - remove this timeout, when the real API has been connected
+    // - implement API post logic in the action function of this route
+    //   should be /api/v1/verfahren/{verfahren-id}/einreichungen
+    // - handle API response and possible errors accordingly
     setTimeout(() => {
       // After 3 seconds, submit the form
       formRef.current?.submit();
@@ -70,7 +74,9 @@ export default function VerfahrenNeu() {
   };
 
   return (
-    <>
+    <div
+      className={`${isSubmitting === "submitting" ? "pointer-events-none opacity-50" : ""} relative`}
+    >
       <h1 className="kern-heading-medium">Klageschrift hochladen</h1>
       <div className="kern-row">
         <div className="kern-col-12 kern-col-md-8 kern-col-md-offset-2 kern-col-lg-6 kern-col-lg-offset-3">
@@ -92,16 +98,7 @@ export default function VerfahrenNeu() {
               className="relative"
               onSubmit={handleSubmit}
             >
-              {isSubmitting === "submitting" && (
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
-                  <div className="kern-loader kern-loader--visible">
-                    <span className="kern-sr-only">Wird geladen...</span>
-                  </div>
-                </div>
-              )}
-              <div
-                className={`${isSubmitting === "submitting" ? "opacity-25" : ""} kern-gap-xl flex flex-col`}
-              >
+              <div className="kern-gap-xl flex flex-col">
                 <input type="hidden" name="type" value="XJUSTIZ" />
                 <div className="kern-form-input">
                   <label className="kern-label" htmlFor="file">
@@ -153,7 +150,14 @@ export default function VerfahrenNeu() {
           </div>
         </div>
       </div>
-    </>
+      {isSubmitting === "submitting" && (
+        <div className="fixed top-0 left-0 flex h-full w-full items-center justify-center">
+          <div className="kern-loader kern-loader--visible">
+            <span className="kern-sr-only">Wird geladen...</span>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

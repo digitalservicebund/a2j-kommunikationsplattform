@@ -60,8 +60,6 @@ export const de = {
     FOOTER_ARIA_LABEL: "Rechtliche und weiterführende Informationen",
     UEBERSICHT_LABEL: "Übersicht",
     VERFAHREN_LABEL: "Verfahren",
-    MITTEILUNGEN_LABEL: "Mitteilungen",
-    KALENDER_LABEL: "Kalender",
     VERFAHREN_DETAILS_LABEL: "Verfahrensdetails",
     DATEIANSICHT_LABEL: "Dateiansicht",
     KOPFZEILE_LABEL: "Offizielle Website – Bundesrepublik Deutschland",

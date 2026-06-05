@@ -99,7 +99,7 @@ export const Breadcrumb = () => {
 
   return (
     <nav aria-label="Breadcrumb" className="kern-container">
-      <ul className="m-0 flex list-none space-x-2 p-0">
+      <ul className="m-0 flex list-none flex-col space-x-2 p-0 md:flex-row">
         {breadcrumbs.map((crumb, index) => {
           const isLast = index === breadcrumbs.length - 1;
 

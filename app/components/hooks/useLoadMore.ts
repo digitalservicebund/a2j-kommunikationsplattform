@@ -4,7 +4,7 @@ import type {
   LoaderData,
   Verfahren,
   VerfahrenLoaderData,
-} from "~/routes/verfahren/_index";
+} from "~/routes/verfahren";
 
 const getFormData = (
   offset: number,

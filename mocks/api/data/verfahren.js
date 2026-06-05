@@ -2,20 +2,70 @@
 export const mockVerfahren = [
   {
     id: "019c572a-d6d4-77a8-aad7-ae4496fa2463",
+    aktenzeichen_gericht: "56 C 5574/25",
+    status: "ERSTELLT",
+    status_changed: "2025-04-10T04:47:34.416853Z",
+    eingereicht_am: "2025-01-18T12:00:00Z",
+    gericht: {
+      id: "d58d2e36-7b5e-4b35-20a1-1f49ea275c0a",
+      wert: "Amtsgericht Düsseldorf",
+      code: "R1101",
+    },
+    beteiligungen: [
+      {
+        id: "91933aec-be5c-548d-7d02-a5c6baca01fb",
+        name: "Tobias-Mara Kühn",
+        rollen: [
+          {
+            id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
+            wert: "Beklagte(r)",
+            code: "028",
+          },
+        ],
+        prozessbevollmaechtigte: [
+          {
+            id: "1a5c1a2e-a215-e784-fffe-d61d89516752",
+            name: "Rechtsanwalt Friedrich Scholz",
+            aktenzeichen: "W 1747 06/2026",
+          },
+          {
+            id: "779b1212-2480-2742-46ce-0c1a369fd899",
+            name: "Rechtsanwalt Dr. Friedrich-Alexander-Johannes von Hohenstein-Bär-Krüger-Schäfer",
+            aktenzeichen: "I 9600 10/2025",
+          },
+        ],
+      },
+      {
+        id: "dcf675b3-e7a9-dc70-cc9d-37e03d799aa9",
+        name: "Daniela Brück",
+        rollen: [
+          {
+            id: "c53dd226-7bd9-4da5-19da-5302595a9469",
+            wert: "Kläger(in)",
+            code: "101",
+          },
+        ],
+        prozessbevollmaechtigte: [
+          {
+            id: "febb560c-31d9-f007-3f46-c44238992406",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
+            aktenzeichen: "E 5109 01/2026",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "b3bf3324-6019-11f1-9b69-325096b39f47",
     aktenzeichen_gericht: null,
     status: "ERSTELLT",
     status_changed: "2026-02-13T13:22:31.082452Z",
     eingereicht_am: null,
-    gericht: null,
-    beteiligungen: [],
-  },
-  {
-    id: "019c5740-36de-7089-a3db-530407ee6684",
-    aktenzeichen_gericht: null,
-    status: "ERSTELLT",
-    status_changed: "2026-02-13T13:45:52.075976Z",
-    eingereicht_am: null,
-    gericht: null,
+    gericht: {
+      id: "a8122807-8430-69ad-9d16-36b4b2675017",
+      wert: "Amtsgericht Charlottenburg",
+      code: "F1103",
+    },
     beteiligungen: [],
   },
   {
@@ -111,7 +161,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "46a43817-90b4-0291-3043-51e357a7889b",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "O 9814 08/2026",
           },
         ],
@@ -736,7 +786,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "75c6a078-303f-e70c-4874-15168816404f",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "Z 7342 09/2026",
           },
         ],
@@ -754,7 +804,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "0da405e9-3acc-bdce-9b32-c4bee9b2117d",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "U 4447 13/2024",
           },
           {
@@ -908,7 +958,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "0bb52bec-6fb9-e355-c3fd-4ffbd41dda48",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "A 8604 11/2024",
           },
           {
@@ -1182,7 +1232,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "fae2f6ba-4a81-2717-188a-760a72067de0",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "E 3453 09/2024",
           },
         ],
@@ -1200,7 +1250,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "2e167a54-e9d8-aca2-757b-0b9446f6c50d",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "Q 9475 02/2024",
           },
           {
@@ -1331,7 +1381,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "c5375107-fee5-08c1-e2f5-f83f241b9437",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "P 5843 13/2026",
           },
           {
@@ -1430,7 +1480,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "fbeae46f-f0c9-bdb2-6190-b0afcb22b73f",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "A 5995 07/2025",
           },
         ],
@@ -1448,7 +1498,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "30ac9002-167b-08ca-bc48-c5c399484415",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "M 1622 09/2024",
           },
         ],
@@ -1585,7 +1635,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "9f1aba23-291b-6138-8664-cde040e76af7",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "G 569 04/2025",
           },
         ],
@@ -2066,7 +2116,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "a4518c0f-4f23-1623-4c56-77417d9eec67",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "A 3121 06/2024",
           },
         ],
@@ -2084,7 +2134,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "2164aeed-2617-fd7a-1b3f-c53ac8ff776d",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "G 9038 11/2025",
           },
           {
@@ -2165,7 +2215,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "0cad2c9c-b6ce-1414-2080-fad002c3eba9",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "O 6525 04/2025",
           },
         ],
@@ -2227,7 +2277,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "0351bd3f-a0ad-690f-7de0-73f1b4658bb4",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "G 2506 04/2024",
           },
         ],
@@ -2271,7 +2321,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "6b5a2fe3-47ad-6bad-b607-e19a4b8820c3",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "N 3013 03/2025",
           },
         ],
@@ -2321,7 +2371,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "6dc9cf89-9b69-d298-a2cf-e95135fbead7",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "Q 9808 02/2024",
           },
         ],
@@ -2353,7 +2403,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "64b46fa4-5b44-efd7-c80d-830fd5e1cc3b",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "U 7151 05/2026",
           },
         ],
@@ -2680,7 +2730,7 @@ export const mockVerfahren = [
           },
           {
             id: "92d6493f-0d52-e997-1c48-1a3ac2eb8680",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "L 7739 02/2026",
           },
         ],
@@ -2840,7 +2890,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "99295cdc-02d7-bce9-d35d-d5b6fa9f3d8c",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "I 1491 10/2024",
           },
         ],
@@ -3382,7 +3432,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "1e8d362a-41ff-47ac-800d-a7becd3df9ee",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "R 8423 06/2024",
           },
         ],
@@ -3487,7 +3537,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "b917f025-fafa-be80-6571-46313732c2c1",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "R 8990 13/2025",
           },
         ],
@@ -3897,7 +3947,7 @@ export const mockVerfahren = [
           },
           {
             id: "ff08f8ca-fa4a-5ba9-65af-ab4a24f79ec8",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "A 5056 08/2025",
           },
         ],
@@ -4144,7 +4194,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f4fd455b-0128-ba24-eb54-ff39143bc6c7",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "S 6888 04/2025",
           },
         ],
@@ -4288,7 +4338,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "6904529e-222e-1e0e-8873-f5f45876c9a2",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "Y 5676 07/2026",
           },
         ],
@@ -4880,7 +4930,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "402e3800-b064-ff4c-f6a5-1264471f656e",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "V 4627 02/2024",
           },
         ],
@@ -4898,7 +4948,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "87f35046-28a7-4993-47ce-0308cfcd4703",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "D 1565 06/2024",
           },
         ],
@@ -4930,7 +4980,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "e0ec45a4-f505-5973-11e3-aaed7ffe7801",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "A 6111 12/2024",
           },
         ],
@@ -4948,7 +4998,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "6899656d-bd03-6c8b-7b17-45cf81b7c7e5",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "Z 4752 09/2024",
           },
         ],
@@ -5092,7 +5142,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "0d1c52f2-8e1e-d617-4e48-9f8cb5b2839a",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "X 8877 05/2026",
           },
           {
@@ -5196,7 +5246,7 @@ export const mockVerfahren = [
           },
           {
             id: "6c5df3a6-219d-dd18-1b93-763d8e8404f2",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "H 1558 02/2025",
           },
         ],
@@ -5422,7 +5472,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "e2602b57-3555-1716-37f1-1c9832ed505c",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "G 6156 07/2026",
           },
         ],
@@ -5590,7 +5640,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "c3b1f4e5-ae24-77e6-d2ae-6c4d291ddcfb",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "K 1600 10/2025",
           },
         ],
@@ -5640,7 +5690,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f36071fd-c2ab-df37-255b-c6daef1ddd12",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "J 643 02/2025",
           },
         ],
@@ -5822,7 +5872,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "3a722474-57b8-8445-04ee-0ce1baa23ae2",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "U 8115 09/2024",
           },
         ],
@@ -5966,7 +6016,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "487e6405-8713-35c0-0a9e-1f876671b262",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "X 2990 05/2024",
           },
         ],
@@ -5984,7 +6034,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "d4ca71b0-9ecf-4ffa-727c-8e8d02d2c0a5",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "Y 3071 10/2025",
           },
         ],
@@ -6016,7 +6066,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "0947e4f6-a791-fd7c-2edf-28949de3ac03",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "O 178 03/2026",
           },
         ],
@@ -6034,7 +6084,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "9d3239ff-e281-30d8-8468-7ffe53f1910f",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "V 8752 11/2025",
           },
         ],
@@ -6066,7 +6116,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "80f8acbe-ad5d-c8cb-9381-b633f3d3a80f",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "H 5969 04/2026",
           },
         ],
@@ -6084,7 +6134,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "63b6fff7-c9f9-0df2-7d5f-8215b10a3666",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "J 364 02/2025",
           },
         ],
@@ -6171,7 +6221,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "bd18676b-8af3-1a06-ce8a-c11d0ddc112d",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "R 4402 11/2026",
           },
           {
@@ -6194,7 +6244,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "dee8b315-9b7f-4077-e4be-4d3b23d4be4d",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "L 8171 11/2025",
           },
         ],
@@ -6320,7 +6370,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "806b44b8-6687-db61-6034-6b665a2e2761",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "G 7441 06/2026",
           },
         ],
@@ -6419,7 +6469,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "c58f1812-fc52-85dd-1ba2-e78814b26c51",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "V 6996 12/2024",
           },
         ],
@@ -6437,7 +6487,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "dcda8c59-096b-8908-a70e-b4111a4a0cfd",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "Z 6026 09/2024",
           },
         ],
@@ -6481,7 +6531,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "91784299-2159-f44a-ea9d-41aa734ab790",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "B 4185 08/2024",
           },
         ],
@@ -6531,7 +6581,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "6a320fd3-25ff-9b61-3b95-d83fd6c1f677",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "Q 1353 05/2024",
           },
         ],
@@ -6680,7 +6730,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f9a86b9f-de04-90be-069d-30fff664ce26",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "W 4313 03/2025",
           },
         ],
@@ -6894,7 +6944,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "446509b0-b65b-7ce9-4b6d-715faaec31a4",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "O 6565 10/2025",
           },
           {
@@ -7197,7 +7247,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "cdfdefbc-dce7-ceb2-5db3-a81068984567",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "N 5944 02/2026",
           },
           {
@@ -7640,7 +7690,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "fe1df804-3532-2344-adb4-27e9f41e57c3",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "C 8214 08/2026",
           },
           {
@@ -7849,7 +7899,7 @@ export const mockVerfahren = [
           },
           {
             id: "e6dc33ba-84af-8dc4-4d06-3c2993a613ec",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "O 5123 12/2024",
           },
         ],
@@ -7993,7 +8043,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f0812bd2-d11d-fe9a-77df-69ec7473be9d",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "G 9687 11/2026",
           },
         ],
@@ -8011,7 +8061,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "303d5fb2-8b97-a092-aa8b-bd72d2611f83",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "Z 9987 04/2025",
           },
           {
@@ -8053,7 +8103,7 @@ export const mockVerfahren = [
           },
           {
             id: "824d841b-9b30-097b-b20a-40d855477a46",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "H 4098 13/2024",
           },
         ],
@@ -8071,7 +8121,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "79cc2183-ee31-9ee7-7768-08c44aa6fe77",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "J 7979 12/2024",
           },
         ],
@@ -8158,7 +8208,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "3f6cb47e-8885-0b0f-1c25-581b8515aba7",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "L 499 08/2024",
           },
         ],
@@ -8313,7 +8363,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "1b76698f-fe1c-f6f1-3c05-42888a2e3120",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "K 7008 04/2024",
           },
         ],
@@ -8331,7 +8381,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "d93e85f4-8f1e-bc4f-08c6-3d281bc661cf",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "G 647 09/2026",
           },
         ],
@@ -9107,7 +9157,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "34dfcebd-7473-9608-945b-9f964794e55c",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "E 3537 13/2025",
           },
           {
@@ -9130,7 +9180,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "59bda793-26ba-2ddd-96ec-de0d946aae5b",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "P 8431 01/2026",
           },
         ],
@@ -9478,7 +9528,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "d93849a3-44c1-20c8-29ed-aaa20fc76717",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "K 1690 05/2026",
           },
         ],
@@ -9528,7 +9578,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "d0e4f144-cfd9-9c40-5b93-eb55c62249c6",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "T 1014 06/2024",
           },
         ],
@@ -9565,7 +9615,7 @@ export const mockVerfahren = [
           },
           {
             id: "51a18cd8-2069-ed34-0683-1dea8313ce8b",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "P 3315 09/2024",
           },
         ],
@@ -9615,7 +9665,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "c55ce5e3-fe4a-c963-e74a-34d7705ff2ca",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "H 9657 12/2026",
           },
         ],
@@ -9633,7 +9683,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "81f91b91-c84f-ed62-b4f5-c5a5b2b7668f",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "N 6262 07/2024",
           },
         ],
@@ -9738,7 +9788,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "ac5b2a4c-8bc0-41b5-4be8-7defb9e9b0cb",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "G 8923 07/2024",
           },
         ],
@@ -9770,7 +9820,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "1550b005-f12b-1243-59b8-8a2cab1065df",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "T 8570 05/2026",
           },
         ],
@@ -9788,7 +9838,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "231f8f40-f456-083a-c165-59b545de4597",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "R 7149 06/2026",
           },
           {
@@ -10173,7 +10223,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "75dd8d5e-cf3f-cb97-81cb-c0d70f3a01d7",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "O 9130 12/2024",
           },
         ],
@@ -10484,7 +10534,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "b77e51bb-4943-42fd-83d9-3b018674c23e",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "B 4273 10/2026",
           },
         ],
@@ -11164,7 +11214,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "afdb6474-ac47-40a9-9beb-6160ea18f603",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "X 4508 03/2026",
           },
         ],
@@ -11390,7 +11440,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "4c9d789b-4864-a350-29cb-088c7736fd2e",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "P 9340 04/2024",
           },
         ],
@@ -11408,7 +11458,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "21476b5a-accc-c9ea-a6e3-c4980ab3e529",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "C 5906 07/2026",
           },
         ],
@@ -11705,7 +11755,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "9ceb8914-39fe-9399-6818-e4467ae862d3",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "Y 5267 03/2025",
           },
         ],
@@ -11723,7 +11773,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "87cdbc8b-a8c8-8d2e-cd3d-13e37cdee55f",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "Y 7596 09/2025",
           },
           {
@@ -11772,7 +11822,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "79b2cbe6-8006-fc29-5519-92c412123455",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "J 6362 05/2025",
           },
         ],
@@ -12096,7 +12146,7 @@ export const mockVerfahren = [
           },
           {
             id: "81e8fb4a-6d8b-7f32-6bf0-66a849902d8d",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "I 3486 09/2026",
           },
         ],
@@ -12114,7 +12164,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "5973981c-becf-0718-9dac-8124d1ce6cd1",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "F 3094 03/2026",
           },
         ],
@@ -12240,7 +12290,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f80c3ab0-b987-5d7d-8857-12e26dcc2295",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "L 5216 06/2024",
           },
         ],
@@ -12258,7 +12308,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f986c560-6e91-ae2f-233f-5b1267f2f7b7",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "Q 8234 10/2024",
           },
         ],
@@ -12745,7 +12795,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "ae1ad1c7-d36d-683c-96be-cc6cb0fa4105",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "T 1095 10/2026",
           },
         ],
@@ -12832,7 +12882,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "d307f536-a32d-e6a3-0a32-956376ee1a62",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "I 9545 04/2024",
           },
         ],
@@ -12850,7 +12900,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "1bc8b246-76b6-87e8-e6f7-306374c5d489",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "H 5043 12/2024",
           },
           {
@@ -12955,7 +13005,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f3d594fb-dc85-04bd-6da4-992f12bc445e",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "R 6423 12/2026",
           },
           {
@@ -13197,7 +13247,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "2ee39368-a9ea-6918-2022-684c1e17ab74",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "C 1340 07/2025",
           },
         ],
@@ -13229,7 +13279,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "711731f3-a299-695a-9cd5-8a7194f9a5ee",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "T 7628 13/2025",
           },
         ],
@@ -13273,7 +13323,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "44933ade-da73-def9-1579-7c72e89f4920",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "F 3236 13/2024",
           },
         ],
@@ -13296,7 +13346,7 @@ export const mockVerfahren = [
           },
           {
             id: "80cc4dcc-fa49-d579-3172-75771af3b9ba",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "I 7175 01/2026",
           },
         ],
@@ -13416,7 +13466,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "9e758aa2-21d7-b8e5-ea48-257d5b189ffe",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "T 8639 04/2025",
           },
         ],
@@ -13466,7 +13516,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "a483fcdc-cd6e-bb14-fc2b-bcb4ba4465c4",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "H 7397 09/2024",
           },
         ],
@@ -13676,7 +13726,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "5aafc523-ef1f-3053-cba1-8d8284aa9b43",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "S 2305 09/2025",
           },
         ],
@@ -13694,7 +13744,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "c7a6338a-5f7f-519e-b9e5-0bbe006cd255",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "W 1988 01/2026",
           },
         ],
@@ -13781,7 +13831,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "432728d3-276c-0484-3969-4c5b9af526f1",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "L 360 12/2025",
           },
         ],
@@ -13919,7 +13969,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "3f3364cd-b12b-d9eb-b77a-f648375b19c4",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "Y 6709 06/2025",
           },
         ],
@@ -14063,7 +14113,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "5899fd5f-11e6-b3f6-41cf-d5d9e6a5f6f5",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "L 5832 13/2024",
           },
         ],
@@ -14086,7 +14136,7 @@ export const mockVerfahren = [
           },
           {
             id: "ba2101dd-62cf-d593-99b0-7d11038307fa",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "P 8118 05/2026",
           },
         ],
@@ -14180,7 +14230,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "cf8fdd19-7147-838a-cfe6-0b2a55a1b5de",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "Y 7485 11/2026",
           },
           {
@@ -14305,7 +14355,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "863fbe7f-e2ba-4307-e669-341cb21954e3",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "O 1403 12/2026",
           },
         ],
@@ -14410,7 +14460,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "3aa19bbe-7b29-6fb9-25f9-98e4aea3c0dd",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "E 3075 02/2026",
           },
         ],
@@ -14460,7 +14510,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "32e80536-d770-c364-d2f0-b9099f3e85d4",
-            name: "DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7 DE.BRAK_SPT.8bc14756-d387-4fe9-aa43-f718fd2e4a03.19e7",
+            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
             aktenzeichen: "V 7855 06/2026",
           },
         ],

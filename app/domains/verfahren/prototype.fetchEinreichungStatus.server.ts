@@ -1,17 +1,19 @@
 import { serverConfig } from "~/config/config.server";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
-import { VerfahrenSchema } from "./schemas/verfahrenSchema";
+import { StatusSchema } from "./schemas/statusSchema";
 
-type FetchVerfahrenByIdOptions = {
+type FetchEinreichungStatusOptions = {
   id: string;
+  verfahrenId: string;
 };
 
-const errorMessage = "Das Verfahren konnte nicht abgerufen werden.";
+const errorMessage =
+  "Der Validierungsstatus der Einreichung konnte nicht abgerufen werden.";
 
-export default async function fetchVerfahrenById(
+export default async function fetchEinreichungStatus(
   authData: AuthenticationResponse,
-  options: FetchVerfahrenByIdOptions,
+  options: FetchEinreichungStatusOptions,
 ) {
   const bearerToken = await getBearerToken(authData);
 
@@ -19,7 +21,14 @@ export default async function fetchVerfahrenById(
     throw new Error("No bearer token available");
   }
 
-  const url = `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren/${options.id}`;
+  console.log(
+    "fetchEinreichungStatus for",
+    options.id,
+    "in Verfahren",
+    options.verfahrenId,
+  );
+
+  const url = `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.id}/validierungsstatus`;
 
   const response = await fetch(url, {
     headers: {
@@ -36,7 +45,7 @@ export default async function fetchVerfahrenById(
   const data = await response.json();
 
   try {
-    return VerfahrenSchema.parse(data);
+    return StatusSchema.parse(data);
   } catch (error) {
     throw new Error(errorMessage, { cause: error });
   }

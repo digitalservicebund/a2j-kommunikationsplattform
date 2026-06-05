@@ -6,16 +6,13 @@ export const getAllVerfahren = () => {
   return verfahrenStore;
 };
 
+/**
+ * Creates a Verfahren with response data
+ *
+ * See Verfahren Schema https://app.kompla-justiz.sinc.de/main/swagger/index.html
+ */
 export const createVerfahren = () => {
-  const newVerfahren = {
-    id: crypto.randomUUID(),
-    aktenzeichen_gericht: null,
-    status: "ERSTELLT",
-    status_changed: new Date().toISOString(),
-    eingereicht_am: null,
-    gericht: null,
-    beteiligungen: [],
-  };
+  const newVerfahren = mockVerfahren[0];
   verfahrenStore.unshift(newVerfahren);
   return newVerfahren;
 };
