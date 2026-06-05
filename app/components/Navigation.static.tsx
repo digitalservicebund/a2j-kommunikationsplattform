@@ -28,16 +28,6 @@ export default function Navigation() {
       iconName: "kern-icon--icon--storage",
       url: "/verfahren?sort=eingereicht_am", // setting default sorting for seachParams
     },
-    {
-      name: labels.MITTEILUNGEN_LABEL,
-      iconName: "kern-icon--mail",
-      url: "/",
-    },
-    {
-      name: labels.KALENDER_LABEL,
-      iconName: "kern-icon--calendar-today",
-      url: "/",
-    },
   ];
   return (
     <ul className="gap-kern-space-small md:gap-kern-space-x-large my-0 flex list-none flex-col items-center justify-between pl-0 text-center md:flex-row md:text-left xl:flex-wrap">
