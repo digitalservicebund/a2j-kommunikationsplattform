@@ -13,11 +13,11 @@ env:
   CONTAINER_IMAGE_VERSION: ${{ github.sha }}
 
 jobs:
-  # sonarqube:
-  #   uses: ./.github/workflows/sonarqube.yml
-  #   secrets: inherit
-  #   permissions:
-  #     contents: read
+  sonarqube:
+    uses: ./.github/workflows/sonarqube.yml
+    secrets: inherit
+    permissions:
+      contents: read
 
   build:
     runs-on: ubuntu-latest
