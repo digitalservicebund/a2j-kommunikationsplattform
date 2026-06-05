@@ -12,8 +12,10 @@ import Alert from "~/components/Alert";
 import InputSelect from "~/components/InputSelect";
 import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
 import fetchVerfahrenById from "~/domains/verfahren/fetchVerfahrenById.server";
+import deleteDokument from "~/domains/verfahren/prototype.deleteDokument.server";
 import fetchDokumenteById from "~/domains/verfahren/prototype.fetchDokumenteById.server";
 import fetchEinreichungenById from "~/domains/verfahren/prototype.fetchEinreichungenById.server";
+import fetchEinreichungStatus from "~/domains/verfahren/prototype.fetchEinreichungStatus.server";
 import { authContext, authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
@@ -41,6 +43,16 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
     return e.verfahren_id === id;
   });
 
+  const einreichungenWithStatus = await Promise.all(
+    filteredEinreichungen.map(async (einreichung) => ({
+      ...einreichung,
+      einreichungsStatus: await fetchEinreichungStatus(authData, {
+        id: einreichung.id,
+        verfahrenId: einreichung.verfahren_id,
+      }),
+    })),
+  );
+
   const dokumentePromise = await Promise.all(
     filteredEinreichungen.map(async (einreichung) => {
       const dokumente = await fetchDokumenteById(authData, {
@@ -58,36 +70,97 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
 
   return {
     verfahren: verfahrenPromise,
+    einreichungen: einreichungenWithStatus,
     dokumente: dokumentePromise,
     gerichte: gerichtePromise,
   };
 };
 
-export const action = async ({ context, params }: ActionFunctionArgs) => {
+export const action = async ({
+  request,
+  context,
+  params,
+}: ActionFunctionArgs) => {
+  const { id } = params;
   const authData = context.get(authContext);
 
   if (!authData) {
-    return {
-      success: false,
-      error: "Keine Authentifizierungsdaten verfügbar.",
-    };
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "Keine Authentifizierungsdaten verfügbar.",
+      }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 
-  const { id } = params;
+  const formData = await request.formData();
+  const deleteDokumentAction = formData.get("deleteDokument");
+
+  // handle document deletion
+  if (deleteDokumentAction === "true") {
+    const dokumentId = formData.get("dokumentId");
+    const verfahrenId = id;
+    const einreichungId = formData.get("einreichungId");
+
+    if (
+      typeof dokumentId !== "string" ||
+      typeof verfahrenId !== "string" ||
+      typeof einreichungId !== "string"
+    ) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Fehlende Dokument-Parameter.",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    await deleteDokument(authData, dokumentId, verfahrenId, einreichungId);
+
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   return redirect(`/verfahren/${id}`);
 };
 
 export default function VerfahrendetailsBearbeiten() {
-  const { verfahren, gerichte, dokumente } = useLoaderData<{
+  const { verfahren, einreichungen, dokumente, gerichte } = useLoaderData<{
     verfahren: Awaited<ReturnType<typeof fetchVerfahrenById>>;
-    gerichte: Awaited<ReturnType<typeof fetchGerichte>>;
+    einreichungen: Awaited<
+      ReturnType<typeof fetchEinreichungenById>
+    > extends Array<infer Einreichung>
+      ? Array<
+          Einreichung & {
+            einreichungsStatus: Awaited<
+              ReturnType<typeof fetchEinreichungStatus>
+            >;
+          }
+        >
+      : never;
     dokumente: Awaited<ReturnType<typeof fetchDokumenteById>>[];
+    gerichte: Awaited<ReturnType<typeof fetchGerichte>>;
   }>();
   const { alerts } = useTranslations();
   const [hasInitialFileUpload, setHasInitialFileUpload] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState<"idle" | "submitting">(
     "idle",
+  );
+  const [deletingDocumentId, setDeletingDocumentId] = useState<string | null>(
+    null,
+  );
+  const [deleteDocumentError, setDeleteDocumentError] = useState<string | null>(
+    null,
   );
   const [additionalFiles, setAdditionalFiles] = useState<number[]>([]);
 
@@ -138,23 +211,68 @@ export default function VerfahrendetailsBearbeiten() {
     setAdditionalFiles((prev) => [...prev, prev.length]);
   };
 
-  const handleRemoveInitialFileUpload = () => {
-    setHasInitialFileUpload(false);
+  const handleDeleteFileFromVerfahren = async (
+    dokumentId: string,
+    einreichungId: string,
+  ) => {
+    setDeleteDocumentError(null);
+    setDeletingDocumentId(dokumentId);
+
+    const formData = new FormData();
+    formData.set("deleteDokument", "true");
+    formData.set("dokumentId", dokumentId);
+    formData.set("einreichungId", einreichungId);
+
+    try {
+      const response = await fetch(globalThis.location.href, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.warn("delete file error: ", errorText);
+        setDeleteDocumentError("Dokument konnte nicht gelöscht werden.");
+        return;
+      }
+
+      if (dokumente.length === 0) {
+        setHasInitialFileUpload(false);
+      }
+    } catch (error) {
+      setDeleteDocumentError(
+        error instanceof Error
+          ? error.message
+          : "Unbekannter Fehler beim Löschen des Dokuments.",
+      );
+    } finally {
+      setDeletingDocumentId(null);
+    }
   };
 
   const handleRemoveFileUpload = (index: number) => {
     setAdditionalFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleUploadFileUpload = () => {
+    alert(
+      "POST /api/v1/verfahren/{verfahren-id}/einreichungen/{einreichung-id}/dokumente ist an dieser Stelle noch nicht verfügbar. Wir arbeiten daran.",
+    );
+  };
+
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    alert("API-Aufruf ist noch nicht implementiert");
+
+    alert(
+      "PATCH /api/v1/verfahren/{id} noch nicht verfügbar. Wir arbeiten daran.\n\nℹ️ Sie werden zur Detailseite dieses Verfahrens weitergeleitet.",
+    );
 
     setIsSubmitting("submitting");
 
-    // @TODO:
-    // - remove this timeout, when the real API has been connected
-    // - handle API response and possible errors accordingly
+    // Temporary delay before submitting the form while the prototype is active.
     setTimeout(() => {
       // After 3 seconds, submit the form
       formRef.current?.submit();
@@ -190,18 +308,63 @@ export default function VerfahrendetailsBearbeiten() {
                 : "Verfahren wurde bereits eingereicht"}
             </span>
           </span>
-          {verfahren.status === "ERSTELLT" && (
-            <>
-              <p className="kern-body">
-                Ergänzen und überprüfen Sie bitte folgende Verfahrensrelevante
-                Angaben.
-              </p>
-              <p className="kern-body kern-body--bold kern-body--small">
-                Je mehr Daten Sie an das Gericht übermitteln, desto schneller
-                kann das Verfahren durch mögliche Automation verlaufen.
-              </p>
-            </>
-          )}
+          <Suspense fallback={<div>Einreichungsstatus wird geladen ...</div>}>
+            <div className="kern-table-responsive">
+              <table className="kern-table kern-table--striped mb-kern-space-x-large">
+                <caption className="kern-title kern-title--small">
+                  Status ihrer Einreichung
+                </caption>
+                <thead className="kern-table__head">
+                  <tr className="kern-table__row">
+                    <th scope="col" className="kern-table__header">
+                      Detail
+                    </th>
+                    <th scope="col" className="kern-table__header">
+                      Status der Einreichung
+                    </th>
+                    <th scope="col" className="kern-table__header">
+                      Validierungsstatus
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="kern-table__body">
+                  <Await resolve={einreichungen}>
+                    {(resolvedData) =>
+                      resolvedData && (
+                        <>
+                          {resolvedData.map((einreichung) => (
+                            <tr
+                              key={einreichung.id}
+                              className="kern-table__row"
+                            >
+                              <td className="kern-table__cell">
+                                {einreichung.name}
+                              </td>
+                              <td className="kern-table__cell">
+                                {einreichung.status}
+                              </td>
+                              <td className="kern-table__cell">
+                                {einreichung.einreichungsStatus.status}
+                              </td>
+                            </tr>
+                          ))}
+                        </>
+                      )
+                    }
+                  </Await>
+                </tbody>
+              </table>
+            </div>
+          </Suspense>
+
+          <h2 className="kern-title">
+            Ergänzen und überprüfen Sie bitte folgende Verfahrensrelevante
+            Angaben.
+          </h2>
+          <p className="kern-body kern-body--bold kern-body--small">
+            Je mehr Daten Sie an das Gericht übermitteln, desto schneller kann
+            das Verfahren durch mögliche Automation verlaufen.
+          </p>
         </div>
 
         {/* plaintiff data */}
@@ -670,145 +833,204 @@ export default function VerfahrendetailsBearbeiten() {
 
         {/* Verfahren related docs */}
         <div className="kern-col-xl-6 kern-col-lg-8 kern-col-12 kern-col-lg-offset-2 kern-col-xl-offset-3">
-          <div className="kern-card kern-card--small kern-gap-xl">
-            <div className="kern-card__container mb-kern-space-default">
-              <header className="kern-card__header">
+          <div className="kern-gap-xl">
+            <div className="mb-kern-space-default">
+              <header className="">
                 <hgroup>
                   <h2 className="kern-title">Anlagen & Beweismittel</h2>
                 </hgroup>
               </header>
-              <section className="kern-card__body">
+              <section className="">
                 <p className="kern-body">
                   Hier haben Sie die Möglichkeit weitere Dateien anzufügen.
                 </p>
 
-                <table className="kern-table">
-                  <caption className="kern-title">
-                    Hochgeladene Dokumente
-                  </caption>
+                <Suspense fallback={<div>Dokumente werden geladen ...</div>}>
+                  <Await resolve={dokumente}>
+                    {(resolvedData) =>
+                      resolvedData && (
+                        <div className="kern-table-responsive">
+                          <table className="kern-table">
+                            <caption className="kern-title kern-title--small">
+                              Hochgeladene Dokumente
+                            </caption>
 
-                  <thead className="kern-table__head">
-                    <tr className="kern-table__row">
-                      <th scope="col" className="kern-table__header">
-                        Datei
-                      </th>
-                      <th scope="col" className="kern-table__header">
-                        Dateigröße (KB)
-                      </th>
-                      <th scope="col" className="kern-table__header">
-                        Virenscanstatus
-                      </th>
-                      <th scope="col" className="kern-table__header">
-                        Aktion
-                      </th>
-                    </tr>
-                  </thead>
+                            <thead className="kern-table__head">
+                              <tr className="kern-table__row">
+                                <th scope="col" className="kern-table__header">
+                                  Datei
+                                </th>
+                                <th scope="col" className="kern-table__header">
+                                  Status
+                                </th>
+                                <th scope="col" className="kern-table__header">
+                                  Dateigröße (KB)
+                                </th>
+                                <th scope="col" className="kern-table__header">
+                                  Virenscanstatus
+                                </th>
+                                <th scope="col" className="kern-table__header">
+                                  Aktion
+                                </th>
+                              </tr>
+                            </thead>
 
-                  <tbody className="kern-table__body">
-                    <Suspense
-                      fallback={<div>Dokumente werden geladen ...</div>}
-                    >
-                      <Await resolve={dokumente}>
-                        {(resolvedData) =>
-                          resolvedData && (
-                            <>
-                              {hasInitialFileUpload && (
-                                <>
-                                  {resolvedData.map((dokument) => (
-                                    <tr
-                                      key={dokument[0].id}
-                                      className="kern-table__row"
-                                    >
-                                      <td
-                                        scope="row"
-                                        className="kern-table__cell align-middle"
-                                      >
-                                        {dokument[0].name}
-                                      </td>
-                                      <td className="kern-table__cell align-middle">
-                                        {Number.parseFloat(
-                                          (
-                                            dokument[0].size_in_bytes / 1000
-                                          ).toString(),
-                                        ).toFixed(2)}
-                                      </td>
-                                      <td className="kern-table__cell align-middle">
-                                        {dokument[0].viren_scan_status}
-                                      </td>
-                                      <td className="kern-table__cell align-middle">
+                            <tbody className="kern-table__body">
+                              {hasInitialFileUpload ? (
+                                resolvedData.map((dokument) => (
+                                  <tr
+                                    key={dokument[0].id}
+                                    className="kern-table__row"
+                                  >
+                                    <td className="kern-table__cell align-middle">
+                                      {dokument[0].name}
+                                    </td>
+                                    <td className="kern-table__cell align-middle">
+                                      {dokument[0].status}
+                                    </td>
+                                    <td className="kern-table__cell align-middle">
+                                      {Number.parseFloat(
+                                        (
+                                          dokument[0].size_in_bytes / 1000
+                                        ).toString(),
+                                      ).toFixed(2)}
+                                    </td>
+                                    <td className="kern-table__cell align-middle">
+                                      {dokument[0].viren_scan_status}
+                                    </td>
+
+                                    <td className="kern-table__cell kern-table__cell--action">
+                                      {dokument[0].status !== "EINGEREICHT" && (
                                         <button
+                                          className="kern-btn kern-btn--tertiary kern-btn--x-small"
                                           type="button"
-                                          className="kern-btn kern-btn--primary"
+                                          disabled={
+                                            deletingDocumentId ===
+                                            dokument[0].id
+                                          }
                                           onClick={() =>
-                                            handleRemoveInitialFileUpload()
+                                            handleDeleteFileFromVerfahren(
+                                              dokument[0].id,
+                                              dokument[0].einreichung_id,
+                                            )
                                           }
                                         >
                                           <span
                                             className="kern-icon kern-icon--delete"
                                             aria-hidden="true"
                                           ></span>
-                                          <span className="kern-label kern-sr-only">
-                                            Entfernen
+                                          <span className="kern-label">
+                                            {deletingDocumentId ===
+                                            dokument[0].id
+                                              ? "Lösche…"
+                                              : "Entfernen"}
                                           </span>
                                         </button>
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </>
+                                      )}
+                                    </td>
+                                  </tr>
+                                ))
+                              ) : (
+                                <tr className="kern-table__row">
+                                  <td className="kern-table__cell align-middle">
+                                    -
+                                  </td>
+                                  <td className="kern-table__cell align-middle">
+                                    -
+                                  </td>
+                                  <td className="kern-table__cell align-middle">
+                                    -
+                                  </td>
+                                  <td className="kern-table__cell align-middle">
+                                    -
+                                  </td>
+                                  <td className="kern-table__cell align-middle">
+                                    -
+                                  </td>
+                                </tr>
                               )}
-                            </>
-                          )
-                        }
-                      </Await>
-                    </Suspense>
-                  </tbody>
-                </table>
+                            </tbody>
+                          </table>
+                        </div>
+                      )
+                    }
+                  </Await>
+                </Suspense>
+                {deleteDocumentError ? (
+                  <div className="whitespace-normal">
+                    <Alert
+                      type="error"
+                      title="Löschen fehlgeschlagen"
+                      message={deleteDocumentError}
+                    />
+                  </div>
+                ) : null}
 
                 {/* Additional file uploads */}
-                {additionalFiles.length > 0 && (
-                  <div className="mt-kern-space-large w-full">
-                    {additionalFiles.map((fileIndex) => (
-                      <div
-                        key={fileIndex}
-                        className="gap-kern-space-default space-y-kern-space-large flex flex-row"
-                      >
-                        <div className="kern-form-input w-2/3">
-                          <label
-                            className="kern-label"
-                            htmlFor={`additional-file-${fileIndex}`}
-                          >
-                            Datei hier hochladen
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id={`additional-file-${fileIndex}`}
-                            name={`additionalFile${fileIndex}`}
-                            type="file"
-                          />
+                <div className="border-kern-layout-border rounded-kern-default p-kern-space-default mb-kern-space-default mt-kern-space-x-large w-full border-4">
+                  <p className="kern-body">
+                    Hier haben Sie die Möglichkeit weitere Dateien anzufügen.
+                  </p>
+                  {additionalFiles.length > 0 && (
+                    <div className="mt-kern-space-large w-full">
+                      {additionalFiles.map((fileIndex) => (
+                        <div
+                          key={fileIndex}
+                          className="gap-kern-space-default p-kern-space-small space-y-kern-space-large border-kern-layout-border rounded-kern-default flex flex-row border-2"
+                        >
+                          <div className="kern-form-input grow">
+                            <label
+                              className="kern-label"
+                              htmlFor={`additional-file-${fileIndex}`}
+                            >
+                              Datei hier hochladen
+                            </label>
+                            <input
+                              className="kern-form-input__input"
+                              id={`additional-file-${fileIndex}`}
+                              name={`additionalFile${fileIndex}`}
+                              type="file"
+                            />
+                          </div>
+                          <div className="gap-kern-space-default flex flex-col flex-wrap justify-center">
+                            <div>
+                              <button
+                                type="button"
+                                className="kern-btn kern-btn--secondary"
+                                onClick={() =>
+                                  handleRemoveFileUpload(fileIndex)
+                                }
+                              >
+                                <span className="kern-label">Entfernen</span>
+                              </button>
+                            </div>
+                            <div>
+                              <button
+                                type="button"
+                                className="kern-btn kern-btn--primary"
+                                onClick={() => handleUploadFileUpload()}
+                              >
+                                <span className="kern-label">Hochladen</span>
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                        <div className="w-1/3 content-center text-right">
-                          <button
-                            type="button"
-                            className="kern-btn kern-btn--primary"
-                            onClick={() => handleRemoveFileUpload(fileIndex)}
-                          >
-                            <span className="kern-label">Entfernen</span>
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
 
-                {/* Add new file upload button */}
-                <div className="kern-justify-content-end flex w-full flex-wrap">
-                  <button
-                    type="button"
-                    onClick={handleAddFileUpload}
-                    className="kern-btn kern-btn--secondary"
-                  >
-                    <span className="kern-label">Datei hinzufügen</span>
-                  </button>
+                  {/* Add new file upload button */}
+                  <div className="kern-justify-content-end mt-kern-space-default flex w-full flex-wrap">
+                    <button
+                      type="button"
+                      onClick={handleAddFileUpload}
+                      className="kern-btn kern-btn--secondary"
+                    >
+                      <span className="kern-label">
+                        Weitere Datei hinzufügen
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </section>
             </div>

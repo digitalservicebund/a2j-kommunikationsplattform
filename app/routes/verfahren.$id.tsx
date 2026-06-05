@@ -136,14 +136,20 @@ export default function Verfahrendetails() {
                       to={`/verfahren/${resolvedData.id}/bearbeiten`}
                       className="kern-btn kern-btn--secondary"
                     >
-                      <span className="kern-label">Bearbeiten</span>
+                      <span className="kern-label">
+                        {resolvedData.status === "ERSTELLT"
+                          ? "Bearbeitung"
+                          : "Weitere Optionen"}
+                      </span>
                     </Link>
                     {resolvedData.status === "ERSTELLT" && (
                       <button
                         type="submit"
                         className="kern-btn kern-btn--primary"
                         onClick={() =>
-                          alert("API-Aufruf ist noch nicht implementiert")
+                          alert(
+                            "POST /api/v1/verfahren/{verfahren-id}/* ist an dieser Stelle noch nicht verfügbar. Wir arbeiten daran.",
+                          )
                         }
                       >
                         <span className="kern-label">
@@ -173,57 +179,80 @@ export default function Verfahrendetails() {
           <Await resolve={einreichungen}>
             {(resolvedData) => (
               <>
-                {showDebugInfo && (
-                  <>
-                    <div>
-                      einreichungen
-                      <br />
-                      <code className="whitespace-pre-wrap">
-                        {JSON.stringify(resolvedData)}
-                      </code>
-                    </div>
-                    {resolvedData.length === 0 ? (
-                      <div>Keine Einreichungen vorhanden.</div>
-                    ) : (
-                      resolvedData.map((einreichung) => (
-                        <div
-                          key={einreichung.id}
-                          className="kern-border kern-bg-secondary p-kern-space-medium rounded"
-                        >
-                          <div className="kern-label kern-label--small">
-                            Einreichung ID: {einreichung.id} / Verfahren ID:{" "}
-                            {einreichung.verfahren_id} / Name:{" "}
-                            {einreichung.name}
-                          </div>
-                          <div className="kern-label kern-label--small">
-                            Status: {einreichung.status}
-                          </div>
-                          <div className="kern-label kern-label--small">
-                            Validierungsstatus:{" "}
-                            {einreichung.einreichungsStatus.status}
-                          </div>
-                          <div className="kern-copy">
-                            {einreichung.einreichungsStatus.validation_messages
-                              .length > 0 ? (
-                              <ul className="list-none pl-5">
-                                {einreichung.einreichungsStatus.validation_messages.map(
+                {resolvedData.length === 0 ? (
+                  <div>Keine Einreichungen vorhanden.</div>
+                ) : (
+                  <div className="kern-table-responsive">
+                    <table className="kern-table kern-table--striped">
+                      <caption className="kern-title kern-title--small">
+                        Einreichungen
+                      </caption>
+
+                      <thead className="kern-table__head">
+                        <tr className="kern-table__row">
+                          <th scope="col" className="kern-table__header">
+                            ID
+                          </th>
+                          <th scope="col" className="kern-table__header">
+                            Verfahren ID
+                          </th>
+                          <th scope="col" className="kern-table__header">
+                            Name
+                          </th>
+                          <th scope="col" className="kern-table__header">
+                            Status
+                          </th>
+                          <th scope="col" className="kern-table__header">
+                            Validierungsinfo
+                          </th>
+                        </tr>
+                      </thead>
+
+                      <tbody className="kern-table__body">
+                        {resolvedData.map((einreichung) => (
+                          <tr key={einreichung.id} className="kern-table__row">
+                            <td className="kern-table__cell">
+                              {einreichung.id}
+                            </td>
+                            <td className="kern-table__cell">
+                              {einreichung.verfahren_id}
+                            </td>
+                            <td className="kern-table__cell">
+                              {einreichung.name}
+                            </td>
+                            <td className="kern-table__cell">
+                              {einreichung.einreichungsStatus.status}
+                            </td>
+                            <td className="kern-table__cell">
+                              {einreichung.einreichungsStatus
+                                .validation_messages.length > 0 ? (
+                                einreichung.einreichungsStatus.validation_messages.map(
                                   (message, index) => (
-                                    <li key={index}>
+                                    <span key={einreichung.id + index}>
                                       {message.message
                                         ? message.message
                                         : "no message"}
-                                    </li>
+                                    </span>
                                   ),
-                                )}
-                              </ul>
-                            ) : (
-                              <span>Keine Validierungsmeldungen</span>
-                            )}
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </>
+                                )
+                              ) : (
+                                <span>Keine Validierungsmeldungen</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                {showDebugInfo && (
+                  <div>
+                    einreichungen
+                    <br />
+                    <code className="whitespace-pre-wrap">
+                      {JSON.stringify(resolvedData)}
+                    </code>
+                  </div>
                 )}
               </>
             )}
@@ -233,41 +262,67 @@ export default function Verfahrendetails() {
           <Await resolve={dokumente}>
             {(resolvedData) => (
               <>
+                {resolvedData.length === 0 ? (
+                  <div>Keine Dokumente vorhanden.</div>
+                ) : (
+                  <div className="kern-table-responsive">
+                    <table className="kern-table kern-table--striped">
+                      <caption className="kern-title kern-title--small">
+                        Dokumente
+                      </caption>
+
+                      <thead className="kern-table__head">
+                        <tr className="kern-table__row">
+                          <th scope="col" className="kern-table__header">
+                            ID
+                          </th>
+                          <th scope="col" className="kern-table__header">
+                            Name
+                          </th>
+                          <th scope="col" className="kern-table__header">
+                            Größe in Bytes
+                          </th>
+                          <th scope="col" className="kern-table__header">
+                            Status
+                          </th>
+                          <th scope="col" className="kern-table__header">
+                            Virenscanstatus
+                          </th>
+                        </tr>
+                      </thead>
+
+                      <tbody className="kern-table__body">
+                        {resolvedData.map((dokumente) => (
+                          <tr key={dokumente[0].id} className="kern-table__row">
+                            <td className="kern-table__cell">
+                              {dokumente[0].id}
+                            </td>
+                            <td className="kern-table__cell">
+                              {dokumente[0].name}
+                            </td>
+                            <td className="kern-table__cell">
+                              {dokumente[0].size_in_bytes}
+                            </td>
+                            <td className="kern-table__cell">
+                              {dokumente[0].status}
+                            </td>
+                            <td className="kern-table__cell">
+                              {dokumente[0].viren_scan_status}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
                 {showDebugInfo && (
-                  <>
-                    <div>
-                      dokumente
-                      <br />
-                      <code className="whitespace-pre-wrap">
-                        {JSON.stringify(resolvedData)}
-                      </code>
-                    </div>
-                    {resolvedData.length === 0 ? (
-                      <div>Keine Dokumente vorhanden.</div>
-                    ) : (
-                      resolvedData.map((dokumente) => (
-                        <div
-                          key={dokumente[0].id}
-                          className="kern-border kern-bg-secondary p-kern-space-medium rounded"
-                        >
-                          <div className="kern-label kern-label--small">
-                            Dokumente sind vorhanden
-                          </div>
-                          <div>
-                            Dokument ID: {dokumente[0].id} / Dokument name:{" "}
-                            {dokumente[0].name} / Dokument size_in_bytes:{" "}
-                            {dokumente[0].size_in_bytes}
-                          </div>
-                          <div>Dokument status: {dokumente[0].status}</div>
-                          <div>Dokument type: {dokumente[0].type}</div>
-                          <div>
-                            Dokument viren_scan_status:{" "}
-                            {dokumente[0].viren_scan_status}
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </>
+                  <div>
+                    dokumente
+                    <br />
+                    <code className="whitespace-pre-wrap">
+                      {JSON.stringify(resolvedData)}
+                    </code>
+                  </div>
                 )}
               </>
             )}
