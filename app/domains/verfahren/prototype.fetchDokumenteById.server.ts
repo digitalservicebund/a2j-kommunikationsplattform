@@ -1,6 +1,10 @@
 import { serverConfig } from "~/config/config.server";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
+import {
+  logApiErrorAndThrow,
+  logParsingErrorAndThrow,
+} from "~/utils/logApiError";
 import { DokumenteSchema } from "./schemas/dokumentSchema";
 
 type FetchDokumenteByIdOptions = {
@@ -27,16 +31,24 @@ export default async function fetchDokumenteById(
   });
 
   if (!response.ok) {
-    throw new Error(errorMessage(options.id), {
-      cause: `Serverantwort war nicht ok (Fehlercode ${response.status} ${response.statusText}).`,
-    });
+    await logApiErrorAndThrow(response, errorMessage(options.id));
   }
 
-  const data = await response.json();
+  let data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    const responseBody = await response.clone().text();
+    logParsingErrorAndThrow(error, errorMessage(options.id), responseBody);
+  }
 
   try {
     return DokumenteSchema.parse(data);
   } catch (error) {
-    throw new Error(errorMessage(options.id), { cause: error });
+    logParsingErrorAndThrow(
+      error,
+      errorMessage(options.id),
+      JSON.stringify(data),
+    );
   }
 }

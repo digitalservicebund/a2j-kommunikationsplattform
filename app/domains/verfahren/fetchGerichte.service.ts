@@ -1,6 +1,10 @@
 import { serverConfig } from "~/config/config.server";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
+import {
+  logApiErrorAndThrow,
+  logParsingErrorAndThrow,
+} from "~/utils/logApiError";
 import { GerichtSchema } from "./schemas/gerichtSchema";
 
 const errorMessage =
@@ -22,18 +26,20 @@ export default async function fetchGerichte(authData: AuthenticationResponse) {
   });
 
   if (!response.ok) {
-    const errorBody = await response.text();
-    console.error("Gerichte error response body:", errorBody);
-    throw new Error(errorMessage, {
-      cause: `Serverantwort war nicht ok (Fehlercode ${response.status} ${response.statusText}). Body: ${errorBody}`,
-    });
+    await logApiErrorAndThrow(response, errorMessage);
   }
 
-  const data = await response.json();
+  let data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    const responseBody = await response.clone().text();
+    logParsingErrorAndThrow(error, errorMessage, responseBody);
+  }
 
   try {
     return GerichtSchema.array().parse(data);
   } catch (error) {
-    throw new Error(errorMessage, { cause: error });
+    logParsingErrorAndThrow(error, errorMessage, JSON.stringify(data));
   }
 }

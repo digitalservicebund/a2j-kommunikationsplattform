@@ -22,9 +22,13 @@ describe("fetchFromApi", () => {
           ok: false,
           status: 500,
           statusText: "Internal server error",
+          url: "https://api.test/url",
+          clone: () => ({
+            text: async () => "error body",
+          }),
         }) as Promise<Response>,
     );
-    expect(() =>
+    await expect(
       fetchFromApi({ url: "/url", errorMessage: "msg" }),
     ).rejects.toThrowError("msg");
   });
@@ -34,10 +38,13 @@ describe("fetchFromApi", () => {
       () =>
         Promise.resolve({
           ok: true,
-          // json() missing to trigger error
+          json: () => Promise.reject(new Error("Invalid JSON")),
+          clone: () => ({
+            text: async () => "malformed response body",
+          }),
         }) as Promise<Response>,
     );
-    expect(() =>
+    await expect(
       fetchFromApi({ url: "/url", errorMessage: "msg" }),
     ).rejects.toThrowError("msg");
   });

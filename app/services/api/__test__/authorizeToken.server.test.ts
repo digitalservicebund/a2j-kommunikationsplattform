@@ -74,13 +74,18 @@ describe("authorizeToken", () => {
     const errorResponse = {
       ok: false,
       status: 400,
+      statusText: "Bad Request",
+      url: "https://mock-idp/protocol/openid-connect/token",
       text: vi.fn().mockResolvedValue("Bad Request"),
+      clone: () => ({
+        text: async () => "Bad Request",
+      }),
     } as unknown as Response;
 
     global.fetch = vi.fn().mockResolvedValue(errorResponse);
 
     await expect(authorizeToken("test-token")).rejects.toThrow(
-      "Token exchange failed: 400 Bad Request",
+      "Token exchange failed",
     );
   });
 });

@@ -73,7 +73,11 @@ describe("fetchGerichte", () => {
       ok: false,
       status: 404,
       statusText: "Not Found",
+      url: "http://localhost:8080/api/v1/gerichte",
       text: async () => "Not Found",
+      clone: () => ({
+        text: async () => "Not Found",
+      }),
     });
 
     const mockRequest = mockAuthData;

@@ -85,7 +85,7 @@ describe("fetchVerfahren", () => {
 
     const result = fetchVerfahren(mockRequest, { sort: sortOptions[0].value });
 
-    expect(result).rejects.toThrow(
+    await expect(result).rejects.toThrow(
       "Die Verfahren konnten nicht abgerufen werden.",
     );
   });
@@ -97,7 +97,7 @@ describe("fetchVerfahren", () => {
 
     const result = fetchVerfahren(mockRequest);
 
-    expect(result).rejects.toThrow("No bearer token available");
+    await expect(result).rejects.toThrow("No bearer token available");
   });
 
   it("throws error when API returns non-ok response", async () => {
@@ -106,14 +106,18 @@ describe("fetchVerfahren", () => {
       ok: false,
       status: 500,
       statusText: "Internal Server Error",
-      text: async () => "",
+      url: "http://localhost:8080/api/v1/verfahren",
+      text: async () => "server failure",
+      clone: () => ({
+        text: async () => "server failure",
+      }),
     });
 
     const mockRequest = mockAuthData;
 
     const result = fetchVerfahren(mockRequest);
 
-    expect(result).rejects.toThrow(
+    await expect(result).rejects.toThrow(
       "Die Verfahren konnten nicht abgerufen werden.",
     );
   });
@@ -163,7 +167,7 @@ describe("fetchVerfahren", () => {
         gericht: "invalid-uuid",
       });
 
-      expect(result).rejects.toThrow();
+      await expect(result).rejects.toThrow();
     });
 
     it("includes sort parameter when provided", async () => {
@@ -206,7 +210,7 @@ describe("fetchVerfahren", () => {
         sort: "invalid-sort-value",
       });
 
-      expect(result).rejects.toThrow();
+      await expect(result).rejects.toThrow();
     });
     it("includes search_text parameter when provided", async () => {
       mocks.getBearerToken.mockResolvedValue("test-token");

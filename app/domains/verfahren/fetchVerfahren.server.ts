@@ -4,6 +4,10 @@ import { sortOptions } from "~/config/verfahren";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 import { buildSearchParams } from "~/utils/buildSearchParams";
+import {
+  logApiErrorAndThrow,
+  logParsingErrorAndThrow,
+} from "~/utils/logApiError";
 import { VerfahrenSchema } from "./schemas/verfahrenSchema";
 
 const fetchVerfahrenOptionsSchema = z.object({
@@ -46,18 +50,20 @@ export default async function fetchVerfahren(
   });
 
   if (!response.ok) {
-    const errorBody = await response.text();
-    console.error("Error response body:", errorBody);
-    throw new Error(ERROR_MESSAGE, {
-      cause: `Serverantwort war nicht ok (Fehlercode ${response.status} ${response.statusText}). Body: ${errorBody}`,
-    });
+    await logApiErrorAndThrow(response, ERROR_MESSAGE);
   }
 
-  const data = await response.json();
+  let data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    const responseBody = await response.clone().text();
+    logParsingErrorAndThrow(error, ERROR_MESSAGE, responseBody);
+  }
 
   try {
     return VerfahrenSchema.array().parse(data);
   } catch (error) {
-    throw new Error(ERROR_MESSAGE, { cause: error });
+    logParsingErrorAndThrow(error, ERROR_MESSAGE, JSON.stringify(data));
   }
 }

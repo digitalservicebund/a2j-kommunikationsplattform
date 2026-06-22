@@ -1,4 +1,5 @@
 import { serverConfig } from "~/config/config.server";
+import { logApiErrorAndThrow } from "~/utils/logApiError";
 
 export interface AuthorizeTokenResponse {
   access_token: string;
@@ -52,9 +53,7 @@ export async function authorizeToken(
   });
 
   if (!response.ok) {
-    throw new Error(
-      `Token exchange failed: ${response.status} ${await response.text()}`,
-    );
+    await logApiErrorAndThrow(response, "Token exchange failed");
   }
 
   const result = (await response.json()) as AuthorizeTokenResponse;

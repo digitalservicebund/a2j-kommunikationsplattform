@@ -1,4 +1,8 @@
 import { serverConfig } from "~/config/config.server";
+import {
+  logApiErrorAndThrow,
+  logParsingErrorAndThrow,
+} from "~/utils/logApiError";
 
 type FetchFromApiOptions = {
   url: string;
@@ -20,16 +24,15 @@ export async function fetchFromApi(options: FetchFromApiOptions) {
     });
 
     if (!response.ok) {
-      // 4xx and 5xx errors
-      throw new Error(options.errorMessage, {
-        cause: `Serverantwort war nicht ok (Fehlercode ${response.status} ${response.statusText}).`,
-      });
+      // 4xx and 5xx errors - log before throwing
+      await logApiErrorAndThrow(response, options.errorMessage);
     }
 
     try {
       return await response.json();
     } catch (error) {
-      throw new Error(options.errorMessage, { cause: error });
+      const responseBody = await response.clone().text();
+      logParsingErrorAndThrow(error, options.errorMessage, responseBody);
     }
   } catch (error) {
     // network errors
