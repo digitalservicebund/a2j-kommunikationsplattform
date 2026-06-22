@@ -2,7 +2,7 @@ import { serverConfig } from "~/config/config.server";
 import {
   logApiErrorAndThrow,
   logParsingErrorAndThrow,
-} from "./logApiError.server";
+} from "~/utils/logApiError";
 
 type FetchFromApiOptions = {
   url: string;

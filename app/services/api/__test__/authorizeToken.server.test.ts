@@ -80,7 +80,7 @@ describe("authorizeToken", () => {
     global.fetch = vi.fn().mockResolvedValue(errorResponse);
 
     await expect(authorizeToken("test-token")).rejects.toThrow(
-      "Token exchange failed: 400 Bad Request",
+      "Token exchange failed",
     );
   });
 });

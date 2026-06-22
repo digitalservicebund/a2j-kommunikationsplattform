@@ -129,7 +129,7 @@ describe("MagicLinkStrategy", () => {
       stubFetch({ ok: false, status: 401, statusText: "Unauthorized" });
       const { strategy } = makeStrategy();
       await expect(strategy.getMagicLinkUrl()).rejects.toThrow(
-        "Service token request failed: 401 Unauthorized",
+        "MagicLinkStrategy: service token request failed",
       );
     });
 
@@ -140,7 +140,7 @@ describe("MagicLinkStrategy", () => {
       );
       const { strategy } = makeStrategy();
       await expect(strategy.getMagicLinkUrl()).rejects.toThrow(
-        "Magic link request failed: 500 Internal Server Error",
+        "MagicLinkStrategy: magic link request failed",
       );
     });
 
@@ -211,7 +211,7 @@ describe("MagicLinkStrategy", () => {
       const { strategy } = makeStrategy();
       const request = new Request("https://example.com/callback?code=bad-code");
       await expect(strategy.authenticate(request)).rejects.toThrow(
-        "Token exchange failed: 400",
+        "MagicLinkStrategy: token exchange failed",
       );
     });
 
@@ -273,7 +273,7 @@ describe("MagicLinkStrategy", () => {
       });
       const { strategy } = makeStrategy();
       await expect(strategy.refreshAccessToken("expired-rt")).rejects.toThrow(
-        "Demo token refresh failed: 401",
+        "MagicLinkStrategy: token refresh failed",
       );
     });
   });

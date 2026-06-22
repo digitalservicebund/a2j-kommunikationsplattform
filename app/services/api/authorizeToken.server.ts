@@ -1,5 +1,5 @@
 import { serverConfig } from "~/config/config.server";
-import { logApiErrorAndThrow } from "./logApiError.server";
+import { logApiErrorAndThrow } from "~/utils/logApiError";
 
 export interface AuthorizeTokenResponse {
   access_token: string;
