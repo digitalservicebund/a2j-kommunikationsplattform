@@ -48,14 +48,24 @@ function stubFetch(
     ok: boolean;
     status?: number;
     statusText?: string;
+    url?: string;
     headers?: Headers;
     json?: () => Promise<unknown>;
     text?: () => Promise<string>;
+    clone?: () => Response;
   }>
 ) {
   const mockFn = vi.fn();
   for (const res of responses) {
-    mockFn.mockResolvedValueOnce(res);
+    const normalizedResponse = {
+      ...res,
+      url: res.url ?? "https://api.test",
+      clone:
+        res.clone ??
+        (() =>
+          ({ text: async () => res.text?.() ?? "" }) as unknown as Response),
+    };
+    mockFn.mockResolvedValueOnce(normalizedResponse);
   }
   vi.stubGlobal("fetch", mockFn);
   return mockFn;
