@@ -1,35 +1,40 @@
 scopeconfig:
-  - scope: node # ignores files such as package-lock.json
+
+- scope: node # ignores files such as package-lock.json
 
 allowed_patterns:
-  - key
-  - uses:\ ([A-z0-9\-]+\/)*[A-z0-9\-]+@[a-fA-F0-9]{40}
-  - TRIVY_PASSWORD:\ \${{\ secrets.GITHUB_TOKEN\ }}
-  - secrets:\ inherit
-  - password:\ \${{\ secrets.GITHUB_TOKEN\ }}
-  - HTTP_CREDENTIALS_PASSWORD:\ \${{\ secrets.HTTP_CREDENTIALS_PASSWORD\ }}
-  - getSecret\(\)
-  - clientSecret:\ \${{\ secrets.[A-Z0-9_]+ }}
-  - BRAK_IDP_OIDC_CLIENT_SECRET
-  - 'clientSecret:\s*serverConfig\(\)\.BRAK_IDP_OIDC_CLIENT_SECRET'
-  - 'const getSecret = \(\) => \{'
-  - 'clientSecret:\s*serverConfig\(\).*'
-  - 'sonar\.projectKey=digitalservicebund_a2j-kommunikationsplattform'
-  - clientSecret:\ \"{{OAUTH_CLIENT_SECRET}}\"
-  - KOMPLA_DEMO_SERVICE_CLIENT_SECRET
+
+- key
+- uses:\ ([A-z0-9\-]+\/)\*[A-z0-9\-]+@[a-fA-F0-9]{40}
+- TRIVY_PASSWORD:\ \${{\ secrets.GITHUB_TOKEN\ }}
+- secrets:\ inherit
+- password:\ \${{\ secrets.GITHUB_TOKEN\ }}
+- HTTP_CREDENTIALS_PASSWORD:\ \${{\ secrets.HTTP_CREDENTIALS_PASSWORD\ }}
+- getSecret\(\)
+- clientSecret:\ \${{\ secrets.[A-Z0-9_]+ }}
+- BRAK_IDP_OIDC_CLIENT_SECRET
+- 'clientSecret:\s\*serverConfig\(\)\.BRAK_IDP_OIDC_CLIENT_SECRET'
+- 'const getSecret = \(\) => \{'
+- 'clientSecret:\s*serverConfig\(\).*'
+- 'sonar\.projectKey=digitalservicebund_a2j-kommunikationsplattform'
+- clientSecret:\ \"{{OAUTH_CLIENT_SECRET}}\"
+- KOMPLA_DEMO_SERVICE_CLIENT_SECRET
 
 fileignoreconfig:
-  - filename: .env.example
-    ignore_detectors: [filename]
-  - filename: app/config/config.server.ts
-    ignore_detectors: [filecontent]
-  - filename: app/services/auth/oAuth.server.ts
-    ignore_detectors: [filecontent]
-  - filename: app/services/auth/__test__/authSession.server.test.ts
-    ignore_detectors: [filecontent]
-  - filename: app/services/auth/__test__/oAuth.server.test.ts
-    ignore_detectors: [filecontent]
-  - filename: app/services/translations/de.ts
-    ignore_detectors: [filecontent]
-  - filename: doc/how-to-configure-bruno.md
-    ignore_detectors: [filecontent]
+
+- filename: .env.example
+  ignore_detectors: [filename]
+- filename: app/config/config.server.ts
+  ignore_detectors: [filecontent]
+- filename: app/services/auth/oAuth.server.ts
+  ignore_detectors: [filecontent]
+- filename: app/services/auth/**test**/authSession.server.test.ts
+  ignore_detectors: [filecontent]
+- filename: app/services/auth/**test**/oAuth.server.test.ts
+  ignore_detectors: [filecontent]
+- filename: app/services/auth/**test**/MagicLinkStrategy.server.test.ts
+  ignore_detectors: [filecontent]
+- filename: app/services/translations/de.ts
+  ignore_detectors: [filecontent]
+- filename: doc/how-to-configure-bruno.md
+  ignore_detectors: [filecontent]
