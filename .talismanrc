@@ -19,6 +19,7 @@ allowed_patterns:
 - 'sonar\.projectKey=digitalservicebund_a2j-kommunikationsplattform'
 - clientSecret:\ \"{{OAUTH_CLIENT_SECRET}}\"
 - KOMPLA_DEMO_SERVICE_CLIENT_SECRET
+- client_secret:\ this.config.serviceClientSecret
 
 fileignoreconfig:
 
