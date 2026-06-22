@@ -1,4 +1,5 @@
 import { Strategy } from "remix-auth/strategy";
+import { logApiErrorAndThrow } from "~/utils/logApiError";
 import type {
   AuthenticationResponse,
   AuthenticationTokens,
@@ -121,8 +122,9 @@ export class MagicLinkStrategy extends Strategy<
     });
 
     if (!response.ok) {
-      throw new Error(
-        `Service token request failed: ${response.status} ${response.statusText}`,
+      await logApiErrorAndThrow(
+        response,
+        "MagicLinkStrategy: service token request failed",
       );
     }
 
@@ -160,8 +162,9 @@ export class MagicLinkStrategy extends Strategy<
     });
 
     if (!response.ok) {
-      throw new Error(
-        `Magic link request failed: ${response.status} ${response.statusText}`,
+      await logApiErrorAndThrow(
+        response,
+        "MagicLinkStrategy: magic link request failed",
       );
     }
 
@@ -208,9 +211,9 @@ export class MagicLinkStrategy extends Strategy<
     });
 
     if (!response.ok) {
-      const text = await response.text();
-      throw new Error(
-        `Demo token refresh failed: ${response.status} — ${text}`,
+      await logApiErrorAndThrow(
+        response,
+        "MagicLinkStrategy: token refresh failed",
       );
     }
 
@@ -237,8 +240,10 @@ export class MagicLinkStrategy extends Strategy<
     });
 
     if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`Token exchange failed: ${response.status} — ${text}`);
+      await logApiErrorAndThrow(
+        response,
+        "MagicLinkStrategy: token exchange failed",
+      );
     }
 
     const data = (await response.json()) as Record<string, unknown>;

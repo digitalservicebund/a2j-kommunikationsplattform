@@ -1,6 +1,7 @@
 import { serverConfig } from "~/config/config.server";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
+import { logApiErrorAndThrow } from "~/utils/logApiError";
 
 export type DokumentType = "XJUSTIZ" | "ANHANG" | "SCHRIFTSTUECK";
 
@@ -16,6 +17,8 @@ export type Dokument = {
   erstellt_von: string;
   erstellt_am: string;
 };
+
+const errorMessage = "Dokument konnte nicht hochgeladen werden.";
 
 export default async function uploadDokument(
   authData: AuthenticationResponse,
@@ -42,10 +45,7 @@ export default async function uploadDokument(
   );
 
   if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(
-      `Dokument konnte nicht hochgeladen werden (${response.status} ${response.statusText}). Body: ${errorBody}`,
-    );
+    await logApiErrorAndThrow(response, errorMessage);
   }
 
   // API observation: POST /dokumente returns an array [{...}] instead of a single object

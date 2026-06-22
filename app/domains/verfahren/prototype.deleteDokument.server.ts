@@ -1,6 +1,9 @@
 import { serverConfig } from "~/config/config.server";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
+import { logApiErrorAndThrow } from "~/utils/logApiError";
+
+const errorMessage = "Dokument konnte nicht gelöscht werden.";
 
 export default async function deleteDokument(
   authData: AuthenticationResponse,
@@ -24,10 +27,7 @@ export default async function deleteDokument(
   );
 
   if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(
-      `Dokument konnte nicht gelöscht werden (${response.status} ${response.statusText}). Body: ${errorBody}`,
-    );
+    await logApiErrorAndThrow(response, errorMessage);
   }
 
   const data = await response.json();

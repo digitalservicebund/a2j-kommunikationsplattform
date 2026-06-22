@@ -1,6 +1,10 @@
 import { serverConfig } from "~/config/config.server";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
+import {
+  logApiErrorAndThrow,
+  logParsingErrorAndThrow,
+} from "~/utils/logApiError";
 import { StatusSchema } from "./schemas/statusSchema";
 
 type FetchEinreichungStatusOptions = {
@@ -37,16 +41,20 @@ export default async function fetchEinreichungStatus(
   });
 
   if (!response.ok) {
-    throw new Error(errorMessage, {
-      cause: `Serverantwort war nicht ok (Fehlercode ${response.status} ${response.statusText}).`,
-    });
+    await logApiErrorAndThrow(response, errorMessage);
   }
 
-  const data = await response.json();
+  let data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    const responseBody = await response.clone().text();
+    logParsingErrorAndThrow(error, errorMessage, responseBody);
+  }
 
   try {
     return StatusSchema.parse(data);
   } catch (error) {
-    throw new Error(errorMessage, { cause: error });
+    logParsingErrorAndThrow(error, errorMessage, JSON.stringify(data));
   }
 }
