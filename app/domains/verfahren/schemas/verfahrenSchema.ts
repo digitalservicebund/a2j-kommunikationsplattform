@@ -18,8 +18,8 @@ export const VerfahrenSchema = z.object({
   status: z.enum(["ERSTELLT", "EINGEREICHT"]),
   status_changed: z.iso.datetime(),
   eingereicht_am: z.nullable(z.iso.datetime()),
-  gericht: CodeWertSchema,
-  beteiligungen: z.nullable(
+  gericht: z.nullish(CodeWertSchema),
+  beteiligungen: z.nullish(
     z.array(
       z.object({
         id: z.string(),
