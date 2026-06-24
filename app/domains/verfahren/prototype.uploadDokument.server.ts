@@ -33,6 +33,15 @@ export default async function uploadDokument(
   formData.append("file", file);
   formData.append("type", type);
 
+  console.log(
+    "uploadDokument :: verfahrenId",
+    verfahrenId,
+    "einreichungId",
+    einreichungId,
+    "type",
+    type,
+  );
+
   const response = await fetch(
     `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren/${verfahrenId}/einreichungen/${einreichungId}/dokumente`,
     {

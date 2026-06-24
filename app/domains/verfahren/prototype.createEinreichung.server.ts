@@ -24,6 +24,8 @@ export default async function createEinreichung(
     throw new Error("No bearer token available");
   }
 
+  console.log("createEinreichung :: verfahrenId", verfahrenId);
+
   const url = `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren/${verfahrenId}/einreichungen`;
 
   const response = await fetch(url, {
