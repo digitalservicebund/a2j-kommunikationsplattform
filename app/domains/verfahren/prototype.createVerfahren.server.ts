@@ -18,7 +18,9 @@ export default async function createVerfahren(
   authData: AuthenticationResponse,
 ): Promise<Verfahren> {
   const bearerToken = await getBearerToken(authData);
-  const safeId = authData.authenticationTokens.idToken;
+  const safeId = authData.authenticationTokens.idToken || "";
+
+  console.log("createVerfahren :: safeId", safeId.slice(0, 20));
 
   const url = `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren`;
 
