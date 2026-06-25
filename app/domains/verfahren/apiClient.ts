@@ -1,7 +1,7 @@
 import z from "zod";
 import { serverConfig } from "~/config/config.server";
+import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 import {
   logApiErrorAndThrow,
   logParsingErrorAndThrow,
@@ -51,6 +51,10 @@ export async function apiRequest<T = unknown>(
     headers["Content-Type"] = "application/json";
     fetchBody = JSON.stringify(body) as BodyInit;
   }
+
+  console.log(
+    `Verfahren apiClient :: fetch ${method} ${url}\nheaders: ${JSON.stringify(headers)}\nbody: ${fetchBody}`,
+  );
 
   const response = await fetch(url, {
     method,

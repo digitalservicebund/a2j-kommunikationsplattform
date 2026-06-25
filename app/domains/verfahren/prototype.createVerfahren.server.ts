@@ -1,5 +1,5 @@
 import z from "zod";
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
+import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { apiRequest } from "./apiClient";
 import { VerfahrenSchema } from "./schemas/verfahrenSchema";
 

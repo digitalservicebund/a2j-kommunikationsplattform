@@ -1,7 +1,7 @@
 import z from "zod";
 import { serverConfig } from "~/config/config.server";
 import { sortOptions } from "~/config/verfahren";
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
+import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { buildSearchParams } from "~/utils/buildSearchParams";
 import { apiRequest } from "./apiClient";
 import { VerfahrenSchema } from "./schemas/verfahrenSchema";
