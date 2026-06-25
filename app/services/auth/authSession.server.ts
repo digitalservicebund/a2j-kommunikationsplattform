@@ -49,19 +49,24 @@ export const setAuthSession = async ({
 }: SetAuthSessionProps) => {
   const session = await getSession(request.headers.get("Cookie"));
   session.set("accessToken", accessToken);
-  session.set("idToken", idToken);
   session.set("expiresAt", expiresAt);
   session.set("refreshToken", refreshToken);
   session.set("provider", provider);
 
-  console.log("setAuthSession: idToken is", idToken);
+  if (idToken) {
+    console.log("setAuthSession: idToken is", idToken);
+    session.set("idToken", idToken);
+  } else {
+    console.error("Error while setting auth session: idToken is missing");
+    throw new Error("Failed to set idToken in auth session");
+  }
 
   try {
     console.log("Set/update session");
     return await commitSession(session);
   } catch (error) {
-    console.error("Error while setting/updating session:", error);
-    throw new Error("Failed to set/update session");
+    console.error("Error while setting auth session:", error);
+    throw new Error("Failed to set auth session");
   }
 };
 
