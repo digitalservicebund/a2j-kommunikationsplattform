@@ -2,13 +2,12 @@ import { createCookieSessionStorage, redirect } from "react-router";
 import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
 import { LogoutType } from "~/routes/action.logout-user";
-import { AuthenticationProvider } from "./auth.types";
 import {
+  AuthenticationProvider,
   AuthenticationResponse,
   AuthenticationTokens,
-  refreshAccessToken,
-  refreshDemoToken,
-} from "./oAuth.server";
+} from "./auth.types";
+import { refreshAccessToken, refreshDemoToken } from "./oAuth.server";
 
 const getSecret = () => {
   return config().ENVIRONMENT === "development"
@@ -49,19 +48,19 @@ export const setAuthSession = async ({
 }: SetAuthSessionProps) => {
   const session = await getSession(request.headers.get("Cookie"));
   session.set("accessToken", accessToken);
-  session.set("idToken", idToken);
   session.set("expiresAt", expiresAt);
   session.set("refreshToken", refreshToken);
   session.set("provider", provider);
+  session.set("idToken", idToken);
 
   console.log("setAuthSession: idToken is", idToken);
 
   try {
-    console.log("Set/update session");
+    console.log("Set/update auth session");
     return await commitSession(session);
   } catch (error) {
-    console.error("Error while setting/updating session:", error);
-    throw new Error("Failed to set/update session");
+    console.error("Error while setting/updating auth session:", error);
+    throw new Error("Failed to set/update auth session");
   }
 };
 

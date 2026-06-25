@@ -204,7 +204,7 @@ describe("authSession.server", () => {
         refreshToken: "r1",
         request: req,
       }),
-    ).rejects.toThrow("Failed to set/update session");
+    ).rejects.toThrow("Failed to set/update auth session");
     expect(errSpy).toHaveBeenCalled();
     restore();
   });

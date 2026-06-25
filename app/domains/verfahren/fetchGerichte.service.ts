@@ -1,6 +1,6 @@
 import { serverConfig } from "~/config/config.server";
+import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 import {
   logApiErrorAndThrow,
   logParsingErrorAndThrow,

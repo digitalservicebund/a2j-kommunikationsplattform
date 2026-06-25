@@ -1,7 +1,5 @@
-import { serverConfig } from "~/config/config.server";
-import { getBearerToken } from "~/services/auth/getBearerToken.server";
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
-import { logApiErrorAndThrow } from "~/utils/logApiError";
+import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { apiRequest } from "./apiClient";
 
 // API observation: `erstellt_von` is always an empty string — not populated from tokens
 export type Einreichung = {
@@ -17,29 +15,12 @@ const errorMessage = "Einreichung konnte nicht erstellt werden.";
 export default async function createEinreichung(
   authData: AuthenticationResponse,
   verfahrenId: string,
-) {
-  const bearerToken = await getBearerToken(authData);
-
-  if (!bearerToken) {
-    throw new Error("No bearer token available");
-  }
-
-  console.log("createEinreichung :: verfahrenId", verfahrenId);
-
-  const url = `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren/${verfahrenId}/einreichungen`;
-
-  const response = await fetch(url, {
+): Promise<Einreichung> {
+  return apiRequest({
+    authData,
+    path: `/api/v1/verfahren/${verfahrenId}/einreichungen`,
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ name: "Klageeinreichung" }),
+    body: { name: "Klageeinreichung" },
+    errorMessage,
   });
-
-  if (!response.ok) {
-    await logApiErrorAndThrow(response, errorMessage);
-  }
-
-  return response.json() as Promise<Einreichung>;
 }

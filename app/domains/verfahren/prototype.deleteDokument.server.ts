@@ -1,7 +1,5 @@
-import { serverConfig } from "~/config/config.server";
-import { getBearerToken } from "~/services/auth/getBearerToken.server";
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
-import { logApiErrorAndThrow } from "~/utils/logApiError";
+import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { apiRequest } from "./apiClient";
 
 const errorMessage = "Dokument konnte nicht gelöscht werden.";
 
@@ -11,26 +9,10 @@ export default async function deleteDokument(
   verfahrenId: string,
   einreichungId: string,
 ): Promise<void> {
-  const bearerToken = await getBearerToken(authData);
-
-  console.log("domains/verfahren::deleteDokument", authData);
-
-  // Endpoint /api/v1/verfahren/{verfahren-id}/einreichungen/{einreichung-id}/dokumente/{id}
-  const response = await fetch(
-    `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren/${verfahrenId}/einreichungen/${einreichungId}/dokumente/${id}`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${bearerToken}`,
-      },
-    },
-  );
-
-  if (!response.ok) {
-    await logApiErrorAndThrow(response, errorMessage);
-  }
-
-  const data = await response.json();
-
-  console.log("domains/verfahren::deleteDokument:data", JSON.stringify(data));
+  await apiRequest({
+    authData,
+    path: `/api/v1/verfahren/${verfahrenId}/einreichungen/${einreichungId}/dokumente/${id}`,
+    method: "DELETE",
+    errorMessage,
+  });
 }

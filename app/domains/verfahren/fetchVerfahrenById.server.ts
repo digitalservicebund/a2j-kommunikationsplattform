@@ -1,10 +1,5 @@
-import { serverConfig } from "~/config/config.server";
-import { getBearerToken } from "~/services/auth/getBearerToken.server";
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
-import {
-  logApiErrorAndThrow,
-  logParsingErrorAndThrow,
-} from "~/utils/logApiError";
+import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { apiRequest } from "./apiClient";
 import { VerfahrenSchema } from "./schemas/verfahrenSchema";
 
 type FetchVerfahrenByIdOptions = {
@@ -17,35 +12,10 @@ export default async function fetchVerfahrenById(
   authData: AuthenticationResponse,
   options: FetchVerfahrenByIdOptions,
 ) {
-  const bearerToken = await getBearerToken(authData);
-
-  if (!bearerToken) {
-    throw new Error("No bearer token available");
-  }
-
-  const url = `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren/${options.id}`;
-
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
-    },
+  return apiRequest({
+    authData,
+    path: `/api/v1/verfahren/${options.id}`,
+    schema: VerfahrenSchema,
+    errorMessage,
   });
-
-  if (!response.ok) {
-    await logApiErrorAndThrow(response, errorMessage);
-  }
-
-  let data;
-  try {
-    data = await response.json();
-  } catch (error) {
-    const responseBody = await response.clone().text();
-    logParsingErrorAndThrow(error, errorMessage, responseBody);
-  }
-
-  try {
-    return VerfahrenSchema.parse(data);
-  } catch (error) {
-    logParsingErrorAndThrow(error, errorMessage, JSON.stringify(data));
-  }
 }
