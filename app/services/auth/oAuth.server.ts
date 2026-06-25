@@ -4,13 +4,12 @@ import { serverConfig } from "~/config/config.server";
 import { MagicLinkStrategy } from "./MagicLinkStrategy.server";
 import { setAuthSession } from "./authSession.server";
 
+import { LoginType } from "~/routes/action.login-user";
 import {
   AuthenticationProvider,
   type AuthenticationResponse,
-  type AuthenticationTokens,
 } from "./auth.types";
 export { AuthenticationProvider };
-export type { AuthenticationResponse, AuthenticationTokens };
 
 type DecodedJWT = Record<string, unknown>;
 
@@ -27,7 +26,10 @@ console.log(
   `\nInit OAuth2Strategy with\nid ${clientId.slice(2, 4)}\nsecret ${clientSecret.slice(0, 4)}\nauth endpoint ${authorizationEndpoint}\ntoken endpoint ${tokenEndpoint} and\nredirect URI ${redirectURI}\n\n`,
 );
 
-const oauth2Strategy = new OAuth2Strategy(
+let idToken = "";
+let loginType: LoginType;
+
+const beaOauth2Strategy = new OAuth2Strategy(
   {
     cookie: "oauth2",
     clientId: clientId,
@@ -41,20 +43,20 @@ const oauth2Strategy = new OAuth2Strategy(
   async ({ tokens, request }) => {
     const acessTokenExpiresInSeconds = tokens.accessTokenExpiresInSeconds();
     const accessToken = tokens.accessToken();
-    const idToken = tokens.idToken();
+    const rawSafeId = tokens.idToken();
     const expiresAt = Date.now() + acessTokenExpiresInSeconds * 1000; // 300 seconds
     const refreshToken = tokens.refreshToken();
 
-    const base64Url = idToken.split(".")[1];
+    const base64Url = rawSafeId.split(".")[1];
     const base64 = base64Url.replaceAll("-", "+").replaceAll("_", "/");
     const decodedIdToken = JSON.parse(atob(base64)) as DecodedJWT;
-    const safeId = decodedIdToken["safe-id"] as string;
+    idToken = decodedIdToken["safe-id"] as string;
 
-    console.log("OAuth2Strategy: authenticated via BRAK IdP, safeId:", safeId);
+    console.log("OAuth2Strategy: authenticated via BRAK IdP, safeId:", idToken);
 
     const sessionCookieHeader = await setAuthSession({
       accessToken,
-      idToken: safeId,
+      idToken,
       expiresAt,
       refreshToken,
       request,
@@ -72,11 +74,13 @@ const oauth2Strategy = new OAuth2Strategy(
       provider: AuthenticationProvider.BEA,
     };
 
+    loginType = LoginType.BeA;
+
     return response;
   },
 );
 
-authenticator.use(oauth2Strategy, AuthenticationProvider.BEA);
+authenticator.use(beaOauth2Strategy, AuthenticationProvider.BEA);
 
 const magicLinkStrategy = new MagicLinkStrategy(
   {
@@ -100,6 +104,8 @@ const magicLinkStrategy = new MagicLinkStrategy(
       sessionCookieHeader,
       provider: AuthenticationProvider.DEMO,
     };
+
+    loginType = LoginType.Demo;
     return response;
   },
 );
@@ -135,7 +141,7 @@ export async function refreshAccessToken(
 
   try {
     console.log("refreshAccessToken: refreshing access token");
-    newTokens = await oauth2Strategy.refreshToken(refreshToken);
+    newTokens = await beaOauth2Strategy.refreshToken(refreshToken);
   } catch (error) {
     console.error("Error while refreshing the access token:", error);
     throw new Error("Failed to refresh the access token");
@@ -143,6 +149,7 @@ export async function refreshAccessToken(
 
   const refreshedTokenData = {
     accessToken: newTokens.accessToken(),
+    idToken,
     refreshToken: newTokens.hasRefreshToken()
       ? newTokens.refreshToken()
       : refreshToken,
@@ -167,10 +174,11 @@ export async function refreshAccessToken(
 }
 
 export async function revokeAccessToken(token: string) {
-  console.log("revoke access token");
-
   try {
-    await oauth2Strategy.revokeToken(token);
+    if (loginType === LoginType.BeA) {
+      console.log("revoke beA access token");
+      await beaOauth2Strategy.revokeToken(token);
+    }
   } catch (error) {
     console.error("revoke access token error:", error);
     return new Response("Could not revoke the access token", { status: 500 });

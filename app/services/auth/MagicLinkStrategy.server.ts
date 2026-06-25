@@ -25,7 +25,7 @@ export class MagicLinkStrategy extends Strategy<
   MagicLinkVerifyOptions
 > {
   name = "magic-link";
-  private config: MagicLinkConfig;
+  private readonly config: MagicLinkConfig;
 
   constructor(
     config: MagicLinkConfig,
@@ -258,6 +258,9 @@ export class MagicLinkStrategy extends Strategy<
     const refreshToken =
       (data["refresh_token"] as string) || fallbackRefreshToken || "";
     const expiresIn = (data["expires_in"] as number) ?? 300;
+
+    console.log("MagicLinkStrategy parseTokenResponse", JSON.stringify(data));
+
     return {
       accessToken,
       refreshToken,
