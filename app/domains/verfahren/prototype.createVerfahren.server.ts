@@ -3,8 +3,6 @@ import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 import { apiRequest } from "./apiClient";
 import { VerfahrenSchema } from "./schemas/verfahrenSchema";
 
-// API issue/bug: POST /verfahren returns an array [{...}] instead of a single object.
-// We take the first element as a workaround.
 export type Verfahren = z.infer<typeof VerfahrenSchema>;
 
 const errorMessage = "Verfahren konnte nicht erstellt werden.";
@@ -28,7 +26,7 @@ export default async function createVerfahren(
     errorMessage,
   });
 
-  // API observation: POST /dokumente returns an array [{...}] instead of a single object
+  // API observation: POST /verfahren returns an array [{...}] instead of a single object
   const singleObject = extractSingleObject<unknown>(rawData);
   return VerfahrenSchema.parse(singleObject);
 }
