@@ -53,7 +53,7 @@ export async function apiRequest<T = unknown>(
   }
 
   console.log(
-    `Verfahren apiClient :: fetch ${method} ${url}\nheaders: ${JSON.stringify(headers)}\nbody: ${fetchBody}`,
+    `Verfahren apiClient :: fetch ${method} ${url} - headers: ${JSON.stringify(headers)} - body: ${fetchBody}`,
   );
 
   const response = await fetch(url, {
