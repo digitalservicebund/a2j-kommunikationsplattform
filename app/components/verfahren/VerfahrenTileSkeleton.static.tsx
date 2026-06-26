@@ -3,12 +3,12 @@ import { clsx } from "clsx";
 const SkeletonBlock = () => (
   <div className="space-y-kern-space-x-large w-full">
     <div className="space-y-kern-space-small">
-      <div className="bg-kern-feedback-loader-background h-kern-dimension-large rounded-kern-default max-w-352"></div>
-      <div className="bg-kern-feedback-loader-background h-kern-dimension-large rounded-kern-default max-w-224"></div>
+      <div className="bg-kern-layout-background-hued h-kern-dimension-large rounded-kern-default max-w-352"></div>
+      <div className="bg-kern-layout-background-hued h-kern-dimension-large rounded-kern-default max-w-224"></div>
     </div>
     <div className="space-y-kern-space-small">
-      <div className="bg-kern-feedback-loader-background h-kern-dimension-large rounded-kern-default max-w-352"></div>
-      <div className="bg-kern-feedback-loader-background h-kern-dimension-large rounded-kern-default max-w-224"></div>
+      <div className="bg-kern-layout-background-hued h-kern-dimension-large rounded-kern-default max-w-352"></div>
+      <div className="bg-kern-layout-background-hued h-kern-dimension-large rounded-kern-default max-w-224"></div>
     </div>
   </div>
 );
@@ -28,10 +28,10 @@ export default function VerfahrenTileSkeleton() {
           <SkeletonBlock />
           <SkeletonBlock />
         </div>
-        <div className="bg-kern-feedback-loader-background rounded-kern-default h-1 w-full"></div>
+        <div className="bg-kern-layout-background-hued rounded-kern-default h-1 w-full"></div>
         <div className="flex w-full">
           <div className="space-y-kern-space-x-large w-full">
-            <div className="bg-kern-feedback-loader-background h-kern-dimension-x-large rounded-kern-default w-352 max-w-full"></div>
+            <div className="bg-kern-layout-background-hued h-kern-dimension-x-large rounded-kern-default w-352 max-w-full"></div>
           </div>
         </div>
       </div>
