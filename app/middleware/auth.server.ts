@@ -1,6 +1,6 @@
 import { createContext, href, redirect } from "react-router";
+import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { getAuthData } from "~/services/auth/authSession.server";
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
 
 export const authContext = createContext<AuthenticationResponse | null>();
 

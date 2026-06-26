@@ -1,9 +1,7 @@
 import type { ActionFunctionArgs } from "react-router";
+import { AuthenticationProvider } from "~/services/auth/auth.types";
 import { loginAsDeveloper } from "~/services/auth/loginAsDeveloper.server";
-import {
-  AuthenticationProvider,
-  authenticator,
-} from "~/services/auth/oAuth.server";
+import { authenticator } from "~/services/auth/oAuth.server";
 
 export enum LoginError {
   BeA = "bea-login-error",
