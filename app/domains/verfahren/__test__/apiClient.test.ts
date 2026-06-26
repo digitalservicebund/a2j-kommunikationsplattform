@@ -63,7 +63,6 @@ describe("apiClient", () => {
 
       await apiRequest({
         authData: mockAuthData,
-        path: "/api/v1/unused",
         fullUrl: "http://custom.api/endpoint",
       });
 
