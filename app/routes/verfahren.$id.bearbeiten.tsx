@@ -317,101 +317,97 @@ export default function VerfahrendetailsBearbeiten() {
             </span>
           </span>
           <Suspense fallback={<div>Einreichungsstatus wird geladen ...</div>}>
-            <div className="kern-table-responsive">
-              <table className="kern-table kern-table--striped mb-kern-space-x-large">
-                <caption className="kern-title kern-title--small">
-                  Status ihrer Einreichung
-                </caption>
-                <thead className="kern-table__head">
-                  <tr className="kern-table__row">
-                    <th scope="col" className="kern-table__header">
-                      Detail
-                    </th>
-                    <th scope="col" className="kern-table__header">
-                      Status der Einreichung
-                    </th>
-                    <th scope="col" className="kern-table__header">
-                      Validierungsstatus
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="kern-table__body">
-                  <Await resolve={einreichungen}>
-                    {(resolvedData: EinreichungWithStatus[]) =>
-                      resolvedData && (
-                        <>
-                          {resolvedData.map((einreichung) => {
-                            // by default it is warning
-                            let statusBadgeClassModifier = "warning";
-                            let statusBadgeLabel = "Wird validiert";
-                            if (einreichung.status === "ERSTELLT") {
-                              statusBadgeClassModifier = "info";
-                              statusBadgeLabel = "Erstellt";
-                            }
-                            if (einreichung.status === "EINGEREICHT") {
-                              statusBadgeClassModifier = "success";
-                              statusBadgeLabel = "Eingereicht";
-                            }
+            <Await resolve={einreichungen}>
+              {(resolvedData: EinreichungWithStatus[]) =>
+                resolvedData.length > 0 && (
+                  <div className="kern-table-responsive">
+                    <table className="kern-table kern-table--striped mb-kern-space-x-large">
+                      <caption className="kern-title kern-title--small">
+                        Status ihrer Einreichung
+                      </caption>
+                      <thead className="kern-table__head">
+                        <tr className="kern-table__row">
+                          <th scope="col" className="kern-table__header">
+                            Detail
+                          </th>
+                          <th scope="col" className="kern-table__header">
+                            Status der Einreichung
+                          </th>
+                          <th scope="col" className="kern-table__header">
+                            Validierungsstatus
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="kern-table__body">
+                        {resolvedData.map((einreichung) => {
+                          // by default it is warning
+                          let statusBadgeClassModifier = "warning";
+                          let statusBadgeLabel = "Wird validiert";
+                          if (einreichung.status === "ERSTELLT") {
+                            statusBadgeClassModifier = "info";
+                            statusBadgeLabel = "Erstellt";
+                          }
+                          if (einreichung.status === "EINGEREICHT") {
+                            statusBadgeClassModifier = "success";
+                            statusBadgeLabel = "Eingereicht";
+                          }
 
-                            // by default it is warning
-                            let einreichungBadgeClassModifier = "warning";
-                            let einreichungBadgeLabel = "Gelb";
-                            if (
-                              einreichung.einreichungsStatus.status === "GRUEN"
-                            ) {
-                              einreichungBadgeClassModifier = "success";
-                              einreichungBadgeLabel = "Grün";
-                            }
-                            if (
-                              einreichung.einreichungsStatus.status === "ROT"
-                            ) {
-                              einreichungBadgeClassModifier = "danger";
-                              einreichungBadgeLabel = "Rot";
-                            }
-                            return (
-                              <tr
-                                key={einreichung.id}
-                                className="kern-table__row"
-                              >
-                                <td className="kern-table__cell">
-                                  {einreichung.name}
-                                </td>
-                                <td className="kern-table__cell">
+                          // by default it is warning
+                          let einreichungBadgeClassModifier = "warning";
+                          let einreichungBadgeLabel = "Gelb";
+                          if (
+                            einreichung.einreichungsStatus.status === "GRUEN"
+                          ) {
+                            einreichungBadgeClassModifier = "success";
+                            einreichungBadgeLabel = "Grün";
+                          }
+                          if (einreichung.einreichungsStatus.status === "ROT") {
+                            einreichungBadgeClassModifier = "danger";
+                            einreichungBadgeLabel = "Rot";
+                          }
+                          return (
+                            <tr
+                              key={einreichung.id}
+                              className="kern-table__row"
+                            >
+                              <td className="kern-table__cell">
+                                {einreichung.name}
+                              </td>
+                              <td className="kern-table__cell">
+                                <span
+                                  className={`kern-badge kern-badge--small kern-badge--${statusBadgeClassModifier}`}
+                                >
                                   <span
-                                    className={`kern-badge kern-badge--small kern-badge--${statusBadgeClassModifier}`}
-                                  >
-                                    <span
-                                      className={`kern-icon kern-icon--${statusBadgeClassModifier}`}
-                                      aria-hidden="true"
-                                    ></span>
-                                    <span className="kern-label">
-                                      {statusBadgeLabel}
-                                    </span>
+                                    className={`kern-icon kern-icon--${statusBadgeClassModifier}`}
+                                    aria-hidden="true"
+                                  ></span>
+                                  <span className="kern-label">
+                                    {statusBadgeLabel}
                                   </span>
-                                </td>
-                                <td className="kern-table__cell">
+                                </span>
+                              </td>
+                              <td className="kern-table__cell">
+                                <span
+                                  className={`kern-badge kern-badge--small kern-badge--${einreichungBadgeClassModifier}`}
+                                >
                                   <span
-                                    className={`kern-badge kern-badge--small kern-badge--${einreichungBadgeClassModifier}`}
-                                  >
-                                    <span
-                                      className={`kern-icon kern-icon--${einreichungBadgeClassModifier}`}
-                                      aria-hidden="true"
-                                    ></span>
-                                    <span className="kern-label">
-                                      {einreichungBadgeLabel}
-                                    </span>
+                                    className={`kern-icon kern-icon--${einreichungBadgeClassModifier}`}
+                                    aria-hidden="true"
+                                  ></span>
+                                  <span className="kern-label">
+                                    {einreichungBadgeLabel}
                                   </span>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </>
-                      )
-                    }
-                  </Await>
-                </tbody>
-              </table>
-            </div>
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )
+              }
+            </Await>
           </Suspense>
 
           <h2 className="kern-title">
@@ -910,7 +906,7 @@ export default function VerfahrendetailsBearbeiten() {
                 <Suspense fallback={<div>Dokumente werden geladen ...</div>}>
                   <Await resolve={dokumente}>
                     {(resolvedData: Dokument[][]) =>
-                      resolvedData && (
+                      resolvedData.length > 0 && (
                         <div className="kern-table-responsive">
                           <table className="kern-table">
                             <caption className="kern-title kern-title--small">
