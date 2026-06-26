@@ -216,38 +216,67 @@ export default function Verfahrendetails() {
                       </thead>
 
                       <tbody className="kern-table__body">
-                        {resolvedData.map((einreichung) => (
-                          <tr key={einreichung.id} className="kern-table__row">
-                            <td className="kern-table__cell">
-                              {einreichung.id}
-                            </td>
-                            <td className="kern-table__cell">
-                              {einreichung.verfahren_id}
-                            </td>
-                            <td className="kern-table__cell">
-                              {einreichung.name}
-                            </td>
-                            <td className="kern-table__cell">
-                              {einreichung.einreichungsStatus.status}
-                            </td>
-                            <td className="kern-table__cell">
-                              {einreichung.einreichungsStatus
-                                .validation_messages.length > 0 ? (
-                                einreichung.einreichungsStatus.validation_messages.map(
-                                  (message, index) => (
-                                    <span key={einreichung.id + index}>
-                                      {message.message
-                                        ? message.message
-                                        : "no message"}
-                                    </span>
-                                  ),
-                                )
-                              ) : (
-                                <span>Keine Validierungsmeldungen</span>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
+                        {resolvedData.map((einreichung) => {
+                          // by default it is warning
+                          let badgeClassModifier = "warning";
+                          let badgeLabel = "Gelb";
+                          if (
+                            einreichung.einreichungsStatus.status === "GRUEN"
+                          ) {
+                            badgeClassModifier = "success";
+                            badgeLabel = "Grün";
+                          }
+                          if (einreichung.einreichungsStatus.status === "ROT") {
+                            badgeClassModifier = "danger";
+                            badgeLabel = "Rot";
+                          }
+
+                          return (
+                            <tr
+                              key={einreichung.id}
+                              className="kern-table__row"
+                            >
+                              <td className="kern-table__cell">
+                                {einreichung.id}
+                              </td>
+                              <td className="kern-table__cell">
+                                {einreichung.verfahren_id}
+                              </td>
+                              <td className="kern-table__cell">
+                                {einreichung.name}
+                              </td>
+                              <td className="kern-table__cell">
+                                <span
+                                  className={`kern-badge kern-badge--small kern-badge--${badgeClassModifier}`}
+                                >
+                                  <span
+                                    className={`kern-icon kern-icon--${badgeClassModifier}`}
+                                    aria-hidden="true"
+                                  ></span>
+                                  <span className="kern-label">
+                                    {badgeLabel}
+                                  </span>
+                                </span>
+                              </td>
+                              <td className="kern-table__cell">
+                                {einreichung.einreichungsStatus
+                                  .validation_messages.length > 0 ? (
+                                  einreichung.einreichungsStatus.validation_messages.map(
+                                    (message, index) => (
+                                      <span key={einreichung.id + index}>
+                                        {message.message
+                                          ? message.message
+                                          : "no message"}
+                                      </span>
+                                    ),
+                                  )
+                                ) : (
+                                  <span>Keine Validierungsmeldungen</span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -306,6 +335,34 @@ export default function Verfahrendetails() {
                             return null;
                           }
 
+                          // by default it is warning
+                          let badgeClassModifier = "warning";
+                          let badgeLabel = "In Bearbeitung";
+                          if (dokument.viren_scan_status === "SAUBER") {
+                            badgeClassModifier = "success";
+                            badgeLabel = "Geprüft und virenfrei";
+                          }
+                          if (dokument.viren_scan_status === "INFIZIERT") {
+                            badgeClassModifier = "danger";
+                            badgeLabel = "Infiziert";
+                          }
+                          if (dokument.viren_scan_status === "FEHLGESCHLAGEN") {
+                            badgeClassModifier = "danger";
+                            badgeLabel = "Fehlgeschlagen";
+                          }
+
+                          // by default it is info
+                          let statusClassModifier = "warning";
+                          let statusLabel = "Wird validiert";
+                          if (dokument.status === "ERSTELLT") {
+                            statusClassModifier = "info";
+                            statusLabel = "Erstellt";
+                          }
+                          if (dokument.status === "EINGEREICHT") {
+                            statusClassModifier = "success";
+                            statusLabel = "Eingereicht";
+                          }
+
                           return (
                             <tr key={dokument.id} className="kern-table__row">
                               <td className="kern-table__cell">
@@ -318,10 +375,30 @@ export default function Verfahrendetails() {
                                 {dokument.size_in_bytes}
                               </td>
                               <td className="kern-table__cell">
-                                {dokument.status}
+                                <span
+                                  className={`kern-badge kern-badge--small kern-badge--${statusClassModifier}`}
+                                >
+                                  <span
+                                    className={`kern-icon kern-icon--${statusClassModifier}`}
+                                    aria-hidden="true"
+                                  ></span>
+                                  <span className="kern-label">
+                                    {statusLabel}
+                                  </span>
+                                </span>
                               </td>
                               <td className="kern-table__cell">
-                                {dokument.viren_scan_status}
+                                <span
+                                  className={`kern-badge kern-badge--small kern-badge--${badgeClassModifier}`}
+                                >
+                                  <span
+                                    className={`kern-icon kern-icon--${badgeClassModifier}`}
+                                    aria-hidden="true"
+                                  ></span>
+                                  <span className="kern-label">
+                                    {badgeLabel}
+                                  </span>
+                                </span>
                               </td>
                             </tr>
                           );

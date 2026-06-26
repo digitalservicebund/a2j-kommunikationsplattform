@@ -165,7 +165,6 @@ export default function VerfahrendetailsBearbeiten() {
   const { verfahren, einreichungen, dokumente, gerichte } =
     useLoaderData<LoaderData>();
   const { alerts } = useTranslations();
-  const [hasInitialFileUpload, setHasInitialFileUpload] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState<"idle" | "submitting">(
     "idle",
   );
@@ -251,10 +250,6 @@ export default function VerfahrendetailsBearbeiten() {
         setDeleteDocumentError("Dokument konnte nicht gelöscht werden.");
         return;
       }
-
-      if (dokumente.length === 0) {
-        setHasInitialFileUpload(false);
-      }
     } catch (error) {
       setDeleteDocumentError(
         error instanceof Error
@@ -313,7 +308,7 @@ export default function VerfahrendetailsBearbeiten() {
 
       <div className="kern-row space-y-kern-space-large">
         {/* intro */}
-        <div className="kern-col-xl-6 kern-col-lg-8 kern-col-12 kern-col-lg-offset-2 kern-col-xl-offset-3">
+        <div className="kern-col-lg-8 kern-col-12 kern-col-lg-offset-2">
           <span className="kern-badge kern-badge--info my-kern-space-default">
             <span className="kern-label">
               {verfahren.status === "ERSTELLT"
@@ -345,22 +340,71 @@ export default function VerfahrendetailsBearbeiten() {
                     {(resolvedData: EinreichungWithStatus[]) =>
                       resolvedData && (
                         <>
-                          {resolvedData.map((einreichung) => (
-                            <tr
-                              key={einreichung.id}
-                              className="kern-table__row"
-                            >
-                              <td className="kern-table__cell">
-                                {einreichung.name}
-                              </td>
-                              <td className="kern-table__cell">
-                                {einreichung.status}
-                              </td>
-                              <td className="kern-table__cell">
-                                {einreichung.einreichungsStatus.status}
-                              </td>
-                            </tr>
-                          ))}
+                          {resolvedData.map((einreichung) => {
+                            // by default it is warning
+                            let statusBadgeClassModifier = "warning";
+                            let statusBadgeLabel = "Wird validiert";
+                            if (einreichung.status === "ERSTELLT") {
+                              statusBadgeClassModifier = "info";
+                              statusBadgeLabel = "Erstellt";
+                            }
+                            if (einreichung.status === "EINGEREICHT") {
+                              statusBadgeClassModifier = "success";
+                              statusBadgeLabel = "Eingereicht";
+                            }
+
+                            // by default it is warning
+                            let einreichungBadgeClassModifier = "warning";
+                            let einreichungBadgeLabel = "Gelb";
+                            if (
+                              einreichung.einreichungsStatus.status === "GRUEN"
+                            ) {
+                              einreichungBadgeClassModifier = "success";
+                              einreichungBadgeLabel = "Grün";
+                            }
+                            if (
+                              einreichung.einreichungsStatus.status === "ROT"
+                            ) {
+                              einreichungBadgeClassModifier = "danger";
+                              einreichungBadgeLabel = "Rot";
+                            }
+                            return (
+                              <tr
+                                key={einreichung.id}
+                                className="kern-table__row"
+                              >
+                                <td className="kern-table__cell">
+                                  {einreichung.name}
+                                </td>
+                                <td className="kern-table__cell">
+                                  <span
+                                    className={`kern-badge kern-badge--small kern-badge--${statusBadgeClassModifier}`}
+                                  >
+                                    <span
+                                      className={`kern-icon kern-icon--${statusBadgeClassModifier}`}
+                                      aria-hidden="true"
+                                    ></span>
+                                    <span className="kern-label">
+                                      {statusBadgeLabel}
+                                    </span>
+                                  </span>
+                                </td>
+                                <td className="kern-table__cell">
+                                  <span
+                                    className={`kern-badge kern-badge--small kern-badge--${einreichungBadgeClassModifier}`}
+                                  >
+                                    <span
+                                      className={`kern-icon kern-icon--${einreichungBadgeClassModifier}`}
+                                      aria-hidden="true"
+                                    ></span>
+                                    <span className="kern-label">
+                                      {einreichungBadgeLabel}
+                                    </span>
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </>
                       )
                     }
@@ -381,7 +425,7 @@ export default function VerfahrendetailsBearbeiten() {
         </div>
 
         {/* plaintiff data */}
-        <div className="kern-col-xl-6 kern-col-lg-8 kern-col-12 kern-col-lg-offset-2 kern-col-xl-offset-3">
+        <div className="kern-col-lg-8 kern-col-12 kern-col-lg-offset-2">
           <div className="kern-card kern-card--small kern-gap-xl">
             <div className="kern-card__container mb-kern-space-default">
               <header className="kern-card__header">
@@ -517,6 +561,11 @@ export default function VerfahrendetailsBearbeiten() {
                   </div>
                 </div>
 
+                <hr
+                  className="kern-divider border-kern-layout-border mt-kern-space-x-large w-full"
+                  aria-hidden="true"
+                />
+
                 <div
                   className={`${hasLawyer ? "my-kern-space-default" : "mt-kern-space-default"} kern-form-check`}
                 >
@@ -644,7 +693,7 @@ export default function VerfahrendetailsBearbeiten() {
         </div>
 
         {/* defendant data */}
-        <div className="kern-col-xl-6 kern-col-lg-8 kern-col-12 kern-col-lg-offset-2 kern-col-xl-offset-3">
+        <div className="kern-col-lg-8 kern-col-12 kern-col-lg-offset-2">
           <div className="kern-card kern-card--small kern-gap-xl">
             <div className="kern-card__container mb-kern-space-default">
               <header className="kern-card__header">
@@ -783,7 +832,7 @@ export default function VerfahrendetailsBearbeiten() {
         </div>
 
         {/* Verfahren details */}
-        <div className="kern-col-xl-6 kern-col-lg-8 kern-col-12 kern-col-lg-offset-2 kern-col-xl-offset-3">
+        <div className="kern-col-lg-8 kern-col-12 kern-col-lg-offset-2">
           <div className="kern-card kern-card--small kern-gap-xl">
             <div className="kern-card__container mb-kern-space-default">
               <header className="kern-card__header">
@@ -845,7 +894,7 @@ export default function VerfahrendetailsBearbeiten() {
         </div>
 
         {/* Verfahren related docs */}
-        <div className="kern-col-xl-6 kern-col-lg-8 kern-col-12 kern-col-lg-offset-2 kern-col-xl-offset-3">
+        <div className="kern-col-lg-8 kern-col-12 kern-col-lg-offset-2">
           <div className="kern-gap-xl">
             <div className="mb-kern-space-default">
               <header className="">
@@ -889,42 +938,100 @@ export default function VerfahrendetailsBearbeiten() {
                             </thead>
 
                             <tbody className="kern-table__body">
-                              {hasInitialFileUpload ? (
-                                resolvedData.map((dokument) => (
+                              {resolvedData.map((dokumente) => {
+                                const dokument = dokumente[0];
+
+                                if (!dokument) {
+                                  return null;
+                                }
+
+                                // by default it is warning
+                                let badgeClassModifier = "warning";
+                                let badgeLabel = "In Bearbeitung";
+                                if (dokument.viren_scan_status === "SAUBER") {
+                                  badgeClassModifier = "success";
+                                  badgeLabel = "Geprüft und virenfrei";
+                                }
+                                if (
+                                  dokument.viren_scan_status === "INFIZIERT"
+                                ) {
+                                  badgeClassModifier = "danger";
+                                  badgeLabel = "Infiziert";
+                                }
+                                if (
+                                  dokument.viren_scan_status ===
+                                  "FEHLGESCHLAGEN"
+                                ) {
+                                  badgeClassModifier = "danger";
+                                  badgeLabel = "Fehlgeschlagen";
+                                }
+
+                                // by default it is info
+                                let statusClassModifier = "warning";
+                                let statusLabel = "Wird validiert";
+                                if (dokument.status === "ERSTELLT") {
+                                  statusClassModifier = "info";
+                                  statusLabel = "Erstellt";
+                                }
+                                if (dokument.status === "EINGEREICHT") {
+                                  statusClassModifier = "success";
+                                  statusLabel = "Eingereicht";
+                                }
+
+                                return (
                                   <tr
-                                    key={dokument[0].id}
+                                    key={dokument.id}
                                     className="kern-table__row"
                                   >
-                                    <td className="kern-table__cell align-middle">
-                                      {dokument[0].name}
+                                    <td className="kern-table__cell">
+                                      {dokument.name}
                                     </td>
-                                    <td className="kern-table__cell align-middle">
-                                      {dokument[0].status}
+                                    <td className="kern-table__cell">
+                                      <span
+                                        className={`kern-badge kern-badge--small kern-badge--${statusClassModifier}`}
+                                      >
+                                        <span
+                                          className={`kern-icon kern-icon--${statusClassModifier}`}
+                                          aria-hidden="true"
+                                        ></span>
+                                        <span className="kern-label">
+                                          {statusLabel}
+                                        </span>
+                                      </span>
                                     </td>
-                                    <td className="kern-table__cell align-middle">
+                                    <td className="kern-table__cell">
                                       {Number.parseFloat(
                                         (
-                                          dokument[0].size_in_bytes / 1000
+                                          dokument.size_in_bytes / 1000
                                         ).toString(),
                                       ).toFixed(2)}
                                     </td>
-                                    <td className="kern-table__cell align-middle">
-                                      {dokument[0].viren_scan_status}
+                                    <td className="kern-table__cell">
+                                      <span
+                                        className={`kern-badge kern-badge--small kern-badge--${badgeClassModifier}`}
+                                      >
+                                        <span
+                                          className={`kern-icon kern-icon--${badgeClassModifier}`}
+                                          aria-hidden="true"
+                                        ></span>
+                                        <span className="kern-label">
+                                          {badgeLabel}
+                                        </span>
+                                      </span>
                                     </td>
 
                                     <td className="kern-table__cell kern-table__cell--action">
-                                      {dokument[0].status !== "EINGEREICHT" && (
+                                      {dokument.status !== "EINGEREICHT" && (
                                         <button
                                           className="kern-btn kern-btn--tertiary kern-btn--x-small"
                                           type="button"
                                           disabled={
-                                            deletingDocumentId ===
-                                            dokument[0].id
+                                            deletingDocumentId === dokument.id
                                           }
                                           onClick={() =>
                                             handleDeleteFileFromVerfahren(
-                                              dokument[0].id,
-                                              dokument[0].einreichung_id,
+                                              dokument.id,
+                                              dokument.einreichung_id,
                                             )
                                           }
                                         >
@@ -933,8 +1040,7 @@ export default function VerfahrendetailsBearbeiten() {
                                             aria-hidden="true"
                                           ></span>
                                           <span className="kern-label">
-                                            {deletingDocumentId ===
-                                            dokument[0].id
+                                            {deletingDocumentId === dokument.id
                                               ? "Lösche…"
                                               : "Entfernen"}
                                           </span>
@@ -942,26 +1048,8 @@ export default function VerfahrendetailsBearbeiten() {
                                       )}
                                     </td>
                                   </tr>
-                                ))
-                              ) : (
-                                <tr className="kern-table__row">
-                                  <td className="kern-table__cell align-middle">
-                                    -
-                                  </td>
-                                  <td className="kern-table__cell align-middle">
-                                    -
-                                  </td>
-                                  <td className="kern-table__cell align-middle">
-                                    -
-                                  </td>
-                                  <td className="kern-table__cell align-middle">
-                                    -
-                                  </td>
-                                  <td className="kern-table__cell align-middle">
-                                    -
-                                  </td>
-                                </tr>
-                              )}
+                                );
+                              })}
                             </tbody>
                           </table>
                         </div>
@@ -1050,7 +1138,7 @@ export default function VerfahrendetailsBearbeiten() {
           </div>
         </div>
 
-        <div className="kern-col-xl-6 kern-col-lg-8 kern-col-12 kern-col-lg-offset-2 kern-col-xl-offset-3">
+        <div className="kern-col-lg-8 kern-col-12 kern-col-lg-offset-2">
           <div className="gap-kern-space-default kern-justify-content-end flex flex-wrap">
             <Link
               to={`/verfahren/neu`}

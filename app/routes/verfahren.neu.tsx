@@ -61,16 +61,7 @@ export default function VerfahrenNeu() {
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting("submitting");
-
-    // @TODO:
-    // - remove this timeout, when the real API has been connected
-    // - implement API post logic in the action function of this route
-    //   should be /api/v1/verfahren/{verfahren-id}/einreichungen
-    // - handle API response and possible errors accordingly
-    setTimeout(() => {
-      // After 3 seconds, submit the form
-      formRef.current?.submit();
-    }, 3000);
+    formRef.current?.submit();
   };
 
   return (
