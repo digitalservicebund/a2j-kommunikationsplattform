@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 
 import { useFetcher, useSearchParams } from "react-router";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
-import { VerfahrenLoaderData } from "~/routes/verfahren/_index";
+import { VerfahrenLoaderData } from "~/routes/verfahren";
 
 vi.mock("react-router", () => ({
   useFetcher: vi.fn(),
@@ -17,7 +17,7 @@ const mockUseSearchParams = useSearchParams as unknown as Mock;
 const mockVerfahrenItem1 = {
   id: "2ab3cbc7-d00a-48bf-95a1-4d6f07406196",
   aktenzeichen_gericht: "JBA-82746242",
-  status: "Erstellt" as const,
+  status: "ERSTELLT" as const,
   status_changed: "2025-03-08T05:00:29.659Z",
   eingereicht_am: "2024-12-29T22:46:29.329Z",
   gericht: {
@@ -31,7 +31,7 @@ const mockVerfahrenItem1 = {
 const mockVerfahrenItem2 = {
   id: "3ab3cbc7-d00a-48bf-95a1-4d6f07406197",
   aktenzeichen_gericht: "JBA-82746243",
-  status: "Eingereicht" as const,
+  status: "EINGEREICHT" as const,
   status_changed: "2025-04-08T05:00:29.659Z",
   eingereicht_am: "2024-11-29T22:46:29.329Z",
   gericht: {
@@ -45,7 +45,7 @@ const mockVerfahrenItem2 = {
 const mockVerfahrenItem3 = {
   id: "4ab3cbc7-d00a-48bf-95a1-4d6f07406198",
   aktenzeichen_gericht: "JBA-82746244",
-  status: "Erstellt" as const,
+  status: "ERSTELLT" as const,
   status_changed: "2025-05-08T05:00:29.659Z",
   eingereicht_am: "2024-10-29T22:46:29.329Z",
   gericht: {
