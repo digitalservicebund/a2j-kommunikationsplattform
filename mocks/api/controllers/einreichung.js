@@ -2,7 +2,7 @@ const mockedEinreichungen = [
   // matches first mockVerfahren in default sort order within UI
   {
     id: "3cf0f6be-5e99-11f1-9bd2-325096b39f47",
-    verfahren_id: "019c572a-d6d4-77a8-aad7-ae4496fa2463",
+    verfahren_id: "019c5736-7834-7ee6-99de-41d9605697d2",
     name: "Einreichung Name",
     erstellt_von: "Musterfrau",
     erstellt_am: "2026-05-01T08:13:39.792Z",
@@ -65,10 +65,9 @@ const mockedEinreichungen = [
 ];
 
 const mockedEinreichungenStatus = [
-  // matches first mockVerfahren in default sort order within UI
   {
     id: "3cf0f6be-5e99-11f1-9bd2-325096b39f47",
-    verfahren_id: "019c572a-d6d4-77a8-aad7-ae4496fa2463",
+    verfahren_id: "019c5736-7834-7ee6-99de-41d9605697d2",
     status: {
       status: "GRUEN",
       validation_messages: [
@@ -121,7 +120,6 @@ const mockedEinreichungenStatus = [
       ],
     },
   },
-  // matches 3rd mockVerfahren in default sort order
   {
     id: "554e8956-5e99-11f1-8a89-325096b39f47",
     verfahren_id: "019c5733-2edb-7702-84d7-77f416b5f16c",

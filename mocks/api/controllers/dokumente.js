@@ -1,7 +1,7 @@
 const mockedDokumente = [
   {
     id: "3cf0f6be-5e99-11f1-9bd2-325096b39f47",
-    verfahren_id: "019c572a-d6d4-77a8-aad7-ae4496fa2463",
+    verfahren_id: "019c5736-7834-7ee6-99de-41d9605697d2",
     dokumente: [
       {
         id: "f7e400a6-5ec1-11f1-8acd-325096b39f47",
