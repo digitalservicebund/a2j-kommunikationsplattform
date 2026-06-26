@@ -5,11 +5,7 @@ import { MagicLinkStrategy } from "./MagicLinkStrategy.server";
 import { setAuthSession } from "./authSession.server";
 
 import { LoginType } from "~/routes/action.login-user";
-import {
-  AuthenticationProvider,
-  type AuthenticationResponse,
-} from "./auth.types";
-export { AuthenticationProvider };
+import { AuthenticationProvider, AuthenticationResponse } from "./auth.types";
 
 type DecodedJWT = Record<string, unknown>;
 
