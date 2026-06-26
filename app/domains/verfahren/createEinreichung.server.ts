@@ -1,14 +1,9 @@
+import z from "zod";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { apiRequest } from "./apiClient";
+import { EinreichungSchema } from "./schemas/einreichungSchema";
 
-// API observation: `erstellt_von` is always an empty string — not populated from tokens
-export type Einreichung = {
-  id: string;
-  verfahren_id: string;
-  status: "ENTWURF" | "EINGEREICHT";
-  erstellt_am: string;
-  erstellt_von: string;
-};
+export type Einreichung = z.infer<typeof EinreichungSchema>;
 
 const errorMessage = "Einreichung konnte nicht erstellt werden.";
 
