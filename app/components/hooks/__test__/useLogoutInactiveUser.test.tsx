@@ -4,7 +4,6 @@ import { act, renderHook } from "@testing-library/react";
 import { ReactNode } from "react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import reactRouterConfig from "~/react-router.config";
 import { LogoutType } from "~/routes/action.logout-user";
 import { useLogoutInactiveUser } from "../useLogoutInactiveUser";
 
@@ -13,7 +12,7 @@ const oneMinute = 1000 * 60 * 1;
 // mock useFetcher().submit() functionality
 const mockSubmit = vi.fn();
 vi.mock("react-router", async (importOriginal) => {
-  const actual = await importOriginal<typeof reactRouterConfig>();
+  const actual = await importOriginal<typeof import("react-router")>();
   return {
     ...actual,
     useFetcher: () => ({

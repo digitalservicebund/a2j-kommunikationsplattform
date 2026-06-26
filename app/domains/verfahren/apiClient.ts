@@ -1,4 +1,5 @@
 import z from "zod";
+import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { getBearerToken } from "~/services/auth/getBearerToken.server";
@@ -7,10 +8,18 @@ import {
   logParsingErrorAndThrow,
 } from "~/utils/logApiError";
 
-type ApiRequestOptions = {
+type ApiRequestUrlOptions =
+  | {
+      path: string;
+      fullUrl?: never;
+    }
+  | {
+      path?: never;
+      fullUrl: string;
+    };
+
+type ApiRequestOptions = ApiRequestUrlOptions & {
   authData: AuthenticationResponse;
-  path?: string; // path relative to KOMPLA_API_URL
-  fullUrl?: string; // optional absolute URL — used when caller builds URL with search params
   method?: string;
   body?: unknown;
   schema?: z.ZodTypeAny;
@@ -52,9 +61,16 @@ export async function apiRequest<T = unknown>(
     fetchBody = JSON.stringify(body) as BodyInit;
   }
 
-  console.log(
-    `Verfahren apiClient :: fetch ${method} ${url}\nheaders: ${JSON.stringify(headers)}\nbody: ${fetchBody}`,
-  );
+  // This can result in carrier tokens and payload data being exposed
+  // in the logs. Therefore, this is only logged in non-production environments
+  const logWithHeaderAndBody =
+    config().ENVIRONMENT === "staging" ||
+    config().ENVIRONMENT === "development";
+  if (logWithHeaderAndBody) {
+    console.log(
+      `Verfahren apiClient :: fetch ${method} ${url} - headers: ${JSON.stringify(headers)} - body: ${fetchBody}`,
+    );
+  }
 
   const response = await fetch(url, {
     method,

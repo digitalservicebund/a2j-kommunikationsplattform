@@ -8,16 +8,39 @@ import {
   redirect,
   useLoaderData,
 } from "react-router";
+import z from "zod";
 import Alert from "~/components/Alert";
 import InputSelect from "~/components/InputSelect";
+import deleteDokument from "~/domains/verfahren/deleteDokument.server";
+import fetchDokumenteById from "~/domains/verfahren/fetchDokumenteById.server";
+import fetchEinreichungenById from "~/domains/verfahren/fetchEinreichungenById.server";
+import fetchEinreichungStatus from "~/domains/verfahren/fetchEinreichungStatus.server";
 import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
 import fetchVerfahrenById from "~/domains/verfahren/fetchVerfahrenById.server";
-import deleteDokument from "~/domains/verfahren/prototype.deleteDokument.server";
-import fetchDokumenteById from "~/domains/verfahren/prototype.fetchDokumenteById.server";
-import fetchEinreichungenById from "~/domains/verfahren/prototype.fetchEinreichungenById.server";
-import fetchEinreichungStatus from "~/domains/verfahren/prototype.fetchEinreichungStatus.server";
+import { DokumentSchema } from "~/domains/verfahren/schemas/dokumentSchema";
+import { EinreichungSchema } from "~/domains/verfahren/schemas/einreichungSchema";
+import { StatusSchema } from "~/domains/verfahren/schemas/statusSchema";
+import {
+  CodeWertSchema,
+  VerfahrenSchema,
+} from "~/domains/verfahren/schemas/verfahrenSchema";
 import { authContext, authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+
+type Verfahren = z.infer<typeof VerfahrenSchema>;
+type Einreichung = z.infer<typeof EinreichungSchema>;
+type EinreichungStatus = z.infer<typeof StatusSchema>;
+type Dokument = z.infer<typeof DokumentSchema>;
+type Gericht = z.infer<typeof CodeWertSchema>;
+type EinreichungWithStatus = Einreichung & {
+  einreichungsStatus: EinreichungStatus;
+};
+type LoaderData = {
+  verfahren: Verfahren;
+  einreichungen: EinreichungWithStatus[];
+  dokumente: Dokument[][];
+  gerichte: Gericht[];
+};
 
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
@@ -35,30 +58,34 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
     throw new Error("No Verfahren ID provided in params");
   }
 
-  const verfahrenPromise = await fetchVerfahrenById(authData, { id });
-  const gerichtePromise = await fetchGerichte(authData);
-  const einreichungenPromise = await fetchEinreichungenById(authData, { id });
+  const verfahrenPromise = (await fetchVerfahrenById(authData, {
+    id,
+  })) as Verfahren;
+  const gerichtePromise = (await fetchGerichte(authData)) as Gericht[];
+  const einreichungenPromise = (await fetchEinreichungenById(authData, {
+    id,
+  })) as Einreichung[];
 
   const filteredEinreichungen = einreichungenPromise.filter((e) => {
     return e.verfahren_id === id;
   });
 
-  const einreichungenWithStatus = await Promise.all(
+  const einreichungenWithStatus: EinreichungWithStatus[] = await Promise.all(
     filteredEinreichungen.map(async (einreichung) => ({
       ...einreichung,
-      einreichungsStatus: await fetchEinreichungStatus(authData, {
+      einreichungsStatus: (await fetchEinreichungStatus(authData, {
         id: einreichung.id,
         verfahrenId: einreichung.verfahren_id,
-      }),
+      })) as EinreichungStatus,
     })),
   );
 
-  const dokumentePromise = await Promise.all(
+  const dokumentePromise: Dokument[][] = await Promise.all(
     filteredEinreichungen.map(async (einreichung) => {
-      const dokumente = await fetchDokumenteById(authData, {
+      const dokumente = (await fetchDokumenteById(authData, {
         id: einreichung.id,
         verfahrenId: einreichung.verfahren_id,
-      });
+      })) as Dokument[];
 
       if (!dokumente) {
         return [];
@@ -135,22 +162,8 @@ export const action = async ({
 };
 
 export default function VerfahrendetailsBearbeiten() {
-  const { verfahren, einreichungen, dokumente, gerichte } = useLoaderData<{
-    verfahren: Awaited<ReturnType<typeof fetchVerfahrenById>>;
-    einreichungen: Awaited<
-      ReturnType<typeof fetchEinreichungenById>
-    > extends Array<infer Einreichung>
-      ? Array<
-          Einreichung & {
-            einreichungsStatus: Awaited<
-              ReturnType<typeof fetchEinreichungStatus>
-            >;
-          }
-        >
-      : never;
-    dokumente: Awaited<ReturnType<typeof fetchDokumenteById>>[];
-    gerichte: Awaited<ReturnType<typeof fetchGerichte>>;
-  }>();
+  const { verfahren, einreichungen, dokumente, gerichte } =
+    useLoaderData<LoaderData>();
   const { alerts } = useTranslations();
   const [hasInitialFileUpload, setHasInitialFileUpload] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState<"idle" | "submitting">(
@@ -329,7 +342,7 @@ export default function VerfahrendetailsBearbeiten() {
                 </thead>
                 <tbody className="kern-table__body">
                   <Await resolve={einreichungen}>
-                    {(resolvedData) =>
+                    {(resolvedData: EinreichungWithStatus[]) =>
                       resolvedData && (
                         <>
                           {resolvedData.map((einreichung) => (
@@ -847,7 +860,7 @@ export default function VerfahrendetailsBearbeiten() {
 
                 <Suspense fallback={<div>Dokumente werden geladen ...</div>}>
                   <Await resolve={dokumente}>
-                    {(resolvedData) =>
+                    {(resolvedData: Dokument[][]) =>
                       resolvedData && (
                         <div className="kern-table-responsive">
                           <table className="kern-table">

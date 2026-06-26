@@ -1,14 +1,33 @@
 import { Suspense } from "react";
 import { Await, Link, LoaderFunctionArgs, useLoaderData } from "react-router";
+import z from "zod";
 import Alert from "~/components/Alert";
 import VerfahrenTile from "~/components/verfahren/VerfahrenTile";
 import VerfahrenTileSkeleton from "~/components/verfahren/VerfahrenTileSkeleton.static";
+import fetchDokumenteById from "~/domains/verfahren/fetchDokumenteById.server";
+import fetchEinreichungenById from "~/domains/verfahren/fetchEinreichungenById.server";
+import fetchEinreichungStatus from "~/domains/verfahren/fetchEinreichungStatus.server";
 import fetchVerfahrenById from "~/domains/verfahren/fetchVerfahrenById.server";
-import fetchDokumenteById from "~/domains/verfahren/prototype.fetchDokumenteById.server";
-import fetchEinreichungenById from "~/domains/verfahren/prototype.fetchEinreichungenById.server";
-import fetchEinreichungStatus from "~/domains/verfahren/prototype.fetchEinreichungStatus.server";
+import { DokumentSchema } from "~/domains/verfahren/schemas/dokumentSchema";
+import { EinreichungSchema } from "~/domains/verfahren/schemas/einreichungSchema";
+import { StatusSchema } from "~/domains/verfahren/schemas/statusSchema";
+import { VerfahrenSchema } from "~/domains/verfahren/schemas/verfahrenSchema";
 import { authContext, authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+
+type Verfahren = z.infer<typeof VerfahrenSchema>;
+type Einreichung = z.infer<typeof EinreichungSchema>;
+type EinreichungStatus = z.infer<typeof StatusSchema>;
+type Dokument = z.infer<typeof DokumentSchema>;
+type EinreichungWithStatus = Einreichung & {
+  einreichungsStatus: EinreichungStatus;
+};
+type LoaderData = {
+  verfahren: Promise<Verfahren>;
+  einreichungen: EinreichungWithStatus[];
+  dokumente: Dokument[][];
+  showDebugInfo: boolean;
+};
 
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
@@ -32,31 +51,33 @@ export const loader = async ({
     throw new Error("No Verfahren ID provided in params");
   }
 
-  const verfahrenDataPromise = fetchVerfahrenById(authData, { id });
-  const einreichungenDataPromise = await fetchEinreichungenById(authData, {
+  const verfahrenDataPromise = fetchVerfahrenById(authData, {
     id,
-  });
+  }) as Promise<Verfahren>;
+  const einreichungenDataPromise = (await fetchEinreichungenById(authData, {
+    id,
+  })) as Einreichung[];
 
   const filteredEinreichungen = einreichungenDataPromise.filter((e) => {
     return e.verfahren_id === id;
   });
 
-  const einreichungenWithStatus = await Promise.all(
+  const einreichungenWithStatus: EinreichungWithStatus[] = await Promise.all(
     filteredEinreichungen.map(async (einreichung) => ({
       ...einreichung,
-      einreichungsStatus: await fetchEinreichungStatus(authData, {
+      einreichungsStatus: (await fetchEinreichungStatus(authData, {
         id: einreichung.id,
         verfahrenId: einreichung.verfahren_id,
-      }),
+      })) as EinreichungStatus,
     })),
   );
 
-  const dokumenteDataPromise = await Promise.all(
+  const dokumenteDataPromise: Dokument[][] = await Promise.all(
     filteredEinreichungen.map(async (einreichung) => {
-      const dokumente = await fetchDokumenteById(authData, {
+      const dokumente = (await fetchDokumenteById(authData, {
         id: einreichung.id,
         verfahrenId: einreichung.verfahren_id,
-      });
+      })) as Dokument[];
 
       if (!dokumente) {
         return [];
@@ -82,22 +103,8 @@ export const loader = async ({
 };
 
 export default function Verfahrendetails() {
-  const { verfahren, einreichungen, dokumente, showDebugInfo } = useLoaderData<{
-    verfahren: Promise<ReturnType<typeof fetchVerfahrenById>>;
-    einreichungen: Awaited<
-      ReturnType<typeof fetchEinreichungenById>
-    > extends Array<infer Einreichung>
-      ? Array<
-          Einreichung & {
-            einreichungsStatus: Awaited<
-              ReturnType<typeof fetchEinreichungStatus>
-            >;
-          }
-        >
-      : never;
-    dokumente: Awaited<ReturnType<typeof fetchDokumenteById>>[];
-    showDebugInfo: boolean;
-  }>();
+  const { verfahren, einreichungen, dokumente, showDebugInfo } =
+    useLoaderData<LoaderData>();
 
   const { alerts, routes } = useTranslations();
 
@@ -119,7 +126,7 @@ export default function Verfahrendetails() {
       <div className="my-kern-space-large gap-y-kern-space-large flex flex-col">
         <Suspense fallback={<VerfahrenTileSkeleton />}>
           <Await resolve={verfahren}>
-            {(resolvedData) => (
+            {(resolvedData: Verfahren) => (
               <div className="space-y-kern-space-large flex flex-col">
                 <div className="flex justify-between">
                   <span
@@ -177,7 +184,7 @@ export default function Verfahrendetails() {
         </Suspense>
         <Suspense fallback={<div> Lade Einreichungen...</div>}>
           <Await resolve={einreichungen}>
-            {(resolvedData) => (
+            {(resolvedData: EinreichungWithStatus[]) => (
               <>
                 {resolvedData.length === 0 ? (
                   <div>Keine Einreichungen vorhanden.</div>
@@ -260,7 +267,7 @@ export default function Verfahrendetails() {
         </Suspense>
         <Suspense fallback={<div> Lade Dokumente...</div>}>
           <Await resolve={dokumente}>
-            {(resolvedData) => (
+            {(resolvedData: Dokument[][]) => (
               <>
                 {resolvedData.length === 0 ? (
                   <div>Keine Dokumente vorhanden.</div>
@@ -292,25 +299,33 @@ export default function Verfahrendetails() {
                       </thead>
 
                       <tbody className="kern-table__body">
-                        {resolvedData.map((dokumente) => (
-                          <tr key={dokumente[0].id} className="kern-table__row">
-                            <td className="kern-table__cell">
-                              {dokumente[0].id}
-                            </td>
-                            <td className="kern-table__cell">
-                              {dokumente[0].name}
-                            </td>
-                            <td className="kern-table__cell">
-                              {dokumente[0].size_in_bytes}
-                            </td>
-                            <td className="kern-table__cell">
-                              {dokumente[0].status}
-                            </td>
-                            <td className="kern-table__cell">
-                              {dokumente[0].viren_scan_status}
-                            </td>
-                          </tr>
-                        ))}
+                        {resolvedData.map((dokumente) => {
+                          const dokument = dokumente[0];
+
+                          if (!dokument) {
+                            return null;
+                          }
+
+                          return (
+                            <tr key={dokument.id} className="kern-table__row">
+                              <td className="kern-table__cell">
+                                {dokument.id}
+                              </td>
+                              <td className="kern-table__cell">
+                                {dokument.name}
+                              </td>
+                              <td className="kern-table__cell">
+                                {dokument.size_in_bytes}
+                              </td>
+                              <td className="kern-table__cell">
+                                {dokument.status}
+                              </td>
+                              <td className="kern-table__cell">
+                                {dokument.viren_scan_status}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>

@@ -1,11 +1,11 @@
 import { useRef, useState } from "react";
 import { ActionFunctionArgs, Form, Link, redirect } from "react-router";
 import Alert from "~/components/Alert";
-import createEinreichung from "~/domains/verfahren/prototype.createEinreichung.server";
-import createVerfahren from "~/domains/verfahren/prototype.createVerfahren.server";
+import createEinreichung from "~/domains/verfahren/createEinreichung.server";
+import createVerfahren from "~/domains/verfahren/createVerfahren.server";
 import uploadDokument, {
   type DokumentType,
-} from "~/domains/verfahren/prototype.uploadDokument.server";
+} from "~/domains/verfahren/uploadDokument.server";
 import { authContext, authMiddleware } from "~/middleware/auth.server";
 
 // this route requires users to be logged in

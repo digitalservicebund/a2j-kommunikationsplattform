@@ -1,6 +1,5 @@
 import { authorizeToken } from "../api/authorizeToken.server";
-import { AuthenticationProvider } from "./auth.types";
-import type { AuthenticationResponse } from "./oAuth.server";
+import { AuthenticationProvider, AuthenticationResponse } from "./auth.types";
 
 /**
  * getBearerToken

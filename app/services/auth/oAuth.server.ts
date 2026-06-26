@@ -5,26 +5,12 @@ import { MagicLinkStrategy } from "./MagicLinkStrategy.server";
 import { setAuthSession } from "./authSession.server";
 
 import { LoginType } from "~/routes/action.login-user";
-import {
-  AuthenticationProvider,
-  type AuthenticationResponse,
-} from "./auth.types";
-export { AuthenticationProvider };
+import { AuthenticationProvider, AuthenticationResponse } from "./auth.types";
 
 type DecodedJWT = Record<string, unknown>;
 
 // BRAK IdP uses "Authorization Code" OAuth 2.0 flow
 export const authenticator = new Authenticator<AuthenticationResponse>();
-
-const clientId = serverConfig().BRAK_IDP_OIDC_CLIENT_ID;
-const clientSecret = serverConfig().BRAK_IDP_OIDC_CLIENT_SECRET;
-const authorizationEndpoint = `${serverConfig().BRAK_IDP_OIDC_ISSUER}/protocol/openid-connect/auth`;
-const tokenEndpoint = `${serverConfig().BRAK_IDP_OIDC_ISSUER}/protocol/openid-connect/token`;
-const redirectURI = `${serverConfig().BRAK_IDP_OIDC_REDIRECT_URI}`;
-
-console.log(
-  `\nInit OAuth2Strategy with\nid ${clientId.slice(2, 4)}\nsecret ${clientSecret.slice(0, 4)}\nauth endpoint ${authorizationEndpoint}\ntoken endpoint ${tokenEndpoint} and\nredirect URI ${redirectURI}\n\n`,
-);
 
 let idToken = "";
 let loginType: LoginType;
@@ -32,11 +18,11 @@ let loginType: LoginType;
 const beaOauth2Strategy = new OAuth2Strategy(
   {
     cookie: "oauth2",
-    clientId: clientId,
-    clientSecret: clientSecret,
-    authorizationEndpoint: authorizationEndpoint,
-    tokenEndpoint: tokenEndpoint,
-    redirectURI: redirectURI,
+    clientId: serverConfig().BRAK_IDP_OIDC_CLIENT_ID,
+    clientSecret: serverConfig().BRAK_IDP_OIDC_CLIENT_SECRET,
+    authorizationEndpoint: `${serverConfig().BRAK_IDP_OIDC_ISSUER}/protocol/openid-connect/auth`,
+    tokenEndpoint: `${serverConfig().BRAK_IDP_OIDC_ISSUER}/protocol/openid-connect/token`,
+    redirectURI: `${serverConfig().BRAK_IDP_OIDC_REDIRECT_URI}`,
     scopes: ["openid"], // as required by BRAK IdP
     codeChallengeMethod: CodeChallengeMethod.S256,
   },

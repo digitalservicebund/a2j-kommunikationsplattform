@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
+import { AuthenticationProvider, AuthenticationResponse } from "../auth.types";
 import { getBearerToken } from "../getBearerToken.server";
-import type { AuthenticationResponse } from "../oAuth.server";
 
 vi.mock("../../api/authorizeToken.server", () => ({
   authorizeToken: vi.fn(),
@@ -15,17 +15,17 @@ const beaAuthData: AuthenticationResponse = {
     refreshToken: "refresh-token",
   },
   sessionCookieHeader: "",
-  provider: "bea" as const,
+  provider: AuthenticationProvider.BEA,
 };
 
 const demoAuthData: AuthenticationResponse = {
   ...beaAuthData,
-  provider: "demo" as const,
+  provider: AuthenticationProvider.DEMO,
 };
 
 const devAuthData: AuthenticationResponse = {
   ...beaAuthData,
-  provider: "development" as const,
+  provider: AuthenticationProvider.DEVELOPMENT,
 };
 
 describe("getBearerToken", () => {

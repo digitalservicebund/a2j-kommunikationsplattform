@@ -21,7 +21,7 @@ vi.mock("~/utils/logApiError", () => ({
   logParsingErrorAndThrow: mocks.logParsingErrorAndThrow,
 }));
 
-global.fetch = mocks.fetch;
+globalThis.fetch = mocks.fetch;
 
 describe("apiClient", () => {
   const originalEnv = process.env.KOMPLA_API_URL;
@@ -63,7 +63,6 @@ describe("apiClient", () => {
 
       await apiRequest({
         authData: mockAuthData,
-        path: "/api/v1/unused",
         fullUrl: "http://custom.api/endpoint",
       });
 
@@ -283,7 +282,7 @@ describe("apiClient", () => {
     it("calls logParsingErrorAndThrow when schema validation fails", async () => {
       mocks.getBearerToken.mockResolvedValue("token");
       const schema = z.object({
-        id: z.string().uuid(),
+        id: z.guid(),
         name: z.string().min(5),
       });
       const invalidData = { id: "not-a-uuid", name: "x" };

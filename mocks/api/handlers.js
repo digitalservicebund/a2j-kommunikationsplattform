@@ -126,6 +126,7 @@ export const handlers = [
         name: "sample_klaver_3500001.xml",
         size_in_bytes: 3481,
         type: "XJUSTIZ",
+        viren_scan_status: "AUSSTEHEND",
         gesendet_am: null,
         eingereicht_am: null,
         erstellt_von: "",

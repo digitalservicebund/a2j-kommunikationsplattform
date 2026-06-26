@@ -75,10 +75,10 @@ vi.mock("../authSession.server", () => ({
 
 import {
   AuthenticationProvider,
-  type AuthenticationResponse,
-  type AuthenticationTokens,
-  authenticator,
-} from "../oAuth.server";
+  AuthenticationResponse,
+  AuthenticationTokens,
+} from "../auth.types";
+import { authenticator } from "../oAuth.server";
 
 type VerifyArgs = {
   tokens: {

@@ -13,7 +13,7 @@ vi.mock("~/services/auth/getBearerToken.server", () => ({
   getBearerToken: mocks.getBearerToken,
 }));
 
-global.fetch = mocks.fetch;
+globalThis.fetch = mocks.fetch;
 
 const mockVerfahren = {
   id: "2ab3cbc7-d00a-48bf-95a1-4d6f07406196",

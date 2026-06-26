@@ -1,10 +1,7 @@
 import { redirect, type LoaderFunction } from "react-router";
+import { AuthenticationProvider } from "~/services/auth/auth.types";
 import { destroySession, getSession } from "~/services/auth/authSession.server";
-import {
-  AuthenticationProvider,
-  authenticator,
-  revokeAccessToken,
-} from "~/services/auth/oAuth.server";
+import { authenticator, revokeAccessToken } from "~/services/auth/oAuth.server";
 import { LoginError } from "./action.login-user";
 
 export const loader: LoaderFunction = async ({ request }) => {

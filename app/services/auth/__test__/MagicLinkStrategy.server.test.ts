@@ -1,9 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { AuthenticationProvider, AuthenticationResponse } from "../auth.types";
 import { MagicLinkStrategy } from "../MagicLinkStrategy.server";
-import {
-  AuthenticationProvider,
-  AuthenticationResponse,
-} from "../oAuth.server";
 
 // NOTE: do NOT mock "remix-auth/strategy" — doing so prevents Istanbul
 // from instrumenting MagicLinkStrategy (the subclass), resulting in 0% coverage.

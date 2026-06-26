@@ -11,11 +11,9 @@ vi.mock("~/services/auth/oAuth.server", () => ({
 }));
 
 import { action, LoginType } from "~/routes/action.login-user";
+import { AuthenticationProvider } from "~/services/auth/auth.types";
 import { loginAsDeveloper } from "~/services/auth/loginAsDeveloper.server";
-import {
-  AuthenticationProvider,
-  authenticator,
-} from "~/services/auth/oAuth.server";
+import { authenticator } from "~/services/auth/oAuth.server";
 
 describe("/action/login-user action", () => {
   beforeEach(() => {
