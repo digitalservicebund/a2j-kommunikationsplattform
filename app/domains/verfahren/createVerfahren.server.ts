@@ -18,20 +18,19 @@ export default async function createVerfahren(
 ): Promise<Verfahren> {
   const safeId = authData.authenticationTokens.idToken;
 
-  if (safeId) {
-    const rawData = await apiRequest({
-      authData,
-      path: "/api/v1/verfahren",
-      method: "POST",
-      body: { safe_id: safeId },
-      errorMessage,
-    });
-
-    // API observation: POST /verfahren returns an array [{...}] instead of a single object
-    const singleObject = extractSingleObject<unknown>(rawData);
-    return VerfahrenSchema.parse(singleObject);
-  } else {
-    console.log("Error while creating a new Verfahren");
+  if (!safeId) {
     throw new Error("No safeId is available");
   }
+
+  const rawData = await apiRequest({
+    authData,
+    path: "/api/v1/verfahren",
+    method: "POST",
+    body: { safe_id: safeId },
+    errorMessage,
+  });
+
+  // API observation: POST /verfahren returns an array [{...}] instead of a single object
+  const singleObject = extractSingleObject<unknown>(rawData);
+  return VerfahrenSchema.parse(singleObject);
 }

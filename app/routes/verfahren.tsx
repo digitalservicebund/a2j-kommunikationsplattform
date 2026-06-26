@@ -51,13 +51,13 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 
   // Fetch verfahren with one extra item to determine if there are more items
   const verfahrenPromise: Promise<VerfahrenLoaderData> = (async () => {
-    const verfahren = await fetchVerfahren(authData, {
+    const verfahren = (await fetchVerfahren(authData, {
       limit: VERFAHREN_PAGE_LIMIT + 1,
       offset,
       gericht,
       sort,
       search_text,
-    });
+    })) as Verfahren[];
 
     const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
     const items = hasMoreItems

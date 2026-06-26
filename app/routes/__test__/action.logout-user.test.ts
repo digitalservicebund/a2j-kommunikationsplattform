@@ -1,5 +1,13 @@
+import type { ActionFunctionArgs, RouterContextProvider } from "react-router";
 import { it } from "vitest";
 import { action, LogoutType } from "../action.logout-user";
+
+const testContext: Readonly<RouterContextProvider> = {
+  get: () => {
+    throw new Error("test context get should not be called");
+  },
+  set: () => {},
+};
 
 describe("/action/logout-user route", () => {
   it("redirects with auto-logged-out status URL params on auto logout", async () => {
@@ -19,8 +27,8 @@ describe("/action/logout-user route", () => {
     const response = await action({
       request,
       params: {},
-      context: {},
-    });
+      context: testContext,
+    } as ActionFunctionArgs);
 
     expect(response.status).toBe(302);
     expect(response.headers.get("Location")).toBe(
@@ -45,8 +53,8 @@ describe("/action/logout-user route", () => {
     const response = await action({
       request,
       params: {},
-      context: {},
-    });
+      context: testContext,
+    } as ActionFunctionArgs);
 
     expect(response.status).toBe(302);
     expect(response.headers.get("Location")).toBe("/login?status=logged-out");

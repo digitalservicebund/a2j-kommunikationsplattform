@@ -14,7 +14,7 @@ vi.mock("~/services/auth/getBearerToken.server", () => ({
   getBearerToken: mocks.getBearerToken,
 }));
 
-global.fetch = mocks.fetch;
+globalThis.fetch = mocks.fetch;
 
 describe("fetchVerfahren", () => {
   const originalEnv = process.env.KOMPLA_API_URL;

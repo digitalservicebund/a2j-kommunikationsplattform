@@ -1,4 +1,4 @@
-import type { AuthenticationResponse } from "~/services/auth/oAuth.server";
+import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { AuthenticationProvider } from "~/services/auth/oAuth.server";
 
 export const mockAuthData: AuthenticationResponse = {
