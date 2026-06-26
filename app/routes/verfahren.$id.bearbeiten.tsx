@@ -7,6 +7,7 @@ import {
   LoaderFunctionArgs,
   redirect,
   useLoaderData,
+  useRevalidator,
 } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
@@ -17,13 +18,17 @@ import fetchEinreichungenById from "~/domains/verfahren/fetchEinreichungenById.s
 import fetchEinreichungStatus from "~/domains/verfahren/fetchEinreichungStatus.server";
 import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
 import fetchVerfahrenById from "~/domains/verfahren/fetchVerfahrenById.server";
-import { DokumentSchema } from "~/domains/verfahren/schemas/dokumentSchema";
+import {
+  DokumentSchema,
+  DokumentTypeSchema,
+} from "~/domains/verfahren/schemas/dokumentSchema";
 import { EinreichungSchema } from "~/domains/verfahren/schemas/einreichungSchema";
 import { StatusSchema } from "~/domains/verfahren/schemas/statusSchema";
 import {
   CodeWertSchema,
   VerfahrenSchema,
 } from "~/domains/verfahren/schemas/verfahrenSchema";
+import uploadDokument from "~/domains/verfahren/uploadDokument.server";
 import { authContext, authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
@@ -31,6 +36,7 @@ type Verfahren = z.infer<typeof VerfahrenSchema>;
 type Einreichung = z.infer<typeof EinreichungSchema>;
 type EinreichungStatus = z.infer<typeof StatusSchema>;
 type Dokument = z.infer<typeof DokumentSchema>;
+type DokumentType = z.infer<typeof DokumentTypeSchema>;
 type Gericht = z.infer<typeof CodeWertSchema>;
 type EinreichungWithStatus = Einreichung & {
   einreichungsStatus: EinreichungStatus;
@@ -42,8 +48,29 @@ type LoaderData = {
   gerichte: Gericht[];
 };
 
+type AdditionalFileUpload = {
+  id: number;
+  einreichungId: string;
+  dokumentTyp: DokumentType | "";
+};
+
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
+
+const dokumentTypeOptions: Array<{ label: string; value: DokumentType }> = [
+  {
+    label: "XJustiz",
+    value: "XJUSTIZ",
+  },
+  {
+    label: "Anhang",
+    value: "ANHANG",
+  },
+  {
+    label: "Schriftstück",
+    value: "SCHRIFTSTUECK",
+  },
+];
 
 export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   const authData = context.get(authContext);
@@ -126,6 +153,7 @@ export const action = async ({
 
   const formData = await request.formData();
   const deleteDokumentAction = formData.get("deleteDokument");
+  const uploadDokumentAction = formData.get("uploadDokument");
 
   // handle document deletion
   if (deleteDokumentAction === "true") {
@@ -158,12 +186,73 @@ export const action = async ({
     });
   }
 
+  // handle document upload
+  if (uploadDokumentAction === "true") {
+    const verfahrenId = id;
+    const einreichungId = formData.get("einreichungId");
+    const dokumentTyp = formData.get("dokumentTyp");
+    const file = formData.get("file");
+
+    if (
+      typeof verfahrenId !== "string" ||
+      typeof einreichungId !== "string" ||
+      typeof dokumentTyp !== "string" ||
+      !(file instanceof File)
+    ) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Fehlende Upload-Parameter.",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    const einreichungen = (await fetchEinreichungenById(authData, {
+      id: verfahrenId,
+    })) as Einreichung[];
+    const selectedEinreichung = einreichungen.find(
+      (einreichung) => einreichung.id === einreichungId,
+    );
+
+    if (!selectedEinreichung || selectedEinreichung.status === "EINGEREICHT") {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error:
+            "Uploads sind für bereits eingereichte Einreichungen nicht erlaubt.",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    await uploadDokument(
+      authData,
+      verfahrenId,
+      einreichungId,
+      file,
+      dokumentTyp as DokumentType,
+    );
+
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   return redirect(`/verfahren/${id}`);
 };
 
 export default function VerfahrendetailsBearbeiten() {
   const { verfahren, einreichungen, dokumente, gerichte } =
     useLoaderData<LoaderData>();
+  const revalidator = useRevalidator();
   const { alerts } = useTranslations();
   const [isSubmitting, setIsSubmitting] = useState<"idle" | "submitting">(
     "idle",
@@ -174,9 +263,18 @@ export default function VerfahrendetailsBearbeiten() {
   const [deleteDocumentError, setDeleteDocumentError] = useState<string | null>(
     null,
   );
-  const [additionalFiles, setAdditionalFiles] = useState<number[]>([]);
+  const [uploadDocumentError, setUploadDocumentError] = useState<string | null>(
+    null,
+  );
+  const [additionalFileUploads, setAdditionalFileUploads] = useState<
+    AdditionalFileUpload[]
+  >([]);
+  const [nextAdditionalFileUploadId, setNextAdditionalFileUploadId] =
+    useState(0);
+  const [uploadingRowId, setUploadingRowId] = useState<number | null>(null);
 
   const formRef = useRef<HTMLFormElement>(null);
+  const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
   // getting/setting the verfahren related data could be
   // moved into a getter/setter functionality in the future
@@ -219,8 +317,44 @@ export default function VerfahrendetailsBearbeiten() {
 
   const [selectedGericht, setSelectedGericht] = useState(courtCode);
 
+  const fileOptions = dokumentTypeOptions.map((d) => {
+    return {
+      value: d.value,
+      label: d.label,
+    };
+  });
+
+  const uploadableEinreichungen = einreichungen.filter(
+    (einreichung) => einreichung.status !== "EINGEREICHT",
+  );
+
+  const einreichungOptions = uploadableEinreichungen.map((einreichung) => {
+    return {
+      value: einreichung.id,
+      label: einreichung.name ?? einreichung.id,
+    };
+  });
+
   const handleAddFileUpload = () => {
-    setAdditionalFiles((prev) => [...prev, prev.length]);
+    const defaultEinreichungId = uploadableEinreichungen[0]?.id ?? "";
+
+    if (!defaultEinreichungId) {
+      setUploadDocumentError(
+        "Alle Einreichungen sind bereits eingereicht. Upload ist nicht mehr möglich.",
+      );
+      return;
+    }
+
+    setAdditionalFileUploads((prev) => [
+      ...prev,
+      {
+        id: nextAdditionalFileUploadId,
+        einreichungId: defaultEinreichungId,
+        dokumentTyp: "",
+      },
+    ]);
+    setNextAdditionalFileUploadId((prev) => prev + 1);
+    setUploadDocumentError(null);
   };
 
   const handleDeleteFileFromVerfahren = async (
@@ -261,14 +395,112 @@ export default function VerfahrendetailsBearbeiten() {
     }
   };
 
-  const handleRemoveFileUpload = (index: number) => {
-    setAdditionalFiles((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveFileUpload = (uploadId: number) => {
+    setAdditionalFileUploads((prev) =>
+      prev.filter((upload) => upload.id !== uploadId),
+    );
+    delete fileInputRefs.current[uploadId];
   };
 
-  const handleUploadFileUpload = () => {
-    alert(
-      "POST /api/v1/verfahren/{verfahren-id}/einreichungen/{einreichung-id}/dokumente ist an dieser Stelle noch nicht verfügbar. Wir arbeiten daran.",
+  const handleUploadEinreichungChange = (
+    uploadId: number,
+    einreichungId: string,
+  ) => {
+    setAdditionalFileUploads((prev) =>
+      prev.map((upload) =>
+        upload.id === uploadId ? { ...upload, einreichungId } : upload,
+      ),
     );
+  };
+
+  const handleUploadDokumentTypChange = (
+    uploadId: number,
+    dokumentTyp: DokumentType | "",
+  ) => {
+    setAdditionalFileUploads((prev) =>
+      prev.map((upload) =>
+        upload.id === uploadId ? { ...upload, dokumentTyp } : upload,
+      ),
+    );
+  };
+
+  const handleUploadFileUpload = async (uploadId: number) => {
+    setUploadDocumentError(null);
+
+    const upload = additionalFileUploads.find((item) => item.id === uploadId);
+    const file = fileInputRefs.current[uploadId]?.files?.[0];
+
+    if (!upload) {
+      setUploadDocumentError(
+        "Upload-Konfiguration konnte nicht gefunden werden.",
+      );
+      return;
+    }
+
+    const { einreichungId, dokumentTyp } = upload;
+
+    if (!einreichungId) {
+      setUploadDocumentError("Keine Einreichung für den Upload verfügbar.");
+      return;
+    }
+
+    const isUploadAllowed = uploadableEinreichungen.some(
+      (einreichung) => einreichung.id === einreichungId,
+    );
+
+    if (!isUploadAllowed) {
+      setUploadDocumentError(
+        "Für diese Einreichung sind keine Uploads mehr erlaubt.",
+      );
+      return;
+    }
+
+    if (!dokumentTyp) {
+      setUploadDocumentError("Bitte wählen Sie einen Dokumenttyp aus.");
+      return;
+    }
+
+    if (!file) {
+      setUploadDocumentError("Bitte wählen Sie eine Datei aus.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.set("uploadDokument", "true");
+    formData.set("einreichungId", einreichungId);
+    formData.set("dokumentTyp", dokumentTyp);
+    formData.set("file", file);
+
+    setUploadingRowId(uploadId);
+    try {
+      const response = await fetch(globalThis.location.href, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.warn("upload file error:", errorText);
+        setUploadDocumentError("Dokument konnte nicht hochgeladen werden.");
+        return;
+      }
+
+      setAdditionalFileUploads((prev) =>
+        prev.filter((item) => item.id !== uploadId),
+      );
+      revalidator.revalidate();
+    } catch (error) {
+      setUploadDocumentError(
+        error instanceof Error
+          ? error.message
+          : "Unbekannter Fehler beim Hochladen des Dokuments.",
+      );
+    } finally {
+      setUploadingRowId(null);
+    }
   };
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -1068,34 +1300,72 @@ export default function VerfahrendetailsBearbeiten() {
                   <p className="kern-body">
                     Hier haben Sie die Möglichkeit weitere Dateien anzufügen.
                   </p>
-                  {additionalFiles.length > 0 && (
+                  {uploadDocumentError ? (
+                    <div className="mt-kern-space-default whitespace-normal">
+                      <Alert
+                        type="error"
+                        title="Hochladen fehlgeschlagen"
+                        message={uploadDocumentError}
+                      />
+                    </div>
+                  ) : null}
+                  {additionalFileUploads.length > 0 && (
                     <div className="mt-kern-space-large w-full">
-                      {additionalFiles.map((fileIndex) => (
+                      {additionalFileUploads.map((fileUpload) => (
                         <div
-                          key={fileIndex}
+                          key={fileUpload.id}
                           className="gap-kern-space-default p-kern-space-small space-y-kern-space-large border-kern-layout-border rounded-kern-default flex flex-row border-2"
                         >
                           <div className="kern-form-input grow">
                             <label
                               className="kern-label"
-                              htmlFor={`additional-file-${fileIndex}`}
+                              htmlFor={`additional-file-${fileUpload.id}`}
                             >
                               Datei hier hochladen
                             </label>
                             <input
                               className="kern-form-input__input"
-                              id={`additional-file-${fileIndex}`}
-                              name={`additionalFile${fileIndex}`}
+                              id={`additional-file-${fileUpload.id}`}
+                              name={`additionalFile${fileUpload.id}`}
                               type="file"
+                              ref={(input) => {
+                                fileInputRefs.current[fileUpload.id] = input;
+                              }}
                             />
                           </div>
+                          <InputSelect
+                            label="Einreichung"
+                            id={`additional-file-einreichung-${fileUpload.id}`}
+                            placeholder="Bitte auswählen"
+                            options={einreichungOptions}
+                            onChange={(e) =>
+                              handleUploadEinreichungChange(
+                                fileUpload.id,
+                                e.target.value,
+                              )
+                            }
+                            selectedValue={fileUpload.einreichungId}
+                          />
+                          <InputSelect
+                            label="Typ des Dokuments"
+                            id={`additional-file-type-${fileUpload.id}`}
+                            placeholder="Bitte auswählen"
+                            options={fileOptions}
+                            onChange={(e) =>
+                              handleUploadDokumentTypChange(
+                                fileUpload.id,
+                                e.target.value as DokumentType,
+                              )
+                            }
+                            selectedValue={fileUpload.dokumentTyp}
+                          />
                           <div className="gap-kern-space-default flex flex-col flex-wrap justify-center">
                             <div>
                               <button
                                 type="button"
                                 className="kern-btn kern-btn--secondary"
                                 onClick={() =>
-                                  handleRemoveFileUpload(fileIndex)
+                                  handleRemoveFileUpload(fileUpload.id)
                                 }
                               >
                                 <span className="kern-label">Entfernen</span>
@@ -1105,9 +1375,16 @@ export default function VerfahrendetailsBearbeiten() {
                               <button
                                 type="button"
                                 className="kern-btn kern-btn--primary"
-                                onClick={() => handleUploadFileUpload()}
+                                disabled={uploadingRowId === fileUpload.id}
+                                onClick={() =>
+                                  handleUploadFileUpload(fileUpload.id)
+                                }
                               >
-                                <span className="kern-label">Hochladen</span>
+                                <span className="kern-label">
+                                  {uploadingRowId === fileUpload.id
+                                    ? "Lade hoch..."
+                                    : "Hochladen"}
+                                </span>
                               </button>
                             </div>
                           </div>
@@ -1122,9 +1399,12 @@ export default function VerfahrendetailsBearbeiten() {
                       type="button"
                       onClick={handleAddFileUpload}
                       className="kern-btn kern-btn--secondary"
+                      disabled={uploadableEinreichungen.length === 0}
                     >
                       <span className="kern-label">
-                        Weitere Datei hinzufügen
+                        {uploadableEinreichungen.length === 0
+                          ? "Keine Uploads mehr möglich"
+                          : "Weitere Datei hinzufügen"}
                       </span>
                     </button>
                   </div>

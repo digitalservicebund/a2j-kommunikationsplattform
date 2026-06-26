@@ -90,7 +90,7 @@ export default function VerfahrenNeu() {
               onSubmit={handleSubmit}
             >
               <div className="kern-gap-xl flex flex-col">
-                <input type="hidden" name="type" value="XJUSTIZ" />
+                <input type="hidden" name="type" value="SCHRIFTSTUECK" />
                 <div className="kern-form-input">
                   <label className="kern-label" htmlFor="file">
                     Datei hier hochladen (PDF, DOCX)
