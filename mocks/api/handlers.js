@@ -29,7 +29,7 @@ import {
 
 // KOMPLA_API_URL
 const mockKomplaApiUrl = "https://app.kompla-justiz.sinc.de";
-// KOMPLA_IDP_ISSUER
+// KOMPLA_API_IDP_ISSUER
 const mockKomplaIdpIssuer = "https://login.kompla-justiz.sinc.de";
 
 export const handlers = [

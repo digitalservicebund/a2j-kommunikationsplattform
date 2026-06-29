@@ -6,9 +6,9 @@ interface ServerConfig {
   BRAK_IDP_OIDC_ISSUER: string;
   BRAK_IDP_OIDC_REDIRECT_URI: string;
   KOMPLA_API_URL: string;
-  KOMPLA_IDP_CLIENT_ID: string;
-  KOMPLA_IDP_ISSUER: string;
-  KOMPLA_IDP_SUBJECT_ISSUER: string;
+  KOMPLA_API_IDP_CLIENT_ID: string;
+  KOMPLA_API_IDP_ISSUER: string;
+  KOMPLA_API_IDP_SUBJECT_ISSUER: string;
   KOMPLA_DEMO_IDP_ISSUER: string;
   KOMPLA_DEMO_SERVICE_CLIENT_ID: string;
   KOMPLA_DEMO_SERVICE_CLIENT_SECRET: string;
@@ -38,10 +38,11 @@ export function serverConfig(): ServerConfig {
     BRAK_IDP_OIDC_REDIRECT_URI:
       process.env.BRAK_IDP_OIDC_REDIRECT_URI?.trim() ?? "",
     KOMPLA_API_URL: process.env.KOMPLA_API_URL?.trim() ?? "",
-    KOMPLA_IDP_CLIENT_ID: process.env.KOMPLA_IDP_CLIENT_ID?.trim() ?? "",
-    KOMPLA_IDP_ISSUER: process.env.KOMPLA_IDP_ISSUER?.trim() ?? "",
-    KOMPLA_IDP_SUBJECT_ISSUER:
-      process.env.KOMPLA_IDP_SUBJECT_ISSUER?.trim() ?? "",
+    KOMPLA_API_IDP_CLIENT_ID:
+      process.env.KOMPLA_API_IDP_CLIENT_ID?.trim() ?? "",
+    KOMPLA_API_IDP_ISSUER: process.env.KOMPLA_API_IDP_ISSUER?.trim() ?? "",
+    KOMPLA_API_IDP_SUBJECT_ISSUER:
+      process.env.KOMPLA_API_IDP_SUBJECT_ISSUER?.trim() ?? "",
     KOMPLA_DEMO_IDP_ISSUER: process.env.KOMPLA_DEMO_IDP_ISSUER?.trim() ?? "",
     KOMPLA_DEMO_SERVICE_CLIENT_ID:
       process.env.KOMPLA_DEMO_SERVICE_CLIENT_ID?.trim() ?? "",

@@ -45,11 +45,7 @@ For the provided Git hooks you will need to install [lefthook](https://github.co
 
 ### Configure .env variables
 
-Copy the `.env.example` file and save it as `.env` within this projects root folder and define the needed environment variables. For example:
-
-```sh
-ENVIRONMENT=development
-```
+Copy the `.env.example` file and save it as `.env` within this projects root folder. Afterwards use the 1Password CLI to provision your app locally with neeed environemnt `development` or `staging` secrets.
 
 ### Local development
 
