@@ -61,6 +61,6 @@ app/
 
 ## Consequences
 
-The [project structure](../project-structure.md) will be updated in accordance with the decision introduced by this ADR, and the development of new features will continue in line with the new structure. The project structure should be revised as soon as it becomes unclear or no longer makes sense.
+The [project structure](../PROJECT-STRUCTURE.md) will be updated in accordance with the decision introduced by this ADR, and the development of new features will continue in line with the new structure. The project structure should be revised as soon as it becomes unclear or no longer makes sense.
 
 [^1]: React Router Routing docs [https://reactrouter.com/start/framework/routing#configuring-routes](https://reactrouter.com/start/framework/routing#configuring-routes)
