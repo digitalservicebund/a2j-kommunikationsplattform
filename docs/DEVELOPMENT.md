@@ -12,7 +12,7 @@ We aim to use the current active [version of Node.js](https://nodejs.dev/en/abou
 
 1Password CLI is needed for secret management locally, have a look at [the docs and install the CLI](https://www.1password.dev/cli/get-started) on your machine, if needed.
 
-Additionally we use [Git Hooks](#git-hooks). For that you will need to install [lefthook](https://github.com/evilmartians/lefthook)
+Additionally we use [Git Hooks](https://git-scm.com/book/ms/v2/Customizing-Git-Git-Hooks). For that you will need to install [lefthook](https://github.com/evilmartians/lefthook)
 (git hook manager) and [talisman](https://github.com/thoughtworks/talisman/) (secrets scanner) `brew install lefthook talisman`. Afterwards execute `lefthook install` to initialize the hooks or run `lefthook run pre-commit` before commiting new changes. See `lefthook.yml` for more details in regards to the currently configured git hooks.
 
 ### Project dependencies
