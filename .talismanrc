@@ -29,6 +29,10 @@ fileignoreconfig:
   checksum: 1f290d7ab784840ea8db18f9551e2d17ed8b0151946a18a22da4cb4e3b371c9f
 - filename: .env.op
   checksum: ce5c604a92f2285c9b623235bd0ad6d8a3e494c617374bacba2934a95127baa6
+- filename: .env.defaults
+  checksum: ddb959b86f4ff32a615a6da54c14f4c04509bfc8ec58b34d0d9ab557fbf93167
+- filename: app/config/**test**/config.server.test.ts
+  checksum: bb34b6bf2a33760dfb871ec19b04b517ba769a29433dfed46bd2eb6cd0a98ec0
 - filename: app/components/hooks/**test**/useLogoutInactiveUser.test.tsx
   ignore_detectors: [filecontent]
 - filename: app/config/config.server.ts
