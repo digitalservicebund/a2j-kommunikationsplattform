@@ -1,862 +1,576 @@
 {
-  "x-generator": "NSwag v14.4.0.0 (NJsonSchema v11.3.2.0 (Newtonsoft.Json v13.0.0.0))",
-  "openapi": "3.0.0",
+  "openapi": "3.0.4",
   "info": {
-    "title": "Kompla API v1",
-    "description": "Kompla API documentation",
-    "version": "1.0"
+    "title": "Justiz KomPla API",
+    "description": "Justiz KomPla API - Kommunikationsplattform zur Klageeinreichung und Verwaltung von Verfahrensdaten bei Gericht.",
+    "version": "v1"
   },
+  "servers": [
+    {
+      "url": "/main"
+    }
+  ],
   "paths": {
-    "/api/v1/lift/{one-time-password}": {
+    "/api/v1/verfahren/{verfahren-id}/einreichungen/{einreichung-id}/dokumente/{id}": {
       "get": {
         "tags": [
-          "Lift"
+          "Dokumente"
         ],
-        "summary": "Führt eine asynchrone Prüfung des Einmalpasswortes durch.",
-        "operationId": "Lift_Get",
+        "summary": "Ruft die Details eines spezifischen Dokuments ab.",
+        "description": "Ruft ein Dokument basierend auf der Verfahrens-, Einreichungs- und Dokument-ID ab und validiert, dass das Dokument zur Einreichung und das Verfahren\nübereinstimmt.",
+        "operationId": "VerfahrenEinreichungenDokumenteController_GetAsync",
         "parameters": [
           {
-            "name": "X-User-ID",
-            "x-originalName": "userSafeId",
-            "in": "header",
-            "required": true,
-            "description": "Die Benutzer-ID aus dem Header.",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 1
-          },
-          {
-            "name": "one-time-password",
-            "x-originalName": "oneTimePassword",
+            "name": "verfahren-id",
             "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
             "required": true,
-            "description": "Das Einmalpasswort aus der Route.",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 2
-          }
-        ],
-        "responses": {
-          "400": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": ""
-          },
-          "200": {
-            "description": "Ein IActionResult mit der Antwort der Validierung.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidateOtpResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/lift/{lift-id}": {
-      "post": {
-        "tags": [
-          "Lift"
-        ],
-        "summary": "Hebt einen Benutzer für ein Verfahren an.",
-        "operationId": "Lift_Post",
-        "parameters": [
-          {
-            "name": "X-User-ID",
-            "x-originalName": "userSafeId",
-            "in": "header",
-            "required": true,
-            "description": "Die Benutzer-ID aus dem Header.",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 1
-          },
-          {
-            "name": "lift-id",
-            "x-originalName": "liftId",
-            "in": "path",
-            "required": true,
-            "description": "Die Lift-ID aus der Route.",
             "schema": {
               "type": "string",
-              "format": "guid"
-            },
-            "x-position": 2
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "einreichung-id",
+            "in": "path",
+            "description": "Eindeutige ID der Einreichung.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Eindeutige ID des Dokuments.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
-        "requestBody": {
-          "x-name": "request",
-          "description": "Die Anfrage zum Anheben eines Benutzers.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AcceptLiftRequest"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 3
-        },
         "responses": {
-          "400": {
-            "description": "",
+          "200": {
+            "description": "OK",
             "content": {
-              "application/problem+json": {
+              "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                  "$ref": "#/components/schemas/Dokument"
                 }
-              }
-            }
-          },
-          "500": {
-            "description": ""
-          },
-          "201": {
-            "description": "Ein IActionResult mit der Antwort des Vorgangs.",
-            "content": {
+              },
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dokument"
+                }
+              },
+              "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Dokument"
                 }
               }
             }
           },
-          "404": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/verfahren": {
-      "get": {
-        "tags": [
-          "Verfahren"
-        ],
-        "summary": "Ruft eine asynchrone Liste von Verfahren ab.",
-        "operationId": "Verfahren_Get",
-        "parameters": [
-          {
-            "name": "X-User-ID",
-            "x-originalName": "userSafeId",
-            "in": "header",
-            "required": true,
-            "description": "Die sichere Benutzer-ID aus der Kopfzeile.",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 1
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": true,
-            "description": "Maximale Anzahl der zurückzugebenden Datensätze.",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 2
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "Offset für die Rückgabe der Datensätze.",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 3
-          },
-          {
-            "name": "status",
-            "in": "query",
-            "description": "Optionaler Status zur Filterung der Verfahren.",
-            "schema": {
-              "nullable": true,
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/EJbaVerfahrenStatus"
-                }
-              ]
-            },
-            "x-position": 4
-          }
-        ],
-        "responses": {
           "400": {
-            "description": "",
+            "description": "Bad Request",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
                 }
               }
             }
           },
-          "500": {
-            "description": "",
+          "401": {
+            "description": "Unauthorized",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
                 }
               }
             }
           },
-          "200": {
-            "description": "ActionResult mit einer Liste von Verfahren.",
+          "403": {
+            "description": "Forbidden",
             "content": {
-              "application/json": {
+              "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VerfahrenList"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Verfahren"
-        ],
-        "summary": "Erstellt ein neues Verfahren.",
-        "operationId": "Verfahren_Post",
-        "parameters": [
-          {
-            "name": "X-User-ID",
-            "x-originalName": "userSafeId",
-            "in": "header",
-            "required": true,
-            "description": "Die sichere Benutzer-ID aus der Kopfzeile.",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 1
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "xJustiz": {
-                    "type": "string",
-                    "format": "binary",
-                    "nullable": true
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
                   },
-                  "files": {
-                    "type": "array",
-                    "nullable": true,
-                    "items": {
-                      "type": "string",
-                      "format": "binary"
-                    }
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
                   }
                 }
               }
             }
           }
         },
-        "responses": {
-          "400": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationProblemDetails"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "ActionResult mit dem erstellten Verfahren.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Verfahren"
-                }
-              }
-            }
-          },
-          "501": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "502": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
           }
-        }
-      }
-    },
-    "/api/v1/verfahren/{verfahren-id}": {
-      "get": {
+        ]
+      },
+      "patch": {
         "tags": [
-          "Verfahren"
+          "Dokumente"
         ],
-        "summary": "Ruft ein Verfahren basierend auf der ID ab.",
-        "operationId": "Verfahren_GetById",
+        "summary": "Aktualisiert den Typ eines spezifischen Dokuments.",
+        "description": "Aktualisiert den Dokumententyp eines bestehenden Dokuments. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
+        "operationId": "VerfahrenEinreichungenDokumenteController_UpdateTypeAsync",
         "parameters": [
           {
-            "name": "X-User-ID",
-            "x-originalName": "userSafeId",
-            "in": "header",
-            "required": true,
-            "description": "Die sichere Benutzer-ID aus der Kopfzeile.",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 1
-          },
-          {
             "name": "verfahren-id",
-            "x-originalName": "verfahrenId",
             "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
             "required": true,
-            "description": "Die ID des anzuzeigenden Verfahrens.",
             "schema": {
               "type": "string",
-              "format": "guid"
-            },
-            "x-position": 2
-          }
-        ],
-        "responses": {
-          "400": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationProblemDetails"
-                }
-              }
+              "format": "uuid"
             }
           },
-          "500": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "ActionResult mit dem angeforderten Verfahren oder NotFound.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Verfahren"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/verfahren/{verfahren-id}/akte": {
-      "get": {
-        "tags": [
-          "Verfahren"
-        ],
-        "summary": "Ruft die Akte eines Verfahrens ab.",
-        "operationId": "Verfahren_Get2",
-        "parameters": [
           {
-            "name": "X-User-ID",
-            "x-originalName": "userSafeId",
+            "name": "einreichung-id",
+            "in": "path",
+            "description": "Eindeutige ID der Einreichung.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Eindeutige ID des Dokuments.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Match",
             "in": "header",
+            "description": "Die aktuelle Version der Ressource (ETag).",
             "required": true,
-            "description": "Die sichere Benutzer-ID aus der Kopfzeile.",
             "schema": {
               "type": "string"
-            },
-            "x-position": 1
-          },
-          {
-            "name": "verfahren-id",
-            "x-originalName": "verfahrenId",
-            "in": "path",
-            "required": true,
-            "description": "Die ID des spezifischen Verfahrens.",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 2
-          }
-        ],
-        "responses": {
-          "400": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationProblemDetails"
-                }
-              }
             }
-          },
-          "500": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "ActionResult mit einer Liste von Verfahren.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Akte"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "501": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "502": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/verfahren/{verfahren-id}/akte/{aktenteil-id}/dokumente": {
-      "get": {
-        "tags": [
-          "Verfahren"
-        ],
-        "summary": "Ruft eine Liste von Schriftstücken für einen Akten-Teil ab.",
-        "operationId": "Verfahren_GetSchriftstuecke",
-        "parameters": [
-          {
-            "name": "X-User-ID",
-            "x-originalName": "userSafeId",
-            "in": "header",
-            "required": true,
-            "description": "Die sichere Benutzer-ID aus der Kopfzeile.",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 1
-          },
-          {
-            "name": "verfahren-id",
-            "x-originalName": "verfahrenId",
-            "in": "path",
-            "required": true,
-            "description": "Die ID des Verfahrens aus der URL.",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 2
-          },
-          {
-            "name": "aktenteil-id",
-            "x-originalName": "aktenteilId",
-            "in": "path",
-            "required": true,
-            "description": "Die ID des Aktenteils aus der URL.",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 3
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": true,
-            "description": "Maximale Anzahl der zurückzugebenden Datensätze.",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 4
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "Offset für die Rückgabe der Datensätze.",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 5
-          }
-        ],
-        "responses": {
-          "400": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationProblemDetails"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "ActionResult mit einer Liste von Schriftstücken.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DokumentResponse"
-                }
-              }
-            }
-          },
-          "501": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "502": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/verfahren/{verfahren-id}/akte/dokumente/{dokument-id}": {
-      "get": {
-        "tags": [
-          "Verfahren"
-        ],
-        "summary": "Lädt ein Dokument anhand seiner ID herunter.",
-        "operationId": "Verfahren_GetDocumentById",
-        "parameters": [
-          {
-            "name": "X-User-ID",
-            "x-originalName": "userSafeId",
-            "in": "header",
-            "required": true,
-            "description": "Sichere Benutzer-ID aus der Kopfzeile.",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 1
-          },
-          {
-            "name": "verfahren-id",
-            "x-originalName": "verfahrenId",
-            "in": "path",
-            "required": true,
-            "description": "ID des Verfahrens.",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 2
-          },
-          {
-            "name": "dokument-id",
-            "x-originalName": "dokumentId",
-            "in": "path",
-            "required": true,
-            "description": "ID des Dokuments.",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 3
-          }
-        ],
-        "responses": {
-          "400": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ValidationProblemDetails"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "Datei im Stream oder NotFound, falls nicht vorhanden.",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "501": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "502": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/verfahren/{verfahren-id}/dokumente": {
-      "post": {
-        "tags": [
-          "Verfahren"
-        ],
-        "summary": "Erstellt Dokumente für ein spezifisches Verfahren.",
-        "operationId": "Verfahren_PostAll",
-        "parameters": [
-          {
-            "name": "X-User-ID",
-            "x-originalName": "userSafeId",
-            "in": "header",
-            "required": true,
-            "description": "Die sichere Benutzer-ID aus der Kopfzeile.",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 1
-          },
-          {
-            "name": "verfahren-id",
-            "x-originalName": "verfahrenId",
-            "in": "path",
-            "required": true,
-            "description": "ID des Verfahrens, zu dem die Dokumente gehören.",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 2
-          },
-          {
-            "name": "aktenteil_id",
-            "x-originalName": "aktenteilId",
-            "in": "query",
-            "description": "Optionale Aktenteil-ID zur Zuordnung der Dokumente.",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 3
           }
         ],
         "requestBody": {
+          "description": "Die Anfrage mit dem neuen Typ des Dokuments.",
           "content": {
-            "multipart/form-data": {
+            "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "files": {
-                    "type": "array",
-                    "nullable": true,
-                    "items": {
-                      "type": "string",
-                      "format": "binary"
-                    }
+                "$ref": "#/components/schemas/UpdateDokumentTypeRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDokumentTypeRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDokumentTypeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dokument"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dokument"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dokument"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "concurrency-conflict": {
+                    "$ref": "#/components/examples/409_ConcurrencyConflict"
+                  }
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Precondition Failed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "if-match-header-version-conflict": {
+                    "$ref": "#/components/examples/412_IfMatchHeaderVersionConflict"
+                  }
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Precondition Required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "invalid-if-match-header": {
+                    "$ref": "#/components/examples/428_InvalidIfMatchHeader"
                   }
                 }
               }
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Dokumente"
+        ],
+        "summary": "Löscht ein spezifisches Dokument.",
+        "description": "Löscht ein Dokument basierend auf der Verfahrens-, Einreichungs- und Dokument-ID. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
+        "operationId": "VerfahrenEinreichungenDokumenteController_DeleteAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "einreichung-id",
+            "in": "path",
+            "description": "Eindeutige ID der Einreichung.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Eindeutige ID des Dokuments.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "description": "Die aktuelle Version der Ressource (ETag).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
+          "204": {
+            "description": "No Content"
+          },
           "400": {
-            "description": "",
+            "description": "Bad Request",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
                 }
               }
             }
           },
-          "500": {
-            "description": "",
+          "401": {
+            "description": "Unauthorized",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
                 }
               }
             }
           },
-          "201": {
-            "description": "ActionResult mit dem erstellten Verfahren.",
+          "403": {
+            "description": "Forbidden",
             "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "concurrency-conflict": {
+                    "$ref": "#/components/examples/409_ConcurrencyConflict"
+                  }
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Precondition Failed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "if-match-header-version-conflict": {
+                    "$ref": "#/components/examples/412_IfMatchHeaderVersionConflict"
+                  }
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Precondition Required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "invalid-if-match-header": {
+                    "$ref": "#/components/examples/428_InvalidIfMatchHeader"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/verfahren/{verfahren-id}/einreichungen/{einreichung-id}/dokumente": {
+      "get": {
+        "tags": [
+          "Dokumente"
+        ],
+        "summary": "Ruft alle Dokumente für eine spezifische Einreichung ab.",
+        "description": "Gibt eine Liste aller Dokumente für die angegebene Einreichung zurück.",
+        "operationId": "VerfahrenEinreichungenDokumenteController_GetAllAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "einreichung-id",
+            "in": "path",
+            "description": "Eindeutige ID der Einreichung.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Dokument"
+                  }
+                }
+              },
               "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Dokument"
+                  }
+                }
+              },
+              "text/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -866,47 +580,2250 @@
               }
             }
           },
-          "501": {
-            "description": "",
+          "400": {
+            "description": "Bad Request",
             "content": {
               "application/problem+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
                 }
               }
             }
           },
-          "502": {
-            "description": "",
+          "401": {
+            "description": "Unauthorized",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
                 }
               }
             }
           },
-          "503": {
-            "description": "",
+          "403": {
+            "description": "Forbidden",
             "content": {
               "application/problem+json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
                 }
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Dokumente"
+        ],
+        "summary": "Erstellt ein neues Dokument zu einer bestimmten Einreichung eines Verfahrens.",
+        "description": "Erstellt ein neues Dokument und speichert es im Objektspeicher. Unterstützt die Übertragung über MIME-Multipart-Formdaten.",
+        "operationId": "VerfahrenEinreichungenDokumenteController_CreateAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "einreichung-id",
+            "in": "path",
+            "description": "Eindeutige ID der Einreichung.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Typ des Dokuments.",
+            "schema": {
+              "$ref": "#/components/schemas/DokumentType"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "file"
+                ],
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "The document file",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dokument"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dokument"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dokument"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ProblemDetails"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ValidationProblemDetails"
+                    }
+                  ]
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  },
+                  "invalid-file-upload": {
+                    "$ref": "#/components/examples/400_InvalidFileUpload"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload Too Large",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "file-too-large": {
+                    "$ref": "#/components/examples/413_FileTooLarge"
+                  }
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Unsupported Media Type",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "invalid-content-type": {
+                    "$ref": "#/components/examples/415_InvalidContentType"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/verfahren/{verfahren-id}/einreichungen/{einreichung-id}/dokumente/{id}/downloadlink": {
+      "get": {
+        "tags": [
+          "Dokumente"
+        ],
+        "summary": "Generiert einen temporären Download-Link für ein Dokument.",
+        "description": "Generiert einen signierten Download-Link für ein Dokument im Objektspeicher mit einer konfigurierbaren Gültigkeitsdauer.",
+        "operationId": "VerfahrenEinreichungenDokumenteController_GetDownloadLinkAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "einreichung-id",
+            "in": "path",
+            "description": "Eindeutige ID der Einreichung.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Eindeutige ID des Dokuments.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "ttl",
+            "in": "query",
+            "description": "TTL für den Download-Link in Sekunden. Default: 30 Sekunden, Max: 7 Tage (604800 Sekunden).",
+            "schema": {
+              "maximum": 604800,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "disposition_type",
+            "in": "query",
+            "description": "Bestimmt das Verhalten des Browsers beim Abrufen der Datei über den generierten Download-Link.",
+            "schema": {
+              "$ref": "#/components/schemas/ContentDispositionType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/verfahren/{verfahren-id}/einreichungen/{einreichung-id}/dokumente/{id}/validierungsstatus": {
+      "get": {
+        "tags": [
+          "Dokumente"
+        ],
+        "summary": "Ruft den Status eines spezifischen Dokuments ab.",
+        "description": "Ruft den Validierungsstatus eines Dokuments ab, basierend auf den Validierungsnachrichten.\nGibt Gruen zurück, wenn keine Nachrichten vorhanden sind, Gelb bei Warnungen, Rot bei Fehlern, die eine Einreichung verhindern.",
+        "operationId": "VerfahrenEinreichungenDokumenteController_GetStatusAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "einreichung-id",
+            "in": "path",
+            "description": "Eindeutige ID der Einreichung.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Eindeutige ID des Dokuments.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  },
+                  "dokument-status-not-available": {
+                    "$ref": "#/components/examples/404_DokumentStatusNotAvailable"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/verfahren/{verfahren-id}/einreichungen/{id}": {
+      "get": {
+        "tags": [
+          "Einreichungen"
+        ],
+        "summary": "Ruft die Details einer spezifischen Einreichung anhand der angegebenen IDs ab.",
+        "description": "Ruft eine Einreichung basierend auf der Verfahrens- und Einreichungs-ID ab und validiert, dass die Einreichung zum Verfahren gehört.",
+        "operationId": "VerfahrenEinreichungenController_GetAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Eindeutige ID der Einreichung.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Einreichung"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Einreichung"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Einreichung"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Einreichungen"
+        ],
+        "summary": "Aktualisiert den Namen einer spezifischen Einreichung.",
+        "description": "Aktualisiert den Namen einer bestehenden Einreichung. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
+        "operationId": "VerfahrenEinreichungenController_UpdateAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Eindeutige ID der Einreichung.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "description": "Die aktuelle Version der Ressource (ETag).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Die Anfrage mit dem neuen Namen der Einreichung.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEinreichungNameRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEinreichungNameRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEinreichungNameRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Einreichung"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Einreichung"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Einreichung"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "concurrency-conflict": {
+                    "$ref": "#/components/examples/409_ConcurrencyConflict"
+                  }
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Precondition Failed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "if-match-header-version-conflict": {
+                    "$ref": "#/components/examples/412_IfMatchHeaderVersionConflict"
+                  }
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Precondition Required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "invalid-if-match-header": {
+                    "$ref": "#/components/examples/428_InvalidIfMatchHeader"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Einreichungen"
+        ],
+        "summary": "Löscht eine spezifische Einreichung basierend auf den angegebenen IDs.",
+        "description": "Löscht eine Einreichung basierend auf der Verfahrens- und Einreichungs-ID. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
+        "operationId": "VerfahrenEinreichungenController_DeleteAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Eindeutige ID der Einreichung.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "description": "Die aktuelle Version der Ressource (ETag).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "concurrency-conflict": {
+                    "$ref": "#/components/examples/409_ConcurrencyConflict"
+                  }
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Precondition Failed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "if-match-header-version-conflict": {
+                    "$ref": "#/components/examples/412_IfMatchHeaderVersionConflict"
+                  }
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Precondition Required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "invalid-if-match-header": {
+                    "$ref": "#/components/examples/428_InvalidIfMatchHeader"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/verfahren/{verfahren-id}/einreichungen": {
+      "get": {
+        "tags": [
+          "Einreichungen"
+        ],
+        "summary": "Ruft alle Einreichungen für ein spezifisches Verfahren ab.",
+        "description": "Gibt eine Liste aller Einreichungen für das angegebene Verfahren zurück.",
+        "operationId": "VerfahrenEinreichungenController_GetAllAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Einreichung"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Einreichung"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Einreichung"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Einreichungen"
+        ],
+        "summary": "Erstellt eine neue Einreichung für das angegebene Verfahren.",
+        "description": "Erstellt eine neue Einreichung basierend auf der Rolle des aktuellen Benutzers für das angegebene Verfahren.\nDer Name der Einreichung ist ein Pflichtfeld und wird unverändert übernommen.",
+        "operationId": "VerfahrenEinreichungenController_CreateAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Die Anfrage mit dem Namen der Einreichung.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEinreichungRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEinreichungRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEinreichungRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Einreichung"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Einreichung"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Einreichung"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/verfahren/{verfahren-id}/einreichungen/{id}/validierungsstatus": {
+      "get": {
+        "tags": [
+          "Einreichungen"
+        ],
+        "summary": "Ruft den Status einer spezifischen Einreichung ab.",
+        "description": "Ruft den Validierungsstatus einer Einreichung ab, basierend auf den Validierungsnachrichten der zugehörigen Dokumente.\nGibt Gruen zurück, wenn keine Nachrichten vorhanden sind, Gelb bei Warnungen, Rot bei Fehlern, die eine Einreichung verhindern.",
+        "operationId": "VerfahrenEinreichungenController_GetStatusAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Eindeutige ID der Einreichung.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  },
+                  "einreichung-status-not-available": {
+                    "$ref": "#/components/examples/404_EinreichungStatusNotAvailable"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/gerichte": {
+      "get": {
+        "tags": [
+          "Gerichte"
+        ],
+        "summary": "Ruft eine Liste aller verfügbaren Gerichte ab.",
+        "description": "Gibt eine gefilterte Liste aller aktiven Gerichte zurück.",
+        "operationId": "GerichteController_GetAllAsync",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Gericht"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Gericht"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Gericht"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.gericht.read"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/verfahren/{id}": {
+      "get": {
+        "tags": [
+          "Verfahren"
+        ],
+        "summary": "Ruft ein Verfahren basierend auf der angegebenen ID ab.",
+        "description": "Ruft ein Verfahren basierend auf der angegebenen ID ab und lädt alle zugehörigen Entitäten (Gericht, Beteiligungen, Rollen und Prozessbevollmächtigte).",
+        "operationId": "VerfahrenController_GetAsync",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Die eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Verfahren"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Verfahren"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Verfahren"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Verfahren"
+        ],
+        "summary": "Löscht ein Verfahren basierend auf der angegebenen ID.",
+        "description": "Löscht ein Verfahren basierend auf der angegebenen ID. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
+        "operationId": "VerfahrenController_DeleteAsync",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Die eindeutige ID des zu löschenden Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "description": "Die aktuelle Version der Ressource (ETag).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "concurrency-conflict": {
+                    "$ref": "#/components/examples/409_ConcurrencyConflict"
+                  }
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Precondition Failed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "if-match-header-version-conflict": {
+                    "$ref": "#/components/examples/412_IfMatchHeaderVersionConflict"
+                  }
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Precondition Required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "invalid-if-match-header": {
+                    "$ref": "#/components/examples/428_InvalidIfMatchHeader"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/verfahren": {
+      "get": {
+        "tags": [
+          "Verfahren"
+        ],
+        "summary": "Ruft eine Liste aller Verfahren basierend auf den angegebenen Parametern ab.",
+        "description": "Ruft eine gefilterte Liste von Verfahren ab, basierend auf den angegebenen Abfrageparametern wie Suchbegriffen, Filtern und Sortierung.",
+        "operationId": "VerfahrenController_GetAllAsync",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximale Anzahl von Ergebnissen, die zurückgegeben werden sollen.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Anzahl der zu überspringenden Datensätze.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sortierung über genau einen Parameter. Vorangestelltes `-` sortiert absteigend.\nErlaubte Felder: `aktenzeichen_gericht`,  `gericht`, `eingereicht_am`,\nBeispiele: `sort=gericht` (aufsteigend), `sort=-gericht` (absteigend).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search_text",
+            "in": "query",
+            "description": "Volltextsuche über Beteiligung, Gericht, Aktenzeichen.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gericht",
+            "in": "query",
+            "description": "Eindeutige ID des Gerichts.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Verfahren"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Verfahren"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Verfahren"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Verfahren"
+        ],
+        "summary": "Erstellt ein neues Verfahren für einen Anwalt.",
+        "description": "Erstellt ein neues Verfahren für den Benutzer mit der angegebenen Safe-ID.\nDie Safe-ID wird überprüft und bei Bedarf einem neuen Benutzer zugeordnet.",
+        "operationId": "VerfahrenController_CreateAsync",
+        "requestBody": {
+          "description": "Die Anfrage mit der Safe-ID des Anwalts.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVerfahrenRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVerfahrenRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVerfahrenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Verfahren"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Verfahren"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Verfahren"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
+          }
+        ]
       }
     }
   },
   "components": {
     "schemas": {
+      "Beteiligte": {
+        "required": [
+          "name",
+          "rollen"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Gibt den Namen einer beteiligten Person oder Organisation an.",
+            "nullable": true
+          },
+          "rollen": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Rolle"
+            },
+            "description": "Enthält die Rollen, die einer beteiligten Person oder Organisation zugewiesen sind.",
+            "nullable": true
+          },
+          "prozessbevollmaechtigte": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Prozessbevollmaechtigter"
+            },
+            "description": "Gibt die Prozessbevollmächtigten für eine beteiligte Person im Verfahren an.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert eine beteiligte Person oder Organisation im Verfahren."
+      },
+      "ContentDispositionType": {
+        "enum": [
+          "INLINE",
+          "ATTACHMENT"
+        ],
+        "type": "string"
+      },
+      "CreateEinreichungRequest": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Der vom Benutzer vergebene Name der Einreichung."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Anfrage-DTO für das Erstellen einer neuen Einreichung."
+      },
+      "CreateVerfahrenRequest": {
+        "required": [
+          "safe_id"
+        ],
+        "type": "object",
+        "properties": {
+          "safe_id": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Die Safe-ID des Anwalts, für den das Verfahren erstellt werden soll."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Anfrage-DTO für das Erstellen eines neuen Verfahrens."
+      },
+      "Dokument": {
+        "required": [
+          "einreichung_id",
+          "erstellt_am",
+          "erstellt_von",
+          "name",
+          "size_in_bytes",
+          "status",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "format": "uuid"
+          },
+          "einreichung_id": {
+            "type": "string",
+            "description": "Eindeutige ID der Einreichung.",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DokumentStatus"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name des Dokuments.",
+            "nullable": true
+          },
+          "size_in_bytes": {
+            "type": "integer",
+            "description": "Größe des Dokuments in Bytes.",
+            "format": "int64"
+          },
+          "type": {
+            "$ref": "#/components/schemas/DokumentType"
+          },
+          "viren_scan_status": {
+            "$ref": "#/components/schemas/VirenScanStatus"
+          },
+          "gesendet_am": {
+            "type": "string",
+            "description": "Das Datum, an dem die Einreichung gesendet wurde.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "eingereicht_am": {
+            "type": "string",
+            "description": "Datum der Einreichung im Verfahren.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "erstellt_von": {
+            "type": "string",
+            "description": "Benutzer, der die Einreichung erstellt hat.",
+            "nullable": true
+          },
+          "erstellt_am": {
+            "type": "string",
+            "description": "Datum und Uhrzeit der Erstellung der Einreichung.",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert ein Dokument im System."
+      },
+      "DokumentStatus": {
+        "enum": [
+          "ERSTELLT",
+          "VALIDIERT",
+          "EINGEREICHT"
+        ],
+        "type": "string"
+      },
+      "DokumentType": {
+        "enum": [
+          "XJUSTIZ",
+          "ANHANG",
+          "SCHRIFTSTUECK"
+        ],
+        "type": "string"
+      },
+      "Einreichung": {
+        "required": [
+          "erstellt_am",
+          "erstellt_von",
+          "name",
+          "status",
+          "verfahren_id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "format": "uuid"
+          },
+          "verfahren_id": {
+            "type": "string",
+            "description": "Die eindeutige Kennung eines Verfahrens.",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "description": "Der vom Benutzer vergebene Name der Einreichung.",
+            "nullable": true
+          },
+          "erstellt_von": {
+            "type": "string",
+            "description": "Benutzer, der die Einreichung erstellt hat.",
+            "nullable": true
+          },
+          "erstellt_am": {
+            "type": "string",
+            "description": "Datum und Uhrzeit der Erstellung der Einreichung.",
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EinreichungStatus"
+          },
+          "gesendet_am": {
+            "type": "string",
+            "description": "Das Datum, an dem die Einreichung gesendet wurde.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "eingereicht_am": {
+            "type": "string",
+            "description": "Datum der Einreichung im Verfahren.",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert das Datenübertragungsobjekt (DTO) für eine Einreichung."
+      },
+      "EinreichungStatus": {
+        "enum": [
+          "ERSTELLT",
+          "VALIDIERT",
+          "EINGEREICHT"
+        ],
+        "type": "string"
+      },
+      "Gericht": {
+        "required": [
+          "code",
+          "wert"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "format": "uuid"
+          },
+          "wert": {
+            "type": "string",
+            "description": "Der Wert des Gerichts.",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "description": "Der eindeutige Code des Gerichts.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "DTO für Gericht."
+      },
       "ProblemDetails": {
         "type": "object",
-        "additionalProperties": {
-          "nullable": true
-        },
         "properties": {
           "type": {
             "type": "string",
@@ -929,185 +2846,193 @@
             "type": "string",
             "nullable": true
           }
-        }
+        },
+        "additionalProperties": { }
       },
-      "ValidateOtpResponse": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "valid": {
-            "type": "boolean"
-          },
-          "status": {
-            "$ref": "#/components/schemas/EOtpStatus"
-          },
-          "lift": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/LiftMessage"
-              }
-            ]
-          }
-        }
-      },
-      "EOtpStatus": {
-        "type": "string",
-        "description": "",
-        "x-enumNames": [
-          "Valid",
-          "Outdated",
-          "NotFound",
-          "AlreadyUsed"
+      "Prozessbevollmaechtigter": {
+        "required": [
+          "aktenzeichen",
+          "name"
         ],
-        "enum": [
-          "Valid",
-          "Outdated",
-          "NotFound",
-          "AlreadyUsed"
-        ]
-      },
-      "LiftMessage": {
         "type": "object",
-        "additionalProperties": false,
         "properties": {
           "id": {
             "type": "string",
-            "nullable": true
-          },
-          "aktenzeichen": {
-            "type": "string",
-            "nullable": true
-          },
-          "rolle": {
-            "type": "string",
-            "nullable": true
-          },
-          "otp": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ValidationProblemDetails": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/HttpValidationProblemDetails"
-          },
-          {
-            "type": "object",
-            "description": "A ProblemDetails for validation errors.",
-            "additionalProperties": {
-              "nullable": true
-            },
-            "properties": {
-              "errors": {
-                "type": "object",
-                "description": "Gets or sets the validation errors associated with this instance of ValidationProblemDetails.",
-                "additionalProperties": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        ]
-      },
-      "HttpValidationProblemDetails": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/ProblemDetails"
-          },
-          {
-            "type": "object",
-            "additionalProperties": {
-              "nullable": true
-            },
-            "properties": {
-              "errors": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        ]
-      },
-      "Dokument": {
-        "type": "object",
-        "description": "Repräsentiert ein Dokument mit grundlegenden Eigenschaften.",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Eindeutige Kennung des Dokuments."
+            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "format": "uuid"
           },
           "name": {
             "type": "string",
-            "description": "Der Name des Dokuments."
-          },
-          "dokument_klasse": {
-            "type": "string",
-            "description": "Klasse für die Klassifizierung eines Dokuments."
-          }
-        }
-      },
-      "AcceptLiftRequest": {
-        "type": "object",
-        "description": "Stellt eine Anfrage zum Akzeptieren eines Lifts dar.",
-        "additionalProperties": false,
-        "properties": {
-          "accept_lift": {
-            "type": "boolean",
-            "description": "Gibt an, ob der Lift akzeptiert wird."
-          },
-          "vollmacht_versicherung": {
-            "type": "boolean",
-            "description": "Gibt an, ob eine Vollmacht für die Versicherung vorliegt."
-          }
-        }
-      },
-      "VerfahrenList": {
-        "type": "object",
-        "description": "Repräsentiert eine Liste von Verfahren.",
-        "additionalProperties": false,
-        "properties": {
-          "verfahren": {
-            "type": "array",
-            "description": "Repräsentiert ein Verfahren.",
-            "items": {
-              "$ref": "#/components/schemas/Verfahren"
-            }
-          }
-        }
-      },
-      "Verfahren": {
-        "type": "object",
-        "description": "Dto-Klasse, die ein Verfahren beschreibt.",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Eindeutige Kennung des Verfahrens.",
-            "format": "guid"
+            "description": "Gibt den Namen eines Prozessbevollmaechtigten an.",
+            "nullable": true
           },
           "aktenzeichen": {
             "type": "string",
-            "description": "Aktenzeichen des Verfahrens."
+            "description": "Aktenzeichen des Prozessbevollmaechtigters im geltenden Verfahren.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Stellt einen Prozessbevollmaechtigter in einem Verfahren dar."
+      },
+      "Rolle": {
+        "required": [
+          "code",
+          "wert"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "format": "uuid"
+          },
+          "wert": {
+            "type": "string",
+            "description": "Der Wert der Rolle.",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "description": "Der eindeutige Code der Rolle.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert eine Rolle mit spezifischen Attributen wie Wert und Code."
+      },
+      "Status": {
+        "required": [
+          "status",
+          "validation_messages"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/ValidationStatus"
+          },
+          "validation_messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationMessage"
+            },
+            "description": "Ruft die Validierungsnachrichten ab oder legt diese fest.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Stellt ein DTO zur Übermittlung des Validierungsstatus dar."
+      },
+      "UpdateDokumentTypeRequest": {
+        "required": [
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/DokumentType"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Anfrage-DTO für das Aktualisieren des Typs eines Dokuments."
+      },
+      "UpdateEinreichungNameRequest": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Der neue Name der Einreichung."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Anfrage-DTO für das Aktualisieren des Namens einer Einreichung."
+      },
+      "ValidationMessage": {
+        "required": [
+          "message",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/ValidationStatus"
+          },
+          "message": {
+            "type": "string",
+            "description": "Ruft die Validierungsnachricht ab oder legt sie fest.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Stellt ein DTO zur Übermittlung von Validierungsnachrichten dar."
+      },
+      "ValidationProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
           },
           "status": {
-            "description": "Aktueller Status des Verfahrens.",
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/EJbaVerfahrenStatus"
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
               }
-            ]
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": { }
+      },
+      "ValidationStatus": {
+        "enum": [
+          "GRUEN",
+          "GELB",
+          "ROT"
+        ],
+        "type": "string"
+      },
+      "Verfahren": {
+        "required": [
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "format": "uuid"
+          },
+          "aktenzeichen_gericht": {
+            "type": "string",
+            "description": "Aktenzeichen des Verfahrens.",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/VerfahrenStatus"
           },
           "status_changed": {
             "type": "string",
@@ -1117,93 +3042,248 @@
           "eingereicht_am": {
             "type": "string",
             "description": "Datum der Einreichung des Verfahrens.",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
-          "gericht_name": {
-            "type": "string",
-            "description": "Name des zuständigen Gerichts."
-          }
-        }
-      },
-      "EJbaVerfahrenStatus": {
-        "type": "string",
-        "description": "Status eines JBA-Verfahrens.",
-        "x-enumNames": [
-          "Erstellt",
-          "Eingereicht"
-        ],
-        "enum": [
-          "Erstellt",
-          "Eingereicht"
-        ]
-      },
-      "Akte": {
-        "type": "object",
-        "description": "Datenübertragungsobjekt für eine Akte.",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Eindeutige Kennung der Akte.",
-            "format": "guid"
+          "gericht": {
+            "$ref": "#/components/schemas/Gericht"
           },
-          "aktenzeichen": {
-            "type": "string",
-            "description": "Eindeutiges Aktenkennzeichen."
-          },
-          "aktenteile": {
+          "beteiligungen": {
             "type": "array",
-            "description": "Enthält die Teile der Akte.",
-            "nullable": true,
             "items": {
-              "$ref": "#/components/schemas/Aktenteil"
-            }
-          }
-        }
-      },
-      "Aktenteil": {
-        "type": "object",
-        "description": "Repräsentiert einen Aktenteil im System.",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Eindeutige Identifikationsnummer des Aktenteils."
-          },
-          "name": {
-            "type": "string",
-            "description": "Name des Aktenteils."
-          },
-          "parent_id": {
-            "type": "string",
-            "description": "Identifikationsnummer des übergeordneten Aktenteils.",
+              "$ref": "#/components/schemas/Beteiligte"
+            },
+            "description": "Liste der an einem Verfahren beteiligten Parteien.",
             "nullable": true
           }
-        }
-      },
-      "DokumentResponse": {
-        "type": "object",
-        "description": "Repräsentiert die Antwort mit Dokumenten und Metadaten.",
+        },
         "additionalProperties": false,
-        "properties": {
-          "verfahren_id": {
-            "type": "string",
-            "description": "Eindeutige Kennung des Verfahrens."
-          },
-          "dokumente": {
-            "type": "array",
-            "description": "Liste der zugehörigen Dokumente.",
-            "items": {
-              "$ref": "#/components/schemas/Dokument"
+        "description": "Stellt die Datenübertragungsobjektrepräsentation eines Verfahrens dar."
+      },
+      "VerfahrenStatus": {
+        "enum": [
+          "ERSTELLT",
+          "EINGEREICHT"
+        ],
+        "type": "string"
+      },
+      "VirenScanStatus": {
+        "enum": [
+          "AUSSTEHEND",
+          "IN_BEARBEITUNG",
+          "FEHLGESCHLAGEN",
+          "INFIZIERT",
+          "SAUBER"
+        ],
+        "type": "string"
+      }
+    },
+    "examples": {
+      "400_InvalidFileUpload": {
+        "summary": "invalid-file-upload",
+        "description": "Ungültiger Datei Upload",
+        "value": {
+          "type": "/problems/invalid-file-upload",
+          "title": "Ungültiger Datei Upload",
+          "status": 400,
+          "detail": "Der Body-Content in der Anfrage ist ungültig. <Detaillierte Problembeschreibung>"
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "400_ValidationFailed": {
+        "summary": "validation-failed",
+        "description": "Validierungsfehler",
+        "value": {
+          "type": "/problems/validation-failed",
+          "title": "Validierungsfehler",
+          "status": 400,
+          "detail": "Die Anfrage enthält ein oder mehrere Validierungsfehler. Weitere Einzelheiten finden Sie in der 'errors' Eigenschaft.",
+          "errors": {
+            "field1": [
+              "Der Wert für das Feld 'field1' ist erforderlich."
+            ],
+            "field2": [
+              "Der Wert für das Feld 'field2' ist ungültig."
+            ]
+          }
+        },
+        "x-schema": "ValidationProblemDetails"
+      },
+      "401_AuthenticationFailed": {
+        "summary": "authentication-failed",
+        "description": "Authentifizierungsfehler",
+        "value": {
+          "type": "/problems/authentication-failed",
+          "title": "Authentifizierungsfehler",
+          "status": 401,
+          "detail": "Für den Zugriff auf diese Resource fehlt eine gültige Authentifizierung."
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "403_AuthorizationFailed": {
+        "summary": "authorization-failed",
+        "description": "Autorisierungsfehler",
+        "value": {
+          "type": "/problems/authorization-failed",
+          "title": "Autorisierungsfehler",
+          "status": 403,
+          "detail": "Der Benutzer besitzt nicht die erforderlichen Berechtigungen, um diese Aktion auszuführen."
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "403_Forbidden": {
+        "summary": "forbidden",
+        "description": "Aktion nicht erlaubt",
+        "value": {
+          "type": "/problems/forbidden",
+          "title": "Aktion nicht erlaubt",
+          "status": 403,
+          "detail": "Sie haben keine Berechtigung für diese Aktion."
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "404_DokumentStatusNotAvailable": {
+        "summary": "dokument-status-not-available",
+        "description": "Dokumentstatus nicht verfügbar",
+        "value": {
+          "type": "/problems/dokument-status-not-available",
+          "title": "Dokumentstatus nicht verfügbar",
+          "status": 404,
+          "detail": "Kein Status für Dokument mit ID '3e511fc6-8a94-4557-8bb8-d304b8d2d424' verfügbar, da die Validierung nicht abgeschlossen ist.",
+          "parameter": {
+            "id": "3e511fc6-8a94-4557-8bb8-d304b8d2d424"
+          }
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "404_EinreichungStatusNotAvailable": {
+        "summary": "einreichung-status-not-available",
+        "description": "Einreichungsstatus nicht verfügbar",
+        "value": {
+          "type": "/problems/einreichung-status-not-available",
+          "title": "Einreichungsstatus nicht verfügbar",
+          "status": 404,
+          "detail": "Kein Status für Einreichung mit ID '5aa024ac-6491-41e1-8b0b-98fdd0be0fd8' verfügbar, da die Validierung nicht abgeschlossen ist oder keine Dokumente vorliegen.",
+          "parameter": {
+            "id": "5aa024ac-6491-41e1-8b0b-98fdd0be0fd8"
+          }
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "404_EntityNotFound": {
+        "summary": "entity-not-found",
+        "description": "Entität nicht gefunden",
+        "value": {
+          "type": "/problems/entity-not-found",
+          "title": "Entität nicht gefunden",
+          "status": 404,
+          "detail": "<Entität> mit ID 'ee278983-6c50-4395-b639-6e308b415ec0' wurde nicht gefunden.",
+          "parameter": {
+            "entity-name": "<Entität>",
+            "id": "ee278983-6c50-4395-b639-6e308b415ec0"
+          }
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "409_ConcurrencyConflict": {
+        "summary": "concurrency-conflict",
+        "description": "Konflikt durch gleichzeitige Änderungen",
+        "value": {
+          "type": "/problems/concurrency-conflict",
+          "title": "Konflikt durch gleichzeitige Änderungen",
+          "status": 409,
+          "detail": "Die Entität wurde in der Zwischenzeit von einem anderen Benutzer oder Prozess geändert. Bitte laden Sie die Daten neu und versuchen Sie es erneut."
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "412_IfMatchHeaderVersionConflict": {
+        "summary": "if-match-header-version-conflict",
+        "description": "Konflikt durch gleichzeitige Änderungen",
+        "value": {
+          "type": "/problems/if-match-header-version-conflict",
+          "title": "Konflikt durch gleichzeitige Änderungen",
+          "status": 412,
+          "detail": "Die Entität wurde in der Zwischenzeit von einem anderen Benutzer oder Prozess geändert. Bitte laden Sie die Daten neu und versuchen Sie es erneut."
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "413_FileTooLarge": {
+        "summary": "file-too-large",
+        "description": "Dateigröße überschritten",
+        "value": {
+          "type": "/problems/file-too-large",
+          "title": "Dateigröße überschritten",
+          "status": 413,
+          "detail": "Die Datei überschreitet die erlaubte Größe von 104857600.",
+          "parameter": {
+            "max-bytes": 104857600
+          }
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "415_InvalidContentType": {
+        "summary": "invalid-content-type",
+        "description": "Ungültiger Content-Type Header",
+        "value": {
+          "type": "/problems/invalid-content-type",
+          "title": "Ungültiger Content-Type Header",
+          "status": 415,
+          "detail": "Der Content-Type Header '<Wert>' in der Anfrage ist ungültig. <Detaillierte Problembeschreibung>",
+          "parameter": {
+            "content-type-string": "<Wert>"
+          }
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "428_InvalidIfMatchHeader": {
+        "summary": "invalid-if-match-header",
+        "description": "Ungültiger If-Match Header",
+        "value": {
+          "type": "/problems/invalid-if-match-header",
+          "title": "Ungültiger If-Match Header",
+          "status": 428,
+          "detail": "Der If-Match Header '<Wert>' in der Anfrage ist ungültig. <Detaillierte Problembeschreibung>",
+          "parameter": {
+            "if-match-string": "<Wert>"
+          }
+        },
+        "x-schema": "ProblemDetails"
+      }
+    },
+    "securitySchemes": {
+      "oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://auth.kompla-justiz.sinc.de/realms/kompla-dev/protocol/openid-connect/auth",
+            "tokenUrl": "https://auth.kompla-justiz.sinc.de/realms/kompla-dev/protocol/openid-connect/token",
+            "scopes": {
+              "kompla.gericht.read": "Gerichtsdaten lesen",
+              "kompla.verfahren.read": "Verfahrendsdaten lesen",
+              "kompla.verfahren.write": "Verfahrendsdaten schreiben oder löschen"
             }
-          },
-          "count": {
-            "type": "integer",
-            "description": "Gibt die Gesamtanzahl der Dokumente an.",
-            "format": "int32"
           }
         }
       }
     }
-  }
+  },
+  "security": [
+    {
+      "oauth2": [ ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "Dokumente"
+    },
+    {
+      "name": "Einreichungen"
+    },
+    {
+      "name": "Gerichte"
+    },
+    {
+      "name": "Verfahren"
+    }
+  ]
 }
