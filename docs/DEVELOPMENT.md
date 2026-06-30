@@ -43,8 +43,8 @@ npx playwright install
 
 ## Environment configuration
 
-- [`.env.defaults`](.env.defaults) — committed, non-secret defaults for local development. Loaded via Node's native `--env-file`.
-- [`.env.op`](.env.op) — committed 1Password `op://` references for needed secrets, resolved at runtime by `op run`. No secret is written to the disk.
+- [`.env.defaults`](../.env.defaults) — committed, non-secret defaults for local development. Loaded via Node's native `--env-file`.
+- [`.env.op`](../.env.op) — committed 1Password `op://` references for needed secrets, resolved at runtime by `op run`. No secret is written to the disk.
 
 ### Local development
 
