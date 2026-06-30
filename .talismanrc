@@ -53,7 +53,3 @@ fileignoreconfig:
   ignore_detectors: [filecontent]
 - filename: README.md
   ignore_detectors: [filecontent]
-- filename: tests/a11y/playwright.config.ts
-  ignore_detectors: [filecontent]
-- filename: tests/e2e/playwright.config.ts
-  ignore_detectors: [filecontent]
