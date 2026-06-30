@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { getTestTranslations } from "tests/utils/translationsUtil";
 import { LoginError } from "~/routes/action.login-user";
 import { LogoutType } from "~/routes/action.logout-user";
+import { expectNoA11yViolations } from "./a11y";
 
 test.describe("Homepage (_index route)", () => {
   const { routes, buttons, alerts, errorMessages } = getTestTranslations();
@@ -12,6 +13,7 @@ test.describe("Homepage (_index route)", () => {
     await expect(
       page.locator(`text=${routes.login.introduction}`),
     ).toBeVisible();
+    await expectNoA11yViolations(page);
   });
 
   test('redirects to beA-Portal when using the "Anmeldung Anwaltschaft" login option', async ({

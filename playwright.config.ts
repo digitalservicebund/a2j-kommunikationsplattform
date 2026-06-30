@@ -8,7 +8,7 @@ const baseURL = useDefaultBaseUrl
   ? "http://localhost:3000"
   : process.env.E2E_BASE_URL;
 
-console.log("e2e test baseURL is:", baseURL);
+console.log("playwright test baseURL is:", baseURL);
 
 const basicAuthUser = process.env.HTTP_CREDENTIALS_USERNAME ?? "";
 const basicAuthPassword = process.env.HTTP_CREDENTIALS_PASSWORD ?? "";
@@ -17,7 +17,7 @@ const basicAuthPassword = process.env.HTTP_CREDENTIALS_PASSWORD ?? "";
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: ".",
+  testDir: "tests/e2e/",
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */

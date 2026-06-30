@@ -94,7 +94,6 @@ The application has
 - Run unit tests: `npm test`
 - Run unit tests in [watch mode](https://vitest.dev/guide/features.html#watch-mode): `npm run test:watch`
 - Run E2E tests: `npm run test:e2e`
-- Run A11y tests: `npm run test:a11y`
 - Generate test coverage: `npm run test:generate-coverage` (used by SonarQube)
 
 ### Code quality checks (linting & formatting)
