@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from "fs";
+import { config } from "./config";
 
 interface ServerConfig {
   BRAK_IDP_OIDC_CLIENT_ID: string;
@@ -19,21 +20,31 @@ interface ServerConfig {
   SENTRY_DSN: string;
 }
 
-const oidcClientSecretFilePath = "/etc/secrets/BRAK_IDP_OIDC_CLIENT_SECRET";
-const oidcClientSecretFileExists = existsSync(oidcClientSecretFilePath);
+const brakOidcClientSecretFilePath = "/etc/secrets/BRAK_IDP_OIDC_CLIENT_SECRET";
+const brakOidcClientSecretFileExists = existsSync(brakOidcClientSecretFilePath);
+let brakOidcClientSecretFallback = "";
+if (config().ENVIRONMENT === "development") {
+  brakOidcClientSecretFallback =
+    process.env.BRAK_IDP_OIDC_CLIENT_SECRET?.trim() ?? "";
+}
 
 const demoServiceClientSecretFilePath =
   "/etc/secrets/KOMPLA_DEMO_SERVICE_CLIENT_SECRET";
 const demoServiceClientSecretFileExists = existsSync(
   demoServiceClientSecretFilePath,
 );
+let demoServiceClientSecretFallback = "";
+if (config().ENVIRONMENT === "development") {
+  demoServiceClientSecretFallback =
+    process.env.KOMPLA_DEMO_SERVICE_CLIENT_SECRET?.trim() ?? "";
+}
 
 export function serverConfig(): ServerConfig {
   return {
     BRAK_IDP_OIDC_CLIENT_ID: process.env.BRAK_IDP_OIDC_CLIENT_ID?.trim() ?? "",
-    BRAK_IDP_OIDC_CLIENT_SECRET: oidcClientSecretFileExists
-      ? readFileSync(oidcClientSecretFilePath, "utf-8")?.trim()
-      : "",
+    BRAK_IDP_OIDC_CLIENT_SECRET: brakOidcClientSecretFileExists
+      ? readFileSync(brakOidcClientSecretFilePath, "utf-8")?.trim()
+      : brakOidcClientSecretFallback,
     BRAK_IDP_OIDC_ISSUER: process.env.BRAK_IDP_OIDC_ISSUER?.trim() ?? "",
     BRAK_IDP_OIDC_REDIRECT_URI:
       process.env.BRAK_IDP_OIDC_REDIRECT_URI?.trim() ?? "",
@@ -48,7 +59,7 @@ export function serverConfig(): ServerConfig {
       process.env.KOMPLA_DEMO_SERVICE_CLIENT_ID?.trim() ?? "",
     KOMPLA_DEMO_SERVICE_CLIENT_SECRET: demoServiceClientSecretFileExists
       ? readFileSync(demoServiceClientSecretFilePath, "utf-8")?.trim()
-      : (process.env.KOMPLA_DEMO_SERVICE_CLIENT_SECRET?.trim() ?? ""),
+      : demoServiceClientSecretFallback,
     KOMPLA_DEMO_CLIENT_ID: process.env.KOMPLA_DEMO_CLIENT_ID?.trim() ?? "",
     KOMPLA_DEMO_REDIRECT_URI:
       process.env.KOMPLA_DEMO_REDIRECT_URI?.trim() ?? "",

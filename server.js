@@ -1,15 +1,9 @@
 import { createRequestHandler } from "@react-router/express";
 import compression from "compression";
-import dotenv from "dotenv";
 import express from "express";
 import morgan from "morgan";
 import logger from "pino-http";
 import { RouterContextProvider } from "react-router";
-
-/**
- * @see: https://github.com/dotenv-org/examples/blob/master/usage/dotenv-express/index.mjs
- */
-dotenv.config();
 
 const environment = process.env.ENVIRONMENT?.trim() ?? "";
 const mockJustizBackendAPI = environment === "development";

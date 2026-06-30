@@ -1,14 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
-import dotenv from "dotenv";
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-
-// Load both .env and test.env
-dotenv.config();
-dotenv.config({ path: "../test.env" });
+process.loadEnvFile(".env.defaults");
 
 const useDefaultBaseUrl = ["", undefined].includes(process.env.E2E_BASE_URL);
 const baseURL = useDefaultBaseUrl

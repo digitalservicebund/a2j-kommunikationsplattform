@@ -39,5 +39,5 @@ fileignoreconfig:
   ignore_detectors: [filecontent]
 - filename: app/services/translations/de.ts
   ignore_detectors: [filecontent]
-- filename: doc/how-to-configure-bruno.md
+- filename: doc/HOW_TO_CONFIGURE_BRUNO.md
   ignore_detectors: [filecontent]

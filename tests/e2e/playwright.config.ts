@@ -1,13 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
-import dotenv from "dotenv";
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-
-// Load .env file for local testing
-dotenv.config();
+process.loadEnvFile(".env.defaults");
 
 const useDefaultBaseUrl = ["", undefined].includes(process.env.E2E_BASE_URL);
 

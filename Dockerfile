@@ -1,6 +1,6 @@
 # Create an upgraded alpine image to solve CVE vulnerabilities
 # See: https://stackoverflow.com/a/76440791/1239760
-FROM node:24.15.0-alpine3.23 AS alpine-upgraded
+FROM node:26.3.1-alpine3.23 AS alpine-upgraded
 
 RUN apk upgrade --no-cache
 FROM scratch

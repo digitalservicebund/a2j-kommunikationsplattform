@@ -6,7 +6,8 @@
   "scripts": {
     "build": "react-router build",
     "dev": "node ./server.js",
-    "start": "cross-env NODE_ENV=production node ./server.js",
+    "dev:op": "op run --no-masking node --env-file=.env.defaults --env-file=.env.op ./server.js",
+    "start": "NODE_ENV=production node --env-file=.env.defaults ./server.js",
     "typecheck": "react-router typegen && tsc",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -29,8 +30,6 @@
     "@sentry/react-router": "^10.56.0",
     "clsx": "^2.1.1",
     "compression": "^1.8.1",
-    "cross-env": "^10.1.0",
-    "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "isbot": "^5.1.36",
     "morgan": "^1.10.1",
@@ -92,6 +91,6 @@
     }
   },
   "engines": {
-    "node": ">=24.15.0"
+    "node": ">=26.3.1"
   }
 }
