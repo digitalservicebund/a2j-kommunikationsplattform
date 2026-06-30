@@ -1,6 +1,6 @@
 # Development
 
-- [How this project is stuctured](./PROJECT-STRUCTURE.md)
+- [How this project is stuctured](./PROJECT_STRUCTURE.md)
 
 ## Prerequisites
 
