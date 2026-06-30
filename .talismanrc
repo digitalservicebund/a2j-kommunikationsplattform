@@ -47,9 +47,9 @@ fileignoreconfig:
   ignore_detectors: [filecontent]
 - filename: app/services/translations/de.ts
   ignore_detectors: [filecontent]
-- filename: doc/HOW_TO_CONFIGURE_BRUNO.md
+- filename: docs/HOW_TO_CONFIGURE_BRUNO.md
   ignore_detectors: [filecontent]
-- filename: doc/DEVELOPMENT.md
+- filename: docs/DEVELOPMENT.md
   ignore_detectors: [filecontent]
 - filename: README.md
   ignore_detectors: [filecontent]

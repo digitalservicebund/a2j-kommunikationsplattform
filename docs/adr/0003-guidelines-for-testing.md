@@ -83,7 +83,7 @@ Based on the above options, it was decided to proceed with **end-to-end (E2E) te
 The following tools have been tested:
 
 - [Prism](https://stoplight.io/open-source/prism)
-  - CLI tool is great and delivers data in no time. For example by running `prism mock doc/api/swagger.json`.
+  - CLI tool is great and delivers data in no time. For example by running `prism mock docs/api/swagger.json`.
 - [MSW](https://mswjs.io/)
   - Great [documentation](https://mswjs.io/docs) and examples to get up and running. No need to install a CLI tool, after the [installation](https://mswjs.io/docs/getting-started) of the npm package responses [can be mocked](https://mswjs.io/docs/basics/mocking-responses/).
 - [OpenAPI Backend](https://openapistack.co/docs/openapi-backend/intro/)
@@ -92,7 +92,7 @@ The following tools have been tested:
 - [MockServer](https://www.mock-server.com/)
   - Has a Java dependency. The mock server can be set up and operated with a Docker image, see [jamesdbloom/mockserver](https://hub.docker.com/r/jamesdbloom/mockserver). As this degrades the development experience, it is not appropriate here.
 - [Mockoon CLI](https://mockoon.com/)
-  - CLI tool is great and delivers data in no time, for example with `mockoon-cli start --data doc/api/swagger.json`.
+  - CLI tool is great and delivers data in no time, for example with `mockoon-cli start --data docs/api/swagger.json`.
 
 | Stub/mock API tools comparison table | Prism | MSW  | OpenAPI Backend | MockServer | Mockoon CLI |
 | ------------------------------------ | ----- | ---- | --------------- | ---------- | ----------- |
@@ -102,7 +102,7 @@ The following tools have been tested:
 
 General notes in regards to all tested options:
 
-As soon as the mock/stub is running (e.g. with [Mockoon CLI](https://mockoon.com/cli/) `mockoon-cli start --data doc/api/swagger.json`) simple API calls can be made. For example `curl -i -X "GET" "http://localhost:3000/api/v1/verfahren?limit=10&offset=0" -H "accept: application/json" -H "X-User-ID: TestId"`:
+As soon as the mock/stub is running (e.g. with [Mockoon CLI](https://mockoon.com/cli/) `mockoon-cli start --data docs/api/swagger.json`) simple API calls can be made. For example `curl -i -X "GET" "http://localhost:3000/api/v1/verfahren?limit=10&offset=0" -H "accept: application/json" -H "X-User-ID: TestId"`:
 
 ```
 HTTP/1.1 200 OK

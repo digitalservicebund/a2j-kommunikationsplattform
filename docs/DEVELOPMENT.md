@@ -6,13 +6,16 @@
 
 ### Node.js and Homebrew
 
-We aim to use the current active [LTS version of Node.js](https://nodejs.dev/en/about/releases/), which is V24 at the time of writing. There is a `.nvmrc` file to simplify Node.js version setup using [nvm](https://github.com/nvm-sh/nvm). Use `nvm install` to install specified version in `.nvmrc` file.
+Please install [Homebrew](https://brew.sh/), if not already installed on your machine.
+
+We aim to use the current active [version of Node.js](https://nodejs.dev/en/about/releases/), which is V26 at the time of writing. There is a `.nvmrc` file to simplify Node.js version setup using [nvm](https://github.com/nvm-sh/nvm) (`brew install nvm`). Use `nvm install` to install specified version in `.nvmrc` file.
 
 1Password CLI is needed for secret management locally, have a look at [the docs and install the CLI](https://www.1password.dev/cli/get-started) on your machine, if needed.
 
-Additionally we use [Git Hooks](#git-hooks) that can be installed with [Homebrew](https://brew.sh/), please check if brew is available on your machine with `brew -v` command.
+Additionally we use [Git Hooks](#git-hooks). For that you will need to install [lefthook](https://github.com/evilmartians/lefthook)
+(git hook manager) and [talisman](https://github.com/thoughtworks/talisman/) (secrets scanner) `brew install lefthook talisman`. Afterwards execute `lefthook install` to initialize the hooks or run `lefthook run pre-commit` before commiting new changes. See `lefthook.yml` for more details in regards to the currently configured git hooks.
 
-### Dependencies
+### Project dependencies
 
 Disable execution of npm scripts to reduce attack surface for supply chain attacks:
 
@@ -33,11 +36,6 @@ For E2E and a11y testing with [Playwright](https://playwright.dev/docs/intro) yo
 ```sh
 npx playwright install
 ```
-
-#### Git Hooks
-
-For the provided Git hooks you will need to install [lefthook](https://github.com/evilmartians/lefthook)
-(git hook manager) and [talisman](https://github.com/thoughtworks/talisman/) (secrets scanner) `brew install lefthook talisman`. Afterwards execute `lefthook install` to initialize the hooks or run `lefthook run pre-commit` before commiting new changes. See `lefthook.yml` for more details in regards to the currently configured git hooks.
 
 ### Everything else
 
@@ -111,7 +109,7 @@ The project uses [ESLint](https://eslint.org/docs/latest/) for linting and [Pret
 
 ## Deployment
 
-We deploy to 1 environment at the moment: Staging.
+We deploy to 1 environment at the moment: **Staging**.
 
 The app is running here:
 
@@ -119,11 +117,12 @@ The app is running here:
 
 ### Docker
 
-The project includes a Dockerfile to create a Docker Image for the project.
+The project includes a Dockerfile to create a Docker Image for the project. We use [Colima](https://colima.run/) as a container runtime to build and run docker images.
 
 You can build the Docker Image using
 
 ```sh
+colima start
 docker build -t a2j-kommunikationsplattform .
 ```
 
@@ -141,7 +140,7 @@ The `.github/workflows/pipeline.yml` GitHub Action includes a `build-and-push-im
 
 ## Architecture Decision Records
 
-The `docs/adr` directory contains [architecture decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions).
+The [`docs/adr`](../docs/adr/) directory contains [architecture decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) that have been made so far.
 For adding new records the [adr-tools](https://github.com/npryce/adr-tools) command-line tool is useful but not strictly necessary:
 
 ```sh
