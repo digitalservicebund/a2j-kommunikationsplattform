@@ -3,9 +3,9 @@
 
 # A2J - Kommunikationsplattform
 
-Erprobung einer Kommunikationsplattform im zivilgerichtlichen Online-Verfahren.
+Deutsch: Erprobung einer Kommunikationsplattform im zivilgerichtlichen Online-Verfahren.
 
-Testing a communication platform in online civil court proceedings.
+English: Testing a communication platform in online civil court proceedings.
 
 This Open Source Project is part of the [Zugang zum Recht](https://www.zugang-zum-recht-projekte.de/kommunikationsplattform) project.
 
