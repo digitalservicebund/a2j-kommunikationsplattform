@@ -24,7 +24,7 @@ allowed_patterns:
 fileignoreconfig:
 
 - filename: .env.op
-  ignore_detectors: [filename]
+  checksum: ce5c604a92f2285c9b623235bd0ad6d8a3e494c617374bacba2934a95127baa6
 - filename: app/components/hooks/**test**/useLogoutInactiveUser.test.tsx
   ignore_detectors: [filecontent]
 - filename: app/config/config.server.ts
