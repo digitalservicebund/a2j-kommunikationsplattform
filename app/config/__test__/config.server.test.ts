@@ -1,41 +1,160 @@
-import { existsSync, readFileSync } from "fs";
-import { expect, it, vi } from "vitest";
-import * as serverConfigModule from "../config.server";
+import { describe, expect, it, vi } from "vitest";
 
-// mock used fs imports within config.server
-vi.mock("fs", () => {
-  return {
-    existsSync: vi.fn().mockReturnValue(true),
-    readFileSync: vi.fn().mockReturnValue("XYZ"),
+type ImportConfigServerOptions = {
+  environment?: string;
+  fileExistsByPath?: Record<string, boolean>;
+  fileValueByPath?: Record<string, string>;
+};
+
+const secretPathBrak = "/etc/secrets/BRAK_IDP_OIDC_CLIENT_SECRET";
+const secretPathDemo = "/etc/secrets/KOMPLA_DEMO_SERVICE_CLIENT_SECRET";
+
+async function importConfigServerWithMocks(
+  options: ImportConfigServerOptions = {},
+) {
+  vi.resetModules();
+
+  const environment = options.environment ?? "development";
+  const fileExistsByPath = options.fileExistsByPath ?? {
+    [secretPathBrak]: true,
+    [secretPathDemo]: true,
   };
-});
+  const fileValueByPath = options.fileValueByPath ?? {
+    [secretPathBrak]: "BRAK_FILE_SECRET",
+    [secretPathDemo]: "DEMO_FILE_SECRET",
+  };
+
+  const existsSyncMock = vi.fn(
+    (path: string) => fileExistsByPath[path] ?? false,
+  );
+  const readFileSyncMock = vi.fn(
+    (path: string) => fileValueByPath[path] ?? "UNEXPECTED_FILE_VALUE",
+  );
+
+  vi.doMock("fs", () => ({
+    existsSync: existsSyncMock,
+    readFileSync: readFileSyncMock,
+  }));
+
+  vi.doMock("../config", () => ({
+    config: () => ({ ENVIRONMENT: environment, SENTRY_DSN: "" }),
+  }));
+
+  const module = await import("../config.server");
+
+  return {
+    module,
+    existsSyncMock,
+    readFileSyncMock,
+  };
+}
 
 describe("serverConfig()", () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
-    // save and clear process.env
     process.env = { ...originalEnv };
-    delete process.env.SENTRY_DSN;
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    // restore process.env
     process.env = originalEnv;
+    vi.restoreAllMocks();
   });
 
-  it("returns a defined container env variable as server config item", () => {
-    process.env = { SENTRY_DSN: "ABC" };
-    const testConfig = serverConfigModule.serverConfig();
+  it("returns secrets from files when secret files exist", async () => {
+    const { module, existsSyncMock, readFileSyncMock } =
+      await importConfigServerWithMocks();
 
-    expect(testConfig).toBeDefined();
-    expect(testConfig.SENTRY_DSN).toBe("ABC");
+    const testConfig = module.serverConfig();
+
+    expect(existsSyncMock).toHaveBeenCalledWith(secretPathBrak);
+    expect(existsSyncMock).toHaveBeenCalledWith(secretPathDemo);
+    expect(readFileSyncMock).toHaveBeenCalledWith(secretPathBrak, "utf-8");
+    expect(readFileSyncMock).toHaveBeenCalledWith(secretPathDemo, "utf-8");
+    expect(testConfig.BRAK_IDP_OIDC_CLIENT_SECRET).toBe("BRAK_FILE_SECRET");
+    expect(testConfig.KOMPLA_DEMO_SERVICE_CLIENT_SECRET).toBe(
+      "DEMO_FILE_SECRET",
+    );
   });
 
-  it("returns a defined secret as server config item", () => {
-    const testConfig = serverConfigModule.serverConfig();
-    expect(existsSync).toHaveBeenCalled();
-    expect(readFileSync).toHaveBeenCalled();
-    expect(testConfig.BRAK_IDP_OIDC_CLIENT_SECRET).toBe("XYZ");
+  it("uses env fallback secrets in development when secret files are missing", async () => {
+    process.env.BRAK_IDP_OIDC_CLIENT_SECRET = "  brak-fallback  ";
+    process.env.KOMPLA_DEMO_SERVICE_CLIENT_SECRET = "  demo-fallback  ";
+
+    const { module, readFileSyncMock } = await importConfigServerWithMocks({
+      environment: "development",
+      fileExistsByPath: {
+        [secretPathBrak]: false,
+        [secretPathDemo]: false,
+      },
+    });
+
+    const testConfig = module.serverConfig();
+
+    expect(readFileSyncMock).not.toHaveBeenCalled();
+    expect(testConfig.BRAK_IDP_OIDC_CLIENT_SECRET).toBe("brak-fallback");
+    expect(testConfig.KOMPLA_DEMO_SERVICE_CLIENT_SECRET).toBe("demo-fallback");
+  });
+
+  it("returns empty fallback secrets outside development when files are missing", async () => {
+    process.env.BRAK_IDP_OIDC_CLIENT_SECRET = "from-env-but-ignored";
+    process.env.KOMPLA_DEMO_SERVICE_CLIENT_SECRET = "from-env-but-ignored";
+
+    const { module } = await importConfigServerWithMocks({
+      environment: "production",
+      fileExistsByPath: {
+        [secretPathBrak]: false,
+        [secretPathDemo]: false,
+      },
+    });
+
+    const testConfig = module.serverConfig();
+
+    expect(testConfig.BRAK_IDP_OIDC_CLIENT_SECRET).toBe("");
+    expect(testConfig.KOMPLA_DEMO_SERVICE_CLIENT_SECRET).toBe("");
+  });
+
+  it("trims values and uses empty string defaults for undefined env vars", async () => {
+    process.env.BRAK_IDP_OIDC_CLIENT_ID = "  client-id  ";
+    process.env.BRAK_IDP_OIDC_ISSUER = "  issuer  ";
+    process.env.BRAK_IDP_OIDC_REDIRECT_URI = "  https://example.org/callback  ";
+    process.env.KOMPLA_API_URL = "  https://api.example.org  ";
+    process.env.KOMPLA_API_IDP_CLIENT_ID = "  api-client  ";
+    process.env.KOMPLA_API_IDP_ISSUER = "  api-issuer  ";
+    process.env.KOMPLA_API_IDP_SUBJECT_ISSUER = "  subject-issuer  ";
+    process.env.KOMPLA_DEMO_IDP_ISSUER = "  demo-issuer  ";
+    process.env.KOMPLA_DEMO_SERVICE_CLIENT_ID = "  demo-service-client  ";
+    process.env.KOMPLA_DEMO_CLIENT_ID = "  demo-client  ";
+    process.env.KOMPLA_DEMO_REDIRECT_URI =
+      "  https://demo.example.org/callback  ";
+    process.env.KOMPLA_DEMO_USERNAME = "  username  ";
+    process.env.KOMPLA_DEMO_EMAIL = "  user@example.org  ";
+    process.env.SENTRY_DSN = "  sentry-dsn  ";
+    delete process.env.KOMPLA_API_IDP_ISSUER;
+
+    const { module } = await importConfigServerWithMocks();
+    const testConfig = module.serverConfig();
+
+    expect(testConfig.BRAK_IDP_OIDC_CLIENT_ID).toBe("client-id");
+    expect(testConfig.BRAK_IDP_OIDC_ISSUER).toBe("issuer");
+    expect(testConfig.BRAK_IDP_OIDC_REDIRECT_URI).toBe(
+      "https://example.org/callback",
+    );
+    expect(testConfig.KOMPLA_API_URL).toBe("https://api.example.org");
+    expect(testConfig.KOMPLA_API_IDP_CLIENT_ID).toBe("api-client");
+    expect(testConfig.KOMPLA_API_IDP_ISSUER).toBe("");
+    expect(testConfig.KOMPLA_API_IDP_SUBJECT_ISSUER).toBe("subject-issuer");
+    expect(testConfig.KOMPLA_DEMO_IDP_ISSUER).toBe("demo-issuer");
+    expect(testConfig.KOMPLA_DEMO_SERVICE_CLIENT_ID).toBe(
+      "demo-service-client",
+    );
+    expect(testConfig.KOMPLA_DEMO_CLIENT_ID).toBe("demo-client");
+    expect(testConfig.KOMPLA_DEMO_REDIRECT_URI).toBe(
+      "https://demo.example.org/callback",
+    );
+    expect(testConfig.KOMPLA_DEMO_USERNAME).toBe("username");
+    expect(testConfig.KOMPLA_DEMO_EMAIL).toBe("user@example.org");
+    expect(testConfig.SENTRY_DSN).toBe("sentry-dsn");
   });
 });

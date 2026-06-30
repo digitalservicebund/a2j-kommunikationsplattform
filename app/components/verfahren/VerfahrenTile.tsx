@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import FolderInfoIcon from "~/components/icons/FolderAlertIcon";
+import FolderInfoIcon from "~/components/icons/FolderInfoIcon.static";
 import type { Verfahren } from "~/routes/verfahren";
 import { useTranslations } from "~/services/translations/context";
 
