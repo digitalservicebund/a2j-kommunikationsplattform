@@ -1,7 +1,6 @@
 ## Architecture
 
-The application is a fullstack React Router/Node.js app without any database. This app
-communicates with an external REST API to request and transfer needed data.
+This is a full-stack application developed using React Router and Node.js. The app was initially designed without a persistent database layer and functions exclusively as a client that uses existing software solutions in the justice IT landscape as needed (e.g., the [BRAK](https://www.brak.de/)-Identity-Provider). The application uses an external REST API ([Justiz KomPla API Swagger](https://app.kompla-justiz.sinc.de/main/swagger/index.html)) to dynamically retrieve, process, and transfer data.
 
 Main components:
 
