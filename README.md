@@ -11,7 +11,7 @@ This Open Source Project is part of the [Zugang zum Recht](https://www.zugang-zu
 
 ## Documentation
 
-- [Architecture](./docs/ARCHITECTURE.md)
-- [Development](./docs/DEVELOPMENT.md)
-- [Contributing](./docs/CONTRIBUTING.md)
-- [Security](./docs/SECURITY.md)
+- [Architecture](./doc/ARCHITECTURE.md)
+- [Development](./doc/DEVELOPMENT.md)
+- [Contributing](./doc/CONTRIBUTING.md)
+- [Security](./doc/SECURITY.md)
