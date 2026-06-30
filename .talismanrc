@@ -23,7 +23,7 @@ allowed_patterns:
 
 fileignoreconfig:
 
-- filename: .env.example
+- filename: .env.op
   ignore_detectors: [filename]
 - filename: app/components/hooks/**test**/useLogoutInactiveUser.test.tsx
   ignore_detectors: [filecontent]
@@ -40,4 +40,12 @@ fileignoreconfig:
 - filename: app/services/translations/de.ts
   ignore_detectors: [filecontent]
 - filename: doc/HOW_TO_CONFIGURE_BRUNO.md
+  ignore_detectors: [filecontent]
+- filename: doc/DEVELOPMENT.md
+  ignore_detectors: [filecontent]
+- filename: README.md
+  ignore_detectors: [filecontent]
+- filename: tests/a11y/playwright.config.ts
+  ignore_detectors: [filecontent]
+- filename: tests/e2e/playwright.config.ts
   ignore_detectors: [filecontent]
