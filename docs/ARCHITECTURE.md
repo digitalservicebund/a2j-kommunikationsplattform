@@ -10,3 +10,10 @@ Main components:
 - [zod](https://zod.dev/): Validation
 - [Vitest](https://vitest.dev/): Unit and integration testing
 - [Playwright](https://playwright.dev/): End-to-end testing
+
+![Kommunikationsplattform Architecture](architecture-kompla.excalidraw.png)
+
+<!--
+Edit this diagram by importing the .png into [https://excalidraw.com](https://excalidraw.com).
+When exporting, choose "embed scene".
+-->
