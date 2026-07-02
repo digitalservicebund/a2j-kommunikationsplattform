@@ -23,6 +23,8 @@ allowed_patterns:
 
 fileignoreconfig:
 
+- filename: .github/workflows/scan.yml
+  checksum: 1582a4d97ed48f0cec201aab58ae536c4ba512dc933c45267dcd856b7e9b2f7e
 - filename: .env.op
   checksum: ce5c604a92f2285c9b623235bd0ad6d8a3e494c617374bacba2934a95127baa6
 - filename: .env.defaults
