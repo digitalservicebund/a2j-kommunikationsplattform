@@ -33,6 +33,8 @@ fileignoreconfig:
   checksum: ddb959b86f4ff32a615a6da54c14f4c04509bfc8ec58b34d0d9ab557fbf93167
 - filename: app/config/**test**/config.server.test.ts
   checksum: bb34b6bf2a33760dfb871ec19b04b517ba769a29433dfed46bd2eb6cd0a98ec0
+- filename: playwright.config.ts
+  checksum: 7c109b4f5bbf8a0b3ee704fce7f552f31d47c15d863bf4670bba66a2d652842e
 - filename: app/components/hooks/**test**/useLogoutInactiveUser.test.tsx
   ignore_detectors: [filecontent]
 - filename: app/config/config.server.ts
