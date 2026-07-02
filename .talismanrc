@@ -23,10 +23,9 @@ allowed_patterns:
 
 fileignoreconfig:
 
-- filename: .github/workflows/sonarqube.yml
-  checksum: ee8a4dfb509f8c94b613fa7563048737b602ea6b3625f7daa2437bec77b88cc1
-- filename: .github/workflows/pipeline.yml
-  checksum: 83a503d4f0b5aa0e62503c1b6c28082d268fd3cf2dd170b0acb4265a9e868fd5
+- filename: .github/workflows/\*
+  allowed_patterns:
+  - \@[a-z0-9]{40} # Allow fixing action hashes
 - filename: .env.op
   checksum: ce5c604a92f2285c9b623235bd0ad6d8a3e494c617374bacba2934a95127baa6
 - filename: .env.defaults
