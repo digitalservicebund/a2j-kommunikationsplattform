@@ -23,9 +23,6 @@ allowed_patterns:
 
 fileignoreconfig:
 
-- filename: .github/workflows/\*
-  allowed_patterns:
-  - \@[a-z0-9]{40} # Allow fixing action hashes
 - filename: .env.op
   checksum: ce5c604a92f2285c9b623235bd0ad6d8a3e494c617374bacba2934a95127baa6
 - filename: .env.defaults
