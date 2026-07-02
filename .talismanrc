@@ -6,7 +6,6 @@ allowed_patterns:
 
 - key
 - 'uses:\s\*[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+@[a-fA-F0-9]{40}'
-- 'uses:\s\*actions\/checkout@[a-fA-F0-9]{40}'
 - TRIVY_PASSWORD:\ \${{\ secrets.GITHUB_TOKEN\ }}
 - secrets:\ inherit
 - password:\ \${{\ secrets.GITHUB_TOKEN\ }}
