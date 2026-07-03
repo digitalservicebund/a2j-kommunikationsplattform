@@ -24,7 +24,7 @@ allowed_patterns:
 fileignoreconfig:
 
 - filename: .github/workflows/pipeline.yml
-  checksum: 447f2c7139de3a2ab583cc818607f4b4e6283d9f7e4449eb784b811d0599972d
+  checksum: cda3705e7e4d5685a7f3e0dc5d1370d2b7b5f717689c35357a2664b613e0cc9a
 - filename: .github/workflows/scan.yml
   checksum: 1582a4d97ed48f0cec201aab58ae536c4ba512dc933c45267dcd856b7e9b2f7e
 - filename: .env.op
