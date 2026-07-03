@@ -23,6 +23,8 @@ allowed_patterns:
 
 fileignoreconfig:
 
+- filename: .github/workflows/sonarqube.yml
+  checksum: 7c1c407af8d8f924c0acb8a207700a30b4c2be0a830039b973d3053107e95583
 - filename: .github/workflows/pipeline.yml
   checksum: cda3705e7e4d5685a7f3e0dc5d1370d2b7b5f717689c35357a2664b613e0cc9a
 - filename: .github/workflows/scan.yml
