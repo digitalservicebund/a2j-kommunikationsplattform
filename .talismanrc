@@ -24,9 +24,9 @@ allowed_patterns:
 fileignoreconfig:
 
 - filename: .github/workflows/sonarqube.yml
-  checksum: 7c1c407af8d8f924c0acb8a207700a30b4c2be0a830039b973d3053107e95583
+  checksum: e0ce0d0ad88a7f6b83e9dd8c6b03b164d55857518bda01e624cb283996fe0392
 - filename: .github/workflows/pipeline.yml
-  checksum: cda3705e7e4d5685a7f3e0dc5d1370d2b7b5f717689c35357a2664b613e0cc9a
+  checksum: 2467c681462afc79cfb6ea894a70ac4d55479c5e94055124c2ffd87299e77ee1
 - filename: .github/workflows/scan.yml
   checksum: 1582a4d97ed48f0cec201aab58ae536c4ba512dc933c45267dcd856b7e9b2f7e
 - filename: .env.op
