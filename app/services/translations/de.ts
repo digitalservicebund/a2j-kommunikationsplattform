@@ -129,7 +129,7 @@ export const de = {
   breadcrumb: {
     START: "Start",
     VERFAHREN: "Übersichtsseite Verfahren",
-    VERFAHREN_NEU: "Klageschrift erstellen",
+    VERFAHREN_NEU: "Neue Klage einreichen",
     VERFAHREN_ID: "Verfahren",
     VERFAHREN_ID_BEARBEITEN: "Bearbeitung",
   },

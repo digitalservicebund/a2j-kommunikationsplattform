@@ -97,7 +97,7 @@ describe("Breadcrumb component", () => {
     expect(links[1]).toHaveAttribute("href", "/verfahren");
     expect(links[1]).toHaveTextContent("Übersichtsseite Verfahren");
 
-    expect(screen.getByText("Klageschrift erstellen")).toBeInTheDocument();
+    expect(screen.getByText("Neue Klage einreichen")).toBeInTheDocument();
   });
 
   it("renders breadcrumb for dynamic route /verfahren/:id", () => {
