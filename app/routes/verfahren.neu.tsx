@@ -7,6 +7,7 @@ import uploadDokument, {
   type DokumentType,
 } from "~/domains/verfahren/uploadDokument.server";
 import { authContext, authMiddleware } from "~/middleware/auth.server";
+import { useTranslations } from "~/services/translations/context";
 
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
@@ -49,10 +50,12 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
     dokumentType,
   );
 
-  return redirect(`/verfahren/${verfahrenId}/bearbeiten`);
+  return redirect(`/verfahren/neu/${verfahrenId}/bearbeiten`);
 };
 
 export default function VerfahrenNeu() {
+  const { routes } = useTranslations();
+
   const [isSubmitting, setIsSubmitting] = useState<"idle" | "submitting">(
     "idle",
   );
@@ -68,16 +71,19 @@ export default function VerfahrenNeu() {
     <div
       className={`${isSubmitting === "submitting" ? "pointer-events-none opacity-50" : ""} relative`}
     >
-      <h1 className="kern-heading-medium">Klageschrift hochladen</h1>
       <div className="kern-row">
-        <div className="kern-col-12 kern-col-md-8 kern-col-md-offset-2 kern-col-lg-6 kern-col-lg-offset-3">
-          <div className="kern-gap-xl flex flex-col">
-            <Alert
-              type="info"
-              title="Vorläufige Ansicht"
-              message="Diese Seite ist ein vorläufiger Prototyp zur API-Validierung. Das endgültige Design folgt."
-            />
-
+        <div className="kern-col-12 kern-col-md-8 kern-col-md-offset-2">
+          <h1 className="kern-heading-large">{routes.verfahrenNeu.headline}</h1>
+          <div className="kern-progress">
+            <label className="kern-label" htmlFor="progress1">
+              Schritt 1 von 3
+            </label>
+            <progress id="progress-1" value="1" max="3"></progress>
+          </div>
+          <div className="pt-kern-space-default kern-gap-xl flex flex-col">
+            <h2 className="kern-heading-medium">
+              {routes.verfahrenNeu.subline}
+            </h2>
             <p className="kern-body">
               Laden Sie Ihre Klageschrift als PDF oder Wodrd-Datei hoch. Wir
               extrahieren die wichtigsten Daten automatisch für Sie.
