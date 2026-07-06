@@ -164,7 +164,7 @@ jobs:
 
       - name: Create SBOM
         # https://github.com/digitalservicebund/create-sbom
-        uses: digitalservicebund/create-sbom@ff8348b5648266dccbdd00310c84950ad48d0c1b # main branch, latest full commit SHA
+        uses: digitalservicebund/create-sbom@b794b6915d8080660e86790bb595790655fb66aa # main branch, latest full commit SHA
         with:
           image_name: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
