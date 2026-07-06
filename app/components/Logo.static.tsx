@@ -7,7 +7,7 @@ export default function Logo() {
   return (
     <Link
       to={href("/")}
-      className="gap-kern-space-small kern-heading-large flex flex-row items-center justify-center break-all no-underline hover:underline"
+      className="gap-kern-space-small kern-heading-medium flex flex-row items-center justify-center break-all no-underline hover:underline"
       aria-label={labels.LOGO_ARIA_LABEL}
     >
       <span

@@ -67,7 +67,7 @@ export default function Header({
       <Kopfzeile />
       <nav aria-label={labels.HEADER_ARIA_LABEL}>
         <div className="kern-container">
-          <div className="gap-kern-space-small pt-kern-space-large flex flex-col">
+          <div className="gap-kern-space-small pt-kern-space-default flex flex-col">
             {/* (2) */}
             {!isContentPage && userProfile}
             <div
@@ -79,7 +79,7 @@ export default function Header({
               {isContentPage ? goBackOrLoginButton : platformNavigation}
             </div>
           </div>
-          <div className="py-kern-space-large">
+          <div className="pt-kern-space-default pb-kern-space-large">
             <hr className="kern-divider" aria-hidden="true" />
           </div>
         </div>
