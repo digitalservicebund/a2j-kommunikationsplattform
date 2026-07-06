@@ -3,8 +3,9 @@ import { http, HttpResponse } from "msw";
 import { getAllDokumenteByIds } from "./controllers/dokumente.js";
 import {
   getAllEinreichungen,
+  getEinreichungById,
   getEinreichungStatusByIds,
-} from "./controllers/einreichung.js";
+} from "./controllers/einreichungen.js";
 import { getGerichte } from "./controllers/gerichte.js";
 import { getAuthTokens } from "./controllers/tokenExchange.js";
 import {
@@ -164,6 +165,23 @@ export const handlers = [
       console.log("Requested einreichungen:", requestedEinreichungen);
 
       const resultArray = [requestedEinreichungen, { status: 200 }];
+
+      return HttpResponse.json(...resultArray);
+    },
+  ),
+
+  // Get a specific Einreichung for a Verfahren
+  http.get(
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen/:einreichungId`,
+    async ({ params }) => {
+      const requestedEinreichung = getEinreichungById(
+        params.verfahrenId,
+        params.einreichungId,
+      );
+
+      console.log("Requested einreichung:", requestedEinreichung);
+
+      const resultArray = [requestedEinreichung, { status: 200 }];
 
       return HttpResponse.json(...resultArray);
     },

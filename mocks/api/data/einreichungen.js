@@ -1,8 +1,8 @@
-const mockedEinreichungen = [
+export const mockedEinreichungen = [
   // matches first mockVerfahren in default sort order within UI
   {
     id: "3cf0f6be-5e99-11f1-9bd2-325096b39f47",
-    verfahren_id: "019c5736-7834-7ee6-99de-41d9605697d2",
+    verfahren_id: "019c572a-d6d4-77a8-aad7-ae4496fa2463",
     name: "Einreichung Name",
     erstellt_von: "Musterfrau",
     erstellt_am: "2026-05-01T08:13:39.792Z",
@@ -62,12 +62,35 @@ const mockedEinreichungen = [
     gesendet_am: "2026-04-01T08:13:39.792Z",
     eingereicht_am: "2026-04-01T08:13:39.792Z",
   },
+  {
+    id: "d77590e8-718e-11f1-bd14-325096b39f47",
+    verfahren_id: "019c572a-d6d4-77a8-aad7-ae4496fa2463",
+    name: "Klageeinreichung test local",
+    erstellt_von: "Musterfrau",
+    erstellt_am: "2026-04-01T08:13:39.792Z",
+    status: "ERSTELLT",
+    gesendet_am: "2026-04-01T08:13:39.792Z",
+    eingereicht_am: "2026-04-01T08:13:39.792Z",
+  },
 ];
 
-const mockedEinreichungenStatus = [
+export const mockedEinreichungenStatus = [
+  {
+    id: "d77590e8-718e-11f1-bd14-325096b39f47",
+    verfahren_id: "019c5736-7834-7ee6-99de-41d9605697d2",
+    status: {
+      status: "GRUEN",
+      validation_messages: [
+        {
+          status: "GRUEN",
+          message: null,
+        },
+      ],
+    },
+  },
   {
     id: "3cf0f6be-5e99-11f1-9bd2-325096b39f47",
-    verfahren_id: "019c5736-7834-7ee6-99de-41d9605697d2",
+    verfahren_id: "019c572a-d6d4-77a8-aad7-ae4496fa2463",
     status: {
       status: "GRUEN",
       validation_messages: [
@@ -148,14 +171,3 @@ const mockedEinreichungenStatus = [
     },
   },
 ];
-
-export const getAllEinreichungen = () => {
-  return mockedEinreichungen;
-};
-
-export const getEinreichungStatusByIds = (verfahrenId, einreichungId) => {
-  const einreichungStatus = mockedEinreichungenStatus.find(
-    (e) => e.verfahren_id === verfahrenId && e.id === einreichungId,
-  ).status;
-  return einreichungStatus;
-};
