@@ -97,6 +97,10 @@ export const de = {
     verfahren: {
       headline: "Alle Verfahren in der Übersicht",
     },
+    verfahrenNeu: {
+      headline: "Neue Klage einreichen",
+      subline: "Verfahrensbeteiligte & Details",
+    },
     verfahrenDetails: {
       headline: "Verfahrensdetailseite",
     },
