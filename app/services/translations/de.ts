@@ -3,7 +3,7 @@ export const de = {
     LOGIN_BUTTON_BEA: "Anmeldung Anwaltschaft (über beA Login)",
     LOGIN_BUTTON_DEVELOPER: "Login als Entwickler*in",
     LOGIN_BUTTON_GERICHTE: "Anmeldung Gerichte",
-    LOGIN_BUTTON_TEST_ZUGANG: "Testzugang",
+    LOGIN_BUTTON_DEMO_LABEL: "Gastzugang",
     ABMELDEN_BUTTON: "Abmelden",
     ANMELDEN_BUTTON: "Anmelden",
     BACK_BUTTON: "Zurück",

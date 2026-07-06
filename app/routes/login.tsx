@@ -42,7 +42,7 @@ export default function LoginPage() {
   const loginButtonLabels: Record<LoginType, string> = {
     [LoginType.BeA]: buttons.LOGIN_BUTTON_BEA,
     [LoginType.Developer]: buttons.LOGIN_BUTTON_DEVELOPER,
-    [LoginType.Demo]: buttons.LOGIN_BUTTON_TEST_ZUGANG,
+    [LoginType.Demo]: buttons.LOGIN_BUTTON_DEMO_LABEL,
   };
 
   let alertMarkup = null;
@@ -165,7 +165,7 @@ export default function LoginPage() {
                 data-testid="demo-button"
               >
                 <span className="kern-label">
-                  {buttons.LOGIN_BUTTON_TEST_ZUGANG}
+                  {buttons.LOGIN_BUTTON_DEMO_LABEL}
                 </span>
               </Link>
             </div>
