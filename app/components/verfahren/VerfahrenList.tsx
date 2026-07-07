@@ -1,7 +1,7 @@
 import VerfahrenTile from "~/components/verfahren/VerfahrenTile";
 import VerfahrenTileSkeleton from "~/components/verfahren/VerfahrenTileSkeleton.static";
 import { VERFAHREN_SKELETONS } from "~/config/verfahrenSkeletons";
-import { Verfahren } from "~/routes/verfahren";
+import { Verfahren } from "~/routes/_index";
 
 export function VerfahrenList({
   verfahrenItems,

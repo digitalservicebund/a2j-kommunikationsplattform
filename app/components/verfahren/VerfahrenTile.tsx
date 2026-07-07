@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import FolderInfoIcon from "~/components/icons/FolderInfoIcon.static";
-import type { Verfahren } from "~/routes/verfahren";
+import { Verfahren } from "~/routes/_index";
 import { useTranslations } from "~/services/translations/context";
 
 const ROLLE_CODE_KLAEGERIN = "101";

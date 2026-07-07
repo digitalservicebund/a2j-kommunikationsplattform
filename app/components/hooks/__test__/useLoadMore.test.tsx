@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 
 import { useFetcher, useSearchParams } from "react-router";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
-import { VerfahrenLoaderData } from "~/routes/verfahren";
+import { VerfahrenLoaderData } from "~/routes/_index";
 
 vi.mock("react-router", () => ({
   useFetcher: vi.fn(),
