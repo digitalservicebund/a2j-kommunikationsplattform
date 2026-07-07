@@ -1,4 +1,4 @@
-import { index, prefix, route, RouteConfig } from "@react-router/dev/routes";
+import { prefix, route, RouteConfig } from "@react-router/dev/routes";
 import { config } from "./config/config";
 import { META_PAGES } from "./config/metaPages";
 
@@ -28,7 +28,6 @@ export default [
 
   // verfahren routes
   ...prefix("verfahren", [
-    index("./routes/verfahren.tsx"),
     route("neu", "./routes/verfahren.neu.tsx"),
     route("neu/:id/bearbeiten", "./routes/verfahren.neu.$id.bearbeiten.tsx"),
     route(":id", "./routes/verfahren.$id.tsx"),

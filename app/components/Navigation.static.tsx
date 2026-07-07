@@ -21,12 +21,7 @@ export default function Navigation() {
     {
       name: labels.UEBERSICHT_LABEL,
       iconName: "kern-icon--home",
-      url: `/`,
-    },
-    {
-      name: labels.VERFAHREN_LABEL,
-      iconName: "kern-icon--icon--storage",
-      url: "/verfahren?sort=eingereicht_am", // setting default sorting for seachParams
+      url: "/",
     },
   ];
   return (

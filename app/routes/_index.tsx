@@ -1,73 +1,245 @@
-import { Link } from "react-router-dom";
-import { authMiddleware } from "~/middleware/auth.server";
+import React, { Ref, RefObject, Suspense, useRef } from "react";
+import { Await, Link, LoaderFunctionArgs, useLoaderData } from "react-router";
+import z from "zod";
+import Alert from "~/components/Alert";
+import { useLoadMore } from "~/components/hooks/useLoadMore";
+import { useParamsState } from "~/components/hooks/useParamsState";
+import InputSelect from "~/components/InputSelect";
+import ScrollToTopButton from "~/components/ScrollToTopButton";
+import Search from "~/components/Search";
+import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
+import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
+import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
+import VerfahrenTileSkeleton from "~/components/verfahren/VerfahrenTileSkeleton.static";
+import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/config/verfahren";
+import { VERFAHREN_SKELETONS } from "~/config/verfahrenSkeletons";
+import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
+import fetchVerfahren from "~/domains/verfahren/fetchVerfahren.server";
+import { GerichtSchema } from "~/domains/verfahren/schemas/gerichtSchema";
+import { VerfahrenSchema } from "~/domains/verfahren/schemas/verfahrenSchema";
+import { authContext, authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+
+export type Verfahren = z.infer<typeof VerfahrenSchema>;
+export type Gericht = z.infer<typeof GerichtSchema>;
+
+export type VerfahrenLoaderData = {
+  items: Verfahren[];
+  hasMoreItems: boolean;
+};
+
+export type LoaderData = {
+  verfahren: Promise<VerfahrenLoaderData>;
+  gerichte: Promise<Gericht[]>;
+};
 
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
 
-export default function DashboardPage() {
-  const { labels, alerts } = useTranslations();
+export const loader = async ({ request, context }: LoaderFunctionArgs) => {
+  const authData = context.get(authContext);
+
+  if (!authData) {
+    throw new Error("No auth data available in loader");
+  }
+
+  const url = new URL(request.url);
+  const offset = Number(url.searchParams.get("offset") || "0");
+  const gericht = url.searchParams.get("gericht");
+  const sort = url.searchParams.get("sort") || sortOptions[0].value;
+  const search_text = url.searchParams.get("search_text");
+
+  // Fetch verfahren with one extra item to determine if there are more items
+  const verfahrenPromise: Promise<VerfahrenLoaderData> = (async () => {
+    const verfahren = (await fetchVerfahren(authData, {
+      limit: VERFAHREN_PAGE_LIMIT + 1,
+      offset,
+      gericht,
+      sort,
+      search_text,
+    })) as Verfahren[];
+
+    const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
+    const items = hasMoreItems
+      ? verfahren.slice(0, VERFAHREN_PAGE_LIMIT)
+      : verfahren;
+
+    return { items, hasMoreItems };
+  })();
+
+  const gerichtePromise = fetchGerichte(authData);
+
+  return {
+    data: Promise.all([verfahrenPromise, gerichtePromise]),
+    showDebugInfo: url.searchParams.get("showDebug") === "true",
+  };
+};
+
+export default function VerfahrenRoute() {
+  const { data, showDebugInfo } = useLoaderData<{
+    data: Promise<[VerfahrenLoaderData, Gericht[]]>;
+    showDebugInfo: boolean;
+  }>();
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
   return (
     <>
-      <h1 className="kern-heading-medium">{labels.UEBERSICHT_LABEL}</h1>
-      <div className="kern-row">
-        <div className="kern-col-xl-4 kern-col-sm-12">
-          <article className="kern-card kern-card--interactive">
-            <div className="kern-card__container">
-              <header className="kern-card__header">
-                <hgroup>
-                  <p className="kern-preline">
-                    <span
-                      className="kern-icon kern-icon--warning kern-icon--default bg-kern-feedback-warning"
+      <div className="mb-kern-dimension-small flex justify-between">
+        <VerfahrenHeading ref={headingRef} />
+        <Link
+          to="/verfahren/neu"
+          className="kern-btn kern-btn--secondary my-2.5"
+        >
+          <span className="kern-label">Neues Verfahren anlegen</span>
+          <span
+            className="kern-icon kern-icon--arrow-forward"
+            aria-hidden="true"
+          ></span>
+        </Link>
+      </div>
+      <div className="space-y-kern-space-large flex flex-col">
+        <Suspense
+          fallback={VERFAHREN_SKELETONS.map((s) => (
+            <VerfahrenTileSkeleton key={s.id} />
+          ))}
+        >
+          <Await resolve={data}>
+            {([verfahrenData, gerichte]) => (
+              <>
+                {showDebugInfo && (
+                  <>
+                    verfahren
+                    <br />
+                    <code>{JSON.stringify(verfahrenData, null, 2)}</code>
+                    <hr
+                      className="kern-divider border-kern-layout-border w-full"
                       aria-hidden="true"
-                    ></span>
-                  </p>
-                  <h2 className="kern-title">
-                    {alerts.WORK_IN_PROGRESS_TITLE}
-                  </h2>
-                </hgroup>
-              </header>
-              <section className="kern-card__body">
-                <p className="kern-body">{alerts.WORK_IN_PROGRESS_MESSAGE}</p>
-              </section>
-            </div>
-          </article>
-        </div>
-        <div className="kern-col-xl-4 kern-col-sm-12">
-          <article className="kern-card kern-card--interactive">
-            <div className="kern-card__container">
-              <header className="kern-card__header">
-                <hgroup>
-                  <p className="kern-preline">
-                    <span
-                      className="kern-icon kern-icon--icon--storage kern-icon--default bg-kern-feedback-info"
+                    />
+                    gerichte
+                    <br />
+                    <code>{JSON.stringify(gerichte, null, 2)}</code>
+                    <hr
+                      className="kern-divider border-kern-layout-border w-full"
                       aria-hidden="true"
-                    ></span>
-                  </p>
-                  <h2 className="kern-title">Verfahren</h2>
-                </hgroup>
-              </header>
-              <section className="kern-card__body">
-                <p className="kern-body">
-                  Alles rund um das Thema Verfahren: Sehen Sie alle Verfahren in
-                  der Übersicht oder erstellen Sie eine neue Klageschrift.
-                </p>
-              </section>
-              <footer className="kern-card__footer">
-                <Link to="/verfahren" className="kern-btn kern-btn--primary">
-                  <span className="kern-label">Übersichtsseite Verfahren</span>
-                </Link>
-                <Link
-                  to="/verfahren/neu"
-                  className="kern-btn kern-btn--secondary"
-                >
-                  <span className="kern-label">Neues Verfahren anlegen</span>
-                </Link>
-              </footer>
-            </div>
-          </article>
-        </div>
+                    />
+                  </>
+                )}
+                <VerfahrenContent
+                  initialData={verfahrenData}
+                  gerichte={gerichte}
+                  ref={headingRef}
+                />
+              </>
+            )}
+          </Await>
+        </Suspense>
       </div>
     </>
+  );
+}
+
+function VerfahrenContent({
+  initialData,
+  gerichte,
+  ref,
+}: Readonly<{
+  initialData: VerfahrenLoaderData;
+  gerichte: Gericht[];
+  ref: RefObject<HTMLHeadingElement | null>;
+}>) {
+  const { labels } = useTranslations();
+  const { allItems, hasMoreItems, isLoading, handleLoadMore } =
+    useLoadMore(initialData);
+  const { getParamValue, updateParam } = useParamsState<{
+    sort: "";
+    gericht: "";
+    search_text: "";
+  }>();
+
+  const gerichteOptions = gerichte.map((g) => ({
+    value: g.id,
+    label: g.wert || "",
+  }));
+
+  const hasFilters = Boolean(
+    getParamValue("search_text") || Boolean(getParamValue("gericht")),
+  );
+
+  // isInputSelectDisabled when loading, or when no items have been returned and no filters are applied
+  const isInputDisabled = isLoading || (!hasFilters && allItems.length === 0);
+
+  const handleSearch = (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const value = formData.get("search_text");
+
+    updateParam("search_text", (value as string) || null);
+  };
+
+  return (
+    <>
+      <div className="bg-kern-layout-background-default pt-kern-space-large space-y-kern-space-large sticky top-0 z-40 flex flex-col">
+        <div className="gap-kern-space-x-large grid grid-cols-1 items-start lg:grid-cols-4">
+          <div className="lg:col-span-2">
+            <Search
+              handleSearch={handleSearch}
+              disabled={isInputDisabled}
+              defaultValue={getParamValue(`search_text`) || ""}
+              id="search_text"
+            />
+          </div>
+          <InputSelect
+            label={labels.COURT_LABEL}
+            id="gericht"
+            placeholder={labels.SHOW_ALL_LABEL}
+            options={gerichteOptions}
+            onChange={(e) => updateParam("gericht", e.target.value || null)}
+            disabled={isInputDisabled}
+            selectedValue={getParamValue("gericht") || ""}
+          />
+          <InputSelect
+            label={labels.SORT_LABEL}
+            id="sort"
+            options={sortOptions}
+            onChange={(e) =>
+              updateParam("sort", e.target.value || sortOptions[0].value)
+            }
+            disabled={isInputDisabled}
+            selectedValue={getParamValue("sort") || sortOptions[0].value}
+          />
+        </div>
+        <hr
+          className="kern-divider border-kern-layout-border w-full"
+          aria-hidden="true"
+        />
+      </div>
+      <VerfahrenCounter count={allItems.length || 0} hasFilters={hasFilters} />
+      <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
+      <ScrollToTopButton refElement={ref} />
+      {hasMoreItems && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}
+    </>
+  );
+}
+
+const VerfahrenHeading = ({ ref }: { ref?: Ref<HTMLHeadingElement> }) => {
+  const { routes } = useTranslations();
+  return (
+    <h1 ref={ref} className="kern-heading-medium">
+      {routes.verfahren.headline}
+    </h1>
+  );
+};
+
+export function ErrorBoundary() {
+  const { errorMessages } = useTranslations();
+  return (
+    <div className="space-y-kern-space-large">
+      <VerfahrenHeading />
+      <Alert
+        type="error"
+        title={errorMessages.GENERIC_ERROR_LABEL}
+        message={errorMessages.API_GET_VERFAHREN_ERROR_MESSAGE}
+      />
+    </div>
   );
 }
