@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Form,
   Link,
@@ -35,17 +36,10 @@ export async function loader({ request }: { request: Request }) {
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const { environment } = useLoaderData<typeof loader>();
+  const { alerts, buttons, routes } = useTranslations();
+  const [loginType, setLoginType] = useState<LoginType | undefined>(undefined);
   const alertStatus = searchParams.get("status") as AlertState;
   const isDevelopment = environment === "development";
-  const currentLoginType = isDevelopment ? LoginType.Developer : LoginType.BeA;
-  const { alerts, buttons, routes } = useTranslations();
-
-  const loginButtonLabels: Record<LoginType, string> = {
-    [LoginType.BeA]: buttons.LOGIN_BUTTON_BEA,
-    [LoginType.Developer]: buttons.LOGIN_BUTTON_DEVELOPER,
-    [LoginType.Demo]: buttons.LOGIN_BUTTON_DEMO_LABEL,
-    [LoginType.KomplaIdp]: buttons.LOGIN_BUTTON_KOMPLA_IDP_LABEL,
-  };
 
   let alertMarkup = null;
   switch (alertStatus) {
@@ -163,14 +157,26 @@ export default function LoginPage() {
 
           <Form method="post" action="/action/login-user">
             <div className="py-kern-space-large gap-kern-space-default flex flex-row flex-wrap items-start self-stretch">
-              <input type="hidden" name="loginType" value={currentLoginType} />
+              <input type="hidden" name="loginType" value={loginType} />
+
+              {isDevelopment && (
+                <button
+                  type="submit"
+                  className="kern-btn kern-btn--block kern-btn--primary"
+                  onClick={() => setLoginType(LoginType.Developer)}
+                >
+                  <span className="kern-label">
+                    {buttons.LOGIN_BUTTON_DEVELOPER}
+                  </span>
+                </button>
+              )}
+
               <button
                 type="submit"
                 className="kern-btn kern-btn--block kern-btn--primary"
+                onClick={() => setLoginType(LoginType.BeA)}
               >
-                <span className="kern-label">
-                  {loginButtonLabels[currentLoginType]}
-                </span>
+                <span className="kern-label">{buttons.LOGIN_BUTTON_BEA}</span>
               </button>
 
               <button
