@@ -54,28 +54,6 @@ describe("Breadcrumb component", () => {
     expect(screen.getByText("Start")).toBeInTheDocument();
   });
 
-  it("renders breadcrumb chain for /verfahren", () => {
-    mockUseLocation.mockReturnValue({ pathname: "/verfahren" });
-    mockUseParams.mockReturnValue({});
-
-    renderWithTestTranslations(
-      <MemoryRouter>
-        <Breadcrumb />
-      </MemoryRouter>,
-    );
-
-    const nav = screen.getByRole("navigation", { name: "Breadcrumb" });
-    expect(nav).toBeInTheDocument();
-
-    // Should have Start -> Verfahren
-    const links = screen.getAllByRole("link");
-    expect(links).toHaveLength(1);
-    expect(links[0]).toHaveAttribute("href", "/");
-    expect(links[0]).toHaveTextContent("Start");
-
-    expect(screen.getByText("Übersichtsseite Verfahren")).toBeInTheDocument();
-  });
-
   it("renders breadcrumb chain for /verfahren/neu", () => {
     mockUseLocation.mockReturnValue({ pathname: "/verfahren/neu" });
     mockUseParams.mockReturnValue({});
@@ -89,14 +67,11 @@ describe("Breadcrumb component", () => {
     const nav = screen.getByRole("navigation", { name: "Breadcrumb" });
     expect(nav).toBeInTheDocument();
 
-    // Should have Start -> Übersichtsseite Verfahren -> Neues Verfahren anlegen
+    // Should have Start -> Neues Verfahren anlegen
     const links = screen.getAllByRole("link");
-    expect(links).toHaveLength(2);
+    expect(links).toHaveLength(1);
     expect(links[0]).toHaveAttribute("href", "/");
     expect(links[0]).toHaveTextContent("Start");
-    expect(links[1]).toHaveAttribute("href", "/verfahren");
-    expect(links[1]).toHaveTextContent("Übersichtsseite Verfahren");
-
     expect(screen.getByText("Neue Klage einreichen")).toBeInTheDocument();
   });
 
@@ -113,14 +88,11 @@ describe("Breadcrumb component", () => {
     const nav = screen.getByRole("navigation", { name: "Breadcrumb" });
     expect(nav).toBeInTheDocument();
 
-    // Should have Start -> Übersichtsseite Verfahren -> Verfahren
+    // Should have Start -> Verfahren
     const links = screen.getAllByRole("link");
-    expect(links).toHaveLength(2);
+    expect(links).toHaveLength(1);
     expect(links[0]).toHaveAttribute("href", "/");
     expect(links[0]).toHaveTextContent("Start");
-    expect(links[1]).toHaveAttribute("href", "/verfahren");
-    expect(links[1]).toHaveTextContent("Übersichtsseite Verfahren");
-
     expect(screen.getByText("Verfahren")).toBeInTheDocument();
   });
 
@@ -137,16 +109,13 @@ describe("Breadcrumb component", () => {
     const nav = screen.getByRole("navigation", { name: "Breadcrumb" });
     expect(nav).toBeInTheDocument();
 
-    // Should have Start -> Übersichtsseite Verfahren -> Verfahren -> Bearbeitung
+    // Should have Start -> Verfahren -> Bearbeitung
     const links = screen.getAllByRole("link");
-    expect(links).toHaveLength(3);
+    expect(links).toHaveLength(2);
     expect(links[0]).toHaveAttribute("href", "/");
     expect(links[0]).toHaveTextContent("Start");
-    expect(links[1]).toHaveAttribute("href", "/verfahren");
-    expect(links[1]).toHaveTextContent("Übersichtsseite Verfahren");
-    expect(links[2]).toHaveAttribute("href", "/verfahren/123");
-    expect(links[2]).toHaveTextContent("Verfahren");
-
+    expect(links[1]).toHaveAttribute("href", "/verfahren/123");
+    expect(links[1]).toHaveTextContent("Verfahren");
     expect(screen.getByText("Bearbeitung")).toBeInTheDocument();
   });
 });

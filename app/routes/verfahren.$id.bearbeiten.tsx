@@ -95,13 +95,13 @@ export const loader = async ({
 export default function Verfahrendetails() {
   const { verfahren, einreichungen, dokumente } = useLoaderData<LoaderData>();
 
-  const { alerts, routes } = useTranslations();
+  const { alerts } = useTranslations();
 
   console.log(einreichungen, dokumente);
 
   return (
     <>
-      <h1 className="kern-heading-medium">{routes.verfahren.headline}</h1>
+      <h1 className="kern-heading-medium">Klagende Partei / Beklagte Partei</h1>
       <div className="kern-row">
         <div className="kern-col-12 kern-col-md-8 kern-col-md-offset-2 kern-col-lg-6 kern-col-lg-offset-3">
           <Alert
