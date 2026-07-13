@@ -8,6 +8,9 @@ vi.mock("~/config/config.server", () => ({
     BRAK_IDP_OIDC_CLIENT_SECRET: "client-secret",
     BRAK_IDP_OIDC_ISSUER: "https://issuer.example",
     BRAK_IDP_OIDC_REDIRECT_URI: "https://redirect.example",
+    KOMPLA_API_IDP_CLIENT_ID: "api-client",
+    KOMPLA_API_IDP_CLIENT_SECRET: "api-client-secret",
+    KOMPLA_API_IDP_ISSUER: "https://api-issuer.example",
     KOMPLA_DEMO_IDP_ISSUER: "https://demo-issuer.example",
     KOMPLA_DEMO_SERVICE_CLIENT_ID: "demo-service-client",
     KOMPLA_DEMO_SERVICE_CLIENT_SECRET: "demo-service-secret",
@@ -15,6 +18,7 @@ vi.mock("~/config/config.server", () => ({
     KOMPLA_DEMO_REDIRECT_URI: "https://demo-redirect.example",
     KOMPLA_DEMO_USERNAME: "demo",
     KOMPLA_DEMO_EMAIL: "demo@example.com",
+    KOMPLA_TEST_REDIRECT_URI: "https://test-redirect.example",
   }),
 }));
 
@@ -126,11 +130,20 @@ function getDemoStrategy(): DemoStrategyResponse {
   return strategy as unknown as DemoStrategyResponse;
 }
 
+function getTestStrategy(): StrategyResponse {
+  const strategyMap = (authenticator as unknown as AuthWithStrategies)
+    .strategies;
+  const strategy = strategyMap.get(AuthenticationProvider.TEST);
+  if (!strategy) throw new Error("test strategy not registered");
+  return strategy;
+}
+
 import { setAuthSession } from "../authSession.server";
 import {
   getDemoMagicLinkUrl,
   refreshAccessToken,
   refreshDemoToken,
+  refreshTestToken,
   revokeAccessToken,
 } from "../oAuth.server";
 
@@ -278,6 +291,29 @@ describe("oAuth.server", () => {
     expect(res.status).toBe(500);
   });
 
+  it("revokeAccessToken revokes the test-login token when the last login was via TEST", async () => {
+    // trigger the test OAuth2Strategy's verify callback so the module's
+    // internal `loginType` state is set to Test before revoking
+    const mockTokens = {
+      accessToken: () => "test-at",
+      refreshToken: () => "test-rt",
+      accessTokenExpiresInSeconds: () => 300,
+      hasRefreshToken: () => true,
+    } as any;
+    await getTestStrategy().verify({
+      tokens: mockTokens,
+      request: mockRequest,
+    });
+
+    oAuthMocks.revokeTokenMock.mockResolvedValue(undefined);
+
+    await revokeAccessToken("test-token-to-revoke");
+
+    expect(oAuthMocks.revokeTokenMock).toHaveBeenCalledWith(
+      "test-token-to-revoke",
+    );
+  });
+
   it("verify MagicLinkStrategy callback: calls setAuthSession with provider DEMO and returns AuthenticationResponse", async () => {
     mockedSetAuthSession.mockResolvedValueOnce("demo-cookie-header");
 
@@ -333,5 +369,95 @@ describe("oAuth.server", () => {
       sessionCookieHeader: "demo-refresh-cookie",
       provider: "demo",
     });
+  });
+
+  it("verify test OAuth2Strategy callback: calls setAuthSession with provider TEST and returns AuthenticationResponse", async () => {
+    mockedSetAuthSession.mockResolvedValueOnce("test-cookie-header");
+
+    const strategy = getTestStrategy();
+    const mockTokens = {
+      accessToken: () => "test-at",
+      refreshToken: () => "test-rt",
+      accessTokenExpiresInSeconds: () => 300,
+      hasRefreshToken: () => true,
+    } as any;
+
+    const result = await strategy.verify({
+      tokens: mockTokens,
+      request: mockRequest,
+    });
+
+    expect(setAuthSession).toHaveBeenCalledWith({
+      accessToken: "test-at",
+      refreshToken: "test-rt",
+      expiresAt: expect.any(Number),
+      request: mockRequest,
+      provider: "test",
+    });
+    expect(result).toEqual({
+      authenticationTokens: {
+        accessToken: "test-at",
+        refreshToken: "test-rt",
+        expiresAt: expect.any(Number),
+      },
+      sessionCookieHeader: "test-cookie-header",
+      provider: "test",
+    });
+  });
+
+  it("refreshTestToken uses OAuth2Strategy.refreshToken and setAuthSession, returning provider TEST", async () => {
+    const tokenObj = {
+      accessToken: () => "new-test-at",
+      refreshToken: () => "new-test-rt",
+      hasRefreshToken: () => true,
+      accessTokenExpiresInSeconds: () => 600,
+    };
+
+    oAuthMocks.refreshTokenMock.mockResolvedValue(tokenObj);
+    mockedSetAuthSession.mockResolvedValueOnce("test-refresh-cookie");
+
+    const result = await refreshTestToken(mockRequest, "old-rt");
+
+    expect(oAuthMocks.refreshTokenMock).toHaveBeenCalledWith("old-rt");
+    expect(setAuthSession).toHaveBeenCalledWith({
+      accessToken: "new-test-at",
+      refreshToken: "new-test-rt",
+      expiresAt: expect.any(Number),
+      request: mockRequest,
+      provider: "test",
+    });
+    expect(result).toEqual({
+      authenticationTokens: {
+        accessToken: "new-test-at",
+        refreshToken: "new-test-rt",
+        expiresAt: expect.any(Number),
+      },
+      sessionCookieHeader: "test-refresh-cookie",
+      provider: "test",
+    });
+  });
+
+  it("refreshTestToken keeps original refresh token when strategy has no refresh token", async () => {
+    const tokenObjNoRefresh = {
+      accessToken: () => "new-test-at-2",
+      refreshToken: () => undefined,
+      hasRefreshToken: () => false,
+      accessTokenExpiresInSeconds: () => 120,
+    } as any;
+
+    oAuthMocks.refreshTokenMock.mockResolvedValue(tokenObjNoRefresh);
+    mockedSetAuthSession.mockResolvedValueOnce("test-refresh-cookie-2");
+
+    const result = await refreshTestToken(mockRequest, "orig-test-rt");
+
+    expect(result.authenticationTokens.refreshToken).toBe("orig-test-rt");
+  });
+
+  it("refreshTestToken throws when OAuth2Strategy.refreshToken fails", async () => {
+    oAuthMocks.refreshTokenMock.mockRejectedValue(new Error("refresh failed"));
+
+    await expect(refreshTestToken(mockRequest, "bad-test-rt")).rejects.toThrow(
+      "Failed to refresh the access token",
+    );
   });
 });

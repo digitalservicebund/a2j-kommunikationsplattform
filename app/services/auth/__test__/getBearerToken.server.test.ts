@@ -28,6 +28,11 @@ const devAuthData: AuthenticationResponse = {
   provider: AuthenticationProvider.DEVELOPMENT,
 };
 
+const testAuthData: AuthenticationResponse = {
+  ...beaAuthData,
+  provider: AuthenticationProvider.TEST,
+};
+
 describe("getBearerToken", () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -57,6 +62,13 @@ describe("getBearerToken", () => {
 
   it("returns accessToken directly for DEVELOPMENT provider without calling authorizeToken", async () => {
     const token = await getBearerToken(devAuthData);
+
+    expect(authorizeToken).not.toHaveBeenCalled();
+    expect(token).toBe("user-access-token");
+  });
+
+  it("returns accessToken directly for TEST provider without calling authorizeToken", async () => {
+    const token = await getBearerToken(testAuthData);
 
     expect(authorizeToken).not.toHaveBeenCalled();
     expect(token).toBe("user-access-token");

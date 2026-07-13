@@ -116,11 +116,13 @@ async function withMocks({
   // mock oAuth helpers used by authSession.server
   const refreshAccessTokenMock = vi.fn(async () => refreshResponse);
   const refreshDemoTokenMock = vi.fn(async () => refreshResponse);
+  const refreshTestTokenMock = vi.fn(async () => refreshResponse);
   const revokeAccessTokenMock = vi.fn(async () => undefined);
   // mock the oAuth helpers relative to this test file's location
   vi.doMock("../oAuth.server", () => ({
     refreshAccessToken: refreshAccessTokenMock,
     refreshDemoToken: refreshDemoTokenMock,
+    refreshTestToken: refreshTestTokenMock,
     revokeAccessToken: revokeAccessTokenMock,
   }));
 
@@ -132,6 +134,7 @@ async function withMocks({
     mocks: {
       refreshAccessTokenMock,
       refreshDemoTokenMock,
+      refreshTestTokenMock,
       revokeAccessTokenMock,
     },
     restore: () => {
@@ -339,6 +342,26 @@ describe("authSession.server", () => {
     const req = new Request(requestURL, { headers: { Cookie: cookie } });
     const res = await module.getAuthData(req);
     expect(mocks.refreshDemoTokenMock).toHaveBeenCalledWith(req, "demo-rt");
+    expect(mocks.refreshAccessTokenMock).not.toHaveBeenCalled();
+    expect(res).toEqual(refreshResponse);
+    restore();
+  });
+
+  it("getAuthData calls refreshTestToken (not refreshAccessToken) when provider is TEST and token is expired", async () => {
+    const refreshResponse = {
+      authenticationTokens: {
+        accessToken: "new-test",
+        expiresAt: Date.now() + 60_000,
+        refreshToken: "new-test-rt",
+      },
+      sessionCookieHeader: "hdr",
+      provider: "test" as const,
+    };
+    const { module, mocks, restore } = await withMocks({ refreshResponse });
+    const cookie = `accessToken=tok; expiresAt=${pastTs()}; refreshToken=test-rt; provider=test`;
+    const req = new Request(requestURL, { headers: { Cookie: cookie } });
+    const res = await module.getAuthData(req);
+    expect(mocks.refreshTestTokenMock).toHaveBeenCalledWith(req, "test-rt");
     expect(mocks.refreshAccessTokenMock).not.toHaveBeenCalled();
     expect(res).toEqual(refreshResponse);
     restore();

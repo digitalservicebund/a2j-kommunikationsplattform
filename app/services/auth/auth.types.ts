@@ -2,6 +2,7 @@ export enum AuthenticationProvider {
   BEA = "bea",
   DEMO = "demo",
   DEVELOPMENT = "development",
+  TEST = "test",
 }
 
 export interface AuthenticationTokens {

@@ -119,6 +119,89 @@ export async function refreshDemoToken(
   };
 }
 
+// KomPla test login uses "Authorization Code" OAuth 2.0 flow against the
+// same Keycloak realm as the Demo IdP, via a dedicated confidential client.
+// Keycloak renders its own hosted login page (username/password) — this app
+// never sees the user's credentials. Used mainly for e2e and manual testing.
+
+const testOauth2Strategy = new OAuth2Strategy(
+  {
+    cookie: "oauth2-test",
+    clientId: serverConfig().KOMPLA_API_IDP_CLIENT_ID,
+    clientSecret: serverConfig().KOMPLA_API_IDP_CLIENT_SECRET,
+    // TODO: cleanup KOMPLA_API and KOMPLA_DEMO envs as currently both use the same idp_issuer
+    authorizationEndpoint: `${serverConfig().KOMPLA_DEMO_IDP_ISSUER}/protocol/openid-connect/auth`,
+    tokenEndpoint: `${serverConfig().KOMPLA_DEMO_IDP_ISSUER}/protocol/openid-connect/token`,
+    redirectURI: `${serverConfig().KOMPLA_API_IDP_REDIRECT_URI}`,
+    scopes: ["openid"],
+    codeChallengeMethod: CodeChallengeMethod.S256,
+  },
+  async ({ tokens, request }) => {
+    const accessToken = tokens.accessToken();
+    const refreshToken = tokens.refreshToken();
+    const expiresAt = Date.now() + tokens.accessTokenExpiresInSeconds() * 1000;
+
+    console.log(
+      "OAuth2Strategy: authenticated via KomPla test login, callback URL:",
+      request.url,
+    );
+
+    const sessionCookieHeader = await setAuthSession({
+      accessToken,
+      expiresAt,
+      refreshToken,
+      request,
+      provider: AuthenticationProvider.TEST,
+    });
+
+    const response: AuthenticationResponse = {
+      authenticationTokens: { accessToken, expiresAt, refreshToken },
+      sessionCookieHeader,
+      provider: AuthenticationProvider.TEST,
+    };
+
+    loginType = LoginType.Test;
+    return response;
+  },
+);
+
+authenticator.use(testOauth2Strategy, AuthenticationProvider.TEST);
+
+export async function refreshTestToken(
+  request: Request,
+  refreshToken: string,
+): Promise<AuthenticationResponse> {
+  let newTokens;
+
+  try {
+    console.log("refreshTestToken: refreshing access token");
+    newTokens = await testOauth2Strategy.refreshToken(refreshToken);
+  } catch (error) {
+    console.error("Error while refreshing the test-login access token:", error);
+    throw new Error("Failed to refresh the access token");
+  }
+
+  const refreshedTokenData = {
+    accessToken: newTokens.accessToken(),
+    refreshToken: newTokens.hasRefreshToken()
+      ? newTokens.refreshToken()
+      : refreshToken,
+    expiresAt: Date.now() + newTokens.accessTokenExpiresInSeconds() * 1000,
+  };
+
+  const sessionCookieHeader = await setAuthSession({
+    ...refreshedTokenData,
+    request,
+    provider: AuthenticationProvider.TEST,
+  });
+
+  return {
+    authenticationTokens: { ...refreshedTokenData },
+    sessionCookieHeader,
+    provider: AuthenticationProvider.TEST,
+  };
+}
+
 export async function refreshAccessToken(
   request: Request,
   refreshToken: string,
@@ -164,6 +247,10 @@ export async function revokeAccessToken(token: string) {
     if (loginType === LoginType.BeA) {
       console.log("revoke beA access token");
       await beaOauth2Strategy.revokeToken(token);
+    }
+    if (loginType === LoginType.Test) {
+      console.log("revoke test-login access token");
+      await testOauth2Strategy.revokeToken(token);
     }
   } catch (error) {
     console.error("revoke access token error:", error);

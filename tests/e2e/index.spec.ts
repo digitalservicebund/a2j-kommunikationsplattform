@@ -63,4 +63,35 @@ test.describe("Homepage (_index route)", () => {
       errorMessages.LOGIN_ERROR_MESSAGE,
     );
   });
+
+  test(`shows danger alert box for status=test-login-error URL param (will be shown on any test-login error)`, async ({
+    page,
+  }) => {
+    await page.goto(`/login?status=${LoginError.Test}`);
+    await expect(page.getByRole("alert")).toContainText(
+      alerts.LOGIN_ERROR_TEST_MESSAGE,
+    );
+  });
+
+  test('redirects to Keycloak login page when using the test login option ("Test-Login")', async ({
+    page,
+  }) => {
+    // triple timeout, see: https://playwright.dev/docs/api/class-test#test-slow
+    test.slow();
+    await page.goto("/login");
+    await page
+      .getByRole("button", { name: buttons.LOGIN_BUTTON_TEST_LABEL })
+      .click();
+    await page.waitForURL((url) =>
+      url.toString().includes("openid-connect/auth"),
+    );
+
+    // expected URL partial after clicking the test-login button — this
+    // is Keycloak's own hosted login page, we never render username/password
+    // fields ourselves
+    const expectedUrl =
+      /auth\.kompla-justiz\.sinc\.de\/realms\/kompla-dev\/protocol\/openid-connect\/auth/;
+
+    await expect(page).toHaveURL(expectedUrl);
+  });
 });

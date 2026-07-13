@@ -6,12 +6,14 @@ import { authenticator } from "~/services/auth/oAuth.server";
 export enum LoginError {
   BeA = "bea-login-error",
   Demo = "demo-login-error",
+  Test = "test-login-error",
 }
 
 export enum LoginType {
   BeA = "bea-login",
   Developer = "developer-login",
   Demo = "demo-login",
+  Test = "test-login",
 }
 
 /**
@@ -35,6 +37,23 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       AuthenticationProvider.BEA,
       request,
     );
+  }
+
+  if (loginType === LoginType.Test) {
+    try {
+      return await authenticator.authenticate(
+        AuthenticationProvider.TEST,
+        request,
+      );
+    } catch (error) {
+      if (error instanceof Response) {
+        console.log(
+          "action/login-user: redirecting to Keycloak authorization URL:",
+          error.headers.get("Location"),
+        );
+      }
+      throw error;
+    }
   }
 
   return new Response("Invalid login type", { status: 400 });

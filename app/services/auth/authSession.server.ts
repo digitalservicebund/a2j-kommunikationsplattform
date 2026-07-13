@@ -7,7 +7,11 @@ import {
   AuthenticationResponse,
   AuthenticationTokens,
 } from "./auth.types";
-import { refreshAccessToken, refreshDemoToken } from "./oAuth.server";
+import {
+  refreshAccessToken,
+  refreshDemoToken,
+  refreshTestToken,
+} from "./oAuth.server";
 
 const getSecret = () => {
   return config().ENVIRONMENT === "development"
@@ -130,6 +134,10 @@ export const getAuthData = async (
     if (provider === AuthenticationProvider.DEMO) {
       console.log("getAuthData: Refreshing demo token");
       return await refreshDemoToken(request, refreshToken);
+    }
+    if (provider === AuthenticationProvider.TEST) {
+      console.log("getAuthData: Refreshing test-login token");
+      return await refreshTestToken(request, refreshToken);
     }
     console.log("getAuthData: Refreshing regular KomPla IdP token");
     return await refreshAccessToken(request, refreshToken);
