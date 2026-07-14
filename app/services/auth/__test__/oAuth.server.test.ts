@@ -264,7 +264,7 @@ describe("oAuth.server", () => {
 
     await expect(
       refreshAccessToken(fakeRequest, "bad-refresh-token"),
-    ).rejects.toThrow("Failed to refresh the access token");
+    ).rejects.toThrow("refresh failed");
 
     expect(oAuthMocks.refreshTokenMock).toHaveBeenCalledWith(
       "bad-refresh-token",
@@ -457,7 +457,7 @@ describe("oAuth.server", () => {
     oAuthMocks.refreshTokenMock.mockRejectedValue(new Error("refresh failed"));
 
     await expect(refreshTestToken(mockRequest, "bad-test-rt")).rejects.toThrow(
-      "Failed to refresh the access token",
+      "refresh failed",
     );
   });
 });

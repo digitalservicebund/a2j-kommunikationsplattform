@@ -171,15 +171,8 @@ export async function refreshTestToken(
   request: Request,
   refreshToken: string,
 ): Promise<AuthenticationResponse> {
-  let newTokens;
-
-  try {
-    console.log("refreshTestToken: refreshing access token");
-    newTokens = await testOauth2Strategy.refreshToken(refreshToken);
-  } catch (error) {
-    console.error("Error while refreshing the test-login access token:", error);
-    throw new Error("Failed to refresh the access token");
-  }
+  console.log("refreshTestToken: refreshing access token");
+  const newTokens = await testOauth2Strategy.refreshToken(refreshToken);
 
   const refreshedTokenData = {
     accessToken: newTokens.accessToken(),
@@ -206,15 +199,8 @@ export async function refreshAccessToken(
   request: Request,
   refreshToken: string,
 ): Promise<AuthenticationResponse> {
-  let newTokens;
-
-  try {
-    console.log("refreshAccessToken: refreshing access token");
-    newTokens = await beaOauth2Strategy.refreshToken(refreshToken);
-  } catch (error) {
-    console.error("Error while refreshing the access token:", error);
-    throw new Error("Failed to refresh the access token");
-  }
+  console.log("refreshAccessToken: refreshing access token");
+  const newTokens = await beaOauth2Strategy.refreshToken(refreshToken);
 
   const refreshedTokenData = {
     accessToken: newTokens.accessToken(),
