@@ -8,13 +8,13 @@ export const loader: LoaderFunction = async ({ request }) => {
   const authenticationProvider = AuthenticationProvider.TEST;
 
   const incomingUrl = new URL(request.url);
-  console.log("test-callback: incoming request URL:", request.url);
+  console.log("test-login-callback: incoming request URL:", request.url);
   console.log(
-    "test-callback: query params:",
+    "test-login-callback: query params:",
     Object.fromEntries(incomingUrl.searchParams),
   );
   console.log(
-    "test-callback: cookie names present:",
+    "test-login-callback: cookie names present:",
     (request.headers.get("Cookie") ?? "")
       .split(";")
       .map((c) => c.trim().split("=")[0])
