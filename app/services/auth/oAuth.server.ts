@@ -129,7 +129,7 @@ const testOauth2Strategy = new OAuth2Strategy(
     cookie: "oauth2-test",
     clientId: serverConfig().KOMPLA_API_IDP_CLIENT_ID,
     clientSecret: serverConfig().KOMPLA_API_IDP_CLIENT_SECRET,
-    // TODO: cleanup KOMPLA_API and KOMPLA_DEMO envs as currently both use the same idp_issuer
+    // TODO: `KOMPLA_DEMO_IDP_ISSUER` is misleading here: this issuer is shared by both the Demo/Magic Link flow and the KomPla test-login flow. In the next cleanup task, move shared KomPla IdP settings to neutral names (for example `KOMPLA_API_IDP_ISSUER`) and reserve `KOMPLA_DEMO_*` for demo-only values and `BRAK_*` for BRAK-specific values.
     authorizationEndpoint: `${serverConfig().KOMPLA_DEMO_IDP_ISSUER}/protocol/openid-connect/auth`,
     tokenEndpoint: `${serverConfig().KOMPLA_DEMO_IDP_ISSUER}/protocol/openid-connect/token`,
     redirectURI: `${serverConfig().KOMPLA_API_IDP_REDIRECT_URI}`,
