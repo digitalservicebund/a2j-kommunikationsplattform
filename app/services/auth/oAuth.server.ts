@@ -229,6 +229,29 @@ export async function refreshAccessToken(
   return response;
 }
 
+// TODO: Logout revocation isn't currently very secure and needs a fix:
+// 1. Neither `beaOauth2Strategy` nor `komplaIdpOauth2Strategy` sets a
+//    `tokenRevocationEndpoint`, so `strategy.revokeToken()` always throws
+//    "Token revocation endpoint is not set." (see remix-auth-oauth2's
+//    OAuth2Strategy.revokeToken). That error is caught here, logged, and
+//    turned into a 500 Response that action.logout-user.ts never checks —
+//    so no token is ever actually revoked at all, for either provider. This
+//    failure is completely invisible: the browser still gets redirected to
+//    /login as if logout succeeded, and the only trace is the
+//    "revoke access token error:" console.error line in the server logs.
+// 2. `loginType` is a module-level variable shared across all concurrent
+//    requests/users, not derived from the logging-out user's own session.
+//    Under concurrent logins, this can revoke the token with the wrong
+//    provider's strategy, or match neither branch and skip revocation
+//    entirely without any error. The provider should be read from the session
+//    (`session.get("provider")` in action.logout-user.ts) and passed in
+//    explicitly instead.
+// 3. There is no case for `LoginType.Demo` — Demo/MagicLink tokens are
+//    never revoked on logout at all.
+// 4. This revokes the `accessToken`, but the `refreshToken` is what
+//    actually needs revoking to make logout a real security boundary
+//    (otherwise a leaked refresh token stays valid for its full lifetime
+//    after logout, even though the session cookie is destroyed).
 export async function revokeAccessToken(token: string) {
   try {
     if (loginType === LoginType.BeA) {
