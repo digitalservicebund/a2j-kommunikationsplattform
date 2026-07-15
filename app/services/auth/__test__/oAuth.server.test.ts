@@ -130,11 +130,11 @@ function getDemoStrategy(): DemoStrategyResponse {
   return strategy as unknown as DemoStrategyResponse;
 }
 
-function getTestStrategy(): StrategyResponse {
+function getKomplaIdpStrategy(): StrategyResponse {
   const strategyMap = (authenticator as unknown as AuthWithStrategies)
     .strategies;
-  const strategy = strategyMap.get(AuthenticationProvider.TEST);
-  if (!strategy) throw new Error("test strategy not registered");
+  const strategy = strategyMap.get(AuthenticationProvider.KOMPLA_IDP);
+  if (!strategy) throw new Error("kompla idp strategy not registered");
   return strategy;
 }
 
@@ -143,7 +143,7 @@ import {
   getDemoMagicLinkUrl,
   refreshAccessToken,
   refreshDemoToken,
-  refreshTestToken,
+  refreshKomplaIdpToken,
   revokeAccessToken,
 } from "../oAuth.server";
 
@@ -291,16 +291,16 @@ describe("oAuth.server", () => {
     expect(res.status).toBe(500);
   });
 
-  it("revokeAccessToken revokes the test-login token when the last login was via TEST", async () => {
-    // trigger the test OAuth2Strategy's verify callback so the module's
-    // internal `loginType` state is set to Test before revoking
+  it("revokeAccessToken revokes the kompla-idp-login token when the last login was via KOMPLA_IDP", async () => {
+    // trigger the kompla idp OAuth2Strategy's verify callback so the module's
+    // internal `loginType` state is set to KomplaIdp before revoking
     const mockTokens = {
       accessToken: () => "test-at",
       refreshToken: () => "test-rt",
       accessTokenExpiresInSeconds: () => 300,
       hasRefreshToken: () => true,
     } as any;
-    await getTestStrategy().verify({
+    await getKomplaIdpStrategy().verify({
       tokens: mockTokens,
       request: mockRequest,
     });
@@ -371,10 +371,10 @@ describe("oAuth.server", () => {
     });
   });
 
-  it("verify test OAuth2Strategy callback: calls setAuthSession with provider TEST and returns AuthenticationResponse", async () => {
+  it("verify kompla idp OAuth2Strategy callback: calls setAuthSession with provider KOMPLA_IDP and returns AuthenticationResponse", async () => {
     mockedSetAuthSession.mockResolvedValueOnce("test-cookie-header");
 
-    const strategy = getTestStrategy();
+    const strategy = getKomplaIdpStrategy();
     const mockTokens = {
       accessToken: () => "test-at",
       refreshToken: () => "test-rt",
@@ -392,7 +392,7 @@ describe("oAuth.server", () => {
       refreshToken: "test-rt",
       expiresAt: expect.any(Number),
       request: mockRequest,
-      provider: "test",
+      provider: "kompla-idp",
     });
     expect(result).toEqual({
       authenticationTokens: {
@@ -401,11 +401,11 @@ describe("oAuth.server", () => {
         expiresAt: expect.any(Number),
       },
       sessionCookieHeader: "test-cookie-header",
-      provider: "test",
+      provider: "kompla-idp",
     });
   });
 
-  it("refreshTestToken uses OAuth2Strategy.refreshToken and setAuthSession, returning provider TEST", async () => {
+  it("refreshKomplaIdpToken uses OAuth2Strategy.refreshToken and setAuthSession, returning provider KOMPLA_IDP", async () => {
     const tokenObj = {
       accessToken: () => "new-test-at",
       refreshToken: () => "new-test-rt",
@@ -416,7 +416,7 @@ describe("oAuth.server", () => {
     oAuthMocks.refreshTokenMock.mockResolvedValue(tokenObj);
     mockedSetAuthSession.mockResolvedValueOnce("test-refresh-cookie");
 
-    const result = await refreshTestToken(mockRequest, "old-rt");
+    const result = await refreshKomplaIdpToken(mockRequest, "old-rt");
 
     expect(oAuthMocks.refreshTokenMock).toHaveBeenCalledWith("old-rt");
     expect(setAuthSession).toHaveBeenCalledWith({
@@ -424,7 +424,7 @@ describe("oAuth.server", () => {
       refreshToken: "new-test-rt",
       expiresAt: expect.any(Number),
       request: mockRequest,
-      provider: "test",
+      provider: "kompla-idp",
     });
     expect(result).toEqual({
       authenticationTokens: {
@@ -433,11 +433,11 @@ describe("oAuth.server", () => {
         expiresAt: expect.any(Number),
       },
       sessionCookieHeader: "test-refresh-cookie",
-      provider: "test",
+      provider: "kompla-idp",
     });
   });
 
-  it("refreshTestToken keeps original refresh token when strategy has no refresh token", async () => {
+  it("refreshKomplaIdpToken keeps original refresh token when strategy has no refresh token", async () => {
     const tokenObjNoRefresh = {
       accessToken: () => "new-test-at-2",
       refreshToken: () => undefined,
@@ -448,16 +448,16 @@ describe("oAuth.server", () => {
     oAuthMocks.refreshTokenMock.mockResolvedValue(tokenObjNoRefresh);
     mockedSetAuthSession.mockResolvedValueOnce("test-refresh-cookie-2");
 
-    const result = await refreshTestToken(mockRequest, "orig-test-rt");
+    const result = await refreshKomplaIdpToken(mockRequest, "orig-test-rt");
 
     expect(result.authenticationTokens.refreshToken).toBe("orig-test-rt");
   });
 
-  it("refreshTestToken throws when OAuth2Strategy.refreshToken fails", async () => {
+  it("refreshKomplaIdpToken throws when OAuth2Strategy.refreshToken fails", async () => {
     oAuthMocks.refreshTokenMock.mockRejectedValue(new Error("refresh failed"));
 
-    await expect(refreshTestToken(mockRequest, "bad-test-rt")).rejects.toThrow(
-      "refresh failed",
-    );
+    await expect(
+      refreshKomplaIdpToken(mockRequest, "bad-test-rt"),
+    ).rejects.toThrow("refresh failed");
   });
 });

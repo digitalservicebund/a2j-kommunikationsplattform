@@ -28,9 +28,9 @@ const devAuthData: AuthenticationResponse = {
   provider: AuthenticationProvider.DEVELOPMENT,
 };
 
-const testAuthData: AuthenticationResponse = {
+const komplaIdpAuthData: AuthenticationResponse = {
   ...beaAuthData,
-  provider: AuthenticationProvider.TEST,
+  provider: AuthenticationProvider.KOMPLA_IDP,
 };
 
 describe("getBearerToken", () => {
@@ -67,8 +67,8 @@ describe("getBearerToken", () => {
     expect(token).toBe("user-access-token");
   });
 
-  it("returns accessToken directly for TEST provider without calling authorizeToken", async () => {
-    const token = await getBearerToken(testAuthData);
+  it("returns accessToken directly for KOMPLA_IDP provider without calling authorizeToken", async () => {
+    const token = await getBearerToken(komplaIdpAuthData);
 
     expect(authorizeToken).not.toHaveBeenCalled();
     expect(token).toBe("user-access-token");

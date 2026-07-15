@@ -2,7 +2,7 @@ export enum AuthenticationProvider {
   BEA = "bea",
   DEMO = "demo",
   DEVELOPMENT = "development",
-  TEST = "test",
+  KOMPLA_IDP = "kompla-idp",
 }
 
 export interface AuthenticationTokens {

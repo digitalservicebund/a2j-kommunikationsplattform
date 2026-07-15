@@ -5,16 +5,16 @@ import { authenticator, revokeAccessToken } from "~/services/auth/oAuth.server";
 import { LoginError } from "./action.login-user";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const authenticationProvider = AuthenticationProvider.TEST;
+  const authenticationProvider = AuthenticationProvider.KOMPLA_IDP;
 
   const incomingUrl = new URL(request.url);
-  console.log("test-login-callback: incoming request URL:", request.url);
+  console.log("kompla-idp-callback: incoming request URL:", request.url);
   console.log(
-    "test-login-callback: query params:",
+    "kompla-idp-callback: query params:",
     Object.fromEntries(incomingUrl.searchParams),
   );
   console.log(
-    "test-login-callback: cookie names present:",
+    "kompla-idp-callback: cookie names present:",
     (request.headers.get("Cookie") ?? "")
       .split(";")
       .map((c) => c.trim().split("=")[0])
@@ -28,7 +28,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
 
     console.log(
-      "authenticator.authenticate test callback done, redirecting to /",
+      "authenticator.authenticate kompla-idp callback done, redirecting to /",
     );
 
     return redirect("/", {
@@ -49,7 +49,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       await revokeAccessToken(accessToken);
     }
 
-    return redirect(`/login?status=${LoginError.Test}`, {
+    return redirect(`/login?status=${LoginError.KomplaIdp}`, {
       headers: {
         "Set-Cookie": await destroySession(session),
       },

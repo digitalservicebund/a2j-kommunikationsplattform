@@ -116,13 +116,13 @@ async function withMocks({
   // mock oAuth helpers used by authSession.server
   const refreshAccessTokenMock = vi.fn(async () => refreshResponse);
   const refreshDemoTokenMock = vi.fn(async () => refreshResponse);
-  const refreshTestTokenMock = vi.fn(async () => refreshResponse);
+  const refreshKomplaIdpTokenMock = vi.fn(async () => refreshResponse);
   const revokeAccessTokenMock = vi.fn(async () => undefined);
   // mock the oAuth helpers relative to this test file's location
   vi.doMock("../oAuth.server", () => ({
     refreshAccessToken: refreshAccessTokenMock,
     refreshDemoToken: refreshDemoTokenMock,
-    refreshTestToken: refreshTestTokenMock,
+    refreshKomplaIdpToken: refreshKomplaIdpTokenMock,
     revokeAccessToken: revokeAccessTokenMock,
   }));
 
@@ -134,7 +134,7 @@ async function withMocks({
     mocks: {
       refreshAccessTokenMock,
       refreshDemoTokenMock,
-      refreshTestTokenMock,
+      refreshKomplaIdpTokenMock,
       revokeAccessTokenMock,
     },
     restore: () => {
@@ -347,7 +347,7 @@ describe("authSession.server", () => {
     restore();
   });
 
-  it("getAuthData calls refreshTestToken (not refreshAccessToken) when provider is TEST and token is expired", async () => {
+  it("getAuthData calls refreshKomplaIdpToken (not refreshAccessToken) when provider is KOMPLA_IDP and token is expired", async () => {
     const refreshResponse = {
       authenticationTokens: {
         accessToken: "new-test",
@@ -355,13 +355,16 @@ describe("authSession.server", () => {
         refreshToken: "new-test-rt",
       },
       sessionCookieHeader: "hdr",
-      provider: "test" as const,
+      provider: "kompla-idp" as const,
     };
     const { module, mocks, restore } = await withMocks({ refreshResponse });
-    const cookie = `accessToken=tok; expiresAt=${pastTs()}; refreshToken=test-rt; provider=test`;
+    const cookie = `accessToken=tok; expiresAt=${pastTs()}; refreshToken=test-rt; provider=kompla-idp`;
     const req = new Request(requestURL, { headers: { Cookie: cookie } });
     const res = await module.getAuthData(req);
-    expect(mocks.refreshTestTokenMock).toHaveBeenCalledWith(req, "test-rt");
+    expect(mocks.refreshKomplaIdpTokenMock).toHaveBeenCalledWith(
+      req,
+      "test-rt",
+    );
     expect(mocks.refreshAccessTokenMock).not.toHaveBeenCalled();
     expect(res).toEqual(refreshResponse);
     restore();

@@ -64,29 +64,29 @@ test.describe("Homepage (_index route)", () => {
     );
   });
 
-  test(`shows danger alert box for status=test-login-error URL param (will be shown on any test-login error)`, async ({
+  test(`shows danger alert box for status=kompla-idp-login-error URL param (will be shown on any KomPla IdP login error)`, async ({
     page,
   }) => {
-    await page.goto(`/login?status=${LoginError.Test}`);
+    await page.goto(`/login?status=${LoginError.KomplaIdp}`);
     await expect(page.getByRole("alert")).toContainText(
-      alerts.LOGIN_ERROR_TEST_MESSAGE,
+      alerts.LOGIN_ERROR_KOMPLA_IDP_MESSAGE,
     );
   });
 
-  test('redirects to Keycloak login page when using the test login option ("Test-Login")', async ({
+  test('redirects to Keycloak login page when using the KomPla IdP login option ("KomPla-IdP-Login")', async ({
     page,
   }) => {
     // triple timeout, see: https://playwright.dev/docs/api/class-test#test-slow
     test.slow();
     await page.goto("/login");
     await page
-      .getByRole("button", { name: buttons.LOGIN_BUTTON_TEST_LABEL })
+      .getByRole("button", { name: buttons.LOGIN_BUTTON_KOMPLA_IDP_LABEL })
       .click();
     await page.waitForURL((url) =>
       url.toString().includes("openid-connect/auth"),
     );
 
-    // expected URL partial after clicking the test-login button — this
+    // expected URL partial after clicking the kompla-idp-login button — this
     // is Keycloak's own hosted login page, we never render username/password
     // fields ourselves
     const expectedUrl =

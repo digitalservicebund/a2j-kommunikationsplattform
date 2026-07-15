@@ -19,7 +19,7 @@ type AlertState =
   | LogoutType.ByUser
   | LoginError.BeA
   | LoginError.Demo
-  | LoginError.Test;
+  | LoginError.KomplaIdp;
 
 export async function loader({ request }: { request: Request }) {
   const userIsLoggedIn = await getAuthData(request);
@@ -44,7 +44,7 @@ export default function LoginPage() {
     [LoginType.BeA]: buttons.LOGIN_BUTTON_BEA,
     [LoginType.Developer]: buttons.LOGIN_BUTTON_DEVELOPER,
     [LoginType.Demo]: buttons.LOGIN_BUTTON_DEMO_LABEL,
-    [LoginType.Test]: buttons.LOGIN_BUTTON_TEST_LABEL,
+    [LoginType.KomplaIdp]: buttons.LOGIN_BUTTON_KOMPLA_IDP_LABEL,
   };
 
   let alertMarkup = null;
@@ -122,7 +122,7 @@ export default function LoginPage() {
         </div>
       );
       break;
-    case LoginError.Test:
+    case LoginError.KomplaIdp:
       alertMarkup = (
         <div
           className="kern-alert kern-alert--danger my-kern-space-default"
@@ -133,10 +133,12 @@ export default function LoginPage() {
               className="kern-icon kern-icon--danger kern-icon--small"
               aria-hidden
             ></span>
-            <span className="kern-title">{alerts.LOGIN_ERROR_TEST_TITLE}</span>
+            <span className="kern-title">
+              {alerts.LOGIN_ERROR_KOMPLA_IDP_TITLE}
+            </span>
           </div>
           <div className="kern-alert__body">
-            <p className="kern-body">{alerts.LOGIN_ERROR_TEST_MESSAGE}</p>
+            <p className="kern-body">{alerts.LOGIN_ERROR_KOMPLA_IDP_MESSAGE}</p>
           </div>
         </div>
       );
@@ -193,14 +195,14 @@ export default function LoginPage() {
           </Form>
 
           <Form method="post" action="/action/login-user">
-            <input type="hidden" name="loginType" value={LoginType.Test} />
+            <input type="hidden" name="loginType" value={LoginType.KomplaIdp} />
             <button
               type="submit"
               className="kern-btn kern-btn--block kern-btn--secondary w-full"
-              data-testid="test-login-button"
+              data-testid="kompla-idp-login-button"
             >
               <span className="kern-label">
-                {buttons.LOGIN_BUTTON_TEST_LABEL}
+                {buttons.LOGIN_BUTTON_KOMPLA_IDP_LABEL}
               </span>
             </button>
           </Form>

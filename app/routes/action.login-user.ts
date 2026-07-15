@@ -6,14 +6,14 @@ import { authenticator } from "~/services/auth/oAuth.server";
 export enum LoginError {
   BeA = "bea-login-error",
   Demo = "demo-login-error",
-  Test = "test-login-error",
+  KomplaIdp = "kompla-idp-login-error",
 }
 
 export enum LoginType {
   BeA = "bea-login",
   Developer = "developer-login",
   Demo = "demo-login",
-  Test = "test-login",
+  KomplaIdp = "kompla-idp-login",
 }
 
 /**
@@ -39,10 +39,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
   }
 
-  if (loginType === LoginType.Test) {
+  if (loginType === LoginType.KomplaIdp) {
     try {
       return await authenticator.authenticate(
-        AuthenticationProvider.TEST,
+        AuthenticationProvider.KOMPLA_IDP,
         request,
       );
     } catch (error) {

@@ -79,7 +79,7 @@ describe("/action/login-user action", () => {
     expect(response).toEqual(authResponse);
   });
 
-  it("delegates to authenticator for Test login", async () => {
+  it("delegates to authenticator for KomPla IdP login", async () => {
     // arrange: mock authenticator.authenticate to return an AuthenticationResponse
     // (the actual redirect to Keycloak's hosted login page happens inside
     // the OAuth2Strategy, not in this action)
@@ -91,12 +91,12 @@ describe("/action/login-user action", () => {
         refreshToken: "refresh-token",
       },
       sessionCookieHeader: "session=xyz; Path=/; HttpOnly",
-      provider: AuthenticationProvider.TEST,
+      provider: AuthenticationProvider.KOMPLA_IDP,
     };
     mockedAuth.authenticate.mockResolvedValue(authResponse);
 
     const formData = new FormData();
-    formData.append("loginType", LoginType.Test);
+    formData.append("loginType", LoginType.KomplaIdp);
 
     const request = new Request("http://localhost/action/login-user", {
       method: "POST",
@@ -110,7 +110,7 @@ describe("/action/login-user action", () => {
     } as ActionFunctionArgs);
 
     expect(mockedAuth.authenticate).toHaveBeenCalledWith(
-      AuthenticationProvider.TEST,
+      AuthenticationProvider.KOMPLA_IDP,
       request,
     );
     expect(response).toEqual(authResponse);

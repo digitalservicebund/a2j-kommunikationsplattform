@@ -10,7 +10,7 @@ import {
 import {
   refreshAccessToken,
   refreshDemoToken,
-  refreshTestToken,
+  refreshKomplaIdpToken,
 } from "./oAuth.server";
 
 const getSecret = () => {
@@ -135,9 +135,9 @@ export const getAuthData = async (
       console.log("getAuthData: Refreshing demo token");
       return await refreshDemoToken(request, refreshToken);
     }
-    if (provider === AuthenticationProvider.TEST) {
-      console.log("getAuthData: Refreshing test-login token");
-      return await refreshTestToken(request, refreshToken);
+    if (provider === AuthenticationProvider.KOMPLA_IDP) {
+      console.log("getAuthData: Refreshing KomPla IdP login token");
+      return await refreshKomplaIdpToken(request, refreshToken);
     }
     console.log("getAuthData: Refreshing regular KomPla IdP token");
     return await refreshAccessToken(request, refreshToken);

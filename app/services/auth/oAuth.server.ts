@@ -119,17 +119,18 @@ export async function refreshDemoToken(
   };
 }
 
-// KomPla test login uses "Authorization Code" OAuth 2.0 flow against the
+// KomPla IdP login uses "Authorization Code" OAuth 2.0 flow against the
 // same Keycloak realm as the Demo IdP, via a dedicated confidential client.
 // Keycloak renders its own hosted login page (username/password) — this app
-// never sees the user's credentials. Used mainly for e2e and manual testing.
+// never sees the user's credentials. Used mainly for e2e and manual testing but, in the future, could be available to any user with KomPla IdP
+// credentials
 
-const testOauth2Strategy = new OAuth2Strategy(
+const komplaIdpOauth2Strategy = new OAuth2Strategy(
   {
-    cookie: "oauth2-test",
+    cookie: "oauth2-kompla-idp",
     clientId: serverConfig().KOMPLA_API_IDP_CLIENT_ID,
     clientSecret: serverConfig().KOMPLA_API_IDP_CLIENT_SECRET,
-    // TODO: `KOMPLA_DEMO_IDP_ISSUER` is misleading here: this issuer is shared by both the Demo/Magic Link flow and the KomPla test-login flow. In the next cleanup task, move shared KomPla IdP settings to neutral names (for example `KOMPLA_API_IDP_ISSUER`) and reserve `KOMPLA_DEMO_*` for demo-only values and `BRAK_*` for BRAK-specific values.
+    // TODO: `KOMPLA_DEMO_IDP_ISSUER` is misleading here: this issuer is shared by both the Demo/Magic Link flow and the KomPla IdP login flow. In the next cleanup task, move shared KomPla IdP settings to neutral names (for example `KOMPLA_API_IDP_ISSUER`) and reserve `KOMPLA_DEMO_*` for demo-only values and `BRAK_*` for BRAK-specific values.
     authorizationEndpoint: `${serverConfig().KOMPLA_DEMO_IDP_ISSUER}/protocol/openid-connect/auth`,
     tokenEndpoint: `${serverConfig().KOMPLA_DEMO_IDP_ISSUER}/protocol/openid-connect/token`,
     redirectURI: `${serverConfig().KOMPLA_API_IDP_REDIRECT_URI}`,
@@ -142,7 +143,7 @@ const testOauth2Strategy = new OAuth2Strategy(
     const expiresAt = Date.now() + tokens.accessTokenExpiresInSeconds() * 1000;
 
     console.log(
-      "OAuth2Strategy: authenticated via KomPla test login, callback URL:",
+      "OAuth2Strategy: authenticated via KomPla IdP login, callback URL:",
       request.url,
     );
 
@@ -151,28 +152,28 @@ const testOauth2Strategy = new OAuth2Strategy(
       expiresAt,
       refreshToken,
       request,
-      provider: AuthenticationProvider.TEST,
+      provider: AuthenticationProvider.KOMPLA_IDP,
     });
 
     const response: AuthenticationResponse = {
       authenticationTokens: { accessToken, expiresAt, refreshToken },
       sessionCookieHeader,
-      provider: AuthenticationProvider.TEST,
+      provider: AuthenticationProvider.KOMPLA_IDP,
     };
 
-    loginType = LoginType.Test;
+    loginType = LoginType.KomplaIdp;
     return response;
   },
 );
 
-authenticator.use(testOauth2Strategy, AuthenticationProvider.TEST);
+authenticator.use(komplaIdpOauth2Strategy, AuthenticationProvider.KOMPLA_IDP);
 
-export async function refreshTestToken(
+export async function refreshKomplaIdpToken(
   request: Request,
   refreshToken: string,
 ): Promise<AuthenticationResponse> {
-  console.log("refreshTestToken: refreshing access token");
-  const newTokens = await testOauth2Strategy.refreshToken(refreshToken);
+  console.log("refreshKomplaIdpToken: refreshing access token");
+  const newTokens = await komplaIdpOauth2Strategy.refreshToken(refreshToken);
 
   const refreshedTokenData = {
     accessToken: newTokens.accessToken(),
@@ -185,13 +186,13 @@ export async function refreshTestToken(
   const sessionCookieHeader = await setAuthSession({
     ...refreshedTokenData,
     request,
-    provider: AuthenticationProvider.TEST,
+    provider: AuthenticationProvider.KOMPLA_IDP,
   });
 
   return {
     authenticationTokens: { ...refreshedTokenData },
     sessionCookieHeader,
-    provider: AuthenticationProvider.TEST,
+    provider: AuthenticationProvider.KOMPLA_IDP,
   };
 }
 
@@ -234,9 +235,9 @@ export async function revokeAccessToken(token: string) {
       console.log("revoke beA access token");
       await beaOauth2Strategy.revokeToken(token);
     }
-    if (loginType === LoginType.Test) {
-      console.log("revoke test-login access token");
-      await testOauth2Strategy.revokeToken(token);
+    if (loginType === LoginType.KomplaIdp) {
+      console.log("revoke kompla-idp-login access token");
+      await komplaIdpOauth2Strategy.revokeToken(token);
     }
   } catch (error) {
     console.error("revoke access token error:", error);

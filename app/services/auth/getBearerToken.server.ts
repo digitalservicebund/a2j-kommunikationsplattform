@@ -12,7 +12,7 @@ export async function getBearerToken(
   if (
     authData.provider === AuthenticationProvider.DEMO ||
     authData.provider === AuthenticationProvider.DEVELOPMENT ||
-    authData.provider === AuthenticationProvider.TEST
+    authData.provider === AuthenticationProvider.KOMPLA_IDP
   ) {
     return authData.authenticationTokens.accessToken;
   }
