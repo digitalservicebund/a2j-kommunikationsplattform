@@ -7,7 +7,11 @@ import {
   AuthenticationResponse,
   AuthenticationTokens,
 } from "./auth.types";
-import { refreshAccessToken, refreshDemoToken } from "./oAuth.server";
+import {
+  refreshAccessToken,
+  refreshDemoToken,
+  refreshKomplaIdpToken,
+} from "./oAuth.server";
 
 const getSecret = () => {
   return config().ENVIRONMENT === "development"
@@ -131,7 +135,11 @@ export const getAuthData = async (
       console.log("getAuthData: Refreshing demo token");
       return await refreshDemoToken(request, refreshToken);
     }
-    console.log("getAuthData: Refreshing regular KomPla IdP token");
+    if (provider === AuthenticationProvider.KOMPLA_IDP) {
+      console.log("getAuthData: Refreshing KomPla IdP login token");
+      return await refreshKomplaIdpToken(request, refreshToken);
+    }
+    console.log("getAuthData: Refreshing BRAK IdP (beA) token");
     return await refreshAccessToken(request, refreshToken);
   } catch (error) {
     console.error("Token refresh failed, destroying session", error);

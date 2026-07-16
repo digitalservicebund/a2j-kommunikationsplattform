@@ -79,6 +79,43 @@ describe("/action/login-user action", () => {
     expect(response).toEqual(authResponse);
   });
 
+  it("delegates to authenticator for KomPla IdP login", async () => {
+    // arrange: mock authenticator.authenticate to return an AuthenticationResponse
+    // (the actual redirect to Keycloak's hosted login page happens inside
+    // the OAuth2Strategy, not in this action)
+    const mockedAuth = vi.mocked(authenticator);
+    const authResponse = {
+      authenticationTokens: {
+        accessToken: "test-token",
+        expiresAt: Date.now() + 1000,
+        refreshToken: "refresh-token",
+      },
+      sessionCookieHeader: "session=xyz; Path=/; HttpOnly",
+      provider: AuthenticationProvider.KOMPLA_IDP,
+    };
+    mockedAuth.authenticate.mockResolvedValue(authResponse);
+
+    const formData = new FormData();
+    formData.append("loginType", LoginType.KomplaIdp);
+
+    const request = new Request("http://localhost/action/login-user", {
+      method: "POST",
+      body: formData,
+    });
+
+    const response = await action({
+      request,
+      params: {},
+      context: {},
+    } as ActionFunctionArgs);
+
+    expect(mockedAuth.authenticate).toHaveBeenCalledWith(
+      AuthenticationProvider.KOMPLA_IDP,
+      request,
+    );
+    expect(response).toEqual(authResponse);
+  });
+
   it("returns 400 for invalid login type", async () => {
     const formData = new FormData();
     formData.append("loginType", "invalid");

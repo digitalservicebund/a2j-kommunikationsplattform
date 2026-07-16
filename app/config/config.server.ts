@@ -10,6 +10,7 @@ interface ServerConfig {
   KOMPLA_API_IDP_CLIENT_ID: string;
   KOMPLA_API_IDP_ISSUER: string;
   KOMPLA_API_IDP_SUBJECT_ISSUER: string;
+  KOMPLA_API_IDP_CLIENT_SECRET: string;
   KOMPLA_DEMO_IDP_ISSUER: string;
   KOMPLA_DEMO_SERVICE_CLIENT_ID: string;
   KOMPLA_DEMO_SERVICE_CLIENT_SECRET: string;
@@ -17,6 +18,7 @@ interface ServerConfig {
   KOMPLA_DEMO_REDIRECT_URI: string;
   KOMPLA_DEMO_USERNAME: string;
   KOMPLA_DEMO_EMAIL: string;
+  KOMPLA_API_IDP_REDIRECT_URI: string;
   SENTRY_DSN: string;
 }
 
@@ -39,6 +41,14 @@ if (config().ENVIRONMENT === "development") {
     process.env.KOMPLA_DEMO_SERVICE_CLIENT_SECRET?.trim() ?? "";
 }
 
+const apiIdpClientSecretFilePath = "/etc/secrets/KOMPLA_API_IDP_CLIENT_SECRET";
+const apiIdpClientSecretFileExists = existsSync(apiIdpClientSecretFilePath);
+let apiIdpClientSecretFallback = "";
+if (config().ENVIRONMENT === "development") {
+  apiIdpClientSecretFallback =
+    process.env.KOMPLA_API_IDP_CLIENT_SECRET?.trim() ?? "";
+}
+
 export function serverConfig(): ServerConfig {
   return {
     BRAK_IDP_OIDC_CLIENT_ID: process.env.BRAK_IDP_OIDC_CLIENT_ID?.trim() ?? "",
@@ -54,6 +64,9 @@ export function serverConfig(): ServerConfig {
     KOMPLA_API_IDP_ISSUER: process.env.KOMPLA_API_IDP_ISSUER?.trim() ?? "",
     KOMPLA_API_IDP_SUBJECT_ISSUER:
       process.env.KOMPLA_API_IDP_SUBJECT_ISSUER?.trim() ?? "",
+    KOMPLA_API_IDP_CLIENT_SECRET: apiIdpClientSecretFileExists
+      ? readFileSync(apiIdpClientSecretFilePath, "utf-8")?.trim()
+      : apiIdpClientSecretFallback,
     KOMPLA_DEMO_IDP_ISSUER: process.env.KOMPLA_DEMO_IDP_ISSUER?.trim() ?? "",
     KOMPLA_DEMO_SERVICE_CLIENT_ID:
       process.env.KOMPLA_DEMO_SERVICE_CLIENT_ID?.trim() ?? "",
@@ -65,6 +78,8 @@ export function serverConfig(): ServerConfig {
       process.env.KOMPLA_DEMO_REDIRECT_URI?.trim() ?? "",
     KOMPLA_DEMO_USERNAME: process.env.KOMPLA_DEMO_USERNAME?.trim() ?? "",
     KOMPLA_DEMO_EMAIL: process.env.KOMPLA_DEMO_EMAIL?.trim() ?? "",
+    KOMPLA_API_IDP_REDIRECT_URI:
+      process.env.KOMPLA_API_IDP_REDIRECT_URI?.trim() ?? "",
     SENTRY_DSN: process.env.SENTRY_DSN?.trim() ?? "",
   };
 }

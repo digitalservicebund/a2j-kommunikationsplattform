@@ -11,7 +11,8 @@ export async function getBearerToken(
 ): Promise<string> {
   if (
     authData.provider === AuthenticationProvider.DEMO ||
-    authData.provider === AuthenticationProvider.DEVELOPMENT
+    authData.provider === AuthenticationProvider.DEVELOPMENT ||
+    authData.provider === AuthenticationProvider.KOMPLA_IDP
   ) {
     return authData.authenticationTokens.accessToken;
   }

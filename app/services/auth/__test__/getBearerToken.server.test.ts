@@ -28,6 +28,11 @@ const devAuthData: AuthenticationResponse = {
   provider: AuthenticationProvider.DEVELOPMENT,
 };
 
+const komplaIdpAuthData: AuthenticationResponse = {
+  ...beaAuthData,
+  provider: AuthenticationProvider.KOMPLA_IDP,
+};
+
 describe("getBearerToken", () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -57,6 +62,13 @@ describe("getBearerToken", () => {
 
   it("returns accessToken directly for DEVELOPMENT provider without calling authorizeToken", async () => {
     const token = await getBearerToken(devAuthData);
+
+    expect(authorizeToken).not.toHaveBeenCalled();
+    expect(token).toBe("user-access-token");
+  });
+
+  it("returns accessToken directly for KOMPLA_IDP provider without calling authorizeToken", async () => {
+    const token = await getBearerToken(komplaIdpAuthData);
 
     expect(authorizeToken).not.toHaveBeenCalled();
     expect(token).toBe("user-access-token");

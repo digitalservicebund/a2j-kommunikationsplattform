@@ -18,7 +18,8 @@ type AlertState =
   | LogoutType.Automatic
   | LogoutType.ByUser
   | LoginError.BeA
-  | LoginError.Demo;
+  | LoginError.Demo
+  | LoginError.KomplaIdp;
 
 export async function loader({ request }: { request: Request }) {
   const userIsLoggedIn = await getAuthData(request);
@@ -43,6 +44,7 @@ export default function LoginPage() {
     [LoginType.BeA]: buttons.LOGIN_BUTTON_BEA,
     [LoginType.Developer]: buttons.LOGIN_BUTTON_DEVELOPER,
     [LoginType.Demo]: buttons.LOGIN_BUTTON_DEMO_LABEL,
+    [LoginType.KomplaIdp]: buttons.LOGIN_BUTTON_KOMPLA_IDP_LABEL,
   };
 
   let alertMarkup = null;
@@ -120,6 +122,27 @@ export default function LoginPage() {
         </div>
       );
       break;
+    case LoginError.KomplaIdp:
+      alertMarkup = (
+        <div
+          className="kern-alert kern-alert--danger my-kern-space-default"
+          role="alert"
+        >
+          <div className="kern-alert__header">
+            <span
+              className="kern-icon kern-icon--danger kern-icon--small"
+              aria-hidden
+            ></span>
+            <span className="kern-title">
+              {alerts.LOGIN_ERROR_KOMPLA_IDP_TITLE}
+            </span>
+          </div>
+          <div className="kern-alert__body">
+            <p className="kern-body">{alerts.LOGIN_ERROR_KOMPLA_IDP_MESSAGE}</p>
+          </div>
+        </div>
+      );
+      break;
   }
 
   return (
@@ -169,6 +192,19 @@ export default function LoginPage() {
                 </span>
               </Link>
             </div>
+          </Form>
+
+          <Form method="post" action="/action/login-user">
+            <input type="hidden" name="loginType" value={LoginType.KomplaIdp} />
+            <button
+              type="submit"
+              className="kern-btn kern-btn--block kern-btn--secondary w-full"
+              data-testid="kompla-idp-login-button"
+            >
+              <span className="kern-label">
+                {buttons.LOGIN_BUTTON_KOMPLA_IDP_LABEL}
+              </span>
+            </button>
           </Form>
         </div>
       </div>
