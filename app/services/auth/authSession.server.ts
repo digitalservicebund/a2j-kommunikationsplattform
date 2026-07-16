@@ -139,7 +139,7 @@ export const getAuthData = async (
       console.log("getAuthData: Refreshing KomPla IdP login token");
       return await refreshKomplaIdpToken(request, refreshToken);
     }
-    console.log("getAuthData: Refreshing regular KomPla IdP token");
+    console.log("getAuthData: Refreshing BRAK IdP (beA) token");
     return await refreshAccessToken(request, refreshToken);
   } catch (error) {
     console.error("Token refresh failed, destroying session", error);
