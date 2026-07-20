@@ -7,18 +7,18 @@ interface ServerConfig {
   BRAK_IDP_OIDC_ISSUER: string;
   BRAK_IDP_OIDC_REDIRECT_URI: string;
   KOMPLA_API_URL: string;
-  KOMPLA_API_IDP_CLIENT_ID: string;
-  KOMPLA_API_IDP_ISSUER: string;
-  KOMPLA_API_IDP_SUBJECT_ISSUER: string;
-  KOMPLA_API_IDP_CLIENT_SECRET: string;
-  KOMPLA_DEMO_IDP_ISSUER: string;
-  KOMPLA_DEMO_SERVICE_CLIENT_ID: string;
-  KOMPLA_DEMO_SERVICE_CLIENT_SECRET: string;
-  KOMPLA_DEMO_CLIENT_ID: string;
-  KOMPLA_DEMO_REDIRECT_URI: string;
-  KOMPLA_DEMO_USERNAME: string;
-  KOMPLA_DEMO_EMAIL: string;
-  KOMPLA_API_IDP_REDIRECT_URI: string;
+  KOMPLA_IDP_OIDC_CLIENT_ID: string;
+  KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT: string;
+  KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER: string;
+  KOMPLA_IDP_OIDC_CLIENT_SECRET: string;
+  KOMPLA_IDP_OIDC_ISSUER: string;
+  KOMPLA_MAGIC_LINK_SERVICE_CLIENT_ID: string;
+  KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET: string;
+  KOMPLA_MAGIC_LINK_CLIENT_ID: string;
+  KOMPLA_MAGIC_LINK_REDIRECT_URI: string;
+  KOMPLA_MAGIC_LINK_DEMO_USERNAME: string;
+  KOMPLA_MAGIC_LINK_DEMO_EMAIL: string;
+  KOMPLA_IDP_OIDC_REDIRECT_URI: string;
   SENTRY_DSN: string;
 }
 
@@ -31,22 +31,22 @@ if (config().ENVIRONMENT === "development") {
 }
 
 const demoServiceClientSecretFilePath =
-  "/etc/secrets/KOMPLA_DEMO_SERVICE_CLIENT_SECRET";
+  "/etc/secrets/KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET";
 const demoServiceClientSecretFileExists = existsSync(
   demoServiceClientSecretFilePath,
 );
 let demoServiceClientSecretFallback = "";
 if (config().ENVIRONMENT === "development") {
   demoServiceClientSecretFallback =
-    process.env.KOMPLA_DEMO_SERVICE_CLIENT_SECRET?.trim() ?? "";
+    process.env.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET?.trim() ?? "";
 }
 
-const apiIdpClientSecretFilePath = "/etc/secrets/KOMPLA_API_IDP_CLIENT_SECRET";
+const apiIdpClientSecretFilePath = "/etc/secrets/KOMPLA_IDP_OIDC_CLIENT_SECRET";
 const apiIdpClientSecretFileExists = existsSync(apiIdpClientSecretFilePath);
 let apiIdpClientSecretFallback = "";
 if (config().ENVIRONMENT === "development") {
   apiIdpClientSecretFallback =
-    process.env.KOMPLA_API_IDP_CLIENT_SECRET?.trim() ?? "";
+    process.env.KOMPLA_IDP_OIDC_CLIENT_SECRET?.trim() ?? "";
 }
 
 export function serverConfig(): ServerConfig {
@@ -59,27 +59,31 @@ export function serverConfig(): ServerConfig {
     BRAK_IDP_OIDC_REDIRECT_URI:
       process.env.BRAK_IDP_OIDC_REDIRECT_URI?.trim() ?? "",
     KOMPLA_API_URL: process.env.KOMPLA_API_URL?.trim() ?? "",
-    KOMPLA_API_IDP_CLIENT_ID:
-      process.env.KOMPLA_API_IDP_CLIENT_ID?.trim() ?? "",
-    KOMPLA_API_IDP_ISSUER: process.env.KOMPLA_API_IDP_ISSUER?.trim() ?? "",
-    KOMPLA_API_IDP_SUBJECT_ISSUER:
-      process.env.KOMPLA_API_IDP_SUBJECT_ISSUER?.trim() ?? "",
-    KOMPLA_API_IDP_CLIENT_SECRET: apiIdpClientSecretFileExists
+    KOMPLA_IDP_OIDC_CLIENT_ID:
+      process.env.KOMPLA_IDP_OIDC_CLIENT_ID?.trim() ?? "",
+    KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT:
+      process.env.KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT?.trim() ?? "",
+    KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER:
+      process.env.KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER?.trim() ?? "",
+    KOMPLA_IDP_OIDC_CLIENT_SECRET: apiIdpClientSecretFileExists
       ? readFileSync(apiIdpClientSecretFilePath, "utf-8")?.trim()
       : apiIdpClientSecretFallback,
-    KOMPLA_DEMO_IDP_ISSUER: process.env.KOMPLA_DEMO_IDP_ISSUER?.trim() ?? "",
-    KOMPLA_DEMO_SERVICE_CLIENT_ID:
-      process.env.KOMPLA_DEMO_SERVICE_CLIENT_ID?.trim() ?? "",
-    KOMPLA_DEMO_SERVICE_CLIENT_SECRET: demoServiceClientSecretFileExists
+    KOMPLA_IDP_OIDC_ISSUER: process.env.KOMPLA_IDP_OIDC_ISSUER?.trim() ?? "",
+    KOMPLA_MAGIC_LINK_SERVICE_CLIENT_ID:
+      process.env.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_ID?.trim() ?? "",
+    KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET: demoServiceClientSecretFileExists
       ? readFileSync(demoServiceClientSecretFilePath, "utf-8")?.trim()
       : demoServiceClientSecretFallback,
-    KOMPLA_DEMO_CLIENT_ID: process.env.KOMPLA_DEMO_CLIENT_ID?.trim() ?? "",
-    KOMPLA_DEMO_REDIRECT_URI:
-      process.env.KOMPLA_DEMO_REDIRECT_URI?.trim() ?? "",
-    KOMPLA_DEMO_USERNAME: process.env.KOMPLA_DEMO_USERNAME?.trim() ?? "",
-    KOMPLA_DEMO_EMAIL: process.env.KOMPLA_DEMO_EMAIL?.trim() ?? "",
-    KOMPLA_API_IDP_REDIRECT_URI:
-      process.env.KOMPLA_API_IDP_REDIRECT_URI?.trim() ?? "",
+    KOMPLA_MAGIC_LINK_CLIENT_ID:
+      process.env.KOMPLA_MAGIC_LINK_CLIENT_ID?.trim() ?? "",
+    KOMPLA_MAGIC_LINK_REDIRECT_URI:
+      process.env.KOMPLA_MAGIC_LINK_REDIRECT_URI?.trim() ?? "",
+    KOMPLA_MAGIC_LINK_DEMO_USERNAME:
+      process.env.KOMPLA_MAGIC_LINK_DEMO_USERNAME?.trim() ?? "",
+    KOMPLA_MAGIC_LINK_DEMO_EMAIL:
+      process.env.KOMPLA_MAGIC_LINK_DEMO_EMAIL?.trim() ?? "",
+    KOMPLA_IDP_OIDC_REDIRECT_URI:
+      process.env.KOMPLA_IDP_OIDC_REDIRECT_URI?.trim() ?? "",
     SENTRY_DSN: process.env.SENTRY_DSN?.trim() ?? "",
   };
 }

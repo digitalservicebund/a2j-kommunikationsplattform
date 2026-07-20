@@ -74,21 +74,23 @@ export class MagicLinkStrategy extends Strategy<
 
   // Helper to ensure all required config values are present before making requests.
   private assertConfig() {
+    const envVarNameByConfigKey: Record<keyof MagicLinkConfig, string> = {
+      idpIssuer: "KOMPLA_IDP_OIDC_ISSUER",
+      serviceClientId: "KOMPLA_MAGIC_LINK_SERVICE_CLIENT_ID",
+      serviceClientSecret: "KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET",
+      clientId: "KOMPLA_MAGIC_LINK_CLIENT_ID",
+      redirectUri: "KOMPLA_MAGIC_LINK_REDIRECT_URI",
+      username: "KOMPLA_MAGIC_LINK_DEMO_USERNAME",
+      email: "KOMPLA_MAGIC_LINK_DEMO_EMAIL",
+    };
+
     const missing = (
-      [
-        "idpIssuer",
-        "serviceClientId",
-        "serviceClientSecret",
-        "clientId",
-        "redirectUri",
-        "username",
-        "email",
-      ] as const
+      Object.keys(envVarNameByConfigKey) as (keyof MagicLinkConfig)[]
     ).filter((key) => !this.config[key]);
 
     if (missing.length > 0) {
       const envVarNames = missing
-        .map((k) => `KOMPLA_DEMO_${k.replace(/([A-Z])/g, "_$1").toUpperCase()}`)
+        .map((key) => envVarNameByConfigKey[key])
         .join(", ");
       throw new Error(
         `MagicLinkStrategy: missing required env vars: ${envVarNames}`,
