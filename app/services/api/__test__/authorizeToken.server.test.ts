@@ -4,9 +4,10 @@ import { authorizeToken } from "../authorizeToken.server";
 // Mock the serverConfig
 vi.mock("~/config/config.server", () => ({
   serverConfig: () => ({
-    KOMPLA_API_IDP_ISSUER: "https://mock-idp",
-    KOMPLA_API_IDP_CLIENT_ID: "mock-client-id",
-    KOMPLA_API_IDP_SUBJECT_ISSUER: "mock-subject-issuer",
+    KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT:
+      "https://mock-idp/protocol/openid-connect/token",
+    KOMPLA_IDP_OIDC_CLIENT_ID: "mock-client-id",
+    KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER: "mock-subject-issuer",
   }),
 }));
 

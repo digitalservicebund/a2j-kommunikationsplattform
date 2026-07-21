@@ -78,7 +78,7 @@ describe("MagicLinkStrategy", () => {
     it("throws listing missing env var names in SCREAMING_SNAKE_CASE", async () => {
       const { strategy } = makeStrategy({ serviceClientSecret: "", email: "" });
       await expect(strategy.getMagicLinkUrl()).rejects.toThrow(
-        "KOMPLA_DEMO_SERVICE_CLIENT_SECRET, KOMPLA_DEMO_EMAIL",
+        "KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET, KOMPLA_MAGIC_LINK_DEMO_EMAIL",
       );
     });
 

@@ -13,9 +13,10 @@ export interface AuthorizeTokenResponse {
   issued_token_type: string;
 }
 
-const authorizeTokenEndpoint = `${serverConfig().KOMPLA_API_IDP_ISSUER}/protocol/openid-connect/token`;
-const clientId = `${serverConfig().KOMPLA_API_IDP_CLIENT_ID}`;
-const subjectIssuer = `${serverConfig().KOMPLA_API_IDP_SUBJECT_ISSUER}`;
+const authorizeTokenEndpoint =
+  serverConfig().KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT;
+const clientId = `${serverConfig().KOMPLA_IDP_OIDC_CLIENT_ID}`;
+const subjectIssuer = `${serverConfig().KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER}`;
 const scope = "kompla-api";
 
 /**

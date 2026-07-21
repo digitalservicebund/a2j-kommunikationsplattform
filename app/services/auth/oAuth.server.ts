@@ -70,13 +70,13 @@ authenticator.use(beaOauth2Strategy, AuthenticationProvider.BEA);
 
 const magicLinkStrategy = new MagicLinkStrategy(
   {
-    idpIssuer: serverConfig().KOMPLA_DEMO_IDP_ISSUER,
-    serviceClientId: serverConfig().KOMPLA_DEMO_SERVICE_CLIENT_ID,
-    serviceClientSecret: serverConfig().KOMPLA_DEMO_SERVICE_CLIENT_SECRET,
-    clientId: serverConfig().KOMPLA_DEMO_CLIENT_ID,
-    redirectUri: serverConfig().KOMPLA_DEMO_REDIRECT_URI,
-    username: serverConfig().KOMPLA_DEMO_USERNAME,
-    email: serverConfig().KOMPLA_DEMO_EMAIL,
+    idpIssuer: serverConfig().KOMPLA_IDP_OIDC_ISSUER,
+    serviceClientId: serverConfig().KOMPLA_MAGIC_LINK_SERVICE_CLIENT_ID,
+    serviceClientSecret: serverConfig().KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET,
+    clientId: serverConfig().KOMPLA_MAGIC_LINK_CLIENT_ID,
+    redirectUri: serverConfig().KOMPLA_MAGIC_LINK_REDIRECT_URI,
+    username: serverConfig().KOMPLA_MAGIC_LINK_DEMO_USERNAME,
+    email: serverConfig().KOMPLA_MAGIC_LINK_DEMO_EMAIL,
   },
   async ({ tokens, request }) => {
     console.log("MagicLinkStrategy: verify — creating session");
@@ -128,12 +128,11 @@ export async function refreshDemoToken(
 const komplaIdpOauth2Strategy = new OAuth2Strategy(
   {
     cookie: "oauth2-kompla-idp",
-    clientId: serverConfig().KOMPLA_API_IDP_CLIENT_ID,
-    clientSecret: serverConfig().KOMPLA_API_IDP_CLIENT_SECRET,
-    // TODO: `KOMPLA_DEMO_IDP_ISSUER` is misleading here: this issuer is shared by both the Demo/Magic Link flow and the KomPla IdP login flow. In the next cleanup task, move shared KomPla IdP settings to neutral names (for example `KOMPLA_API_IDP_ISSUER`) and reserve `KOMPLA_DEMO_*` for demo-only values and `BRAK_*` for BRAK-specific values.
-    authorizationEndpoint: `${serverConfig().KOMPLA_DEMO_IDP_ISSUER}/protocol/openid-connect/auth`,
-    tokenEndpoint: `${serverConfig().KOMPLA_DEMO_IDP_ISSUER}/protocol/openid-connect/token`,
-    redirectURI: `${serverConfig().KOMPLA_API_IDP_REDIRECT_URI}`,
+    clientId: serverConfig().KOMPLA_IDP_OIDC_CLIENT_ID,
+    clientSecret: serverConfig().KOMPLA_IDP_OIDC_CLIENT_SECRET,
+    authorizationEndpoint: `${serverConfig().KOMPLA_IDP_OIDC_ISSUER}/protocol/openid-connect/auth`,
+    tokenEndpoint: `${serverConfig().KOMPLA_IDP_OIDC_ISSUER}/protocol/openid-connect/token`,
+    redirectURI: `${serverConfig().KOMPLA_IDP_OIDC_REDIRECT_URI}`,
     scopes: ["openid"],
     codeChallengeMethod: CodeChallengeMethod.S256,
   },
