@@ -8,6 +8,7 @@ type ImportConfigServerOptions = {
 
 const secretPathBrak = "/etc/secrets/BRAK_IDP_OIDC_CLIENT_SECRET";
 const secretPathDemo = "/etc/secrets/KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET";
+const secretPathApiIdp = "/etc/secrets/KOMPLA_IDP_OIDC_CLIENT_SECRET";
 
 async function importConfigServerWithMocks(
   options: ImportConfigServerOptions = {},
@@ -18,10 +19,12 @@ async function importConfigServerWithMocks(
   const fileExistsByPath = options.fileExistsByPath ?? {
     [secretPathBrak]: true,
     [secretPathDemo]: true,
+    [secretPathApiIdp]: true,
   };
   const fileValueByPath = options.fileValueByPath ?? {
     [secretPathBrak]: "BRAK_FILE_SECRET",
     [secretPathDemo]: "DEMO_FILE_SECRET",
+    [secretPathApiIdp]: "API_IDP_FILE_SECRET",
   };
 
   const existsSyncMock = vi.fn(
@@ -70,11 +73,16 @@ describe("serverConfig()", () => {
 
     expect(existsSyncMock).toHaveBeenCalledWith(secretPathBrak);
     expect(existsSyncMock).toHaveBeenCalledWith(secretPathDemo);
+    expect(existsSyncMock).toHaveBeenCalledWith(secretPathApiIdp);
     expect(readFileSyncMock).toHaveBeenCalledWith(secretPathBrak, "utf-8");
     expect(readFileSyncMock).toHaveBeenCalledWith(secretPathDemo, "utf-8");
+    expect(readFileSyncMock).toHaveBeenCalledWith(secretPathApiIdp, "utf-8");
     expect(testConfig.BRAK_IDP_OIDC_CLIENT_SECRET).toBe("BRAK_FILE_SECRET");
     expect(testConfig.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET).toBe(
       "DEMO_FILE_SECRET",
+    );
+    expect(testConfig.KOMPLA_IDP_OIDC_CLIENT_SECRET).toBe(
+      "API_IDP_FILE_SECRET",
     );
   });
 
@@ -97,6 +105,27 @@ describe("serverConfig()", () => {
     expect(testConfig.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET).toBe(
       "demo-fallback",
     );
+  });
+
+  it("falls back to empty string for secrets in development when files are missing and env vars are unset", async () => {
+    delete process.env.BRAK_IDP_OIDC_CLIENT_SECRET;
+    delete process.env.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET;
+    delete process.env.KOMPLA_IDP_OIDC_CLIENT_SECRET;
+
+    const { module } = await importConfigServerWithMocks({
+      environment: "development",
+      fileExistsByPath: {
+        [secretPathBrak]: false,
+        [secretPathDemo]: false,
+        [secretPathApiIdp]: false,
+      },
+    });
+
+    const testConfig = module.serverConfig();
+
+    expect(testConfig.BRAK_IDP_OIDC_CLIENT_SECRET).toBe("");
+    expect(testConfig.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET).toBe("");
+    expect(testConfig.KOMPLA_IDP_OIDC_CLIENT_SECRET).toBe("");
   });
 
   it("returns empty fallback secrets outside development when files are missing", async () => {
@@ -161,5 +190,34 @@ describe("serverConfig()", () => {
     expect(testConfig.KOMPLA_MAGIC_LINK_DEMO_USERNAME).toBe("username");
     expect(testConfig.KOMPLA_MAGIC_LINK_DEMO_EMAIL).toBe("user@example.org");
     expect(testConfig.SENTRY_DSN).toBe("sentry-dsn");
+  });
+
+  it("returns empty string defaults when other env vars are undefined", async () => {
+    const envVarsWithEmptyDefault = [
+      "BRAK_IDP_OIDC_CLIENT_ID",
+      "BRAK_IDP_OIDC_ISSUER",
+      "BRAK_IDP_OIDC_REDIRECT_URI",
+      "KOMPLA_API_URL",
+      "KOMPLA_IDP_OIDC_CLIENT_ID",
+      "KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER",
+      "KOMPLA_IDP_OIDC_ISSUER",
+      "KOMPLA_MAGIC_LINK_SERVICE_CLIENT_ID",
+      "KOMPLA_MAGIC_LINK_CLIENT_ID",
+      "KOMPLA_MAGIC_LINK_REDIRECT_URI",
+      "KOMPLA_MAGIC_LINK_DEMO_USERNAME",
+      "KOMPLA_MAGIC_LINK_DEMO_EMAIL",
+      "KOMPLA_IDP_OIDC_REDIRECT_URI",
+    ] as const;
+
+    for (const key of envVarsWithEmptyDefault) {
+      delete process.env[key];
+    }
+
+    const { module } = await importConfigServerWithMocks();
+    const testConfig = module.serverConfig();
+
+    for (const key of envVarsWithEmptyDefault) {
+      expect(testConfig[key]).toBe("");
+    }
   });
 });
