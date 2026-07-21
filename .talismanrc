@@ -34,7 +34,7 @@ fileignoreconfig:
 - filename: .env.defaults
   checksum: ddb959b86f4ff32a615a6da54c14f4c04509bfc8ec58b34d0d9ab557fbf93167
 - filename: app/config/**test**/config.server.test.ts
-  checksum: bb34b6bf2a33760dfb871ec19b04b517ba769a29433dfed46bd2eb6cd0a98ec0
+  checksum: e0032376dcb50535952654822230a18fce1ade507f9252cac9ba83055b4b1edc
 - filename: playwright.config.ts
   checksum: 64e5e6fe7a7787a6c84f3c8ac347e54a421c400c6982b46ee2b6d4dd4497af75
 - filename: app/components/hooks/**test**/useLogoutInactiveUser.test.tsx
