@@ -54,7 +54,12 @@ export default function InputSelect({
           value={selectedValue}
           onChange={onChange}
           required={required}
-          aria-describedby={`${hint && `select-hint-${id}`} ${error && "kern-input-error"}`}
+          aria-describedby={[
+            hint && `select-hint-${id}`,
+            error && "kern-input-error",
+          ]
+            .filter(Boolean)
+            .join(" ")}
           aria-disabled={disabled} // using aria-disabled as recommended in https://www.kern-ux.de/komponenten/form-inputs/#disabled-attribut
         >
           {placeholder && (

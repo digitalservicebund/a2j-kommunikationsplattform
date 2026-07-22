@@ -274,7 +274,7 @@ export async function apiRequest<T = unknown>(
     config().ENVIRONMENT === "development";
   if (logWithHeaderAndBody) {
     const logHeaders = headers ? `headers: ${JSON.stringify(headers)}` : "";
-    const logBody = body ? `body: ${fetchBody}` : "";
+    const logBody = body ? `body: ${JSON.stringify(fetchBody)}` : "";
     const logETag = eTag ? `eTag: ${eTag}` : "";
     console.log(`fetch ${method} ${url} ${logHeaders} ${logBody} ${logETag}`);
   }
