@@ -158,3 +158,6 @@ talisman_report
 
 # MSW auto mock files
 /msw-auto-mock
+
+# API migration test folder
+/data/api/migration/*.json
