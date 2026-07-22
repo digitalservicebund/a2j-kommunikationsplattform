@@ -6,8 +6,8 @@ import { useTranslations } from "~/services/translations/context";
 import { renderWithTestTranslations } from "./translationsUtil";
 
 function TestComponent() {
-  const { labels } = useTranslations();
-  return <span>{labels.LOGGED_IN_AS_LABEL}</span>;
+  const { shared } = useTranslations();
+  return <span>{shared.LOGGED_IN_AS_LABEL}</span>;
 }
 
 it("provides German translations context", () => {

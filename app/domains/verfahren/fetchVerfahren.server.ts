@@ -18,7 +18,7 @@ const fetchVerfahrenOptionsSchema = z.object({
 
 export type FetchVerfahrenOptions = z.infer<typeof fetchVerfahrenOptionsSchema>;
 
-const ERROR_MESSAGE = "Die Verfahren konnten nicht abgerufen werden.";
+const errorMessage = "Verfahren could not be fetched.";
 
 export default async function fetchVerfahren(
   authData: AuthenticationResponse,
@@ -38,6 +38,6 @@ export default async function fetchVerfahren(
     authData,
     fullUrl: url.toString(),
     schema: VerfahrenSchema.array(),
-    errorMessage: ERROR_MESSAGE,
+    errorMessage: errorMessage,
   });
 }

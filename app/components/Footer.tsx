@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { useTranslations } from "~/services/translations/context";
 
 export default function Footer() {
-  const { labels, descriptions, contentLinkLabels } = useTranslations();
+  const { shared, descriptions, contentLinkLabels } = useTranslations();
   return (
     <footer className="kern-container mt-kern-dimension-5x-large">
       <div className="py-kern-space-large">
@@ -10,7 +10,7 @@ export default function Footer() {
       </div>
       <nav
         className="gap-x-kern-space-default flex flex-row flex-wrap justify-between"
-        aria-label={labels.FOOTER_ARIA_LABEL}
+        aria-label={shared.FOOTER_ARIA_LABEL}
       >
         <Link to="/datenschutz" className="kern-link">
           {contentLinkLabels.DATENSCHUTZ_LINK_LABEL}

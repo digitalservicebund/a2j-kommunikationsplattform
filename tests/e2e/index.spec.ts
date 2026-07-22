@@ -10,9 +10,7 @@ test.describe("Homepage (_index route)", () => {
     await page.goto("/");
     await expect(page).toHaveTitle("Kommunikationsplattform | Justiz-Services");
     await expect(page.locator("text=Kommunikationsplattform")).toBeVisible();
-    await expect(
-      page.locator(`text=${routes.login.introduction}`),
-    ).toBeVisible();
+    await expect(page.locator(`text=${routes.login.intro}`)).toBeVisible();
     await expectNoA11yViolations(page);
   });
 

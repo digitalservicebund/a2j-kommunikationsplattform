@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import fetchDokumenteById from "../fetchDokumenteById.server";
+import fetchDokumente from "../fetchDokumente";
 import { mockAuthData } from "./helpers";
 
 const mocks = vi.hoisted(() => ({
@@ -10,7 +10,7 @@ vi.mock("../apiClient", () => ({
   apiRequest: mocks.apiRequest,
 }));
 
-describe("fetchDokumenteById", () => {
+describe("fetchDokumente", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -19,9 +19,9 @@ describe("fetchDokumenteById", () => {
     const dokumente: unknown[] = [];
     mocks.apiRequest.mockResolvedValueOnce(dokumente);
 
-    const result = await fetchDokumenteById(mockAuthData, {
-      id: "e-1",
+    const result = await fetchDokumente(mockAuthData, {
       verfahrenId: "v-1",
+      einreichungId: "e-1",
     });
 
     expect(mocks.apiRequest).toHaveBeenCalledWith(

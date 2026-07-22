@@ -33,14 +33,14 @@ export function VerfahrenCounter({
   count: number;
   hasFilters: boolean;
 }>) {
-  const { labels, alerts } = useTranslations();
+  const { shared, alerts } = useTranslations();
 
   const displayState = getCounterState(count, hasFilters);
 
   const formattedCount =
     count >= VERFAHREN_PAGE_LIMIT
-      ? labels.MORE_THAN_100_VERFAHREN_LABEL
-      : `${count} ${labels.VERFAHREN_LABEL}`;
+      ? shared.MORE_THAN_100_VERFAHREN_LABEL
+      : `${count} ${shared.VERFAHREN_LABEL}`;
 
   let countInfo: string;
   let alertTitle: string | null = null;
@@ -48,14 +48,14 @@ export function VerfahrenCounter({
 
   switch (displayState) {
     case CounterState.NoVerfahren: {
-      countInfo = `0 ${labels.VERFAHREN_LABEL}`;
+      countInfo = `0 ${shared.VERFAHREN_LABEL}`;
       alertTitle = alerts.NO_VERFAHREN_FOUND_TITLE;
       alertMessage = alerts.NO_VERFAHREN_FOUND_MESSAGE;
       break;
     }
 
     case CounterState.NoResult: {
-      countInfo = `0 ${labels.RESULTS_LABEL}`;
+      countInfo = `0 ${shared.RESULTS_LABEL}`;
       alertTitle = alerts.NO_VERFAHREN_FOUND_WITH_FILTERS_TITLE;
       alertMessage = alerts.NO_VERFAHREN_FOUND_WITH_FILTERS_MESSAGE;
       break;

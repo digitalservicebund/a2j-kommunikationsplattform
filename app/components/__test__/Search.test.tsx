@@ -10,7 +10,7 @@ import { describe, expect, it, vi } from "vitest";
 import Search from "../Search";
 
 describe("Search", () => {
-  const { placeholders, labels, buttons } = getTestTranslations();
+  const { shared, buttons } = getTestTranslations();
   const searchId = "test-search-input";
 
   it("renders input and submit button with translations and defaultValue", () => {
@@ -26,8 +26,8 @@ describe("Search", () => {
     const input = screen.getByRole("textbox") as HTMLInputElement;
     const button = screen.getByRole("button", { name: buttons.SEARCH_BUTTON });
 
-    expect(screen.getByText(labels.SEARCH_LABEL)).toBeInTheDocument();
-    expect(input.placeholder).toBe(placeholders.SEARCH_PLACEHOLDER);
+    expect(screen.getByText(shared.SEARCH_LABEL)).toBeInTheDocument();
+    expect(input.placeholder).toBe(shared.form.search.placeholder);
     expect(input.value).toBe("initial");
     expect(button).toBeInTheDocument();
   });

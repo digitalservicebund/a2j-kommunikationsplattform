@@ -6,7 +6,11 @@ import { DokumentSchema, DokumentTypeSchema } from "./schemas/dokumentSchema";
 export type DokumentType = z.infer<typeof DokumentTypeSchema>;
 export type Dokument = z.infer<typeof DokumentSchema>;
 
-const errorMessage = "Dokument konnte nicht hochgeladen werden.";
+const buildErrorMessage = (
+  verfahrenId: string,
+  einreichungId: string,
+): string =>
+  `Dokument for Einreichung with id ${einreichungId} of Verfahren with id ${verfahrenId} could not be uploaded.`;
 
 function extractSingleObject(data: unknown): unknown {
   return Array.isArray(data) ? data[0] : data;
@@ -28,7 +32,7 @@ export default async function uploadDokument(
     path: `/api/v1/verfahren/${verfahrenId}/einreichungen/${einreichungId}/dokumente`,
     method: "POST",
     body: formData,
-    errorMessage,
+    errorMessage: buildErrorMessage(verfahrenId, einreichungId),
   });
 
   const singleObject = extractSingleObject(rawData);

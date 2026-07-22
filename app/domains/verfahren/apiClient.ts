@@ -22,19 +22,180 @@ type ApiRequestOptions = ApiRequestUrlOptions & {
   authData: AuthenticationResponse;
   method?: string;
   body?: unknown;
+  eTag?: string;
+  includeResponseETag?: boolean;
+  includeResponseMeta?: boolean;
+  throwOnError?: boolean;
   schema?: z.ZodTypeAny;
   errorMessage?: string; // error message used for logging/parsing helpers
 };
 
+export type ApiRequestWithETagResult<T> = {
+  data: T;
+  eTag: string | null;
+};
+
+export type ApiRequestWithMetaResult<T> = {
+  data: T;
+  status: number;
+  headers: Headers;
+  eTag: string | null;
+};
+
+export type ApiRequestErrorResult = {
+  ok: false;
+  status: number;
+  headers: Headers;
+  eTag: string | null;
+  errorBody: unknown;
+};
+
+export type ApiRequestSuccessResult<T> = {
+  ok: true;
+  data: T;
+  status: number;
+  headers: Headers;
+  eTag: string | null;
+};
+
+export type ApiRequestHandledResult<T> =
+  | ApiRequestSuccessResult<T>
+  | ApiRequestErrorResult;
+
+function parseJsonBodyOrUndefined(
+  responseBody: string,
+  errorMessage: string,
+): unknown {
+  if (responseBody.trim() === "") {
+    return undefined;
+  }
+
+  try {
+    return JSON.parse(responseBody);
+  } catch (err) {
+    logParsingErrorAndThrow(err, errorMessage, responseBody);
+  }
+}
+
+function parseSchemaOrThrow<T>(
+  data: unknown,
+  schema: z.ZodTypeAny | undefined,
+  errorMessage: string,
+): T {
+  if (!schema) {
+    return data as T;
+  }
+
+  try {
+    return schema.parse(data) as T;
+  } catch (err) {
+    logParsingErrorAndThrow(err, errorMessage, JSON.stringify(data));
+  }
+}
+
+async function handleNonOkResponse(
+  response: Response,
+  responseETag: string | null,
+  throwOnError: boolean,
+  errorMessage: string,
+): Promise<ApiRequestErrorResult | undefined> {
+  if (throwOnError) {
+    await logApiErrorAndThrow(response, errorMessage);
+    return undefined;
+  }
+
+  const errorText = await response.text();
+  let errorBody: unknown = errorText;
+
+  if (errorText.trim() !== "") {
+    try {
+      errorBody = JSON.parse(errorText);
+    } catch {
+      errorBody = errorText;
+    }
+  }
+
+  return {
+    ok: false,
+    status: response.status,
+    headers: response.headers,
+    eTag: responseETag,
+    errorBody,
+  };
+}
+
+function buildSuccessReturn<T>(
+  data: T,
+  response: Response,
+  responseETag: string | null,
+  options: {
+    throwOnError: boolean;
+    includeResponseMeta: boolean;
+    includeResponseETag: boolean;
+  },
+):
+  | T
+  | ApiRequestWithETagResult<T>
+  | ApiRequestWithMetaResult<T>
+  | ApiRequestSuccessResult<T> {
+  if (!options.throwOnError) {
+    return {
+      ok: true,
+      data,
+      status: response.status,
+      headers: response.headers,
+      eTag: responseETag,
+    };
+  }
+
+  if (options.includeResponseMeta) {
+    return {
+      data,
+      status: response.status,
+      headers: response.headers,
+      eTag: responseETag,
+    };
+  }
+
+  if (options.includeResponseETag) {
+    return {
+      data,
+      eTag: responseETag,
+    };
+  }
+
+  return data;
+}
+
+export function apiRequest<T = unknown>(
+  opts: ApiRequestOptions & { throwOnError: false },
+): Promise<ApiRequestHandledResult<T>>;
+export function apiRequest<T = unknown>(
+  opts: ApiRequestOptions & { includeResponseMeta: true },
+): Promise<ApiRequestWithMetaResult<T>>;
+export function apiRequest<T = unknown>(
+  opts: ApiRequestOptions & { includeResponseETag: true },
+): Promise<ApiRequestWithETagResult<T>>;
+export function apiRequest<T = unknown>(opts: ApiRequestOptions): Promise<T>;
+
 export async function apiRequest<T = unknown>(
   opts: ApiRequestOptions,
-): Promise<T> {
+): Promise<
+  | T
+  | ApiRequestWithETagResult<T>
+  | ApiRequestWithMetaResult<T>
+  | ApiRequestHandledResult<T>
+> {
   const {
     authData,
     path,
     fullUrl,
     method = "GET",
     body,
+    eTag,
+    includeResponseETag = false,
+    includeResponseMeta = false,
+    throwOnError = true,
     schema,
     errorMessage,
   } = opts;
@@ -61,15 +222,21 @@ export async function apiRequest<T = unknown>(
     fetchBody = JSON.stringify(body) as BodyInit;
   }
 
+  // If eTag is present, add it as header
+  if (eTag) {
+    headers["If-Match"] = eTag;
+  }
+
   // This can result in carrier tokens and payload data being exposed
-  // in the logs. Therefore, this is only logged in non-production environments
+  // in the logs. Therefore, this is only logged in non-production environments for now
   const logWithHeaderAndBody =
     config().ENVIRONMENT === "staging" ||
     config().ENVIRONMENT === "development";
   if (logWithHeaderAndBody) {
-    console.log(
-      `Verfahren apiClient :: fetch ${method} ${url} - headers: ${JSON.stringify(headers)} - body: ${fetchBody}`,
-    );
+    const logHeaders = headers ? `headers: ${JSON.stringify(headers)}` : "";
+    const logBody = body ? `body: ${fetchBody}` : "";
+    const logETag = eTag ? `eTag: ${eTag}` : "";
+    console.log(`fetch ${method} ${url} ${logHeaders} ${logBody} ${logETag}`);
   }
 
   const response = await fetch(url, {
@@ -78,35 +245,38 @@ export async function apiRequest<T = unknown>(
     body: fetchBody,
   });
 
+  const responseETag = response.headers.get("etag");
+  const resolvedErrorMessage = errorMessage ?? "API request failed.";
+
   if (!response.ok) {
-    await logApiErrorAndThrow(response, errorMessage ?? "API request failed.");
-  }
-
-  let data: unknown;
-  try {
-    data = await response.json();
-  } catch (err) {
-    const responseBody = await response.clone().text();
-    logParsingErrorAndThrow(
-      err,
-      errorMessage ?? "Failed to read/parse the response as JSON.",
-      responseBody,
+    const nonOkResult = await handleNonOkResponse<T>(
+      response,
+      responseETag,
+      throwOnError,
+      resolvedErrorMessage,
     );
-  }
 
-  if (schema) {
-    try {
-      return schema.parse(data) as T;
-    } catch (err) {
-      logParsingErrorAndThrow(
-        err,
-        errorMessage ?? "Failed to parse Zod schema.",
-        JSON.stringify(data),
-      );
+    if (nonOkResult) {
+      return nonOkResult;
     }
   }
 
-  return data as T;
+  const responseBody = await response.text();
+  const parsedBody = parseJsonBodyOrUndefined(
+    responseBody,
+    errorMessage ?? "Failed to read/parse the response as JSON.",
+  );
+  const parsedData = parseSchemaOrThrow<T>(
+    parsedBody,
+    schema,
+    errorMessage ?? "Failed to parse Zod schema.",
+  );
+
+  return buildSuccessReturn(parsedData, response, responseETag, {
+    throwOnError,
+    includeResponseMeta,
+    includeResponseETag,
+  });
 }
 
 export default apiRequest;

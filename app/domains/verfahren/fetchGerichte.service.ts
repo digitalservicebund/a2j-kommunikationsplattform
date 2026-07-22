@@ -2,8 +2,7 @@ import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { apiRequest } from "./apiClient";
 import { GerichtSchema } from "./schemas/gerichtSchema";
 
-const errorMessage =
-  "Die Daten für das ausgewählte Gericht konnten nicht abgerufen werden.";
+const errorMessage = "Gerichte could not be fetched.";
 
 export default async function fetchGerichte(authData: AuthenticationResponse) {
   return apiRequest({

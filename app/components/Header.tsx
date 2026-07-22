@@ -17,7 +17,7 @@ export default function Header({
   isContentPage = false,
 }: Readonly<HeaderProps>) {
   const navigate = useNavigate();
-  const { buttons, labels } = useTranslations();
+  const { buttons, shared } = useTranslations();
 
   // The header has a:
   // (1) Kopfzeile,
@@ -38,7 +38,7 @@ export default function Header({
       onClick={() => navigate(-1)}
     >
       <span className="kern-icon kern-icon--arrow-back kern-icon--default"></span>
-      <span>{buttons.BACK_BUTTON}</span>
+      <span>{buttons.prev}</span>
     </button>
   ) : (
     <button
@@ -65,7 +65,7 @@ export default function Header({
       {/* (1) */}
       {showTestzugangBanner && <TestzugangBanner />}
       <Kopfzeile />
-      <nav aria-label={labels.HEADER_ARIA_LABEL}>
+      <nav aria-label={shared.HEADER_ARIA_LABEL}>
         <div className="kern-container">
           <div className="gap-kern-space-small pt-kern-space-default flex flex-col">
             {/* (2) */}

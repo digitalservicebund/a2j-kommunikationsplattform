@@ -16,10 +16,10 @@ const LogoutButton = () => {
 };
 
 export default function Navigation() {
-  const { labels } = useTranslations();
+  const { shared } = useTranslations();
   const navigationLinksList = [
     {
-      name: labels.UEBERSICHT_LABEL,
+      name: shared.UEBERSICHT_LABEL,
       iconName: "kern-icon--home",
       url: "/",
     },

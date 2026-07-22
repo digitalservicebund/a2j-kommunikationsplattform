@@ -1,7 +1,7 @@
 import { useTranslations } from "~/services/translations/context";
 
 export default function Kopfzeile() {
-  const { labels } = useTranslations();
+  const { shared } = useTranslations();
   return (
     <div className="kern-kopfzeile">
       <div className="kern-container">
@@ -18,7 +18,7 @@ export default function Kopfzeile() {
             </svg>
           </span>
           <span className="kern-kopfzeile__label">
-            {labels.KOPFZEILE_LABEL}
+            {shared.KOPFZEILE_LABEL}
           </span>
         </div>
       </div>

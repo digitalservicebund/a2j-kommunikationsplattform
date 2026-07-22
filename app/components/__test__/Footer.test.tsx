@@ -10,7 +10,7 @@ import { it } from "vitest";
 import Footer from "../Footer";
 
 describe("Footer", () => {
-  const { labels, descriptions, contentLinkLabels } = getTestTranslations();
+  const { shared, descriptions, contentLinkLabels } = getTestTranslations();
   it("should render a <nav/> with links and a project info", () => {
     const { getByLabelText, getByRole } = renderWithTestTranslations(
       <MemoryRouter>
@@ -18,7 +18,7 @@ describe("Footer", () => {
       </MemoryRouter>,
     );
     // check if nav is being rendered
-    expect(getByLabelText(labels.FOOTER_ARIA_LABEL)).toBeInTheDocument();
+    expect(getByLabelText(shared.FOOTER_ARIA_LABEL)).toBeInTheDocument();
     // check if a link is being rendered
     expect(
       getByRole("link", { name: contentLinkLabels.DATENSCHUTZ_LINK_LABEL }),

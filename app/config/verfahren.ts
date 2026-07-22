@@ -7,19 +7,19 @@ const TOO_MANY_RESULTS_THRESHOLD = 50;
 const sortOptions: InputSelectOption[] = [
   {
     value: "eingereicht_am",
-    label: dictionaries.de.labels.VERFAHREN_EINREICHUNGEN_LATEST_FIRST_LABEL,
+    label: dictionaries.de.shared.VERFAHREN_EINREICHUNGEN_LATEST_FIRST_LABEL,
   },
   {
     value: "-eingereicht_am",
-    label: dictionaries.de.labels.VERFAHREN_EINREICHUNGEN_OLDEST_FIRST_LABEL,
+    label: dictionaries.de.shared.VERFAHREN_EINREICHUNGEN_OLDEST_FIRST_LABEL,
   },
   {
     value: "aktenzeichen_gericht",
-    label: dictionaries.de.labels.VERFAHREN_AKTENZEICHEN_ASC_LABEL,
+    label: dictionaries.de.shared.VERFAHREN_AKTENZEICHEN_ASC_LABEL,
   },
   {
     value: "-aktenzeichen_gericht",
-    label: dictionaries.de.labels.VERFAHREN_AKTENZEICHEN_DESC_LABEL,
+    label: dictionaries.de.shared.VERFAHREN_AKTENZEICHEN_DESC_LABEL,
   },
 ];
 

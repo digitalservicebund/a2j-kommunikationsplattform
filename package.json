@@ -21,7 +21,7 @@
     "style:fix": "npm run format:fix && npm run lint:fix"
   },
   "dependencies": {
-    "@kern-ux/native": "^2.5.0",
+    "@kern-ux/native": "^2.7.1",
     "@react-router/express": "^7.17.0",
     "@react-router/node": "^7.17.0",
     "@react-router/serve": "^7.17.0",

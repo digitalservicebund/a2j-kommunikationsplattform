@@ -10,7 +10,7 @@ import { describe, expect, it, vi } from "vitest";
 import InputSelect from "../InputSelect";
 
 describe("InputSelect", () => {
-  const { labels } = getTestTranslations();
+  const { shared } = getTestTranslations();
   const mockOptions = [
     { value: "1", label: "Option 1" },
     { value: "2", label: "Option 2" },
@@ -35,7 +35,7 @@ describe("InputSelect", () => {
       <InputSelect {...defaultProps} options={mockOptions} />,
     );
     expect(
-      screen.queryByRole("option", { name: labels.PLEASE_SELECT_LABEL }),
+      screen.queryByRole("option", { name: shared.form.select.placeholder }),
     ).toBeNull();
   });
 

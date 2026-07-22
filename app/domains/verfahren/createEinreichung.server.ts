@@ -5,7 +5,7 @@ import { EinreichungSchema } from "./schemas/einreichungSchema";
 
 export type Einreichung = z.infer<typeof EinreichungSchema>;
 
-const errorMessage = "Einreichung konnte nicht erstellt werden.";
+const errorMessage = "Einreichung could not be created.";
 
 export default async function createEinreichung(
   authData: AuthenticationResponse,

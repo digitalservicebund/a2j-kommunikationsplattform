@@ -27,7 +27,7 @@ function expectHeaderToBePresent(container: HTMLElement) {
 
 describe("Header", () => {
   let container: HTMLElement;
-  const { labels } = getTestTranslations();
+  const { shared } = getTestTranslations();
   const { buttons } = getTestTranslations();
 
   beforeEach(() => {
@@ -50,7 +50,7 @@ describe("Header", () => {
         expect(container.querySelector(".kern-kopfzeile")).toBeInTheDocument();
       });
       it("should not render header's Logo, UserProfile or Navigation ", () => {
-        expect(container).not.toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
+        expect(container).not.toHaveTextContent(shared.LOGGED_IN_AS_LABEL);
       });
     });
 
@@ -70,7 +70,7 @@ describe("Header", () => {
           container.querySelector(".kern-icon--network_node"),
         ).toBeInTheDocument();
         expect(container).toHaveTextContent(buttons.ANMELDEN_BUTTON);
-        expect(container).not.toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
+        expect(container).not.toHaveTextContent(shared.LOGGED_IN_AS_LABEL);
       });
       it('should render Anmelden button and, when clicked, navigate to "/login" ', () => {
         const button = container.querySelector("button") as HTMLButtonElement;
@@ -99,7 +99,7 @@ describe("Header", () => {
         expect(container.querySelector(".kern-kopfzeile")).toBeInTheDocument();
       });
       it("should render header's Logo, UserProfile or Navigation ", () => {
-        expect(container).toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
+        expect(container).toHaveTextContent(shared.LOGGED_IN_AS_LABEL);
       });
     });
 
@@ -119,16 +119,16 @@ describe("Header", () => {
         expect(
           container.querySelector(".kern-icon--arrow-back"),
         ).toBeInTheDocument();
-        expect(container).toHaveTextContent(buttons.BACK_BUTTON);
+        expect(container).toHaveTextContent(buttons.prev);
         expect(
           container.querySelector(".kern-icon--network_node"),
         ).toBeInTheDocument();
-        expect(container).not.toHaveTextContent(labels.LOGGED_IN_AS_LABEL);
+        expect(container).not.toHaveTextContent(shared.LOGGED_IN_AS_LABEL);
       });
       it("should render Zurück button and, when clicked, navigate back one step in history", () => {
         const button = container.querySelector("button") as HTMLButtonElement;
         expect(container.querySelector("button")).toHaveTextContent(
-          buttons.BACK_BUTTON,
+          buttons.prev,
         );
         button.click();
         expect(mockNavigate).toHaveBeenCalledWith(-1);

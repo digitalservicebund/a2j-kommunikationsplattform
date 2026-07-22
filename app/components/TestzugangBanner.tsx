@@ -1,7 +1,7 @@
 import { useTranslations } from "~/services/translations/context";
 
 export default function TestzugangBanner() {
-  const { labels } = useTranslations();
+  const { shared } = useTranslations();
   return (
     <div className="bg-kern-feedback-warning-background">
       <div className="kern-container space-x-kern-space-default flex items-center">
@@ -10,9 +10,9 @@ export default function TestzugangBanner() {
           aria-hidden="true"
         ></span>
         <p className="kern-body">
-          {labels.TESTZUGANG_BANNER_LABEL_PRE}
-          <strong>{labels.TESTZUGANG_BANNER_LABEL_BOLD}</strong>
-          {labels.TESTZUGANG_BANNER_LABEL_POST}
+          {shared.TESTZUGANG_BANNER_LABEL_PRE}
+          <strong>{shared.TESTZUGANG_BANNER_LABEL_BOLD}</strong>
+          {shared.TESTZUGANG_BANNER_LABEL_POST}
         </p>
       </div>
     </div>

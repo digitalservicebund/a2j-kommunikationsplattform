@@ -4,7 +4,7 @@ import z from "zod";
 import Alert from "~/components/Alert";
 import VerfahrenTile from "~/components/verfahren/VerfahrenTile";
 import VerfahrenTileSkeleton from "~/components/verfahren/VerfahrenTileSkeleton.static";
-import fetchDokumenteById from "~/domains/verfahren/fetchDokumenteById.server";
+import fetchDokumente from "~/domains/verfahren/fetchDokumente";
 import fetchEinreichungenById from "~/domains/verfahren/fetchEinreichungenById.server";
 import fetchEinreichungStatus from "~/domains/verfahren/fetchEinreichungStatus.server";
 import fetchVerfahrenById from "~/domains/verfahren/fetchVerfahrenById.server";
@@ -74,8 +74,8 @@ export const loader = async ({
 
   const dokumenteDataPromise: Dokument[][] = await Promise.all(
     filteredEinreichungen.map(async (einreichung) => {
-      const dokumente = (await fetchDokumenteById(authData, {
-        id: einreichung.id,
+      const dokumente = (await fetchDokumente(authData, {
+        einreichungId: einreichung.id,
         verfahrenId: einreichung.verfahren_id,
       })) as Dokument[];
 
@@ -85,13 +85,6 @@ export const loader = async ({
 
       return dokumente;
     }),
-  );
-
-  console.log("Loader: Fetching data for Verfahren ID", id);
-  console.log("Loader: Verfahren data promise", verfahrenDataPromise);
-  console.log(
-    "Loader: Einreichungen with Status for this Verfahren",
-    einreichungenWithStatus,
   );
 
   return {

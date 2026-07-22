@@ -21,13 +21,13 @@ export function buildErrorContext(
 ): ErrorContext {
   // load translations statically, as in some errors the useTranslations hook within
   // ErrorBoundary may not be reachable, e.g. if an error occurs before the app component mounts.
-  const { errorMessages, labels } = dictionaries["de"];
+  const { errorMessages, shared } = dictionaries["de"];
 
   let errorContent: ErrorContent = {
     label: errorMessages.GENERIC_ERROR_LABEL,
     heading: errorMessages.GENERIC_ERROR_HEADING,
     body: errorMessages.GENERIC_ERROR_BODY,
-    redirectText: labels.TO_START_PAGE_LABEL,
+    redirectText: shared.TO_START_PAGE_LABEL,
     redirectUrl: "/",
   };
 
@@ -37,14 +37,14 @@ export function buildErrorContext(
       label: errorMessages.UNKNOWN_PAGE_LABEL,
       heading: errorMessages.UNKNOWN_PAGE_HEADING,
       body: errorMessages.UNKNOWN_PAGE_BODY,
-      redirectText: labels.TO_START_PAGE_LABEL,
+      redirectText: shared.TO_START_PAGE_LABEL,
       redirectUrl: "/",
     },
     500: {
       label: errorMessages.SERVER_ERROR_LABEL,
       heading: errorMessages.SERVER_ERROR_HEADING,
       body: errorMessages.SERVER_ERROR_BODY,
-      redirectText: labels.CONTACT_SUPPORT_LABEL,
+      redirectText: shared.CONTACT_SUPPORT_LABEL,
       redirectUrl: "/hilfe-und-kontakt",
     },
   };
@@ -62,7 +62,7 @@ export function buildErrorContext(
         label: "Error",
         heading: error.message,
         body: error.stack || "",
-        redirectText: labels.TO_START_PAGE_LABEL,
+        redirectText: shared.TO_START_PAGE_LABEL,
         redirectUrl: "/",
       };
     } else {

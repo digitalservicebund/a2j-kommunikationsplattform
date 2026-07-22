@@ -147,7 +147,7 @@ function VerfahrenContent({
   gerichte: Gericht[];
   ref: RefObject<HTMLHeadingElement | null>;
 }>) {
-  const { labels } = useTranslations();
+  const { shared } = useTranslations();
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
     useLoadMore(initialData);
   const { getParamValue, updateParam } = useParamsState<{
@@ -189,16 +189,16 @@ function VerfahrenContent({
             />
           </div>
           <InputSelect
-            label={labels.COURT_LABEL}
+            label={shared.COURT_LABEL}
             id="gericht"
-            placeholder={labels.SHOW_ALL_LABEL}
+            placeholder={shared.SHOW_ALL_LABEL}
             options={gerichteOptions}
             onChange={(e) => updateParam("gericht", e.target.value || null)}
             disabled={isInputDisabled}
             selectedValue={getParamValue("gericht") || ""}
           />
           <InputSelect
-            label={labels.SORT_LABEL}
+            label={shared.SORT_LABEL}
             id="sort"
             options={sortOptions}
             onChange={(e) =>
@@ -225,7 +225,7 @@ const VerfahrenHeading = ({ ref }: { ref?: Ref<HTMLHeadingElement> }) => {
   const { routes } = useTranslations();
   return (
     <h1 ref={ref} className="kern-heading-medium">
-      {routes.verfahren.headline}
+      {routes.index.headline}
     </h1>
   );
 };

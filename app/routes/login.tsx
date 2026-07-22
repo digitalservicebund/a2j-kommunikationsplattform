@@ -152,7 +152,7 @@ export default function LoginPage() {
           </h1>
 
           <p className="kern-subline my-kern-space-default text-center">
-            {routes.login.introduction}
+            {routes.login.intro}
           </p>
 
           <Form method="post" action="/action/login-user">
@@ -177,15 +177,6 @@ export default function LoginPage() {
                 onClick={() => setLoginType(LoginType.BeA)}
               >
                 <span className="kern-label">{buttons.LOGIN_BUTTON_BEA}</span>
-              </button>
-
-              <button
-                className="kern-btn kern-btn--primary kern-btn--block"
-                disabled
-              >
-                <span className="kern-label">
-                  {buttons.LOGIN_BUTTON_GERICHTE}
-                </span>
               </button>
 
               <Link

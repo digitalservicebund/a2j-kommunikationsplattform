@@ -4,7 +4,7 @@ import z from "zod";
 import Alert from "~/components/Alert";
 import VerfahrenTile from "~/components/verfahren/VerfahrenTile";
 import VerfahrenTileSkeleton from "~/components/verfahren/VerfahrenTileSkeleton.static";
-import fetchDokumenteById from "~/domains/verfahren/fetchDokumenteById.server";
+import fetchDokumente from "~/domains/verfahren/fetchDokumente";
 import fetchEinreichungenById from "~/domains/verfahren/fetchEinreichungenById.server";
 import fetchEinreichungStatus from "~/domains/verfahren/fetchEinreichungStatus.server";
 import fetchVerfahrenById from "~/domains/verfahren/fetchVerfahrenById.server";
@@ -72,9 +72,9 @@ export const loader = async ({
 
   const dokumenteDataPromise: Dokument[][] = await Promise.all(
     filteredEinreichungen.map(async (einreichung) => {
-      const dokumente = (await fetchDokumenteById(authData, {
-        id: einreichung.id,
+      const dokumente = (await fetchDokumente(authData, {
         verfahrenId: einreichung.verfahren_id,
+        einreichungId: einreichung.id,
       })) as Dokument[];
 
       if (!dokumente) {
@@ -93,11 +93,8 @@ export const loader = async ({
 };
 
 export default function Verfahrendetails() {
-  const { verfahren, einreichungen, dokumente } = useLoaderData<LoaderData>();
-
+  const { verfahren } = useLoaderData<LoaderData>();
   const { alerts } = useTranslations();
-
-  console.log(einreichungen, dokumente);
 
   return (
     <>

@@ -87,8 +87,6 @@ export const getAuthData = async (
   const refreshToken = session.get("refreshToken");
   const provider = session.get("provider") as AuthenticationProvider;
 
-  console.log("getAuthData: idToken is", idToken);
-
   // Check expiresAt type and parse if needed
   if (typeof expiresAt === "string") {
     const parsed = Number.parseInt(expiresAt, 10);
@@ -120,7 +118,6 @@ export const getAuthData = async (
 
   // Token still valid
   if (accessToken && expiresAt > Date.now()) {
-    console.log("getAuthData: Token is still valid");
     return {
       authenticationTokens: { accessToken, idToken, expiresAt, refreshToken },
       sessionCookieHeader: "",
@@ -132,7 +129,6 @@ export const getAuthData = async (
   try {
     console.log("getAuthData: Token expired, attempting refresh");
     if (provider === AuthenticationProvider.DEMO) {
-      console.log("getAuthData: Refreshing demo token");
       return await refreshDemoToken(request, refreshToken);
     }
     if (provider === AuthenticationProvider.KOMPLA_IDP) {

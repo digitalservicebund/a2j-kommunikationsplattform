@@ -13,7 +13,7 @@ export default function Search({
   defaultValue,
   id,
 }: Readonly<SearchProps>) {
-  const { placeholders, labels, buttons } = useTranslations();
+  const { shared, buttons } = useTranslations();
   return (
     <search>
       <form onSubmit={handleSearch}>
@@ -21,8 +21,8 @@ export default function Search({
           {/* using type text as there is no search input in KERN yet*/}
           <InputText
             onFocus={(e) => e.currentTarget.select()} // Select all text on focus - useful for quick replacement
-            label={labels.SEARCH_LABEL}
-            placeholder={placeholders.SEARCH_PLACEHOLDER}
+            label={shared.SEARCH_LABEL}
+            placeholder={shared.form.search.placeholder}
             id={id}
             defaultValue={defaultValue}
             className="grow"

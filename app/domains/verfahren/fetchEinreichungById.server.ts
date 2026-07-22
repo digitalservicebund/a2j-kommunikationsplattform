@@ -8,7 +8,7 @@ type FetchEinreichungByIdOptions = {
 };
 
 const buildErrorMessage = (id: string, verfahrenId: string): string =>
-  `Die Einreichung mit der ID ${id} für das Verfahren mit der ID ${verfahrenId} konnten nicht abgerufen werden.`;
+  `Einreichung with id ${id} of Verfahren with id ${verfahrenId} could not be fetched.`;
 
 export default async function fetchEinreichungById(
   authData: AuthenticationResponse,

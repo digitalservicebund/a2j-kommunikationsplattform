@@ -7,8 +7,8 @@ type FetchEinreichungStatusOptions = {
   verfahrenId: string;
 };
 
-const errorMessage =
-  "Der Validierungsstatus der Einreichung konnte nicht abgerufen werden.";
+const buildErrorMessage = (id: string, verfahrenId: string): string =>
+  `Validierungsstatus for Einreichung ${id} of Verfahren with id ${verfahrenId} could not be fetched.`;
 
 export default async function fetchEinreichungStatus(
   authData: AuthenticationResponse,
@@ -18,6 +18,6 @@ export default async function fetchEinreichungStatus(
     authData,
     path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.id}/validierungsstatus`,
     schema: StatusSchema,
-    errorMessage,
+    errorMessage: buildErrorMessage(options.id, options.verfahrenId),
   });
 }

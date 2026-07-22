@@ -5,7 +5,7 @@ import { VerfahrenSchema } from "./schemas/verfahrenSchema";
 
 export type Verfahren = z.infer<typeof VerfahrenSchema>;
 
-const errorMessage = "Verfahren konnte nicht erstellt werden.";
+const errorMessage = "Verfahren could not be created.";
 
 // This can be removed and adjusted as soon as API v3.0.4 has been released,
 // align with SINC and API REST guidelines on this

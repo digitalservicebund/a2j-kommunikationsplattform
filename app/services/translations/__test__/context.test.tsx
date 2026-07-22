@@ -16,11 +16,11 @@ describe("useTranslations", () => {
   it("updates when provider value changes", () => {
     const custom1 = {
       ...dictionaries.de,
-      labels: { ...dictionaries.de.labels, A: "A1" },
+      shared: { ...dictionaries.de.shared, A: "A1" },
     };
     const custom2 = {
       ...dictionaries.de,
-      labels: { ...dictionaries.de.labels, A: "A2" },
+      shared: { ...dictionaries.de.shared, A: "A2" },
     };
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

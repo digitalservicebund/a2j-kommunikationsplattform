@@ -1,13 +1,12 @@
 export const de = {
   buttons: {
-    LOGIN_BUTTON_BEA: "Anmeldung Anwaltschaft (über beA Login)",
+    prev: "Zurück",
+    LOGIN_BUTTON_BEA: "Anwaltschaft (mit beA anmelden)",
     LOGIN_BUTTON_DEVELOPER: "Login als Entwickler*in",
-    LOGIN_BUTTON_GERICHTE: "Anmeldung Gerichte",
     LOGIN_BUTTON_DEMO_LABEL: "Gastzugang",
     LOGIN_BUTTON_KOMPLA_IDP_LABEL: "KomPla-IdP-Login",
     ABMELDEN_BUTTON: "Abmelden",
     ANMELDEN_BUTTON: "Anmelden",
-    BACK_BUTTON: "Zurück",
     SHOW_VERFAHREN_DETAILS: "Verfahrensdetails anzeigen",
     SHOW_URTEIL: "Urteil anzeigen",
     LOAD_MORE_VERFAHREN: "Weitere Verfahren laden",
@@ -59,7 +58,69 @@ export const de = {
     NO_VERFAHREN_FOUND_WITH_FILTERS_MESSAGE:
       "Es konnten keine passenden Ergebnisse für Ihre Suche/Filtereinstellungen gefunden werden. Bitte überprüfen Sie Ihre Eingaben oder ändern Sie die Filter, um andere Ergebnisse zu sehen.",
   },
-  labels: {
+  shared: {
+    loading: "Wird geladen...",
+    dokumentType: {
+      anhang: "Anhang",
+      schriftstueck: "Schriftstück",
+      xjustiz: "XJustiz",
+    },
+    form: {
+      search: {
+        placeholder:
+          "Freie Textsuche zum Beispiel nach Aktenzeichen, Parteien, Gerichten, ...",
+      },
+      select: {
+        placeholder: "Bitte auswählen",
+      },
+      selectDokumentType: {
+        label: "Dateityp",
+        hint: "Wählen Sie einen Dateityp zur besseren Zuordnung",
+        error:
+          "Bitte wählen Sie zwischen einem Schriftstück, einem Anhang oder einer XJustiz Datei.",
+      },
+      uploadDokument: {
+        label: "Datei hochladen",
+        hint: "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
+        error:
+          "Keine Datei ausgewählt? Ist ihre Datei zu groß? Oder der Dateityp wird nicht unterstützt. Bitte laden Sie eine Datei mit maximal 104 MB hoch. Unterstützte Dateitypen sind: *.pdf, *.doc, *.docx und *.xml (XJustiz).",
+      },
+      deleteDokument: {
+        label: "Entfernen",
+      },
+      submit: {
+        title: "Fehler beim Absenden des Formulars",
+        message: "Bitte versuchen Sie es später erneut.",
+      },
+      labels: {
+        forename: "Vorname",
+        lastname: "Nachname",
+        street: "Straße",
+        houseNumber: "Hausnummer",
+        postcode: "Postleitzahl",
+        place: "Ort",
+        eMail: "E-Mail (optional)",
+        phone: "Telefon (optional)",
+        rubrum: "Rubrum",
+        legalRepresentativesReferenceNumber:
+          "Geschäftszeichen des Prozessbevollmächtigten",
+        recipientCourt: "Empfängergericht",
+        subjectMatterOfTheProceedings: "Verfahrensgegenstand",
+        edit: "Bearbeiten",
+      },
+    },
+    beteiligte: {
+      klaegerLabel: "Klagende Partei",
+      beklagteLabel: "Beklagte Partei",
+      fallbackLabel: "Keine Beteiligten angegeben.",
+    },
+    gericht: {
+      briefSummaryTitle: "Empfängergericht",
+      label: "Gericht",
+      azLabel: "Aktenzeichen",
+      kontoinhaberLabel: "Zahlungsempfänger",
+      ibanLabel: "IBAN",
+    },
     HEADER_ARIA_LABEL: "Hauptmenü",
     FOOTER_ARIA_LABEL: "Rechtliche und weiterführende Informationen",
     UEBERSICHT_LABEL: "Übersicht",
@@ -73,7 +134,6 @@ export const de = {
     TO_START_PAGE_LABEL: "Zur Startseite",
     CONTACT_SUPPORT_LABEL: "Kontaktieren Sie den Support",
     MORE_THAN_100_VERFAHREN_LABEL: "Mehr als 100 Verfahren",
-    PLEASE_SELECT_LABEL: "Bitte auswählen",
     SHOW_ALL_LABEL: "Alle anzeigen",
     RESULTS_LABEL: "Ergebnisse",
     SEARCH_LABEL: "Suche",
@@ -91,15 +151,114 @@ export const de = {
   routes: {
     login: {
       headline: "Anmeldung",
-      introduction:
+      intro:
         "Willkommen auf der Pilotplattform für den digitalen Austausch zwischen Gerichten und Verfahrensbeteiligten.",
     },
-    verfahren: {
+    index: {
       headline: "Alle Verfahren in der Übersicht",
     },
     verfahrenNeu: {
-      headline: "Neue Klage einreichen",
-      subline: "Verfahrensbeteiligte & Details",
+      step1: {
+        headline: "Neue Klage einreichen",
+        progress: "Schritt 1 von 3",
+        subline: "Klageschrift hochladen",
+        intro:
+          "Laden Sie Ihre Klageschrift als PDF- oder Word-Datei hoch. Wir extrahieren die wichtigsten Daten automatisch für Sie.",
+        analysis: {
+          hint: "Wir lesen Beteiligte, Gericht und Streitgegenstand aus und füllen das Formular vor.",
+          label: "Automatische Analyse der Klageschrift aktivieren",
+        },
+        navigation: {
+          next: "Datei hochladen und weiter",
+        },
+      },
+      step2: {
+        headline: "Neue Klage einreichen",
+        progress: "Schritt 2 von 3",
+        subline: "Verfahrensbeteiligte & Details",
+        intro: "Bitte prüfen und ergänzen Sie die Angaben zu den Beteiligten.",
+        navigation: {
+          next: "Weiter zur Überprüfung",
+        },
+        notification: {
+          headline: "Daten automatisch übernommen",
+          copy: "Wir haben die Angaben aus Ihrer Klageschrift vorausgefüllt. Bitte prüfen Sie alle Felder sorgfältig.",
+        },
+        form: {
+          plaintiff: {
+            title: "Klagende Partei",
+            description:
+              "Alle Angaben zur klagenden Partei, dem Kläger oder der Klägerin. Hier können Sie auch angeben, ob eine anwaltliche Vertretung vorhanden ist.",
+            hasLawyer: {
+              checkbox: "Anwaltliche Vertretung ist vorhanden",
+              title: "Angaben zum Anwalt",
+              nameOfLawFirm:
+                "Name der Kanzlei / Sozietät / Berufsausübungsgesellschaft",
+            },
+          },
+          defendant: {
+            title: "Beklagte Partei",
+            description:
+              "Alle Angaben zur beklagten Partei, dem Beklagten oder der Beklagten.",
+          },
+          verfahrenDetails: {
+            title: "Verfahrensdetails",
+          },
+          assets: {
+            title: "Anlagen & Beweismittel",
+            description:
+              "Fügen Sie Beweismittel und weitere Dokumente hinzu (optional).",
+          },
+        },
+      },
+      step3: {
+        headline: "Neue Klage einreichen",
+        progress: "Schritt 3 von 3",
+        subline: "Überprüfung & Abgabe",
+        navigation: {
+          next: "Klage einreichen & Abgabe ans Gericht",
+        },
+        summary: {
+          aktenzeichen: "Az. wird vergeben",
+          gericht: "Gericht ist unbekannt",
+          badgeLabels: {
+            ready: "Bereit zur Abgabe",
+            soon: "Noch wenige Schritte zur Abgabe",
+          },
+        },
+        proceduralSteps: {
+          headline: "Verfahrensschritte",
+          einreichung: {
+            timelineLabel: "Entwurf",
+            basisdaten: {
+              label: "Basisdaten",
+              titleLabel: "Aktuelle Einreichung",
+              artLabel: "Art der Einreichung",
+              gzLabel: "Geschäftszeichen",
+              createdLabel: "Erstellt am",
+            },
+            additionalData: {
+              label: "Weitere Daten",
+              rubrumLabel: "Rubrum",
+              verfahrensgegenstandLabel: "Verfahrensgegenstand",
+            },
+            dokumente: {
+              uploadedAtLabel: "hochgeladen am",
+            },
+            submit: " Klage einreichen & Abgabe ans Gericht",
+          },
+          assets: {
+            title: "Anlagen & Beweismittel",
+            filesAddedLabel: "Datei(en) hinzugefügt",
+          },
+          addDetails: {
+            title: "Verfahrensbeteiligte & Details erfasst",
+          },
+          klageschriftUpload: {
+            title: "Klageschrift hochgeladen",
+          },
+        },
+      },
     },
     verfahrenDetails: {
       headline: "Verfahrensdetailseite",
@@ -126,15 +285,11 @@ export const de = {
     OPEN_SOURCE_CODE_LINK_LABEL: "Open Source Code",
     IMPRESSUM_LINK_LABEL: "Impressum",
   },
-  placeholders: {
-    SEARCH_PLACEHOLDER:
-      "Freie Textsuche zum Beispiel nach Aktenzeichen, Parteien, Gerichten, ...",
-  },
   breadcrumb: {
-    START: "Start",
-    VERFAHREN_NEU: "Neue Klage einreichen",
-    VERFAHREN_ID: "Verfahren",
-    VERFAHREN_ID_BEARBEITEN: "Bearbeitung",
+    start: "Start",
+    verfahrenNeu: "Neue Klage einreichen",
+    verfahrenId: "Verfahren",
+    verfahrenIdBearbeiten: "Bearbeitung",
   },
 } as const;
 

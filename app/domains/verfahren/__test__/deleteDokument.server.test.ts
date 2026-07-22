@@ -15,16 +15,51 @@ describe("deleteDokument", () => {
     vi.clearAllMocks();
   });
 
-  it("calls DELETE endpoint", async () => {
-    mocks.apiRequest.mockResolvedValueOnce(undefined);
+  it("calls DELETE endpoint and returns success result", async () => {
+    mocks.apiRequest.mockResolvedValueOnce({ ok: true });
 
-    await deleteDokument(mockAuthData, "d-1", "v-1", "e-1");
+    const result = await deleteDokument(mockAuthData, {
+      id: "d-1",
+      verfahrenId: "v-1",
+      einreichungId: "e-1",
+      eTag: 'W/"0"',
+    });
+
+    expect(result).toEqual({ success: true });
 
     expect(mocks.apiRequest).toHaveBeenCalledWith({
       authData: mockAuthData,
       path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1",
       method: "DELETE",
-      errorMessage: "Dokument konnte nicht gelöscht werden.",
+      eTag: 'W/"0"',
+      throwOnError: false,
+      errorMessage: "Das Dokument mit der ID d-1 konnte nicht gelöscht werden.",
     });
+  });
+
+  it("returns error on 412", async () => {
+    mocks.apiRequest.mockResolvedValueOnce({ ok: false, status: 412 });
+
+    const result = await deleteDokument(mockAuthData, {
+      id: "d-1",
+      verfahrenId: "v-1",
+      einreichungId: "e-1",
+      eTag: 'W/"0"',
+    });
+
+    expect(result).toEqual({ success: false });
+  });
+
+  it("returns error for other non-success responses", async () => {
+    mocks.apiRequest.mockResolvedValueOnce({ ok: false, status: 500 });
+
+    const result = await deleteDokument(mockAuthData, {
+      id: "d-1",
+      verfahrenId: "v-1",
+      einreichungId: "e-1",
+      eTag: 'W/"0"',
+    });
+
+    expect(result).toEqual({ success: false });
   });
 });

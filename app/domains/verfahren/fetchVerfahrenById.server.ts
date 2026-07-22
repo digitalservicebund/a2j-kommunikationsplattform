@@ -6,7 +6,8 @@ type FetchVerfahrenByIdOptions = {
   id: string;
 };
 
-const errorMessage = "Das Verfahren konnte nicht abgerufen werden.";
+const buildErrorMessage = (id: string): string =>
+  `Verfahren with ${id} could not be fetched.`;
 
 export default async function fetchVerfahrenById(
   authData: AuthenticationResponse,
@@ -16,6 +17,6 @@ export default async function fetchVerfahrenById(
     authData,
     path: `/api/v1/verfahren/${options.id}`,
     schema: VerfahrenSchema,
-    errorMessage,
+    errorMessage: buildErrorMessage(options.id),
   });
 }
