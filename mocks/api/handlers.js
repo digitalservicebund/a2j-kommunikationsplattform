@@ -1,7 +1,13 @@
 import { http, HttpResponse } from "msw";
 
-import { getAllDokumenteByIds } from "./controllers/dokumente.js";
 import {
+  deleteDokument,
+  dokumenteStore,
+  getAllDokumenteByIds,
+  getDokumentById,
+} from "./controllers/dokumente.js";
+import {
+  einreichungenStore,
   getAllEinreichungen,
   getEinreichungById,
   getEinreichungStatusByIds,
@@ -9,14 +15,15 @@ import {
 import { getGerichte } from "./controllers/gerichte.js";
 import { getAuthTokens } from "./controllers/tokenExchange.js";
 import {
-  createVerfahren,
   filterVerfahrenByGericht,
   getAllVerfahren,
   getVerfahrenById,
   paginateVerfahren,
   searchVerfahren,
   sortVerfahren,
+  verfahrenStore,
 } from "./controllers/verfahren.js";
+import { randomString } from "./helpers.js";
 
 /**
  * All defined Handlers intercept a request and handle its response
@@ -83,9 +90,6 @@ export const handlers = [
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId`,
     async ({ params }) => {
       const requestedVerfahren = getVerfahrenById(params.verfahrenId);
-
-      console.log("Requested verfahren:", requestedVerfahren);
-
       const resultArray = [requestedVerfahren, { status: 200 }];
 
       return HttpResponse.json(...resultArray);
@@ -94,7 +98,62 @@ export const handlers = [
 
   // Create Verfahren
   http.post(`${mockKomplaApiUrl}/:environment/api/v1/verfahren`, () => {
-    const newVerfahren = createVerfahren();
+    const newVerfahren = {
+      id: crypto.randomUUID(),
+      aktenzeichen_gericht: "XX C YYYY/ZZ",
+      status: "ERSTELLT",
+      status_changed: new Date().toISOString(),
+      eingereicht_am: new Date().toISOString(),
+      gericht: {
+        id: "d58d2e36-7b5e-4b35-20a1-1f49ea275c0a",
+        wert: "Amtsgericht Düsseldorf",
+        code: "R1101",
+      },
+      beteiligungen: [
+        {
+          id: crypto.randomUUID(),
+          name: "Markus Reinhardt",
+          rollen: [
+            {
+              id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
+              wert: "Beklagte(r)",
+              code: "028",
+            },
+          ],
+          prozessbevollmaechtigte: [
+            {
+              id: "1a5c1a2e-a215-e784-fffe-d61d89516752",
+              name: "Rechtsanwalt Dr. Frederike Scholz",
+              aktenzeichen: "W 1747 06/2026",
+            },
+            {
+              id: "779b1212-2480-2742-46ce-0c1a369fd899",
+              name: "Rechtsanwalt Dr. Alexander-Johannes von Hohenstein-Bär-Krüger-Schäfer",
+              aktenzeichen: "I 9600 10/2025",
+            },
+          ],
+        },
+        {
+          id: crypto.randomUUID(),
+          name: "Emilia Kühn",
+          rollen: [
+            {
+              id: "c53dd226-7bd9-4da5-19da-5302595a9469",
+              wert: "Kläger(in)",
+              code: "101",
+            },
+          ],
+          prozessbevollmaechtigte: [
+            {
+              id: "febb560c-31d9-f007-3f46-c44238992406",
+              name: "Rechtsanwälte Böhm & Partner mbB",
+              aktenzeichen: "E 5109 01/2026",
+            },
+          ],
+        },
+      ],
+    };
+    verfahrenStore.unshift(newVerfahren);
     // API returns array (known bug)
     return HttpResponse.json([newVerfahren], { status: 201 });
   }),
@@ -107,11 +166,14 @@ export const handlers = [
       const newEinreichung = {
         id: id,
         verfahren_id: params.verfahrenId,
-        status: "ENTWURF",
+        name: randomString("Klageschrift Neu", "Klageeinreichung", "Klage"),
+        erstellt_von: randomString("Musterfrau", "Person XYZ"),
         erstellt_am: new Date().toISOString(),
-        erstellt_von: "",
+        status: randomString("ERSTELLT", "VALIDIERT"),
+        gesendet_am: "",
+        eingereicht_am: "",
       };
-      console.log("POST einreichung with id", id);
+      einreichungenStore.push(newEinreichung);
       return HttpResponse.json(newEinreichung, { status: 201 });
     },
   ),
@@ -120,20 +182,48 @@ export const handlers = [
   http.post(
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen/:einreichungId/dokumente`,
     ({ params }) => {
+      const id = crypto.randomUUID();
       const newDokument = {
-        id: crypto.randomUUID(),
+        id: id,
         einreichung_id: params.einreichungId,
-        status: "ERSTELLT",
-        name: "sample_klaver_3500001.xml",
+        status: randomString("ERSTELLT", "VALIDIERT"),
+        name: randomString(
+          "Dokument.pdf",
+          "Klageschrift.pdf",
+          "klage.xml",
+          "Mueller-Klageschrift.docx",
+        ),
         size_in_bytes: 3481,
-        type: "XJUSTIZ",
-        viren_scan_status: "AUSSTEHEND",
+        type: randomString("XJUSTIZ", "ANHANG", "SCHRIFTSTUECK"),
+        viren_scan_status: randomString(
+          "AUSSTEHEND",
+          "IN_BEARBEITUNG",
+          "FEHLGESCHLAGEN",
+          "INFIZIERT",
+          "SAUBER",
+        ),
         gesendet_am: null,
         eingereicht_am: null,
         erstellt_von: "",
         erstellt_am: new Date().toISOString(),
       };
-      console.log("POST dokumente with {einreichung-id}", params.einreichungId);
+
+      const dokumenteEntry = dokumenteStore.find(
+        (d) =>
+          d.verfahren_id === params.verfahrenId &&
+          d.id === params.einreichungId,
+      );
+
+      if (dokumenteEntry?.dokumente) {
+        dokumenteEntry.dokumente.push(newDokument);
+      } else {
+        dokumenteStore.push({
+          id: params.einreichungId,
+          verfahren_id: params.verfahrenId,
+          dokumente: [newDokument],
+        });
+      }
+
       return HttpResponse.json([newDokument], { status: 201 });
     },
   ),
@@ -142,28 +232,23 @@ export const handlers = [
   http.delete(
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen/:einreichungId/dokumente/:dokumentId`,
     ({ params }) => {
-      console.log(
-        "DELETE dokument with {verfahren-id}",
+      deleteDokument(
         params.verfahrenId,
-        "{einreichung-id}",
         params.einreichungId,
-        "{dokument-id}",
         params.dokumentId,
       );
 
-      const gerichteResponse = [{ status: 204 }];
-      return HttpResponse.json(...gerichteResponse);
+      return new HttpResponse(null, { status: 204 });
     },
   ),
 
   // Get Einreichungen for a Verfahren
   http.get(
     `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen`,
-    () => {
-      const requestedEinreichungen = getAllEinreichungen();
-
-      console.log("Requested einreichungen:", requestedEinreichungen);
-
+    ({ params }) => {
+      const requestedEinreichungen = getAllEinreichungen().filter(
+        (einreichung) => einreichung.verfahren_id === params.verfahrenId,
+      );
       const resultArray = [requestedEinreichungen, { status: 200 }];
 
       return HttpResponse.json(...resultArray);
@@ -178,9 +263,6 @@ export const handlers = [
         params.verfahrenId,
         params.einreichungId,
       );
-
-      console.log("Requested einreichung:", requestedEinreichung);
-
       const resultArray = [requestedEinreichung, { status: 200 }];
 
       return HttpResponse.json(...resultArray);
@@ -195,12 +277,6 @@ export const handlers = [
         params.verfahrenId,
         params.einreichungId,
       );
-
-      console.log(
-        "Requested validierungsstatus for einreichung:",
-        requestedEinreichungStatus,
-      );
-
       const resultArray = [requestedEinreichungStatus, { status: 200 }];
 
       return HttpResponse.json(...resultArray);
@@ -215,14 +291,36 @@ export const handlers = [
         params.verfahrenId,
         params.einreichungId,
       );
-
-      console.log(
-        "Requested all dokumente for einreichung:",
-        requestedDokumenteForEinreichung,
-      );
-
       const resultArray = [requestedDokumenteForEinreichung, { status: 200 }];
 
+      return HttpResponse.json(...resultArray);
+    },
+  ),
+
+  // Get a specific dokument of an Einreichung for a Verfahren
+  // /api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.einreichungId}/dokumente/${options.id}
+  http.get(
+    `${mockKomplaApiUrl}/:environment/api/v1/verfahren/:verfahrenId/einreichungen/:einreichungId/dokumente/:dokumentId`,
+    async ({ params }) => {
+      let resultArray;
+      const requestedDokument = getDokumentById(
+        params.verfahrenId,
+        params.einreichungId,
+        params.dokumentId,
+      );
+      if (requestedDokument?.id) {
+        resultArray = [
+          requestedDokument,
+          { status: 200, headers: { ETag: 'W/"0"' } },
+        ];
+      } else {
+        resultArray = [
+          null,
+          {
+            status: 404,
+          },
+        ];
+      }
       return HttpResponse.json(...resultArray);
     },
   ),

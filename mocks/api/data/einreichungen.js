@@ -77,7 +77,7 @@ export const mockedEinreichungen = [
 export const mockedEinreichungenStatus = [
   {
     id: "d77590e8-718e-11f1-bd14-325096b39f47",
-    verfahren_id: "019c5736-7834-7ee6-99de-41d9605697d2",
+    verfahren_id: "019c572a-d6d4-77a8-aad7-ae4496fa2463",
     status: {
       status: "GRUEN",
       validation_messages: [

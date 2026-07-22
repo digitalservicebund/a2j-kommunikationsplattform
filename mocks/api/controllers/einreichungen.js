@@ -3,20 +3,31 @@ import {
   mockedEinreichungenStatus,
 } from "../data/einreichungen.js";
 
+export const einreichungenStore = [...mockedEinreichungen];
+
 export const getAllEinreichungen = () => {
-  return mockedEinreichungen;
+  return einreichungenStore;
 };
 
 export const getEinreichungById = (verfahrenId, einreichungId) => {
-  const einreichung = mockedEinreichungen.find(
+  const einreichung = einreichungenStore.find(
     (e) => e.verfahren_id === verfahrenId && e.id === einreichungId,
   );
-  return einreichung;
+  if (einreichung) {
+    return einreichung;
+  } else {
+    return einreichungenStore.at(-1);
+  }
 };
 
 export const getEinreichungStatusByIds = (verfahrenId, einreichungId) => {
   const einreichungStatus = mockedEinreichungenStatus.find(
     (e) => e.verfahren_id === verfahrenId && e.id === einreichungId,
-  ).status;
-  return einreichungStatus;
+  );
+
+  if (einreichungStatus) {
+    return einreichungStatus.status;
+  } else {
+    return mockedEinreichungenStatus.at(0).status;
+  }
 };

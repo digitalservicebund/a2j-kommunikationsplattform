@@ -1,20 +1,9 @@
 import { mockVerfahren } from "../data/verfahren.js";
 
-const verfahrenStore = [...mockVerfahren];
+export const verfahrenStore = [...mockVerfahren];
 
 export const getAllVerfahren = () => {
   return verfahrenStore;
-};
-
-/**
- * Creates a Verfahren with response data
- *
- * See Verfahren Schema https://app.kompla-justiz.sinc.de/main/swagger/index.html
- */
-export const createVerfahren = () => {
-  const newVerfahren = mockVerfahren[0];
-  verfahrenStore.unshift(newVerfahren);
-  return newVerfahren;
 };
 
 export const getVerfahrenById = (id) => {
