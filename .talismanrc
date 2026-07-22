@@ -21,6 +21,10 @@ allowed_patterns:
 - KOMPLA_DEMO_SERVICE_CLIENT_SECRET
 - client_secret:\ this.config.serviceClientSecret
 - passes
+- envVarNameByConfigKey
+- serviceClientSecret:
+- KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET
+- Keycloak
 
 fileignoreconfig:
 
@@ -31,9 +35,9 @@ fileignoreconfig:
 - filename: .github/workflows/scan.yml
   checksum: 1582a4d97ed48f0cec201aab58ae536c4ba512dc933c45267dcd856b7e9b2f7e
 - filename: .env.op
-  checksum: ce5c604a92f2285c9b623235bd0ad6d8a3e494c617374bacba2934a95127baa6
+  checksum: 1c7661fd991fc0338fe12c259b06f656503f92c7d7d8387466fe76f42fc83597
 - filename: .env.defaults
-  checksum: ddb959b86f4ff32a615a6da54c14f4c04509bfc8ec58b34d0d9ab557fbf93167
+  checksum: 112c758585f05e082d888fa8fbdf4321fd08662333e6cdd121d048e60bbe0797
 - filename: app/config/**test**/config.server.test.ts
   checksum: e0032376dcb50535952654822230a18fce1ade507f9252cac9ba83055b4b1edc
 - filename: playwright.config.ts
