@@ -49,7 +49,7 @@ describe("createVerfahren", () => {
       path: "/api/v1/verfahren",
       method: "POST",
       body: { safe_id: mockAuthData.authenticationTokens.idToken },
-      errorMessage: "Verfahren konnte nicht erstellt werden.",
+      errorMessage: "Verfahren could not be created.",
     });
     expect(result).toEqual(verfahren);
   });

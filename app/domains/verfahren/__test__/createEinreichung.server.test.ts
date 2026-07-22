@@ -32,7 +32,8 @@ describe("createEinreichung", () => {
       path: "/api/v1/verfahren/v-1/einreichungen",
       method: "POST",
       body: { name: "Klageeinreichung" },
-      errorMessage: "Einreichung konnte nicht erstellt werden.",
+      errorMessage:
+        "Einreichung for Verfahren with id v-1 could not be created.",
     });
     expect(result).toEqual(mockEinreichung);
   });

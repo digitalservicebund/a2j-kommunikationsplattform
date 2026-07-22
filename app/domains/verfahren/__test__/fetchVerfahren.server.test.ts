@@ -85,9 +85,7 @@ describe("fetchVerfahren", () => {
 
     const result = fetchVerfahren(mockRequest, { sort: sortOptions[0].value });
 
-    await expect(result).rejects.toThrow(
-      "Die Verfahren konnten nicht abgerufen werden.",
-    );
+    await expect(result).rejects.toThrow("Verfahren could not be fetched.");
   });
 
   it("throws error when bearer token is not available", async () => {
@@ -117,9 +115,7 @@ describe("fetchVerfahren", () => {
 
     const result = fetchVerfahren(mockRequest);
 
-    await expect(result).rejects.toThrow(
-      "Die Verfahren konnten nicht abgerufen werden.",
-    );
+    await expect(result).rejects.toThrow("Verfahren could not be fetched.");
   });
 
   describe("gericht parameter handling", () => {

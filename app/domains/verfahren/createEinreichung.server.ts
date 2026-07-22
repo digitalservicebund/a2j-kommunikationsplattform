@@ -5,7 +5,8 @@ import { EinreichungSchema } from "./schemas/einreichungSchema";
 
 export type Einreichung = z.infer<typeof EinreichungSchema>;
 
-const errorMessage = "Einreichung could not be created.";
+const buildErrorMessage = (id: string): string =>
+  `Einreichung for Verfahren with id ${id} could not be created.`;
 
 export default async function createEinreichung(
   authData: AuthenticationResponse,
@@ -16,6 +17,6 @@ export default async function createEinreichung(
     path: `/api/v1/verfahren/${verfahrenId}/einreichungen`,
     method: "POST",
     body: { name: "Klageeinreichung" },
-    errorMessage,
+    errorMessage: buildErrorMessage(verfahrenId),
   });
 }

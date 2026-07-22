@@ -26,7 +26,7 @@ describe("fetchEinreichungenById", () => {
         authData: mockAuthData,
         path: "/api/v1/verfahren/v-1/einreichungen",
         errorMessage:
-          "Die Einreichungen für das Verfahren mit der ID v-1 konnten nicht abgerufen werden.",
+          "Einreichungen of Verfahren with id v-1 could not be fetched.",
       }),
     );
     expect(result).toEqual(einreichungen);

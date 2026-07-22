@@ -10,7 +10,7 @@ const buildErrorMessage = (
   verfahrenId: string,
   einreichungId: string,
 ): string =>
-  `Dokument for Einreichung with id ${einreichungId} of Verfahren with id ${verfahrenId} could not be uploaded.`;
+  `Dokument upload for Einreichung with id ${einreichungId} of Verfahren with ${verfahrenId} could not be uploaded.`;
 
 function extractSingleObject(data: unknown): unknown {
   return Array.isArray(data) ? data[0] : data;

@@ -29,7 +29,7 @@ describe("fetchDokumente", () => {
         authData: mockAuthData,
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente",
         errorMessage:
-          "Die Dokumente für die Einreichung mit der ID e-1 konnten nicht abgerufen werden.",
+          "Dokumente for Einreichung with id e-1 could not be fetched.",
       }),
     );
     expect(result).toEqual(dokumente);

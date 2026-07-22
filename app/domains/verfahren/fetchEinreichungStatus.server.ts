@@ -8,7 +8,7 @@ type FetchEinreichungStatusOptions = {
 };
 
 const buildErrorMessage = (id: string, verfahrenId: string): string =>
-  `Validierungsstatus for Einreichung ${id} of Verfahren with id ${verfahrenId} could not be fetched.`;
+  `Validierungsstatus for Einreichung with id ${id} of Verfahren with id ${verfahrenId} could not be fetched.`;
 
 export default async function fetchEinreichungStatus(
   authData: AuthenticationResponse,

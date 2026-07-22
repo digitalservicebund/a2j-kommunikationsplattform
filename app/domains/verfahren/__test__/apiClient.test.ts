@@ -220,6 +220,29 @@ describe("apiClient", () => {
       );
     });
 
+    it("continues when logApiErrorAndThrow does not throw on non-ok response", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      mocks.fetch.mockResolvedValue({
+        ok: false,
+        status: 404,
+        json: async () => ({ id: "123" }),
+        text: async () => JSON.stringify({ id: "123" }),
+      });
+      mocks.logApiErrorAndThrow.mockResolvedValueOnce(undefined);
+
+      const result = await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+        errorMessage: "Custom error message",
+      });
+
+      expect(mocks.logApiErrorAndThrow).toHaveBeenCalledWith(
+        expect.any(Object),
+        "Custom error message",
+      );
+      expect(result).toEqual({ id: "123" });
+    });
+
     it("uses default error message when not provided", async () => {
       mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
@@ -243,6 +266,54 @@ describe("apiClient", () => {
       );
     });
 
+    it("returns handled error result when throwOnError is false", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      mocks.fetch.mockResolvedValue({
+        ok: false,
+        status: 409,
+        headers: new Headers({ etag: 'W/"1"' }),
+        text: async () => JSON.stringify({ message: "conflict" }),
+      });
+
+      const result = await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+        throwOnError: false,
+      });
+
+      expect(result).toEqual({
+        ok: false,
+        status: 409,
+        headers: new Headers({ etag: 'W/"1"' }),
+        eTag: 'W/"1"',
+        errorBody: { message: "conflict" },
+      });
+    });
+
+    it("returns handled error result with plain text body when JSON parsing fails", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      mocks.fetch.mockResolvedValue({
+        ok: false,
+        status: 500,
+        headers: new Headers(),
+        text: async () => "plain text failure",
+      });
+
+      const result = await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+        throwOnError: false,
+      });
+
+      expect(result).toEqual({
+        ok: false,
+        status: 500,
+        headers: new Headers(),
+        eTag: null,
+        errorBody: "plain text failure",
+      });
+    });
+
     it("parses JSON response and returns data", async () => {
       mocks.getBearerToken.mockResolvedValue("token");
       const responseData = { id: "123", name: "test" };
@@ -257,6 +328,97 @@ describe("apiClient", () => {
       });
 
       expect(result).toEqual(responseData);
+    });
+
+    it("returns undefined for empty text body", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        text: async () => "",
+      });
+
+      const result = await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+      });
+
+      expect(result).toBeUndefined();
+    });
+
+    it("calls logParsingErrorAndThrow when text body is invalid JSON", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      const parseError = new Error("Invalid JSON string");
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        text: async () => "not-json",
+      });
+      mocks.logParsingErrorAndThrow.mockImplementation(() => {
+        throw new Error("Parse error from text");
+      });
+
+      await expect(
+        apiRequest({
+          authData: mockAuthData,
+          path: "/api/v1/test",
+          errorMessage: "Failed to parse text body",
+        }),
+      ).rejects.toThrow("Parse error from text");
+
+      expect(mocks.logParsingErrorAndThrow).toHaveBeenCalledWith(
+        expect.any(Error),
+        "Failed to parse text body",
+        "not-json",
+      );
+      expect(parseError).toBeInstanceOf(Error);
+    });
+
+    it("reads body from clone when json is unavailable", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        clone: () => ({
+          text: async () => JSON.stringify({ id: "from-clone" }),
+        }),
+      });
+
+      const result = await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+      });
+
+      expect(result).toEqual({ id: "from-clone" });
+    });
+
+    it("returns undefined when response has no readable body", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+      });
+
+      const result = await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+      });
+
+      expect(result).toBeUndefined();
+    });
+
+    it("throws original parse error when json fails without clone fallback", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      const parseError = new Error("Invalid JSON");
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        json: async () => {
+          throw parseError;
+        },
+      });
+
+      await expect(
+        apiRequest({
+          authData: mockAuthData,
+          path: "/api/v1/test",
+        }),
+      ).rejects.toThrow("Invalid JSON");
     });
 
     it("validates response with zod schema when provided", async () => {
@@ -277,6 +439,75 @@ describe("apiClient", () => {
       });
 
       expect(result).toEqual({ id: "123", name: "test" });
+    });
+
+    it("returns success result wrapper when throwOnError is false", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ etag: 'W/"9"' }),
+        json: async () => ({ id: "123" }),
+      });
+
+      const result = await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+        throwOnError: false,
+      });
+
+      expect(result).toEqual({
+        ok: true,
+        data: { id: "123" },
+        status: 200,
+        headers: new Headers({ etag: 'W/"9"' }),
+        eTag: 'W/"9"',
+      });
+    });
+
+    it("returns response meta when includeResponseMeta is enabled", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      const headers = new Headers({ etag: 'W/"2"' });
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers,
+        json: async () => ({ id: "123" }),
+      });
+
+      const result = await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+        includeResponseMeta: true,
+      });
+
+      expect(result).toEqual({
+        data: { id: "123" },
+        status: 200,
+        headers,
+        eTag: 'W/"2"',
+      });
+    });
+
+    it("returns data plus eTag when includeResponseETag is enabled", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ etag: 'W/"3"' }),
+        json: async () => ({ id: "123" }),
+      });
+
+      const result = await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+        includeResponseETag: true,
+      });
+
+      expect(result).toEqual({
+        data: { id: "123" },
+        eTag: 'W/"3"',
+      });
     });
 
     it("calls logParsingErrorAndThrow when schema validation fails", async () => {
@@ -341,6 +572,29 @@ describe("apiClient", () => {
         parseError,
         "Failed to parse",
         "invalid json content",
+      );
+    });
+
+    it("adds If-Match header when eTag is provided", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: "123" }),
+      });
+
+      await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+        eTag: 'W/"7"',
+      });
+
+      expect(mocks.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            "If-Match": 'W/"7"',
+          }),
+        }),
       );
     });
 

@@ -83,7 +83,7 @@ describe("fetchGerichte", () => {
     const mockRequest = mockAuthData;
 
     await expect(fetchGerichte(mockRequest)).rejects.toThrow(
-      "Die Daten für das ausgewählte Gericht konnten nicht abgerufen werden",
+      "Gericht data could not be fetched.",
     );
   });
 
@@ -97,7 +97,7 @@ describe("fetchGerichte", () => {
     const mockRequest = mockAuthData;
 
     await expect(fetchGerichte(mockRequest)).rejects.toThrow(
-      "Die Daten für das ausgewählte Gericht konnten nicht abgerufen werden",
+      "Gericht data could not be fetched.",
     );
   });
 

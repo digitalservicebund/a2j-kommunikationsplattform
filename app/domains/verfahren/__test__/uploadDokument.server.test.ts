@@ -46,7 +46,7 @@ describe("uploadDokument", () => {
     );
     expect(firstCallArgs.method).toBe("POST");
     expect(firstCallArgs.errorMessage).toBe(
-      "Dokument konnte nicht hochgeladen werden.",
+      "Dokument upload for Einreichung with id e-1 of Verfahren with v-1 could not be uploaded.",
     );
     expect(firstCallArgs.body).toBeInstanceOf(FormData);
     expect(result).toEqual(rawDokument);

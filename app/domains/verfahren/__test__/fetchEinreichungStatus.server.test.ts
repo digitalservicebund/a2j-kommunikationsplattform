@@ -29,7 +29,7 @@ describe("fetchEinreichungStatus", () => {
         authData: mockAuthData,
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/validierungsstatus",
         errorMessage:
-          "Der Validierungsstatus der Einreichung konnte nicht abgerufen werden.",
+          "Validierungsstatus for Einreichung with id e-1 of Verfahren with id v-1 could not be fetched.",
       }),
     );
     expect(result).toEqual(status);

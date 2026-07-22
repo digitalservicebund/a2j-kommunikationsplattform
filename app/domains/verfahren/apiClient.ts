@@ -124,6 +124,46 @@ async function handleNonOkResponse(
   };
 }
 
+async function readResponseBody(
+  response: Response,
+  errorMessage: string,
+): Promise<unknown> {
+  const responseLike = response as Response & {
+    json?: () => Promise<unknown>;
+    text?: () => Promise<string>;
+    clone?: () => Response & { text?: () => Promise<string> };
+  };
+
+  if (typeof responseLike.json === "function") {
+    try {
+      return await responseLike.json();
+    } catch (error) {
+      if (typeof responseLike.clone === "function") {
+        const clonedResponse = responseLike.clone();
+        if (typeof clonedResponse.text === "function") {
+          const responseBody = await clonedResponse.text();
+          logParsingErrorAndThrow(error, errorMessage, responseBody);
+        }
+      }
+
+      throw error;
+    }
+  }
+
+  if (typeof responseLike.text === "function") {
+    return await responseLike.text();
+  }
+
+  if (typeof responseLike.clone === "function") {
+    const clonedResponse = responseLike.clone();
+    if (typeof clonedResponse.text === "function") {
+      return await clonedResponse.text();
+    }
+  }
+
+  return undefined;
+}
+
 function buildSuccessReturn<T>(
   data: T,
   response: Response,
@@ -245,11 +285,16 @@ export async function apiRequest<T = unknown>(
     body: fetchBody,
   });
 
-  const responseETag = response.headers.get("etag");
+  const responseHeaders = (
+    response as Response & {
+      headers?: Headers;
+    }
+  ).headers;
+  const responseETag = responseHeaders?.get("etag") ?? null;
   const resolvedErrorMessage = errorMessage ?? "API request failed.";
 
   if (!response.ok) {
-    const nonOkResult = await handleNonOkResponse<T>(
+    const nonOkResult = await handleNonOkResponse(
       response,
       responseETag,
       throwOnError,
@@ -261,11 +306,17 @@ export async function apiRequest<T = unknown>(
     }
   }
 
-  const responseBody = await response.text();
-  const parsedBody = parseJsonBodyOrUndefined(
-    responseBody,
+  const responseBody = await readResponseBody(
+    response,
     errorMessage ?? "Failed to read/parse the response as JSON.",
   );
+  const parsedBody =
+    typeof responseBody === "string"
+      ? parseJsonBodyOrUndefined(
+          responseBody,
+          errorMessage ?? "Failed to read/parse the response as JSON.",
+        )
+      : responseBody;
   const parsedData = parseSchemaOrThrow<T>(
     parsedBody,
     schema,
