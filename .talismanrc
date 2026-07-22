@@ -20,6 +20,7 @@ allowed_patterns:
 - clientSecret:\ \"{{OAUTH_CLIENT_SECRET}}\"
 - KOMPLA_DEMO_SERVICE_CLIENT_SECRET
 - client_secret:\ this.config.serviceClientSecret
+- passes
 
 fileignoreconfig:
 
