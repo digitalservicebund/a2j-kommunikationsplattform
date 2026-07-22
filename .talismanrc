@@ -22,7 +22,7 @@ allowed_patterns:
 - client_secret:\ this.config.serviceClientSecret
 - passes
 - envVarNameByConfigKey
-- serviceClientSecret:
+- serviceClientSecret
 - KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET
 - Keycloak
 
