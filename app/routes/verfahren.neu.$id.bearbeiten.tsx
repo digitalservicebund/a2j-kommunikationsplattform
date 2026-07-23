@@ -900,7 +900,7 @@ export default function VerfahrenNeuBearbeiten() {
                   </div>
                 </div>
 
-                {/* Verfahren related doc */}
+                {/* Verfahren related docs */}
                 <div className="kern-card">
                   <div className="kern-card__container mb-kern-space-default">
                     <header className="kern-card__header">
