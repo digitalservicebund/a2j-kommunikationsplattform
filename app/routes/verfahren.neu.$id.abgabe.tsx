@@ -148,21 +148,16 @@ function BriefSummaryOfGericht({
 }
 
 function BriefSummaryOfBeteiligte({
-  key,
   title,
   beteiligte,
   fallbackLabel,
 }: Readonly<{
-  key: string;
   title: string;
   beteiligte: Array<NonNullable<Verfahren["beteiligungen"]>[number]>;
   fallbackLabel: string;
 }>) {
   return (
-    <div
-      key={key}
-      className="p-kern-space-default space-y-kern-space-default rounded-kern-default border border-(--kern-color-decorative-border-contextual)"
-    >
+    <div className="p-kern-space-default space-y-kern-space-default rounded-kern-default border border-(--kern-color-decorative-border-contextual)">
       <h3 className="kern-heading-small pb-kern-space-default border-b border-(--kern-color-decorative-border-contextual)">
         {title}
       </h3>
@@ -172,11 +167,8 @@ function BriefSummaryOfBeteiligte({
         ) : (
           <>
             {beteiligte.map((beteiligung) => (
-              <>
-                <div
-                  key={`${beteiligung.id}-name`}
-                  className="kern-description-list-item"
-                >
+              <div key={`${beteiligung.id}-name`}>
+                <div className="kern-description-list-item">
                   <dt className="kern-description-list-item__key">Name</dt>
                   <dd className="kern-description-list-item__value">
                     {beteiligung.name ?? NOT_AVAILABLE}
@@ -228,7 +220,7 @@ function BriefSummaryOfBeteiligte({
                       : NOT_AVAILABLE}
                   </dd>
                 </div>
-              </>
+              </div>
             ))}
           </>
         )}
@@ -510,7 +502,6 @@ export default function VerfahrenNeuBearbeiten() {
                       </div>
                       <div className="gap-kern-space-default grid grid-cols-1 md:grid-cols-3">
                         <BriefSummaryOfBeteiligte
-                          key="brief-summary-of-beteiligte-1"
                           title={shared.beteiligte.klaegerLabel}
                           beteiligte={getBeteiligteByRoleCode(
                             verfahren.beteiligungen,
@@ -519,7 +510,6 @@ export default function VerfahrenNeuBearbeiten() {
                           fallbackLabel={shared.beteiligte.fallbackLabel}
                         />
                         <BriefSummaryOfBeteiligte
-                          key="brief-summary-of-beteiligte-2"
                           title={shared.beteiligte.beklagteLabel}
                           beteiligte={getBeteiligteByRoleCode(
                             verfahren.beteiligungen,
