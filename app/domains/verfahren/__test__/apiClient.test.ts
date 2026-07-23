@@ -345,6 +345,49 @@ describe("apiClient", () => {
       expect(result).toBeUndefined();
     });
 
+    it("returns undefined for 204 responses without trying to read the body", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      const jsonSpy = vi.fn();
+      const textSpy = vi.fn();
+
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        status: 204,
+        headers: new Headers(),
+        json: jsonSpy,
+        text: textSpy,
+      });
+
+      const result = await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+      });
+
+      expect(result).toBeUndefined();
+      expect(jsonSpy).not.toHaveBeenCalled();
+      expect(textSpy).not.toHaveBeenCalled();
+    });
+
+    it("returns undefined for content-length 0 responses", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      const textSpy = vi.fn();
+
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ "content-length": "0" }),
+        text: textSpy,
+      });
+
+      const result = await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+      });
+
+      expect(result).toBeUndefined();
+      expect(textSpy).not.toHaveBeenCalled();
+    });
+
     it("calls logParsingErrorAndThrow when text body is invalid JSON", async () => {
       mocks.getBearerToken.mockResolvedValue("token");
       const parseError = new Error("Invalid JSON string");
@@ -419,6 +462,28 @@ describe("apiClient", () => {
           path: "/api/v1/test",
         }),
       ).rejects.toThrow("Invalid JSON");
+    });
+
+    it("throws original parse error when clone fallback has no text reader", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      const parseError = new Error("Invalid JSON");
+
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        json: async () => {
+          throw parseError;
+        },
+        clone: () => ({}),
+      });
+
+      await expect(
+        apiRequest({
+          authData: mockAuthData,
+          path: "/api/v1/test",
+        }),
+      ).rejects.toThrow("Invalid JSON");
+
+      expect(mocks.logParsingErrorAndThrow).not.toHaveBeenCalled();
     });
 
     it("returns undefined when json parsing fails for an empty body", async () => {

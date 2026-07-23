@@ -124,61 +124,80 @@ async function handleNonOkResponse(
   };
 }
 
+type ResponseBodyType = Response & {
+  status?: number;
+  headers?: Headers;
+  json?: () => Promise<unknown>;
+  text?: () => Promise<string>;
+  clone?: () => Response & { text?: () => Promise<string> };
+};
+
+function hasNoResponseBody(responseBody: ResponseBodyType): boolean {
+  if (responseBody.status === 204 || responseBody.status === 205) {
+    return true;
+  }
+
+  const contentLength = responseBody.headers?.get("content-length");
+  return contentLength === "0";
+}
+
+async function readTextFromResponseBody(
+  responseBody: ResponseBodyType,
+): Promise<string | undefined> {
+  if (typeof responseBody.text === "function") {
+    return await responseBody.text();
+  }
+
+  if (typeof responseBody.clone !== "function") {
+    return undefined;
+  }
+
+  const clonedResponse = responseBody.clone();
+
+  if (typeof clonedResponse.text !== "function") {
+    return undefined;
+  }
+
+  return await clonedResponse.text();
+}
+
+async function readJsonBody(
+  responseBody: ResponseBodyType,
+  errorMessage: string,
+): Promise<unknown> {
+  try {
+    return await responseBody.json!();
+  } catch (error) {
+    const responseBodyText = await readTextFromResponseBody(responseBody);
+
+    if (responseBodyText === undefined) {
+      throw error;
+    }
+
+    if (responseBodyText.trim() === "") {
+      return undefined;
+    }
+
+    logParsingErrorAndThrow(error, errorMessage, responseBodyText);
+  }
+}
+
 async function readResponseBody(
   response: Response,
   errorMessage: string,
 ): Promise<unknown> {
-  const responseLike = response as Response & {
-    status?: number;
-    headers?: Headers;
-    json?: () => Promise<unknown>;
-    text?: () => Promise<string>;
-    clone?: () => Response & { text?: () => Promise<string> };
-  };
+  const responseBody = response as ResponseBodyType;
 
   // 204/205 responses intentionally have no body.
-  if (responseLike.status === 204 || responseLike.status === 205) {
+  if (hasNoResponseBody(responseBody)) {
     return undefined;
   }
 
-  const contentLength = responseLike.headers?.get("content-length");
-  if (contentLength === "0") {
-    return undefined;
+  if (typeof responseBody.json === "function") {
+    return await readJsonBody(responseBody, errorMessage);
   }
 
-  if (typeof responseLike.json === "function") {
-    try {
-      return await responseLike.json();
-    } catch (error) {
-      if (typeof responseLike.clone === "function") {
-        const clonedResponse = responseLike.clone();
-        if (typeof clonedResponse.text === "function") {
-          const responseBody = await clonedResponse.text();
-
-          if (responseBody.trim() === "") {
-            return undefined;
-          }
-
-          logParsingErrorAndThrow(error, errorMessage, responseBody);
-        }
-      }
-
-      throw error;
-    }
-  }
-
-  if (typeof responseLike.text === "function") {
-    return await responseLike.text();
-  }
-
-  if (typeof responseLike.clone === "function") {
-    const clonedResponse = responseLike.clone();
-    if (typeof clonedResponse.text === "function") {
-      return await clonedResponse.text();
-    }
-  }
-
-  return undefined;
+  return await readTextFromResponseBody(responseBody);
 }
 
 function buildSuccessReturn<T>(
