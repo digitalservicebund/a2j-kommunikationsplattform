@@ -148,16 +148,21 @@ function BriefSummaryOfGericht({
 }
 
 function BriefSummaryOfBeteiligte({
+  key,
   title,
   beteiligte,
   fallbackLabel,
 }: Readonly<{
+  key: string;
   title: string;
   beteiligte: Array<NonNullable<Verfahren["beteiligungen"]>[number]>;
   fallbackLabel: string;
 }>) {
   return (
-    <div className="p-kern-space-default space-y-kern-space-default rounded-kern-default border border-(--kern-color-decorative-border-contextual)">
+    <div
+      key={key}
+      className="p-kern-space-default space-y-kern-space-default rounded-kern-default border border-(--kern-color-decorative-border-contextual)"
+    >
       <h3 className="kern-heading-small pb-kern-space-default border-b border-(--kern-color-decorative-border-contextual)">
         {title}
       </h3>
@@ -505,6 +510,7 @@ export default function VerfahrenNeuBearbeiten() {
                       </div>
                       <div className="gap-kern-space-default grid grid-cols-1 md:grid-cols-3">
                         <BriefSummaryOfBeteiligte
+                          key="brief-summary-of-beteiligte-1"
                           title={shared.beteiligte.klaegerLabel}
                           beteiligte={getBeteiligteByRoleCode(
                             verfahren.beteiligungen,
@@ -513,6 +519,7 @@ export default function VerfahrenNeuBearbeiten() {
                           fallbackLabel={shared.beteiligte.fallbackLabel}
                         />
                         <BriefSummaryOfBeteiligte
+                          key="brief-summary-of-beteiligte-2"
                           title={shared.beteiligte.beklagteLabel}
                           beteiligte={getBeteiligteByRoleCode(
                             verfahren.beteiligungen,
