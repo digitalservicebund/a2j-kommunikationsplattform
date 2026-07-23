@@ -1,6 +1,6 @@
 Contact: mailto:security@digitalservice.bund.de
 Expires: 2026-12-01T23:59:59.000Z
 Preferred-Languages: en, de
-Policy: https://raw.githubusercontent.com/digitalservicebund/a2j-kommunikationsplattform/main/SECURITY.md
+Policy: https://raw.githubusercontent.com/digitalservicebund/a2j-kommunikationsplattform/main/doc/SECURITY.md
 Hiring: https://digitalservice.bund.de/en/career
 Encryption: https://raw.githubusercontent.com/digitalservicebund/public-keys/main/pgp-public-key-security-mail.pem
