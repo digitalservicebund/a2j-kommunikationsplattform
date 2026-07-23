@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Await, Link, LoaderFunctionArgs, useLoaderData } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
+import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import VerfahrenTile from "~/components/verfahren/VerfahrenTile";
 import VerfahrenTileSkeleton from "~/components/verfahren/VerfahrenTileSkeleton.static";
 import fetchDokumente from "~/domains/verfahren/fetchDokumente";
@@ -12,6 +13,11 @@ import { DokumentSchema } from "~/domains/verfahren/schemas/dokumentSchema";
 import { EinreichungSchema } from "~/domains/verfahren/schemas/einreichungSchema";
 import { StatusSchema } from "~/domains/verfahren/schemas/statusSchema";
 import { VerfahrenSchema } from "~/domains/verfahren/schemas/verfahrenSchema";
+import {
+  getDokumentStatusPresentation,
+  getEinreichungStatusPresentation,
+  getVirenScanStatusPresentation,
+} from "~/domains/verfahren/statusPresentation";
 import { authContext, authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
@@ -210,19 +216,10 @@ export default function Verfahrendetails() {
 
                       <tbody className="kern-table__body">
                         {resolvedData.map((einreichung) => {
-                          // by default it is warning
-                          let badgeClassModifier = "warning";
-                          let badgeLabel = "Gelb";
-                          if (
-                            einreichung.einreichungsStatus.status === "GRUEN"
-                          ) {
-                            badgeClassModifier = "success";
-                            badgeLabel = "Grün";
-                          }
-                          if (einreichung.einreichungsStatus.status === "ROT") {
-                            badgeClassModifier = "danger";
-                            badgeLabel = "Rot";
-                          }
+                          const statusPresentation =
+                            getEinreichungStatusPresentation(
+                              einreichung.einreichungsStatus.status,
+                            );
 
                           return (
                             <tr
@@ -239,17 +236,11 @@ export default function Verfahrendetails() {
                                 {einreichung.name}
                               </td>
                               <td className="kern-table__cell">
-                                <span
-                                  className={`kern-badge kern-badge--small kern-badge--${badgeClassModifier}`}
-                                >
-                                  <span
-                                    className={`kern-icon kern-icon--${badgeClassModifier}`}
-                                    aria-hidden="true"
-                                  ></span>
-                                  <span className="kern-label">
-                                    {badgeLabel}
-                                  </span>
-                                </span>
+                                <VerfahrenStatusBadge
+                                  small
+                                  tone={statusPresentation.badgeClassModifier}
+                                  label={statusPresentation.label}
+                                />
                               </td>
                               <td className="kern-table__cell">
                                 {einreichung.einreichungsStatus
@@ -327,34 +318,14 @@ export default function Verfahrendetails() {
                           if (!dokument) {
                             return null;
                           }
-
-                          // by default it is warning
-                          let badgeClassModifier = "warning";
-                          let badgeLabel = "In Bearbeitung";
-                          if (dokument.viren_scan_status === "SAUBER") {
-                            badgeClassModifier = "success";
-                            badgeLabel = "Geprüft und virenfrei";
-                          }
-                          if (dokument.viren_scan_status === "INFIZIERT") {
-                            badgeClassModifier = "danger";
-                            badgeLabel = "Infiziert";
-                          }
-                          if (dokument.viren_scan_status === "FEHLGESCHLAGEN") {
-                            badgeClassModifier = "danger";
-                            badgeLabel = "Fehlgeschlagen";
-                          }
-
-                          // by default it is info
-                          let statusClassModifier = "warning";
-                          let statusLabel = "Wird validiert";
-                          if (dokument.status === "ERSTELLT") {
-                            statusClassModifier = "info";
-                            statusLabel = "Erstellt";
-                          }
-                          if (dokument.status === "EINGEREICHT") {
-                            statusClassModifier = "success";
-                            statusLabel = "Eingereicht";
-                          }
+                          const dokumentStatus = getDokumentStatusPresentation(
+                            dokument.status,
+                          );
+                          const virenScanStatus =
+                            getVirenScanStatusPresentation(
+                              dokument.viren_scan_status,
+                              "short",
+                            );
 
                           return (
                             <tr key={dokument.id} className="kern-table__row">
@@ -368,30 +339,18 @@ export default function Verfahrendetails() {
                                 {dokument.size_in_bytes}
                               </td>
                               <td className="kern-table__cell">
-                                <span
-                                  className={`kern-badge kern-badge--small kern-badge--${statusClassModifier}`}
-                                >
-                                  <span
-                                    className={`kern-icon kern-icon--${statusClassModifier}`}
-                                    aria-hidden="true"
-                                  ></span>
-                                  <span className="kern-label">
-                                    {statusLabel}
-                                  </span>
-                                </span>
+                                <VerfahrenStatusBadge
+                                  small
+                                  tone={dokumentStatus.badgeClassModifier}
+                                  label={dokumentStatus.label}
+                                />
                               </td>
                               <td className="kern-table__cell">
-                                <span
-                                  className={`kern-badge kern-badge--small kern-badge--${badgeClassModifier}`}
-                                >
-                                  <span
-                                    className={`kern-icon kern-icon--${badgeClassModifier}`}
-                                    aria-hidden="true"
-                                  ></span>
-                                  <span className="kern-label">
-                                    {badgeLabel}
-                                  </span>
-                                </span>
+                                <VerfahrenStatusBadge
+                                  small
+                                  tone={virenScanStatus.badgeClassModifier}
+                                  label={virenScanStatus.label}
+                                />
                               </td>
                             </tr>
                           );

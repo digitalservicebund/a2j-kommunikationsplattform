@@ -16,37 +16,26 @@ import z from "zod";
 import Alert from "~/components/Alert";
 import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
 import VerfahrenGerichteSelect from "~/components/verfahren/VerfahrenGerichteSelect";
+import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
+import VerfahrenPrototypeHint from "~/components/verfahren/VerfahrenPrototypeHint.static";
 import deleteDokument from "~/domains/verfahren/deleteDokument.server";
 import fetchDokument from "~/domains/verfahren/fetchDokument";
-import fetchDokumente from "~/domains/verfahren/fetchDokumente";
-import fetchEinreichungById from "~/domains/verfahren/fetchEinreichungById.server";
-import fetchEinreichungenById from "~/domains/verfahren/fetchEinreichungenById.server";
-import fetchEinreichungStatus from "~/domains/verfahren/fetchEinreichungStatus.server";
 import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
-import fetchVerfahrenById from "~/domains/verfahren/fetchVerfahrenById.server";
-import {
-  DokumentSchema,
-  DokumentTypeSchema,
-} from "~/domains/verfahren/schemas/dokumentSchema";
-import { EinreichungSchema } from "~/domains/verfahren/schemas/einreichungSchema";
-import { StatusSchema } from "~/domains/verfahren/schemas/statusSchema";
-import {
-  CodeWertSchema,
-  VerfahrenSchema,
-} from "~/domains/verfahren/schemas/verfahrenSchema";
+import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
+import loadVerfahrenEinreichungBundle, {
+  Dokument,
+  EinreichungWithStatus,
+  Verfahren,
+} from "~/domains/verfahren/loadVerfahrenEinreichungBundle.server";
+import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.server";
+import { DokumentTypeSchema } from "~/domains/verfahren/schemas/dokumentSchema";
+import { CodeWertSchema } from "~/domains/verfahren/schemas/verfahrenSchema";
 import uploadDokument from "~/domains/verfahren/uploadDokument.server";
-import { authContext, authMiddleware } from "~/middleware/auth.server";
+import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
-type Verfahren = z.infer<typeof VerfahrenSchema>;
-type Einreichung = z.infer<typeof EinreichungSchema>;
-type EinreichungStatus = z.infer<typeof StatusSchema>;
-type Dokument = z.infer<typeof DokumentSchema>;
 type DokumentType = z.infer<typeof DokumentTypeSchema>;
 type Gericht = z.infer<typeof CodeWertSchema>;
-type EinreichungWithStatus = Einreichung & {
-  einreichungsStatus: EinreichungStatus;
-};
 type LoaderData = {
   verfahren: Verfahren;
   einreichung: EinreichungWithStatus;
@@ -68,56 +57,19 @@ const DokumentUploadSchema = z.object({
 export const middleware = [authMiddleware];
 
 export const loader = async ({ context, params }: LoaderFunctionArgs) => {
-  const authData = context.get(authContext);
-
-  if (!authData) {
-    throw new Error("No auth data available in loader");
-  }
-
-  const { id } = params;
-
-  if (!id) {
-    throw new Error("id is missing in loader");
-  }
-
-  const verfahrenPromise = (await fetchVerfahrenById(authData, {
-    id,
-  })) as Verfahren;
+  const { authData, verfahrenId } = requireAuthAndVerfahrenId(
+    context,
+    params,
+    "loader",
+  );
+  const { verfahren, einreichung, dokumente } =
+    await loadVerfahrenEinreichungBundle(authData, verfahrenId);
   const gerichtePromise = fetchGerichte(authData) as Promise<Gericht[]>;
 
-  const einreichungen = (await fetchEinreichungenById(authData, {
-    id,
-  })) as Einreichung[];
-  const firstEinreichungId = einreichungen[0]?.id;
-
-  if (!firstEinreichungId) {
-    throw new Error("No Einreichung could be fetched");
-  }
-
-  const einreichungPromise = (await fetchEinreichungById(authData, {
-    id: firstEinreichungId,
-    verfahrenId: id,
-  })) as Einreichung;
-
-  const einreichungsStatus = (await fetchEinreichungStatus(authData, {
-    id: firstEinreichungId,
-    verfahrenId: id,
-  })) as EinreichungStatus;
-
-  const einreichungWithStatus: EinreichungWithStatus = {
-    ...einreichungPromise,
-    einreichungsStatus,
-  };
-
-  const dokumentePromise: Dokument[] = (await fetchDokumente(authData, {
-    einreichungId: firstEinreichungId,
-    verfahrenId: id,
-  })) as Dokument[];
-
   return {
-    verfahren: verfahrenPromise,
-    einreichung: einreichungWithStatus,
-    dokumente: dokumentePromise,
+    verfahren,
+    einreichung,
+    dokumente,
     gerichte: gerichtePromise,
   };
 };
@@ -127,17 +79,11 @@ export const action = async ({
   context,
   params,
 }: ActionFunctionArgs) => {
-  const authData = context.get(authContext);
-
-  if (!authData) {
-    throw new Error("No auth data available in action");
-  }
-
-  const { id } = params;
-
-  if (!id) {
-    throw new Error("id is missing in action");
-  }
+  const { authData, verfahrenId } = requireAuthAndVerfahrenId(
+    context,
+    params,
+    "action",
+  );
 
   const formData = await request.formData();
   const formType = formData.get("formType");
@@ -161,7 +107,7 @@ export const action = async ({
     const file = formValues.file as File;
     const type = formValues.type as DokumentType;
 
-    await uploadDokument(authData, id, einreichungId, file, type);
+    await uploadDokument(authData, verfahrenId, einreichungId, file, type);
 
     return new Response(JSON.stringify({ success: true, formType: "upload" }), {
       status: 200,
@@ -174,13 +120,13 @@ export const action = async ({
     const dokumentId = formData.get("dokumentId") as string;
 
     const { eTag } = await fetchDokument(authData, {
-      verfahrenId: id,
+      verfahrenId,
       einreichungId: einreichungId,
       id: dokumentId,
     });
 
     const deleteResult = await deleteDokument(authData, {
-      verfahrenId: id,
+      verfahrenId,
       einreichungId,
       id: dokumentId,
       eTag: eTag ?? "",
@@ -202,7 +148,7 @@ export const action = async ({
   if (formType === "submit") {
     // @TODO: Update the submit logic and input files to be in sync with the soon
     // to be available VerfahrenAendernRequest data Schema (Swagger doc: PUT /api/v1/verfahren/{id})
-    return redirect(`/verfahren/neu/${id}/abgabe`);
+    return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   }
 };
 
@@ -355,13 +301,7 @@ export default function VerfahrenNeuBearbeiten() {
                     {routes.verfahrenNeu.step2.subline}
                   </h2>
                   <p className="kern-body">{routes.verfahrenNeu.step2.intro}</p>
-                  <p className="kern-body kern-body--small">
-                    <span className="bg-kern-feedback-info-background">
-                      Blau markierte Elemente
-                    </span>{" "}
-                    sind exemplarisch und statisch hinterlegt, die passende
-                    API-Integration folgt.
-                  </p>
+                  <VerfahrenPrototypeHint />
                 </div>
                 <div className="gap-kern-space-default flex">
                   <Link
@@ -962,12 +902,9 @@ export default function VerfahrenNeuBearbeiten() {
                                         </div>
 
                                         <div className="kern-body kern-body--small">
-                                          {Number.parseFloat(
-                                            (
-                                              dokument.size_in_bytes / 1000
-                                            ).toString(),
-                                          ).toFixed(2)}{" "}
-                                          KB
+                                          {formatDokumentSize(
+                                            dokument.size_in_bytes,
+                                          )}
                                         </div>
                                       </div>
 
@@ -1111,13 +1048,10 @@ export default function VerfahrenNeuBearbeiten() {
                   </div>
                 </div>
 
-                {submitState === "submit" && (
-                  <div className="fixed top-0 left-0 flex h-full w-full items-center justify-center">
-                    <div className="kern-loader kern-loader--visible">
-                      <span className="kern-sr-only">Wird geladen...</span>
-                    </div>
-                  </div>
-                )}
+                <VerfahrenLoader
+                  active={submitState === "submit"}
+                  label="Wird geladen..."
+                />
               </div>
             </Form>
           </div>

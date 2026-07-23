@@ -1,18 +1,13 @@
 import { Link } from "react-router";
 import FolderInfoIcon from "~/components/icons/FolderInfoIcon.static";
+import {
+  getBeteiligungByRoleCode,
+  ROLE_CODE_BEKLAGTE,
+  ROLE_CODE_KLAEGERIN,
+} from "~/domains/verfahren/beteiligteByRole";
+import { NOT_AVAILABLE_LABEL } from "~/domains/verfahren/presentationPlaceholders";
 import { Verfahren } from "~/routes/_index";
 import { useTranslations } from "~/services/translations/context";
-
-const ROLLE_CODE_KLAEGERIN = "101";
-const ROLLE_CODE_BEKLAGTE = "028";
-
-// Helper functions to extract data based on role codes - we can move these to a separate utils file and create tests for them later
-function getBeteiligungByRoleCode(
-  beteiligungen: Verfahren["beteiligungen"],
-  roleCode: string,
-) {
-  return beteiligungen?.find((b) => b.rollen?.some((r) => r.code === roleCode));
-}
 
 function DataItem({
   label,
@@ -50,8 +45,6 @@ function DataCard({
   );
 }
 
-const notAvailable = "Unbekannt";
-
 type VerfahrenTileProps = Readonly<Verfahren> & {
   withoutDetailsLink?: boolean;
 };
@@ -70,9 +63,9 @@ export default function VerfahrenTile({
 
   // Extract values from beteiligungen based on rollen codes
   const klaegerinData =
-    getBeteiligungByRoleCode(beteiligungen, ROLLE_CODE_KLAEGERIN) || null;
+    getBeteiligungByRoleCode(beteiligungen, ROLE_CODE_KLAEGERIN) || null;
   const beklagteData =
-    getBeteiligungByRoleCode(beteiligungen, ROLLE_CODE_BEKLAGTE) || null;
+    getBeteiligungByRoleCode(beteiligungen, ROLE_CODE_BEKLAGTE) || null;
 
   const prozessbevollmaechtigteKlaegerin =
     klaegerinData?.prozessbevollmaechtigte || [];
@@ -113,33 +106,41 @@ export default function VerfahrenTile({
       </div>
       <dl className="gap-kern-space-large my-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <DataCard label="Klagende Partei">
-          <DataItem label="Name" value={klaegerinData?.name || notAvailable} />
+          <DataItem
+            label="Name"
+            value={klaegerinData?.name || NOT_AVAILABLE_LABEL}
+          />
           <DataItem
             key={prozessbevollmaechtigteKlaegerin[0]?.id}
             label="Geschäftszeichen"
             value={
-              prozessbevollmaechtigteKlaegerin[0]?.aktenzeichen || notAvailable
+              prozessbevollmaechtigteKlaegerin[0]?.aktenzeichen ||
+              NOT_AVAILABLE_LABEL
             }
           />
         </DataCard>
         <DataCard label="Beklagte Partei">
-          <DataItem label="Name" value={beklagteData?.name || notAvailable} />
+          <DataItem
+            label="Name"
+            value={beklagteData?.name || NOT_AVAILABLE_LABEL}
+          />
           <DataItem
             key={prozessbevollmaechtigteBeklagte[0]?.id}
             label="Geschäftszeichen"
             value={
-              prozessbevollmaechtigteBeklagte[0]?.aktenzeichen || notAvailable
+              prozessbevollmaechtigteBeklagte[0]?.aktenzeichen ||
+              NOT_AVAILABLE_LABEL
             }
           />
         </DataCard>
         <DataCard label="Gericht">
           <DataItem
             label="Zuständiges Gericht"
-            value={gericht?.wert || notAvailable}
+            value={gericht?.wert || NOT_AVAILABLE_LABEL}
           />
           <DataItem
             label="Aktenzeichen des Gerichts"
-            value={aktenzeichen_gericht || notAvailable}
+            value={aktenzeichen_gericht || NOT_AVAILABLE_LABEL}
           />
         </DataCard>
       </dl>

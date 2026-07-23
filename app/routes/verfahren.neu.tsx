@@ -12,17 +12,20 @@ import {
 import z from "zod";
 import Alert from "~/components/Alert";
 import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
+import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import createEinreichung from "~/domains/verfahren/createEinreichung.server";
 import createVerfahren from "~/domains/verfahren/createVerfahren.server";
 import deleteDokument from "~/domains/verfahren/deleteDokument.server";
 import fetchDokument from "~/domains/verfahren/fetchDokument";
 import fetchDokumente from "~/domains/verfahren/fetchDokumente";
+import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
+import { requireAuthData } from "~/domains/verfahren/routeContext.server";
 import { DokumentTypeSchema } from "~/domains/verfahren/schemas/dokumentSchema";
 import uploadDokument, {
   type Dokument,
   type DokumentType,
 } from "~/domains/verfahren/uploadDokument.server";
-import { authContext, authMiddleware } from "~/middleware/auth.server";
+import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
 const StatementOfClaimUploadSchema = z.object({
@@ -54,11 +57,7 @@ function buildRouteUrl(verfahrenId: string, einreichungId: string): string {
 }
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
-  const authData = context.get(authContext);
-
-  if (!authData) {
-    throw new Error("No auth data available in loader");
-  }
+  const authData = requireAuthData(context, "loader");
 
   const url = new URL(request.url);
   const { verfahrenId, einreichungId } = getVerfahrenContextFromUrl(url);
@@ -81,11 +80,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
-  const authData = context.get(authContext);
-
-  if (!authData) {
-    throw new Error("No auth data available in action");
-  }
+  const authData = requireAuthData(context, "action");
 
   const formData = await request.formData();
   const formType = formData.get("formType");
@@ -255,12 +250,9 @@ export default function VerfahrenNeu() {
                           </div>
 
                           <div className="kern-body kern-body--small">
-                            {Number.parseFloat(
-                              (
-                                (uploadedDokument?.size_in_bytes ?? 0) / 1000
-                              ).toString(),
-                            ).toFixed(2)}{" "}
-                            KB
+                            {formatDokumentSize(
+                              uploadedDokument?.size_in_bytes ?? 0,
+                            )}
                           </div>
                         </div>
 
@@ -426,13 +418,7 @@ export default function VerfahrenNeu() {
           </div>
         </div>
       </div>
-      {isSubmitting && (
-        <div className="fixed top-0 left-0 flex h-full w-full items-center justify-center">
-          <div className="kern-loader kern-loader--visible">
-            <span className="kern-sr-only">{shared.loading}</span>
-          </div>
-        </div>
-      )}
+      <VerfahrenLoader active={isSubmitting} label={shared.loading} />
     </div>
   );
 }
