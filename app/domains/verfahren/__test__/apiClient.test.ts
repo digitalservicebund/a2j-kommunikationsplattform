@@ -421,6 +421,29 @@ describe("apiClient", () => {
       ).rejects.toThrow("Invalid JSON");
     });
 
+    it("returns undefined when json parsing fails for an empty body", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers(),
+        json: async () => {
+          throw new SyntaxError("Unexpected end of JSON input");
+        },
+        clone: () => ({
+          text: async () => "",
+        }),
+      });
+
+      const result = await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+      });
+
+      expect(result).toBeUndefined();
+      expect(mocks.logParsingErrorAndThrow).not.toHaveBeenCalled();
+    });
+
     it("validates response with zod schema when provided", async () => {
       mocks.getBearerToken.mockResolvedValue("token");
       const schema = z.object({

@@ -11,7 +11,7 @@ type DeleteDokumentOptions = {
 export type DeleteDokumentResult = { success: true } | { success: false };
 
 const buildErrorMessage = (id: string): string =>
-  `Dokument with id ${id} could not be created.`;
+  `Dokument with id ${id} could not be deleted.`;
 
 export default async function deleteDokument(
   authData: AuthenticationResponse,

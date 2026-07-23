@@ -129,10 +129,22 @@ async function readResponseBody(
   errorMessage: string,
 ): Promise<unknown> {
   const responseLike = response as Response & {
+    status?: number;
+    headers?: Headers;
     json?: () => Promise<unknown>;
     text?: () => Promise<string>;
     clone?: () => Response & { text?: () => Promise<string> };
   };
+
+  // 204/205 responses intentionally have no body.
+  if (responseLike.status === 204 || responseLike.status === 205) {
+    return undefined;
+  }
+
+  const contentLength = responseLike.headers?.get("content-length");
+  if (contentLength === "0") {
+    return undefined;
+  }
 
   if (typeof responseLike.json === "function") {
     try {
@@ -142,6 +154,11 @@ async function readResponseBody(
         const clonedResponse = responseLike.clone();
         if (typeof clonedResponse.text === "function") {
           const responseBody = await clonedResponse.text();
+
+          if (responseBody.trim() === "") {
+            return undefined;
+          }
+
           logParsingErrorAndThrow(error, errorMessage, responseBody);
         }
       }

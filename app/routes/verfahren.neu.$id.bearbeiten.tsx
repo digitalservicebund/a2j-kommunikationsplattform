@@ -7,6 +7,7 @@ import {
   LoaderFunctionArgs,
   redirect,
   useActionData,
+  useFetcher,
   useLoaderData,
   useNavigation,
   useRevalidator,
@@ -53,6 +54,10 @@ type LoaderData = {
   gerichte: Promise<Gericht[]>;
 };
 type SubmitState = "idle" | "submit" | "upload" | "delete";
+type DokumentActionResult = {
+  success?: boolean;
+  formType?: SubmitState;
+};
 
 const DokumentUploadSchema = z.object({
   type: DokumentTypeSchema,
@@ -213,6 +218,7 @@ export default function VerfahrenNeuBearbeiten() {
   const { routes, buttons, shared } = useTranslations();
   const navigation = useNavigation();
   const revalidator = useRevalidator();
+  const deleteFetcher = useFetcher<DokumentActionResult>();
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const uploadFileInputRef = useRef<HTMLInputElement>(null);
   const [isFileInputErrorDismissed, setIsFileInputErrorDismissed] =
@@ -231,6 +237,26 @@ export default function VerfahrenNeuBearbeiten() {
       setSubmitState("idle");
     }
   }, [navigation.state]);
+
+  useEffect(() => {
+    if (
+      submitState === "delete" &&
+      deleteFetcher.state === "idle" &&
+      deleteFetcher.data?.success
+    ) {
+      revalidator.revalidate();
+      setSubmitState("idle");
+    }
+
+    if (submitState === "delete" && deleteFetcher.state === "idle") {
+      setSubmitState("idle");
+    }
+  }, [
+    deleteFetcher.data?.success,
+    deleteFetcher.state,
+    revalidator,
+    submitState,
+  ]);
 
   useEffect(() => {
     if (errors?.fieldErrors?.file) {
@@ -935,12 +961,6 @@ export default function VerfahrenNeuBearbeiten() {
                                       className="p-kern-space-default align-center gap-kern-space-default rounded-kern-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)"
                                     >
                                       <div className="flex-1">
-                                        <input
-                                          type="hidden"
-                                          name="dokumentId"
-                                          value={dokument.id}
-                                        />
-
                                         <div className="kern-body kern-body--bold">
                                           {dokument.name}
                                         </div>
@@ -956,23 +976,30 @@ export default function VerfahrenNeuBearbeiten() {
                                       </div>
 
                                       <div className="flex items-center">
-                                        {dokument.status !== "EINGEREICHT" && (
-                                          <button
-                                            className="kern-btn kern-btn--secondary kern-btn--x-small"
-                                            type="submit"
-                                            name="formType"
-                                            value="delete"
-                                            disabled={submitState !== "idle"}
-                                          >
-                                            <span
-                                              className="kern-icon kern-icon--delete"
-                                              aria-hidden="true"
-                                            ></span>
-                                            <span className="kern-label">
-                                              {shared.form.deleteDokument.label}
-                                            </span>
-                                          </button>
-                                        )}
+                                        <button
+                                          className="kern-btn kern-btn--secondary kern-btn--x-small"
+                                          type="button"
+                                          onClick={() => {
+                                            setSubmitState("delete");
+                                            deleteFetcher.submit(
+                                              {
+                                                formType: "delete",
+                                                einreichungId: einreichung.id,
+                                                dokumentId: dokument.id,
+                                              },
+                                              { method: "post" },
+                                            );
+                                          }}
+                                          disabled={submitState !== "idle"}
+                                        >
+                                          <span
+                                            className="kern-icon kern-icon--delete"
+                                            aria-hidden="true"
+                                          ></span>
+                                          <span className="kern-label">
+                                            {shared.form.deleteDokument.label}
+                                          </span>
+                                        </button>
                                       </div>
                                     </div>
                                   );

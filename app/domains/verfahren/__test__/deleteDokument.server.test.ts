@@ -33,7 +33,7 @@ describe("deleteDokument", () => {
       method: "DELETE",
       eTag: 'W/"0"',
       throwOnError: false,
-      errorMessage: "Dokument with id d-1 could not be created.",
+      errorMessage: "Dokument with id d-1 could not be deleted.",
     });
   });
 
