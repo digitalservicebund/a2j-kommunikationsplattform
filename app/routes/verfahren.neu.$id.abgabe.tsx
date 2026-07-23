@@ -12,6 +12,7 @@ import Alert from "~/components/Alert";
 import deleteDokument from "~/domains/verfahren/deleteDokument.server";
 import fetchDokument from "~/domains/verfahren/fetchDokument";
 import fetchDokumente from "~/domains/verfahren/fetchDokumente";
+import fetchEinreichungById from "~/domains/verfahren/fetchEinreichungById.server";
 import fetchEinreichungenById from "~/domains/verfahren/fetchEinreichungenById.server";
 import fetchEinreichungStatus from "~/domains/verfahren/fetchEinreichungStatus.server";
 import fetchVerfahrenById from "~/domains/verfahren/fetchVerfahrenById.server";
@@ -233,8 +234,8 @@ function BriefSummaryOfBeteiligte({
 
 type LoaderData = {
   verfahren: Verfahren;
-  einreichungen: EinreichungWithStatus[];
-  dokumente: Dokument[][];
+  einreichung: EinreichungWithStatus;
+  dokumente: Dokument[];
 };
 
 // this route requires users to be logged in
@@ -256,43 +257,38 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   const verfahren = (await fetchVerfahrenById(authData, {
     id,
   })) as Verfahren;
-  const einreichungenPromise = (await fetchEinreichungenById(authData, {
+
+  const einreichungen = (await fetchEinreichungenById(authData, {
     id,
   })) as Einreichung[];
+  const firstEinreichungId = einreichungen[0]?.id;
 
-  const filteredEinreichungen = einreichungenPromise.filter((e) => {
-    return e.verfahren_id === id;
-  });
+  if (!firstEinreichungId) {
+    throw new Error("No Einreichung could be fetched");
+  }
 
-  const einreichungenWithStatus: EinreichungWithStatus[] = await Promise.all(
-    filteredEinreichungen.map(async (einreichung) => ({
-      ...einreichung,
-      einreichungsStatus: (await fetchEinreichungStatus(authData, {
-        id: einreichung.id,
-        verfahrenId: einreichung.verfahren_id,
-      })) as EinreichungStatus,
-    })),
-  );
+  const einreichung = (await fetchEinreichungById(authData, {
+    id: firstEinreichungId,
+    verfahrenId: id,
+  })) as Einreichung;
 
-  const dokumentePromise: Dokument[][] = await Promise.all(
-    filteredEinreichungen.map(async (einreichung) => {
-      const dokumente = (await fetchDokumente(authData, {
-        einreichungId: einreichung.id,
-        verfahrenId: einreichung.verfahren_id,
-      })) as Dokument[];
+  const einreichungWithStatus: EinreichungWithStatus = {
+    ...einreichung,
+    einreichungsStatus: (await fetchEinreichungStatus(authData, {
+      id: einreichung.id,
+      verfahrenId: id,
+    })) as EinreichungStatus,
+  };
 
-      if (!dokumente) {
-        return [];
-      }
-
-      return dokumente;
-    }),
-  );
+  const dokumente = (await fetchDokumente(authData, {
+    einreichungId: einreichung.id,
+    verfahrenId: id,
+  })) as Dokument[];
 
   return {
     verfahren,
-    einreichungen: einreichungenWithStatus,
-    dokumente: dokumentePromise,
+    einreichung: einreichungWithStatus,
+    dokumente,
   };
 };
 
@@ -353,7 +349,7 @@ export const action = async ({
 };
 
 export default function VerfahrenNeuBearbeiten() {
-  const { verfahren, einreichungen, dokumente } = useLoaderData<LoaderData>();
+  const { verfahren, einreichung, dokumente } = useLoaderData<LoaderData>();
   const { routes, buttons, shared } = useTranslations();
 
   const klaegerinnenNamen = getBeteiligteNamesByRoleCode(
@@ -364,16 +360,6 @@ export default function VerfahrenNeuBearbeiten() {
     verfahren.beteiligungen,
     ROLLE_CODE_BEKLAGTE,
   );
-
-  const einreichung =
-    einreichungen.length > 0
-      ? [
-          {
-            einreichung: einreichungen[0],
-            dokumente: dokumente[0] ?? [],
-          },
-        ]
-      : [];
 
   const isEinreichungReady = (einreichungDokumente: Dokument[]) => {
     return (
@@ -386,19 +372,14 @@ export default function VerfahrenNeuBearbeiten() {
     );
   };
 
-  const isReady =
-    einreichung.length > 0 &&
-    einreichung.every(({ dokumente }) => isEinreichungReady(dokumente));
+  const isReady = isEinreichungReady(dokumente);
   const readinessLabel = isReady
     ? routes.verfahrenNeu.step3.summary.badgeLabels.ready
     : routes.verfahrenNeu.step3.summary.badgeLabels.soon;
   const readinessBadgeClass = isReady ? "success" : "warning";
-  const additionalDokumenteCount = Math.max(
-    (einreichung[0]?.dokumente?.length ?? 0) - 1,
-    0,
-  );
-  const firstDokumentName =
-    einreichung[0]?.dokumente?.[0]?.name ?? NOT_AVAILABLE;
+  const einreichungData = [{ einreichung, dokumente }];
+  const additionalDokumenteCount = Math.max(dokumente.length - 1, 0);
+  const firstDokumentName = dokumente[0]?.name ?? NOT_AVAILABLE;
 
   const [isSubmitting, setIsSubmitting] = useState<"idle" | "submitting">(
     "idle",
@@ -575,7 +556,7 @@ export default function VerfahrenNeuBearbeiten() {
                         <div className="mt-kern-space-small min-h-16 w-2 flex-1 bg-(--kern-color-decorative-border-default) p-0"></div>
                       </div>
                       <div className="pb-kern-space-default flex-1">
-                        {einreichung.map(({ einreichung, dokumente }) => (
+                        {einreichungData.map(({ einreichung, dokumente }) => (
                           <article className="kern-card" key={einreichung.id}>
                             <div className="kern-card__container">
                               <header className="kern-card__header">
@@ -857,10 +838,10 @@ export default function VerfahrenNeuBearbeiten() {
                     <div className="gap-kern-space-default flex items-stretch">
                       <div className="w-80 flex-[0_0_auto]">
                         <span className="kern-body kern-body--small kern-body--muted">
-                          {einreichung[0]?.dokumente?.length
+                          {einreichungData[0]?.dokumente?.length
                             ? new Date(
-                                einreichung[0].dokumente.at(-1)?.erstellt_am ??
-                                  NOT_AVAILABLE,
+                                einreichungData[0].dokumente.at(-1)
+                                  ?.erstellt_am ?? NOT_AVAILABLE,
                               ).toLocaleDateString()
                             : NOT_AVAILABLE}
                         </span>
@@ -956,9 +937,9 @@ export default function VerfahrenNeuBearbeiten() {
                     <div className="gap-kern-space-default flex items-stretch">
                       <div className="w-80 flex-[0_0_auto]">
                         <span className="kern-body kern-body--small kern-body--muted">
-                          {einreichung[0]?.dokumente?.[0]?.erstellt_am
+                          {einreichungData[0]?.dokumente?.[0]?.erstellt_am
                             ? new Date(
-                                einreichung[0].dokumente[0].erstellt_am,
+                                einreichungData[0].dokumente[0].erstellt_am,
                               ).toLocaleDateString()
                             : NOT_AVAILABLE}
                         </span>
@@ -984,7 +965,7 @@ export default function VerfahrenNeuBearbeiten() {
                               <div className="flex w-full flex-row items-center justify-between">
                                 <p className="kern-body">{firstDokumentName}</p>
                                 <Link
-                                  to={`/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichung[0].einreichung.id}`}
+                                  to={`/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichungData[0].einreichung.id}`}
                                   className="kern-btn kern-btn--tertiary"
                                 >
                                   <span className="kern-label">

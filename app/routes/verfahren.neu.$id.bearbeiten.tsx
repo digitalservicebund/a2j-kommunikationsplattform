@@ -85,26 +85,22 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   })) as Verfahren;
   const gerichtePromise = fetchGerichte(authData) as Promise<Gericht[]>;
 
-  const einreichungenPromise = (await fetchEinreichungenById(authData, {
+  const einreichungen = (await fetchEinreichungenById(authData, {
     id,
   })) as Einreichung[];
+  const firstEinreichungId = einreichungen[0]?.id;
 
-  const einreichung = einreichungenPromise.find(
-    (candidate) => candidate.verfahren_id === id,
-  );
-  const einreichungId = einreichung?.id;
-
-  if (!einreichungId) {
+  if (!firstEinreichungId) {
     throw new Error("No Einreichung could be fetched");
   }
 
   const einreichungPromise = (await fetchEinreichungById(authData, {
-    id: einreichungId,
+    id: firstEinreichungId,
     verfahrenId: id,
   })) as Einreichung;
 
   const einreichungsStatus = (await fetchEinreichungStatus(authData, {
-    id: einreichungId,
+    id: firstEinreichungId,
     verfahrenId: id,
   })) as EinreichungStatus;
 
@@ -114,7 +110,7 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   };
 
   const dokumentePromise: Dokument[] = (await fetchDokumente(authData, {
-    einreichungId: einreichungId,
+    einreichungId: firstEinreichungId,
     verfahrenId: id,
   })) as Dokument[];
 
