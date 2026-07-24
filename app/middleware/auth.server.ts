@@ -26,7 +26,7 @@ export async function authMiddleware(
 
   const response = await next();
 
-  if (authData.sessionCookieHeader) {
+  if (authData.sessionCookieHeader.length > 0) {
     console.log(
       "authMiddleware: sessionCookieHeader found, appending to response headers",
     );
@@ -35,7 +35,9 @@ export async function authMiddleware(
       statusText: response.statusText,
       headers: new Headers(response.headers),
     });
-    newResponse.headers.append("Set-Cookie", authData.sessionCookieHeader);
+    for (const cookieHeader of authData.sessionCookieHeader) {
+      newResponse.headers.append("Set-Cookie", cookieHeader);
+    }
     return newResponse;
   }
 

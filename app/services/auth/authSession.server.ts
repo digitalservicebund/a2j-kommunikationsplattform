@@ -1,146 +1,127 @@
-import { createCookieSessionStorage, redirect } from "react-router";
-import { config } from "~/config/config";
-import { serverConfig } from "~/config/config.server";
-import { LogoutType } from "~/routes/action.logout-user";
-import {
-  AuthenticationProvider,
-  AuthenticationResponse,
-  AuthenticationTokens,
-} from "./auth.types";
-import {
-  refreshAccessToken,
-  refreshDemoToken,
-  refreshKomplaIdpToken,
-} from "./oAuth.server";
+import { AuthenticationProvider, AuthenticationResponse } from "./auth.types";
+import { auth } from "./betterAuth.server";
+import { magicLinkClient } from "./magicLinkClient.server";
 
-const getSecret = () => {
-  return config().ENVIRONMENT === "development"
-    ? "default-secret"
-    : serverConfig().BRAK_IDP_OIDC_CLIENT_SECRET;
-};
+const OAUTH2_PROVIDERS = new Set<AuthenticationProvider>([
+  AuthenticationProvider.BEA,
+  AuthenticationProvider.KOMPLA_IDP,
+]);
 
-const { getSession, commitSession, destroySession } =
-  createCookieSessionStorage({
-    cookie: {
-      name: "__session",
-      sameSite: "lax",
-      path: "/",
-      httpOnly: true,
-      secrets: [getSecret()],
-      secure: process.env.NODE_ENV === "production",
-    },
+async function getOAuth2Tokens(
+  request: Request,
+  provider: AuthenticationProvider,
+) {
+  const { response, headers } = await auth.api.getAccessToken({
+    body: { providerId: provider },
+    headers: request.headers,
+    returnHeaders: true,
   });
 
-export { commitSession, destroySession, getSession };
+  return {
+    accessToken: response.accessToken,
+    idToken: response.idToken,
+    expiresAt: response.accessTokenExpiresAt
+      ? new Date(response.accessTokenExpiresAt).getTime()
+      : Date.now(),
+    // refreshToken isn't returned by /get-access-token — Better Auth
+    // refreshes it internally and getBearerToken never needs the raw value.
+    refreshToken: "",
+    setCookieHeaders: headers.getSetCookie(),
+  };
+}
 
-interface SetAuthSessionProps extends AuthenticationTokens {
-  request: Request;
-  provider: AuthenticationProvider;
+async function getCustomProviderTokens(
+  userId: string,
+  provider: AuthenticationProvider,
+) {
+  const ctx = await auth.$context;
+  const account = await ctx.internalAdapter.findAccountByProviderId(
+    userId,
+    provider,
+  );
+
+  if (!account?.accessToken || !account.refreshToken) {
+    return null;
+  }
+
+  const expiresAt = account.accessTokenExpiresAt?.getTime() ?? 0;
+  const isExpired = expiresAt <= Date.now();
+
+  if (!isExpired || provider === AuthenticationProvider.DEVELOPMENT) {
+    return {
+      accessToken: account.accessToken,
+      idToken: account.idToken ?? undefined,
+      expiresAt,
+      refreshToken: account.refreshToken,
+    };
+  }
+
+  console.log("getAuthData: Demo token expired, refreshing");
+  const refreshed = await magicLinkClient.refreshAccessToken(
+    account.refreshToken,
+  );
+  await ctx.internalAdapter.updateAccount(account.id, {
+    accessToken: refreshed.accessToken,
+    refreshToken: refreshed.refreshToken,
+    accessTokenExpiresAt: new Date(refreshed.expiresAt),
+  });
+
+  return {
+    accessToken: refreshed.accessToken,
+    idToken: undefined,
+    expiresAt: refreshed.expiresAt,
+    refreshToken: refreshed.refreshToken,
+  };
 }
 
 /**
- * As soon as a user is authenticated (via OAuth2 framework), we
- * create/update access related data in session cookie.
- */
-export const setAuthSession = async ({
-  accessToken,
-  idToken,
-  expiresAt,
-  refreshToken,
-  request,
-  provider,
-}: SetAuthSessionProps) => {
-  const session = await getSession(request.headers.get("Cookie"));
-  session.set("accessToken", accessToken);
-  session.set("expiresAt", expiresAt);
-  session.set("refreshToken", refreshToken);
-  session.set("provider", provider);
-  session.set("idToken", idToken);
-
-  console.log("setAuthSession: idToken is", idToken);
-
-  try {
-    console.log("Set/update auth session");
-    return await commitSession(session);
-  } catch (error) {
-    console.error("Error while setting/updating auth session:", error);
-    throw new Error("Failed to set/update auth session");
-  }
-};
-
-/**
- * Retrieves authentication data from the session cookie.
- * Returns null if no valid session exists, allowing middleware to handle redirects.
+ * Retrieves authentication data for the current request from the Better
+ * Auth session, resolving/refreshing the underlying provider access token.
+ * Returns null if no valid session exists, allowing middleware to redirect.
  */
 export const getAuthData = async (
   request: Request,
 ): Promise<AuthenticationResponse | null> => {
-  // If a token refresh is not successful, we log the person out of
-  // the app. Example use case: A token expires after a user has
-  // locked their screen for more than two hours. Session will be
-  // destroyed similar to "action.logout-user.ts".
-  const session = await getSession(request.headers.get("Cookie"));
+  const { response: sessionData, headers: sessionHeaders } =
+    await auth.api.getSession({
+      headers: request.headers,
+      returnHeaders: true,
+    });
 
-  const accessToken = session.get("accessToken");
-  const idToken = session.get("idToken");
-  let expiresAt = session.get("expiresAt");
-  const refreshToken = session.get("refreshToken");
-  const provider = session.get("provider") as AuthenticationProvider;
-
-  // Check expiresAt type and parse if needed
-  if (typeof expiresAt === "string") {
-    const parsed = Number.parseInt(expiresAt, 10);
-    if (Number.isFinite(parsed)) {
-      expiresAt = parsed;
-    } else {
-      console.warn(
-        "getAuthData: expiresAt is not a valid number, destroying session",
-      );
-      await destroySession(session);
-      return null;
-    }
-  }
-
-  // Log session cookie size for debugging
-  const cookieHeader = request.headers.get("Cookie") || "";
-  if (cookieHeader.length > 3500) {
-    console.warn("Session cookie size is large:", cookieHeader.length);
-  }
-
-  // No tokens at all - not authenticated
-  if (!accessToken || !refreshToken) {
-    console.log(
-      "No valid access or refresh token available, destroying session",
-    );
-    await destroySession(session);
+  if (!sessionData) {
     return null;
   }
 
-  // Token still valid
-  if (accessToken && expiresAt > Date.now()) {
+  const { user } = sessionData;
+  const provider = user.authProvider as AuthenticationProvider;
+  const setCookieHeaders = sessionHeaders.getSetCookie();
+
+  if (OAUTH2_PROVIDERS.has(provider)) {
+    const tokens = await getOAuth2Tokens(request, provider);
     return {
-      authenticationTokens: { accessToken, idToken, expiresAt, refreshToken },
-      sessionCookieHeader: "",
+      authenticationTokens: {
+        accessToken: tokens.accessToken,
+        idToken:
+          provider === AuthenticationProvider.BEA
+            ? ((user as { safeId?: string }).safeId ?? tokens.idToken)
+            : tokens.idToken,
+        expiresAt: tokens.expiresAt,
+        refreshToken: tokens.refreshToken,
+      },
+      sessionCookieHeader: [...setCookieHeaders, ...tokens.setCookieHeaders],
       provider,
     };
   }
 
-  // Try to refresh the token using the appropriate IdP
-  try {
-    console.log("getAuthData: Token expired, attempting refresh");
-    if (provider === AuthenticationProvider.DEMO) {
-      return await refreshDemoToken(request, refreshToken);
-    }
-    if (provider === AuthenticationProvider.KOMPLA_IDP) {
-      console.log("getAuthData: Refreshing KomPla IdP login token");
-      return await refreshKomplaIdpToken(request, refreshToken);
-    }
-    console.log("getAuthData: Refreshing BRAK IdP (beA) token");
-    return await refreshAccessToken(request, refreshToken);
-  } catch (error) {
-    console.error("Token refresh failed, destroying session", error);
-    throw redirect(`/login?status=${LogoutType.Automatic}`, {
-      headers: { "Set-Cookie": await destroySession(session) },
-    });
+  const tokens = await getCustomProviderTokens(user.id, provider);
+
+  if (!tokens) {
+    return null;
   }
+
+  return {
+    authenticationTokens: tokens,
+    sessionCookieHeader: setCookieHeaders,
+    provider,
+  };
 };

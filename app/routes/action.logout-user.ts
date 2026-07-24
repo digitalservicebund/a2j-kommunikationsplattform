@@ -1,6 +1,5 @@
 import { redirect, type ActionFunctionArgs } from "react-router";
-import { destroySession, getSession } from "~/services/auth/authSession.server";
-import { revokeAccessToken } from "~/services/auth/oAuth.server";
+import { auth } from "~/services/auth/betterAuth.server";
 
 export enum LogoutType {
   Automatic = "auto-logged-out",
@@ -16,16 +15,13 @@ export enum LogoutType {
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const logoutType = formData.get("logoutType") as LogoutType;
-  const session = await getSession(request.headers.get("Cookie"));
-  const accessToken = session.get("accessToken");
 
-  if (accessToken) {
-    await revokeAccessToken(accessToken);
-  }
+  const response = await auth.api.signOut({
+    headers: request.headers,
+    asResponse: true,
+  });
 
   return redirect(`/login?status=${logoutType}`, {
-    headers: {
-      "Set-Cookie": await destroySession(session),
-    },
+    headers: response.headers,
   });
 };

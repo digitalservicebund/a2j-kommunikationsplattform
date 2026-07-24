@@ -14,6 +14,6 @@ export interface AuthenticationTokens {
 
 export interface AuthenticationResponse {
   authenticationTokens: AuthenticationTokens;
-  sessionCookieHeader: string;
+  sessionCookieHeader: string[];
   provider: AuthenticationProvider;
 }

@@ -175,6 +175,7 @@ export default function LoginPage() {
                 type="submit"
                 className="kern-btn kern-btn--block kern-btn--primary"
                 onClick={() => setLoginType(LoginType.BeA)}
+                disabled={isDevelopment}
               >
                 <span className="kern-label">{buttons.LOGIN_BUTTON_BEA}</span>
               </button>

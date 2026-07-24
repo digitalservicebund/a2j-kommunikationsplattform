@@ -1,44 +1,18 @@
-import { redirect, type LoaderFunction } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
 import { AuthenticationProvider } from "~/services/auth/auth.types";
-import { destroySession, getSession } from "~/services/auth/authSession.server";
-import { authenticator, revokeAccessToken } from "~/services/auth/oAuth.server";
-import { LoginError } from "./action.login-user";
+import { auth } from "~/services/auth/betterAuth.server";
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const authenticationProvider = AuthenticationProvider.BEA;
-
-  try {
-    const authenticationResponse = await authenticator.authenticate(
-      authenticationProvider,
-      request,
-    );
-
-    console.log(
-      "authenticator.authenticate auth callback done, redirecting to /",
-    );
-
-    return redirect("/", {
-      headers: {
-        "Set-Cookie": authenticationResponse.sessionCookieHeader,
-      },
-    });
-  } catch (error) {
-    console.error(
-      `Failed to authenticate user via "${authenticationProvider}":`,
-      error,
-    );
-
-    const session = await getSession(request.headers.get("Cookie"));
-    const accessToken = session.get("accessToken");
-
-    if (accessToken) {
-      await revokeAccessToken(accessToken);
-    }
-
-    return redirect(`/login?status=${LoginError.BeA}`, {
-      headers: {
-        "Set-Cookie": await destroySession(session),
-      },
-    });
-  }
+/**
+ * Keeps the redirect_uri registered with the real BRAK IdP client stable
+ * (unaffected by the Better Auth migration) by forwarding this request to
+ * Better Auth's own auto-mounted OAuth2 callback handler, which does the
+ * actual code exchange and session creation.
+ */
+export const loader = ({ request }: LoaderFunctionArgs) => {
+  const url = new URL(request.url);
+  const target = new URL(
+    `/api/auth/oauth2/callback/${AuthenticationProvider.BEA}${url.search}`,
+    url.origin,
+  );
+  return auth.handler(new Request(target, { headers: request.headers }));
 };
