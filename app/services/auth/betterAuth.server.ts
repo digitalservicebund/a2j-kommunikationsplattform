@@ -41,6 +41,13 @@ export const auth = betterAuth({
   secret: serverConfig().BETTER_AUTH_SECRET,
   baseURL: serverConfig().BETTER_AUTH_URL,
   basePath: "/api/auth",
+  // `signInCustom` (customAuthPlugin.server.ts) mints a session from
+  // caller-supplied tokens with no way to verify they're genuine — it must
+  // only ever be reached via the server-side `auth.api.signInCustom(...)`
+  // call (from loginAsDeveloper / auth.magic-link-callback), never as a
+  // public HTTP endpoint. `disabledPaths` blocks it at the router level
+  // (404) without affecting `auth.api.*` calls, which bypass the router.
+  disabledPaths: ["/sign-in/custom"],
   session: {
     cookieCache: {
       enabled: true,

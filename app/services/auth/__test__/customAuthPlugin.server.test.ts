@@ -8,9 +8,10 @@ function createTestAuth() {
     secret: "test-secret-at-least-32-characters-long",
     baseURL: "http://localhost:3000",
     basePath: "/api/auth",
+    disabledPaths: ["/sign-in/custom"],
     user: {
       additionalFields: {
-        authProvider: { type: "string", required: true, input: false },
+        authProvider: { type: "string", required: true },
       },
     },
     plugins: [customAuthPlugin()],
@@ -65,5 +66,24 @@ describe("customAuthPlugin", () => {
     expect(sessionResult?.user.authProvider).toBe(
       AuthenticationProvider.DEVELOPMENT,
     );
+  });
+
+  it("blocks /sign-in/custom from the public HTTP router (no way to forge a session)", async () => {
+    const auth = createTestAuth();
+
+    const response = await auth.handler(
+      new Request("http://localhost:3000/api/auth/sign-in/custom", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider: AuthenticationProvider.DEVELOPMENT,
+          accessToken: "forged-token",
+          refreshToken: "forged-refresh",
+          expiresAt: Date.now() + 60_000,
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(404);
   });
 });
