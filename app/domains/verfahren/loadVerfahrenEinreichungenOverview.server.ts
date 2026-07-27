@@ -59,10 +59,6 @@ export default async function loadVerfahrenEinreichungenOverview(
     }),
   );
 
-  if (einreichungen.length === 0) {
-    throw new Error("No Einreichung could be fetched");
-  }
-
   return {
     verfahren,
     einreichungen,

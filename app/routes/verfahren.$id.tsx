@@ -99,13 +99,13 @@ export default function VerfahrenId() {
   const { verfahren, einreichungen } = useLoaderData<LoaderData>();
   const { routes, shared } = useTranslations();
 
-  const initialEinreichungSummary = einreichungen[0];
-  const initialEinreichung = initialEinreichungSummary.einreichung;
-  const initialEinreichungDokumente = initialEinreichungSummary.dokumente;
-  const showInitialEinreichungDetails =
-    einreichungen.length === 1 &&
-    verfahren.status !== "EINGEREICHT" &&
-    initialEinreichung.status !== "EINGEREICHT";
+  const formatDate = (value: string | null | undefined) => {
+    if (!value) {
+      return NOT_AVAILABLE_LABEL;
+    }
+
+    return new Date(value).toLocaleDateString();
+  };
 
   const klaegerinnenNamen = getBeteiligteNamesByRoleCode(
     verfahren.beteiligungen,
@@ -117,6 +117,19 @@ export default function VerfahrenId() {
     ROLE_CODE_BEKLAGTE,
     NOT_AVAILABLE_LABEL,
   );
+
+  let overviewBadge = getVerfahrenStatusPresentation(verfahren.status);
+
+  const initialEinreichungData = einreichungen[0];
+  const initialEinreichung = initialEinreichungData?.einreichung;
+  const initialEinreichungDokumente = initialEinreichungData?.dokumente ?? [];
+  const showInitialEinreichungDetails =
+    Boolean(initialEinreichung) &&
+    einreichungen.length === 1 &&
+    verfahren.status !== "EINGEREICHT" &&
+    initialEinreichung?.status !== "EINGEREICHT";
+  const hasInitialEinreichung =
+    initialEinreichungData && showInitialEinreichungDetails;
 
   const isInitialEinreichungReady = isEinreichungReady(
     initialEinreichungDokumente,
@@ -130,34 +143,26 @@ export default function VerfahrenId() {
         label: routes.verfahrenNeu.step3.summary.badgeLabels.soon,
         badgeClassModifier: "warning" as const,
       };
-  const overviewBadge = showInitialEinreichungDetails
-    ? initialEinreichungBadge
-    : getVerfahrenStatusPresentation(verfahren.status);
 
-  const formatDate = (value: string | null | undefined) => {
-    if (!value) {
-      return NOT_AVAILABLE_LABEL;
-    }
+  const initialTimelineStepData = initialEinreichung
+    ? buildInitialTimelineStepData(
+        getInitialEinreichungTimelineSteps(initialEinreichungDokumente),
+        verfahren.status_changed,
+        {
+          assetsTitle: routes.verfahrenNeu.step3.proceduralSteps.assets.title,
+          filesAddedLabel:
+            routes.verfahrenNeu.step3.proceduralSteps.assets.filesAddedLabel,
+          addDetailsTitle:
+            routes.verfahrenNeu.step3.proceduralSteps.addDetails.title,
+          klageschriftUploadTitle:
+            routes.verfahrenNeu.step3.proceduralSteps.klageschriftUpload.title,
+        },
+      )
+    : [];
 
-    return new Date(value).toLocaleDateString();
-  };
-
-  const timelineSteps = getInitialEinreichungTimelineSteps(
-    initialEinreichungDokumente,
-  );
-  const initialTimelineStepData = buildInitialTimelineStepData(
-    timelineSteps,
-    verfahren.status_changed,
-    {
-      assetsTitle: routes.verfahrenNeu.step3.proceduralSteps.assets.title,
-      filesAddedLabel:
-        routes.verfahrenNeu.step3.proceduralSteps.assets.filesAddedLabel,
-      addDetailsTitle:
-        routes.verfahrenNeu.step3.proceduralSteps.addDetails.title,
-      klageschriftUploadTitle:
-        routes.verfahrenNeu.step3.proceduralSteps.klageschriftUpload.title,
-    },
-  );
+  if (hasInitialEinreichung) {
+    overviewBadge = initialEinreichungBadge;
+  }
 
   const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -235,7 +240,7 @@ export default function VerfahrenId() {
               <h3 className="kern-heading-medium">
                 {routes.verfahrenId.headline}
               </h3>
-              {showInitialEinreichungDetails ? (
+              {hasInitialEinreichung ? (
                 <>
                   <div className="gap-kern-space-default flex items-stretch">
                     <div className="w-80 flex-[0_0_auto]">
@@ -545,28 +550,34 @@ export default function VerfahrenId() {
                 </>
               ) : (
                 <div className="space-y-kern-space-default">
-                  {einreichungen.map(({ einreichung, dokumente }, index) => {
-                    const statusPresentation = getDokumentStatusPresentation(
-                      einreichung.status,
-                    );
-                    const timelineLabel = formatDate(
-                      einreichung.eingereicht_am ?? einreichung.erstellt_am,
-                    );
-                    const title =
-                      einreichung.name ??
-                      `${routes.verfahrenNeu.step3.proceduralSteps.einreichung.basisdaten.titleLabel} ${index + 1}`;
-                    const body = `${statusPresentation.label} · ${routes.verfahrenNeu.step3.proceduralSteps.einreichung.basisdaten.createdLabel} ${formatDate(einreichung.erstellt_am)} · ${dokumente.length} ${routes.verfahrenNeu.step3.proceduralSteps.assets.filesAddedLabel}`;
+                  {einreichungen.length ? (
+                    einreichungen.map(({ einreichung, dokumente }, index) => {
+                      const statusPresentation = getDokumentStatusPresentation(
+                        einreichung.status,
+                      );
+                      const timelineLabel = formatDate(
+                        einreichung.eingereicht_am ?? einreichung.erstellt_am,
+                      );
+                      const title =
+                        einreichung.name ??
+                        `${routes.verfahrenNeu.step3.proceduralSteps.einreichung.basisdaten.titleLabel} ${index + 1}`;
+                      const body = `${statusPresentation.label} · ${routes.verfahrenNeu.step3.proceduralSteps.einreichung.basisdaten.createdLabel} ${formatDate(einreichung.erstellt_am)} · ${dokumente.length} ${routes.verfahrenNeu.step3.proceduralSteps.assets.filesAddedLabel}`;
 
-                    return (
-                      <VerfahrenTimelineStepCard
-                        key={einreichung.id}
-                        timelineLabel={timelineLabel}
-                        title={title}
-                        body={body}
-                        showConnector={index < einreichungen.length - 1}
-                      />
-                    );
-                  })}
+                      return (
+                        <VerfahrenTimelineStepCard
+                          key={einreichung.id}
+                          timelineLabel={timelineLabel}
+                          title={title}
+                          body={body}
+                          showConnector={index < einreichungen.length - 1}
+                        />
+                      );
+                    })
+                  ) : (
+                    <p className="kern-body mt-kern-space-default m-0">
+                      Keine Einreichung vorhanden.
+                    </p>
+                  )}
                 </div>
               )}
             </section>

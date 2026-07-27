@@ -29,12 +29,16 @@ export default async function loadVerfahrenEinreichungBundle(
     authData,
     verfahrenId,
   );
-  const initialEinreichungSummary = einreichungen[0];
+  const initialEinreichungData = einreichungen[0];
+
+  if (!initialEinreichungData) {
+    throw new Error("No Einreichung could be fetched");
+  }
 
   return {
     verfahren,
-    einreichung: initialEinreichungSummary.einreichung,
-    dokumente: initialEinreichungSummary.dokumente,
-    einreichungId: initialEinreichungSummary.einreichung.id,
+    einreichung: initialEinreichungData.einreichung,
+    dokumente: initialEinreichungData.dokumente,
+    einreichungId: initialEinreichungData.einreichung.id,
   };
 }
