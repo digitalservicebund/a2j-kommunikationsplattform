@@ -17,6 +17,10 @@ import {
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/beteiligteByRole";
+import {
+  buildInitialTimelineStepData,
+  getInitialEinreichungTimelineSteps,
+} from "~/domains/verfahren/buildInitialEinreichungTimelineSteps";
 import deleteDokumentFromEinreichung from "~/domains/verfahren/deleteDokumentFromEinreichung.server";
 import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
 import type { Verfahren } from "~/domains/verfahren/loadVerfahrenEinreichungBundle.server";
@@ -72,16 +76,19 @@ export const action = async ({
   const formType = formData.get("formType");
 
   if (formType === "delete") {
-    await deleteDokumentFromEinreichung({
+    const deleteResult = await deleteDokumentFromEinreichung({
       authData,
       verfahrenId,
       einreichungId: formData.get("einreichungId"),
       dokumentId: formData.get("dokumentId"),
     });
 
-    // The detailed layout on this route is only used for the initial
-    // single-einreichung flow, so document changes continue in the
-    // /verfahren/neu/:id/abgabe route after the action completes.
+    if (deleteResult.status === "invalid-form-data") {
+      return redirect(`/verfahren/${verfahrenId}`);
+    }
+
+    // So far the formType "delete" is only allowed and meant to be used for an inital
+    // Einreichung, therefor the user will be returned to the "neue Klage einreichen" flow.
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   }
 
@@ -135,18 +142,22 @@ export default function VerfahrenId() {
     return new Date(value).toLocaleDateString();
   };
 
-  const additionalDokumenteCount = Math.max(
-    initialEinreichungDokumente.length - 1,
-    0,
+  const timelineSteps = getInitialEinreichungTimelineSteps(
+    initialEinreichungDokumente,
   );
-  const firstDokumentName =
-    initialEinreichungDokumente[0]?.name ?? NOT_AVAILABLE_LABEL;
-  const latestDokumentDate = initialEinreichungDokumente.length
-    ? formatDate(initialEinreichungDokumente.at(-1)?.erstellt_am)
-    : NOT_AVAILABLE_LABEL;
-  const firstDokumentDate = initialEinreichungDokumente[0]?.erstellt_am
-    ? formatDate(initialEinreichungDokumente[0].erstellt_am)
-    : NOT_AVAILABLE_LABEL;
+  const initialTimelineStepData = buildInitialTimelineStepData(
+    timelineSteps,
+    verfahren.status_changed,
+    {
+      assetsTitle: routes.verfahrenNeu.step3.proceduralSteps.assets.title,
+      filesAddedLabel:
+        routes.verfahrenNeu.step3.proceduralSteps.assets.filesAddedLabel,
+      addDetailsTitle:
+        routes.verfahrenNeu.step3.proceduralSteps.addDetails.title,
+      klageschriftUploadTitle:
+        routes.verfahrenNeu.step3.proceduralSteps.klageschriftUpload.title,
+    },
+  );
 
   const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -504,41 +515,33 @@ export default function VerfahrenId() {
                       </article>
                     </div>
                   </div>
-                  <VerfahrenTimelineStepCard
-                    timelineLabel={latestDokumentDate}
-                    title={
-                      routes.verfahrenNeu.step3.proceduralSteps.assets.title
-                    }
-                    body={`${additionalDokumenteCount} ${routes.verfahrenNeu.step3.proceduralSteps.assets.filesAddedLabel}`}
-                    editTo={`/verfahren/neu/${verfahren.id}/bearbeiten`}
-                    editLabel={shared.form.labels.edit}
-                  />
-                  <VerfahrenTimelineStepCard
-                    timelineLabel={new Date(
-                      verfahren.status_changed,
-                    ).toLocaleDateString()}
-                    title={
-                      routes.verfahrenNeu.step3.proceduralSteps.addDetails.title
-                    }
-                    body={
-                      <span className="bg-kern-feedback-info-background">
-                        Kläger, Beklagter, Rubrum und Gericht
-                      </span>
-                    }
-                    editTo={`/verfahren/neu/${verfahren.id}/bearbeiten`}
-                    editLabel={shared.form.labels.edit}
-                  />
-                  <VerfahrenTimelineStepCard
-                    timelineLabel={firstDokumentDate}
-                    title={
-                      routes.verfahrenNeu.step3.proceduralSteps
-                        .klageschriftUpload.title
-                    }
-                    body={firstDokumentName}
-                    editTo={`/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${initialEinreichung.id}`}
-                    editLabel={shared.form.labels.edit}
-                    showConnector={false}
-                  />
+                  {initialTimelineStepData.map((timelineStep, index) => {
+                    const isLastStep =
+                      index === initialTimelineStepData.length - 1;
+                    const editTo = isLastStep
+                      ? `/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${initialEinreichung.id}`
+                      : `/verfahren/neu/${verfahren.id}/bearbeiten`;
+
+                    return (
+                      <VerfahrenTimelineStepCard
+                        key={`${timelineStep.title}-${timelineStep.timelineLabel}`}
+                        timelineLabel={timelineStep.timelineLabel}
+                        title={timelineStep.title}
+                        body={
+                          timelineStep.highlightBody ? (
+                            <span className="bg-kern-feedback-info-background">
+                              {timelineStep.body}
+                            </span>
+                          ) : (
+                            timelineStep.body
+                          )
+                        }
+                        editTo={editTo}
+                        editLabel={shared.form.labels.edit}
+                        showConnector={timelineStep.showConnector}
+                      />
+                    );
+                  })}
                 </>
               ) : (
                 <div className="space-y-kern-space-default">

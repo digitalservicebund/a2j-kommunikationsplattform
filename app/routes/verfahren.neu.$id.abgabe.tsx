@@ -20,6 +20,10 @@ import {
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/beteiligteByRole";
+import {
+  buildInitialTimelineStepData,
+  getInitialEinreichungTimelineSteps,
+} from "~/domains/verfahren/buildInitialEinreichungTimelineSteps";
 import deleteDokumentFromEinreichung from "~/domains/verfahren/deleteDokumentFromEinreichung.server";
 import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
 import loadVerfahrenEinreichungBundle, {
@@ -81,12 +85,16 @@ export const action = async ({
   const formType = formData.get("formType");
 
   if (formType === "delete") {
-    await deleteDokumentFromEinreichung({
+    const deleteResult = await deleteDokumentFromEinreichung({
       authData,
       verfahrenId,
       einreichungId: formData.get("einreichungId"),
       dokumentId: formData.get("dokumentId"),
     });
+
+    if (deleteResult.status === "invalid-form-data") {
+      return redirect(`/verfahren/${verfahrenId}`);
+    }
 
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   }
@@ -115,16 +123,20 @@ export default function VerfahrenNeuBearbeiten() {
     : routes.verfahrenNeu.step3.summary.badgeLabels.soon;
   const readinessBadgeClass = isReady ? "success" : "warning";
   const einreichungData = [{ einreichung, dokumente }];
-  const additionalDokumenteCount = Math.max(dokumente.length - 1, 0);
-  const firstDokumentName = dokumente[0]?.name ?? NOT_AVAILABLE_LABEL;
-  const latestDokumentDate = einreichungData[0]?.dokumente?.length
-    ? new Date(
-        einreichungData[0].dokumente.at(-1)?.erstellt_am ?? NOT_AVAILABLE_LABEL,
-      ).toLocaleDateString()
-    : NOT_AVAILABLE_LABEL;
-  const firstDokumentDate = einreichungData[0]?.dokumente?.[0]?.erstellt_am
-    ? new Date(einreichungData[0].dokumente[0].erstellt_am).toLocaleDateString()
-    : NOT_AVAILABLE_LABEL;
+  const timelineSteps = getInitialEinreichungTimelineSteps(dokumente);
+  const initialTimelineStepData = buildInitialTimelineStepData(
+    timelineSteps,
+    verfahren.status_changed,
+    {
+      assetsTitle: routes.verfahrenNeu.step3.proceduralSteps.assets.title,
+      filesAddedLabel:
+        routes.verfahrenNeu.step3.proceduralSteps.assets.filesAddedLabel,
+      addDetailsTitle:
+        routes.verfahrenNeu.step3.proceduralSteps.addDetails.title,
+      klageschriftUploadTitle:
+        routes.verfahrenNeu.step3.proceduralSteps.klageschriftUpload.title,
+    },
+  );
 
   const [isSubmitting, setIsSubmitting] = useState<"idle" | "submitting">(
     "idle",
@@ -562,42 +574,33 @@ export default function VerfahrenNeuBearbeiten() {
                         ))}
                       </div>
                     </div>
-                    <VerfahrenTimelineStepCard
-                      timelineLabel={latestDokumentDate}
-                      title={
-                        routes.verfahrenNeu.step3.proceduralSteps.assets.title
-                      }
-                      body={`${additionalDokumenteCount} ${routes.verfahrenNeu.step3.proceduralSteps.assets.filesAddedLabel}`}
-                      editTo={`/verfahren/neu/${verfahren.id}/bearbeiten`}
-                      editLabel={shared.form.labels.edit}
-                    />
-                    <VerfahrenTimelineStepCard
-                      timelineLabel={new Date(
-                        verfahren.status_changed,
-                      ).toLocaleDateString()}
-                      title={
-                        routes.verfahrenNeu.step3.proceduralSteps.addDetails
-                          .title
-                      }
-                      body={
-                        <span className="bg-kern-feedback-info-background">
-                          Kläger, Beklagter, Rubrum und Gericht
-                        </span>
-                      }
-                      editTo={`/verfahren/neu/${verfahren.id}/bearbeiten`}
-                      editLabel={shared.form.labels.edit}
-                    />
-                    <VerfahrenTimelineStepCard
-                      timelineLabel={firstDokumentDate}
-                      title={
-                        routes.verfahrenNeu.step3.proceduralSteps
-                          .klageschriftUpload.title
-                      }
-                      body={firstDokumentName}
-                      editTo={`/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichungData[0].einreichung.id}`}
-                      editLabel={shared.form.labels.edit}
-                      showConnector={false}
-                    />
+                    {initialTimelineStepData.map((timelineStep, index) => {
+                      const isLastStep =
+                        index === initialTimelineStepData.length - 1;
+                      const editTo = isLastStep
+                        ? `/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichungData[0].einreichung.id}`
+                        : `/verfahren/neu/${verfahren.id}/bearbeiten`;
+
+                      return (
+                        <VerfahrenTimelineStepCard
+                          key={`${timelineStep.title}-${timelineStep.timelineLabel}`}
+                          timelineLabel={timelineStep.timelineLabel}
+                          title={timelineStep.title}
+                          body={
+                            timelineStep.highlightBody ? (
+                              <span className="bg-kern-feedback-info-background">
+                                {timelineStep.body}
+                              </span>
+                            ) : (
+                              timelineStep.body
+                            )
+                          }
+                          editTo={editTo}
+                          editLabel={shared.form.labels.edit}
+                          showConnector={timelineStep.showConnector}
+                        />
+                      );
+                    })}
                   </section>
                 </>
               )}

@@ -5,7 +5,6 @@ import { mockAuthData } from "./helpers";
 const mocks = vi.hoisted(() => ({
   fetchVerfahrenById: vi.fn(),
   fetchEinreichungenById: vi.fn(),
-  fetchEinreichungById: vi.fn(),
   fetchEinreichungStatus: vi.fn(),
   fetchDokumente: vi.fn(),
 }));
@@ -16,10 +15,6 @@ vi.mock("../fetchVerfahrenById.server", () => ({
 
 vi.mock("../fetchEinreichungenById.server", () => ({
   default: mocks.fetchEinreichungenById,
-}));
-
-vi.mock("../fetchEinreichungById.server", () => ({
-  default: mocks.fetchEinreichungById,
 }));
 
 vi.mock("../fetchEinreichungStatus.server", () => ({

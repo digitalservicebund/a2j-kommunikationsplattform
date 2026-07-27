@@ -11,14 +11,21 @@ type DeleteDokumentFromEinreichungOptions = {
   dokumentId: FormDataEntryValue | null;
 };
 
+export type DeleteDokumentFromEinreichungResult =
+  | { status: "invalid-form-data" }
+  // Klageschrift
+  | { status: "protected-initial-dokument" }
+  | { status: "deleted" }
+  | { status: "delete-failed" };
+
 export default async function deleteDokumentFromEinreichung({
   authData,
   verfahrenId,
   einreichungId,
   dokumentId,
-}: DeleteDokumentFromEinreichungOptions): Promise<void> {
+}: DeleteDokumentFromEinreichungOptions): Promise<DeleteDokumentFromEinreichungResult> {
   if (typeof einreichungId !== "string" || typeof dokumentId !== "string") {
-    return;
+    return { status: "invalid-form-data" };
   }
 
   const dokumente = (await fetchDokumente(authData, {
@@ -28,7 +35,7 @@ export default async function deleteDokumentFromEinreichung({
 
   // The first dokument is the initial filing and must not be deleted.
   if (dokumente[0]?.id === dokumentId) {
-    return;
+    return { status: "protected-initial-dokument" };
   }
 
   const { eTag } = await fetchDokument(authData, {
@@ -37,10 +44,16 @@ export default async function deleteDokumentFromEinreichung({
     id: dokumentId,
   });
 
-  await deleteDokument(authData, {
+  const deleteResult = await deleteDokument(authData, {
     verfahrenId,
     einreichungId,
     id: dokumentId,
     eTag: eTag ?? "",
   });
+
+  if (!deleteResult.success) {
+    return { status: "delete-failed" };
+  }
+
+  return { status: "deleted" };
 }
