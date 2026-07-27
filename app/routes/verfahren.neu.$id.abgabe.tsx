@@ -250,7 +250,7 @@ export default function VerfahrenNeuBearbeiten() {
                           label={readinessLabel}
                         />
                       </div>
-                      <div className="gap-kern-space-default grid grid-cols-1 md:grid-cols-3">
+                      <div className="gap-kern-space-default grid w-full grid-cols-1 md:grid-cols-3">
                         <VerfahrenBriefSummaryOfBeteiligte
                           notAvailableLabel={NOT_AVAILABLE_LABEL}
                           title={shared.beteiligte.klaegerLabel}
