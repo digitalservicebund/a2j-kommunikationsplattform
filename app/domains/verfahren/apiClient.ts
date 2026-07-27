@@ -59,8 +59,7 @@ export type ApiRequestSuccessResult<T> = {
 };
 
 export type ApiRequestHandledResult<T> =
-  | ApiRequestSuccessResult<T>
-  | ApiRequestErrorResult;
+  ApiRequestSuccessResult<T> | ApiRequestErrorResult;
 
 function parseJsonBodyOrUndefined(
   responseBody: string,
