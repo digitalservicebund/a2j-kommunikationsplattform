@@ -20,9 +20,7 @@ import {
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/beteiligteByRole";
-import deleteDokument from "~/domains/verfahren/deleteDokument.server";
-import fetchDokument from "~/domains/verfahren/fetchDokument";
-import fetchDokumente from "~/domains/verfahren/fetchDokumente";
+import deleteDokumentFromEinreichung from "~/domains/verfahren/deleteDokumentFromEinreichung.server";
 import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
 import loadVerfahrenEinreichungBundle, {
   Dokument,
@@ -83,34 +81,11 @@ export const action = async ({
   const formType = formData.get("formType");
 
   if (formType === "delete") {
-    const einreichungId = formData.get("einreichungId");
-    const dokumentId = formData.get("dokumentId");
-
-    if (typeof einreichungId !== "string" || typeof dokumentId !== "string") {
-      return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
-    }
-
-    const dokumente = (await fetchDokumente(authData, {
+    await deleteDokumentFromEinreichung({
+      authData,
       verfahrenId,
-      einreichungId,
-    })) as Dokument[];
-
-    // The first dokument is the initial filing and must not be deleted.
-    if (dokumente[0]?.id === dokumentId) {
-      return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
-    }
-
-    const { eTag } = await fetchDokument(authData, {
-      verfahrenId,
-      einreichungId,
-      id: dokumentId,
-    });
-
-    await deleteDokument(authData, {
-      verfahrenId,
-      einreichungId,
-      id: dokumentId,
-      eTag: eTag ?? "",
+      einreichungId: formData.get("einreichungId"),
+      dokumentId: formData.get("dokumentId"),
     });
 
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
@@ -192,7 +167,7 @@ export default function VerfahrenNeuBearbeiten() {
       className={`${isSubmitting === "submitting" ? "pointer-events-none opacity-50" : ""} relative`}
     >
       <div className="kern-row">
-        <div className="kern-col-12 kern-col-xl-8 kern-col-xl-offset-2">
+        <div className="kern-col-12 kern-col-xl-10 kern-col-xl-offset-1">
           <h1 className="kern-heading-large">
             {routes.verfahrenNeu.step3.headline}
           </h1>
@@ -237,7 +212,7 @@ export default function VerfahrenNeuBearbeiten() {
                 <>
                   <article className="kern-card">
                     <div className="kern-card__container">
-                      <div className="algin-start gap-kern-space-default flex flex-wrap items-start">
+                      <div className="algin-start gap-kern-space-default flex w-full flex-wrap items-start">
                         <div className="flex-1">
                           <h2 className="kern-heading-medium">
                             {`${klaegerinnenNamen} ./. ${beklagteNamen}`}

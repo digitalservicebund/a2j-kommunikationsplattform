@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   getDokumentStatusPresentation,
   getEinreichungStatusPresentation,
+  getVerfahrenStatusPresentation,
   getVirenScanStatusPresentation,
   isEinreichungReady,
 } from "../statusPresentation";
@@ -34,6 +35,17 @@ describe("statusPresentation", () => {
     expect(getDokumentStatusPresentation("OTHER")).toEqual({
       badgeClassModifier: "warning",
       label: "Wird validiert",
+    });
+  });
+
+  test("maps verfahren status", () => {
+    expect(getVerfahrenStatusPresentation("ERSTELLT")).toEqual({
+      badgeClassModifier: "info",
+      label: "Klage noch nicht eingereicht",
+    });
+    expect(getVerfahrenStatusPresentation("EINGEREICHT")).toEqual({
+      badgeClassModifier: "success",
+      label: "Klage eingereicht",
     });
   });
 

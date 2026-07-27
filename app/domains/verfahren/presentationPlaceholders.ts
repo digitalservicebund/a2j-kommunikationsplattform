@@ -10,4 +10,4 @@ export const PROTOTYPE_EINREICHUNG_GZ = "AR-2024-001";
 export const PROTOTYPE_HIGHLIGHT_LABEL = "Blau markierte Elemente";
 
 export const PROTOTYPE_HINT_SUFFIX =
-  "sind exemplarisch und statisch hinterlegt, die passende API-Integration folgt.";
+  "sind exemplarisch und statisch hinterlegt, API-Integration folgt.";

@@ -32,7 +32,6 @@ export default [
     route("neu/:id/bearbeiten", "./routes/verfahren.neu.$id.bearbeiten.tsx"),
     route("neu/:id/abgabe", "./routes/verfahren.neu.$id.abgabe.tsx"),
     route(":id", "./routes/verfahren.$id.tsx"),
-    route(":id/bearbeiten", "./routes/verfahren.$id.bearbeiten.tsx"),
   ]),
 
   // exclude route(s) from production environment

@@ -49,6 +49,20 @@ export function getDokumentStatusPresentation(status: string): Presentation {
   };
 }
 
+export function getVerfahrenStatusPresentation(status: string): Presentation {
+  if (status === "EINGEREICHT") {
+    return {
+      badgeClassModifier: "success",
+      label: "Klage eingereicht",
+    };
+  }
+
+  return {
+    badgeClassModifier: "info",
+    label: "Klage noch nicht eingereicht",
+  };
+}
+
 export function getVirenScanStatusPresentation(
   status: string,
   variant: VirenScanLabelVariant = "short",
