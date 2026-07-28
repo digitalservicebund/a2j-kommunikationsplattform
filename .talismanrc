@@ -35,7 +35,7 @@ fileignoreconfig:
 - filename: .github/workflows/pipeline.yml
   checksum: 48bdf777d2d48169121983a1c7e79d42856d21d3c6a98c28e9acb9dbfa2147a2
 - filename: .github/workflows/scan.yml
-  checksum: 24dece18fd71e389cfa840dcc8d03123ef6944a0ceca3be03d7fb1214c504f37
+  checksum: 20fab47fd6eef4d63852bae412dcf0d0248784b3d6980ca40740f90e05a51e42
 - filename: .env.op
   checksum: 1c7661fd991fc0338fe12c259b06f656503f92c7d7d8387466fe76f42fc83597
 - filename: .env.defaults
