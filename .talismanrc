@@ -31,7 +31,7 @@ fileignoreconfig:
 - filename: .github/workflows/sonarqube.yml
   checksum: b71414957aa2c47a0bbe4e509ca1a189f99e9066d9419453fa612a82aa8fc69c
 - filename: .github/workflows/pipeline.yml
-  checksum: 589dd4ac1fbff4143fa0d87646ff8d9a9cb70d304541e6f710a5b41c3fdab76f
+  checksum: 7be742c5e69f9bf892855e91a50afe603f4cbedde90acb02a963ae73af37d645
 - filename: .github/workflows/scan.yml
   checksum: 11f88e8d0d4ce28132afab0bf06f493744dd91a4ef83107b8cbdd09bed5d0f2e
 - filename: .env.op
