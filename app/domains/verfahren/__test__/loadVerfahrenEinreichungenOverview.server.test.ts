@@ -91,7 +91,7 @@ describe("loadVerfahrenEinreichungenOverview", () => {
     });
   });
 
-  test("throws when no matching einreichung exists", async () => {
+  test("returns empty einreichungen when no matching einreichung exists", async () => {
     mocks.fetchVerfahrenById.mockResolvedValueOnce({ id: "v-1" });
     mocks.fetchEinreichungenById.mockResolvedValueOnce([
       { id: "e-3", verfahren_id: "v-2" },
@@ -99,6 +99,12 @@ describe("loadVerfahrenEinreichungenOverview", () => {
 
     await expect(
       loadVerfahrenEinreichungenOverview(mockAuthData, "v-1"),
-    ).rejects.toThrow("No Einreichung could be fetched");
+    ).resolves.toEqual({
+      verfahren: { id: "v-1" },
+      einreichungen: [],
+    });
+
+    expect(mocks.fetchEinreichungStatus).not.toHaveBeenCalled();
+    expect(mocks.fetchDokumente).not.toHaveBeenCalled();
   });
 });

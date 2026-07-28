@@ -37,10 +37,6 @@ export default async function loadVerfahrenEinreichungenOverview(
     (einreichung) => einreichung.verfahren_id === verfahrenId,
   );
 
-  if (matchingEinreichungen.length === 0) {
-    throw new Error("No Einreichung could be fetched");
-  }
-
   const einreichungen = await Promise.all(
     matchingEinreichungen.map(async (einreichung) => {
       const einreichungsStatus = (await fetchEinreichungStatus(authData, {
