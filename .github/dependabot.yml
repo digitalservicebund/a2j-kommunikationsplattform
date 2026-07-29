@@ -1,15 +1,9 @@
-# Please see the documentation for all configuration options:
-# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
-      # By default, Dependabot checks for new versions at a random set time for the repository.
-      # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#scheduletime
-      time: "08:00"
-      timezone: "Europe/Berlin"
     cooldown:
       default-days: 3
     groups:
@@ -21,14 +15,31 @@ updates:
         patterns:
           - "vitest*"
           - "@vitest*"
-          - "vite-node"
       react:
         patterns:
           - "react"
           - "react-dom"
           - "@types/react"
           - "@types/react-dom"
+
+  - package-ecosystem: "docker"
+    directories:
+      - /
+    schedule:
+      interval: "daily"
+    cooldown:
+      default-days: 1
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
+      cooldown:
+        default-days: 3
+      groups:
+        actions:
+          patterns:
+            - "actions/*"
+        docker:
+          patterns:
+            - "docker/*"
