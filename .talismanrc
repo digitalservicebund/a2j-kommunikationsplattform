@@ -44,6 +44,8 @@ fileignoreconfig:
   checksum: e0032376dcb50535952654822230a18fce1ade507f9252cac9ba83055b4b1edc
 - filename: playwright.config.ts
   checksum: 64e5e6fe7a7787a6c84f3c8ac347e54a421c400c6982b46ee2b6d4dd4497af75
+- filename: .github/workflows/dependabot-auto-merge.yml
+  checksum: aa4ad6ddaa190d85cc7b027108e71dd7afbc63e4969fe0e196dd399be7cac89e
 - filename: app/components/hooks/**test**/useLogoutInactiveUser.test.tsx
   ignore_detectors: [filecontent]
 - filename: app/config/config.server.ts
