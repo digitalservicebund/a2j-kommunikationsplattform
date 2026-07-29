@@ -24,12 +24,18 @@ export default function VerfahrenBriefSummaryOfBeteiligte({
 }: Readonly<VerfahrenBriefSummaryOfBeteiligteProps>) {
   return (
     <div className="p-kern-space-default space-y-kern-space-default rounded-kern-default border border-(--kern-color-decorative-border-contextual)">
-      <h3 className="kern-heading-small pb-kern-space-default border-b border-(--kern-color-decorative-border-contextual)">
+      <h3 className="kern-heading-small pb-kern-space-default border-b border-(--kern-color-decorative-border-contextual) px-0">
         {title}
       </h3>
       <dl className="kern-description-list kern-description-list--col">
         {beteiligte.length === 0 ? (
-          <p className="kern-body">{fallbackLabel}</p>
+          <div>
+            <div className="kern-description-list-item">
+              <dd className="kern-description-list-item__value">
+                {fallbackLabel}
+              </dd>
+            </div>
+          </div>
         ) : (
           <>
             {beteiligte.map((beteiligung) => (

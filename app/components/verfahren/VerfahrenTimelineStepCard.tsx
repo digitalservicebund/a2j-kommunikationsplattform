@@ -5,8 +5,8 @@ type VerfahrenTimelineStepCardProps = {
   timelineLabel: string;
   title: string;
   body: ReactNode;
-  editTo: string;
-  editLabel: string;
+  editTo?: string;
+  editLabel?: string;
   showConnector?: boolean;
   iconClassName?: string;
 };
@@ -48,9 +48,11 @@ export default function VerfahrenTimelineStepCard({
             <section className="kern-card__body">
               <div className="flex w-full flex-row items-center justify-between">
                 <p className="kern-body">{body}</p>
-                <Link to={editTo} className="kern-btn kern-btn--tertiary">
-                  <span className="kern-label">{editLabel}</span>
-                </Link>
+                {editTo && editLabel && (
+                  <Link to={editTo} className="kern-btn kern-btn--tertiary">
+                    <span className="kern-label">{editLabel}</span>
+                  </Link>
+                )}
               </div>
             </section>
           </div>

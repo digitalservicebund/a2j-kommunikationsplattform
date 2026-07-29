@@ -111,7 +111,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "38f88aaa-3082-8bae-0055-90bbc79b9f89",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "D 966 12/2024",
           },
         ],
@@ -161,7 +161,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "46a43817-90b4-0291-3043-51e357a7889b",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "O 9814 08/2026",
           },
         ],
@@ -198,7 +198,7 @@ export const mockVerfahren = [
           },
           {
             id: "661154f6-9da3-d711-1d83-27622d956a7f",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "A 6873 11/2025",
           },
         ],
@@ -216,7 +216,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "70c2dc02-d2f1-6dee-1e10-76b621151a64",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "B 4890 11/2025",
           },
         ],
@@ -298,7 +298,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "72bf2519-764d-5590-2f64-bcc62f066bbb",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "N 1397 04/2024",
           },
         ],
@@ -342,7 +342,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "7ff69fb1-1329-ef1c-c145-d45f765a2917",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "O 8335 06/2025",
           },
         ],
@@ -360,7 +360,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "77dfa73c-0bfb-3632-3f9b-1d8a26fbc813",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "L 2750 13/2024",
           },
         ],
@@ -392,7 +392,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "e49a5bda-dffc-9e89-ca7d-6e734ab34fe2",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "Z 2827 01/2025",
           },
         ],
@@ -410,7 +410,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "edf57c3c-6765-0646-91b4-038ed7b3b377",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "L 7865 02/2026",
           },
         ],
@@ -442,7 +442,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "79f44a90-7c13-480a-a33d-ad680e0cb09a",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "B 9622 04/2024",
           },
         ],
@@ -492,7 +492,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "66672cf5-f9f5-3d4b-b261-6b652ac4e779",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "P 500 05/2026",
           },
         ],
@@ -510,7 +510,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "6a8d535c-b0c4-253a-e1f4-3660b5a15d2f",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "W 3012 09/2026",
           },
         ],
@@ -586,7 +586,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "65f91d8c-f70a-ff9f-8d75-b2c6d69f5fc7",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "P 2841 11/2026",
           },
         ],
@@ -604,7 +604,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "41575658-90f3-eb74-3541-cbf9b029f30e",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "Z 9687 01/2025",
           },
         ],
@@ -654,7 +654,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "ff75017d-a85b-a5e2-ed54-c92e6b7e504e",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "P 6734 10/2024",
           },
         ],
@@ -786,7 +786,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "75c6a078-303f-e70c-4874-15168816404f",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "Z 7342 09/2026",
           },
         ],
@@ -804,7 +804,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "0da405e9-3acc-bdce-9b32-c4bee9b2117d",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "U 4447 13/2024",
           },
           {
@@ -853,7 +853,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f1bcac87-e0eb-4809-1ba2-2046489a108c",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "X 3687 05/2024",
           },
         ],
@@ -903,7 +903,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "a2bc0d33-93ed-d4bb-d15f-17904e846019",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "M 9368 09/2026",
           },
           {
@@ -958,7 +958,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "0bb52bec-6fb9-e355-c3fd-4ffbd41dda48",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "A 8604 11/2024",
           },
           {
@@ -1057,7 +1057,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "9134deda-82a6-1afb-4b18-6e4198732f3c",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "M 7128 10/2026",
           },
         ],
@@ -1094,7 +1094,7 @@ export const mockVerfahren = [
           },
           {
             id: "28f0ea38-7ff6-ef09-0447-8a4afb1c7714",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "A 3113 07/2025",
           },
         ],
@@ -1232,7 +1232,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "fae2f6ba-4a81-2717-188a-760a72067de0",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "E 3453 09/2024",
           },
         ],
@@ -1250,7 +1250,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "2e167a54-e9d8-aca2-757b-0b9446f6c50d",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "Q 9475 02/2024",
           },
           {
@@ -1381,7 +1381,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "c5375107-fee5-08c1-e2f5-f83f241b9437",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "P 5843 13/2026",
           },
           {
@@ -1480,7 +1480,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "fbeae46f-f0c9-bdb2-6190-b0afcb22b73f",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "A 5995 07/2025",
           },
         ],
@@ -1498,7 +1498,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "30ac9002-167b-08ca-bc48-c5c399484415",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "M 1622 09/2024",
           },
         ],
@@ -1635,7 +1635,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "9f1aba23-291b-6138-8664-cde040e76af7",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "G 569 04/2025",
           },
         ],
@@ -1697,7 +1697,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "2ef9690c-7989-d3ec-f5ae-ca3b2786a72d",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "G 2246 09/2026",
           },
         ],
@@ -1829,7 +1829,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "e76963dc-70a0-d171-d6d3-aca5f35225d1",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "L 2449 07/2025",
           },
         ],
@@ -1847,7 +1847,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "8d7d03dc-475b-3373-34c2-592d867a31e9",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "B 7713 01/2025",
           },
         ],
@@ -1891,7 +1891,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "d65b6076-8478-cf3a-2882-6c7877c11476",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "Z 4643 08/2025",
           },
         ],
@@ -2061,7 +2061,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "243fa75d-0189-f3e8-66fd-32f7229ce8ad",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "A 8414 02/2025",
           },
           {
@@ -2116,7 +2116,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "a4518c0f-4f23-1623-4c56-77417d9eec67",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "A 3121 06/2024",
           },
         ],
@@ -2134,7 +2134,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "2164aeed-2617-fd7a-1b3f-c53ac8ff776d",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "G 9038 11/2025",
           },
           {
@@ -2215,7 +2215,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "0cad2c9c-b6ce-1414-2080-fad002c3eba9",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "O 6525 04/2025",
           },
         ],
@@ -2277,7 +2277,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "0351bd3f-a0ad-690f-7de0-73f1b4658bb4",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "G 2506 04/2024",
           },
         ],
@@ -2321,7 +2321,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "6b5a2fe3-47ad-6bad-b607-e19a4b8820c3",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "N 3013 03/2025",
           },
         ],
@@ -2371,7 +2371,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "6dc9cf89-9b69-d298-a2cf-e95135fbead7",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "Q 9808 02/2024",
           },
         ],
@@ -2403,7 +2403,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "64b46fa4-5b44-efd7-c80d-830fd5e1cc3b",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "U 7151 05/2026",
           },
         ],
@@ -2447,7 +2447,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "d71f917a-3399-e661-cf49-e55598c572a8",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "I 9591 09/2025",
           },
           {
@@ -2620,7 +2620,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "332c09e2-093b-bfd3-9d24-2e9715f8a125",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "B 7556 04/2025",
           },
         ],
@@ -2652,7 +2652,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "5deaff32-9f50-bd02-7aa0-e6ba1e973dcc",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "S 6202 09/2026",
           },
         ],
@@ -2670,7 +2670,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "694bef61-bc3e-d518-3199-7cba2495eeb5",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "W 3116 10/2024",
           },
           {
@@ -2730,7 +2730,7 @@ export const mockVerfahren = [
           },
           {
             id: "92d6493f-0d52-e997-1c48-1a3ac2eb8680",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "L 7739 02/2026",
           },
         ],
@@ -2817,7 +2817,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "8d682c50-3f24-e56d-1e31-3bde6aa21858",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "J 7421 11/2025",
           },
           {
@@ -2890,7 +2890,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "99295cdc-02d7-bce9-d35d-d5b6fa9f3d8c",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "I 1491 10/2024",
           },
         ],
@@ -3177,7 +3177,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "11b78fd3-ed5b-4adc-6d2f-18308191aa85",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "F 6762 10/2024",
           },
         ],
@@ -3332,7 +3332,7 @@ export const mockVerfahren = [
           },
           {
             id: "7526d78a-a62a-5d7a-3a09-3a986675c08a",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "Z 5127 02/2024",
           },
         ],
@@ -3432,7 +3432,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "1e8d362a-41ff-47ac-800d-a7becd3df9ee",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "R 8423 06/2024",
           },
         ],
@@ -3500,7 +3500,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "9b956fe4-d265-99e7-bfb1-98ca3c57494b",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "R 9603 03/2024",
           },
           {
@@ -3537,7 +3537,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "b917f025-fafa-be80-6571-46313732c2c1",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "R 8990 13/2025",
           },
         ],
@@ -3610,7 +3610,7 @@ export const mockVerfahren = [
           },
           {
             id: "f94e33e0-9a73-71e1-2b8f-910aad6d366f",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "J 7098 03/2026",
           },
         ],
@@ -3892,7 +3892,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "ef21c3b7-a4c1-a2f0-05f9-42e87672651f",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "X 679 02/2024",
           },
         ],
@@ -3947,7 +3947,7 @@ export const mockVerfahren = [
           },
           {
             id: "ff08f8ca-fa4a-5ba9-65af-ab4a24f79ec8",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "A 5056 08/2025",
           },
         ],
@@ -3984,7 +3984,7 @@ export const mockVerfahren = [
           },
           {
             id: "883e4654-b813-8aa1-75f2-56e3ad291ca4",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "R 9201 06/2026",
           },
         ],
@@ -4002,7 +4002,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "7ee8e6fa-5b69-f002-e097-c475a0f8ad08",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "Z 2316 04/2025",
           },
         ],
@@ -4194,7 +4194,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f4fd455b-0128-ba24-eb54-ff39143bc6c7",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "S 6888 04/2025",
           },
         ],
@@ -4288,7 +4288,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "2f12d30b-927a-fe78-f572-adc530a58d29",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "B 6691 12/2025",
           },
         ],
@@ -4306,7 +4306,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "5c944042-a701-9fa8-769f-eaea5a9ce376",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "Q 8214 01/2026",
           },
         ],
@@ -4338,7 +4338,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "6904529e-222e-1e0e-8873-f5f45876c9a2",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "Y 5676 07/2026",
           },
         ],
@@ -4456,7 +4456,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f5e6c514-c280-c133-e088-12edd3a66b51",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "P 8971 08/2024",
           },
         ],
@@ -4538,7 +4538,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "45104eec-da5d-e41f-abe8-041a2da3caf6",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "V 5045 07/2025",
           },
         ],
@@ -4556,7 +4556,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "a692b0a2-d5dd-bd59-6903-2269eb595ec8",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "Y 8558 06/2026",
           },
         ],
@@ -4898,7 +4898,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "bc5463ee-9820-7941-5a35-91272a50a526",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "J 4729 12/2025",
           },
         ],
@@ -4930,7 +4930,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "402e3800-b064-ff4c-f6a5-1264471f656e",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "V 4627 02/2024",
           },
         ],
@@ -4948,7 +4948,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "87f35046-28a7-4993-47ce-0308cfcd4703",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "D 1565 06/2024",
           },
         ],
@@ -4980,7 +4980,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "e0ec45a4-f505-5973-11e3-aaed7ffe7801",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "A 6111 12/2024",
           },
         ],
@@ -4998,7 +4998,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "6899656d-bd03-6c8b-7b17-45cf81b7c7e5",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "Z 4752 09/2024",
           },
         ],
@@ -5092,7 +5092,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "20aebb79-f194-c617-e301-bfe4b3fd408e",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "Y 4966 02/2026",
           },
         ],
@@ -5142,7 +5142,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "0d1c52f2-8e1e-d617-4e48-9f8cb5b2839a",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "X 8877 05/2026",
           },
           {
@@ -5191,7 +5191,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "7851e0bf-e8f1-b64c-22a4-5b50f3b570e7",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "W 3808 12/2026",
           },
         ],
@@ -5246,7 +5246,7 @@ export const mockVerfahren = [
           },
           {
             id: "6c5df3a6-219d-dd18-1b93-763d8e8404f2",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "H 1558 02/2025",
           },
         ],
@@ -5278,7 +5278,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f498cc30-1de7-1435-816c-ebc7d08e47a1",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "A 8831 09/2026",
           },
         ],
@@ -5296,7 +5296,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "350def9e-1f86-5dd0-1bcb-6611dd6b5833",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "P 1199 08/2024",
           },
         ],
@@ -5346,7 +5346,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "9159ab44-d32a-e2d9-47d1-860e2ec4ec3c",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "J 9084 10/2025",
           },
         ],
@@ -5440,7 +5440,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "232ad986-baff-60c2-0120-89b62bb7c4e5",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "B 1829 13/2025",
           },
         ],
@@ -5472,7 +5472,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "e2602b57-3555-1716-37f1-1c9832ed505c",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "G 6156 07/2026",
           },
         ],
@@ -5522,7 +5522,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "1d0d0c81-a508-6880-d92c-bef2eb1a3bae",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "S 5659 06/2024",
           },
         ],
@@ -5540,7 +5540,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "9640e371-ed93-1a07-1f1a-1936ffc97acc",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "B 1225 12/2025",
           },
         ],
@@ -5640,7 +5640,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "c3b1f4e5-ae24-77e6-d2ae-6c4d291ddcfb",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "K 1600 10/2025",
           },
         ],
@@ -5690,7 +5690,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f36071fd-c2ab-df37-255b-c6daef1ddd12",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "J 643 02/2025",
           },
         ],
@@ -5740,7 +5740,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "8a6ce1bd-c818-2bde-f84e-4dcf333bbe53",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "S 4646 06/2025",
           },
         ],
@@ -5872,7 +5872,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "3a722474-57b8-8445-04ee-0ce1baa23ae2",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "U 8115 09/2024",
           },
         ],
@@ -6016,7 +6016,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "487e6405-8713-35c0-0a9e-1f876671b262",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "X 2990 05/2024",
           },
         ],
@@ -6034,7 +6034,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "d4ca71b0-9ecf-4ffa-727c-8e8d02d2c0a5",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "Y 3071 10/2025",
           },
         ],
@@ -6066,7 +6066,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "0947e4f6-a791-fd7c-2edf-28949de3ac03",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "O 178 03/2026",
           },
         ],
@@ -6084,7 +6084,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "9d3239ff-e281-30d8-8468-7ffe53f1910f",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "V 8752 11/2025",
           },
         ],
@@ -6116,7 +6116,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "80f8acbe-ad5d-c8cb-9381-b633f3d3a80f",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "H 5969 04/2026",
           },
         ],
@@ -6134,7 +6134,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "63b6fff7-c9f9-0df2-7d5f-8215b10a3666",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "J 364 02/2025",
           },
         ],
@@ -6221,7 +6221,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "bd18676b-8af3-1a06-ce8a-c11d0ddc112d",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "R 4402 11/2026",
           },
           {
@@ -6244,7 +6244,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "dee8b315-9b7f-4077-e4be-4d3b23d4be4d",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "L 8171 11/2025",
           },
         ],
@@ -6294,7 +6294,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "68d69817-fcf8-5923-e61f-383f839ed955",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "Z 5590 07/2026",
           },
         ],
@@ -6370,7 +6370,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "806b44b8-6687-db61-6034-6b665a2e2761",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "G 7441 06/2026",
           },
         ],
@@ -6414,7 +6414,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "d4e936ba-5843-0279-9823-e29345b24b3c",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "C 6597 10/2025",
           },
           {
@@ -6469,7 +6469,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "c58f1812-fc52-85dd-1ba2-e78814b26c51",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "V 6996 12/2024",
           },
         ],
@@ -6487,7 +6487,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "dcda8c59-096b-8908-a70e-b4111a4a0cfd",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "Z 6026 09/2024",
           },
         ],
@@ -6531,7 +6531,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "91784299-2159-f44a-ea9d-41aa734ab790",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "B 4185 08/2024",
           },
         ],
@@ -6581,7 +6581,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "6a320fd3-25ff-9b61-3b95-d83fd6c1f677",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "Q 1353 05/2024",
           },
         ],
@@ -6618,7 +6618,7 @@ export const mockVerfahren = [
           },
           {
             id: "b8c19f72-b6d3-c237-b06c-b90b8f4bcdc0",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "S 6183 11/2024",
           },
         ],
@@ -6636,7 +6636,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "64fa2c69-966f-8f5f-bfe5-799d6db24852",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "M 331 03/2026",
           },
         ],
@@ -6668,7 +6668,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "b09a266a-4825-8529-409f-330df0a31b51",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "Q 9791 01/2026",
           },
         ],
@@ -6686,7 +6686,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "1b56a2b3-a4f4-5f91-f6be-0447a1850dad",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "X 9635 02/2026",
           },
         ],
@@ -6730,7 +6730,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f9a86b9f-de04-90be-069d-30fff664ce26",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "W 4313 03/2025",
           },
         ],
@@ -6944,12 +6944,12 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "446509b0-b65b-7ce9-4b6d-715faaec31a4",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "O 6565 10/2025",
           },
           {
             id: "7e3159ea-d6a2-aee3-5fab-2d9a06108c51",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "Q 2505 07/2025",
           },
         ],
@@ -7247,7 +7247,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "cdfdefbc-dce7-ceb2-5db3-a81068984567",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "N 5944 02/2026",
           },
           {
@@ -7352,7 +7352,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "cdb95b7e-a714-dae4-f463-089c785e5abe",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "N 4076 06/2025",
           },
         ],
@@ -7370,7 +7370,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "440647c4-07d6-6cd5-7b52-4fc0d5c83323",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "V 9287 12/2025",
           },
         ],
@@ -7402,7 +7402,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "15c9e6aa-6d1b-d2c3-ba9f-5699aa7f3517",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "P 9747 02/2025",
           },
         ],
@@ -7508,7 +7508,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "bf5b8c4b-08f8-1aa1-b939-d54c4fa1db77",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "Z 3800 05/2026",
           },
         ],
@@ -7690,7 +7690,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "fe1df804-3532-2344-adb4-27e9f41e57c3",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "C 8214 08/2026",
           },
           {
@@ -7839,7 +7839,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "60d2d569-15fd-f4f8-482a-7d4f1896da27",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "M 8192 07/2024",
           },
           {
@@ -7862,7 +7862,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "4207fb88-58ba-0e3e-b56e-68e323a80de3",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "I 3899 10/2025",
           },
         ],
@@ -7899,7 +7899,7 @@ export const mockVerfahren = [
           },
           {
             id: "e6dc33ba-84af-8dc4-4d06-3c2993a613ec",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "O 5123 12/2024",
           },
         ],
@@ -7949,7 +7949,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "33b4bfd1-5c80-a1d7-9d1e-1c8e12357e67",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "K 4590 10/2025",
           },
         ],
@@ -8043,7 +8043,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f0812bd2-d11d-fe9a-77df-69ec7473be9d",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "G 9687 11/2026",
           },
         ],
@@ -8061,7 +8061,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "303d5fb2-8b97-a092-aa8b-bd72d2611f83",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "Z 9987 04/2025",
           },
           {
@@ -8103,7 +8103,7 @@ export const mockVerfahren = [
           },
           {
             id: "824d841b-9b30-097b-b20a-40d855477a46",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "H 4098 13/2024",
           },
         ],
@@ -8121,7 +8121,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "79cc2183-ee31-9ee7-7768-08c44aa6fe77",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "J 7979 12/2024",
           },
         ],
@@ -8153,7 +8153,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "329c87ec-b232-993a-7612-86a077ae5bba",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "I 7348 07/2026",
           },
           {
@@ -8208,7 +8208,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "3f6cb47e-8885-0b0f-1c25-581b8515aba7",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "L 499 08/2024",
           },
         ],
@@ -8363,7 +8363,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "1b76698f-fe1c-f6f1-3c05-42888a2e3120",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "K 7008 04/2024",
           },
         ],
@@ -8381,7 +8381,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "d93e85f4-8f1e-bc4f-08c6-3d281bc661cf",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "G 647 09/2026",
           },
         ],
@@ -8563,7 +8563,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "c6fd12d7-1fa1-5a16-7603-48e9c2fcdb44",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "K 7816 11/2025",
           },
         ],
@@ -8581,7 +8581,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "e33b18d5-26bf-cfd8-2db6-62c4ffc63e2b",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "R 1550 08/2025",
           },
         ],
@@ -8857,7 +8857,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "3c285a8f-7419-4233-c593-9dee8d9833ab",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "W 1566 01/2025",
           },
         ],
@@ -8875,7 +8875,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "8371a408-ae35-70b4-1814-c63adf68c6c5",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "E 5015 04/2024",
           },
         ],
@@ -9057,7 +9057,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "a29a1691-bd41-3091-b1f7-38f7360ac5b4",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "Y 1284 06/2026",
           },
         ],
@@ -9107,7 +9107,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "726b6e1f-3f90-437a-1c09-86d45e305489",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "O 4540 11/2025",
           },
         ],
@@ -9125,7 +9125,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "ce3f5164-7e2d-4864-3a2e-e88d1e7820ab",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "G 3455 01/2026",
           },
         ],
@@ -9157,7 +9157,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "34dfcebd-7473-9608-945b-9f964794e55c",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "E 3537 13/2025",
           },
           {
@@ -9180,7 +9180,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "59bda793-26ba-2ddd-96ec-de0d946aae5b",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "P 8431 01/2026",
           },
         ],
@@ -9285,7 +9285,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "ca346a38-6a70-a23c-9a04-e275c4e71c1c",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "L 4787 01/2026",
           },
         ],
@@ -9528,7 +9528,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "d93849a3-44c1-20c8-29ed-aaa20fc76717",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "K 1690 05/2026",
           },
         ],
@@ -9578,7 +9578,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "d0e4f144-cfd9-9c40-5b93-eb55c62249c6",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "T 1014 06/2024",
           },
         ],
@@ -9615,7 +9615,7 @@ export const mockVerfahren = [
           },
           {
             id: "51a18cd8-2069-ed34-0683-1dea8313ce8b",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "P 3315 09/2024",
           },
         ],
@@ -9665,7 +9665,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "c55ce5e3-fe4a-c963-e74a-34d7705ff2ca",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "H 9657 12/2026",
           },
         ],
@@ -9683,7 +9683,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "81f91b91-c84f-ed62-b4f5-c5a5b2b7668f",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "N 6262 07/2024",
           },
         ],
@@ -9788,7 +9788,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "ac5b2a4c-8bc0-41b5-4be8-7defb9e9b0cb",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "G 8923 07/2024",
           },
         ],
@@ -9820,7 +9820,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "1550b005-f12b-1243-59b8-8a2cab1065df",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "T 8570 05/2026",
           },
         ],
@@ -9838,7 +9838,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "231f8f40-f456-083a-c165-59b545de4597",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "R 7149 06/2026",
           },
           {
@@ -10024,7 +10024,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "386ee8b5-ed62-7d94-52e4-84de408f8f88",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "R 6217 11/2026",
           },
         ],
@@ -10047,7 +10047,7 @@ export const mockVerfahren = [
           },
           {
             id: "09c6d367-7aa1-a3e5-9b6b-8471a27cf57c",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "A 1654 04/2026",
           },
         ],
@@ -10223,7 +10223,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "75dd8d5e-cf3f-cb97-81cb-c0d70f3a01d7",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "O 9130 12/2024",
           },
         ],
@@ -10296,7 +10296,7 @@ export const mockVerfahren = [
           },
           {
             id: "dffd1750-2f5e-d040-13e8-87998c37da90",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "T 7172 13/2024",
           },
         ],
@@ -10428,7 +10428,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "7c27d08f-4c34-812c-6113-7456f51c9f2d",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "S 1802 01/2026",
           },
         ],
@@ -10490,7 +10490,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "c28f118c-eeee-0c84-862e-fbebe993e736",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "M 8673 11/2025",
           },
         ],
@@ -10534,7 +10534,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "b77e51bb-4943-42fd-83d9-3b018674c23e",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "B 4273 10/2026",
           },
         ],
@@ -10804,7 +10804,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "420418cc-12d8-7ce1-2794-6941c121448d",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "M 4343 06/2024",
           },
         ],
@@ -11146,7 +11146,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "fad667da-7681-d8a6-f270-d1a04d1013bf",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "W 5280 01/2025",
           },
         ],
@@ -11214,7 +11214,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "afdb6474-ac47-40a9-9beb-6160ea18f603",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "X 4508 03/2026",
           },
         ],
@@ -11440,7 +11440,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "4c9d789b-4864-a350-29cb-088c7736fd2e",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "P 9340 04/2024",
           },
         ],
@@ -11458,7 +11458,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "21476b5a-accc-c9ea-a6e3-c4980ab3e529",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "C 5906 07/2026",
           },
         ],
@@ -11495,7 +11495,7 @@ export const mockVerfahren = [
           },
           {
             id: "d4c62940-fe34-c31a-cbbb-8413727befe5",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "C 2787 13/2026",
           },
         ],
@@ -11755,7 +11755,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "9ceb8914-39fe-9399-6818-e4467ae862d3",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "Y 5267 03/2025",
           },
         ],
@@ -11773,7 +11773,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "87cdbc8b-a8c8-8d2e-cd3d-13e37cdee55f",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "Y 7596 09/2025",
           },
           {
@@ -11822,7 +11822,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "79b2cbe6-8006-fc29-5519-92c412123455",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "J 6362 05/2025",
           },
         ],
@@ -11960,7 +11960,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "c300656a-16a5-8c53-3c50-35a3d0865c3d",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "K 9854 04/2026",
           },
         ],
@@ -12047,7 +12047,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "a95be7e1-0818-c8e3-9029-527a7662f808",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "K 7712 07/2025",
           },
         ],
@@ -12065,7 +12065,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "fd069dc8-9733-78d1-1094-7fcfe619051f",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "O 3857 04/2026",
           },
         ],
@@ -12146,7 +12146,7 @@ export const mockVerfahren = [
           },
           {
             id: "81e8fb4a-6d8b-7f32-6bf0-66a849902d8d",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "I 3486 09/2026",
           },
         ],
@@ -12164,7 +12164,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "5973981c-becf-0718-9dac-8124d1ce6cd1",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "F 3094 03/2026",
           },
         ],
@@ -12196,7 +12196,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "82dfcb17-4848-01b6-1ad0-b63f3f391cbe",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "J 892 04/2025",
           },
         ],
@@ -12246,7 +12246,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "d8d97562-dc54-09e3-4186-c433f1d49253",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "K 1640 07/2024",
           },
         ],
@@ -12290,7 +12290,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f80c3ab0-b987-5d7d-8857-12e26dcc2295",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "L 5216 06/2024",
           },
         ],
@@ -12308,7 +12308,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f986c560-6e91-ae2f-233f-5b1267f2f7b7",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "Q 8234 10/2024",
           },
         ],
@@ -12345,7 +12345,7 @@ export const mockVerfahren = [
           },
           {
             id: "258dd37a-6fb8-acbb-584c-d8d3ed8f3fbe",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "K 6353 08/2026",
           },
         ],
@@ -12363,7 +12363,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "4155980d-a145-1a68-98ef-e4e05fc3548d",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "T 5601 07/2025",
           },
         ],
@@ -12413,7 +12413,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "a870a3f5-4fab-6a3d-998b-ae0f77e262fd",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "Q 2741 04/2025",
           },
         ],
@@ -12539,7 +12539,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "b0ccb744-d906-2347-9e6c-abfce81a9210",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "G 7385 02/2024",
           },
         ],
@@ -12795,7 +12795,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "ae1ad1c7-d36d-683c-96be-cc6cb0fa4105",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "T 1095 10/2026",
           },
         ],
@@ -12850,7 +12850,7 @@ export const mockVerfahren = [
           },
           {
             id: "493e0396-8881-26f7-062f-38b0e80d5d6a",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "P 8121 11/2024",
           },
         ],
@@ -12882,7 +12882,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "d307f536-a32d-e6a3-0a32-956376ee1a62",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "I 9545 04/2024",
           },
         ],
@@ -12900,7 +12900,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "1bc8b246-76b6-87e8-e6f7-306374c5d489",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "H 5043 12/2024",
           },
           {
@@ -13005,7 +13005,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "f3d594fb-dc85-04bd-6da4-992f12bc445e",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "R 6423 12/2026",
           },
           {
@@ -13247,7 +13247,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "2ee39368-a9ea-6918-2022-684c1e17ab74",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "C 1340 07/2025",
           },
         ],
@@ -13279,7 +13279,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "711731f3-a299-695a-9cd5-8a7194f9a5ee",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "T 7628 13/2025",
           },
         ],
@@ -13323,7 +13323,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "44933ade-da73-def9-1579-7c72e89f4920",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "F 3236 13/2024",
           },
         ],
@@ -13346,7 +13346,7 @@ export const mockVerfahren = [
           },
           {
             id: "80cc4dcc-fa49-d579-3172-75771af3b9ba",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "I 7175 01/2026",
           },
         ],
@@ -13466,7 +13466,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "9e758aa2-21d7-b8e5-ea48-257d5b189ffe",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "T 8639 04/2025",
           },
         ],
@@ -13516,7 +13516,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "a483fcdc-cd6e-bb14-fc2b-bcb4ba4465c4",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "H 7397 09/2024",
           },
         ],
@@ -13726,7 +13726,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "5aafc523-ef1f-3053-cba1-8d8284aa9b43",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "S 2305 09/2025",
           },
         ],
@@ -13744,7 +13744,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "c7a6338a-5f7f-519e-b9e5-0bbe006cd255",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "W 1988 01/2026",
           },
         ],
@@ -13831,7 +13831,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "432728d3-276c-0484-3969-4c5b9af526f1",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "L 360 12/2025",
           },
         ],
@@ -13969,7 +13969,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "3f3364cd-b12b-d9eb-b77a-f648375b19c4",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "Y 6709 06/2025",
           },
         ],
@@ -14113,7 +14113,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "5899fd5f-11e6-b3f6-41cf-d5d9e6a5f6f5",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "L 5832 13/2024",
           },
         ],
@@ -14136,7 +14136,7 @@ export const mockVerfahren = [
           },
           {
             id: "ba2101dd-62cf-d593-99b0-7d11038307fa",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "P 8118 05/2026",
           },
         ],
@@ -14230,7 +14230,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "cf8fdd19-7147-838a-cfe6-0b2a55a1b5de",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "Y 7485 11/2026",
           },
           {
@@ -14311,7 +14311,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "db1238cc-81e4-cd9f-62b7-5d907e055176",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "E 6134 08/2024",
           },
         ],
@@ -14355,7 +14355,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "863fbe7f-e2ba-4307-e669-341cb21954e3",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "O 1403 12/2026",
           },
         ],
@@ -14460,7 +14460,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "3aa19bbe-7b29-6fb9-25f9-98e4aea3c0dd",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "E 3075 02/2026",
           },
         ],
@@ -14510,7 +14510,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "32e80536-d770-c364-d2f0-b9099f3e85d4",
-            name: "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6 DE.BRAK_SPT.0ec14c02-5fe9-11f1-bbc6-325096b39f47.17e5",
+            name: "Rechtsanwalt Dr. Banane Apfel Heidelbeere",
             aktenzeichen: "V 7855 06/2026",
           },
         ],
@@ -14559,7 +14559,7 @@ export const mockVerfahren = [
           },
           {
             id: "9d264f0a-6451-7550-4d96-280da0621b6f",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "O 2471 03/2026",
           },
         ],
@@ -14614,7 +14614,7 @@ export const mockVerfahren = [
           },
           {
             id: "f82e41a0-7067-c9ef-994e-b4944c36f849",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "M 2528 01/2024",
           },
         ],
@@ -14632,7 +14632,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "8fc439c9-62f0-f63a-cb0e-4ad79de23e6e",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "R 8892 05/2025",
           },
         ],
@@ -14719,7 +14719,7 @@ export const mockVerfahren = [
           },
           {
             id: "69459e05-7d18-bab2-fc6b-f352503bcdd1",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "W 560 07/2025",
           },
         ],
@@ -14774,7 +14774,7 @@ export const mockVerfahren = [
           },
           {
             id: "cc20d6b8-8c13-278f-6597-7cca23ee15bb",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "B 3791 02/2026",
           },
         ],
@@ -14836,7 +14836,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "b791bbfb-de2c-243a-da96-7c0b82865a0f",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "Z 3827 01/2024",
           },
         ],
@@ -14886,7 +14886,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "c0f17eda-5029-d46b-3a85-28b8b4a3df9c",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "W 2009 02/2024",
           },
         ],
@@ -14968,7 +14968,7 @@ export const mockVerfahren = [
         prozessbevollmaechtigte: [
           {
             id: "6ac56af1-ee21-5283-8667-41f2e02ee861",
-            name: "DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca DE.BRAK_SPT.d1acd228-03ab-448c-a085-f1d8a3ba3874.27ca",
+            name: "Rechtsanwalt Dr. Kathrin Hölzer",
             aktenzeichen: "E 583 09/2026",
           },
         ],

@@ -96,8 +96,10 @@ describe("Breadcrumb component", () => {
     expect(screen.getByText("Verfahren")).toBeInTheDocument();
   });
 
-  it("renders breadcrumb for nested dynamic route /verfahren/:id/bearbeiten", () => {
-    mockUseLocation.mockReturnValue({ pathname: "/verfahren/123/bearbeiten" });
+  it("renders breadcrumb for nested dynamic route /verfahren/neu/:id/bearbeiten", () => {
+    mockUseLocation.mockReturnValue({
+      pathname: "/verfahren/neu/123/bearbeiten",
+    });
     mockUseParams.mockReturnValue({ id: "123" });
 
     renderWithTestTranslations(
@@ -109,13 +111,11 @@ describe("Breadcrumb component", () => {
     const nav = screen.getByRole("navigation", { name: "Breadcrumb" });
     expect(nav).toBeInTheDocument();
 
-    // Should have Start -> Verfahren -> Bearbeitung
+    // Should have Start -> Neue Klage einreichen
     const links = screen.getAllByRole("link");
-    expect(links).toHaveLength(2);
+    expect(links).toHaveLength(1);
     expect(links[0]).toHaveAttribute("href", "/");
     expect(links[0]).toHaveTextContent("Start");
-    expect(links[1]).toHaveAttribute("href", "/verfahren/123");
-    expect(links[1]).toHaveTextContent("Verfahren");
-    expect(screen.getByText("Bearbeitung")).toBeInTheDocument();
+    expect(screen.getByText("Neue Klage einreichen")).toBeInTheDocument();
   });
 });

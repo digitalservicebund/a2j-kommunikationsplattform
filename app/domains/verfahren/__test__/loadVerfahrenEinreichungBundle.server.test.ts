@@ -5,7 +5,6 @@ import { mockAuthData } from "./helpers";
 const mocks = vi.hoisted(() => ({
   fetchVerfahrenById: vi.fn(),
   fetchEinreichungenById: vi.fn(),
-  fetchEinreichungById: vi.fn(),
   fetchEinreichungStatus: vi.fn(),
   fetchDokumente: vi.fn(),
 }));
@@ -16,10 +15,6 @@ vi.mock("../fetchVerfahrenById.server", () => ({
 
 vi.mock("../fetchEinreichungenById.server", () => ({
   default: mocks.fetchEinreichungenById,
-}));
-
-vi.mock("../fetchEinreichungById.server", () => ({
-  default: mocks.fetchEinreichungById,
 }));
 
 vi.mock("../fetchEinreichungStatus.server", () => ({
@@ -37,17 +32,13 @@ describe("loadVerfahrenEinreichungBundle", () => {
 
   test("loads and combines verfahren, einreichung, status and dokumente", async () => {
     const verfahren = { id: "v-1", status: "ERSTELLT" };
-    const einreichung = {
-      id: "e-1",
-      verfahren_id: "v-1",
-      erstellt_am: "2026-07-23T10:00:00.000Z",
-    };
     const einreichungsStatus = { status: "GRUEN", validation_messages: [] };
     const dokumente = [{ id: "d-1", name: "klage.pdf", size_in_bytes: 1200 }];
 
     mocks.fetchVerfahrenById.mockResolvedValueOnce(verfahren);
-    mocks.fetchEinreichungenById.mockResolvedValueOnce([{ id: "e-1" }]);
-    mocks.fetchEinreichungById.mockResolvedValueOnce(einreichung);
+    mocks.fetchEinreichungenById.mockResolvedValueOnce([
+      { id: "e-1", verfahren_id: "v-1" },
+    ]);
     mocks.fetchEinreichungStatus.mockResolvedValueOnce(einreichungsStatus);
     mocks.fetchDokumente.mockResolvedValueOnce(dokumente);
 
@@ -58,10 +49,6 @@ describe("loadVerfahrenEinreichungBundle", () => {
     });
     expect(mocks.fetchEinreichungenById).toHaveBeenCalledWith(mockAuthData, {
       id: "v-1",
-    });
-    expect(mocks.fetchEinreichungById).toHaveBeenCalledWith(mockAuthData, {
-      id: "e-1",
-      verfahrenId: "v-1",
     });
     expect(mocks.fetchEinreichungStatus).toHaveBeenCalledWith(mockAuthData, {
       id: "e-1",
@@ -75,7 +62,8 @@ describe("loadVerfahrenEinreichungBundle", () => {
     expect(result).toEqual({
       verfahren,
       einreichung: {
-        ...einreichung,
+        id: "e-1",
+        verfahren_id: "v-1",
         einreichungsStatus,
       },
       dokumente,

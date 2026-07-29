@@ -273,7 +273,7 @@ export default function VerfahrenNeuBearbeiten() {
       className={`${submitState === "submit" ? "pointer-events-none opacity-50" : ""} relative`}
     >
       <div className="kern-row">
-        <div className="kern-col-12 kern-col-xl-8 kern-col-xl-offset-2">
+        <div className="kern-col-12 kern-col-xl-10 kern-col-xl-offset-1">
           <h1 className="kern-heading-large">
             {routes.verfahrenNeu.step2.headline}
           </h1>

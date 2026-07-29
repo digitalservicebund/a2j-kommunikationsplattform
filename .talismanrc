@@ -28,12 +28,14 @@ allowed_patterns:
 
 fileignoreconfig:
 
+- filename: .github/workflows/secrets-check.yml
+  checksum: 8c2ba65488519c72b54af1653a157e1b7f03eaf45111032d492d5fd38d99cbb9
 - filename: .github/workflows/sonarqube.yml
-  checksum: e0ce0d0ad88a7f6b83e9dd8c6b03b164d55857518bda01e624cb283996fe0392
+  checksum: fb26d92afd2c93fb6b909b0c78866bf3b79ad49fd5dc3a758f3a662d68ffaa5e
 - filename: .github/workflows/pipeline.yml
-  checksum: 2467c681462afc79cfb6ea894a70ac4d55479c5e94055124c2ffd87299e77ee1
+  checksum: b99ceb3db19d2f87b1326859b406a3e754d64911f030a1d75fee73cf44a2755d
 - filename: .github/workflows/scan.yml
-  checksum: 1582a4d97ed48f0cec201aab58ae536c4ba512dc933c45267dcd856b7e9b2f7e
+  checksum: ad9c0586638711e445110f81e7277dc69dc3a083ce6ecd541f5a3c5d13c6df46
 - filename: .env.op
   checksum: 1c7661fd991fc0338fe12c259b06f656503f92c7d7d8387466fe76f42fc83597
 - filename: .env.defaults
@@ -42,6 +44,8 @@ fileignoreconfig:
   checksum: e0032376dcb50535952654822230a18fce1ade507f9252cac9ba83055b4b1edc
 - filename: playwright.config.ts
   checksum: 64e5e6fe7a7787a6c84f3c8ac347e54a421c400c6982b46ee2b6d4dd4497af75
+- filename: .github/workflows/dependabot-auto-merge.yml
+  checksum: aa4ad6ddaa190d85cc7b027108e71dd7afbc63e4969fe0e196dd399be7cac89e
 - filename: app/components/hooks/**test**/useLogoutInactiveUser.test.tsx
   ignore_detectors: [filecontent]
 - filename: app/config/config.server.ts

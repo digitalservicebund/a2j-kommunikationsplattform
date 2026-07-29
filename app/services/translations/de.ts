@@ -112,7 +112,7 @@ export const de = {
     beteiligte: {
       klaegerLabel: "Klagende Partei",
       beklagteLabel: "Beklagte Partei",
-      fallbackLabel: "Keine Beteiligten angegeben.",
+      fallbackLabel: "Keine Beteiligten bekannt.",
     },
     gericht: {
       briefSummaryTitle: "Empfängergericht",
@@ -260,8 +260,8 @@ export const de = {
         },
       },
     },
-    verfahrenDetails: {
-      headline: "Verfahrensdetailseite",
+    verfahrenId: {
+      headline: "Verlauf der Akte",
     },
     PLATFORM_TITLE: "Kommunikationsplattform | Justiz-Services",
     DATENSCHUTZ_TITLE: "Datenschutzerklärung zur Webseite",
@@ -289,7 +289,6 @@ export const de = {
     start: "Start",
     verfahrenNeu: "Neue Klage einreichen",
     verfahrenId: "Verfahren",
-    verfahrenIdBearbeiten: "Bearbeitung",
   },
 } as const;
 

@@ -1,10 +1,6 @@
 import z from "zod";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
-import fetchDokumente from "./fetchDokumente";
-import fetchEinreichungById from "./fetchEinreichungById.server";
-import fetchEinreichungenById from "./fetchEinreichungenById.server";
-import fetchEinreichungStatus from "./fetchEinreichungStatus.server";
-import fetchVerfahrenById from "./fetchVerfahrenById.server";
+import loadVerfahrenEinreichungenOverview from "./loadVerfahrenEinreichungenOverview.server";
 import { DokumentSchema } from "./schemas/dokumentSchema";
 import { EinreichungSchema } from "./schemas/einreichungSchema";
 import { StatusSchema } from "./schemas/statusSchema";
@@ -29,41 +25,20 @@ export default async function loadVerfahrenEinreichungBundle(
   authData: AuthenticationResponse,
   verfahrenId: string,
 ): Promise<VerfahrenEinreichungBundle> {
-  const verfahren = (await fetchVerfahrenById(authData, {
-    id: verfahrenId,
-  })) as Verfahren;
+  const { verfahren, einreichungen } = await loadVerfahrenEinreichungenOverview(
+    authData,
+    verfahrenId,
+  );
+  const initialEinreichungData = einreichungen[0];
 
-  const einreichungen = (await fetchEinreichungenById(authData, {
-    id: verfahrenId,
-  })) as Einreichung[];
-  const firstEinreichungId = einreichungen[0]?.id;
-
-  if (!firstEinreichungId) {
+  if (!initialEinreichungData) {
     throw new Error("No Einreichung could be fetched");
   }
 
-  const einreichung = (await fetchEinreichungById(authData, {
-    id: firstEinreichungId,
-    verfahrenId,
-  })) as Einreichung;
-
-  const einreichungsStatus = (await fetchEinreichungStatus(authData, {
-    id: firstEinreichungId,
-    verfahrenId,
-  })) as EinreichungStatus;
-
-  const dokumente = (await fetchDokumente(authData, {
-    einreichungId: firstEinreichungId,
-    verfahrenId,
-  })) as Dokument[];
-
   return {
     verfahren,
-    einreichung: {
-      ...einreichung,
-      einreichungsStatus,
-    },
-    dokumente,
-    einreichungId: firstEinreichungId,
+    einreichung: initialEinreichungData.einreichung,
+    dokumente: initialEinreichungData.dokumente,
+    einreichungId: initialEinreichungData.einreichung.id,
   };
 }

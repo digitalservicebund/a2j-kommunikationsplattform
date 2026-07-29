@@ -25,8 +25,4 @@ export const breadcrumbConfig: BreadcrumbConfig = {
     label: dictionaries.de.breadcrumb.verfahrenId,
     parent: "/",
   },
-  "/verfahren/:id/bearbeiten": {
-    label: dictionaries.de.breadcrumb.verfahrenIdBearbeiten,
-    parent: "/verfahren/:id",
-  },
 };

@@ -76,7 +76,9 @@ export default function App() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:type" content="website" />
         {/* @TODO: https://digitalservicebund.atlassian.net/browse/KOMPLA-492 */}
-        <Links />
+        {/* React Router v8 forwards ServerRouter nonce to Links on SSR only; 
+        keep this explicit empty nonce to avoid hydration attribute mismatch. */}
+        <Links nonce="" />
         <script
           nonce={nonce}
           dangerouslySetInnerHTML={{
@@ -124,7 +126,9 @@ export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:type" content="website" />
         <title>{de.routes.PLATFORM_TITLE}</title>
-        <Links />
+        {/* Keep nonce output stable between SSR and hydration in the error boundary
+        document as well, to avoid hydration attribute mismatch. */}
+        <Links nonce="" />
       </head>
       <body>
         <Header />

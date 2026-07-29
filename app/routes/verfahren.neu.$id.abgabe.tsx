@@ -20,9 +20,11 @@ import {
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/beteiligteByRole";
-import deleteDokument from "~/domains/verfahren/deleteDokument.server";
-import fetchDokument from "~/domains/verfahren/fetchDokument";
-import fetchDokumente from "~/domains/verfahren/fetchDokumente";
+import {
+  buildInitialTimelineStepData,
+  getInitialEinreichungTimelineSteps,
+} from "~/domains/verfahren/buildInitialEinreichungTimelineSteps";
+import deleteDokumentFromEinreichung from "~/domains/verfahren/deleteDokumentFromEinreichung.server";
 import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
 import loadVerfahrenEinreichungBundle, {
   Dokument,
@@ -83,35 +85,16 @@ export const action = async ({
   const formType = formData.get("formType");
 
   if (formType === "delete") {
-    const einreichungId = formData.get("einreichungId");
-    const dokumentId = formData.get("dokumentId");
-
-    if (typeof einreichungId !== "string" || typeof dokumentId !== "string") {
-      return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
-    }
-
-    const dokumente = (await fetchDokumente(authData, {
+    const deleteResult = await deleteDokumentFromEinreichung({
+      authData,
       verfahrenId,
-      einreichungId,
-    })) as Dokument[];
-
-    // The first dokument is the initial filing and must not be deleted.
-    if (dokumente[0]?.id === dokumentId) {
-      return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
-    }
-
-    const { eTag } = await fetchDokument(authData, {
-      verfahrenId,
-      einreichungId,
-      id: dokumentId,
+      einreichungId: formData.get("einreichungId"),
+      dokumentId: formData.get("dokumentId"),
     });
 
-    await deleteDokument(authData, {
-      verfahrenId,
-      einreichungId,
-      id: dokumentId,
-      eTag: eTag ?? "",
-    });
+    if (deleteResult.status === "invalid-form-data") {
+      return redirect(`/verfahren/${verfahrenId}`);
+    }
 
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   }
@@ -140,16 +123,20 @@ export default function VerfahrenNeuBearbeiten() {
     : routes.verfahrenNeu.step3.summary.badgeLabels.soon;
   const readinessBadgeClass = isReady ? "success" : "warning";
   const einreichungData = [{ einreichung, dokumente }];
-  const additionalDokumenteCount = Math.max(dokumente.length - 1, 0);
-  const firstDokumentName = dokumente[0]?.name ?? NOT_AVAILABLE_LABEL;
-  const latestDokumentDate = einreichungData[0]?.dokumente?.length
-    ? new Date(
-        einreichungData[0].dokumente.at(-1)?.erstellt_am ?? NOT_AVAILABLE_LABEL,
-      ).toLocaleDateString()
-    : NOT_AVAILABLE_LABEL;
-  const firstDokumentDate = einreichungData[0]?.dokumente?.[0]?.erstellt_am
-    ? new Date(einreichungData[0].dokumente[0].erstellt_am).toLocaleDateString()
-    : NOT_AVAILABLE_LABEL;
+  const timelineSteps = getInitialEinreichungTimelineSteps(dokumente);
+  const initialTimelineStepData = buildInitialTimelineStepData(
+    timelineSteps,
+    verfahren.status_changed,
+    {
+      assetsTitle: routes.verfahrenNeu.step3.proceduralSteps.assets.title,
+      filesAddedLabel:
+        routes.verfahrenNeu.step3.proceduralSteps.assets.filesAddedLabel,
+      addDetailsTitle:
+        routes.verfahrenNeu.step3.proceduralSteps.addDetails.title,
+      klageschriftUploadTitle:
+        routes.verfahrenNeu.step3.proceduralSteps.klageschriftUpload.title,
+    },
+  );
 
   const [isSubmitting, setIsSubmitting] = useState<"idle" | "submitting">(
     "idle",
@@ -192,7 +179,7 @@ export default function VerfahrenNeuBearbeiten() {
       className={`${isSubmitting === "submitting" ? "pointer-events-none opacity-50" : ""} relative`}
     >
       <div className="kern-row">
-        <div className="kern-col-12 kern-col-xl-8 kern-col-xl-offset-2">
+        <div className="kern-col-12 kern-col-xl-10 kern-col-xl-offset-1">
           <h1 className="kern-heading-large">
             {routes.verfahrenNeu.step3.headline}
           </h1>
@@ -237,7 +224,7 @@ export default function VerfahrenNeuBearbeiten() {
                 <>
                   <article className="kern-card">
                     <div className="kern-card__container">
-                      <div className="algin-start gap-kern-space-default flex flex-wrap items-start">
+                      <div className="algin-start gap-kern-space-default flex w-full flex-wrap items-start">
                         <div className="flex-1">
                           <h2 className="kern-heading-medium">
                             {`${klaegerinnenNamen} ./. ${beklagteNamen}`}
@@ -263,7 +250,7 @@ export default function VerfahrenNeuBearbeiten() {
                           label={readinessLabel}
                         />
                       </div>
-                      <div className="gap-kern-space-default grid grid-cols-1 md:grid-cols-3">
+                      <div className="gap-kern-space-default grid w-full grid-cols-1 md:grid-cols-3">
                         <VerfahrenBriefSummaryOfBeteiligte
                           notAvailableLabel={NOT_AVAILABLE_LABEL}
                           title={shared.beteiligte.klaegerLabel}
@@ -587,42 +574,33 @@ export default function VerfahrenNeuBearbeiten() {
                         ))}
                       </div>
                     </div>
-                    <VerfahrenTimelineStepCard
-                      timelineLabel={latestDokumentDate}
-                      title={
-                        routes.verfahrenNeu.step3.proceduralSteps.assets.title
-                      }
-                      body={`${additionalDokumenteCount} ${routes.verfahrenNeu.step3.proceduralSteps.assets.filesAddedLabel}`}
-                      editTo={`/verfahren/neu/${verfahren.id}/bearbeiten`}
-                      editLabel={shared.form.labels.edit}
-                    />
-                    <VerfahrenTimelineStepCard
-                      timelineLabel={new Date(
-                        verfahren.status_changed,
-                      ).toLocaleDateString()}
-                      title={
-                        routes.verfahrenNeu.step3.proceduralSteps.addDetails
-                          .title
-                      }
-                      body={
-                        <span className="bg-kern-feedback-info-background">
-                          Kläger, Beklagter, Rubrum und Gericht
-                        </span>
-                      }
-                      editTo={`/verfahren/neu/${verfahren.id}/bearbeiten`}
-                      editLabel={shared.form.labels.edit}
-                    />
-                    <VerfahrenTimelineStepCard
-                      timelineLabel={firstDokumentDate}
-                      title={
-                        routes.verfahrenNeu.step3.proceduralSteps
-                          .klageschriftUpload.title
-                      }
-                      body={firstDokumentName}
-                      editTo={`/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichungData[0].einreichung.id}`}
-                      editLabel={shared.form.labels.edit}
-                      showConnector={false}
-                    />
+                    {initialTimelineStepData.map((timelineStep, index) => {
+                      const isLastStep =
+                        index === initialTimelineStepData.length - 1;
+                      const editTo = isLastStep
+                        ? `/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichungData[0].einreichung.id}`
+                        : `/verfahren/neu/${verfahren.id}/bearbeiten`;
+
+                      return (
+                        <VerfahrenTimelineStepCard
+                          key={`${timelineStep.title}-${timelineStep.timelineLabel}`}
+                          timelineLabel={timelineStep.timelineLabel}
+                          title={timelineStep.title}
+                          body={
+                            timelineStep.highlightBody ? (
+                              <span className="bg-kern-feedback-info-background">
+                                {timelineStep.body}
+                              </span>
+                            ) : (
+                              timelineStep.body
+                            )
+                          }
+                          editTo={editTo}
+                          editLabel={shared.form.labels.edit}
+                          showConnector={timelineStep.showConnector}
+                        />
+                      );
+                    })}
                   </section>
                 </>
               )}
