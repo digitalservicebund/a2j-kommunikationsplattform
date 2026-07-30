@@ -258,6 +258,7 @@ jobs:
 
   github-pages:
     name: Publish /prototype folder content to GitHub pages
+    runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
