@@ -256,6 +256,29 @@ jobs:
           name: playwright-e2e-test-results
           path: tests/e2e/playwright-report
 
+  github-pages:
+    name: Publish /prototype folder content to GitHub pages
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      id-token: write
+      pages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+
+      - name: Setup Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v7
+        with:
+          path: ./prototype/
+
+      - name: Deploy pages
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
+
   # Inspired by: https://github.com/digitalservicebund/a2j-rechtsantragstelle/blob/main/.github/workflows/ci-pipeline.yml
   send-pipeline-failure-to-slack:
     name: Send failure message to Slack
