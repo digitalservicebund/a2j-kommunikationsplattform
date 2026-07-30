@@ -18,7 +18,7 @@ jobs:
 
       - name: Generate GitHub App token
         id: app-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.AUTO_MERGE_A2J_APP_CLIENT_ID }}
           private-key: ${{ secrets.AUTO_MERGE_A2J_APP_PRIVATE_KEY }}
