@@ -1,10 +1,11 @@
 # 6. Better Auth spike, and why we reverted it
 
 - 2026-07-30: Drafted
+- 2026-08-01: Concluded spike and reverted to ADR 0004
 
 ## Status
 
-Drafted
+Accepted
 
 ## Context
 
