@@ -16,24 +16,25 @@ let infoLog = `Info:
   -> API will be mocked: ${mockJustizBackendAPI ? "yes" : "no"}
 `;
 
-if (mockJustizBackendAPI) {
-  infoLog +=
-    "  -> Setting up a Justiz-Backend-API mock for local development\n";
-}
-
-if (!isProduction) {
-  infoLog += "  -> Setting up a viteDevServer for local development\n";
-}
-
-if (mockJustizBackendAPI) {
-  const mockJustizBackendService = mockJustizBackendAPI
-    ? await import("./mocks/api/node.js")
-    : undefined;
-
-  if (mockJustizBackendService) {
-    mockJustizBackendService.server.listen();
-  }
-}
+// TODO: uncomment below when ticket is completed
+// if (mockJustizBackendAPI) {
+//   infoLog +=
+//     "  -> Setting up a Justiz-Backend-API mock for local development\n";
+// }
+//
+// if (!isProduction) {
+//   infoLog += "  -> Setting up a viteDevServer for local development\n";
+// }
+//
+// if (mockJustizBackendAPI) {
+//   const mockJustizBackendService = mockJustizBackendAPI
+//     ? await import("./mocks/api/node.js")
+//     : undefined;
+//
+//   if (mockJustizBackendService) {
+//     mockJustizBackendService.server.listen();
+//   }
+// }
 
 const viteDevServer = isProduction
   ? undefined
