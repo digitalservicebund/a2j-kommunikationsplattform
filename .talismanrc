@@ -64,5 +64,7 @@ fileignoreconfig:
   ignore_detectors: [filecontent]
 - filename: doc/DEVELOPMENT.md
   ignore_detectors: [filecontent]
+- filename: doc/adr/*
+  ignore_detectors: [filecontent]
 - filename: README.md
   ignore_detectors: [filecontent]
