@@ -1,7 +1,9 @@
 import { Link } from "react-router";
 import FolderInfoIcon from "~/components/icons/FolderInfoIcon.static";
 import {
+  getBeteiligteDisplayName,
   getBeteiligungByRoleCode,
+  getGeschaeftszeichenByRoleCode,
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/beteiligteByRole";
@@ -52,25 +54,34 @@ type VerfahrenTileProps = Readonly<Verfahren> & {
 export type { VerfahrenTileProps };
 
 export default function VerfahrenTile({
-  id,
-  aktenzeichen_gericht,
-  gericht,
-  beteiligungen,
-  status,
   withoutDetailsLink = false,
+  ...verfahren
 }: VerfahrenTileProps) {
   const { buttons } = useTranslations();
+  const { beteiligungen, status, id, gericht, aktenzeichen_gericht } =
+    verfahren;
 
   // Extract values from beteiligungen based on rollen codes
-  const klaegerinData =
-    getBeteiligungByRoleCode(beteiligungen, ROLE_CODE_KLAEGERIN) || null;
-  const beklagteData =
-    getBeteiligungByRoleCode(beteiligungen, ROLE_CODE_BEKLAGTE) || null;
+  const klaegerinData = getBeteiligungByRoleCode(
+    beteiligungen,
+    ROLE_CODE_KLAEGERIN,
+  );
+  const beklagteData = getBeteiligungByRoleCode(
+    beteiligungen,
+    ROLE_CODE_BEKLAGTE,
+  );
 
-  const prozessbevollmaechtigteKlaegerin =
-    klaegerinData?.prozessbevollmaechtigte || [];
-  const prozessbevollmaechtigteBeklagte =
-    beklagteData?.prozessbevollmaechtigte || [];
+  const klaegerinName = getBeteiligteDisplayName(klaegerinData);
+  const beklagteName = getBeteiligteDisplayName(beklagteData);
+
+  const klaegerinGeschaeftszeichen = getGeschaeftszeichenByRoleCode(
+    klaegerinData,
+    ROLE_CODE_KLAEGERIN,
+  );
+  const beklagteGeschaeftszeichen = getGeschaeftszeichenByRoleCode(
+    beklagteData,
+    ROLE_CODE_BEKLAGTE,
+  );
 
   return (
     <article className="gap-kern-space-large border-t-kern-layout-border pt-kern-dimension-x-large flex flex-col border-t-1 first-of-type:border-0 first-of-type:pt-0">
@@ -106,31 +117,17 @@ export default function VerfahrenTile({
       </div>
       <dl className="gap-kern-space-large my-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <DataCard label="Klagende Partei">
+          <DataItem label="Name" value={klaegerinName || NOT_AVAILABLE_LABEL} />
           <DataItem
-            label="Name"
-            value={klaegerinData?.name || NOT_AVAILABLE_LABEL}
-          />
-          <DataItem
-            key={prozessbevollmaechtigteKlaegerin[0]?.id}
             label="Geschäftszeichen"
-            value={
-              prozessbevollmaechtigteKlaegerin[0]?.aktenzeichen ||
-              NOT_AVAILABLE_LABEL
-            }
+            value={klaegerinGeschaeftszeichen || NOT_AVAILABLE_LABEL}
           />
         </DataCard>
         <DataCard label="Beklagte Partei">
+          <DataItem label="Name" value={beklagteName || NOT_AVAILABLE_LABEL} />
           <DataItem
-            label="Name"
-            value={beklagteData?.name || NOT_AVAILABLE_LABEL}
-          />
-          <DataItem
-            key={prozessbevollmaechtigteBeklagte[0]?.id}
             label="Geschäftszeichen"
-            value={
-              prozessbevollmaechtigteBeklagte[0]?.aktenzeichen ||
-              NOT_AVAILABLE_LABEL
-            }
+            value={beklagteGeschaeftszeichen || NOT_AVAILABLE_LABEL}
           />
         </DataCard>
         <DataCard label="Gericht">

@@ -153,7 +153,6 @@ function VerfahrenContent({
   ref: RefObject<HTMLHeadingElement | null>;
 }>) {
   const { shared } = useTranslations();
-  console.log("initialData", initialData);
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
     useLoadMore(initialData);
   const { getParamValue, updateParam } = useParamsState<{
@@ -161,8 +160,6 @@ function VerfahrenContent({
     gericht: "";
     search_text: "";
   }>();
-
-  console.log("gerichte", gerichte);
 
   const gerichteOptions = gerichte.map((g) => ({
     value: g.id,

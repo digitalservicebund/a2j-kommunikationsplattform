@@ -11,18 +11,18 @@ describe("beteiligteByRole", () => {
   const beteiligte = [
     {
       id: "b-1",
-      name: "Klaegerin GmbH",
-      rollen: [{ code: ROLE_CODE_KLAEGERIN }],
+      bezeichnung: "Klaegerin GmbH",
+      rollen: [{ rollenbezeichnung: { code: ROLE_CODE_KLAEGERIN } }],
     },
     {
       id: "b-2",
-      name: "Beklagte AG",
-      rollen: [{ code: ROLE_CODE_BEKLAGTE }],
+      bezeichnung: "Beklagte AG",
+      rollen: [{ rollenbezeichnung: { code: ROLE_CODE_BEKLAGTE } }],
     },
     {
       id: "b-3",
-      name: null,
-      rollen: [{ code: ROLE_CODE_KLAEGERIN }],
+      bezeichnung: null,
+      rollen: [{ rollenbezeichnung: { code: ROLE_CODE_KLAEGERIN } }],
     },
   ];
 

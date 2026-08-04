@@ -11,8 +11,12 @@ import VerfahrenTile, { VerfahrenTileProps } from "../VerfahrenTile";
 const mockVerfahren: VerfahrenTileProps = {
   id: "123",
   aktenzeichen_gericht: "AZ-123",
+  verfahrensgegenstand: null,
+  kurzrubrum: null,
   status: "EINGEREICHT",
-  status_changed: "2026-05-22T14:02:31.832Z",
+  status_geaendert_am: "2026-05-22T14:02:31.832Z",
+  erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstellt_am: "2026-05-22T14:02:31.832Z",
   eingereicht_am: "2026-05-22T14:02:31.832Z",
   gericht: {
     id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
@@ -21,40 +25,50 @@ const mockVerfahren: VerfahrenTileProps = {
   },
   beteiligungen: [
     {
+      beteiligtenart: "natuerlichePerson",
       id: "bet-1",
-      name: "Klaus Müller",
+      nachname: "Müller",
+      vorname: "Klaus",
+      titel: null,
+      namensvorsatz: null,
       rollen: [
         {
           id: "rolle-1",
-          wert: "Kläger:in",
-          code: "101",
+          rollennummer: null,
+          rollenbezeichnung: {
+            id: "rb-1",
+            wert: "Kläger:in",
+            code: "101",
+          },
+          geschaeftszeichen: "GZ-12345",
+          referenz: null,
         },
       ],
-      prozessbevollmaechtigte: [
-        {
-          aktenzeichen: "GZ-12345",
-          id: "bev-1",
-          name: "Rechtsanwalt Schmidt",
-        },
-      ],
+      anschriften: null,
+      telekommunikation: null,
     },
     {
+      beteiligtenart: "natuerlichePerson",
       id: "bet-2",
-      name: "Maria Weber",
+      nachname: "Weber",
+      vorname: "Maria",
+      titel: null,
+      namensvorsatz: null,
       rollen: [
         {
           id: "rolle-2",
-          wert: "Beklagte:r",
-          code: "028",
+          rollennummer: null,
+          rollenbezeichnung: {
+            id: "rb-2",
+            wert: "Beklagte:r",
+            code: "028",
+          },
+          geschaeftszeichen: "GZ-67890",
+          referenz: null,
         },
       ],
-      prozessbevollmaechtigte: [
-        {
-          aktenzeichen: "GZ-67890",
-          id: "bev-2",
-          name: "Rechtsanwältin Fischer",
-        },
-      ],
+      anschriften: null,
+      telekommunikation: null,
     },
   ],
 };
@@ -62,8 +76,12 @@ const mockVerfahren: VerfahrenTileProps = {
 const mockVerfahrenWithMissingData: VerfahrenTileProps = {
   id: "456",
   aktenzeichen_gericht: "AZ-456",
+  verfahrensgegenstand: null,
+  kurzrubrum: null,
   status: "EINGEREICHT",
-  status_changed: "2026-05-22T14:02:31.832Z",
+  status_geaendert_am: "2026-05-22T14:02:31.832Z",
+  erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstellt_am: "2026-05-22T14:02:31.832Z",
   eingereicht_am: "2026-05-22T14:02:31.832Z",
   gericht: {
     id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
