@@ -18,12 +18,16 @@ const fetchVerfahrenOptionsSchema = z.object({
 
 export type FetchVerfahrenOptions = z.infer<typeof fetchVerfahrenOptionsSchema>;
 
+export const fetchVerfahrenSchema = z.object({
+  elemente: z.array(VerfahrenSchema),
+});
+
 const errorMessage = "Verfahren could not be fetched.";
 
 export default async function fetchVerfahren(
   authData: AuthenticationResponse,
   options?: FetchVerfahrenOptions,
-) {
+): Promise<z.infer<typeof fetchVerfahrenSchema>> {
   const parsed = fetchVerfahrenOptionsSchema.parse(options ?? {});
 
   const url = new URL(`${serverConfig().KOMPLA_API_URL}/api/v1/verfahren`);
@@ -37,7 +41,7 @@ export default async function fetchVerfahren(
   return apiRequest({
     authData,
     fullUrl: url.toString(),
-    schema: VerfahrenSchema.array(),
+    schema: fetchVerfahrenSchema,
     errorMessage: errorMessage,
   });
 }

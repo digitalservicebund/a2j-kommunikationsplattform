@@ -11,14 +11,14 @@
     }
   ],
   "paths": {
-    "/api/v1/verfahren/{verfahren-id}/einreichungen/{einreichung-id}/dokumente/{id}": {
+    "/api/v1/verfahren/{verfahren-id}/belege": {
       "get": {
         "tags": [
-          "Dokumente"
+          "Belege"
         ],
-        "summary": "Ruft die Details eines spezifischen Dokuments ab.",
-        "description": "Ruft ein Dokument basierend auf der Verfahrens-, Einreichungs- und Dokument-ID ab und validiert, dass das Dokument zur Einreichung und das Verfahren\nübereinstimmt.",
-        "operationId": "VerfahrenEinreichungenDokumenteController_GetAsync",
+        "summary": "Ruft die Belege eines Verfahrens ab, optional gefiltert nach Einreichung.",
+        "description": "Gibt die Belege des Verfahrens zurück, inklusive der noch in Bearbeitung befindlichen Belege.",
+        "operationId": "VerfahrenEinreichungenBelegeController_GetAllAsync",
         "parameters": [
           {
             "name": "verfahren-id",
@@ -32,19 +32,8 @@
           },
           {
             "name": "einreichung-id",
-            "in": "path",
-            "description": "Eindeutige ID der Einreichung.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Eindeutige ID des Dokuments.",
-            "required": true,
+            "in": "query",
+            "description": "Optionale Einreichungs-ID zum Einschränken der Belege.",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -55,19 +44,9 @@
           "200": {
             "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Dokument"
-                }
-              },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Dokument"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Dokument"
+                  "$ref": "#/components/schemas/BelegListeResponse"
                 }
               }
             }
@@ -134,6 +113,1001 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/verfahren/{verfahren-id}/belege/{id}": {
+      "get": {
+        "tags": [
+          "Belege"
+        ],
+        "summary": "Ruft einen Beleg eines Verfahrens ab.",
+        "description": "Gibt den Beleg unabhängig von seinem Status zurück. Ein noch nicht fertiggestellter Beleg wird mit Status IN_BEARBEITUNG geliefert.",
+        "operationId": "VerfahrenEinreichungenBelegeController_GetAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Eindeutige ID des Beleges.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BelegResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/verfahren/{verfahren-id}/belege/{id}/downloadlink": {
+      "get": {
+        "tags": [
+          "Belege"
+        ],
+        "summary": "Generiert einen temporären Download-Link für einen Beleg.",
+        "description": "Generiert einen signierten Download-Link für einen Beleg im Objektspeicher mit einer konfigurierbaren Gültigkeitsdauer.",
+        "operationId": "VerfahrenEinreichungenBelegeController_GetDownloadLinkAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Eindeutige ID des Beleges.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "ttl",
+            "in": "query",
+            "description": "TTL für den Download-Link in Sekunden. Default: 30 Sekunden, Max: 7 Tage (604800 Sekunden).",
+            "schema": {
+              "maximum": 604800,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "disposition_type",
+            "in": "query",
+            "description": "Bestimmt das Verhalten des Browsers beim Abrufen der Datei über den generierten Download-Link.",
+            "schema": {
+              "$ref": "#/components/schemas/ContentDispositionType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "example": "https://s3.example.com/bucket/object?X-Amz-Signature=..."
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/codelisten/gerichte": {
+      "get": {
+        "tags": [
+          "Codelisten"
+        ],
+        "summary": "Ruft die verfügbaren Gerichte ab.",
+        "description": "Gibt die Einträge der Codeliste `GDS.Gerichte` zurück.\nDie zurückgegebenen Werte können verwendet werden, um das zuständige Gericht\ninnerhalb eines Verfahrens zu klassifizieren.",
+        "operationId": "CodelistenController_GetGerichteAsync",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GerichtListeResponse"
+                },
+                "example": {
+                  "list_version": "3.7",
+                  "elemente": [
+                    {
+                      "id": "1e4d18ee-8101-9aed-1e7d-134ec4cb4531",
+                      "wert": "Amtsgericht Erding",
+                      "code": "D2411"
+                    },
+                    {
+                      "id": "243117a4-9658-863b-4a00-000aeb462b43",
+                      "wert": "Amtsgericht Hannover",
+                      "code": "P2305"
+                    },
+                    {
+                      "id": "789846d5-6228-8653-a0c9-55531d7c5c48",
+                      "wert": "Amtsgericht Bremen",
+                      "code": "H1101"
+                    },
+                    {
+                      "id": "8ef51f4a-2109-99c8-6488-e22a3ba45330",
+                      "wert": "Amtsgericht Berlin Mitte",
+                      "code": "F1112"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.codelisten.read"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/codelisten/anschriftstypen": {
+      "get": {
+        "tags": [
+          "Codelisten"
+        ],
+        "summary": "Ruft die verfügbaren Anschriftstypen ab.",
+        "description": "Gibt die Einträge der Codeliste `GDS.Anschriftstyp` zurück.\nDie zurückgegebenen Werte können verwendet werden, um Anschriften\nvon Beteiligten innerhalb eines Verfahrens zu klassifizieren.",
+        "operationId": "CodelistenController_GetAnschriftstypAsync",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnschriftstypListeResponse"
+                },
+                "example": {
+                  "list_version": "3.0",
+                  "elemente": [
+                    {
+                      "id": "ddcefaa7-2e51-4877-96db-219e1eda29d0",
+                      "wert": "Postfach",
+                      "code": "014"
+                    },
+                    {
+                      "id": "3750ab0e-7c61-4989-b4f9-1f86d55f43cf",
+                      "wert": "Privatanschrift",
+                      "code": "017"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.codelisten.read"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/codelisten/telekommunikationsarten": {
+      "get": {
+        "tags": [
+          "Codelisten"
+        ],
+        "summary": "Ruft die verfügbaren Telekommunikationsarten ab.",
+        "description": "Gibt die Einträge der Codeliste `GDS.Telekommunikationsart` zurück.\nDie zurückgegebenen Werte können verwendet werden, um Kommunikationsanschlüsse\nvon Beteiligten innerhalb eines Verfahrens zu klassifizieren.",
+        "operationId": "CodelistenController_GetTelekommunikationsartAsync",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelekommunikationsartListeResponse"
+                },
+                "example": {
+                  "list_version": "2.3",
+                  "elemente": [
+                    {
+                      "id": "ca595916-7b40-4ed7-9d39-3f9e740de5d8",
+                      "wert": "E-Mail",
+                      "code": "001",
+                      "beschreibung": ""
+                    },
+                    {
+                      "id": "db6d63ae-c711-45c1-b063-d86c21fd5881",
+                      "wert": "Mobiltelefon",
+                      "code": "004",
+                      "beschreibung": ""
+                    },
+                    {
+                      "id": "40d22ea5-b2b2-4710-a381-bb580eae8af8",
+                      "wert": "Rechtsverbindlicher elektronischer Kommunikationsweg",
+                      "code": "008",
+                      "beschreibung": "elektronische Kommunikationsparameter für den ERV, d.h. SAFE-ID für Postfächer der EGVP-Infrastruktur (z.B. beA, beN, beSt, beBPo, eBO, MJP, EGVP-Postfächer der Justiz)"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.codelisten.read"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/codelisten/staaten": {
+      "get": {
+        "tags": [
+          "Codelisten"
+        ],
+        "summary": "Ruft die verfügbaren Staaten ab.",
+        "description": "Gibt die Einträge der Codeliste `GDS.Staat` zurück.\nDie zurückgegebenen Werte können verwendet werden, um den Staat einer Anschrift\ninnerhalb eines Verfahrens zu klassifizieren.",
+        "operationId": "CodelistenController_GetStaatenAsync",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaatListeResponse"
+                },
+                "example": {
+                  "list_version": "7.0",
+                  "elemente": [
+                    {
+                      "id": "712c97d9-106f-4111-97d5-c9046b2b2160",
+                      "code": "000",
+                      "wert": "Deutschland"
+                    },
+                    {
+                      "id": "61846212-101c-4b08-9272-9fd79b646dad",
+                      "code": "151",
+                      "wert": "Österreich"
+                    },
+                    {
+                      "id": "df176902-2fce-451e-a3b2-74648b129172",
+                      "code": "161",
+                      "wert": "Spanien"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.codelisten.read"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/codelisten/kanzleiformen": {
+      "get": {
+        "tags": [
+          "Codelisten"
+        ],
+        "summary": "Ruft die verfügbaren Kanzleiformen ab.",
+        "description": "Gibt die Einträge der Codeliste `GDS.Kanzleiform` zurück.\nDie zurückgegebenen Werte können verwendet werden, um die Kanzleiform einer Rechtsanwaltskanzlei\ninnerhalb eines Verfahrens zu klassifizieren.",
+        "operationId": "CodelistenController_GetKanzleiformenAsync",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KanzleiformListeResponse"
+                },
+                "example": {
+                  "list_version": "3.0",
+                  "elemente": [
+                    {
+                      "id": "86a2c45e-db63-423d-8e9f-a4c4a3ef6ffb",
+                      "wert": "Einzelanwalt",
+                      "code": "001"
+                    },
+                    {
+                      "id": "2d99055b-02e1-4910-a9cd-6fa63a3b37c5",
+                      "wert": "Sozietät",
+                      "code": "002"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.codelisten.read"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/codelisten/rollenbezeichnungen": {
+      "get": {
+        "tags": [
+          "Codelisten"
+        ],
+        "summary": "Ruft die verfügbaren Rollenbezeichnungen ab.",
+        "description": "Gibt die Einträge der Codeliste `GDS.Rollenbezeichnung` zurück.\nDie zurückgegebenen Werte können verwendet werden, um Rollen von Beteiligten\ninnerhalb eines Verfahrens zu klassifizieren.",
+        "operationId": "CodelistenController_GetRollenbezeichnungenAsync",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RollenbezeichnungListeResponse"
+                },
+                "example": {
+                  "list_version": "3.6",
+                  "elemente": [
+                    {
+                      "id": "8ae7fa32-2777-44c7-a918-6097da7cbb7d",
+                      "wert": "Beklagte(r)",
+                      "code": "028"
+                    },
+                    {
+                      "id": "8c61ca36-d64c-4b46-b4e2-f384646e7ad7",
+                      "wert": "Kläger(in)",
+                      "code": "101"
+                    },
+                    {
+                      "id": "2c45e857-0286-43e9-b96a-bd68543365fb",
+                      "wert": "Prozessbevollmächtigte(r)",
+                      "code": "132"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.codelisten.read"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/verfahren/{verfahren-id}/einreichungen/{einreichung-id}/dokumente/{id}": {
+      "get": {
+        "tags": [
+          "Dokumente"
+        ],
+        "summary": "Ruft die Details eines spezifischen Dokuments ab.",
+        "description": "Ruft ein Dokument basierend auf der Verfahrens-, Einreichungs- und Dokument-ID ab und validiert, dass das Dokument zur Einreichung und das Verfahren\nübereinstimmt.",
+        "operationId": "VerfahrenEinreichungenDokumenteController_GetAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "einreichung-id",
+            "in": "path",
+            "description": "Eindeutige ID der Einreichung.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Eindeutige ID des Dokuments.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DokumentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -148,9 +1122,9 @@
         "tags": [
           "Dokumente"
         ],
-        "summary": "Aktualisiert den Typ eines spezifischen Dokuments.",
-        "description": "Aktualisiert den Dokumententyp eines bestehenden Dokuments. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
-        "operationId": "VerfahrenEinreichungenDokumenteController_UpdateTypeAsync",
+        "summary": "Aktualisiert die Daten eines spezifischen Dokuments.",
+        "description": "Aktualisiert die Daten eines bestehenden Dokuments. Eine Aktualisierung ist nur möglich, solange sich das Dokument im Status ERSTELLT befindet; sobald das\nDokument eingereicht wurde (Status EINGEREICHT), sind keine Änderungen mehr möglich. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
+        "operationId": "VerfahrenEinreichungenDokumenteController_UpdateAsync",
         "parameters": [
           {
             "name": "verfahren-id",
@@ -190,24 +1164,44 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "Dokument-Typ",
+            "in": "header",
+            "description": "Der Typ des Dokumentes.",
+            "schema": {
+              "$ref": "#/components/schemas/DokumentType"
+            }
+          },
+          {
+            "name": "Dokument-Sichtbarkeit-Alle",
+            "in": "header",
+            "description": "Legt die Sichtbarkeit des Dokuments fest. true: Das Dokument ist für alle Beteiligten der Akte sichtbar. false: Das Dokument ist zunächst nur für die zugeordnete Partei und das Gericht sichtbar. Das Gericht kann die Sichtbarkeit nachträglich ändern.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "Dokument-Anzeigename",
+            "in": "header",
+            "description": "Der Anzeigename des Dokumentes.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
-          "description": "Die Anfrage mit dem neuen Typ des Dokuments.",
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateDokumentTypeRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateDokumentTypeRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateDokumentTypeRequest"
+                "type": "object",
+                "properties": {
+                  "datei": {
+                    "type": "string",
+                    "description": "Die hochzuladende Datei.",
+                    "format": "binary"
+                  }
+                }
               }
             }
           }
@@ -216,19 +1210,9 @@
           "200": {
             "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Dokument"
-                }
-              },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Dokument"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Dokument"
+                  "$ref": "#/components/schemas/DokumentResponse"
                 }
               }
             }
@@ -304,8 +1288,16 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 },
                 "examples": {
-                  "concurrency-conflict": {
-                    "$ref": "#/components/examples/409_ConcurrencyConflict"
+                  "wrong-state": {
+                    "summary": "wrong-state",
+                    "description": "Dokument kann nicht aktualisiert werden",
+                    "value": {
+                      "type": "/problems/wrong-state",
+                      "title": "Dokument kann nicht aktualisiert werden",
+                      "status": 409,
+                      "detail": "Dokumente können nur aktualisiert werden, solange sie sich im Status ‚Erstellt‘ befinden."
+                    },
+                    "x-schema": "ProblemDetails"
                   }
                 }
               }
@@ -336,6 +1328,21 @@
                 "examples": {
                   "invalid-if-match-header": {
                     "$ref": "#/components/examples/428_InvalidIfMatchHeader"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
                   }
                 }
               }
@@ -473,8 +1480,16 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 },
                 "examples": {
-                  "concurrency-conflict": {
-                    "$ref": "#/components/examples/409_ConcurrencyConflict"
+                  "wrong-state": {
+                    "summary": "wrong-state",
+                    "description": "Dokument kann nicht gelöscht werden",
+                    "value": {
+                      "type": "/problems/wrong-state",
+                      "title": "Dokument kann nicht gelöscht werden",
+                      "status": 409,
+                      "detail": "Nur Dokumente mit dem Status ‚Erstellt‘ können gelöscht werden."
+                    },
+                    "x-schema": "ProblemDetails"
                   }
                 }
               }
@@ -505,6 +1520,21 @@
                 "examples": {
                   "invalid-if-match-header": {
                     "$ref": "#/components/examples/428_InvalidIfMatchHeader"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
                   }
                 }
               }
@@ -554,28 +1584,9 @@
           "200": {
             "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Dokument"
-                  }
-                }
-              },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Dokument"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Dokument"
-                  }
+                  "$ref": "#/components/schemas/DokumentListeResponse"
                 }
               }
             }
@@ -642,6 +1653,21 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -681,11 +1707,29 @@
             }
           },
           {
-            "name": "type",
-            "in": "query",
-            "description": "Typ des Dokuments.",
+            "name": "Dokument-Typ",
+            "in": "header",
+            "description": "Der Typ des Dokumentes.",
+            "required": true,
             "schema": {
               "$ref": "#/components/schemas/DokumentType"
+            }
+          },
+          {
+            "name": "Dokument-Sichtbarkeit-Alle",
+            "in": "header",
+            "description": "Legt die initiale Sichtbarkeit des Dokuments fest. true: Das Dokument ist für alle Beteiligten der Akte sichtbar. false: Das Dokument ist zunächst nur für die zugeordnete Partei und das Gericht sichtbar. Das Gericht kann die Sichtbarkeit nachträglich ändern.",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "Dokument-Anzeigename",
+            "in": "header",
+            "description": "Der Anzeigename des Dokumentes.",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -694,13 +1738,13 @@
             "multipart/form-data": {
               "schema": {
                 "required": [
-                  "file"
+                  "datei"
                 ],
                 "type": "object",
                 "properties": {
-                  "file": {
+                  "datei": {
                     "type": "string",
-                    "description": "The document file",
+                    "description": "Die hochzuladende Datei.",
                     "format": "binary"
                   }
                 }
@@ -712,19 +1756,23 @@
           "201": {
             "description": "Created",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Dokument"
-                }
-              },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Dokument"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Dokument"
+                  "$ref": "#/components/schemas/DokumentErstellenResponse"
+                },
+                "example": {
+                  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                  "status": "ERSTELLT",
+                  "dateiname": "klageschrift.pdf",
+                  "anzeigename": "Klageschrift",
+                  "size_in_bytes": 235875,
+                  "content_type": "application/pdf",
+                  "hash": "46d9edbb427e5275a6845cd982fab0b5d2381878d6d66b3f4c1500eecfa96a27bf3118da755bf56af3505b9606ec8135",
+                  "hash_algorithmus": "SHA3-384",
+                  "typ": "XJUSTIZ",
+                  "erstellt_von": "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+                  "erstellt_am": "2026-06-22T11:28:06.456+00:00",
+                  "sichtbarkeit_alle": true
                 }
               }
             }
@@ -802,6 +1850,29 @@
               }
             }
           },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "wrong-state": {
+                    "summary": "wrong-state",
+                    "description": "Dokumentbearbeitung im aktuellen Status nicht erlaubt",
+                    "value": {
+                      "type": "/problems/wrong-state",
+                      "title": "Dokumentbearbeitung im aktuellen Status nicht erlaubt",
+                      "status": 409,
+                      "detail": "Das Löschen ist nicht möglich, da sich die Entität in einem Status befindet, der kein Löschen erlaubt. Eine Einreichung kann nur in den Status ERSTELLT oder FEHLGESCHLAGEN gelöscht werden."
+                    },
+                    "x-schema": "ProblemDetails"
+                  }
+                }
+              }
+            }
+          },
           "413": {
             "description": "Payload Too Large",
             "content": {
@@ -827,6 +1898,21 @@
                 "examples": {
                   "invalid-content-type": {
                     "$ref": "#/components/examples/415_InvalidContentType"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
                   }
                 }
               }
@@ -905,20 +1991,12 @@
           "200": {
             "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              },
               "application/json": {
                 "schema": {
-                  "type": "string"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "string"
-                }
+                  "type": "string",
+                  "format": "uri"
+                },
+                "example": "https://s3.example.com/bucket/object?X-Amz-Signature=..."
               }
             }
           },
@@ -980,6 +2058,21 @@
                 "examples": {
                   "entity-not-found": {
                     "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
                   }
                 }
               }
@@ -1039,19 +2132,9 @@
           "200": {
             "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Status"
-                }
-              },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Status"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Status"
+                  "$ref": "#/components/schemas/ValidierungsstatusResponse"
                 }
               }
             }
@@ -1114,9 +2197,21 @@
                 "examples": {
                   "entity-not-found": {
                     "$ref": "#/components/examples/404_EntityNotFound"
-                  },
-                  "dokument-status-not-available": {
-                    "$ref": "#/components/examples/404_DokumentStatusNotAvailable"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
                   }
                 }
               }
@@ -1166,19 +2261,9 @@
           "200": {
             "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Einreichung"
-                }
-              },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Einreichung"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Einreichung"
+                  "$ref": "#/components/schemas/EinreichungResponse"
                 }
               }
             }
@@ -1245,6 +2330,21 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1260,7 +2360,7 @@
           "Einreichungen"
         ],
         "summary": "Aktualisiert den Namen einer spezifischen Einreichung.",
-        "description": "Aktualisiert den Namen einer bestehenden Einreichung. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
+        "description": "Aktualisiert den Namen einer bestehenden Einreichung. Eine Aktualisierung ist nur möglich, solange sich die Einreichung im Status ERSTELLT oder FEHLGESCHLAGEN\nbefindet. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
         "operationId": "VerfahrenEinreichungenController_UpdateAsync",
         "parameters": [
           {
@@ -1298,17 +2398,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateEinreichungNameRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateEinreichungNameRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateEinreichungNameRequest"
+                "$ref": "#/components/schemas/EinreichungNameAendernRequest"
               }
             }
           }
@@ -1317,19 +2407,9 @@
           "200": {
             "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Einreichung"
-                }
-              },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Einreichung"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Einreichung"
+                  "$ref": "#/components/schemas/EinreichungResponse"
                 }
               }
             }
@@ -1405,8 +2485,16 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 },
                 "examples": {
-                  "concurrency-conflict": {
-                    "$ref": "#/components/examples/409_ConcurrencyConflict"
+                  "wrong-state": {
+                    "summary": "wrong-state",
+                    "description": "Aktualisierung im aktuellen Status nicht erlaubt",
+                    "value": {
+                      "type": "/problems/wrong-state",
+                      "title": "Aktualisierung im aktuellen Status nicht erlaubt",
+                      "status": 409,
+                      "detail": "Die Aktualisierung ist nur möglich, solange sich die Einreichung im Status ERSTELLT oder FEHLGESCHLAGEN befindet."
+                    },
+                    "x-schema": "ProblemDetails"
                   }
                 }
               }
@@ -1437,6 +2525,21 @@
                 "examples": {
                   "invalid-if-match-header": {
                     "$ref": "#/components/examples/428_InvalidIfMatchHeader"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
                   }
                 }
               }
@@ -1564,8 +2667,16 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 },
                 "examples": {
-                  "concurrency-conflict": {
-                    "$ref": "#/components/examples/409_ConcurrencyConflict"
+                  "wrong-state": {
+                    "summary": "wrong-state",
+                    "description": "Löschen im aktuellen Status nicht erlaubt",
+                    "value": {
+                      "type": "/problems/wrong-state",
+                      "title": "Löschen im aktuellen Status nicht erlaubt",
+                      "status": 409,
+                      "detail": "Das Löschen ist nicht möglich, da sich die Entität in einem Status befindet, der kein Löschen erlaubt. Eine Einreichung kann nur in den Status ERSTELLT oder FEHLGESCHLAGEN gelöscht werden."
+                    },
+                    "x-schema": "ProblemDetails"
                   }
                 }
               }
@@ -1596,6 +2707,21 @@
                 "examples": {
                   "invalid-if-match-header": {
                     "$ref": "#/components/examples/428_InvalidIfMatchHeader"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
                   }
                 }
               }
@@ -1635,28 +2761,9 @@
           "200": {
             "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Einreichung"
-                  }
-                }
-              },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Einreichung"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Einreichung"
-                  }
+                  "$ref": "#/components/schemas/EinreichungListeResponse"
                 }
               }
             }
@@ -1719,6 +2826,21 @@
                 "examples": {
                   "entity-not-found": {
                     "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
                   }
                 }
               }
@@ -1757,17 +2879,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateEinreichungRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEinreichungRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEinreichungRequest"
+                "$ref": "#/components/schemas/EinreichungErstellenRequest"
               }
             }
           }
@@ -1776,19 +2888,9 @@
           "201": {
             "description": "Created",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Einreichung"
-                }
-              },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Einreichung"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Einreichung"
+                  "$ref": "#/components/schemas/EinreichungErstellenResponse"
                 }
               }
             }
@@ -1855,6 +2957,21 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1872,7 +2989,7 @@
           "Einreichungen"
         ],
         "summary": "Ruft den Status einer spezifischen Einreichung ab.",
-        "description": "Ruft den Validierungsstatus einer Einreichung ab, basierend auf den Validierungsnachrichten der zugehörigen Dokumente.\nGibt Gruen zurück, wenn keine Nachrichten vorhanden sind, Gelb bei Warnungen, Rot bei Fehlern, die eine Einreichung verhindern.",
+        "description": "Ruft den Validierungsstatus einer Einreichung ab, basierend auf den Validierungsnachrichten der zugehörigen Dokumente. Gibt Gruen zurück, wenn keine\nNachrichten vorhanden sind, Gelb bei Warnungen, Rot bei Fehlern, die eine Einreichung verhindern.",
         "operationId": "VerfahrenEinreichungenController_GetStatusAsync",
         "parameters": [
           {
@@ -1900,19 +3017,9 @@
           "200": {
             "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Status"
-                }
-              },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Status"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Status"
+                  "$ref": "#/components/schemas/ValidierungsstatusResponse"
                 }
               }
             }
@@ -1975,9 +3082,21 @@
                 "examples": {
                   "entity-not-found": {
                     "$ref": "#/components/examples/404_EntityNotFound"
-                  },
-                  "einreichung-status-not-available": {
-                    "$ref": "#/components/examples/404_EinreichungStatusNotAvailable"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
                   }
                 }
               }
@@ -1993,39 +3112,66 @@
         ]
       }
     },
-    "/api/v1/gerichte": {
-      "get": {
+    "/api/v1/verfahren/{verfahren-id}/einreichungen/{id}/einreichen": {
+      "post": {
         "tags": [
-          "Gerichte"
+          "Einreichungen"
         ],
-        "summary": "Ruft eine Liste aller verfügbaren Gerichte ab.",
-        "description": "Gibt eine gefilterte Liste aller aktiven Gerichte zurück.",
-        "operationId": "GerichteController_GetAllAsync",
+        "summary": "Abschließen der Einreichung.",
+        "description": "Einreichung wird vom Benutzer abgeschlossen. Über die Id kann im späteren Verlauf der Beleg zu der Einreichung abgerufen werden. Das Einreichen ist nur\nmöglich, solange sich die Einreichung im Status ERSTELLT oder FEHLGESCHLAGEN befindet.",
+        "operationId": "VerfahrenEinreichungenController_EinreichenAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Eindeutige ID der Einreichung.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "description": "Die aktuelle Version der Ressource (ETag).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Gericht"
-                  }
-                }
-              },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Gericht"
-                  }
+                  "$ref": "#/components/schemas/EinreichenResponse"
                 }
-              },
-              "text/json": {
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Gericht"
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
                   }
                 }
               }
@@ -2056,6 +3202,333 @@
                 "examples": {
                   "authorization-failed": {
                     "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "wrong-state": {
+                    "summary": "wrong-state",
+                    "description": "Einreichen im aktuellen Status nicht erlaubt",
+                    "value": {
+                      "type": "/problems/wrong-state",
+                      "title": "Einreichen im aktuellen Status nicht erlaubt",
+                      "status": 409,
+                      "detail": "Das Einreichen ist nur möglich, solange sich die Einreichung im Status ERSTELLT oder FEHLGESCHLAGEN befindet."
+                    },
+                    "x-schema": "ProblemDetails"
+                  }
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Precondition Failed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "if-match-header-version-conflict": {
+                    "$ref": "#/components/examples/412_IfMatchHeaderVersionConflict"
+                  }
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Precondition Required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "invalid-if-match-header": {
+                    "$ref": "#/components/examples/428_InvalidIfMatchHeader"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/verfahren/{verfahren-id}/einreichungen/{id}/xjustiz": {
+      "get": {
+        "tags": [
+          "Einreichungen"
+        ],
+        "summary": "Ruft eine XJustiz Nachricht mit den aktuellen Grunddaten des Verfahrens ab.",
+        "description": "Ruft eine XJustiz Nachricht basierend auf der angegebenen ID ab und lädt alle zugehörigen Entitäten (Gericht, Beteiligungen, Rollen und Prozessbevollmächtigte).",
+        "operationId": "VerfahrenEinreichungenController_GetXJustizAsync",
+        "parameters": [
+          {
+            "name": "verfahren-id",
+            "in": "path",
+            "description": "Eindeutige ID des Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Eindeutige ID der Einreichung.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  },
+                  "forbidden": {
+                    "$ref": "#/components/examples/403_Forbidden"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/v1/informationen/gerichte/{gericht-id}": {
+      "get": {
+        "tags": [
+          "Informationen"
+        ],
+        "summary": "Ruft Informationen zu einem Gericht ab.",
+        "description": "Ruft Informationen wie z.B. IBAN zu einem Gericht ab.",
+        "operationId": "InformationenController_GetGerichtsinformationenAsync",
+        "parameters": [
+          {
+            "name": "gericht-id",
+            "in": "path",
+            "description": "ID des Gerichts aus Codeliste Gerichte.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GerichtInformationResponse"
+                },
+                "example": {
+                  "bankverbindungen": [
+                    {
+                      "bank": "Landesbank Hessen-Thüringen",
+                      "iban": "DE73 5005 0000 0001 0060 30",
+                      "bic": "HELADEFFXXX",
+                      "kontoinhaber": "Gerichtskasse Frankfurt am Main"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
                   }
                 }
               }
@@ -2095,19 +3568,9 @@
           "200": {
             "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Verfahren"
-                }
-              },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Verfahren"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Verfahren"
+                  "$ref": "#/components/schemas/VerfahrenResponse"
                 }
               }
             }
@@ -2171,12 +3634,213 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
           {
             "oauth2": [
               "kompla.verfahren.read"
+            ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Verfahren"
+        ],
+        "summary": "Aktualisiert ein Verfahren basierend auf der angegebenen ID.",
+        "description": "Aktualisiert ein Verfahren, sofern es sich im Status ERSTELLT befindet. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
+        "operationId": "VerfahrenController_UpdateAsync",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Die eindeutige ID des zu aktualisierenden Verfahrens.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "description": "Die aktuelle Version der Ressource (ETag).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Die Anfrage mit den zu aktualisierenden Verfahrensinhalten. Erforderliche Inhalte sind GerichtId und Verfahrensgegenstand.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerfahrenAendernRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerfahrenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                },
+                "examples": {
+                  "validation-failed": {
+                    "$ref": "#/components/examples/400_ValidationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "entity-not-found": {
+                    "$ref": "#/components/examples/404_EntityNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "wrong-state": {
+                    "summary": "wrong-state",
+                    "description": "Verfahren kann nicht aktualisiert werden.",
+                    "value": {
+                      "type": "/problems/wrong-state",
+                      "title": "Verfahren kann nicht aktualisiert werden.",
+                      "status": 409,
+                      "detail": "Ein Verfahren kann nur aktualisiert werden, wenn es den Status ‚Erstellt‘ hat und alle zugehörigen Einreichungen im Status ERSTELLT oder FEHLGESCHLAGEN sind."
+                    },
+                    "x-schema": "ProblemDetails"
+                  }
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Precondition Failed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "if-match-header-version-conflict": {
+                    "$ref": "#/components/examples/412_IfMatchHeaderVersionConflict"
+                  }
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Precondition Required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "invalid-if-match-header": {
+                    "$ref": "#/components/examples/428_InvalidIfMatchHeader"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.verfahren.write"
             ]
           }
         ]
@@ -2284,8 +3948,16 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 },
                 "examples": {
-                  "concurrency-conflict": {
-                    "$ref": "#/components/examples/409_ConcurrencyConflict"
+                  "wrong-state": {
+                    "summary": "wrong-state",
+                    "description": "Verfahren kann nicht gelöscht werden",
+                    "value": {
+                      "type": "/problems/wrong-state",
+                      "title": "Verfahren kann nicht gelöscht werden",
+                      "status": 409,
+                      "detail": "Ein Verfahren kann nur gelöscht werden, wenn es den Status ‚Erstellt‘ hat und alle zugehörigen Einreichungen im Status ERSTELLT oder FEHLGESCHLAGEN sind."
+                    },
+                    "x-schema": "ProblemDetails"
                   }
                 }
               }
@@ -2316,6 +3988,21 @@
                 "examples": {
                   "invalid-if-match-header": {
                     "$ref": "#/components/examples/428_InvalidIfMatchHeader"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
                   }
                 }
               }
@@ -2388,28 +4075,9 @@
           "200": {
             "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Verfahren"
-                  }
-                }
-              },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Verfahren"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Verfahren"
-                  }
+                  "$ref": "#/components/schemas/VerfahrenListeResponse"
                 }
               }
             }
@@ -2458,6 +4126,21 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -2473,24 +4156,14 @@
           "Verfahren"
         ],
         "summary": "Erstellt ein neues Verfahren für einen Anwalt.",
-        "description": "Erstellt ein neues Verfahren für den Benutzer mit der angegebenen Safe-ID.\nDie Safe-ID wird überprüft und bei Bedarf einem neuen Benutzer zugeordnet.",
+        "description": "Erstellt ein neues Verfahren für den Benutzer mit der angegebenen Safe-ID unter Angabe der GerichtId, dem Verfahrensgegenstand und weiterer optionaler Verfahrensinhalte.\nDie Safe-ID wird überprüft und bei Bedarf einem neuen Benutzer zugeordnet.",
         "operationId": "VerfahrenController_CreateAsync",
         "requestBody": {
-          "description": "Die Anfrage mit der Safe-ID des Anwalts.",
+          "description": "Die Anfrage mit der Safe-ID des Anwalts und den Verfahrensinhalten. Erforderliche Inhalte sind GerichtId und Verfahrensgegenstand.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateVerfahrenRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateVerfahrenRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateVerfahrenRequest"
+                "$ref": "#/components/schemas/VerfahrenErstellenRequest"
               }
             }
           }
@@ -2499,19 +4172,9 @@
           "201": {
             "description": "Created",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Verfahren"
-                }
-              },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Verfahren"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Verfahren"
+                  "$ref": "#/components/schemas/VerfahrenResponse"
                 }
               }
             }
@@ -2563,6 +4226,21 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -2577,10 +4255,53 @@
   },
   "components": {
     "schemas": {
-      "Beteiligte": {
+      "AnschriftRequest": {
+        "type": "object",
+        "properties": {
+          "anschriftstyp_id": {
+            "type": "string",
+            "description": "Identifikator des zugehörigen Anschriftstyps.",
+            "format": "uuid",
+            "nullable": true
+          },
+          "strasse": {
+            "type": "string",
+            "description": "Straße der Anschrift.",
+            "nullable": true
+          },
+          "hausnummer": {
+            "type": "string",
+            "description": "Hausnummer der Anschrift.",
+            "nullable": true
+          },
+          "postleitzahl": {
+            "type": "string",
+            "description": "Postleitzahl der Anschrift.",
+            "nullable": true
+          },
+          "ort": {
+            "type": "string",
+            "description": "Ort der Anschrift.",
+            "nullable": true
+          },
+          "postfachnummer": {
+            "type": "string",
+            "description": "Postfachnummer der Anschrift.",
+            "nullable": true
+          },
+          "staat_id": {
+            "type": "string",
+            "description": "Identifikator des zugehörigen Staates.",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Anfrage-DTO für eine Anschrift einer Beteiligung im Verfahren."
+      },
+      "AnschriftResponse": {
         "required": [
-          "name",
-          "rollen"
+          "id"
         ],
         "type": "object",
         "properties": {
@@ -2589,39 +4310,526 @@
             "description": "Eindeutige Identifikationsnummer der Entität.",
             "format": "uuid"
           },
-          "name": {
+          "anschriftstyp": {
+            "$ref": "#/components/schemas/AnschriftstypResponse"
+          },
+          "strasse": {
             "type": "string",
-            "description": "Gibt den Namen einer beteiligten Person oder Organisation an.",
+            "description": "Straße der Anschrift.",
             "nullable": true
           },
-          "rollen": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Rolle"
-            },
-            "description": "Enthält die Rollen, die einer beteiligten Person oder Organisation zugewiesen sind.",
+          "hausnummer": {
+            "type": "string",
+            "description": "Hausnummer der Anschrift.",
             "nullable": true
           },
-          "prozessbevollmaechtigte": {
+          "postleitzahl": {
+            "type": "string",
+            "description": "Postleitzahl der Anschrift.",
+            "nullable": true
+          },
+          "ort": {
+            "type": "string",
+            "description": "Ort der Anschrift.",
+            "nullable": true
+          },
+          "postfachnummer": {
+            "type": "string",
+            "description": "Postfachnummer der Anschrift.",
+            "nullable": true
+          },
+          "staat": {
+            "$ref": "#/components/schemas/StaatResponse"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert eine Anschrift einer Beteiligung im Verfahren."
+      },
+      "AnschriftstypListeResponse": {
+        "required": [
+          "elemente",
+          "list_version"
+        ],
+        "type": "object",
+        "properties": {
+          "list_version": {
+            "type": "string",
+            "description": "Die Versionsnummer der Codeliste."
+          },
+          "elemente": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Prozessbevollmaechtigter"
+              "$ref": "#/components/schemas/AnschriftstypResponse"
             },
-            "description": "Gibt die Prozessbevollmächtigten für eine beteiligte Person im Verfahren an.",
+            "description": "Die Liste der enthaltenen Codelistenelemente."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert Anschriftstypen mit spezifischen Attributen wie Wert und Code."
+      },
+      "AnschriftstypResponse": {
+        "required": [
+          "code",
+          "wert"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "format": "uuid"
+          },
+          "wert": {
+            "type": "string",
+            "description": "Der Wert des Anschriftstyp."
+          },
+          "code": {
+            "type": "string",
+            "description": "Der eindeutige Code des Anschriftstyp."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert ein Anschriftstyp mit spezifischen Attributen wie Wert und Code."
+      },
+      "BankverbindungResponse": {
+        "required": [
+          "bank",
+          "bic",
+          "iban",
+          "kontoinhaber"
+        ],
+        "type": "object",
+        "properties": {
+          "bank": {
+            "type": "string",
+            "description": "Name des kontoführenden Kreditinstituts."
+          },
+          "iban": {
+            "type": "string",
+            "description": "IBAN des Kontos."
+          },
+          "bic": {
+            "type": "string",
+            "description": "BIC des kontoführenden Kreditinstituts."
+          },
+          "kontoinhaber": {
+            "type": "string",
+            "description": "Name des Kontoinhabers."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert eine Bankverbindung des Gerichts."
+      },
+      "BelegListeResponse": {
+        "required": [
+          "elemente"
+        ],
+        "type": "object",
+        "properties": {
+          "elemente": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BelegResponse"
+            },
+            "description": "Die Belege des Verfahrens."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Enthält die Liste der Belege eines Verfahrens."
+      },
+      "BelegResponse": {
+        "required": [
+          "content_type",
+          "dateiname",
+          "erstellt_am",
+          "id",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige ID des Beleges.",
+            "format": "uuid"
+          },
+          "erstellt_am": {
+            "type": "string",
+            "description": "Datum und Uhrzeit der Erstellung des Beleges.",
+            "format": "date-time"
+          },
+          "typ": {
+            "$ref": "#/components/schemas/BelegTyp"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BelegStatus"
+          },
+          "einreichung_id": {
+            "type": "string",
+            "description": "Eindeutige ID der zugehörigen Einreichung.",
+            "format": "uuid"
+          },
+          "anzeigename": {
+            "type": "string",
+            "description": "Sprechender Anzeigename des Beleges.",
+            "nullable": true
+          },
+          "dateiname": {
+            "type": "string",
+            "description": "Dateiname des Beleges inkl. Endung.",
+            "nullable": true
+          },
+          "content_type": {
+            "type": "string",
+            "description": "MIME-Type des Beleges.",
+            "nullable": true
+          },
+          "size_in_bytes": {
+            "type": "integer",
+            "description": "Größe des Beleges in Bytes.",
+            "format": "int64",
             "nullable": true
           }
         },
         "additionalProperties": false,
-        "description": "Repräsentiert eine beteiligte Person oder Organisation im Verfahren."
+        "description": "Repräsentiert einen Beleg einer Einreichung."
+      },
+      "BelegStatus": {
+        "enum": [
+          "IN_BEARBEITUNG",
+          "ERSTELLT"
+        ],
+        "type": "string",
+        "description": "Status eines Beleges einer Einreichung."
+      },
+      "BelegTyp": {
+        "enum": [
+          "PROTOKOLL",
+          "NACHWEIS"
+        ],
+        "type": "string",
+        "description": "Typ eines Beleges einer Einreichung."
+      },
+      "BeteiligteRequest": {
+        "required": [
+          "beteiligtenart",
+          "rollen"
+        ],
+        "type": "object",
+        "properties": {
+          "beteiligtenart": {
+            "type": "string"
+          },
+          "rollen": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RollenRequest"
+            },
+            "description": "Enthält die Rollen, die einer beteiligten Person oder Organisation zugewiesen sind."
+          },
+          "anschriften": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AnschriftRequest"
+            },
+            "description": "Gibt die Anschriften der beteiligten Person im Verfahren an.",
+            "nullable": true
+          },
+          "kommunikationsanschluesse": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KommunikationsanschlussRequest"
+            },
+            "description": "Gibt die Kommunikationsanschlüsse der beteiligten Person im Verfahren an.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Anfrage-DTO für eine beteiligte Person oder Organisation im Verfahren.",
+        "discriminator": {
+          "propertyName": "beteiligtenart",
+          "mapping": {
+            "natuerlichePerson": "#/components/schemas/NatuerlichePersonRequest",
+            "organisation": "#/components/schemas/OrganisationRequest",
+            "raKanzlei": "#/components/schemas/RaKanzleiRequest"
+          }
+        }
+      },
+      "BeteiligteResponse": {
+        "required": [
+          "beteiligtenart",
+          "rollen"
+        ],
+        "type": "object",
+        "properties": {
+          "beteiligtenart": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "format": "uuid"
+          },
+          "rollen": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RollenResponse"
+            },
+            "description": "Enthält die Rollen, die einer beteiligten Person oder Organisation zugewiesen sind."
+          },
+          "anschriften": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AnschriftResponse"
+            },
+            "description": "Gibt die Anschriften der beteiligten Person im Verfahren an.",
+            "nullable": true
+          },
+          "telekommunikation": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KommunikationsanschlussResponse"
+            },
+            "description": "Gibt die Kommunikationsanschlüsse der beteiligten Person im Verfahren an.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert eine beteiligte Person oder Organisation im Verfahren.",
+        "discriminator": {
+          "propertyName": "beteiligtenart",
+          "mapping": {
+            "natuerlichePerson": "#/components/schemas/NatuerlichePersonResponse",
+            "organisation": "#/components/schemas/OrganisationResponse",
+            "raKanzlei": "#/components/schemas/RaKanzleiResponse"
+          }
+        }
       },
       "ContentDispositionType": {
         "enum": [
           "INLINE",
           "ATTACHMENT"
         ],
-        "type": "string"
+        "type": "string",
+        "description": "Bestimmt das Verhalten des Browsers beim Abrufen der Datei über den generierten Download-Link."
       },
-      "CreateEinreichungRequest": {
+      "DokumentErstellenResponse": {
+        "required": [
+          "anzeigename",
+          "content_type",
+          "dateiname",
+          "erstellt_am",
+          "erstellt_von",
+          "hash",
+          "hash_algorithmus",
+          "sichtbarkeit_alle",
+          "size_in_bytes",
+          "status",
+          "typ"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DokumentStatus"
+          },
+          "dateiname": {
+            "type": "string",
+            "description": "Dateiname des Dokuments inkl. Endung, z.B. \"klageschrift.pdf\"."
+          },
+          "anzeigename": {
+            "type": "string",
+            "description": "Anzeigename des Dokuments."
+          },
+          "size_in_bytes": {
+            "type": "integer",
+            "description": "Größe des Dokuments in Bytes.",
+            "format": "int64"
+          },
+          "content_type": {
+            "type": "string",
+            "description": "MIME-Type des Dokuments, z.B. \"application/pdf\".",
+            "example": "application/pdf"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Hashwert des Dokuments in hexadezimaler Notation. Dient dem Integritätsnachweis.\nSteht erst zur Verfügung, wenn das Dokument vollständig hochgeladen wurde.",
+            "example": "46d9edbb427e5275a6845cd982fab0b5d2381878d6d66b3f4c1500eecfa96a27bf3118da755bf56af3505b9606ec8135"
+          },
+          "hash_algorithmus": {
+            "type": "string",
+            "description": "Verfahren, mit dem der Hashwert berechnet wurde. Plattformweit wird SHA3-384 verwendet.",
+            "example": "SHA3-384"
+          },
+          "typ": {
+            "$ref": "#/components/schemas/DokumentType"
+          },
+          "erstellt_von": {
+            "type": "string",
+            "description": "Benutzer, der das Dokument erstellt hat, angegeben als SAFE-ID.",
+            "example": "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d"
+          },
+          "erstellt_am": {
+            "type": "string",
+            "description": "Datum und Uhrzeit der Erstellung des Dokuments.",
+            "format": "date-time"
+          },
+          "sichtbarkeit_alle": {
+            "type": "boolean",
+            "description": "Gibt an, ob das Dokument für alle sichtbar ist."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert das Datenübertragungsobjekt (DTO) für die Erstellung eines Dokuments."
+      },
+      "DokumentListeResponse": {
+        "required": [
+          "elemente"
+        ],
+        "type": "object",
+        "properties": {
+          "elemente": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DokumentResponse"
+            },
+            "description": "Gibt die Liste der enthaltenen Dokumente zurück."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert die Antwort mit einer Liste von Dokumenten."
+      },
+      "DokumentResponse": {
+        "required": [
+          "anzeigename",
+          "content_type",
+          "dateiname",
+          "erstellt_am",
+          "erstellt_von",
+          "hash",
+          "hash_algorithmus",
+          "sichtbarkeit_alle",
+          "size_in_bytes",
+          "status",
+          "typ",
+          "validierungslauf_status"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DokumentStatus"
+          },
+          "validierungslauf_status": {
+            "$ref": "#/components/schemas/ValidierungslaufStatus"
+          },
+          "dateiname": {
+            "type": "string",
+            "description": "Dateiname des Dokuments inkl. Endung, z.B. \"klageschrift.pdf\"."
+          },
+          "anzeigename": {
+            "type": "string",
+            "description": "Anzeigename des Dokuments."
+          },
+          "size_in_bytes": {
+            "type": "integer",
+            "description": "Größe des Dokuments in Bytes.",
+            "format": "int64"
+          },
+          "content_type": {
+            "type": "string",
+            "description": "MIME-Type des Dokuments, z.B. \"application/pdf\".",
+            "example": "application/pdf"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Hashwert des Dokuments in hexadezimaler Notation. Dient dem Integritätsnachweis.\nSteht erst zur Verfügung, wenn das Dokument vollständig hochgeladen wurde.",
+            "example": "46d9edbb427e5275a6845cd982fab0b5d2381878d6d66b3f4c1500eecfa96a27bf3118da755bf56af3505b9606ec8135"
+          },
+          "hash_algorithmus": {
+            "type": "string",
+            "description": "Verfahren, mit dem der Hashwert berechnet wurde. Plattformweit wird SHA3-384 verwendet.",
+            "example": "SHA3-384"
+          },
+          "typ": {
+            "$ref": "#/components/schemas/DokumentType"
+          },
+          "gesendet_am": {
+            "type": "string",
+            "description": "Das Datum, an dem die Einreichung gesendet wurde.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "eingereicht_am": {
+            "type": "string",
+            "description": "Datum der Einreichung im Verfahren.",
+            "format": "date-time",
+            "nullable": true
+          },
+          "erstellt_von": {
+            "type": "string",
+            "description": "Benutzer, der die Einreichung erstellt hat, angegeben als SAFE-ID.",
+            "example": "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d"
+          },
+          "erstellt_am": {
+            "type": "string",
+            "description": "Datum und Uhrzeit der Erstellung der Einreichung.",
+            "format": "date-time"
+          },
+          "sichtbarkeit_alle": {
+            "type": "boolean",
+            "description": "Gibt an, ob das Dokument für alle sichtbar ist."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert ein Dokument im System."
+      },
+      "DokumentStatus": {
+        "enum": [
+          "ERSTELLT",
+          "EINGEREICHT",
+          "VERSENDET",
+          "VERAKTET",
+          "NICHT_EINGEREICHT",
+          "GELOESCHT"
+        ],
+        "type": "string",
+        "description": "Definiert den Status eines Dokuments."
+      },
+      "DokumentType": {
+        "enum": [
+          "ANHANG",
+          "SCHRIFTSTUECK",
+          "SIGNATURDATEI",
+          "XJUSTIZ"
+        ],
+        "type": "string",
+        "description": "Typ des Dokuments."
+      },
+      "EinreichenResponse": {
+        "required": [
+          "beleg_id"
+        ],
+        "type": "object",
+        "properties": {
+          "beleg_id": {
+            "type": "string",
+            "description": "ID der Belegdatei für ein Protokoll oder Nachweis.",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Antwort auf die Aktion Einreichen."
+      },
+      "EinreichungErstellenRequest": {
         "required": [
           "name"
         ],
@@ -2636,30 +4844,12 @@
         "additionalProperties": false,
         "description": "Anfrage-DTO für das Erstellen einer neuen Einreichung."
       },
-      "CreateVerfahrenRequest": {
+      "EinreichungErstellenResponse": {
         "required": [
-          "safe_id"
-        ],
-        "type": "object",
-        "properties": {
-          "safe_id": {
-            "minLength": 1,
-            "type": "string",
-            "description": "Die Safe-ID des Anwalts, für den das Verfahren erstellt werden soll."
-          }
-        },
-        "additionalProperties": false,
-        "description": "Anfrage-DTO für das Erstellen eines neuen Verfahrens."
-      },
-      "Dokument": {
-        "required": [
-          "einreichung_id",
           "erstellt_am",
           "erstellt_von",
           "name",
-          "size_in_bytes",
-          "status",
-          "type"
+          "status"
         ],
         "type": "object",
         "properties": {
@@ -2668,79 +4858,66 @@
             "description": "Eindeutige Identifikationsnummer der Entität.",
             "format": "uuid"
           },
-          "einreichung_id": {
-            "type": "string",
-            "description": "Eindeutige ID der Einreichung.",
-            "format": "uuid"
-          },
-          "status": {
-            "$ref": "#/components/schemas/DokumentStatus"
-          },
           "name": {
             "type": "string",
-            "description": "Name des Dokuments.",
-            "nullable": true
-          },
-          "size_in_bytes": {
-            "type": "integer",
-            "description": "Größe des Dokuments in Bytes.",
-            "format": "int64"
-          },
-          "type": {
-            "$ref": "#/components/schemas/DokumentType"
-          },
-          "viren_scan_status": {
-            "$ref": "#/components/schemas/VirenScanStatus"
-          },
-          "gesendet_am": {
-            "type": "string",
-            "description": "Das Datum, an dem die Einreichung gesendet wurde.",
-            "format": "date-time",
-            "nullable": true
-          },
-          "eingereicht_am": {
-            "type": "string",
-            "description": "Datum der Einreichung im Verfahren.",
-            "format": "date-time",
-            "nullable": true
+            "description": "Der vom Benutzer vergebene Name der Einreichung."
           },
           "erstellt_von": {
             "type": "string",
-            "description": "Benutzer, der die Einreichung erstellt hat.",
-            "nullable": true
+            "description": "Benutzer, der die Einreichung erstellt hat, angegeben als SAFE-ID.",
+            "example": "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d"
           },
           "erstellt_am": {
             "type": "string",
             "description": "Datum und Uhrzeit der Erstellung der Einreichung.",
             "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EinreichungStatus"
           }
         },
         "additionalProperties": false,
-        "description": "Repräsentiert ein Dokument im System."
+        "description": "Repräsentiert das Datenübertragungsobjekt (DTO) für die Erstellung einer Einreichung."
       },
-      "DokumentStatus": {
-        "enum": [
-          "ERSTELLT",
-          "VALIDIERT",
-          "EINGEREICHT"
+      "EinreichungListeResponse": {
+        "required": [
+          "elemente"
         ],
-        "type": "string"
+        "type": "object",
+        "properties": {
+          "elemente": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EinreichungResponse"
+            },
+            "description": "Die Liste der enthaltenen Einreichungen."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert die Antwort mit einer Liste von Einreichungen."
       },
-      "DokumentType": {
-        "enum": [
-          "XJUSTIZ",
-          "ANHANG",
-          "SCHRIFTSTUECK"
+      "EinreichungNameAendernRequest": {
+        "required": [
+          "name"
         ],
-        "type": "string"
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Der neue Name der Einreichung."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Anfrage-DTO für das Aktualisieren des Namens einer Einreichung."
       },
-      "Einreichung": {
+      "EinreichungResponse": {
         "required": [
           "erstellt_am",
           "erstellt_von",
           "name",
           "status",
-          "verfahren_id"
+          "validierungs_status"
         ],
         "type": "object",
         "properties": {
@@ -2749,20 +4926,14 @@
             "description": "Eindeutige Identifikationsnummer der Entität.",
             "format": "uuid"
           },
-          "verfahren_id": {
-            "type": "string",
-            "description": "Die eindeutige Kennung eines Verfahrens.",
-            "format": "uuid"
-          },
           "name": {
             "type": "string",
-            "description": "Der vom Benutzer vergebene Name der Einreichung.",
-            "nullable": true
+            "description": "Der vom Benutzer vergebene Name der Einreichung."
           },
           "erstellt_von": {
             "type": "string",
-            "description": "Benutzer, der die Einreichung erstellt hat.",
-            "nullable": true
+            "description": "Benutzer, der die Einreichung erstellt hat, angegeben als SAFE-ID.",
+            "example": "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d"
           },
           "erstellt_am": {
             "type": "string",
@@ -2772,6 +4943,12 @@
           "status": {
             "$ref": "#/components/schemas/EinreichungStatus"
           },
+          "beantragt_am": {
+            "type": "string",
+            "description": "Datum, an dem die Einreichung beantragt wurde.",
+            "format": "date-time",
+            "nullable": true
+          },
           "gesendet_am": {
             "type": "string",
             "description": "Das Datum, an dem die Einreichung gesendet wurde.",
@@ -2783,6 +4960,9 @@
             "description": "Datum der Einreichung im Verfahren.",
             "format": "date-time",
             "nullable": true
+          },
+          "validierungs_status": {
+            "$ref": "#/components/schemas/ValidierungslaufStatus"
           }
         },
         "additionalProperties": false,
@@ -2791,12 +4971,56 @@
       "EinreichungStatus": {
         "enum": [
           "ERSTELLT",
-          "VALIDIERT",
-          "EINGEREICHT"
+          "EINGEREICHT",
+          "FEHLGESCHLAGEN",
+          "BEANTRAGT",
+          "VERSENDET",
+          "VERAKTET",
+          "GELOESCHT"
         ],
-        "type": "string"
+        "type": "string",
+        "description": "Repräsentiert den Status einer Einreichung."
       },
-      "Gericht": {
+      "GerichtInformationResponse": {
+        "required": [
+          "bankverbindungen"
+        ],
+        "type": "object",
+        "properties": {
+          "bankverbindungen": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BankverbindungResponse"
+            },
+            "description": "Bankverbindungen des Gerichts."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert Informationen zu einem Gericht."
+      },
+      "GerichtListeResponse": {
+        "required": [
+          "elemente",
+          "list_version"
+        ],
+        "type": "object",
+        "properties": {
+          "list_version": {
+            "type": "string",
+            "description": "Die Versionsnummer der Codeliste."
+          },
+          "elemente": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GerichtResponse"
+            },
+            "description": "Die Liste der enthaltenen Codelistenelemente."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert Gerichte mit spezifischen Attributen wie Wert und Code."
+      },
+      "GerichtResponse": {
         "required": [
           "code",
           "wert"
@@ -2810,17 +5034,222 @@
           },
           "wert": {
             "type": "string",
-            "description": "Der Wert des Gerichts.",
-            "nullable": true
+            "description": "Der Wert des Gerichts."
           },
           "code": {
             "type": "string",
-            "description": "Der eindeutige Code des Gerichts.",
-            "nullable": true
+            "description": "Der eindeutige Code des Gerichts."
           }
         },
         "additionalProperties": false,
-        "description": "DTO für Gericht."
+        "description": "Repräsentiert ein Gericht mit spezifischen Attributen wie Wert und Code."
+      },
+      "KanzleiformListeResponse": {
+        "required": [
+          "elemente",
+          "list_version"
+        ],
+        "type": "object",
+        "properties": {
+          "list_version": {
+            "type": "string",
+            "description": "Die Versionsnummer der Codeliste."
+          },
+          "elemente": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KanzleiformResponse"
+            },
+            "description": "Die Liste der enthaltenen Codelistenelemente."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert Kanzleiformen mit spezifischen Attributen wie Wert und Code."
+      },
+      "KanzleiformResponse": {
+        "required": [
+          "code",
+          "wert"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "format": "uuid"
+          },
+          "wert": {
+            "type": "string",
+            "description": "Der Wert der Kanzleiform."
+          },
+          "code": {
+            "type": "string",
+            "description": "Der eindeutige Code der Kanzleiform."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert eine Kanzleiform mit spezifischen Attributen wie Wert und Code."
+      },
+      "KommunikationsanschlussRequest": {
+        "required": [
+          "telekommunikationsart_id",
+          "verbindung"
+        ],
+        "type": "object",
+        "properties": {
+          "telekommunikationsart_id": {
+            "type": "string",
+            "description": "Identifikator der zugehörigen Telekommunikationsart.",
+            "format": "uuid"
+          },
+          "verbindung": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Verbindungsangabe wie Telefonnummer, E-Mail-Adresse oder SAFE-ID."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Anfrage-DTO für einen Kommunikationsanschluss einer Beteiligung im Verfahren."
+      },
+      "KommunikationsanschlussResponse": {
+        "required": [
+          "id",
+          "telekommunikationsart",
+          "verbindung"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "format": "uuid"
+          },
+          "telekommunikationsart": {
+            "$ref": "#/components/schemas/TelekommunikationsartResponse"
+          },
+          "verbindung": {
+            "type": "string",
+            "description": "Verbindungsangabe wie Telefonnummer, E-Mail-Adresse oder SAFE-ID."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert einen Kommunikationsanschluss einer Beteiligung im Verfahren."
+      },
+      "NatuerlichePersonRequest": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BeteiligteRequest"
+          },
+          {
+            "required": [
+              "nachname"
+            ],
+            "type": "object",
+            "properties": {
+              "vorname": {
+                "type": "string",
+                "description": "Vorname der Person.",
+                "nullable": true
+              },
+              "titel": {
+                "type": "string",
+                "description": "Titel der Person.",
+                "nullable": true
+              },
+              "namensvorsatz": {
+                "type": "string",
+                "description": "Namensvorsatz der Person.",
+                "nullable": true
+              },
+              "nachname": {
+                "minLength": 1,
+                "type": "string",
+                "description": "Nachname der Person."
+              }
+            },
+            "additionalProperties": false
+          }
+        ],
+        "description": "Anfrage-DTO für eine natürliche Person als Beteiligte im Verfahren."
+      },
+      "NatuerlichePersonResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BeteiligteResponse"
+          },
+          {
+            "required": [
+              "nachname"
+            ],
+            "type": "object",
+            "properties": {
+              "vorname": {
+                "type": "string",
+                "description": "Vorname der Person.",
+                "nullable": true
+              },
+              "titel": {
+                "type": "string",
+                "description": "Titel der Person.",
+                "nullable": true
+              },
+              "namensvorsatz": {
+                "type": "string",
+                "description": "Namensvorsatz der Person.",
+                "nullable": true
+              },
+              "nachname": {
+                "type": "string",
+                "description": "Nachname der Person."
+              }
+            },
+            "additionalProperties": false
+          }
+        ],
+        "description": "Repräsentiert eine natürliche Person als Beteiligte im Verfahren."
+      },
+      "OrganisationRequest": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BeteiligteRequest"
+          },
+          {
+            "required": [
+              "bezeichnung"
+            ],
+            "type": "object",
+            "properties": {
+              "bezeichnung": {
+                "minLength": 1,
+                "type": "string",
+                "description": "Offizieller Name der Organisation."
+              }
+            },
+            "additionalProperties": false
+          }
+        ],
+        "description": "Anfrage-DTO für eine Organisation als Beteiligte im Verfahren."
+      },
+      "OrganisationResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BeteiligteResponse"
+          },
+          {
+            "required": [
+              "bezeichnung"
+            ],
+            "type": "object",
+            "properties": {
+              "bezeichnung": {
+                "type": "string",
+                "description": "Offizieller Name der Organisation."
+              }
+            },
+            "additionalProperties": false
+          }
+        ],
+        "description": "Repräsentiert eine Organisation als Beteiligte im Verfahren."
       },
       "ProblemDetails": {
         "type": "object",
@@ -2849,10 +5278,102 @@
         },
         "additionalProperties": { }
       },
-      "Prozessbevollmaechtigter": {
+      "RaKanzleiRequest": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BeteiligteRequest"
+          },
+          {
+            "required": [
+              "bezeichnung",
+              "kanzleiform_id"
+            ],
+            "type": "object",
+            "properties": {
+              "bezeichnung": {
+                "minLength": 1,
+                "type": "string",
+                "description": "Offizieller Name der Rechtsanwaltskanzlei."
+              },
+              "rechtsform": {
+                "type": "string",
+                "description": "Rechtsform der Rechtsanwaltskanzlei.",
+                "nullable": true
+              },
+              "kanzleiform_id": {
+                "type": "string",
+                "description": "Identifikator der zugehörigen Kanzleiform.",
+                "format": "uuid"
+              }
+            },
+            "additionalProperties": false
+          }
+        ],
+        "description": "Anfrage-DTO für eine Rechtsanwaltskanzlei als Beteiligte im Verfahren."
+      },
+      "RaKanzleiResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BeteiligteResponse"
+          },
+          {
+            "required": [
+              "bezeichnung",
+              "kanzleiform"
+            ],
+            "type": "object",
+            "properties": {
+              "bezeichnung": {
+                "type": "string",
+                "description": "Offizieller Name der Rechtsanwaltskanzlei."
+              },
+              "rechtsform": {
+                "type": "string",
+                "description": "Rechtsform der Rechtsanwaltskanzlei.",
+                "nullable": true
+              },
+              "kanzleiform": {
+                "$ref": "#/components/schemas/KanzleiformResponse"
+              }
+            },
+            "additionalProperties": false
+          }
+        ],
+        "description": "Repräsentiert eine Rechtsanwaltskanzlei als Beteiligte im Verfahren."
+      },
+      "RollenRequest": {
         "required": [
-          "aktenzeichen",
-          "name"
+          "rollenbezeichnung_id"
+        ],
+        "type": "object",
+        "properties": {
+          "rollennummer": {
+            "type": "string",
+            "description": "Eindeutige Kennziffer der Rolle innerhalb des Verfahrens.",
+            "nullable": true
+          },
+          "rollenbezeichnung_id": {
+            "type": "string",
+            "description": "Identifikator der zugehörigen Rollenbezeichnung.",
+            "format": "uuid"
+          },
+          "geschaeftszeichen": {
+            "type": "string",
+            "description": "Eigenes Geschäftszeichen des Beteiligten in dieser Rolle.",
+            "nullable": true
+          },
+          "referenz": {
+            "type": "string",
+            "description": "Verknüpfung dieser Rolle mit einer anderen Rolle im Verfahren.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Anfrage-DTO für die Zuordnung einer Rolle zu einer Beteiligung im Verfahren."
+      },
+      "RollenResponse": {
+        "required": [
+          "rollenbezeichnung"
         ],
         "type": "object",
         "properties": {
@@ -2861,21 +5382,51 @@
             "description": "Eindeutige Identifikationsnummer der Entität.",
             "format": "uuid"
           },
-          "name": {
+          "rollennummer": {
             "type": "string",
-            "description": "Gibt den Namen eines Prozessbevollmaechtigten an.",
+            "description": "Eindeutige Kennziffer der Rolle innerhalb des Verfahrens.",
             "nullable": true
           },
-          "aktenzeichen": {
+          "rollenbezeichnung": {
+            "$ref": "#/components/schemas/RollenbezeichnungResponse"
+          },
+          "geschaeftszeichen": {
             "type": "string",
-            "description": "Aktenzeichen des Prozessbevollmaechtigters im geltenden Verfahren.",
+            "description": "Eigenes Geschäftszeichen des Beteiligten in dieser Rolle.",
+            "nullable": true
+          },
+          "referenz": {
+            "type": "string",
+            "description": "Verknüpfung dieser Rolle mit einer anderen Rolle im Verfahren.",
             "nullable": true
           }
         },
         "additionalProperties": false,
-        "description": "Stellt einen Prozessbevollmaechtigter in einem Verfahren dar."
+        "description": "Repräsentiert die Zuordnung einer Rolle zu einer Beteiligung im Verfahren."
       },
-      "Rolle": {
+      "RollenbezeichnungListeResponse": {
+        "required": [
+          "elemente",
+          "list_version"
+        ],
+        "type": "object",
+        "properties": {
+          "list_version": {
+            "type": "string",
+            "description": "Die Versionsnummer der Codeliste."
+          },
+          "elemente": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RollenbezeichnungResponse"
+            },
+            "description": "Die Liste der enthaltenen Codelistenelemente."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert Rollenbezeichnungen mit spezifischen Attributen wie Wert und Code."
+      },
+      "RollenbezeichnungResponse": {
         "required": [
           "code",
           "wert"
@@ -2889,86 +5440,112 @@
           },
           "wert": {
             "type": "string",
-            "description": "Der Wert der Rolle.",
-            "nullable": true
+            "description": "Der Wert der Rolle."
           },
           "code": {
             "type": "string",
-            "description": "Der eindeutige Code der Rolle.",
-            "nullable": true
+            "description": "Der eindeutige Code der Rolle."
           }
         },
         "additionalProperties": false,
         "description": "Repräsentiert eine Rolle mit spezifischen Attributen wie Wert und Code."
       },
-      "Status": {
+      "StaatListeResponse": {
         "required": [
-          "status",
-          "validation_messages"
+          "elemente",
+          "list_version"
         ],
         "type": "object",
         "properties": {
-          "status": {
-            "$ref": "#/components/schemas/ValidationStatus"
+          "list_version": {
+            "type": "string",
+            "description": "Die Versionsnummer der Codeliste."
           },
-          "validation_messages": {
+          "elemente": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ValidationMessage"
+              "$ref": "#/components/schemas/StaatResponse"
             },
-            "description": "Ruft die Validierungsnachrichten ab oder legt diese fest.",
-            "nullable": true
+            "description": "Die Liste der enthaltenen Codelistenelemente."
           }
         },
         "additionalProperties": false,
-        "description": "Stellt ein DTO zur Übermittlung des Validierungsstatus dar."
+        "description": "Repräsentiert Staaten mit spezifischen Attributen wie Wert und Code."
       },
-      "UpdateDokumentTypeRequest": {
+      "StaatResponse": {
         "required": [
-          "type"
+          "code",
+          "wert"
         ],
         "type": "object",
         "properties": {
-          "type": {
-            "$ref": "#/components/schemas/DokumentType"
-          }
-        },
-        "additionalProperties": false,
-        "description": "Anfrage-DTO für das Aktualisieren des Typs eines Dokuments."
-      },
-      "UpdateEinreichungNameRequest": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "minLength": 1,
+          "id": {
             "type": "string",
-            "description": "Der neue Name der Einreichung."
-          }
-        },
-        "additionalProperties": false,
-        "description": "Anfrage-DTO für das Aktualisieren des Namens einer Einreichung."
-      },
-      "ValidationMessage": {
-        "required": [
-          "message",
-          "status"
-        ],
-        "type": "object",
-        "properties": {
-          "status": {
-            "$ref": "#/components/schemas/ValidationStatus"
+            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "format": "uuid"
           },
-          "message": {
+          "code": {
             "type": "string",
-            "description": "Ruft die Validierungsnachricht ab oder legt sie fest.",
+            "description": "Der eindeutige Code des Staates."
+          },
+          "wert": {
+            "type": "string",
+            "description": "Staat oder Gebiet."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert einen Staat mit spezifischen Attributen wie Wert und Code."
+      },
+      "TelekommunikationsartListeResponse": {
+        "required": [
+          "elemente",
+          "list_version"
+        ],
+        "type": "object",
+        "properties": {
+          "list_version": {
+            "type": "string",
+            "description": "Die Versionsnummer der Codeliste."
+          },
+          "elemente": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TelekommunikationsartResponse"
+            },
+            "description": "Die Liste der enthaltenen Codelistenelemente."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert Telekommunikationsarten mit spezifischen Attributen wie Wert und Code."
+      },
+      "TelekommunikationsartResponse": {
+        "required": [
+          "code",
+          "wert"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "format": "uuid"
+          },
+          "wert": {
+            "type": "string",
+            "description": "Der Wert der Telekommunikationsart."
+          },
+          "code": {
+            "type": "string",
+            "description": "Der eindeutige Code der Telekommunikationsart."
+          },
+          "beschreibung": {
+            "type": "string",
+            "description": "Die Beschreibung der Telekommunikationsart.",
             "nullable": true
           }
         },
         "additionalProperties": false,
-        "description": "Stellt ein DTO zur Übermittlung von Validierungsnachrichten dar."
+        "description": "Repräsentiert eine Telekommunikationsart mit spezifischen Attributen wie Wert und Code."
       },
       "ValidationProblemDetails": {
         "type": "object",
@@ -3001,22 +5578,140 @@
               "items": {
                 "type": "string"
               }
-            },
-            "nullable": true
+            }
           }
         },
         "additionalProperties": { }
       },
-      "ValidationStatus": {
+      "ValidierungslaufStatus": {
         "enum": [
+          "AUSSTEHEND",
+          "LAEUFT",
+          "ABGESCHLOSSEN"
+        ],
+        "type": "string",
+        "description": "Definiert den Status eines Validierungslaufs."
+      },
+      "ValidierungsstatusErgebnis": {
+        "enum": [
+          "NICHT_VERFUEGBAR",
           "GRUEN",
           "GELB",
           "ROT"
         ],
-        "type": "string"
+        "type": "string",
+        "description": "Definiert das Ergebnis des Validierungsstatus."
       },
-      "Verfahren": {
+      "ValidierungsstatusResponse": {
         "required": [
+          "ergebnis",
+          "fehler",
+          "validierungslauf_status"
+        ],
+        "type": "object",
+        "properties": {
+          "validierungslauf_status": {
+            "$ref": "#/components/schemas/ValidierungslaufStatus"
+          },
+          "ergebnis": {
+            "$ref": "#/components/schemas/ValidierungsstatusErgebnis"
+          },
+          "fehler": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Gibt die Liste der aufgetretenen Fehler zurück."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert den Status und das Ergebnis eines Validierungslaufs sowie zugehörige Fehler."
+      },
+      "VerfahrenAendernRequest": {
+        "required": [
+          "gericht_id",
+          "verfahrensgegenstand"
+        ],
+        "type": "object",
+        "properties": {
+          "verfahrensgegenstand": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Verfahrensgegenstand des Verfahrens."
+          },
+          "kurzrubrum": {
+            "type": "string",
+            "description": "Kurzrubrum des Verfahrens.",
+            "nullable": true
+          },
+          "gericht_id": {
+            "type": "string",
+            "description": "Zuweisung des Gerichts zum Verfahren.",
+            "format": "uuid"
+          },
+          "beteiligungen": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/NatuerlichePersonRequest"
+                },
+                {
+                  "$ref": "#/components/schemas/OrganisationRequest"
+                },
+                {
+                  "$ref": "#/components/schemas/RaKanzleiRequest"
+                }
+              ],
+              "description": "Anfrage-DTO für eine beteiligte Person oder Organisation im Verfahren."
+            },
+            "description": "Liste der an einem Verfahren beteiligten Parteien.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Anfrage-DTO für die Inhalte eines Verfahrens."
+      },
+      "VerfahrenErstellenRequest": {
+        "required": [
+          "safe_id",
+          "verfahren"
+        ],
+        "type": "object",
+        "properties": {
+          "safe_id": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Die Safe-ID des Anwalts, für den das Verfahren erstellt werden soll."
+          },
+          "verfahren": {
+            "$ref": "#/components/schemas/VerfahrenAendernRequest"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Anfrage-DTO für das Erstellen eines neuen Verfahrens."
+      },
+      "VerfahrenListeResponse": {
+        "required": [
+          "elemente"
+        ],
+        "type": "object",
+        "properties": {
+          "elemente": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VerfahrenResponse"
+            },
+            "description": "Die Liste der enthaltenen Verfahren."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert die Antwort mit einer Liste von Verfahren."
+      },
+      "VerfahrenResponse": {
+        "required": [
+          "erstellt_am",
+          "erstellt_von",
           "status"
         ],
         "type": "object",
@@ -3031,12 +5726,32 @@
             "description": "Aktenzeichen des Verfahrens.",
             "nullable": true
           },
+          "verfahrensgegenstand": {
+            "type": "string",
+            "description": "Verfahrensgegenstand des Verfahrens.",
+            "nullable": true
+          },
+          "kurzrubrum": {
+            "type": "string",
+            "description": "Kurzrubrum des Verfahrens.",
+            "nullable": true
+          },
           "status": {
             "$ref": "#/components/schemas/VerfahrenStatus"
           },
-          "status_changed": {
+          "status_geaendert_am": {
             "type": "string",
             "description": "Datum der letzten Statusänderung.",
+            "format": "date-time"
+          },
+          "erstellt_von": {
+            "type": "string",
+            "description": "Benutzer, der das Verfahren erstellt hat, angegeben als SAFE-ID.",
+            "example": "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d"
+          },
+          "erstellt_am": {
+            "type": "string",
+            "description": "Datum und Uhrzeit der Erstellung des Verfahrens.",
             "format": "date-time"
           },
           "eingereicht_am": {
@@ -3046,12 +5761,23 @@
             "nullable": true
           },
           "gericht": {
-            "$ref": "#/components/schemas/Gericht"
+            "$ref": "#/components/schemas/GerichtResponse"
           },
           "beteiligungen": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Beteiligte"
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/NatuerlichePersonResponse"
+                },
+                {
+                  "$ref": "#/components/schemas/OrganisationResponse"
+                },
+                {
+                  "$ref": "#/components/schemas/RaKanzleiResponse"
+                }
+              ],
+              "description": "Repräsentiert eine beteiligte Person oder Organisation im Verfahren."
             },
             "description": "Liste der an einem Verfahren beteiligten Parteien.",
             "nullable": true
@@ -3063,19 +5789,13 @@
       "VerfahrenStatus": {
         "enum": [
           "ERSTELLT",
-          "EINGEREICHT"
+          "EINGEREICHT",
+          "GERICHTSVERFAHRENANGELEGT",
+          "GELOESCHT",
+          "ABGESCHLOSSEN"
         ],
-        "type": "string"
-      },
-      "VirenScanStatus": {
-        "enum": [
-          "AUSSTEHEND",
-          "IN_BEARBEITUNG",
-          "FEHLGESCHLAGEN",
-          "INFIZIERT",
-          "SAUBER"
-        ],
-        "type": "string"
+        "type": "string",
+        "description": "Status des Verfahrens."
       }
     },
     "examples": {
@@ -3142,34 +5862,6 @@
         },
         "x-schema": "ProblemDetails"
       },
-      "404_DokumentStatusNotAvailable": {
-        "summary": "dokument-status-not-available",
-        "description": "Dokumentstatus nicht verfügbar",
-        "value": {
-          "type": "/problems/dokument-status-not-available",
-          "title": "Dokumentstatus nicht verfügbar",
-          "status": 404,
-          "detail": "Kein Status für Dokument mit ID '3e511fc6-8a94-4557-8bb8-d304b8d2d424' verfügbar, da die Validierung nicht abgeschlossen ist.",
-          "parameter": {
-            "id": "3e511fc6-8a94-4557-8bb8-d304b8d2d424"
-          }
-        },
-        "x-schema": "ProblemDetails"
-      },
-      "404_EinreichungStatusNotAvailable": {
-        "summary": "einreichung-status-not-available",
-        "description": "Einreichungsstatus nicht verfügbar",
-        "value": {
-          "type": "/problems/einreichung-status-not-available",
-          "title": "Einreichungsstatus nicht verfügbar",
-          "status": 404,
-          "detail": "Kein Status für Einreichung mit ID '5aa024ac-6491-41e1-8b0b-98fdd0be0fd8' verfügbar, da die Validierung nicht abgeschlossen ist oder keine Dokumente vorliegen.",
-          "parameter": {
-            "id": "5aa024ac-6491-41e1-8b0b-98fdd0be0fd8"
-          }
-        },
-        "x-schema": "ProblemDetails"
-      },
       "404_EntityNotFound": {
         "summary": "entity-not-found",
         "description": "Entität nicht gefunden",
@@ -3185,14 +5877,14 @@
         },
         "x-schema": "ProblemDetails"
       },
-      "409_ConcurrencyConflict": {
-        "summary": "concurrency-conflict",
-        "description": "Konflikt durch gleichzeitige Änderungen",
+      "409_WrongState": {
+        "summary": "wrong-state",
+        "description": "Vorgang im falschen Status",
         "value": {
-          "type": "/problems/concurrency-conflict",
-          "title": "Konflikt durch gleichzeitige Änderungen",
+          "type": "/problems/wrong-state",
+          "title": "Vorgang im falschen Status",
           "status": 409,
-          "detail": "Die Entität wurde in der Zwischenzeit von einem anderen Benutzer oder Prozess geändert. Bitte laden Sie die Daten neu und versuchen Sie es erneut."
+          "detail": "Die Ressource befindet sich in einem Status, der diese Aktion nicht erlaubt."
         },
         "x-schema": "ProblemDetails"
       },
@@ -3248,6 +5940,17 @@
           }
         },
         "x-schema": "ProblemDetails"
+      },
+      "500_InternalError": {
+        "summary": "internal-error",
+        "description": "Interner Server Fehler",
+        "value": {
+          "type": "/problems/internal-error",
+          "title": "Interner Server Fehler",
+          "status": 500,
+          "detail": "Ein interner Server Fehler ist aufgetreten."
+        },
+        "x-schema": "ProblemDetails"
       }
     },
     "securitySchemes": {
@@ -3258,9 +5961,10 @@
             "authorizationUrl": "https://auth.kompla-justiz.sinc.de/realms/kompla-dev/protocol/openid-connect/auth",
             "tokenUrl": "https://auth.kompla-justiz.sinc.de/realms/kompla-dev/protocol/openid-connect/token",
             "scopes": {
-              "kompla.gericht.read": "Gerichtsdaten lesen",
-              "kompla.verfahren.read": "Verfahrendsdaten lesen",
-              "kompla.verfahren.write": "Verfahrendsdaten schreiben oder löschen"
+              "kompla.codelisten.read": "Codelisten lesen",
+              "kompla.verfahren.read": "Verfahrensdaten lesen",
+              "kompla.verfahren.write": "Verfahrensdaten schreiben oder löschen",
+              "kompla.gericht.read": "Gerichtsinformationen lesen"
             }
           }
         }
@@ -3274,16 +5978,27 @@
   ],
   "tags": [
     {
-      "name": "Dokumente"
+      "name": "Codelisten",
+      "description": "Codelisten aus XRepository."
     },
     {
-      "name": "Einreichungen"
+      "name": "Informationen",
+      "description": "Informationen"
     },
     {
-      "name": "Gerichte"
+      "name": "Verfahren",
+      "description": "Verfahren"
     },
     {
-      "name": "Verfahren"
+      "name": "Einreichungen",
+      "description": "Einreichungen"
+    },
+    {
+      "name": "Dokumente",
+      "description": "Dokumente"
+    },
+    {
+      "name": "Belege"
     }
   ]
 }
