@@ -60,7 +60,7 @@ export default function VerfahrenTile({
   const { buttons } = useTranslations();
   const { beteiligungen, status, id, gericht, aktenzeichen_gericht } =
     verfahren;
-  console.log("status", status);
+  // console.log("status", status);
 
   // Extract values from beteiligungen based on rollen codes
   const klaegerinData = getBeteiligungByRoleCode(
