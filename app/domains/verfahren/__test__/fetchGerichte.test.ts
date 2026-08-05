@@ -28,13 +28,16 @@ describe("fetchGerichte", () => {
   });
 
   it("calls API with correct URL and bearer token", async () => {
-    const mockGerichte = [
-      {
-        id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
-        wert: "Landgericht Frankfurt",
-        code: "LG_FFM",
-      },
-    ];
+    const mockGerichte = {
+      list_version: "1",
+      elemente: [
+        {
+          id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
+          wert: "Landgericht Frankfurt",
+          code: "LG_FFM",
+        },
+      ],
+    };
 
     mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
@@ -46,7 +49,7 @@ describe("fetchGerichte", () => {
     const result = await fetchGerichte(mockRequest);
 
     expect(mocks.fetch).toHaveBeenCalledWith(
-      "http://localhost:8080/api/v1/gerichte",
+      "http://localhost:8080/api/v1/codelisten/gerichte",
       expect.objectContaining({
         headers: {
           Authorization: "Bearer test-token",
@@ -73,7 +76,7 @@ describe("fetchGerichte", () => {
       ok: false,
       status: 404,
       statusText: "Not Found",
-      url: "http://localhost:8080/api/v1/gerichte",
+      url: "http://localhost:8080/api/v1/codelisten/gerichte",
       text: async () => "Not Found",
       clone: () => ({
         text: async () => "Not Found",
@@ -101,16 +104,16 @@ describe("fetchGerichte", () => {
     );
   });
 
-  it("returns empty array when API returns no data", async () => {
+  it("returns empty list when API returns no elemente", async () => {
     mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
-      json: async () => [],
+      json: async () => ({ list_version: "1", elemente: [] }),
     });
 
     const mockRequest = mockAuthData;
     const result = await fetchGerichte(mockRequest);
 
-    expect(result).toEqual([]);
+    expect(result).toEqual({ list_version: "1", elemente: [] });
   });
 });
