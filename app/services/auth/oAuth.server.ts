@@ -9,10 +9,21 @@ import { AuthenticationProvider, AuthenticationResponse } from "./auth.types";
 
 type DecodedJWT = Record<string, unknown>;
 
+function decodeSafeId(rawIdToken: string): string {
+  const base64Url = rawIdToken.split(".")[1];
+  const base64 = base64Url.replaceAll("-", "+").replaceAll("_", "/");
+  const decodedIdToken = JSON.parse(atob(base64)) as DecodedJWT;
+  return decodedIdToken["safe-id"] as string;
+}
+
 // BRAK IdP uses "Authorization Code" OAuth 2.0 flow
 export const authenticator = new Authenticator<AuthenticationResponse>();
 
+// TODO: Remove module-level auth state (`idToken`, `komplaIdpIdToken`, `loginType`) and derive
+// provider/token data from the current request session instead, so concurrent logins do not
+// share mutable process memory.
 let idToken = "";
+let komplaIdpIdToken = "";
 let loginType: LoginType;
 
 const beaOauth2Strategy = new OAuth2Strategy(
@@ -33,10 +44,7 @@ const beaOauth2Strategy = new OAuth2Strategy(
     const expiresAt = Date.now() + acessTokenExpiresInSeconds * 1000; // 300 seconds
     const refreshToken = tokens.refreshToken();
 
-    const base64Url = rawSafeId.split(".")[1];
-    const base64 = base64Url.replaceAll("-", "+").replaceAll("_", "/");
-    const decodedIdToken = JSON.parse(atob(base64)) as DecodedJWT;
-    idToken = decodedIdToken["safe-id"] as string;
+    idToken = decodeSafeId(rawSafeId);
 
     console.log("OAuth2Strategy: authenticated via BRAK IdP, safeId:", idToken);
 
@@ -140,6 +148,7 @@ const komplaIdpOauth2Strategy = new OAuth2Strategy(
     const accessToken = tokens.accessToken();
     const refreshToken = tokens.refreshToken();
     const expiresAt = Date.now() + tokens.accessTokenExpiresInSeconds() * 1000;
+    komplaIdpIdToken = decodeSafeId(tokens.idToken());
 
     console.log(
       "OAuth2Strategy: authenticated via KomPla IdP login, callback URL:",
@@ -148,6 +157,7 @@ const komplaIdpOauth2Strategy = new OAuth2Strategy(
 
     const sessionCookieHeader = await setAuthSession({
       accessToken,
+      idToken: komplaIdpIdToken,
       expiresAt,
       refreshToken,
       request,
@@ -155,7 +165,12 @@ const komplaIdpOauth2Strategy = new OAuth2Strategy(
     });
 
     const response: AuthenticationResponse = {
-      authenticationTokens: { accessToken, expiresAt, refreshToken },
+      authenticationTokens: {
+        accessToken,
+        idToken: komplaIdpIdToken,
+        expiresAt,
+        refreshToken,
+      },
       sessionCookieHeader,
       provider: AuthenticationProvider.KOMPLA_IDP,
     };
@@ -176,6 +191,7 @@ export async function refreshKomplaIdpToken(
 
   const refreshedTokenData = {
     accessToken: newTokens.accessToken(),
+    idToken: komplaIdpIdToken,
     refreshToken: newTokens.hasRefreshToken()
       ? newTokens.refreshToken()
       : refreshToken,

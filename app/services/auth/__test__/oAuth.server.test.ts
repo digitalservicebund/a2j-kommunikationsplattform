@@ -296,6 +296,7 @@ describe("oAuth.server", () => {
     // internal `loginType` state is set to KomplaIdp before revoking
     const mockTokens = {
       accessToken: () => "test-at",
+      idToken: () => idToken,
       refreshToken: () => "test-rt",
       accessTokenExpiresInSeconds: () => 300,
       hasRefreshToken: () => true,
@@ -377,6 +378,7 @@ describe("oAuth.server", () => {
     const strategy = getKomplaIdpStrategy();
     const mockTokens = {
       accessToken: () => "test-at",
+      idToken: () => idToken,
       refreshToken: () => "test-rt",
       accessTokenExpiresInSeconds: () => 300,
       hasRefreshToken: () => true,
@@ -389,6 +391,7 @@ describe("oAuth.server", () => {
 
     expect(setAuthSession).toHaveBeenCalledWith({
       accessToken: "test-at",
+      idToken: expect.any(String),
       refreshToken: "test-rt",
       expiresAt: expect.any(Number),
       request: mockRequest,
@@ -397,6 +400,7 @@ describe("oAuth.server", () => {
     expect(result).toEqual({
       authenticationTokens: {
         accessToken: "test-at",
+        idToken: expect.any(String),
         refreshToken: "test-rt",
         expiresAt: expect.any(Number),
       },
@@ -421,6 +425,7 @@ describe("oAuth.server", () => {
     expect(oAuthMocks.refreshTokenMock).toHaveBeenCalledWith("old-rt");
     expect(setAuthSession).toHaveBeenCalledWith({
       accessToken: "new-test-at",
+      idToken: expect.any(String),
       refreshToken: "new-test-rt",
       expiresAt: expect.any(Number),
       request: mockRequest,
@@ -429,6 +434,7 @@ describe("oAuth.server", () => {
     expect(result).toEqual({
       authenticationTokens: {
         accessToken: "new-test-at",
+        idToken: expect.any(String),
         refreshToken: "new-test-rt",
         expiresAt: expect.any(Number),
       },
