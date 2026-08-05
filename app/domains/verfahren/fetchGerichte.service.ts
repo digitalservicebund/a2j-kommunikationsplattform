@@ -1,5 +1,5 @@
 import z from "zod";
-import { getListeResponseSchema } from "~/domains/verfahren/schemas/helpers";
+import { getListeResponseSchema } from "~/domains/verfahren/helpers";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { apiRequest } from "./apiClient";
 import { GerichtSchema } from "./schemas/gerichtSchema";
