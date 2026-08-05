@@ -12,8 +12,8 @@ export function VerfahrenList({
 }>) {
   return (
     <>
-      {verfahrenItems.map((data) => (
-        <VerfahrenTile key={data.id} {...data} />
+      {verfahrenItems.map((verfahren) => (
+        <VerfahrenTile key={verfahren.id} {...verfahren} />
       ))}
       {isLoading &&
         VERFAHREN_SKELETONS.map((s) => <VerfahrenTileSkeleton key={s.id} />)}

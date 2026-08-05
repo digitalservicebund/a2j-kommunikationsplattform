@@ -18,8 +18,12 @@ globalThis.fetch = mocks.fetch;
 const mockVerfahren = {
   id: "2ab3cbc7-d00a-48bf-95a1-4d6f07406196",
   aktenzeichen_gericht: "JBA-82746242",
+  verfahrensgegenstand: null,
+  kurzrubrum: null,
   status: "ERSTELLT",
-  status_changed: "2025-03-08T05:00:29.659Z",
+  status_geaendert_am: "2025-03-08T05:00:29.659Z",
+  erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstellt_am: "2025-03-08T05:00:29.659Z",
   eingereicht_am: "2024-12-29T22:46:29.329Z",
   gericht: {
     id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
@@ -28,28 +32,50 @@ const mockVerfahren = {
   },
   beteiligungen: [
     {
+      beteiligtenart: "natuerlichePerson",
       id: "019aa757-2b36-71fd-b76c-f65031658bba",
-      name: "Test Beklagte",
+      nachname: "Test Beklagte",
+      vorname: null,
+      titel: null,
+      namensvorsatz: null,
       rollen: [
         {
           id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
-          wert: "Beklagte(r)",
-          code: "028",
+          rollennummer: null,
+          rollenbezeichnung: {
+            id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
+            wert: "Beklagte(r)",
+            code: "028",
+          },
+          geschaeftszeichen: null,
+          referenz: null,
         },
       ],
-      prozessbevollmaechtigte: [],
+      anschriften: null,
+      telekommunikation: null,
     },
     {
+      beteiligtenart: "natuerlichePerson",
       id: "019aa757-2b36-7512-b77e-f3865302c272",
-      name: "Test Klägerin",
+      nachname: "Test Klägerin",
+      vorname: null,
+      titel: null,
+      namensvorsatz: null,
       rollen: [
         {
           id: "c53dd226-7bd9-4da5-19da-5302595a9469",
-          wert: "Kläger(in)",
-          code: "101",
+          rollennummer: null,
+          rollenbezeichnung: {
+            id: "c53dd226-7bd9-4da5-19da-5302595a9469",
+            wert: "Kläger(in)",
+            code: "101",
+          },
+          geschaeftszeichen: null,
+          referenz: null,
         },
       ],
-      prozessbevollmaechtigte: [],
+      anschriften: null,
+      telekommunikation: null,
     },
   ],
 };

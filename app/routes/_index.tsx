@@ -49,25 +49,30 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   const sort = url.searchParams.get("sort") || sortOptions[0].value;
   const search_text = url.searchParams.get("search_text");
 
+  // TODO: refactor the handling of below promises
   // Fetch verfahren with one extra item to determine if there are more items
-  const verfahrenPromise: Promise<VerfahrenLoaderData> = (async () => {
-    const verfahren = (await fetchVerfahren(authData, {
+  const verfahrenPromise = (async () => {
+    const verfahren = await fetchVerfahren(authData, {
       limit: VERFAHREN_PAGE_LIMIT + 1,
       offset,
       gericht,
       sort,
       search_text,
-    })) as Verfahren[];
+    });
 
-    const hasMoreItems = verfahren.length > VERFAHREN_PAGE_LIMIT;
-    const items = hasMoreItems
-      ? verfahren.slice(0, VERFAHREN_PAGE_LIMIT)
-      : verfahren;
+    const hasMoreItems = verfahren.elemente.length > VERFAHREN_PAGE_LIMIT;
+    const items: Verfahren[] = hasMoreItems
+      ? verfahren.elemente.slice(0, VERFAHREN_PAGE_LIMIT)
+      : verfahren.elemente;
 
     return { items, hasMoreItems };
   })();
 
-  const gerichtePromise = fetchGerichte(authData);
+  const gerichtePromise = (async () => {
+    const { elemente } = await fetchGerichte(authData);
+
+    return elemente;
+  })();
 
   return {
     data: Promise.all([verfahrenPromise, gerichtePromise]),
