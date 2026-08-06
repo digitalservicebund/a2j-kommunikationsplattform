@@ -40,18 +40,20 @@ describe("deleteDokumentFromEinreichung", () => {
   });
 
   test("protects the initial dokument from deletion", async () => {
-    mocks.fetchDokumente.mockResolvedValueOnce([
-      {
-        id: "d-1",
-        name: "Klageschrift.pdf",
-        erstellt_am: "2026-07-01T08:00:00.000Z",
-      },
-      {
-        id: "d-2",
-        name: "Anlage.pdf",
-        erstellt_am: "2026-07-02T08:00:00.000Z",
-      },
-    ]);
+    mocks.fetchDokumente.mockResolvedValueOnce({
+      elemente: [
+        {
+          id: "d-1",
+          anzeigename: "Klageschrift.pdf",
+          erstellt_am: "2026-07-01T08:00:00.000Z",
+        },
+        {
+          id: "d-2",
+          anzeigename: "Anlage.pdf",
+          erstellt_am: "2026-07-02T08:00:00.000Z",
+        },
+      ],
+    });
 
     const result = await deleteDokumentFromEinreichung({
       authData: mockAuthData,
@@ -66,18 +68,20 @@ describe("deleteDokumentFromEinreichung", () => {
   });
 
   test("returns delete-failed when downstream delete call is unsuccessful", async () => {
-    mocks.fetchDokumente.mockResolvedValueOnce([
-      {
-        id: "d-1",
-        name: "Klageschrift.pdf",
-        erstellt_am: "2026-07-01T08:00:00.000Z",
-      },
-      {
-        id: "d-2",
-        name: "Anlage.pdf",
-        erstellt_am: "2026-07-02T08:00:00.000Z",
-      },
-    ]);
+    mocks.fetchDokumente.mockResolvedValueOnce({
+      elemente: [
+        {
+          id: "d-1",
+          anzeigename: "Klageschrift.pdf",
+          erstellt_am: "2026-07-01T08:00:00.000Z",
+        },
+        {
+          id: "d-2",
+          anzeigename: "Anlage.pdf",
+          erstellt_am: "2026-07-02T08:00:00.000Z",
+        },
+      ],
+    });
     mocks.fetchDokument.mockResolvedValueOnce({ eTag: undefined });
     mocks.deleteDokument.mockResolvedValueOnce({ success: false });
 
@@ -103,18 +107,20 @@ describe("deleteDokumentFromEinreichung", () => {
   });
 
   test("returns deleted when non-initial dokument deletion succeeds", async () => {
-    mocks.fetchDokumente.mockResolvedValueOnce([
-      {
-        id: "d-1",
-        name: "Klageschrift.pdf",
-        erstellt_am: "2026-07-01T08:00:00.000Z",
-      },
-      {
-        id: "d-2",
-        name: "Anlage.pdf",
-        erstellt_am: "2026-07-02T08:00:00.000Z",
-      },
-    ]);
+    mocks.fetchDokumente.mockResolvedValueOnce({
+      elemente: [
+        {
+          id: "d-1",
+          anzeigename: "Klageschrift.pdf",
+          erstellt_am: "2026-07-01T08:00:00.000Z",
+        },
+        {
+          id: "d-2",
+          anzeigename: "Anlage.pdf",
+          erstellt_am: "2026-07-02T08:00:00.000Z",
+        },
+      ],
+    });
     mocks.fetchDokument.mockResolvedValueOnce({ eTag: 'W/"1"' });
     mocks.deleteDokument.mockResolvedValueOnce({ success: true });
 

@@ -18,9 +18,18 @@ describe("buildInitialEinreichungTimelineSteps", () => {
 
   test("derives first and latest dokument details for multiple dokumente", () => {
     const dokumente = [
-      { name: "Klageschrift.pdf", erstellt_am: "2026-07-01T08:00:00.000Z" },
-      { name: "Anlage-1.pdf", erstellt_am: "2026-07-04T12:15:00.000Z" },
-      { name: "Anlage-2.pdf", erstellt_am: "2026-07-09T14:30:00.000Z" },
+      {
+        anzeigename: "Klageschrift.pdf",
+        erstellt_am: "2026-07-01T08:00:00.000Z",
+      },
+      {
+        anzeigename: "Anlage-1.pdf",
+        erstellt_am: "2026-07-04T12:15:00.000Z",
+      },
+      {
+        anzeigename: "Anlage-2.pdf",
+        erstellt_am: "2026-07-09T14:30:00.000Z",
+      },
     ];
 
     const timelineSteps = getInitialEinreichungTimelineSteps(dokumente);
@@ -37,9 +46,12 @@ describe("buildInitialEinreichungTimelineSteps", () => {
     });
   });
 
-  test("uses fallback name when first dokument name is null", () => {
+  test("uses fallback name when first dokument name is missing", () => {
     const timelineSteps = getInitialEinreichungTimelineSteps([
-      { name: null, erstellt_am: "2026-07-01T08:00:00.000Z" },
+      {
+        anzeigename: undefined as unknown as string,
+        erstellt_am: "2026-07-01T08:00:00.000Z",
+      },
     ]);
 
     expect(timelineSteps.firstDokumentName).toBe("Unbekannt");
@@ -47,7 +59,10 @@ describe("buildInitialEinreichungTimelineSteps", () => {
 
   test("uses fallback dates when first dokument timestamp is empty", () => {
     const timelineSteps = getInitialEinreichungTimelineSteps([
-      { name: "Klageschrift.pdf", erstellt_am: "" as unknown as string },
+      {
+        anzeigename: "Klageschrift.pdf",
+        erstellt_am: "" as unknown as string,
+      },
     ]);
 
     expect(timelineSteps.firstDokumentDate).toBe("Unbekannt");

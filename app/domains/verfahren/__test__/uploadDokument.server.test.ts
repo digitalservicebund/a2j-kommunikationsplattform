@@ -18,16 +18,17 @@ describe("uploadDokument", () => {
   it("posts FormData and parses array response first element", async () => {
     const rawDokument = {
       id: "d-1",
-      einreichung_id: "e-1",
       status: "ERSTELLT",
-      name: null,
+      dateiname: "test.txt",
+      anzeigename: "test.txt",
       size_in_bytes: 123,
-      type: "ANHANG",
-      viren_scan_status: "SAUBER",
-      gesendet_am: null,
-      eingereicht_am: null,
-      erstellt_von: null,
+      content_type: "text/plain",
+      hash: "abc123",
+      hash_algorithmus: "SHA3-384",
+      typ: "ANHANG",
+      erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
       erstellt_am: "2026-03-08T05:00:29.659Z",
+      sichtbarkeit_alle: true,
     };
     mocks.apiRequest.mockResolvedValueOnce([rawDokument]);
     const file = new File(["abc"], "test.txt", { type: "text/plain" });
@@ -49,6 +50,14 @@ describe("uploadDokument", () => {
       "Dokument upload for Einreichung with id e-1 of Verfahren with v-1 could not be uploaded.",
     );
     expect(firstCallArgs.body).toBeInstanceOf(FormData);
+    const body = firstCallArgs.body as FormData;
+    expect(body.get("datei")).toBe(file);
+    expect([...body.keys()]).toEqual(["datei"]);
+    expect(firstCallArgs.headers).toEqual({
+      "Dokument-Typ": "ANHANG",
+      "Dokument-Sichtbarkeit-Alle": "true",
+      "Dokument-Anzeigename": "test.txt",
+    });
     expect(result).toEqual(rawDokument);
   });
 });

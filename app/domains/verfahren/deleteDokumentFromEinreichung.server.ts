@@ -2,7 +2,6 @@ import { AuthenticationResponse } from "~/services/auth/auth.types";
 import deleteDokument from "./deleteDokument.server";
 import fetchDokument from "./fetchDokument";
 import fetchDokumente from "./fetchDokumente";
-import type { Dokument } from "./loadVerfahrenEinreichungBundle.server";
 
 type DeleteDokumentFromEinreichungOptions = {
   authData: AuthenticationResponse;
@@ -28,10 +27,10 @@ export default async function deleteDokumentFromEinreichung({
     return { status: "invalid-form-data" };
   }
 
-  const dokumente = (await fetchDokumente(authData, {
+  const { elemente: dokumente } = await fetchDokumente(authData, {
     verfahrenId,
     einreichungId,
-  })) as Dokument[];
+  });
 
   // The first dokument is the initial filing and must not be deleted.
   if (dokumente[0]?.id === dokumentId) {

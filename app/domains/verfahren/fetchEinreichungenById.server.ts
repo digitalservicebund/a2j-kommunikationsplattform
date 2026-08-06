@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { apiRequest } from "./apiClient";
 import { EinreichungenSchema } from "./schemas/einreichungSchema";
@@ -12,7 +13,7 @@ const buildErrorMessage = (id: string): string =>
 export default async function fetchEinreichungenById(
   authData: AuthenticationResponse,
   options: FetchEinreichungenByIdOptions,
-) {
+): Promise<z.infer<typeof EinreichungenSchema>> {
   return apiRequest({
     authData,
     path: `/api/v1/verfahren/${options.id}/einreichungen`,

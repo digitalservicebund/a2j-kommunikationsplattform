@@ -14,7 +14,7 @@ export type FetchDokumentResult = {
   eTag: string | null;
 };
 
-type Dokument = z.infer<typeof DokumentSchema>;
+export type Dokument = z.infer<typeof DokumentSchema>;
 
 const buildErrorMessage = (id: string): string =>
   `Dokument with id ${id} could not be fetched.`;

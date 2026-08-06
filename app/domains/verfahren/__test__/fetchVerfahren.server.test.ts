@@ -71,9 +71,9 @@ describe("fetchVerfahren", () => {
     expect(mocks.fetch).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
-        headers: {
+        headers: expect.objectContaining({
           Authorization: "Bearer test-token",
-        },
+        }),
       }),
     );
 

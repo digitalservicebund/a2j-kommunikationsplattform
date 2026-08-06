@@ -23,6 +23,7 @@ type ApiRequestOptions = ApiRequestUrlOptions & {
   method?: string;
   body?: unknown;
   eTag?: string;
+  headers?: Record<string, string>;
   includeResponseETag?: boolean;
   includeResponseMeta?: boolean;
   throwOnError?: boolean;
@@ -61,21 +62,6 @@ export type ApiRequestSuccessResult<T> = {
 export type ApiRequestHandledResult<T> =
   ApiRequestSuccessResult<T> | ApiRequestErrorResult;
 
-function parseJsonBodyOrUndefined(
-  responseBody: string,
-  errorMessage: string,
-): unknown {
-  if (responseBody.trim() === "") {
-    return undefined;
-  }
-
-  try {
-    return JSON.parse(responseBody);
-  } catch (err) {
-    logParsingErrorAndThrow(err, errorMessage, responseBody);
-  }
-}
-
 function parseSchemaOrThrow<T>(
   data: unknown,
   schema: z.ZodTypeAny | undefined,
@@ -103,15 +89,12 @@ async function handleNonOkResponse(
     return undefined;
   }
 
-  const errorText = await response.text();
-  let errorBody: unknown = errorText;
+  let errorBody: unknown;
 
-  if (errorText.trim() !== "") {
-    try {
-      errorBody = JSON.parse(errorText);
-    } catch {
-      errorBody = errorText;
-    }
+  try {
+    errorBody = await response.json();
+  } catch {
+    errorBody = undefined;
   }
 
   return {
@@ -126,9 +109,6 @@ async function handleNonOkResponse(
 type ResponseBodyType = Response & {
   status?: number;
   headers?: Headers;
-  json?: () => Promise<unknown>;
-  text?: () => Promise<string>;
-  clone?: () => Response & { text?: () => Promise<string> };
 };
 
 function hasNoResponseBody(responseBody: ResponseBodyType): boolean {
@@ -140,63 +120,20 @@ function hasNoResponseBody(responseBody: ResponseBodyType): boolean {
   return contentLength === "0";
 }
 
-async function readTextFromResponseBody(
-  responseBody: ResponseBodyType,
-): Promise<string | undefined> {
-  if (typeof responseBody.text === "function") {
-    return await responseBody.text();
-  }
-
-  if (typeof responseBody.clone !== "function") {
-    return undefined;
-  }
-
-  const clonedResponse = responseBody.clone();
-
-  if (typeof clonedResponse.text !== "function") {
-    return undefined;
-  }
-
-  return await clonedResponse.text();
-}
-
-async function readJsonBody(
-  responseBody: ResponseBodyType,
-  errorMessage: string,
-): Promise<unknown> {
-  try {
-    return await responseBody.json!();
-  } catch (error) {
-    const responseBodyText = await readTextFromResponseBody(responseBody);
-
-    if (responseBodyText === undefined) {
-      throw error;
-    }
-
-    if (responseBodyText.trim() === "") {
-      return undefined;
-    }
-
-    logParsingErrorAndThrow(error, errorMessage, responseBodyText);
-  }
-}
-
 async function readResponseBody(
   response: Response,
   errorMessage: string,
 ): Promise<unknown> {
-  const responseBody = response as ResponseBodyType;
-
   // 204/205 responses intentionally have no body.
-  if (hasNoResponseBody(responseBody)) {
+  if (hasNoResponseBody(response)) {
     return undefined;
   }
 
-  if (typeof responseBody.json === "function") {
-    return await readJsonBody(responseBody, errorMessage);
+  try {
+    return await response.json();
+  } catch (error) {
+    logParsingErrorAndThrow(error, errorMessage, "[unparsable JSON response]");
   }
-
-  return await readTextFromResponseBody(responseBody);
 }
 
 function buildSuccessReturn<T>(
@@ -268,6 +205,7 @@ export async function apiRequest<T = unknown>(
     method = "GET",
     body,
     eTag,
+    headers: customHeaders,
     includeResponseETag = false,
     includeResponseMeta = false,
     throwOnError = true,
@@ -285,6 +223,8 @@ export async function apiRequest<T = unknown>(
 
   const headers: Record<string, string> = {
     Authorization: `Bearer ${bearerToken}`,
+    Accept: "application/json",
+    ...customHeaders,
   };
 
   let fetchBody: BodyInit | undefined;
@@ -345,15 +285,8 @@ export async function apiRequest<T = unknown>(
     response,
     errorMessage ?? "Failed to read/parse the response as JSON.",
   );
-  const parsedBody =
-    typeof responseBody === "string"
-      ? parseJsonBodyOrUndefined(
-          responseBody,
-          errorMessage ?? "Failed to read/parse the response as JSON.",
-        )
-      : responseBody;
   const parsedData = parseSchemaOrThrow<T>(
-    parsedBody,
+    responseBody,
     schema,
     errorMessage ?? "Failed to parse Zod schema.",
   );

@@ -381,7 +381,7 @@ export default function VerfahrenId() {
                                       }
                                     </dt>
                                     <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
-                                      {PROTOTYPE_CLAIM_SUBJECT}
+                                      {verfahren.verfahrensgegenstand}
                                     </dd>
                                   </div>
                                 </dl>

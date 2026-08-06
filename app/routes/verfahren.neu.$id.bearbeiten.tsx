@@ -18,6 +18,11 @@ import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumen
 import VerfahrenGerichteSelect from "~/components/verfahren/VerfahrenGerichteSelect";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenPrototypeHint from "~/components/verfahren/VerfahrenPrototypeHint.static";
+import {
+  getBeteiligungByRoleCode,
+  ROLE_CODE_BEKLAGTE,
+  ROLE_CODE_KLAEGERIN,
+} from "~/domains/verfahren/beteiligteByRole";
 import deleteDokument from "~/domains/verfahren/deleteDokument.server";
 import fetchDokument from "~/domains/verfahren/fetchDokument";
 import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
@@ -28,8 +33,8 @@ import loadVerfahrenEinreichungBundle, {
   Verfahren,
 } from "~/domains/verfahren/loadVerfahrenEinreichungBundle.server";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.server";
+import { CodeWertSchema } from "~/domains/verfahren/schemas/codeWertSchema";
 import { DokumentTypeSchema } from "~/domains/verfahren/schemas/dokumentSchema";
-import { CodeWertSchema } from "~/domains/verfahren/schemas/verfahrenSchema";
 import uploadDokument from "~/domains/verfahren/uploadDokument.server";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
@@ -64,7 +69,12 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   );
   const { verfahren, einreichung, dokumente } =
     await loadVerfahrenEinreichungBundle(authData, verfahrenId);
-  const gerichtePromise = fetchGerichte(authData) as Promise<Gericht[]>;
+
+  const gerichtePromise = (async () => {
+    const { elemente } = await fetchGerichte(authData);
+
+    return elemente;
+  })();
 
   return {
     verfahren,
@@ -168,6 +178,8 @@ export default function VerfahrenNeuBearbeiten() {
   const showFileInputError =
     Boolean(errors?.fieldErrors?.file) && !isFileInputErrorDismissed;
 
+  console.log("verfahren", verfahren);
+
   useEffect(() => {
     if (actionData?.success && navigation.state === "idle") {
       revalidator.revalidate();
@@ -224,35 +236,40 @@ export default function VerfahrenNeuBearbeiten() {
 
   // @TODO: sync input fields with API response/result schemas
   // and maybe move this into a getter/setter helper for other routes?
-  const klagendePartei = verfahren.beteiligungen?.find((b) =>
-    b.rollen?.some((r) => r.wert?.toLowerCase().includes("kläger")),
+  const klagendePartei = getBeteiligungByRoleCode(
+    verfahren.beteiligungen,
+    ROLE_CODE_KLAEGERIN,
   );
-  const beklagtePartei = verfahren.beteiligungen?.find((b) =>
-    b.rollen?.some((r) => r.wert?.toLowerCase().includes("beklag")),
+  const beklagtePartei = getBeteiligungByRoleCode(
+    verfahren.beteiligungen,
+    ROLE_CODE_BEKLAGTE,
   );
-  const klagendeParteiNameParts = klagendePartei?.name?.split(" ") ?? [];
-  const beklagteParteiNameParts = beklagtePartei?.name?.split(" ") ?? [];
   const klagendeParteiFirstName =
-    klagendeParteiNameParts.length > 1
-      ? klagendeParteiNameParts.slice(0, -1).join(" ")
-      : (klagendePartei?.name ?? "");
+    klagendePartei && "vorname" in klagendePartei
+      ? (klagendePartei.vorname ?? "")
+      : "";
   const klagendeParteiLastName =
-    klagendeParteiNameParts.length > 1
-      ? klagendeParteiNameParts.slice(-1).join(" ")
+    klagendePartei && "nachname" in klagendePartei
+      ? klagendePartei.nachname
       : "";
   const beklagteParteiFirstName =
-    beklagteParteiNameParts.length > 1
-      ? beklagteParteiNameParts.slice(0, -1).join(" ")
-      : (beklagtePartei?.name ?? "");
-  const beklagteParteiLastName =
-    beklagteParteiNameParts.length > 1
-      ? beklagteParteiNameParts.slice(-1).join(" ")
+    beklagtePartei && "vorname" in beklagtePartei
+      ? (beklagtePartei.vorname ?? "")
       : "";
-  const klagendeParteiLawyer = klagendePartei?.prozessbevollmaechtigte?.[0];
-  const courtCode = verfahren.gericht?.code ?? "";
+  const beklagteParteiLastName =
+    beklagtePartei && "nachname" in beklagtePartei
+      ? beklagtePartei.nachname
+      : "";
+  // @TODO: the API no longer nests a "prozessbevollmaechtigte" list on a
+  // Beteiligte — a Prozessbevollmächtigter is now its own Beteiligte (a
+  // RaKanzlei) linked via Rolle.referenz. That linking isn't implemented
+  // yet, so we can't reliably pre-fill an existing lawyer.
+  const klagendeParteiLawyerName = "";
+  const hasExistingLawyer = false;
+  const courtId = verfahren.gericht?.id ?? "";
   const claimReference = verfahren.aktenzeichen_gericht ?? "";
 
-  const [hasLawyer, setHasLawyer] = useState(Boolean(klagendeParteiLawyer));
+  const [hasLawyer, setHasLawyer] = useState(hasExistingLawyer);
 
   const uploadedDokumente = dokumente.filter((_, index) => index > 0);
 
@@ -533,7 +550,7 @@ export default function VerfahrenNeuBearbeiten() {
                               id="lawyer-name"
                               name="lawyerName"
                               type="text"
-                              defaultValue={klagendeParteiLawyer?.name ?? ""}
+                              defaultValue={klagendeParteiLawyerName}
                             />
                           </div>
 
@@ -840,7 +857,7 @@ export default function VerfahrenNeuBearbeiten() {
                           className="bg-kern-feedback-info-background flex-1 self-end"
                           placeholder={shared.form.select.placeholder}
                           gerichtePromise={gerichte}
-                          initialSelectedValue={courtCode}
+                          initialSelectedValue={courtId}
                         />
                       </div>
 
@@ -898,7 +915,7 @@ export default function VerfahrenNeuBearbeiten() {
                                     >
                                       <div className="flex-1">
                                         <div className="kern-body kern-body--bold">
-                                          {dokument.name}
+                                          {dokument.anzeigename}
                                         </div>
 
                                         <div className="kern-body kern-body--small">

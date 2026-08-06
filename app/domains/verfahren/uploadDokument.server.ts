@@ -1,10 +1,15 @@
 import z from "zod";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { apiRequest } from "./apiClient";
-import { DokumentSchema, DokumentTypeSchema } from "./schemas/dokumentSchema";
+import {
+  DokumentErstellenResponseSchema,
+  DokumentTypeSchema,
+} from "./schemas/dokumentSchema";
 
 export type DokumentType = z.infer<typeof DokumentTypeSchema>;
-export type Dokument = z.infer<typeof DokumentSchema>;
+export type DokumentErstellenResponse = z.infer<
+  typeof DokumentErstellenResponseSchema
+>;
 
 const buildErrorMessage = (
   verfahrenId: string,
@@ -22,19 +27,23 @@ export default async function uploadDokument(
   einreichungId: string,
   file: File,
   type: DokumentType,
-): Promise<Dokument> {
+): Promise<DokumentErstellenResponse> {
   const formData = new FormData();
-  formData.append("file", file);
-  formData.append("type", type);
+  formData.append("datei", file);
 
   const rawData = await apiRequest({
     authData,
     path: `/api/v1/verfahren/${verfahrenId}/einreichungen/${einreichungId}/dokumente`,
     method: "POST",
     body: formData,
+    headers: {
+      "Dokument-Typ": type,
+      "Dokument-Sichtbarkeit-Alle": "true",
+      "Dokument-Anzeigename": file.name,
+    },
     errorMessage: buildErrorMessage(verfahrenId, einreichungId),
   });
 
   const singleObject = extractSingleObject(rawData);
-  return DokumentSchema.parse(singleObject);
+  return DokumentErstellenResponseSchema.parse(singleObject);
 }

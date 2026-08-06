@@ -18,12 +18,13 @@ describe("fetchEinreichungById", () => {
   test("delegates path and schema", async () => {
     const einreichung = {
       id: "e-1",
-      verfahren_id: "v-1",
       status: "ERSTELLT",
       erstellt_am: "2026-07-22T10:00:00.000Z",
-      erstellt_von: null,
+      erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+      beantragt_am: null,
       gesendet_am: null,
       eingereicht_am: null,
+      validierungs_status: "AUSSTEHEND",
       name: "Klageschrift",
     };
 

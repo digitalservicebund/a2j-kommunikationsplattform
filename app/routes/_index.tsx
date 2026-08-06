@@ -15,13 +15,13 @@ import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/config/verfahren";
 import { VERFAHREN_SKELETONS } from "~/config/verfahrenSkeletons";
 import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
 import fetchVerfahren from "~/domains/verfahren/fetchVerfahren.server";
-import { GerichtSchema } from "~/domains/verfahren/schemas/gerichtSchema";
+import { CodeWertSchema } from "~/domains/verfahren/schemas/codeWertSchema";
 import { VerfahrenSchema } from "~/domains/verfahren/schemas/verfahrenSchema";
 import { authContext, authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
 export type Verfahren = z.infer<typeof VerfahrenSchema>;
-export type Gericht = z.infer<typeof GerichtSchema>;
+export type Gericht = z.infer<typeof CodeWertSchema>;
 
 export type VerfahrenLoaderData = {
   items: Verfahren[];
