@@ -173,6 +173,8 @@ export default function VerfahrenNeuBearbeiten() {
   const showFileInputError =
     Boolean(errors?.fieldErrors?.file) && !isFileInputErrorDismissed;
 
+  console.log("verfahren", verfahren);
+
   useEffect(() => {
     if (actionData?.success && navigation.state === "idle") {
       revalidator.revalidate();

@@ -33,7 +33,7 @@ export default async function loadVerfahrenEinreichungenOverview(
     { id: verfahrenId },
   );
 
-  console.log("verfahren", einreichungenList);
+  console.log("einreichungenList", einreichungenList);
 
   const einreichungen = await Promise.all(
     einreichungenList.map(async (einreichung) => {

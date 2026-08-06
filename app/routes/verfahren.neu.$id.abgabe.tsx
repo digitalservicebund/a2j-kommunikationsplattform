@@ -126,7 +126,7 @@ export default function VerfahrenNeuBearbeiten() {
   const timelineSteps = getInitialEinreichungTimelineSteps(dokumente);
   const initialTimelineStepData = buildInitialTimelineStepData(
     timelineSteps,
-    verfahren.status_changed,
+    verfahren.status_geaendert_am,
     {
       assetsTitle: routes.verfahrenNeu.step3.proceduralSteps.assets.title,
       filesAddedLabel:
