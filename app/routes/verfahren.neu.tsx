@@ -11,26 +11,30 @@ import {
 } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
+import InputText from "~/components/InputText";
 import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
+import VerfahrenGerichteSelect from "~/components/verfahren/VerfahrenGerichteSelect";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import createEinreichung from "~/domains/verfahren/createEinreichung.server";
 import createVerfahren from "~/domains/verfahren/createVerfahren.server";
 import deleteDokument from "~/domains/verfahren/deleteDokument.server";
-import fetchDokument from "~/domains/verfahren/fetchDokument";
+import fetchDokument, {
+  type Dokument,
+} from "~/domains/verfahren/fetchDokument";
 import fetchDokumente from "~/domains/verfahren/fetchDokumente";
+import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
 import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
 import { requireAuthData } from "~/domains/verfahren/routeContext.server";
 import { DokumentTypeSchema } from "~/domains/verfahren/schemas/dokumentSchema";
-import uploadDokument, {
-  type Dokument,
-  type DokumentType,
-} from "~/domains/verfahren/uploadDokument.server";
+import uploadDokument from "~/domains/verfahren/uploadDokument.server";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
 const StatementOfClaimUploadSchema = z.object({
   type: DokumentTypeSchema,
   file: z.file(),
+  verfahrensgegenstand: z.string().min(1),
+  gerichtId: z.string().min(1),
   analysis: z.coerce.boolean().optional(),
 });
 
@@ -62,21 +66,28 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const { verfahrenId, einreichungId } = getVerfahrenContextFromUrl(url);
 
+  const gerichtePromise = (async () => {
+    const { elemente } = await fetchGerichte(authData);
+
+    return elemente;
+  })();
+
   if (!verfahrenId || !einreichungId) {
     return {
       verfahrenId: undefined,
       einreichungId: undefined,
       uploadedDokument: undefined,
+      gerichtePromise,
     };
   }
 
-  const dokumente = (await fetchDokumente(authData, {
+  const { elemente: dokumente } = await fetchDokumente(authData, {
     verfahrenId,
     einreichungId,
-  })) as Dokument[];
+  });
   const uploadedDokument = dokumente.at(0);
 
-  return { verfahrenId, einreichungId, uploadedDokument };
+  return { verfahrenId, einreichungId, uploadedDokument, gerichtePromise };
 };
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
@@ -137,10 +148,10 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
   }
 
   if (existingVerfahrenId && existingEinreichungId) {
-    const dokumente = (await fetchDokumente(authData, {
+    const { elemente: dokumente } = await fetchDokumente(authData, {
       verfahrenId: existingVerfahrenId,
       einreichungId: existingEinreichungId,
-    })) as Dokument[];
+    });
 
     if (dokumente.length > 0) {
       return redirect(`/verfahren/neu/${existingVerfahrenId}/bearbeiten`);
@@ -154,15 +165,19 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
     return { errors: z.flattenError(validatedForm.error), formValues };
   }
 
-  const file = formData.get("file") as File;
-  const type = formData.get("type") as DokumentType;
+  const { file, type, verfahrensgegenstand, gerichtId } = validatedForm.data;
   const dokumentType = type;
 
   let verfahrenId = existingVerfahrenId;
   let einreichungId = existingEinreichungId;
 
   if (!verfahrenId || !einreichungId) {
-    const verfahren = await createVerfahren(authData);
+    const verfahren = await createVerfahren(authData, {
+      verfahrensgegenstand,
+      kurzrubrum: null,
+      gericht_id: gerichtId,
+      beteiligungen: null,
+    });
     verfahrenId = verfahren.id;
     const einreichung = await createEinreichung(authData, verfahrenId);
     einreichungId = einreichung.id;
@@ -187,6 +202,9 @@ export default function VerfahrenNeu() {
   const { errors, formValues } = actionData;
   const [selectedDokumentType, setSelectedDokumentType] = useState<string>(
     (formValues?.type as string) || "",
+  );
+  const [selectedGerichtId, setSelectedGerichtId] = useState<string>(
+    (formValues?.gerichtId as string) || "",
   );
 
   const isSubmitting = navigation.state !== "idle";
@@ -246,7 +264,7 @@ export default function VerfahrenNeu() {
                       <div className="p-kern-space-default align-center gap-kern-space-default rounded-kern-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)">
                         <div className="flex-1">
                           <div className="kern-body kern-body--bold">
-                            {uploadedDokument?.name}
+                            {uploadedDokument?.anzeigename}
                           </div>
 
                           <div className="kern-body kern-body--small">
@@ -332,6 +350,26 @@ export default function VerfahrenNeu() {
                             </span>
                           </p>
                         )}
+                      </div>
+
+                      <div className="kern-gap-md flex w-full">
+                        <InputText
+                          label={shared.form.labels.verfahrensgegenstand}
+                          id="verfahrensgegenstand"
+                        />
+                      </div>
+
+                      <div className="kern-gap-md flex w-full">
+                        <VerfahrenGerichteSelect
+                          id="gerichtId"
+                          label={shared.form.labels.recipientCourt}
+                          className="bg-kern-feedback-info-background flex-1 self-end"
+                          placeholder={shared.form.select.placeholder}
+                          gerichtePromise={loaderData.gerichtePromise}
+                          initialSelectedValue={selectedGerichtId}
+                          onValueChange={setSelectedGerichtId}
+                          required
+                        />
                       </div>
 
                       <VerfahrenDokumentTypeSelect

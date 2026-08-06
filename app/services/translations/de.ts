@@ -107,6 +107,7 @@ export const de = {
         recipientCourt: "Empfängergericht",
         subjectMatterOfTheProceedings: "Verfahrensgegenstand",
         edit: "Bearbeiten",
+        verfahrensgegenstand: "Verfahrensgegenstand",
       },
     },
     beteiligte: {

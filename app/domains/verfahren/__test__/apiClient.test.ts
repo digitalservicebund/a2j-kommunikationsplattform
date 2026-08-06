@@ -195,6 +195,31 @@ describe("apiClient", () => {
       expect(config?.headers).not.toHaveProperty("Content-Type");
     });
 
+    it("merges custom headers alongside Authorization for a FormData body", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({}),
+      });
+
+      const formData = new FormData();
+      formData.append("file", new File(["content"], "test.txt"));
+
+      await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+        method: "POST",
+        body: formData,
+        headers: { "Dokument-Typ": "ANHANG" },
+      });
+
+      const [, config] = mocks.fetch.mock.calls[0];
+      expect(config?.headers).toEqual({
+        Authorization: "Bearer token",
+        "Dokument-Typ": "ANHANG",
+      });
+    });
+
     it("calls logApiErrorAndThrow when response is not ok", async () => {
       mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({

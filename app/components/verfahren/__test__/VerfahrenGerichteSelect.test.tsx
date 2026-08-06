@@ -32,8 +32,8 @@ vi.mock("react-router", async () => {
       }
 
       return children([
-        { code: "AG-BE", wert: "Amtsgericht Berlin" },
-        { code: "LG-HH", wert: "Landgericht Hamburg" },
+        { id: "ag-be-id", wert: "Amtsgericht Berlin" },
+        { id: "lg-hh-id", wert: "Landgericht Hamburg" },
       ]);
     },
   };
@@ -88,30 +88,30 @@ describe("VerfahrenGerichteSelect", () => {
       screen.getByRole("option", { name: "Landgericht Hamburg" }),
     ).toBeInTheDocument();
 
-    await user.selectOptions(select, "LG-HH");
+    await user.selectOptions(select, "lg-hh-id");
 
-    expect(handleValueChange).toHaveBeenCalledWith("LG-HH");
-    expect((select as HTMLSelectElement).value).toBe("LG-HH");
+    expect(handleValueChange).toHaveBeenCalledWith("lg-hh-id");
+    expect((select as HTMLSelectElement).value).toBe("lg-hh-id");
   });
 });
 describe("VerfahrenGerichteSelect", () => {
   describe("buildGerichteOptions", () => {
-    it("maps code and wert into InputSelect options", () => {
+    it("maps id and wert into InputSelect options", () => {
       const gerichte: GerichtSelectItem[] = [
-        { code: "AG-K", wert: "Amtsgericht Koln" },
-        { code: "LG-HH", wert: "Landgericht Hamburg" },
+        { id: "ag-k-id", wert: "Amtsgericht Koln" },
+        { id: "lg-hh-id", wert: "Landgericht Hamburg" },
       ];
 
       const options = buildGerichteOptions(gerichte);
 
       expect(options).toEqual([
-        { value: "AG-K", label: "Amtsgericht Koln" },
-        { value: "LG-HH", label: "Landgericht Hamburg" },
+        { value: "ag-k-id", label: "Amtsgericht Koln" },
+        { value: "lg-hh-id", label: "Landgericht Hamburg" },
       ]);
     });
 
     it("falls back safely when values are missing", () => {
-      const gerichte: GerichtSelectItem[] = [{}, { code: null, wert: null }];
+      const gerichte: GerichtSelectItem[] = [{}, { id: null, wert: null }];
 
       const options = buildGerichteOptions(gerichte);
 

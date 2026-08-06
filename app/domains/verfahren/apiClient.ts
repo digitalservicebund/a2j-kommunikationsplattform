@@ -23,6 +23,7 @@ type ApiRequestOptions = ApiRequestUrlOptions & {
   method?: string;
   body?: unknown;
   eTag?: string;
+  headers?: Record<string, string>;
   includeResponseETag?: boolean;
   includeResponseMeta?: boolean;
   throwOnError?: boolean;
@@ -268,6 +269,7 @@ export async function apiRequest<T = unknown>(
     method = "GET",
     body,
     eTag,
+    headers: customHeaders,
     includeResponseETag = false,
     includeResponseMeta = false,
     throwOnError = true,
@@ -285,6 +287,7 @@ export async function apiRequest<T = unknown>(
 
   const headers: Record<string, string> = {
     Authorization: `Bearer ${bearerToken}`,
+    ...customHeaders,
   };
 
   let fetchBody: BodyInit | undefined;

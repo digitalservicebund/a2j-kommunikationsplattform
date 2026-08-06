@@ -1,4 +1,5 @@
-import z from "zod";
+import { z } from "zod";
+import { BeteiligungenSchema } from "~/domains/verfahren/schemas/beteiligungenSchema";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { apiRequest } from "./apiClient";
 import { VerfahrenSchema } from "./schemas/verfahrenSchema";
@@ -13,8 +14,18 @@ function extractSingleObject<T>(data: unknown): T {
   return (Array.isArray(data) ? data[0] : data) as T;
 }
 
+export const VerfahrenAendernRequestSchema = z.object({
+  verfahrensgegenstand: z.string().min(1),
+  kurzrubrum: z.string().nullable(),
+  gericht_id: z.string(),
+  beteiligungen: BeteiligungenSchema,
+});
+
+type VerfahrenAendernRequestDTO = z.infer<typeof VerfahrenAendernRequestSchema>;
+
 export default async function createVerfahren(
   authData: AuthenticationResponse,
+  verfahren: VerfahrenAendernRequestDTO,
 ): Promise<Verfahren> {
   const safeId = authData.authenticationTokens.idToken;
 
@@ -26,7 +37,7 @@ export default async function createVerfahren(
     authData,
     path: "/api/v1/verfahren",
     method: "POST",
-    body: { safe_id: safeId },
+    body: { safe_id: safeId, verfahren },
     errorMessage,
   });
 

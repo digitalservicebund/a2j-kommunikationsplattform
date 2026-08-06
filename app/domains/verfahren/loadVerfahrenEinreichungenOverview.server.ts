@@ -5,7 +5,6 @@ import fetchEinreichungStatus from "./fetchEinreichungStatus.server";
 import fetchVerfahrenById from "./fetchVerfahrenById.server";
 import type {
   Dokument,
-  Einreichung,
   EinreichungStatus,
   EinreichungWithStatus,
   Verfahren,
@@ -29,25 +28,24 @@ export default async function loadVerfahrenEinreichungenOverview(
     id: verfahrenId,
   })) as Verfahren;
 
-  const fetchedEinreichungen = (await fetchEinreichungenById(authData, {
-    id: verfahrenId,
-  })) as Einreichung[];
-
-  const matchingEinreichungen = fetchedEinreichungen.filter(
-    (einreichung) => einreichung.verfahren_id === verfahrenId,
+  const { elemente: einreichungenList } = await fetchEinreichungenById(
+    authData,
+    { id: verfahrenId },
   );
 
+  console.log("verfahren", einreichungenList);
+
   const einreichungen = await Promise.all(
-    matchingEinreichungen.map(async (einreichung) => {
+    einreichungenList.map(async (einreichung) => {
       const einreichungsStatus = (await fetchEinreichungStatus(authData, {
         id: einreichung.id,
-        verfahrenId: einreichung.verfahren_id,
+        verfahrenId,
       })) as EinreichungStatus;
 
-      const dokumente = (await fetchDokumente(authData, {
-        verfahrenId: einreichung.verfahren_id,
+      const { elemente: dokumente } = await fetchDokumente(authData, {
+        verfahrenId,
         einreichungId: einreichung.id,
-      })) as Dokument[];
+      });
 
       return {
         einreichung: {

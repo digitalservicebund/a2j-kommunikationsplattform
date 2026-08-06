@@ -64,7 +64,12 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   );
   const { verfahren, einreichung, dokumente } =
     await loadVerfahrenEinreichungBundle(authData, verfahrenId);
-  const gerichtePromise = fetchGerichte(authData) as Promise<Gericht[]>;
+
+  const gerichtePromise = (async () => {
+    const { elemente } = await fetchGerichte(authData);
+
+    return elemente;
+  })();
 
   return {
     verfahren,
@@ -249,7 +254,7 @@ export default function VerfahrenNeuBearbeiten() {
       ? beklagteParteiNameParts.slice(-1).join(" ")
       : "";
   const klagendeParteiLawyer = klagendePartei?.prozessbevollmaechtigte?.[0];
-  const courtCode = verfahren.gericht?.code ?? "";
+  const courtId = verfahren.gericht?.id ?? "";
   const claimReference = verfahren.aktenzeichen_gericht ?? "";
 
   const [hasLawyer, setHasLawyer] = useState(Boolean(klagendeParteiLawyer));
@@ -840,7 +845,7 @@ export default function VerfahrenNeuBearbeiten() {
                           className="bg-kern-feedback-info-background flex-1 self-end"
                           placeholder={shared.form.select.placeholder}
                           gerichtePromise={gerichte}
-                          initialSelectedValue={courtCode}
+                          initialSelectedValue={courtId}
                         />
                       </div>
 

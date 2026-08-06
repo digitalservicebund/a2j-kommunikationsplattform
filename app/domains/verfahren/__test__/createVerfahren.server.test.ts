@@ -10,6 +10,13 @@ vi.mock("../apiClient", () => ({
   apiRequest: mocks.apiRequest,
 }));
 
+const verfahrenPayload = {
+  verfahrensgegenstand: "Zahlungsklage",
+  kurzrubrum: null,
+  gericht_id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
+  beteiligungen: null,
+};
+
 describe("createVerfahren", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -24,9 +31,9 @@ describe("createVerfahren", () => {
       },
     };
 
-    await expect(createVerfahren(authWithoutSafeId)).rejects.toThrow(
-      "No safeId is available",
-    );
+    await expect(
+      createVerfahren(authWithoutSafeId, verfahrenPayload),
+    ).rejects.toThrow("No safeId is available");
     expect(mocks.apiRequest).not.toHaveBeenCalled();
   });
 
@@ -34,7 +41,7 @@ describe("createVerfahren", () => {
     const verfahren = {
       id: "2ab3cbc7-d00a-48bf-95a1-4d6f07406196",
       aktenzeichen_gericht: null,
-      verfahrensgegenstand: null,
+      verfahrensgegenstand: "Zahlungsklage",
       kurzrubrum: null,
       status: "ERSTELLT",
       status_geaendert_am: "2026-03-08T05:00:29.659Z",
@@ -50,13 +57,16 @@ describe("createVerfahren", () => {
     };
     mocks.apiRequest.mockResolvedValueOnce([verfahren]);
 
-    const result = await createVerfahren(mockAuthData);
+    const result = await createVerfahren(mockAuthData, verfahrenPayload);
 
     expect(mocks.apiRequest).toHaveBeenCalledWith({
       authData: mockAuthData,
       path: "/api/v1/verfahren",
       method: "POST",
-      body: { safe_id: mockAuthData.authenticationTokens.idToken },
+      body: {
+        safe_id: mockAuthData.authenticationTokens.idToken,
+        verfahren: verfahrenPayload,
+      },
       errorMessage: "Verfahren could not be created.",
     });
     expect(result).toEqual(verfahren);

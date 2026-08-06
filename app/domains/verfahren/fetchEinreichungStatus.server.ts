@@ -1,6 +1,7 @@
+import z from "zod";
+import { ValidierungsstatusSchema } from "~/domains/verfahren/schemas/validierungsStatusSchema";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { apiRequest } from "./apiClient";
-import { StatusSchema } from "./schemas/statusSchema";
 
 type FetchEinreichungStatusOptions = {
   id: string;
@@ -13,11 +14,11 @@ const buildErrorMessage = (id: string, verfahrenId: string): string =>
 export default async function fetchEinreichungStatus(
   authData: AuthenticationResponse,
   options: FetchEinreichungStatusOptions,
-) {
+): Promise<z.infer<typeof ValidierungsstatusSchema>> {
   return apiRequest({
     authData,
     path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.id}/validierungsstatus`,
-    schema: StatusSchema,
+    schema: ValidierungsstatusSchema,
     errorMessage: buildErrorMessage(options.id, options.verfahrenId),
   });
 }

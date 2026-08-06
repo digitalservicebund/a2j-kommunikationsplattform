@@ -36,11 +36,11 @@ describe("loadVerfahrenEinreichungBundle", () => {
     const dokumente = [{ id: "d-1", name: "klage.pdf", size_in_bytes: 1200 }];
 
     mocks.fetchVerfahrenById.mockResolvedValueOnce(verfahren);
-    mocks.fetchEinreichungenById.mockResolvedValueOnce([
-      { id: "e-1", verfahren_id: "v-1" },
-    ]);
+    mocks.fetchEinreichungenById.mockResolvedValueOnce({
+      elemente: [{ id: "e-1" }],
+    });
     mocks.fetchEinreichungStatus.mockResolvedValueOnce(einreichungsStatus);
-    mocks.fetchDokumente.mockResolvedValueOnce(dokumente);
+    mocks.fetchDokumente.mockResolvedValueOnce({ elemente: dokumente });
 
     const result = await loadVerfahrenEinreichungBundle(mockAuthData, "v-1");
 
@@ -63,7 +63,6 @@ describe("loadVerfahrenEinreichungBundle", () => {
       verfahren,
       einreichung: {
         id: "e-1",
-        verfahren_id: "v-1",
         einreichungsStatus,
       },
       dokumente,
@@ -73,7 +72,7 @@ describe("loadVerfahrenEinreichungBundle", () => {
 
   test("throws when no einreichung exists", async () => {
     mocks.fetchVerfahrenById.mockResolvedValueOnce({ id: "v-1" });
-    mocks.fetchEinreichungenById.mockResolvedValueOnce([]);
+    mocks.fetchEinreichungenById.mockResolvedValueOnce({ elemente: [] });
 
     await expect(
       loadVerfahrenEinreichungBundle(mockAuthData, "v-1"),

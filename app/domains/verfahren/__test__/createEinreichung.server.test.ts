@@ -18,8 +18,8 @@ describe("createEinreichung", () => {
   it("delegates to apiRequest with expected payload", async () => {
     const mockEinreichung = {
       id: "e-1",
-      verfahren_id: "v-1",
-      status: "ENTWURF",
+      name: "Klageeinreichung",
+      status: "ERSTELLT",
       erstellt_am: "2026-01-01T12:00:00.000Z",
       erstellt_von: "",
     };

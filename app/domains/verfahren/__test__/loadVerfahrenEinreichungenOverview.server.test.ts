@@ -30,22 +30,15 @@ describe("loadVerfahrenEinreichungenOverview", () => {
     vi.clearAllMocks();
   });
 
-  test("loads verfahren and all matching einreichungen with status and dokumente", async () => {
+  test("loads verfahren and all einreichungen with status and dokumente", async () => {
     const verfahren = { id: "v-1", status: "ERSTELLT" };
     const einreichungA = {
       id: "e-1",
-      verfahren_id: "v-1",
       erstellt_am: "2026-07-23T10:00:00.000Z",
     };
     const einreichungB = {
       id: "e-2",
-      verfahren_id: "v-1",
       erstellt_am: "2026-07-24T10:00:00.000Z",
-    };
-    const otherVerfahrenEinreichung = {
-      id: "e-3",
-      verfahren_id: "v-2",
-      erstellt_am: "2026-07-25T10:00:00.000Z",
     };
     const statusA = { status: "GRUEN", validation_messages: [] };
     const statusB = { status: "GELB", validation_messages: [] };
@@ -53,21 +46,36 @@ describe("loadVerfahrenEinreichungenOverview", () => {
     const dokumenteB = [{ id: "d-2", name: "anlage.pdf", size_in_bytes: 800 }];
 
     mocks.fetchVerfahrenById.mockResolvedValueOnce(verfahren);
-    mocks.fetchEinreichungenById.mockResolvedValueOnce([
-      einreichungA,
-      otherVerfahrenEinreichung,
-      einreichungB,
-    ]);
+    mocks.fetchEinreichungenById.mockResolvedValueOnce({
+      elemente: [einreichungA, einreichungB],
+    });
     mocks.fetchEinreichungStatus
       .mockResolvedValueOnce(statusA)
       .mockResolvedValueOnce(statusB);
     mocks.fetchDokumente
-      .mockResolvedValueOnce(dokumenteA)
-      .mockResolvedValueOnce(dokumenteB);
+      .mockResolvedValueOnce({ elemente: dokumenteA })
+      .mockResolvedValueOnce({ elemente: dokumenteB });
 
     const result = await loadVerfahrenEinreichungenOverview(
       mockAuthData,
       "v-1",
+    );
+
+    expect(mocks.fetchEinreichungStatus).toHaveBeenNthCalledWith(
+      1,
+      mockAuthData,
+      {
+        id: "e-1",
+        verfahrenId: "v-1",
+      },
+    );
+    expect(mocks.fetchEinreichungStatus).toHaveBeenNthCalledWith(
+      2,
+      mockAuthData,
+      {
+        id: "e-2",
+        verfahrenId: "v-1",
+      },
     );
 
     expect(result).toEqual({
@@ -91,11 +99,9 @@ describe("loadVerfahrenEinreichungenOverview", () => {
     });
   });
 
-  test("returns empty einreichungen when no matching einreichung exists", async () => {
+  test("returns empty einreichungen when the API returns none", async () => {
     mocks.fetchVerfahrenById.mockResolvedValueOnce({ id: "v-1" });
-    mocks.fetchEinreichungenById.mockResolvedValueOnce([
-      { id: "e-3", verfahren_id: "v-2" },
-    ]);
+    mocks.fetchEinreichungenById.mockResolvedValueOnce({ elemente: [] });
 
     await expect(
       loadVerfahrenEinreichungenOverview(mockAuthData, "v-1"),
