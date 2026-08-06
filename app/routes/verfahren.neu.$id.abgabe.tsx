@@ -117,6 +117,8 @@ export default function VerfahrenNeuBearbeiten() {
     NOT_AVAILABLE_LABEL,
   );
 
+  console.log("dokumente", dokumente);
+
   const isReady = isEinreichungReady(dokumente);
   const readinessLabel = isReady
     ? routes.verfahrenNeu.step3.summary.badgeLabels.ready

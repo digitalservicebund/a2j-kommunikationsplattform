@@ -12,7 +12,6 @@ import {
 import z from "zod";
 import Alert from "~/components/Alert";
 import InputText from "~/components/InputText";
-import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
 import VerfahrenGerichteSelect from "~/components/verfahren/VerfahrenGerichteSelect";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import createEinreichung from "~/domains/verfahren/createEinreichung.server";
@@ -25,13 +24,11 @@ import fetchDokumente from "~/domains/verfahren/fetchDokumente";
 import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
 import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
 import { requireAuthData } from "~/domains/verfahren/routeContext.server";
-import { DokumentTypeSchema } from "~/domains/verfahren/schemas/dokumentSchema";
 import uploadDokument from "~/domains/verfahren/uploadDokument.server";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
 const StatementOfClaimUploadSchema = z.object({
-  type: DokumentTypeSchema,
   file: z.file(),
   verfahrensgegenstand: z.string().min(1),
   gerichtId: z.string().min(1),
@@ -165,8 +162,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
     return { errors: z.flattenError(validatedForm.error), formValues };
   }
 
-  const { file, type, verfahrensgegenstand, gerichtId } = validatedForm.data;
-  const dokumentType = type;
+  const { file, verfahrensgegenstand, gerichtId } = validatedForm.data;
 
   let verfahrenId = existingVerfahrenId;
   let einreichungId = existingEinreichungId;
@@ -188,7 +184,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
     verfahrenId,
     einreichungId,
     file,
-    dokumentType,
+    "SCHRIFTSTUECK",
   );
 
   return redirect(`/verfahren/neu/${verfahrenId}/bearbeiten`);
@@ -200,9 +196,6 @@ export default function VerfahrenNeu() {
   const actionData = useActionData() || {};
   const loaderData = useLoaderData<typeof loader>();
   const { errors, formValues } = actionData;
-  const [selectedDokumentType, setSelectedDokumentType] = useState<string>(
-    (formValues?.type as string) || "",
-  );
   const [selectedGerichtId, setSelectedGerichtId] = useState<string>(
     (formValues?.gerichtId as string) || "",
   );
@@ -371,23 +364,6 @@ export default function VerfahrenNeu() {
                           required
                         />
                       </div>
-
-                      <VerfahrenDokumentTypeSelect
-                        label={shared.form.selectDokumentType.label}
-                        id="type"
-                        required
-                        placeholder={shared.form.select.placeholder}
-                        onChange={(e) =>
-                          setSelectedDokumentType(e.target.value)
-                        }
-                        selectedValue={selectedDokumentType}
-                        hint={shared.form.selectDokumentType.hint}
-                        error={
-                          errors?.fieldErrors?.type &&
-                          selectedDokumentType === "" &&
-                          shared.form.selectDokumentType.error
-                        }
-                      />
                     </>
                   )}
 
