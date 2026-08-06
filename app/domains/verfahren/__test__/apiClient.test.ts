@@ -27,7 +27,7 @@ describe("apiClient", () => {
   const originalEnv = process.env.KOMPLA_API_URL;
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     process.env.KOMPLA_API_URL = "http://localhost:8080";
   });
 
@@ -216,6 +216,7 @@ describe("apiClient", () => {
       const [, config] = mocks.fetch.mock.calls[0];
       expect(config?.headers).toEqual({
         Authorization: "Bearer token",
+        Accept: "application/json",
         "Dokument-Typ": "ANHANG",
       });
     });
@@ -297,7 +298,7 @@ describe("apiClient", () => {
         ok: false,
         status: 409,
         headers: new Headers({ etag: 'W/"1"' }),
-        text: async () => JSON.stringify({ message: "conflict" }),
+        json: async () => ({ message: "conflict" }),
       });
 
       const result = await apiRequest({
@@ -315,13 +316,15 @@ describe("apiClient", () => {
       });
     });
 
-    it("returns handled error result with plain text body when JSON parsing fails", async () => {
+    it("returns handled error result with undefined body when JSON parsing fails", async () => {
       mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: false,
         status: 500,
         headers: new Headers(),
-        text: async () => "plain text failure",
+        json: async () => {
+          throw new SyntaxError("Unexpected token");
+        },
       });
 
       const result = await apiRequest({
@@ -335,7 +338,7 @@ describe("apiClient", () => {
         status: 500,
         headers: new Headers(),
         eTag: null,
-        errorBody: "plain text failure",
+        errorBody: undefined,
       });
     });
 
@@ -355,32 +358,35 @@ describe("apiClient", () => {
       expect(result).toEqual(responseData);
     });
 
-    it("returns undefined for empty text body", async () => {
+    it("requests application/json via the Accept header", async () => {
       mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: true,
-        text: async () => "",
+        json: async () => ({}),
       });
 
-      const result = await apiRequest({
+      await apiRequest({
         authData: mockAuthData,
         path: "/api/v1/test",
       });
 
-      expect(result).toBeUndefined();
+      expect(mocks.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({ Accept: "application/json" }),
+        }),
+      );
     });
 
     it("returns undefined for 204 responses without trying to read the body", async () => {
       mocks.getBearerToken.mockResolvedValue("token");
       const jsonSpy = vi.fn();
-      const textSpy = vi.fn();
 
       mocks.fetch.mockResolvedValue({
         ok: true,
         status: 204,
         headers: new Headers(),
         json: jsonSpy,
-        text: textSpy,
       });
 
       const result = await apiRequest({
@@ -390,18 +396,17 @@ describe("apiClient", () => {
 
       expect(result).toBeUndefined();
       expect(jsonSpy).not.toHaveBeenCalled();
-      expect(textSpy).not.toHaveBeenCalled();
     });
 
     it("returns undefined for content-length 0 responses", async () => {
       mocks.getBearerToken.mockResolvedValue("token");
-      const textSpy = vi.fn();
+      const jsonSpy = vi.fn();
 
       mocks.fetch.mockResolvedValue({
         ok: true,
         status: 200,
         headers: new Headers({ "content-length": "0" }),
-        text: textSpy,
+        json: jsonSpy,
       });
 
       const result = await apiRequest({
@@ -410,128 +415,37 @@ describe("apiClient", () => {
       });
 
       expect(result).toBeUndefined();
-      expect(textSpy).not.toHaveBeenCalled();
+      expect(jsonSpy).not.toHaveBeenCalled();
     });
 
-    it("calls logParsingErrorAndThrow when text body is invalid JSON", async () => {
+    it("calls logParsingErrorAndThrow when JSON body cannot be parsed", async () => {
       mocks.getBearerToken.mockResolvedValue("token");
-      const parseError = new Error("Invalid JSON string");
-      mocks.fetch.mockResolvedValue({
-        ok: true,
-        text: async () => "not-json",
-      });
-      mocks.logParsingErrorAndThrow.mockImplementation(() => {
-        throw new Error("Parse error from text");
-      });
-
-      await expect(
-        apiRequest({
-          authData: mockAuthData,
-          path: "/api/v1/test",
-          errorMessage: "Failed to parse text body",
-        }),
-      ).rejects.toThrow("Parse error from text");
-
-      expect(mocks.logParsingErrorAndThrow).toHaveBeenCalledWith(
-        expect.any(Error),
-        "Failed to parse text body",
-        "not-json",
-      );
-      expect(parseError).toBeInstanceOf(Error);
-    });
-
-    it("reads body from clone when json is unavailable", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
-      mocks.fetch.mockResolvedValue({
-        ok: true,
-        clone: () => ({
-          text: async () => JSON.stringify({ id: "from-clone" }),
-        }),
-      });
-
-      const result = await apiRequest({
-        authData: mockAuthData,
-        path: "/api/v1/test",
-      });
-
-      expect(result).toEqual({ id: "from-clone" });
-    });
-
-    it("returns undefined when response has no readable body", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
-      mocks.fetch.mockResolvedValue({
-        ok: true,
-      });
-
-      const result = await apiRequest({
-        authData: mockAuthData,
-        path: "/api/v1/test",
-      });
-
-      expect(result).toBeUndefined();
-    });
-
-    it("throws original parse error when json fails without clone fallback", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
-      const parseError = new Error("Invalid JSON");
-      mocks.fetch.mockResolvedValue({
-        ok: true,
-        json: async () => {
-          throw parseError;
-        },
-      });
-
-      await expect(
-        apiRequest({
-          authData: mockAuthData,
-          path: "/api/v1/test",
-        }),
-      ).rejects.toThrow("Invalid JSON");
-    });
-
-    it("throws original parse error when clone fallback has no text reader", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
-      const parseError = new Error("Invalid JSON");
-
-      mocks.fetch.mockResolvedValue({
-        ok: true,
-        json: async () => {
-          throw parseError;
-        },
-        clone: () => ({}),
-      });
-
-      await expect(
-        apiRequest({
-          authData: mockAuthData,
-          path: "/api/v1/test",
-        }),
-      ).rejects.toThrow("Invalid JSON");
-
-      expect(mocks.logParsingErrorAndThrow).not.toHaveBeenCalled();
-    });
-
-    it("returns undefined when json parsing fails for an empty body", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
+      const parseError = new SyntaxError("Unexpected end of JSON input");
       mocks.fetch.mockResolvedValue({
         ok: true,
         status: 200,
         headers: new Headers(),
         json: async () => {
-          throw new SyntaxError("Unexpected end of JSON input");
+          throw parseError;
         },
-        clone: () => ({
-          text: async () => "",
+      });
+      mocks.logParsingErrorAndThrow.mockImplementation(() => {
+        throw new Error("Parse error");
+      });
+
+      await expect(
+        apiRequest({
+          authData: mockAuthData,
+          path: "/api/v1/test",
+          errorMessage: "Failed to parse response",
         }),
-      });
+      ).rejects.toThrow("Parse error");
 
-      const result = await apiRequest({
-        authData: mockAuthData,
-        path: "/api/v1/test",
-      });
-
-      expect(result).toBeUndefined();
-      expect(mocks.logParsingErrorAndThrow).not.toHaveBeenCalled();
+      expect(mocks.logParsingErrorAndThrow).toHaveBeenCalledWith(
+        parseError,
+        "Failed to parse response",
+        "[unparsable JSON response]",
+      );
     });
 
     it("validates response with zod schema when provided", async () => {
@@ -652,39 +566,6 @@ describe("apiClient", () => {
         expect.any(Error),
         "Invalid data",
         JSON.stringify(invalidData),
-      );
-    });
-
-    it("calls logParsingErrorAndThrow when JSON parsing fails", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
-      const parseError = new Error("Invalid JSON");
-
-      mocks.fetch.mockResolvedValue({
-        ok: true,
-        json: async () => {
-          throw parseError;
-        },
-        clone: () => ({
-          text: async () => "invalid json content",
-        }),
-      });
-
-      mocks.logParsingErrorAndThrow.mockImplementation(() => {
-        throw new Error("Parse error");
-      });
-
-      await expect(
-        apiRequest({
-          authData: mockAuthData,
-          path: "/api/v1/test",
-          errorMessage: "Failed to parse",
-        }),
-      ).rejects.toThrow("Parse error");
-
-      expect(mocks.logParsingErrorAndThrow).toHaveBeenCalledWith(
-        parseError,
-        "Failed to parse",
-        "invalid json content",
       );
     });
 

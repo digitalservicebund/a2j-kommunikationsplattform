@@ -100,9 +100,9 @@ describe("fetchVerfahrenById", () => {
     expect(mocks.fetch).toHaveBeenCalledWith(
       expect.stringContaining(`/verfahren/${mockVerfahren.id}`),
       expect.objectContaining({
-        headers: {
+        headers: expect.objectContaining({
           Authorization: "Bearer test-token",
-        },
+        }),
       }),
     );
 

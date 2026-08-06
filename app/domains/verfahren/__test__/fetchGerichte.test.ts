@@ -51,9 +51,9 @@ describe("fetchGerichte", () => {
     expect(mocks.fetch).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/codelisten/gerichte",
       expect.objectContaining({
-        headers: {
+        headers: expect.objectContaining({
           Authorization: "Bearer test-token",
-        },
+        }),
       }),
     );
 

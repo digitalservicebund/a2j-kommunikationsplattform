@@ -20,6 +20,7 @@ export async function fetchFromApi(options: FetchFromApiOptions) {
       headers: {
         "X-User-ID": userId,
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
     });
 
@@ -31,8 +32,11 @@ export async function fetchFromApi(options: FetchFromApiOptions) {
     try {
       return await response.json();
     } catch (error) {
-      const responseBody = await response.clone().text();
-      logParsingErrorAndThrow(error, options.errorMessage, responseBody);
+      logParsingErrorAndThrow(
+        error,
+        options.errorMessage,
+        "[unparsable JSON response]",
+      );
     }
   } catch (error) {
     // network errors
