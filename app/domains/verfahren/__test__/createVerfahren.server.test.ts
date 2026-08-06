@@ -37,7 +37,7 @@ describe("createVerfahren", () => {
     expect(mocks.apiRequest).not.toHaveBeenCalled();
   });
 
-  it("extracts first item from array response", async () => {
+  it("returns the created Verfahren from apiRequest", async () => {
     const verfahren = {
       id: "2ab3cbc7-d00a-48bf-95a1-4d6f07406196",
       aktenzeichen_gericht: null,
@@ -55,7 +55,7 @@ describe("createVerfahren", () => {
       },
       beteiligungen: null,
     };
-    mocks.apiRequest.mockResolvedValueOnce([verfahren]);
+    mocks.apiRequest.mockResolvedValueOnce(verfahren);
 
     const result = await createVerfahren(mockAuthData, verfahrenPayload);
 

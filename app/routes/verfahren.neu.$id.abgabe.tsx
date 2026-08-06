@@ -38,10 +38,7 @@ import {
   PROTOTYPE_EINREICHUNG_GZ,
 } from "~/domains/verfahren/presentationPlaceholders";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.server";
-import {
-  getVirenScanStatusPresentation,
-  isEinreichungReady,
-} from "~/domains/verfahren/statusPresentation";
+import { getDokumentStatusPresentation } from "~/domains/verfahren/statusPresentation";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
@@ -117,9 +114,7 @@ export default function VerfahrenNeuBearbeiten() {
     NOT_AVAILABLE_LABEL,
   );
 
-  console.log("dokumente", dokumente);
-
-  const isReady = isEinreichungReady(dokumente);
+  const isReady = einreichung.einreichungsStatus.ergebnis === "GRUEN";
   const readinessLabel = isReady
     ? routes.verfahrenNeu.step3.summary.badgeLabels.ready
     : routes.verfahrenNeu.step3.summary.badgeLabels.soon;
@@ -449,10 +444,9 @@ export default function VerfahrenNeuBearbeiten() {
                                   ) : (
                                     <div className="mt-kern-space-default gap-kern-space-default flex w-full flex-col">
                                       {dokumente.map((dokument, index) => {
-                                        const virenScanStatus =
-                                          getVirenScanStatusPresentation(
-                                            dokument.viren_scan_status,
-                                            "long",
+                                        const dokumentStatus =
+                                          getDokumentStatusPresentation(
+                                            dokument.status,
                                           );
 
                                         return (
@@ -462,8 +456,7 @@ export default function VerfahrenNeuBearbeiten() {
                                           >
                                             <div className="flex-1">
                                               <div className="kern-body kern-body--bold">
-                                                {dokument.name ??
-                                                  NOT_AVAILABLE_LABEL}
+                                                {dokument.anzeigename}
                                               </div>
                                               <div className="kern-body kern-body--small kern-body--muted">
                                                 {formatDokumentSize(
@@ -519,18 +512,18 @@ export default function VerfahrenNeuBearbeiten() {
                                                 </button>
                                                 <VerfahrenStatusBadge
                                                   tone={
-                                                    virenScanStatus.badgeClassModifier
+                                                    dokumentStatus.badgeClassModifier
                                                   }
-                                                  label={virenScanStatus.label}
+                                                  label={dokumentStatus.label}
                                                 />
                                               </Form>
                                             ) : (
                                               <div className="flex items-center">
                                                 <VerfahrenStatusBadge
                                                   tone={
-                                                    virenScanStatus.badgeClassModifier
+                                                    dokumentStatus.badgeClassModifier
                                                   }
-                                                  label={virenScanStatus.label}
+                                                  label={dokumentStatus.label}
                                                 />
                                               </div>
                                             )}

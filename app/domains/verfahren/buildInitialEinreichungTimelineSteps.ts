@@ -16,10 +16,10 @@ export type InitialEinreichungTimelineSteps = {
 };
 
 export function getInitialEinreichungTimelineSteps(
-  dokumente: Array<{ name: string | null; erstellt_am: string }>,
+  dokumente: Array<{ anzeigename: string; erstellt_am: string }>,
 ): InitialEinreichungTimelineSteps {
   const additionalDokumenteCount = Math.max(dokumente.length - 1, 0);
-  const firstDokumentName = dokumente[0]?.name ?? NOT_AVAILABLE_LABEL;
+  const firstDokumentName = dokumente[0]?.anzeigename ?? NOT_AVAILABLE_LABEL;
   const latestDokumentDate = dokumente.length
     ? formatDate(dokumente.at(-1)?.erstellt_am)
     : NOT_AVAILABLE_LABEL;
