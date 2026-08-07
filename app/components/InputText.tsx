@@ -8,12 +8,10 @@ export interface InputTextProps extends React.InputHTMLAttributes<HTMLInputEleme
 export default function InputText({
   label,
   id,
-  disabled,
-  placeholder,
-  onFocus,
-  defaultValue,
   className = "",
   optional,
+  disabled,
+  ...inputProps
 }: Readonly<InputTextProps>) {
   return (
     <div className={`kern-form-input ${className}`}>
@@ -22,14 +20,12 @@ export default function InputText({
         {optional && <span className="kern-label__optional">- Optional</span>}
       </label>
       <input
-        defaultValue={defaultValue}
-        onFocus={onFocus}
+        type="text"
         className="kern-form-input__input"
         id={id}
         name={id}
-        type="text"
-        placeholder={placeholder || ""}
         aria-disabled={disabled}
+        {...inputProps}
       />
     </div>
   );

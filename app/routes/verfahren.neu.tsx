@@ -349,6 +349,7 @@ export default function VerfahrenNeu() {
                         <InputText
                           label={shared.form.labels.verfahrensgegenstand}
                           id="verfahrensgegenstand"
+                          required
                         />
                       </div>
 

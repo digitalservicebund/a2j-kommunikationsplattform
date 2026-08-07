@@ -40,4 +40,14 @@ describe("InputText", () => {
     const input = screen.getByRole("textbox");
     expect(input).toHaveAttribute("aria-disabled", "true");
   });
+
+  it("renders an optional hint when optional prop is true", () => {
+    render(<InputText label="Middlename" id="middlename-input" optional />);
+    expect(screen.getByText("- Optional")).toBeInTheDocument();
+  });
+
+  it("does not render an optional hint when optional prop is omitted", () => {
+    render(<InputText label="Name" id="name-input" />);
+    expect(screen.queryByText("- Optional")).not.toBeInTheDocument();
+  });
 });
