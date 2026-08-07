@@ -1,0 +1,12 @@
+info:
+  name: Get Kanzleiformen
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/api/v1/codelisten/kanzleiformen"
+  auth: inherit
+
+settings:
+  encodeUrl: true

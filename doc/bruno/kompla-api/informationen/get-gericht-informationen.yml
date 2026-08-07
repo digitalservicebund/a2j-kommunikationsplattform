@@ -1,0 +1,12 @@
+info:
+  name: Get Gericht Informationen
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/api/v1/informationen/gerichte/{{GERICHT_ID}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true

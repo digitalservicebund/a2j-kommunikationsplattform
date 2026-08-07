@@ -1,0 +1,24 @@
+info:
+  name: Update Verfahren
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}"
+  headers:
+    - name: If-Match
+      value: "{{ETAG}}"
+  body:
+    type: json
+    data: |-
+      {
+        "verfahrensgegenstand": "Zahlungsklage",
+        "kurzrubrum": null,
+        "gericht_id": "{{GERICHT_ID}}",
+        "beteiligungen": null
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true

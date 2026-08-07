@@ -25,7 +25,7 @@ request:
       clientId: "{{OAUTH_CLIENT_ID}}"
       clientSecret: "{{OAUTH_CLIENT_SECRET}}"
       placement: body
-    scope: kompla.verfahren.read kompla.verfahren.write kompla.gericht.read
+    scope: openid kompla.verfahren.read kompla.verfahren.write kompla.gericht.read
     pkce: {}
     tokenConfig:
       id: credentials
@@ -34,13 +34,6 @@ request:
       source: access_token
     settings:
       autoFetchToken: true
-      autoRefreshToken: false
-
-doc:
-  content: |-
-    # How to configure Bruno
-
-    If the Auth configuration is not being applied automatically within Bruno, follow the steps as described [here](https://github.com/digitalservicebund/a2j-kommunikationsplattform/tree/main/doc/HOW_TO_CONFIGURE_BRUNO.md).
-  type: text/markdown
+      autoRefreshToken: true
 bundled: false
 extensions: {}

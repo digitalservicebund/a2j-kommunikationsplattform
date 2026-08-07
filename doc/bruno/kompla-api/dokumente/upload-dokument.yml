@@ -6,15 +6,17 @@ info:
 http:
   method: POST
   url: "{{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/dokumente"
-  params:
-    - name: type
+  headers:
+    - name: Dokument-Typ
       value: XJUSTIZ
-      type: query
-      disabled: true
+    - name: Dokument-Sichtbarkeit-Alle
+      value: "true"
+    - name: Dokument-Anzeigename
+      value: sample_klaver_3500001.xml
   body:
     type: multipart-form
     data:
-      - name: file
+      - name: datei
         value: "@file(../../data/xjustiz/sample_klaver_3500001.xml)"
         contentType: ""
   auth: inherit

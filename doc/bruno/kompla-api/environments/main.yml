@@ -10,6 +10,12 @@ variables:
     value: ""
   - name: DOKUMENT_ID
     value: ""
+  - name: BELEG_ID
+    value: ""
+  - name: GERICHT_ID
+    value: 01450a4b-5e26-9b5a-19e2-ea0de4f46927
+  - secret: true
+    name: SAFE_ID
   - name: ETAG
     value: ""
   - secret: true
