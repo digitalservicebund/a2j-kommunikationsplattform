@@ -10,8 +10,12 @@ const mockVerfahren: Verfahren[] = [
   {
     id: "1",
     aktenzeichen_gericht: "AZ-123",
+    verfahrensgegenstand: null,
+    kurzrubrum: null,
     status: "ERSTELLT",
-    status_changed: "2025-03-08T05:00:29.659Z",
+    status_geaendert_am: "2025-03-08T05:00:29.659Z",
+    erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+    erstellt_am: "2025-03-08T05:00:29.659Z",
     eingereicht_am: "2024-12-29T22:46:29.329Z",
     gericht: {
       id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
@@ -23,8 +27,12 @@ const mockVerfahren: Verfahren[] = [
   {
     id: "2",
     aktenzeichen_gericht: "AZ-456",
+    verfahrensgegenstand: null,
+    kurzrubrum: null,
     status: "EINGEREICHT",
-    status_changed: "2025-03-08T06:00:29.659Z",
+    status_geaendert_am: "2025-03-08T06:00:29.659Z",
+    erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+    erstellt_am: "2025-03-08T06:00:29.659Z",
     eingereicht_am: "2024-12-30T22:46:29.329Z",
     gericht: {
       id: "c727131c-0c32-91ba-3eaa-f44405967b6d",

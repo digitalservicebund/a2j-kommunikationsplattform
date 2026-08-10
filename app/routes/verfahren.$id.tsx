@@ -37,8 +37,6 @@ import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.serv
 import {
   getDokumentStatusPresentation,
   getVerfahrenStatusPresentation,
-  getVirenScanStatusPresentation,
-  isEinreichungReady,
 } from "~/domains/verfahren/statusPresentation";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
@@ -131,9 +129,8 @@ export default function VerfahrenId() {
   const hasInitialEinreichung =
     initialEinreichungData && showInitialEinreichungDetails;
 
-  const isInitialEinreichungReady = isEinreichungReady(
-    initialEinreichungDokumente,
-  );
+  const isInitialEinreichungReady =
+    initialEinreichung?.einreichungsStatus.ergebnis === "GRUEN";
   const initialEinreichungBadge = isInitialEinreichungReady
     ? {
         label: routes.verfahrenNeu.step3.summary.badgeLabels.ready,
@@ -147,7 +144,7 @@ export default function VerfahrenId() {
   const initialTimelineStepData = initialEinreichung
     ? buildInitialTimelineStepData(
         getInitialEinreichungTimelineSteps(initialEinreichungDokumente),
-        verfahren.status_changed,
+        verfahren.status_geaendert_am,
         {
           assetsTitle: routes.verfahrenNeu.step3.proceduralSteps.assets.title,
           filesAddedLabel:
@@ -397,10 +394,9 @@ export default function VerfahrenId() {
                                 <div className="mt-kern-space-default gap-kern-space-default flex w-full flex-col">
                                   {initialEinreichungDokumente.map(
                                     (dokument, index) => {
-                                      const virenScanStatus =
-                                        getVirenScanStatusPresentation(
-                                          dokument.viren_scan_status,
-                                          "long",
+                                      const dokumentStatus =
+                                        getDokumentStatusPresentation(
+                                          dokument.status,
                                         );
 
                                       return (
@@ -410,8 +406,7 @@ export default function VerfahrenId() {
                                         >
                                           <div className="flex-1">
                                             <div className="kern-body kern-body--bold">
-                                              {dokument.name ??
-                                                NOT_AVAILABLE_LABEL}
+                                              {dokument.anzeigename}
                                             </div>
                                             <div className="kern-body kern-body--small kern-body--muted">
                                               {formatDokumentSize(
@@ -464,18 +459,18 @@ export default function VerfahrenId() {
                                               </button>
                                               <VerfahrenStatusBadge
                                                 tone={
-                                                  virenScanStatus.badgeClassModifier
+                                                  dokumentStatus.badgeClassModifier
                                                 }
-                                                label={virenScanStatus.label}
+                                                label={dokumentStatus.label}
                                               />
                                             </Form>
                                           ) : (
                                             <div className="flex items-center">
                                               <VerfahrenStatusBadge
                                                 tone={
-                                                  virenScanStatus.badgeClassModifier
+                                                  dokumentStatus.badgeClassModifier
                                                 }
-                                                label={virenScanStatus.label}
+                                                label={dokumentStatus.label}
                                               />
                                             </div>
                                           )}

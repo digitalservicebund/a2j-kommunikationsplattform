@@ -17,8 +17,12 @@ const mockUseSearchParams = useSearchParams as unknown as Mock;
 const mockVerfahrenItem1 = {
   id: "2ab3cbc7-d00a-48bf-95a1-4d6f07406196",
   aktenzeichen_gericht: "JBA-82746242",
+  verfahrensgegenstand: null,
+  kurzrubrum: null,
   status: "ERSTELLT" as const,
-  status_changed: "2025-03-08T05:00:29.659Z",
+  status_geaendert_am: "2025-03-08T05:00:29.659Z",
+  erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstellt_am: "2025-03-08T05:00:29.659Z",
   eingereicht_am: "2024-12-29T22:46:29.329Z",
   gericht: {
     id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
@@ -31,8 +35,12 @@ const mockVerfahrenItem1 = {
 const mockVerfahrenItem2 = {
   id: "3ab3cbc7-d00a-48bf-95a1-4d6f07406197",
   aktenzeichen_gericht: "JBA-82746243",
+  verfahrensgegenstand: null,
+  kurzrubrum: null,
   status: "EINGEREICHT" as const,
-  status_changed: "2025-04-08T05:00:29.659Z",
+  status_geaendert_am: "2025-04-08T05:00:29.659Z",
+  erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstellt_am: "2025-04-08T05:00:29.659Z",
   eingereicht_am: "2024-11-29T22:46:29.329Z",
   gericht: {
     id: "c727131c-0c32-91ba-3eaa-f44405967b6e",
@@ -45,8 +53,12 @@ const mockVerfahrenItem2 = {
 const mockVerfahrenItem3 = {
   id: "4ab3cbc7-d00a-48bf-95a1-4d6f07406198",
   aktenzeichen_gericht: "JBA-82746244",
+  verfahrensgegenstand: null,
+  kurzrubrum: null,
   status: "ERSTELLT" as const,
-  status_changed: "2025-05-08T05:00:29.659Z",
+  status_geaendert_am: "2025-05-08T05:00:29.659Z",
+  erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstellt_am: "2025-05-08T05:00:29.659Z",
   eingereicht_am: "2024-10-29T22:46:29.329Z",
   gericht: {
     id: "d727131c-0c32-91ba-3eaa-f44405967b6f",
