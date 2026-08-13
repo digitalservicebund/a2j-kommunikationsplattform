@@ -18,12 +18,16 @@ import InputText from "~/components/InputText";
 import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
 import VerfahrenGerichteSelect from "~/components/verfahren/VerfahrenGerichteSelect";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
-import VerfahrenPrototypeHint from "~/components/verfahren/VerfahrenPrototypeHint.static";
 import {
   getBeteiligungByRoleCode,
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/beteiligteByRole";
+import {
+  getBeteiligteAnschrift,
+  getBeteiligteEmail,
+  getBeteiligteTelefon,
+} from "~/domains/verfahren/beteiligteContactInfo";
 import buildBeteiligungFromFormValues, {
   ParteiFormValues,
 } from "~/domains/verfahren/buildBeteiligungFromFormValues";
@@ -366,6 +370,12 @@ export default function VerfahrenNeuBearbeiten() {
     beklagtePartei && "nachname" in beklagtePartei
       ? beklagtePartei.nachname
       : "";
+  const klagendeParteiAnschrift = getBeteiligteAnschrift(klagendePartei);
+  const beklagteParteiAnschrift = getBeteiligteAnschrift(beklagtePartei);
+  const klagendeParteiEmail = getBeteiligteEmail(klagendePartei);
+  const klagendeParteiTelefon = getBeteiligteTelefon(klagendePartei);
+  const beklagteParteiEmail = getBeteiligteEmail(beklagtePartei);
+  const beklagteParteiTelefon = getBeteiligteTelefon(beklagtePartei);
   // @TODO: the API no longer nests a "prozessbevollmaechtigte" list on a
   // Beteiligte — a Prozessbevollmächtigter is now its own Beteiligte (a
   // RaKanzlei) linked via Rolle.referenz. That linking isn't implemented
@@ -424,7 +434,6 @@ export default function VerfahrenNeuBearbeiten() {
                     {routes.verfahrenNeu.step2.subline}
                   </h2>
                   <p className="kern-body">{routes.verfahrenNeu.step2.intro}</p>
-                  <VerfahrenPrototypeHint />
                 </div>
                 <div className="gap-kern-space-default flex">
                   <Link
@@ -484,7 +493,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-vorname"
                           >
                             {shared.form.labels.forename}
@@ -499,7 +508,7 @@ export default function VerfahrenNeuBearbeiten() {
                         </div>
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-nachname"
                           >
                             {shared.form.labels.lastname}
@@ -517,7 +526,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-2">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-strasse"
                           >
                             {shared.form.labels.street}
@@ -527,12 +536,14 @@ export default function VerfahrenNeuBearbeiten() {
                             id="klagende-partei-strasse"
                             name="klagendeParteiStrasse"
                             type="text"
-                            defaultValue={"Bockenheimer Landstraße"}
+                            defaultValue={
+                              klagendeParteiAnschrift?.strasse ?? ""
+                            }
                           />
                         </div>
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-hausnummer"
                           >
                             {shared.form.labels.houseNumber}
@@ -542,7 +553,9 @@ export default function VerfahrenNeuBearbeiten() {
                             id="klagende-partei-hausnummer"
                             name="klagendeParteiHausnummer"
                             type="text"
-                            defaultValue={"42-44"}
+                            defaultValue={
+                              klagendeParteiAnschrift?.hausnummer ?? ""
+                            }
                           />
                         </div>
                       </div>
@@ -550,7 +563,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-plz"
                           >
                             {shared.form.labels.postcode}
@@ -560,12 +573,14 @@ export default function VerfahrenNeuBearbeiten() {
                             id="klagende-partei-plz"
                             name="klagendeParteiPlz"
                             type="text"
-                            defaultValue={"60323"}
+                            defaultValue={
+                              klagendeParteiAnschrift?.postleitzahl ?? ""
+                            }
                           />
                         </div>
                         <div className="kern-form-input flex-2">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-ort"
                           >
                             {shared.form.labels.place}
@@ -575,7 +590,7 @@ export default function VerfahrenNeuBearbeiten() {
                             id="klagende-partei-ort"
                             name="klagendeParteiOrt"
                             type="text"
-                            defaultValue={"Frankfurt am Main"}
+                            defaultValue={klagendeParteiAnschrift?.ort ?? ""}
                           />
                         </div>
                       </div>
@@ -583,7 +598,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-email"
                           >
                             {shared.form.labels.eMail}
@@ -593,12 +608,12 @@ export default function VerfahrenNeuBearbeiten() {
                             id="klagende-partei-email"
                             name="klagendeParteiEmail"
                             type="email"
-                            defaultValue={"emiliakuehn@posteo.de"}
+                            defaultValue={klagendeParteiEmail}
                           />
                         </div>
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-telefon"
                           >
                             {shared.form.labels.phone}
@@ -608,6 +623,7 @@ export default function VerfahrenNeuBearbeiten() {
                             id="klagende-partei-telefon"
                             name="klagendeParteiTelefon"
                             type="tel"
+                            defaultValue={klagendeParteiTelefon}
                           />
                         </div>
                       </div>
@@ -630,10 +646,7 @@ export default function VerfahrenNeuBearbeiten() {
                             setHasLawyer(event.target.checked)
                           }
                         />
-                        <label
-                          className="kern-label bg-kern-feedback-info-background"
-                          htmlFor="has-lawyer"
-                        >
+                        <label className="kern-label" htmlFor="has-lawyer">
                           {
                             routes.verfahrenNeu.step2.form.plaintiff.hasLawyer
                               .checkbox
@@ -650,10 +663,7 @@ export default function VerfahrenNeuBearbeiten() {
                             }
                           </h3>
                           <div className="kern-form-input">
-                            <label
-                              className="kern-label bg-kern-feedback-info-background"
-                              htmlFor="lawyer-name"
-                            >
+                            <label className="kern-label" htmlFor="lawyer-name">
                               {
                                 routes.verfahrenNeu.step2.form.plaintiff
                                   .hasLawyer.nameOfLawFirm
@@ -671,7 +681,7 @@ export default function VerfahrenNeuBearbeiten() {
                           <div className="kern-gap-md flex w-full">
                             <div className="kern-form-input flex-2">
                               <label
-                                className="kern-label bg-kern-feedback-info-background"
+                                className="kern-label"
                                 htmlFor="lawyer-strasse"
                               >
                                 {shared.form.labels.street}
@@ -681,12 +691,11 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-strasse"
                                 name="lawyerStrasse"
                                 type="text"
-                                defaultValue={"Römerberg"}
                               />
                             </div>
                             <div className="kern-form-input flex-1">
                               <label
-                                className="kern-label bg-kern-feedback-info-background"
+                                className="kern-label"
                                 htmlFor="lawyer-hausnummer"
                               >
                                 {shared.form.labels.houseNumber}
@@ -696,7 +705,6 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-hausnummer"
                                 name="lawyerHausnummer"
                                 type="text"
-                                defaultValue={"2"}
                               />
                             </div>
                           </div>
@@ -704,7 +712,7 @@ export default function VerfahrenNeuBearbeiten() {
                           <div className="kern-gap-md flex w-full">
                             <div className="kern-form-input flex-1">
                               <label
-                                className="kern-label bg-kern-feedback-info-background"
+                                className="kern-label"
                                 htmlFor="lawyer-plz"
                               >
                                 {shared.form.labels.postcode}
@@ -714,12 +722,11 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-plz"
                                 name="lawyerPlz"
                                 type="text"
-                                defaultValue={"60311"}
                               />
                             </div>
                             <div className="kern-form-input flex-2">
                               <label
-                                className="kern-label bg-kern-feedback-info-background"
+                                className="kern-label"
                                 htmlFor="lawyer-ort"
                               >
                                 {shared.form.labels.place}
@@ -729,7 +736,6 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-ort"
                                 name="lawyerOrt"
                                 type="text"
-                                defaultValue={"Frankfurt am Main"}
                               />
                             </div>
                           </div>
@@ -737,7 +743,7 @@ export default function VerfahrenNeuBearbeiten() {
                           <div className="kern-gap-md flex w-full">
                             <div className="kern-form-input flex-1">
                               <label
-                                className="kern-label bg-kern-feedback-info-background"
+                                className="kern-label"
                                 htmlFor="lawyer-email"
                               >
                                 {shared.form.labels.eMail}
@@ -747,12 +753,11 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-email"
                                 name="lawyerEmail"
                                 type="email"
-                                defaultValue={"kanzlei@ra-boehm.de"}
                               />
                             </div>
                             <div className="kern-form-input flex-1">
                               <label
-                                className="kern-label bg-kern-feedback-info-background"
+                                className="kern-label"
                                 htmlFor="lawyer-telefon"
                               >
                                 {shared.form.labels.phone}
@@ -762,7 +767,6 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-telefon"
                                 name="lawyerTelefon"
                                 type="tel"
-                                defaultValue={"06921994731"}
                               />
                             </div>
                           </div>
@@ -790,7 +794,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-vorname"
                           >
                             {shared.form.labels.forename}
@@ -805,7 +809,7 @@ export default function VerfahrenNeuBearbeiten() {
                         </div>
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-nachname"
                           >
                             {shared.form.labels.lastname}
@@ -823,7 +827,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-2">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-strasse"
                           >
                             {shared.form.labels.street}
@@ -833,11 +837,14 @@ export default function VerfahrenNeuBearbeiten() {
                             id="beklagte-partei-strasse"
                             name="beklagteParteiStrasse"
                             type="text"
+                            defaultValue={
+                              beklagteParteiAnschrift?.strasse ?? ""
+                            }
                           />
                         </div>
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-hausnummer"
                           >
                             {shared.form.labels.houseNumber}
@@ -847,6 +854,9 @@ export default function VerfahrenNeuBearbeiten() {
                             id="beklagte-partei-hausnummer"
                             name="beklagteParteiHausnummer"
                             type="text"
+                            defaultValue={
+                              beklagteParteiAnschrift?.hausnummer ?? ""
+                            }
                           />
                         </div>
                       </div>
@@ -854,7 +864,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-plz"
                           >
                             {shared.form.labels.postcode}
@@ -864,11 +874,14 @@ export default function VerfahrenNeuBearbeiten() {
                             id="beklagte-partei-plz"
                             name="beklagteParteiPlz"
                             type="text"
+                            defaultValue={
+                              beklagteParteiAnschrift?.postleitzahl ?? ""
+                            }
                           />
                         </div>
                         <div className="kern-form-input flex-2">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-ort"
                           >
                             {shared.form.labels.place}
@@ -878,6 +891,7 @@ export default function VerfahrenNeuBearbeiten() {
                             id="beklagte-partei-ort"
                             name="beklagteParteiOrt"
                             type="text"
+                            defaultValue={beklagteParteiAnschrift?.ort ?? ""}
                           />
                         </div>
                       </div>
@@ -885,7 +899,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-email"
                           >
                             {shared.form.labels.eMail}
@@ -895,11 +909,12 @@ export default function VerfahrenNeuBearbeiten() {
                             id="beklagte-partei-email"
                             name="beklagteParteiEmail"
                             type="email"
+                            defaultValue={beklagteParteiEmail}
                           />
                         </div>
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-telefon"
                           >
                             {shared.form.labels.phone}
@@ -909,6 +924,7 @@ export default function VerfahrenNeuBearbeiten() {
                             id="beklagte-partei-telefon"
                             name="beklagteParteiTelefon"
                             type="tel"
+                            defaultValue={beklagteParteiTelefon}
                           />
                         </div>
                       </div>
@@ -942,7 +958,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-1 self-end">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="claim-reference"
                           >
                             {
@@ -962,7 +978,7 @@ export default function VerfahrenNeuBearbeiten() {
                         <VerfahrenGerichteSelect
                           id="claim-court"
                           label={shared.form.labels.recipientCourt}
-                          className="bg-kern-feedback-info-background flex-1 self-end"
+                          className="flex-1 self-end"
                           placeholder={shared.form.select.placeholder}
                           gerichtePromise={gerichte}
                           initialSelectedValue={courtId}
