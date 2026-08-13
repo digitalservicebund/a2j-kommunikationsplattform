@@ -14,6 +14,7 @@ import {
 } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
+import InputText from "~/components/InputText";
 import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
 import VerfahrenGerichteSelect from "~/components/verfahren/VerfahrenGerichteSelect";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
@@ -23,19 +24,35 @@ import {
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/beteiligteByRole";
+import buildBeteiligungFromFormValues, {
+  ParteiFormValues,
+} from "~/domains/verfahren/buildBeteiligungFromFormValues";
+import { VerfahrenAendernRequestSchema } from "~/domains/verfahren/createVerfahren.server";
 import deleteDokument from "~/domains/verfahren/deleteDokument.server";
+import fetchAnschriftstypen from "~/domains/verfahren/fetchAnschriftstypen.service";
 import fetchDokument from "~/domains/verfahren/fetchDokument";
 import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
+import fetchRollenbezeichnungen from "~/domains/verfahren/fetchRollenbezeichnungen.service";
+import fetchStaaten from "~/domains/verfahren/fetchStaaten.service";
+import fetchTelekommunikationsarten from "~/domains/verfahren/fetchTelekommunikationsarten.service";
 import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
 import loadVerfahrenEinreichungBundle, {
   Dokument,
   EinreichungWithStatus,
   Verfahren,
 } from "~/domains/verfahren/loadVerfahrenEinreichungBundle.server";
+import resolveCodeWertId from "~/domains/verfahren/resolveCodeWertId";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.server";
 import { CodeWertSchema } from "~/domains/verfahren/schemas/codeWertSchema";
 import { DokumentTypeSchema } from "~/domains/verfahren/schemas/dokumentSchema";
+import updateVerfahren from "~/domains/verfahren/updateVerfahren.server";
 import uploadDokument from "~/domains/verfahren/uploadDokument.server";
+import {
+  ANSCHRIFTSTYP_CODE_PRIVATANSCHRIFT,
+  STAAT_CODE_DEUTSCHLAND,
+  TELEKOMMUNIKATIONSART_CODE_EMAIL,
+  TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
+} from "~/domains/verfahren/verfahrenCodeConstants";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
@@ -57,6 +74,27 @@ const DokumentUploadSchema = z.object({
   type: DokumentTypeSchema,
   file: z.file().min(1),
 });
+
+function getFormText(formData: FormData, name: string): string {
+  const value = formData.get(name);
+  return typeof value === "string" ? value : "";
+}
+
+function getParteiFormValues(
+  formData: FormData,
+  prefix: "klagendePartei" | "beklagtePartei",
+): ParteiFormValues {
+  return {
+    vorname: getFormText(formData, `${prefix}Vorname`),
+    nachname: getFormText(formData, `${prefix}Nachname`),
+    strasse: getFormText(formData, `${prefix}Strasse`),
+    hausnummer: getFormText(formData, `${prefix}Hausnummer`),
+    postleitzahl: getFormText(formData, `${prefix}Plz`),
+    ort: getFormText(formData, `${prefix}Ort`),
+    email: getFormText(formData, `${prefix}Email`),
+    telefon: getFormText(formData, `${prefix}Telefon`),
+  };
+}
 
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
@@ -156,8 +194,76 @@ export const action = async ({
   }
 
   if (formType === "submit") {
-    // @TODO: Update the submit logic and input files to be in sync with the soon
-    // to be available VerfahrenAendernRequest data Schema (Swagger doc: PUT /api/v1/verfahren/{id})
+    const [
+      { elemente: staaten },
+      { elemente: anschriftstypen },
+      { elemente: telekommunikationsarten },
+      { elemente: rollenbezeichnungen },
+    ] = await Promise.all([
+      fetchStaaten(authData),
+      fetchAnschriftstypen(authData),
+      fetchTelekommunikationsarten(authData),
+      fetchRollenbezeichnungen(authData),
+    ]);
+
+    const sharedCodeIds = {
+      anschriftstypId: resolveCodeWertId(
+        anschriftstypen,
+        ANSCHRIFTSTYP_CODE_PRIVATANSCHRIFT,
+      ),
+      staatId: resolveCodeWertId(staaten, STAAT_CODE_DEUTSCHLAND),
+      emailTelekommunikationsartId: resolveCodeWertId(
+        telekommunikationsarten,
+        TELEKOMMUNIKATIONSART_CODE_EMAIL,
+      ),
+      telefonTelekommunikationsartId: resolveCodeWertId(
+        telekommunikationsarten,
+        TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
+      ),
+    };
+
+    const beteiligungen = [
+      buildBeteiligungFromFormValues(
+        getParteiFormValues(formData, "klagendePartei"),
+        {
+          ...sharedCodeIds,
+          rollenbezeichnungId: resolveCodeWertId(
+            rollenbezeichnungen,
+            ROLE_CODE_KLAEGERIN,
+          ),
+        },
+      ),
+      buildBeteiligungFromFormValues(
+        getParteiFormValues(formData, "beklagtePartei"),
+        {
+          ...sharedCodeIds,
+          rollenbezeichnungId: resolveCodeWertId(
+            rollenbezeichnungen,
+            ROLE_CODE_BEKLAGTE,
+          ),
+        },
+      ),
+    ].filter((beteiligung) => beteiligung !== null);
+
+    const formValues = {
+      verfahrensgegenstand: formData.get("subjectMatterOfTheProceedings"),
+      kurzrubrum: formData.get("claimRubrum"),
+      gericht_id: formData.get("claim-court"),
+      beteiligungen: beteiligungen.length > 0 ? beteiligungen : null,
+    };
+
+    const validatedForm = VerfahrenAendernRequestSchema.safeParse(formValues);
+
+    if (!validatedForm.success) {
+      return {
+        errors: z.flattenError(validatedForm.error),
+        formValues,
+        formType: "submit",
+      };
+    }
+
+    await updateVerfahren(authData, verfahrenId, validatedForm.data);
+
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   }
 };
@@ -350,6 +456,14 @@ export default function VerfahrenNeuBearbeiten() {
                 title={routes.verfahrenNeu.step2.notification.headline}
                 message={routes.verfahrenNeu.step2.notification.copy}
               />
+
+              {actionData?.formType === "submit" && errors && (
+                <Alert
+                  type="error"
+                  title={shared.form.submit.title}
+                  message={`${JSON.stringify(errors)}`}
+                />
+              )}
 
               <div className="kern-gap-lg flex flex-col">
                 {/* plaintiff data */}
@@ -817,17 +931,11 @@ export default function VerfahrenNeuBearbeiten() {
                     </header>
                     <section className="kern-card__body">
                       <div className="kern-form-input">
-                        <label
-                          className="kern-label bg-kern-feedback-info-background"
-                          htmlFor="claim-rubrum"
-                        >
-                          {shared.form.labels.rubrum}
-                        </label>
-                        <input
-                          className="kern-form-input__input"
+                        <InputText
+                          label={shared.form.labels.rubrum}
                           id="claim-rubrum"
                           name="claimRubrum"
-                          type="text"
+                          defaultValue={verfahren?.kurzrubrum ?? ""}
                         />
                       </div>
 
@@ -862,17 +970,14 @@ export default function VerfahrenNeuBearbeiten() {
                       </div>
 
                       <div className="kern-form-input">
-                        <label
-                          className="kern-label bg-kern-feedback-info-background"
-                          htmlFor="subject-matter-of-the-proceedings"
-                        >
-                          {shared.form.labels.subjectMatterOfTheProceedings}
-                        </label>
-                        <textarea
-                          className="kern-form-input__input"
+                        <InputText
+                          label={
+                            shared.form.labels.subjectMatterOfTheProceedings
+                          }
                           id="subject-matter-of-the-proceedings"
                           name="subjectMatterOfTheProceedings"
-                          rows={4}
+                          required
+                          defaultValue={verfahren?.verfahrensgegenstand ?? ""}
                         />
                       </div>
                     </section>

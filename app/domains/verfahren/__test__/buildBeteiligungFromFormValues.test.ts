@@ -1,0 +1,110 @@
+import { describe, expect, it } from "vitest";
+import buildBeteiligungFromFormValues, {
+  ParteiFormValues,
+} from "../buildBeteiligungFromFormValues";
+
+const codeIds = {
+  rollenbezeichnungId: "rolle-1",
+  anschriftstypId: "typ-1",
+  staatId: "staat-1",
+  emailTelekommunikationsartId: "tka-email",
+  telefonTelekommunikationsartId: "tka-telefon",
+};
+
+const emptyPartei: ParteiFormValues = {
+  vorname: "",
+  nachname: "",
+  strasse: "",
+  hausnummer: "",
+  postleitzahl: "",
+  ort: "",
+  email: "",
+  telefon: "",
+};
+
+describe("buildBeteiligungFromFormValues", () => {
+  it("returns null when no nachname was provided", () => {
+    expect(buildBeteiligungFromFormValues(emptyPartei, codeIds)).toBeNull();
+  });
+
+  it("builds a full natuerlichePerson request with address and both contacts", () => {
+    const partei: ParteiFormValues = {
+      ...emptyPartei,
+      vorname: "Emilia",
+      nachname: "Kühn",
+      strasse: "Bockenheimer Landstraße",
+      hausnummer: "42-44",
+      postleitzahl: "60323",
+      ort: "Frankfurt am Main",
+      email: "emiliakuehn@posteo.de",
+      telefon: "06921994731",
+    };
+
+    expect(buildBeteiligungFromFormValues(partei, codeIds)).toEqual({
+      beteiligtenart: "natuerlichePerson",
+      vorname: "Emilia",
+      titel: null,
+      namensvorsatz: null,
+      nachname: "Kühn",
+      rollen: [
+        {
+          rollennummer: null,
+          rollenbezeichnung_id: "rolle-1",
+          geschaeftszeichen: null,
+          referenz: null,
+        },
+      ],
+      anschriften: [
+        {
+          anschriftstyp_id: "typ-1",
+          strasse: "Bockenheimer Landstraße",
+          hausnummer: "42-44",
+          postleitzahl: "60323",
+          ort: "Frankfurt am Main",
+          postfachnummer: null,
+          staat_id: "staat-1",
+        },
+      ],
+      kommunikationsanschluesse: [
+        {
+          telekommunikationsart_id: "tka-email",
+          verbindung: "emiliakuehn@posteo.de",
+        },
+        { telekommunikationsart_id: "tka-telefon", verbindung: "06921994731" },
+      ],
+    });
+  });
+
+  it("omits anschriften when no address fields were provided", () => {
+    const partei: ParteiFormValues = { ...emptyPartei, nachname: "Kühn" };
+
+    const result = buildBeteiligungFromFormValues(partei, codeIds);
+
+    expect(result?.anschriften).toBeNull();
+  });
+
+  it("only includes the email contact when no phone was provided", () => {
+    const partei: ParteiFormValues = {
+      ...emptyPartei,
+      nachname: "Kühn",
+      email: "emiliakuehn@posteo.de",
+    };
+
+    const result = buildBeteiligungFromFormValues(partei, codeIds);
+
+    expect(result?.kommunikationsanschluesse).toEqual([
+      {
+        telekommunikationsart_id: "tka-email",
+        verbindung: "emiliakuehn@posteo.de",
+      },
+    ]);
+  });
+
+  it("omits kommunikationsanschluesse when neither email nor phone was provided", () => {
+    const partei: ParteiFormValues = { ...emptyPartei, nachname: "Kühn" };
+
+    const result = buildBeteiligungFromFormValues(partei, codeIds);
+
+    expect(result?.kommunikationsanschluesse).toBeNull();
+  });
+});
