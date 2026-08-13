@@ -18,6 +18,7 @@ import InputText from "~/components/InputText";
 import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
 import VerfahrenGerichteSelect from "~/components/verfahren/VerfahrenGerichteSelect";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
+import { config } from "~/config/config";
 import {
   getBeteiligungByRoleCode,
   ROLE_CODE_BEKLAGTE,
@@ -78,6 +79,46 @@ const DokumentUploadSchema = z.object({
   type: DokumentTypeSchema,
   file: z.file().min(1),
 });
+
+// Dev-only convenience data for the "Fill details with dummy data" button below.
+const DUMMY_FORM_VALUES: Record<string, string> = {
+  klagendeParteiVorname: "Emilia",
+  klagendeParteiNachname: "Kühn",
+  klagendeParteiStrasse: "Bockenheimer Landstraße",
+  klagendeParteiHausnummer: "42-44",
+  klagendeParteiPlz: "60323",
+  klagendeParteiOrt: "Frankfurt am Main",
+  klagendeParteiEmail: "emiliakuehn@posteo.de",
+  klagendeParteiTelefon: "06921994731",
+  lawyerName: "Kanzlei Böhm",
+  lawyerStrasse: "Römerberg",
+  lawyerHausnummer: "2",
+  lawyerPlz: "60311",
+  lawyerOrt: "Frankfurt am Main",
+  lawyerEmail: "kanzlei@ra-boehm.de",
+  lawyerTelefon: "06921994731",
+  beklagteParteiVorname: "Max",
+  beklagteParteiNachname: "Mustermann",
+  beklagteParteiStrasse: "Zeil",
+  beklagteParteiHausnummer: "100",
+  beklagteParteiPlz: "60313",
+  beklagteParteiOrt: "Frankfurt am Main",
+  beklagteParteiEmail: "max.mustermann@example.com",
+  beklagteParteiTelefon: "06912345678",
+  claimRubrum: "Testrubrum",
+  claimReference: "AZ-TEST-001",
+  subjectMatterOfTheProceedings: "Zahlungsklage wegen offener Rechnung",
+};
+
+function fillFormFields(form: HTMLFormElement, values: Record<string, string>) {
+  Object.entries(values).forEach(([name, value]) => {
+    const field = form.elements.namedItem(name);
+
+    if (field instanceof HTMLInputElement) {
+      field.value = value;
+    }
+  });
+}
 
 function getFormText(formData: FormData, name: string): string {
   const value = formData.get(name);
@@ -283,6 +324,7 @@ export default function VerfahrenNeuBearbeiten() {
   const deleteFetcher = useFetcher<DokumentActionResult>();
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const uploadFileInputRef = useRef<HTMLInputElement>(null);
+  const mainFormRef = useRef<HTMLFormElement>(null);
   const [isFileInputErrorDismissed, setIsFileInputErrorDismissed] =
     useState(false);
   const showFileInputError =
@@ -401,6 +443,25 @@ export default function VerfahrenNeuBearbeiten() {
     setSubmitState(formType as SubmitState);
   };
 
+  // To be used in development for easier manual testing
+  // TODO: delete after full implementation
+  const handleFillDummyData = () => {
+    const form = mainFormRef.current;
+
+    if (!form) {
+      return;
+    }
+
+    fillFormFields(form, DUMMY_FORM_VALUES);
+    setHasLawyer(true);
+
+    // the lawyer fields only mount once hasLawyer becomes true, so fill them
+    // once React has rendered the newly-revealed inputs.
+    requestAnimationFrame(() => {
+      fillFormFields(form, DUMMY_FORM_VALUES);
+    });
+  };
+
   return (
     <div
       className={`${submitState === "submit" ? "pointer-events-none opacity-50" : ""} relative`}
@@ -418,6 +479,7 @@ export default function VerfahrenNeuBearbeiten() {
           </div>
           <div className="pt-kern-space-x-large">
             <Form
+              ref={mainFormRef}
               method="post"
               encType="multipart/form-data"
               className="kern-gap-lg flex flex-col"
@@ -434,6 +496,17 @@ export default function VerfahrenNeuBearbeiten() {
                     {routes.verfahrenNeu.step2.subline}
                   </h2>
                   <p className="kern-body">{routes.verfahrenNeu.step2.intro}</p>
+                  {config().ENVIRONMENT === "development" && (
+                    <button
+                      type="button"
+                      className="kern-btn kern-btn--secondary kern-btn--x-small mt-kern-space-small"
+                      onClick={handleFillDummyData}
+                    >
+                      <span className="kern-label">
+                        Fill details with dummy data
+                      </span>
+                    </button>
+                  )}
                 </div>
                 <div className="gap-kern-space-default flex">
                   <Link
