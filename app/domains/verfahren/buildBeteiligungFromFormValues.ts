@@ -1,17 +1,33 @@
 import z from "zod";
-import { NatuerlichePersonRequestSchema } from "~/domains/verfahren/schemas/beteiligungenRequestSchema";
+import { AnschriftRequestSchema } from "~/domains/verfahren/schemas/anschriftRequestSchema";
+import {
+  NatuerlichePersonRequestSchema,
+  RaKanzleiRequestSchema,
+} from "~/domains/verfahren/schemas/beteiligungenRequestSchema";
+import { KommunikationsanschlussRequestSchema } from "~/domains/verfahren/schemas/kommunikationsanschlussRequestSchema";
 
 type NatuerlichePersonRequest = z.infer<typeof NatuerlichePersonRequestSchema>;
+type RaKanzleiRequest = z.infer<typeof RaKanzleiRequestSchema>;
+type Anschriften = z.infer<typeof AnschriftRequestSchema>[] | null;
+type Kommunikationsanschluesse =
+  z.infer<typeof KommunikationsanschlussRequestSchema>[] | null;
 
-export type ParteiFormValues = {
-  vorname: string;
-  nachname: string;
+type AdresseKontaktFormValues = {
   strasse: string;
   hausnummer: string;
   postleitzahl: string;
   ort: string;
   email: string;
   telefon: string;
+};
+
+export type ParteiFormValues = AdresseKontaktFormValues & {
+  vorname: string;
+  nachname: string;
+};
+
+export type AnwaltFormValues = AdresseKontaktFormValues & {
+  name: string;
 };
 
 export type BeteiligungCodeIds = {
@@ -22,15 +38,19 @@ export type BeteiligungCodeIds = {
   telefonTelekommunikationsartId: string;
 };
 
+export type AnwaltCodeIds = BeteiligungCodeIds & {
+  kanzleiformId: string;
+};
+
 function buildAnschriften(
-  partei: ParteiFormValues,
+  formValues: AdresseKontaktFormValues,
   codeIds: BeteiligungCodeIds,
-): NatuerlichePersonRequest["anschriften"] {
+): Anschriften {
   const hasAddress = [
-    partei.strasse,
-    partei.hausnummer,
-    partei.postleitzahl,
-    partei.ort,
+    formValues.strasse,
+    formValues.hausnummer,
+    formValues.postleitzahl,
+    formValues.ort,
   ].some(Boolean);
 
   if (!hasAddress) {
@@ -40,10 +60,10 @@ function buildAnschriften(
   return [
     {
       anschriftstyp_id: codeIds.anschriftstypId,
-      strasse: partei.strasse || null,
-      hausnummer: partei.hausnummer || null,
-      postleitzahl: partei.postleitzahl || null,
-      ort: partei.ort || null,
+      strasse: formValues.strasse || null,
+      hausnummer: formValues.hausnummer || null,
+      postleitzahl: formValues.postleitzahl || null,
+      ort: formValues.ort || null,
       postfachnummer: null,
       staat_id: codeIds.staatId,
     },
@@ -51,20 +71,20 @@ function buildAnschriften(
 }
 
 function buildKommunikationsanschluesse(
-  partei: ParteiFormValues,
+  formValues: AdresseKontaktFormValues,
   codeIds: BeteiligungCodeIds,
-): NatuerlichePersonRequest["kommunikationsanschluesse"] {
+): Kommunikationsanschluesse {
   const kommunikationsanschluesse = [
-    partei.email
+    formValues.email
       ? {
           telekommunikationsart_id: codeIds.emailTelekommunikationsartId,
-          verbindung: partei.email,
+          verbindung: formValues.email,
         }
       : null,
-    partei.telefon
+    formValues.telefon
       ? {
           telekommunikationsart_id: codeIds.telefonTelekommunikationsartId,
-          verbindung: partei.telefon,
+          verbindung: formValues.telefon,
         }
       : null,
   ].filter((eintrag) => eintrag !== null);
@@ -77,6 +97,7 @@ function buildKommunikationsanschluesse(
 export default function buildBeteiligungFromFormValues(
   partei: ParteiFormValues,
   codeIds: BeteiligungCodeIds,
+  rollennummer: string | null = null,
 ): NatuerlichePersonRequest | null {
   if (!partei.nachname) {
     return null;
@@ -90,7 +111,7 @@ export default function buildBeteiligungFromFormValues(
     nachname: partei.nachname,
     rollen: [
       {
-        rollennummer: null,
+        rollennummer,
         rollenbezeichnung_id: codeIds.rollenbezeichnungId,
         geschaeftszeichen: null,
         referenz: null,
@@ -98,5 +119,32 @@ export default function buildBeteiligungFromFormValues(
     ],
     anschriften: buildAnschriften(partei, codeIds),
     kommunikationsanschluesse: buildKommunikationsanschluesse(partei, codeIds),
+  };
+}
+
+export function buildRaKanzleiFromFormValues(
+  anwalt: AnwaltFormValues,
+  codeIds: AnwaltCodeIds,
+  vertreteneRollennummer: string,
+): RaKanzleiRequest | null {
+  if (!anwalt.name) {
+    return null;
+  }
+
+  return {
+    beteiligtenart: "raKanzlei",
+    bezeichnung: anwalt.name,
+    rechtsform: null,
+    kanzleiform_id: codeIds.kanzleiformId,
+    rollen: [
+      {
+        rollennummer: null,
+        rollenbezeichnung_id: codeIds.rollenbezeichnungId,
+        geschaeftszeichen: null,
+        referenz: vertreteneRollennummer,
+      },
+    ],
+    anschriften: buildAnschriften(anwalt, codeIds),
+    kommunikationsanschluesse: buildKommunikationsanschluesse(anwalt, codeIds),
   };
 }

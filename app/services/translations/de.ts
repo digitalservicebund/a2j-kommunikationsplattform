@@ -195,6 +195,7 @@ export const de = {
               title: "Angaben zum Anwalt",
               nameOfLawFirm:
                 "Name der Kanzlei / Sozietät / Berufsausübungsgesellschaft",
+              kanzleiform: "Art der anwaltlichen Vertretung",
             },
           },
           defendant: {

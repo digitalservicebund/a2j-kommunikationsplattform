@@ -34,7 +34,7 @@ export const RaKanzleiRequestSchema = z.object({
   beteiligtenart: z.literal("raKanzlei"),
   bezeichnung: z.string().min(1),
   rechtsform: z.nullable(z.string()),
-  kanzleiform_id: z.string(),
+  kanzleiform_id: z.string().min(1),
   ...beteiligteRequestFields,
 });
 

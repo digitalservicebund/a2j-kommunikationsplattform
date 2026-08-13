@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import buildBeteiligungFromFormValues, {
+  AnwaltFormValues,
+  buildRaKanzleiFromFormValues,
   ParteiFormValues,
 } from "../buildBeteiligungFromFormValues";
 
@@ -106,5 +108,80 @@ describe("buildBeteiligungFromFormValues", () => {
     const result = buildBeteiligungFromFormValues(partei, codeIds);
 
     expect(result?.kommunikationsanschluesse).toBeNull();
+  });
+
+  it("sets the given rollennummer on the built role", () => {
+    const partei: ParteiFormValues = { ...emptyPartei, nachname: "Kühn" };
+
+    const result = buildBeteiligungFromFormValues(partei, codeIds, "klaegerin");
+
+    expect(result?.rollen[0].rollennummer).toBe("klaegerin");
+  });
+});
+
+describe("buildRaKanzleiFromFormValues", () => {
+  const anwaltCodeIds = { ...codeIds, kanzleiformId: "kanzleiform-1" };
+  const emptyAnwalt: AnwaltFormValues = {
+    name: "",
+    strasse: "",
+    hausnummer: "",
+    postleitzahl: "",
+    ort: "",
+    email: "",
+    telefon: "",
+  };
+
+  it("returns null when no name was provided", () => {
+    expect(
+      buildRaKanzleiFromFormValues(emptyAnwalt, anwaltCodeIds, "klaegerin"),
+    ).toBeNull();
+  });
+
+  it("builds a raKanzlei request linked to the represented party via referenz", () => {
+    const anwalt: AnwaltFormValues = {
+      ...emptyAnwalt,
+      name: "Kanzlei Böhm",
+      strasse: "Römerberg",
+      hausnummer: "2",
+      postleitzahl: "60311",
+      ort: "Frankfurt am Main",
+      email: "kanzlei@ra-boehm.de",
+      telefon: "06921994731",
+    };
+
+    expect(
+      buildRaKanzleiFromFormValues(anwalt, anwaltCodeIds, "klaegerin"),
+    ).toEqual({
+      beteiligtenart: "raKanzlei",
+      bezeichnung: "Kanzlei Böhm",
+      rechtsform: null,
+      kanzleiform_id: "kanzleiform-1",
+      rollen: [
+        {
+          rollennummer: null,
+          rollenbezeichnung_id: "rolle-1",
+          geschaeftszeichen: null,
+          referenz: "klaegerin",
+        },
+      ],
+      anschriften: [
+        {
+          anschriftstyp_id: "typ-1",
+          strasse: "Römerberg",
+          hausnummer: "2",
+          postleitzahl: "60311",
+          ort: "Frankfurt am Main",
+          postfachnummer: null,
+          staat_id: "staat-1",
+        },
+      ],
+      kommunikationsanschluesse: [
+        {
+          telekommunikationsart_id: "tka-email",
+          verbindung: "kanzlei@ra-boehm.de",
+        },
+        { telekommunikationsart_id: "tka-telefon", verbindung: "06921994731" },
+      ],
+    });
   });
 });

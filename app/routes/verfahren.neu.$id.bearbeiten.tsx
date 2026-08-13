@@ -17,6 +17,7 @@ import Alert from "~/components/Alert";
 import InputText from "~/components/InputText";
 import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
 import VerfahrenGerichteSelect from "~/components/verfahren/VerfahrenGerichteSelect";
+import VerfahrenKanzleiformSelect from "~/components/verfahren/VerfahrenKanzleiformSelect";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import { config } from "~/config/config";
 import {
@@ -30,6 +31,8 @@ import {
   getBeteiligteTelefon,
 } from "~/domains/verfahren/beteiligteContactInfo";
 import buildBeteiligungFromFormValues, {
+  AnwaltFormValues,
+  buildRaKanzleiFromFormValues,
   ParteiFormValues,
 } from "~/domains/verfahren/buildBeteiligungFromFormValues";
 import { VerfahrenAendernRequestSchema } from "~/domains/verfahren/createVerfahren.server";
@@ -37,6 +40,7 @@ import deleteDokument from "~/domains/verfahren/deleteDokument.server";
 import fetchAnschriftstypen from "~/domains/verfahren/fetchAnschriftstypen.service";
 import fetchDokument from "~/domains/verfahren/fetchDokument";
 import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
+import fetchKanzleiformen from "~/domains/verfahren/fetchKanzleiformen.service";
 import fetchRollenbezeichnungen from "~/domains/verfahren/fetchRollenbezeichnungen.service";
 import fetchStaaten from "~/domains/verfahren/fetchStaaten.service";
 import fetchTelekommunikationsarten from "~/domains/verfahren/fetchTelekommunikationsarten.service";
@@ -54,6 +58,7 @@ import updateVerfahren from "~/domains/verfahren/updateVerfahren.server";
 import uploadDokument from "~/domains/verfahren/uploadDokument.server";
 import {
   ANSCHRIFTSTYP_CODE_PRIVATANSCHRIFT,
+  ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
   STAAT_CODE_DEUTSCHLAND,
   TELEKOMMUNIKATIONSART_CODE_EMAIL,
   TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
@@ -62,12 +67,13 @@ import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
 type DokumentType = z.infer<typeof DokumentTypeSchema>;
-type Gericht = z.infer<typeof CodeWertSchema>;
+type CodeWertItem = z.infer<typeof CodeWertSchema>;
 type LoaderData = {
   verfahren: Verfahren;
   einreichung: EinreichungWithStatus;
   dokumente: Dokument[];
-  gerichte: Promise<Gericht[]>;
+  gerichte: Promise<CodeWertItem[]>;
+  kanzleiformen: Promise<CodeWertItem[]>;
 };
 type SubmitState = "idle" | "submit" | "upload" | "delete";
 type DokumentActionResult = {
@@ -141,6 +147,18 @@ function getParteiFormValues(
   };
 }
 
+function getAnwaltFormValues(formData: FormData): AnwaltFormValues {
+  return {
+    name: getFormText(formData, "lawyerName"),
+    strasse: getFormText(formData, "lawyerStrasse"),
+    hausnummer: getFormText(formData, "lawyerHausnummer"),
+    postleitzahl: getFormText(formData, "lawyerPlz"),
+    ort: getFormText(formData, "lawyerOrt"),
+    email: getFormText(formData, "lawyerEmail"),
+    telefon: getFormText(formData, "lawyerTelefon"),
+  };
+}
+
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
 
@@ -159,11 +177,18 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
     return elemente;
   })();
 
+  const kanzleiformenPromise = (async () => {
+    const { elemente } = await fetchKanzleiformen(authData);
+
+    return elemente;
+  })();
+
   return {
     verfahren,
     einreichung,
     dokumente,
     gerichte: gerichtePromise,
+    kanzleiformen: kanzleiformenPromise,
   };
 };
 
@@ -277,6 +302,7 @@ export const action = async ({
             ROLE_CODE_KLAEGERIN,
           ),
         },
+        ROLE_CODE_KLAEGERIN,
       ),
       buildBeteiligungFromFormValues(
         getParteiFormValues(formData, "beklagtePartei"),
@@ -287,6 +313,18 @@ export const action = async ({
             ROLE_CODE_BEKLAGTE,
           ),
         },
+      ),
+      buildRaKanzleiFromFormValues(
+        getAnwaltFormValues(formData),
+        {
+          ...sharedCodeIds,
+          rollenbezeichnungId: resolveCodeWertId(
+            rollenbezeichnungen,
+            ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+          ),
+          kanzleiformId: getFormText(formData, "lawyerKanzleiformId"),
+        },
+        ROLE_CODE_KLAEGERIN,
       ),
     ].filter((beteiligung) => beteiligung !== null);
 
@@ -314,7 +352,7 @@ export const action = async ({
 };
 
 export default function VerfahrenNeuBearbeiten() {
-  const { verfahren, einreichung, dokumente, gerichte } =
+  const { verfahren, einreichung, dokumente, gerichte, kanzleiformen } =
     useLoaderData<LoaderData>();
   const actionData = useActionData() || {};
   const { errors, formValues } = actionData;
@@ -750,6 +788,17 @@ export default function VerfahrenNeuBearbeiten() {
                               defaultValue={klagendeParteiLawyerName}
                             />
                           </div>
+
+                          <VerfahrenKanzleiformSelect
+                            id="lawyerKanzleiformId"
+                            label={
+                              routes.verfahrenNeu.step2.form.plaintiff.hasLawyer
+                                .kanzleiform
+                            }
+                            placeholder={shared.form.select.placeholder}
+                            kanzleiformenPromise={kanzleiformen}
+                            required
+                          />
 
                           <div className="kern-gap-md flex w-full">
                             <div className="kern-form-input flex-2">
