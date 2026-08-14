@@ -82,11 +82,16 @@ describe("buildInitialEinreichungTimelineSteps", () => {
       filesAddedLabel: "Dateien hinzugefügt",
       addDetailsTitle: "Angaben ergänzt",
       klageschriftUploadTitle: "Klageschrift hochgeladen",
+      klaegerLabel: "Kläger",
+      beklagterLabel: "Beklagter",
+      rubrumLabel: "Rubrum",
+      gerichtLabel: "Gericht",
     };
 
     const result = buildInitialTimelineStepData(
       timelineSteps,
       "2026-07-10T10:00:00.000Z",
+      { klaeger: true, beklagter: true, rubrum: true, gericht: true },
       translations,
     );
 
@@ -101,8 +106,7 @@ describe("buildInitialEinreichungTimelineSteps", () => {
           "2026-07-10T10:00:00.000Z",
         ).toLocaleDateString(),
         title: "Angaben ergänzt",
-        body: "Kläger, Beklagter, Rubrum und Gericht",
-        highlightBody: true,
+        body: "Kläger, Beklagter, Rubrum, Gericht",
       },
       {
         timelineLabel: "01.07.2026",
@@ -111,5 +115,92 @@ describe("buildInitialEinreichungTimelineSteps", () => {
         showConnector: false,
       },
     ]);
+  });
+
+  test("builds a partial completed-details body reflecting only finished parts, comma-separated", () => {
+    const timelineSteps = {
+      latestDokumentDate: "09.07.2026",
+      firstDokumentDate: "01.07.2026",
+      firstDokumentName: "Klageschrift.pdf",
+      additionalDokumenteCount: 0,
+    };
+
+    const translations = {
+      assetsTitle: "Dateien hinzugefügt",
+      filesAddedLabel: "Dateien hinzugefügt",
+      addDetailsTitle: "Angaben ergänzt",
+      klageschriftUploadTitle: "Klageschrift hochgeladen",
+      klaegerLabel: "Kläger",
+      beklagterLabel: "Beklagter",
+      rubrumLabel: "Rubrum",
+      gerichtLabel: "Gericht",
+    };
+
+    const result = buildInitialTimelineStepData(
+      timelineSteps,
+      "2026-07-10T10:00:00.000Z",
+      { klaeger: true, beklagter: false, rubrum: false, gericht: true },
+      translations,
+    );
+
+    expect(result[1].body).toBe("Kläger, Gericht");
+  });
+
+  test("builds a single-part completed-details body without a separator", () => {
+    const timelineSteps = {
+      latestDokumentDate: "09.07.2026",
+      firstDokumentDate: "01.07.2026",
+      firstDokumentName: "Klageschrift.pdf",
+      additionalDokumenteCount: 0,
+    };
+
+    const translations = {
+      assetsTitle: "Dateien hinzugefügt",
+      filesAddedLabel: "Dateien hinzugefügt",
+      addDetailsTitle: "Angaben ergänzt",
+      klageschriftUploadTitle: "Klageschrift hochgeladen",
+      klaegerLabel: "Kläger",
+      beklagterLabel: "Beklagter",
+      rubrumLabel: "Rubrum",
+      gerichtLabel: "Gericht",
+    };
+
+    const result = buildInitialTimelineStepData(
+      timelineSteps,
+      "2026-07-10T10:00:00.000Z",
+      { klaeger: false, beklagter: false, rubrum: true, gericht: false },
+      translations,
+    );
+
+    expect(result[1].body).toBe("Rubrum");
+  });
+
+  test("builds an empty completed-details body when nothing is done yet", () => {
+    const timelineSteps = {
+      latestDokumentDate: "09.07.2026",
+      firstDokumentDate: "01.07.2026",
+      firstDokumentName: "Klageschrift.pdf",
+      additionalDokumenteCount: 0,
+    };
+
+    const translations = {
+      assetsTitle: "Dateien hinzugefügt",
+      filesAddedLabel: "Dateien hinzugefügt",
+      addDetailsTitle: "Angaben ergänzt",
+      klageschriftUploadTitle: "Klageschrift hochgeladen",
+      klaegerLabel: "Kläger",
+      beklagterLabel: "Beklagter",
+      rubrumLabel: "Rubrum",
+      gerichtLabel: "Gericht",
+    };
+
+    const result = buildInitialTimelineStepData(
+      timelineSteps,
+      "2026-07-10T10:00:00.000Z",
+      { klaeger: false, beklagter: false, rubrum: false, gericht: false },
+      translations,
+    );
+
+    expect(result[1].body).toBe("");
   });
 });

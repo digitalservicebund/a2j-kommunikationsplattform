@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BeteiligungenSchema } from "~/domains/verfahren/schemas/beteiligungenSchema";
+import { BeteiligungenRequestSchema } from "~/domains/verfahren/schemas/beteiligungenRequestSchema";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { apiRequest } from "./apiClient";
 import { VerfahrenSchema } from "./schemas/verfahrenSchema";
@@ -12,7 +12,7 @@ export const VerfahrenAendernRequestSchema = z.object({
   verfahrensgegenstand: z.string().min(1),
   kurzrubrum: z.string().nullable(),
   gericht_id: z.string(),
-  beteiligungen: BeteiligungenSchema,
+  beteiligungen: BeteiligungenRequestSchema,
 });
 
 type VerfahrenAendernRequestDTO = z.infer<typeof VerfahrenAendernRequestSchema>;

@@ -14,38 +14,67 @@ import {
 } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
+import InputText from "~/components/InputText";
 import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
 import VerfahrenGerichteSelect from "~/components/verfahren/VerfahrenGerichteSelect";
+import VerfahrenKanzleiformSelect from "~/components/verfahren/VerfahrenKanzleiformSelect";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
-import VerfahrenPrototypeHint from "~/components/verfahren/VerfahrenPrototypeHint.static";
+import { config } from "~/config/config";
 import {
   getBeteiligungByRoleCode,
+  getProzessbevollmaechtigteByReferenz,
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/beteiligteByRole";
+import {
+  getBeteiligteAnschrift,
+  getBeteiligteEmail,
+  getBeteiligteTelefon,
+} from "~/domains/verfahren/beteiligteContactInfo";
+import buildBeteiligungFromFormValues, {
+  AnwaltFormValues,
+  buildRaKanzleiFromFormValues,
+  ParteiFormValues,
+} from "~/domains/verfahren/buildBeteiligungFromFormValues";
+import { VerfahrenAendernRequestSchema } from "~/domains/verfahren/createVerfahren.server";
 import deleteDokument from "~/domains/verfahren/deleteDokument.server";
+import fetchAnschriftstypen from "~/domains/verfahren/fetchAnschriftstypen.service";
 import fetchDokument from "~/domains/verfahren/fetchDokument";
 import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
+import fetchKanzleiformen from "~/domains/verfahren/fetchKanzleiformen.service";
+import fetchRollenbezeichnungen from "~/domains/verfahren/fetchRollenbezeichnungen.service";
+import fetchStaaten from "~/domains/verfahren/fetchStaaten.service";
+import fetchTelekommunikationsarten from "~/domains/verfahren/fetchTelekommunikationsarten.service";
 import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
 import loadVerfahrenEinreichungBundle, {
   Dokument,
   EinreichungWithStatus,
   Verfahren,
 } from "~/domains/verfahren/loadVerfahrenEinreichungBundle.server";
+import resolveCodeWertId from "~/domains/verfahren/resolveCodeWertId";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.server";
 import { CodeWertSchema } from "~/domains/verfahren/schemas/codeWertSchema";
 import { DokumentTypeSchema } from "~/domains/verfahren/schemas/dokumentSchema";
+import updateVerfahren from "~/domains/verfahren/updateVerfahren.server";
 import uploadDokument from "~/domains/verfahren/uploadDokument.server";
+import {
+  ANSCHRIFTSTYP_CODE_PRIVATANSCHRIFT,
+  ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+  STAAT_CODE_DEUTSCHLAND,
+  TELEKOMMUNIKATIONSART_CODE_EMAIL,
+  TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
+} from "~/domains/verfahren/verfahrenCodeConstants";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
 type DokumentType = z.infer<typeof DokumentTypeSchema>;
-type Gericht = z.infer<typeof CodeWertSchema>;
+type CodeWertItem = z.infer<typeof CodeWertSchema>;
 type LoaderData = {
   verfahren: Verfahren;
   einreichung: EinreichungWithStatus;
   dokumente: Dokument[];
-  gerichte: Promise<Gericht[]>;
+  gerichte: Promise<CodeWertItem[]>;
+  kanzleiformen: Promise<CodeWertItem[]>;
 };
 type SubmitState = "idle" | "submit" | "upload" | "delete";
 type DokumentActionResult = {
@@ -57,6 +86,79 @@ const DokumentUploadSchema = z.object({
   type: DokumentTypeSchema,
   file: z.file().min(1),
 });
+
+// Dev-only convenience data for the "Fill details with dummy data" button below.
+const DUMMY_FORM_VALUES: Record<string, string> = {
+  klagendeParteiVorname: "Test-Klaeger-Vorname",
+  klagendeParteiNachname: "Test-Klaeger-Nachname",
+  klagendeParteiStrasse: "Teststraße",
+  klagendeParteiHausnummer: "1",
+  klagendeParteiPlz: "12345",
+  klagendeParteiOrt: "Testort",
+  klagendeParteiEmail: "test-klaeger@test.de",
+  klagendeParteiTelefon: "0123456789",
+  lawyerName: "Test-Kanzlei",
+  lawyerStrasse: "Teststraße",
+  lawyerHausnummer: "2",
+  lawyerPlz: "12345",
+  lawyerOrt: "Testort",
+  lawyerEmail: "test-kanzlei@test.de",
+  lawyerTelefon: "0123456789",
+  beklagteParteiVorname: "Test-Beklagte-Vorname",
+  beklagteParteiNachname: "Test-Beklagte-Nachname",
+  beklagteParteiStrasse: "Teststraße",
+  beklagteParteiHausnummer: "3",
+  beklagteParteiPlz: "12345",
+  beklagteParteiOrt: "Testort",
+  beklagteParteiEmail: "test-beklagte@test.de",
+  beklagteParteiTelefon: "0123456789",
+  claimRubrum: "Test-Rubrum",
+  claimReference: "AZ-TEST-001",
+  subjectMatterOfTheProceedings: "Test-Verfahrensgegenstand",
+};
+
+function fillFormFields(form: HTMLFormElement, values: Record<string, string>) {
+  Object.entries(values).forEach(([name, value]) => {
+    const field = form.elements.namedItem(name);
+
+    if (field instanceof HTMLInputElement) {
+      field.value = value;
+    }
+  });
+}
+
+function getFormText(formData: FormData, name: string): string {
+  const value = formData.get(name);
+  return typeof value === "string" ? value : "";
+}
+
+function getParteiFormValues(
+  formData: FormData,
+  prefix: "klagendePartei" | "beklagtePartei",
+): ParteiFormValues {
+  return {
+    vorname: getFormText(formData, `${prefix}Vorname`),
+    nachname: getFormText(formData, `${prefix}Nachname`),
+    strasse: getFormText(formData, `${prefix}Strasse`),
+    hausnummer: getFormText(formData, `${prefix}Hausnummer`),
+    postleitzahl: getFormText(formData, `${prefix}Plz`),
+    ort: getFormText(formData, `${prefix}Ort`),
+    email: getFormText(formData, `${prefix}Email`),
+    telefon: getFormText(formData, `${prefix}Telefon`),
+  };
+}
+
+function getAnwaltFormValues(formData: FormData): AnwaltFormValues {
+  return {
+    name: getFormText(formData, "lawyerName"),
+    strasse: getFormText(formData, "lawyerStrasse"),
+    hausnummer: getFormText(formData, "lawyerHausnummer"),
+    postleitzahl: getFormText(formData, "lawyerPlz"),
+    ort: getFormText(formData, "lawyerOrt"),
+    email: getFormText(formData, "lawyerEmail"),
+    telefon: getFormText(formData, "lawyerTelefon"),
+  };
+}
 
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
@@ -76,11 +178,18 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
     return elemente;
   })();
 
+  const kanzleiformenPromise = (async () => {
+    const { elemente } = await fetchKanzleiformen(authData);
+
+    return elemente;
+  })();
+
   return {
     verfahren,
     einreichung,
     dokumente,
     gerichte: gerichtePromise,
+    kanzleiformen: kanzleiformenPromise,
   };
 };
 
@@ -156,14 +265,95 @@ export const action = async ({
   }
 
   if (formType === "submit") {
-    // @TODO: Update the submit logic and input files to be in sync with the soon
-    // to be available VerfahrenAendernRequest data Schema (Swagger doc: PUT /api/v1/verfahren/{id})
+    const [
+      { elemente: staaten },
+      { elemente: anschriftstypen },
+      { elemente: telekommunikationsarten },
+      { elemente: rollenbezeichnungen },
+    ] = await Promise.all([
+      fetchStaaten(authData),
+      fetchAnschriftstypen(authData),
+      fetchTelekommunikationsarten(authData),
+      fetchRollenbezeichnungen(authData),
+    ]);
+
+    const sharedCodeIds = {
+      anschriftstypId: resolveCodeWertId(
+        anschriftstypen,
+        ANSCHRIFTSTYP_CODE_PRIVATANSCHRIFT,
+      ),
+      staatId: resolveCodeWertId(staaten, STAAT_CODE_DEUTSCHLAND),
+      emailTelekommunikationsartId: resolveCodeWertId(
+        telekommunikationsarten,
+        TELEKOMMUNIKATIONSART_CODE_EMAIL,
+      ),
+      telefonTelekommunikationsartId: resolveCodeWertId(
+        telekommunikationsarten,
+        TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
+      ),
+    };
+
+    const beteiligungen = [
+      buildBeteiligungFromFormValues(
+        getParteiFormValues(formData, "klagendePartei"),
+        {
+          ...sharedCodeIds,
+          rollenbezeichnungId: resolveCodeWertId(
+            rollenbezeichnungen,
+            ROLE_CODE_KLAEGERIN,
+          ),
+        },
+        ROLE_CODE_KLAEGERIN,
+      ),
+      buildBeteiligungFromFormValues(
+        getParteiFormValues(formData, "beklagtePartei"),
+        {
+          ...sharedCodeIds,
+          rollenbezeichnungId: resolveCodeWertId(
+            rollenbezeichnungen,
+            ROLE_CODE_BEKLAGTE,
+          ),
+        },
+      ),
+      buildRaKanzleiFromFormValues(
+        getAnwaltFormValues(formData),
+        {
+          ...sharedCodeIds,
+          rollenbezeichnungId: resolveCodeWertId(
+            rollenbezeichnungen,
+            ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+          ),
+          kanzleiformId: getFormText(formData, "lawyerKanzleiformId"),
+        },
+        ROLE_CODE_KLAEGERIN,
+      ),
+    ].filter((beteiligung) => beteiligung !== null);
+
+    const formValues = {
+      verfahrensgegenstand: formData.get("subjectMatterOfTheProceedings"),
+      kurzrubrum: formData.get("claimRubrum"),
+      gericht_id: formData.get("claim-court"),
+      beteiligungen: beteiligungen.length > 0 ? beteiligungen : null,
+    };
+
+    const validatedForm = VerfahrenAendernRequestSchema.safeParse(formValues);
+
+    if (!validatedForm.success) {
+      return {
+        errors: z.flattenError(validatedForm.error),
+        formValues,
+        formType: "submit",
+      };
+    }
+
+    await updateVerfahren(authData, verfahrenId, validatedForm.data);
+
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   }
 };
 
 export default function VerfahrenNeuBearbeiten() {
-  const { verfahren, einreichung, dokumente, gerichte } =
+  const { verfahren, einreichung, dokumente, gerichte, kanzleiformen } =
     useLoaderData<LoaderData>();
   const actionData = useActionData() || {};
   const { errors, formValues } = actionData;
@@ -173,6 +363,7 @@ export default function VerfahrenNeuBearbeiten() {
   const deleteFetcher = useFetcher<DokumentActionResult>();
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const uploadFileInputRef = useRef<HTMLInputElement>(null);
+  const mainFormRef = useRef<HTMLFormElement>(null);
   const [isFileInputErrorDismissed, setIsFileInputErrorDismissed] =
     useState(false);
   const showFileInputError =
@@ -234,8 +425,6 @@ export default function VerfahrenNeuBearbeiten() {
     }
   }, [actionData, navigation.state]);
 
-  // @TODO: sync input fields with API response/result schemas
-  // and maybe move this into a getter/setter helper for other routes?
   const klagendePartei = getBeteiligungByRoleCode(
     verfahren.beteiligungen,
     ROLE_CODE_KLAEGERIN,
@@ -260,12 +449,36 @@ export default function VerfahrenNeuBearbeiten() {
     beklagtePartei && "nachname" in beklagtePartei
       ? beklagtePartei.nachname
       : "";
-  // @TODO: the API no longer nests a "prozessbevollmaechtigte" list on a
-  // Beteiligte — a Prozessbevollmächtigter is now its own Beteiligte (a
-  // RaKanzlei) linked via Rolle.referenz. That linking isn't implemented
-  // yet, so we can't reliably pre-fill an existing lawyer.
-  const klagendeParteiLawyerName = "";
-  const hasExistingLawyer = false;
+  const klagendeParteiAnschrift = getBeteiligteAnschrift(klagendePartei);
+  const beklagteParteiAnschrift = getBeteiligteAnschrift(beklagtePartei);
+  const klagendeParteiEmail = getBeteiligteEmail(klagendePartei);
+  const klagendeParteiTelefon = getBeteiligteTelefon(klagendePartei);
+  const beklagteParteiEmail = getBeteiligteEmail(beklagtePartei);
+  const beklagteParteiTelefon = getBeteiligteTelefon(beklagtePartei);
+  // A Prozessbevollmächtigter is its own Beteiligte (a RaKanzlei), linked to
+  // the party it represents via its Rolle.referenz. We don't track a separate
+  // rollennummer scheme — we just reuse the represented party's role code
+  // (e.g. ROLE_CODE_KLAEGERIN) as both its rollennummer and the lawyer's
+  // referenz when writing (see updateVerfahren action below).
+  const klagendeParteiAnwalt = getProzessbevollmaechtigteByReferenz(
+    verfahren.beteiligungen,
+    ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+    ROLE_CODE_KLAEGERIN,
+  );
+  const klagendeParteiLawyerName =
+    klagendeParteiAnwalt && "bezeichnung" in klagendeParteiAnwalt
+      ? (klagendeParteiAnwalt.bezeichnung ?? "")
+      : "";
+  const klagendeParteiAnwaltAnschrift =
+    getBeteiligteAnschrift(klagendeParteiAnwalt);
+  const klagendeParteiAnwaltEmail = getBeteiligteEmail(klagendeParteiAnwalt);
+  const klagendeParteiAnwaltTelefon =
+    getBeteiligteTelefon(klagendeParteiAnwalt);
+  const klagendeParteiAnwaltKanzleiformId =
+    klagendeParteiAnwalt && "kanzleiform" in klagendeParteiAnwalt
+      ? (klagendeParteiAnwalt.kanzleiform?.id ?? "")
+      : "";
+  const hasExistingLawyer = Boolean(klagendeParteiAnwalt);
   const courtId = verfahren.gericht?.id ?? "";
   const claimReference = verfahren.aktenzeichen_gericht ?? "";
 
@@ -285,6 +498,25 @@ export default function VerfahrenNeuBearbeiten() {
     setSubmitState(formType as SubmitState);
   };
 
+  // To be used in development for easier manual testing
+  // TODO: delete after full implementation
+  const handleFillDummyData = () => {
+    const form = mainFormRef.current;
+
+    if (!form) {
+      return;
+    }
+
+    fillFormFields(form, DUMMY_FORM_VALUES);
+    setHasLawyer(true);
+
+    // the lawyer fields only mount once hasLawyer becomes true, so fill them
+    // once React has rendered the newly-revealed inputs.
+    requestAnimationFrame(() => {
+      fillFormFields(form, DUMMY_FORM_VALUES);
+    });
+  };
+
   return (
     <div
       className={`${submitState === "submit" ? "pointer-events-none opacity-50" : ""} relative`}
@@ -302,6 +534,7 @@ export default function VerfahrenNeuBearbeiten() {
           </div>
           <div className="pt-kern-space-x-large">
             <Form
+              ref={mainFormRef}
               method="post"
               encType="multipart/form-data"
               className="kern-gap-lg flex flex-col"
@@ -318,7 +551,17 @@ export default function VerfahrenNeuBearbeiten() {
                     {routes.verfahrenNeu.step2.subline}
                   </h2>
                   <p className="kern-body">{routes.verfahrenNeu.step2.intro}</p>
-                  <VerfahrenPrototypeHint />
+                  {config().ENVIRONMENT === "development" && (
+                    <button
+                      type="button"
+                      className="kern-btn kern-btn--secondary kern-btn--x-small mt-kern-space-small"
+                      onClick={handleFillDummyData}
+                    >
+                      <span className="kern-label">
+                        Fill details with dummy data
+                      </span>
+                    </button>
+                  )}
                 </div>
                 <div className="gap-kern-space-default flex">
                   <Link
@@ -351,6 +594,14 @@ export default function VerfahrenNeuBearbeiten() {
                 message={routes.verfahrenNeu.step2.notification.copy}
               />
 
+              {actionData?.formType === "submit" && errors && (
+                <Alert
+                  type="error"
+                  title={shared.form.submit.title}
+                  message={`${JSON.stringify(errors)}`}
+                />
+              )}
+
               <div className="kern-gap-lg flex flex-col">
                 {/* plaintiff data */}
                 <div className="kern-card">
@@ -370,7 +621,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-vorname"
                           >
                             {shared.form.labels.forename}
@@ -385,7 +636,7 @@ export default function VerfahrenNeuBearbeiten() {
                         </div>
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-nachname"
                           >
                             {shared.form.labels.lastname}
@@ -403,7 +654,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-2">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-strasse"
                           >
                             {shared.form.labels.street}
@@ -413,12 +664,14 @@ export default function VerfahrenNeuBearbeiten() {
                             id="klagende-partei-strasse"
                             name="klagendeParteiStrasse"
                             type="text"
-                            defaultValue={"Bockenheimer Landstraße"}
+                            defaultValue={
+                              klagendeParteiAnschrift?.strasse ?? ""
+                            }
                           />
                         </div>
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-hausnummer"
                           >
                             {shared.form.labels.houseNumber}
@@ -428,7 +681,9 @@ export default function VerfahrenNeuBearbeiten() {
                             id="klagende-partei-hausnummer"
                             name="klagendeParteiHausnummer"
                             type="text"
-                            defaultValue={"42-44"}
+                            defaultValue={
+                              klagendeParteiAnschrift?.hausnummer ?? ""
+                            }
                           />
                         </div>
                       </div>
@@ -436,7 +691,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-plz"
                           >
                             {shared.form.labels.postcode}
@@ -446,12 +701,14 @@ export default function VerfahrenNeuBearbeiten() {
                             id="klagende-partei-plz"
                             name="klagendeParteiPlz"
                             type="text"
-                            defaultValue={"60323"}
+                            defaultValue={
+                              klagendeParteiAnschrift?.postleitzahl ?? ""
+                            }
                           />
                         </div>
                         <div className="kern-form-input flex-2">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-ort"
                           >
                             {shared.form.labels.place}
@@ -461,7 +718,7 @@ export default function VerfahrenNeuBearbeiten() {
                             id="klagende-partei-ort"
                             name="klagendeParteiOrt"
                             type="text"
-                            defaultValue={"Frankfurt am Main"}
+                            defaultValue={klagendeParteiAnschrift?.ort ?? ""}
                           />
                         </div>
                       </div>
@@ -469,7 +726,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-email"
                           >
                             {shared.form.labels.eMail}
@@ -479,12 +736,12 @@ export default function VerfahrenNeuBearbeiten() {
                             id="klagende-partei-email"
                             name="klagendeParteiEmail"
                             type="email"
-                            defaultValue={"emiliakuehn@posteo.de"}
+                            defaultValue={klagendeParteiEmail}
                           />
                         </div>
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="klagende-partei-telefon"
                           >
                             {shared.form.labels.phone}
@@ -494,6 +751,7 @@ export default function VerfahrenNeuBearbeiten() {
                             id="klagende-partei-telefon"
                             name="klagendeParteiTelefon"
                             type="tel"
+                            defaultValue={klagendeParteiTelefon}
                           />
                         </div>
                       </div>
@@ -516,10 +774,7 @@ export default function VerfahrenNeuBearbeiten() {
                             setHasLawyer(event.target.checked)
                           }
                         />
-                        <label
-                          className="kern-label bg-kern-feedback-info-background"
-                          htmlFor="has-lawyer"
-                        >
+                        <label className="kern-label" htmlFor="has-lawyer">
                           {
                             routes.verfahrenNeu.step2.form.plaintiff.hasLawyer
                               .checkbox
@@ -536,10 +791,7 @@ export default function VerfahrenNeuBearbeiten() {
                             }
                           </h3>
                           <div className="kern-form-input">
-                            <label
-                              className="kern-label bg-kern-feedback-info-background"
-                              htmlFor="lawyer-name"
-                            >
+                            <label className="kern-label" htmlFor="lawyer-name">
                               {
                                 routes.verfahrenNeu.step2.form.plaintiff
                                   .hasLawyer.nameOfLawFirm
@@ -554,10 +806,24 @@ export default function VerfahrenNeuBearbeiten() {
                             />
                           </div>
 
+                          <VerfahrenKanzleiformSelect
+                            id="lawyerKanzleiformId"
+                            label={
+                              routes.verfahrenNeu.step2.form.plaintiff.hasLawyer
+                                .kanzleiform
+                            }
+                            placeholder={shared.form.select.placeholder}
+                            kanzleiformenPromise={kanzleiformen}
+                            initialSelectedValue={
+                              klagendeParteiAnwaltKanzleiformId
+                            }
+                            required
+                          />
+
                           <div className="kern-gap-md flex w-full">
                             <div className="kern-form-input flex-2">
                               <label
-                                className="kern-label bg-kern-feedback-info-background"
+                                className="kern-label"
                                 htmlFor="lawyer-strasse"
                               >
                                 {shared.form.labels.street}
@@ -567,12 +833,14 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-strasse"
                                 name="lawyerStrasse"
                                 type="text"
-                                defaultValue={"Römerberg"}
+                                defaultValue={
+                                  klagendeParteiAnwaltAnschrift?.strasse ?? ""
+                                }
                               />
                             </div>
                             <div className="kern-form-input flex-1">
                               <label
-                                className="kern-label bg-kern-feedback-info-background"
+                                className="kern-label"
                                 htmlFor="lawyer-hausnummer"
                               >
                                 {shared.form.labels.houseNumber}
@@ -582,7 +850,10 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-hausnummer"
                                 name="lawyerHausnummer"
                                 type="text"
-                                defaultValue={"2"}
+                                defaultValue={
+                                  klagendeParteiAnwaltAnschrift?.hausnummer ??
+                                  ""
+                                }
                               />
                             </div>
                           </div>
@@ -590,7 +861,7 @@ export default function VerfahrenNeuBearbeiten() {
                           <div className="kern-gap-md flex w-full">
                             <div className="kern-form-input flex-1">
                               <label
-                                className="kern-label bg-kern-feedback-info-background"
+                                className="kern-label"
                                 htmlFor="lawyer-plz"
                               >
                                 {shared.form.labels.postcode}
@@ -600,12 +871,15 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-plz"
                                 name="lawyerPlz"
                                 type="text"
-                                defaultValue={"60311"}
+                                defaultValue={
+                                  klagendeParteiAnwaltAnschrift?.postleitzahl ??
+                                  ""
+                                }
                               />
                             </div>
                             <div className="kern-form-input flex-2">
                               <label
-                                className="kern-label bg-kern-feedback-info-background"
+                                className="kern-label"
                                 htmlFor="lawyer-ort"
                               >
                                 {shared.form.labels.place}
@@ -615,7 +889,9 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-ort"
                                 name="lawyerOrt"
                                 type="text"
-                                defaultValue={"Frankfurt am Main"}
+                                defaultValue={
+                                  klagendeParteiAnwaltAnschrift?.ort ?? ""
+                                }
                               />
                             </div>
                           </div>
@@ -623,7 +899,7 @@ export default function VerfahrenNeuBearbeiten() {
                           <div className="kern-gap-md flex w-full">
                             <div className="kern-form-input flex-1">
                               <label
-                                className="kern-label bg-kern-feedback-info-background"
+                                className="kern-label"
                                 htmlFor="lawyer-email"
                               >
                                 {shared.form.labels.eMail}
@@ -633,12 +909,12 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-email"
                                 name="lawyerEmail"
                                 type="email"
-                                defaultValue={"kanzlei@ra-boehm.de"}
+                                defaultValue={klagendeParteiAnwaltEmail}
                               />
                             </div>
                             <div className="kern-form-input flex-1">
                               <label
-                                className="kern-label bg-kern-feedback-info-background"
+                                className="kern-label"
                                 htmlFor="lawyer-telefon"
                               >
                                 {shared.form.labels.phone}
@@ -648,7 +924,7 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-telefon"
                                 name="lawyerTelefon"
                                 type="tel"
-                                defaultValue={"06921994731"}
+                                defaultValue={klagendeParteiAnwaltTelefon}
                               />
                             </div>
                           </div>
@@ -676,7 +952,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-vorname"
                           >
                             {shared.form.labels.forename}
@@ -691,7 +967,7 @@ export default function VerfahrenNeuBearbeiten() {
                         </div>
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-nachname"
                           >
                             {shared.form.labels.lastname}
@@ -709,7 +985,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-2">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-strasse"
                           >
                             {shared.form.labels.street}
@@ -719,11 +995,14 @@ export default function VerfahrenNeuBearbeiten() {
                             id="beklagte-partei-strasse"
                             name="beklagteParteiStrasse"
                             type="text"
+                            defaultValue={
+                              beklagteParteiAnschrift?.strasse ?? ""
+                            }
                           />
                         </div>
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-hausnummer"
                           >
                             {shared.form.labels.houseNumber}
@@ -733,6 +1012,9 @@ export default function VerfahrenNeuBearbeiten() {
                             id="beklagte-partei-hausnummer"
                             name="beklagteParteiHausnummer"
                             type="text"
+                            defaultValue={
+                              beklagteParteiAnschrift?.hausnummer ?? ""
+                            }
                           />
                         </div>
                       </div>
@@ -740,7 +1022,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-plz"
                           >
                             {shared.form.labels.postcode}
@@ -750,11 +1032,14 @@ export default function VerfahrenNeuBearbeiten() {
                             id="beklagte-partei-plz"
                             name="beklagteParteiPlz"
                             type="text"
+                            defaultValue={
+                              beklagteParteiAnschrift?.postleitzahl ?? ""
+                            }
                           />
                         </div>
                         <div className="kern-form-input flex-2">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-ort"
                           >
                             {shared.form.labels.place}
@@ -764,6 +1049,7 @@ export default function VerfahrenNeuBearbeiten() {
                             id="beklagte-partei-ort"
                             name="beklagteParteiOrt"
                             type="text"
+                            defaultValue={beklagteParteiAnschrift?.ort ?? ""}
                           />
                         </div>
                       </div>
@@ -771,7 +1057,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-email"
                           >
                             {shared.form.labels.eMail}
@@ -781,11 +1067,12 @@ export default function VerfahrenNeuBearbeiten() {
                             id="beklagte-partei-email"
                             name="beklagteParteiEmail"
                             type="email"
+                            defaultValue={beklagteParteiEmail}
                           />
                         </div>
                         <div className="kern-form-input flex-1">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="beklagte-partei-telefon"
                           >
                             {shared.form.labels.phone}
@@ -795,6 +1082,7 @@ export default function VerfahrenNeuBearbeiten() {
                             id="beklagte-partei-telefon"
                             name="beklagteParteiTelefon"
                             type="tel"
+                            defaultValue={beklagteParteiTelefon}
                           />
                         </div>
                       </div>
@@ -817,24 +1105,18 @@ export default function VerfahrenNeuBearbeiten() {
                     </header>
                     <section className="kern-card__body">
                       <div className="kern-form-input">
-                        <label
-                          className="kern-label bg-kern-feedback-info-background"
-                          htmlFor="claim-rubrum"
-                        >
-                          {shared.form.labels.rubrum}
-                        </label>
-                        <input
-                          className="kern-form-input__input"
+                        <InputText
+                          label={shared.form.labels.rubrum}
                           id="claim-rubrum"
                           name="claimRubrum"
-                          type="text"
+                          defaultValue={verfahren?.kurzrubrum ?? ""}
                         />
                       </div>
 
                       <div className="kern-gap-md flex w-full">
                         <div className="kern-form-input flex-1 self-end">
                           <label
-                            className="kern-label bg-kern-feedback-info-background"
+                            className="kern-label"
                             htmlFor="claim-reference"
                           >
                             {
@@ -854,7 +1136,7 @@ export default function VerfahrenNeuBearbeiten() {
                         <VerfahrenGerichteSelect
                           id="claim-court"
                           label={shared.form.labels.recipientCourt}
-                          className="bg-kern-feedback-info-background flex-1 self-end"
+                          className="flex-1 self-end"
                           placeholder={shared.form.select.placeholder}
                           gerichtePromise={gerichte}
                           initialSelectedValue={courtId}
@@ -862,17 +1144,14 @@ export default function VerfahrenNeuBearbeiten() {
                       </div>
 
                       <div className="kern-form-input">
-                        <label
-                          className="kern-label bg-kern-feedback-info-background"
-                          htmlFor="subject-matter-of-the-proceedings"
-                        >
-                          {shared.form.labels.subjectMatterOfTheProceedings}
-                        </label>
-                        <textarea
-                          className="kern-form-input__input"
+                        <InputText
+                          label={
+                            shared.form.labels.subjectMatterOfTheProceedings
+                          }
                           id="subject-matter-of-the-proceedings"
                           name="subjectMatterOfTheProceedings"
-                          rows={4}
+                          required
+                          defaultValue={verfahren?.verfahrensgegenstand ?? ""}
                         />
                       </div>
                     </section>

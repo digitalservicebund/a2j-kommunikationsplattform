@@ -39,7 +39,6 @@ export type TimelineStepData = {
   timelineLabel: string;
   title: string;
   body: string;
-  highlightBody?: boolean;
   showConnector?: boolean;
 };
 
@@ -48,11 +47,37 @@ type TimelineStepTranslations = {
   filesAddedLabel: string;
   addDetailsTitle: string;
   klageschriftUploadTitle: string;
+  klaegerLabel: string;
+  beklagterLabel: string;
+  rubrumLabel: string;
+  gerichtLabel: string;
 };
+
+export type CompletedEinreichungDetails = {
+  klaeger: boolean;
+  beklagter: boolean;
+  rubrum: boolean;
+  gericht: boolean;
+};
+
+function buildCompletedDetailsBody(
+  completedDetails: CompletedEinreichungDetails,
+  translations: TimelineStepTranslations,
+): string {
+  return [
+    completedDetails.klaeger && translations.klaegerLabel,
+    completedDetails.beklagter && translations.beklagterLabel,
+    completedDetails.rubrum && translations.rubrumLabel,
+    completedDetails.gericht && translations.gerichtLabel,
+  ]
+    .filter((label): label is string => Boolean(label))
+    .join(", ");
+}
 
 export function buildInitialTimelineStepData(
   timelineSteps: InitialEinreichungTimelineSteps,
   verfahrenStatusChanged: string,
+  completedDetails: CompletedEinreichungDetails,
   translations: TimelineStepTranslations,
 ): TimelineStepData[] {
   return [
@@ -64,10 +89,7 @@ export function buildInitialTimelineStepData(
     {
       timelineLabel: new Date(verfahrenStatusChanged).toLocaleDateString(),
       title: translations.addDetailsTitle,
-      // @TODO: Remove static text and replace it with dynamic translation keys
-      // for each completed part of the editing process
-      body: "Kläger, Beklagter, Rubrum und Gericht",
-      highlightBody: true,
+      body: buildCompletedDetailsBody(completedDetails, translations),
     },
     {
       timelineLabel: timelineSteps.firstDokumentDate,

@@ -107,6 +107,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       ? submittedEinreichungId
       : urlContext.einreichungId;
 
+  // 1) Handle delete flow for an already uploaded document
   if (formType === "delete") {
     const verfahrenId = formData.get("verfahrenId");
     const einreichungId = formData.get("einreichungId");
@@ -140,10 +141,12 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
     return redirect(buildRouteUrl(verfahrenId, einreichungId));
   }
 
+  // 2) Guard unsupported form submissions
   if (formType !== "submit") {
     return { error: true };
   }
 
+  // 3) If a draft already has uploads, continue in edit route
   if (existingVerfahrenId && existingEinreichungId) {
     const { elemente: dokumente } = await fetchDokumente(authData, {
       verfahrenId: existingVerfahrenId,
@@ -164,6 +167,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
   const { file, verfahrensgegenstand, gerichtId } = validatedForm.data;
 
+  // 4) Ensure verfahren/einreichung exist (create on first submit)
   let verfahrenId = existingVerfahrenId;
   let einreichungId = existingEinreichungId;
 
@@ -187,6 +191,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
     "SCHRIFTSTUECK",
   );
 
+  // 5) Continue to bearbeiten step
   return redirect(`/verfahren/neu/${verfahrenId}/bearbeiten`);
 };
 
