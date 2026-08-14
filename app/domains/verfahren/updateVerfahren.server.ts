@@ -1,4 +1,3 @@
-import { inspect } from "node:util";
 import { z } from "zod";
 import { VerfahrenAendernRequestSchema } from "~/domains/verfahren/createVerfahren.server";
 import { VerfahrenSchema } from "~/domains/verfahren/schemas/verfahrenSchema";
@@ -23,12 +22,6 @@ export default async function updateVerfahren(
     includeResponseETag: true,
     errorMessage,
   });
-
-  // TODO: delete after implementation
-  console.log(
-    "verfahren in updateVerfahren",
-    inspect(verfahren, { depth: null }),
-  );
 
   return apiRequest({
     authData,
