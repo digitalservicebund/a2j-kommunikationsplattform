@@ -55,3 +55,24 @@ export function getBeteiligteTelefon(
     TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
   );
 }
+
+export function formatAnschrift(
+  anschrift: Anschrift | null | undefined,
+): string | null {
+  if (!anschrift) {
+    return null;
+  }
+
+  const strassenzeile = [anschrift.strasse, anschrift.hausnummer]
+    .filter(Boolean)
+    .join(" ");
+  const ortszeile = [anschrift.postleitzahl, anschrift.ort]
+    .filter(Boolean)
+    .join(" ");
+
+  return [strassenzeile, ortszeile].filter(Boolean).join(", ") || null;
+}
+
+export function formatKontakt(email: string, telefon: string): string | null {
+  return [email, telefon].filter(Boolean).join(", ") || null;
+}

@@ -15,11 +15,11 @@ import VerfahrenPrototypeHint from "~/components/verfahren/VerfahrenPrototypeHin
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import VerfahrenTimelineStepCard from "~/components/verfahren/VerfahrenTimelineStepCard";
 import {
-  getBeteiligteByRoleCode,
   getBeteiligteNamesByRoleCode,
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/beteiligteByRole";
+import { buildBeteiligteSummaryItems } from "~/domains/verfahren/buildBeteiligteSummaryItems";
 import {
   buildInitialTimelineStepData,
   getInitialEinreichungTimelineSteps,
@@ -101,6 +101,7 @@ export const action = async ({
 export default function VerfahrenNeuBearbeiten() {
   const { verfahren, einreichung, dokumente } = useLoaderData<LoaderData>();
   console.log("verfahren", verfahren);
+  console.log("dokumente", dokumente);
   const { routes, buttons, shared } = useTranslations();
 
   const klaegerinnenNamen = getBeteiligteNamesByRoleCode(
@@ -112,6 +113,14 @@ export default function VerfahrenNeuBearbeiten() {
     verfahren.beteiligungen,
     ROLE_CODE_BEKLAGTE,
     NOT_AVAILABLE_LABEL,
+  );
+  const klaegerinnenSummary = buildBeteiligteSummaryItems(
+    verfahren.beteiligungen,
+    ROLE_CODE_KLAEGERIN,
+  );
+  const beklagteSummary = buildBeteiligteSummaryItems(
+    verfahren.beteiligungen,
+    ROLE_CODE_BEKLAGTE,
   );
 
   const isReady = einreichung.einreichungsStatus.ergebnis === "GRUEN";
@@ -125,6 +134,12 @@ export default function VerfahrenNeuBearbeiten() {
     timelineSteps,
     verfahren.status_geaendert_am,
     {
+      klaeger: klaegerinnenSummary.length > 0,
+      beklagter: beklagteSummary.length > 0,
+      rubrum: Boolean(verfahren.kurzrubrum),
+      gericht: Boolean(verfahren.gericht),
+    },
+    {
       assetsTitle: routes.verfahrenNeu.step3.proceduralSteps.assets.title,
       filesAddedLabel:
         routes.verfahrenNeu.step3.proceduralSteps.assets.filesAddedLabel,
@@ -132,6 +147,14 @@ export default function VerfahrenNeuBearbeiten() {
         routes.verfahrenNeu.step3.proceduralSteps.addDetails.title,
       klageschriftUploadTitle:
         routes.verfahrenNeu.step3.proceduralSteps.klageschriftUpload.title,
+      klaegerLabel:
+        routes.verfahrenNeu.step3.proceduralSteps.addDetails.klaegerLabel,
+      beklagterLabel:
+        routes.verfahrenNeu.step3.proceduralSteps.addDetails.beklagterLabel,
+      rubrumLabel:
+        routes.verfahrenNeu.step3.proceduralSteps.addDetails.rubrumLabel,
+      gerichtLabel:
+        routes.verfahrenNeu.step3.proceduralSteps.addDetails.gerichtLabel,
     },
   );
 
@@ -253,19 +276,13 @@ export default function VerfahrenNeuBearbeiten() {
                         <VerfahrenBriefSummaryOfBeteiligte
                           notAvailableLabel={NOT_AVAILABLE_LABEL}
                           title={shared.beteiligte.klaegerLabel}
-                          beteiligte={getBeteiligteByRoleCode(
-                            verfahren.beteiligungen,
-                            ROLE_CODE_KLAEGERIN,
-                          )}
+                          beteiligte={klaegerinnenSummary}
                           fallbackLabel={shared.beteiligte.fallbackLabel}
                         />
                         <VerfahrenBriefSummaryOfBeteiligte
                           notAvailableLabel={NOT_AVAILABLE_LABEL}
                           title={shared.beteiligte.beklagteLabel}
-                          beteiligte={getBeteiligteByRoleCode(
-                            verfahren.beteiligungen,
-                            ROLE_CODE_BEKLAGTE,
-                          )}
+                          beteiligte={beklagteSummary}
                           fallbackLabel={shared.beteiligte.fallbackLabel}
                         />
                         <VerfahrenBriefSummaryOfGericht
@@ -583,15 +600,7 @@ export default function VerfahrenNeuBearbeiten() {
                           key={`${timelineStep.title}-${timelineStep.timelineLabel}`}
                           timelineLabel={timelineStep.timelineLabel}
                           title={timelineStep.title}
-                          body={
-                            timelineStep.highlightBody ? (
-                              <span className="bg-kern-feedback-info-background">
-                                {timelineStep.body}
-                              </span>
-                            ) : (
-                              timelineStep.body
-                            )
-                          }
+                          body={timelineStep.body}
                           editTo={editTo}
                           editLabel={shared.form.labels.edit}
                           showConnector={timelineStep.showConnector}

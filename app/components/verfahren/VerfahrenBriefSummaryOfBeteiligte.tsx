@@ -6,6 +6,8 @@ type Prozessbevollmaechtigte = {
 type Beteiligte = {
   id: string;
   name?: string | null;
+  anschrift?: string | null;
+  kontakt?: string | null;
   prozessbevollmaechtigte?: Prozessbevollmaechtigte[] | null;
 };
 
@@ -52,8 +54,8 @@ export default function VerfahrenBriefSummaryOfBeteiligte({
                   className="kern-description-list-item"
                 >
                   <dt className="kern-description-list-item__key">Anschrift</dt>
-                  <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
-                    {notAvailableLabel}
+                  <dd className="kern-description-list-item__value">
+                    {beteiligung.anschrift ?? notAvailableLabel}
                   </dd>
                 </div>
 
@@ -62,8 +64,8 @@ export default function VerfahrenBriefSummaryOfBeteiligte({
                   className="kern-description-list-item"
                 >
                   <dt className="kern-description-list-item__key">Kontakt</dt>
-                  <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
-                    {notAvailableLabel}
+                  <dd className="kern-description-list-item__value">
+                    {beteiligung.kontakt ?? notAvailableLabel}
                   </dd>
                 </div>
 

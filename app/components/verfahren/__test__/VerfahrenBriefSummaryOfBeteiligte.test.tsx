@@ -26,6 +26,8 @@ describe("VerfahrenBriefSummaryOfBeteiligte", () => {
           {
             id: "bet-1",
             name: "Erika Mustermann",
+            anschrift: "Musterstraße 1, 12345 Berlin",
+            kontakt: "erika@example.com, 0123456789",
             prozessbevollmaechtigte: [
               {
                 name: "RA Schmidt",
@@ -48,6 +50,12 @@ describe("VerfahrenBriefSummaryOfBeteiligte", () => {
     );
 
     expect(screen.getByText("Erika Mustermann")).toBeInTheDocument();
+    expect(
+      screen.getByText("Musterstraße 1, 12345 Berlin"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("erika@example.com, 0123456789"),
+    ).toBeInTheDocument();
     expect(
       screen.getByText("RA Schmidt (AZ-100), Unbekannt"),
     ).toBeInTheDocument();

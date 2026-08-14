@@ -255,6 +255,10 @@ export const de = {
           },
           addDetails: {
             title: "Verfahrensbeteiligte & Details erfasst",
+            klaegerLabel: "Kläger",
+            beklagterLabel: "Beklagter",
+            rubrumLabel: "Rubrum",
+            gerichtLabel: "Gericht",
           },
           klageschriftUpload: {
             title: "Klageschrift hochgeladen",
