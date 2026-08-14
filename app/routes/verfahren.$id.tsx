@@ -29,7 +29,6 @@ import loadVerfahrenEinreichungenOverview, {
 } from "~/domains/verfahren/loadVerfahrenEinreichungenOverview.server";
 import {
   NOT_AVAILABLE_LABEL,
-  PROTOTYPE_CLAIM_SUBJECT,
   PROTOTYPE_EINREICHUNG_ART,
   PROTOTYPE_EINREICHUNG_GZ,
 } from "~/domains/verfahren/presentationPlaceholders";
@@ -202,7 +201,8 @@ export default function VerfahrenId() {
                     </h2>
                     <div className="align-center kern-body kern-body--muted gap-kern-space-small flex flex-wrap">
                       <span>
-                        {routes.verfahrenNeu.step3.summary.aktenzeichen}
+                        {verfahren.aktenzeichen_gericht ??
+                          routes.verfahrenNeu.step3.summary.aktenzeichen}
                       </span>
                       <span>·</span>
                       <span>
@@ -210,8 +210,8 @@ export default function VerfahrenId() {
                           routes.verfahrenNeu.step3.summary.gericht}
                       </span>
                       <span>·</span>
-                      <span className="bg-kern-feedback-info-background">
-                        {PROTOTYPE_CLAIM_SUBJECT}
+                      <span>
+                        {verfahren.verfahrensgegenstand ?? NOT_AVAILABLE_LABEL}
                       </span>
                     </div>
                   </div>
@@ -380,8 +380,9 @@ export default function VerfahrenId() {
                                           .additionalData.rubrumLabel
                                       }
                                     </dt>
-                                    <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
-                                      {NOT_AVAILABLE_LABEL}
+                                    <dd className="kern-description-list-item__value">
+                                      {verfahren.kurzrubrum ??
+                                        NOT_AVAILABLE_LABEL}
                                     </dd>
                                   </div>
                                   <div className="kern-description-list-item">
@@ -393,8 +394,9 @@ export default function VerfahrenId() {
                                           .verfahrensgegenstandLabel
                                       }
                                     </dt>
-                                    <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
-                                      {verfahren.verfahrensgegenstand}
+                                    <dd className="kern-description-list-item__value">
+                                      {verfahren.verfahrensgegenstand ??
+                                        NOT_AVAILABLE_LABEL}
                                     </dd>
                                   </div>
                                 </dl>
