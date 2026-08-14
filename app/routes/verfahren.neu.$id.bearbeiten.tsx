@@ -89,32 +89,32 @@ const DokumentUploadSchema = z.object({
 
 // Dev-only convenience data for the "Fill details with dummy data" button below.
 const DUMMY_FORM_VALUES: Record<string, string> = {
-  klagendeParteiVorname: "Emilia",
-  klagendeParteiNachname: "Kühn",
-  klagendeParteiStrasse: "Bockenheimer Landstraße",
-  klagendeParteiHausnummer: "42-44",
-  klagendeParteiPlz: "60323",
-  klagendeParteiOrt: "Frankfurt am Main",
-  klagendeParteiEmail: "emiliakuehn@posteo.de",
-  klagendeParteiTelefon: "06921994731",
-  lawyerName: "Kanzlei Böhm",
-  lawyerStrasse: "Römerberg",
+  klagendeParteiVorname: "Test-Klaeger-Vorname",
+  klagendeParteiNachname: "Test-Klaeger-Nachname",
+  klagendeParteiStrasse: "Teststraße",
+  klagendeParteiHausnummer: "1",
+  klagendeParteiPlz: "12345",
+  klagendeParteiOrt: "Testort",
+  klagendeParteiEmail: "test-klaeger@test.de",
+  klagendeParteiTelefon: "0123456789",
+  lawyerName: "Test-Kanzlei",
+  lawyerStrasse: "Teststraße",
   lawyerHausnummer: "2",
-  lawyerPlz: "60311",
-  lawyerOrt: "Frankfurt am Main",
-  lawyerEmail: "kanzlei@ra-boehm.de",
-  lawyerTelefon: "06921994731",
-  beklagteParteiVorname: "Max",
-  beklagteParteiNachname: "Mustermann",
-  beklagteParteiStrasse: "Zeil",
-  beklagteParteiHausnummer: "100",
-  beklagteParteiPlz: "60313",
-  beklagteParteiOrt: "Frankfurt am Main",
-  beklagteParteiEmail: "max.mustermann@example.com",
-  beklagteParteiTelefon: "06912345678",
-  claimRubrum: "Testrubrum",
+  lawyerPlz: "12345",
+  lawyerOrt: "Testort",
+  lawyerEmail: "test-kanzlei@test.de",
+  lawyerTelefon: "0123456789",
+  beklagteParteiVorname: "Test-Beklagte-Vorname",
+  beklagteParteiNachname: "Test-Beklagte-Nachname",
+  beklagteParteiStrasse: "Teststraße",
+  beklagteParteiHausnummer: "3",
+  beklagteParteiPlz: "12345",
+  beklagteParteiOrt: "Testort",
+  beklagteParteiEmail: "test-beklagte@test.de",
+  beklagteParteiTelefon: "0123456789",
+  claimRubrum: "Test-Rubrum",
   claimReference: "AZ-TEST-001",
-  subjectMatterOfTheProceedings: "Zahlungsklage wegen offener Rechnung",
+  subjectMatterOfTheProceedings: "Test-Verfahrensgegenstand",
 };
 
 function fillFormFields(form: HTMLFormElement, values: Record<string, string>) {
@@ -425,8 +425,6 @@ export default function VerfahrenNeuBearbeiten() {
     }
   }, [actionData, navigation.state]);
 
-  // @TODO: sync input fields with API response/result schemas
-  // and maybe move this into a getter/setter helper for other routes?
   const klagendePartei = getBeteiligungByRoleCode(
     verfahren.beteiligungen,
     ROLE_CODE_KLAEGERIN,
@@ -458,9 +456,10 @@ export default function VerfahrenNeuBearbeiten() {
   const beklagteParteiEmail = getBeteiligteEmail(beklagtePartei);
   const beklagteParteiTelefon = getBeteiligteTelefon(beklagtePartei);
   // A Prozessbevollmächtigter is its own Beteiligte (a RaKanzlei), linked to
-  // the party it represents via its Rolle.referenz — which we set to the
-  // represented party's rollennummer when writing (see updateVerfahren
-  // action below).
+  // the party it represents via its Rolle.referenz. We don't track a separate
+  // rollennummer scheme — we just reuse the represented party's role code
+  // (e.g. ROLE_CODE_KLAEGERIN) as both its rollennummer and the lawyer's
+  // referenz when writing (see updateVerfahren action below).
   const klagendeParteiAnwalt = getProzessbevollmaechtigteByReferenz(
     verfahren.beteiligungen,
     ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
