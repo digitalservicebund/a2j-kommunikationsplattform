@@ -1,10 +1,12 @@
 type Rolle = {
   rollenbezeichnung?: { code?: string | null } | null;
   geschaeftszeichen?: string | null;
+  referenz?: string | null;
 };
 
 type Beteiligte = {
   id?: string;
+  beteiligtenart?: string;
   nachname?: string | null;
   vorname?: string | null;
   bezeichnung?: string | null;
@@ -69,4 +71,20 @@ export function getBeteiligteNamesByRoleCode<T extends Beteiligte>(
   }
 
   return names.join(", ");
+}
+
+export function getProzessbevollmaechtigteByReferenz<T extends Beteiligte>(
+  beteiligte: T[] | null | undefined,
+  rollenbezeichnungCode: string,
+  referenz: string,
+): T | undefined {
+  return beteiligte?.find(
+    (beteiligung) =>
+      beteiligung.beteiligtenart === "raKanzlei" &&
+      beteiligung.rollen?.some(
+        (rolle) =>
+          rolle.rollenbezeichnung?.code === rollenbezeichnungCode &&
+          rolle.referenz === referenz,
+      ),
+  );
 }

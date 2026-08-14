@@ -22,6 +22,7 @@ import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import { config } from "~/config/config";
 import {
   getBeteiligungByRoleCode,
+  getProzessbevollmaechtigteByReferenz,
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/beteiligteByRole";
@@ -456,12 +457,29 @@ export default function VerfahrenNeuBearbeiten() {
   const klagendeParteiTelefon = getBeteiligteTelefon(klagendePartei);
   const beklagteParteiEmail = getBeteiligteEmail(beklagtePartei);
   const beklagteParteiTelefon = getBeteiligteTelefon(beklagtePartei);
-  // @TODO: the API no longer nests a "prozessbevollmaechtigte" list on a
-  // Beteiligte — a Prozessbevollmächtigter is now its own Beteiligte (a
-  // RaKanzlei) linked via Rolle.referenz. That linking isn't implemented
-  // yet, so we can't reliably pre-fill an existing lawyer.
-  const klagendeParteiLawyerName = "";
-  const hasExistingLawyer = false;
+  // A Prozessbevollmächtigter is its own Beteiligte (a RaKanzlei), linked to
+  // the party it represents via its Rolle.referenz — which we set to the
+  // represented party's rollennummer when writing (see updateVerfahren
+  // action below).
+  const klagendeParteiAnwalt = getProzessbevollmaechtigteByReferenz(
+    verfahren.beteiligungen,
+    ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+    ROLE_CODE_KLAEGERIN,
+  );
+  const klagendeParteiLawyerName =
+    klagendeParteiAnwalt && "bezeichnung" in klagendeParteiAnwalt
+      ? (klagendeParteiAnwalt.bezeichnung ?? "")
+      : "";
+  const klagendeParteiAnwaltAnschrift =
+    getBeteiligteAnschrift(klagendeParteiAnwalt);
+  const klagendeParteiAnwaltEmail = getBeteiligteEmail(klagendeParteiAnwalt);
+  const klagendeParteiAnwaltTelefon =
+    getBeteiligteTelefon(klagendeParteiAnwalt);
+  const klagendeParteiAnwaltKanzleiformId =
+    klagendeParteiAnwalt && "kanzleiform" in klagendeParteiAnwalt
+      ? (klagendeParteiAnwalt.kanzleiform?.id ?? "")
+      : "";
+  const hasExistingLawyer = Boolean(klagendeParteiAnwalt);
   const courtId = verfahren.gericht?.id ?? "";
   const claimReference = verfahren.aktenzeichen_gericht ?? "";
 
@@ -797,6 +815,9 @@ export default function VerfahrenNeuBearbeiten() {
                             }
                             placeholder={shared.form.select.placeholder}
                             kanzleiformenPromise={kanzleiformen}
+                            initialSelectedValue={
+                              klagendeParteiAnwaltKanzleiformId
+                            }
                             required
                           />
 
@@ -813,6 +834,9 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-strasse"
                                 name="lawyerStrasse"
                                 type="text"
+                                defaultValue={
+                                  klagendeParteiAnwaltAnschrift?.strasse ?? ""
+                                }
                               />
                             </div>
                             <div className="kern-form-input flex-1">
@@ -827,6 +851,10 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-hausnummer"
                                 name="lawyerHausnummer"
                                 type="text"
+                                defaultValue={
+                                  klagendeParteiAnwaltAnschrift?.hausnummer ??
+                                  ""
+                                }
                               />
                             </div>
                           </div>
@@ -844,6 +872,10 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-plz"
                                 name="lawyerPlz"
                                 type="text"
+                                defaultValue={
+                                  klagendeParteiAnwaltAnschrift?.postleitzahl ??
+                                  ""
+                                }
                               />
                             </div>
                             <div className="kern-form-input flex-2">
@@ -858,6 +890,9 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-ort"
                                 name="lawyerOrt"
                                 type="text"
+                                defaultValue={
+                                  klagendeParteiAnwaltAnschrift?.ort ?? ""
+                                }
                               />
                             </div>
                           </div>
@@ -875,6 +910,7 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-email"
                                 name="lawyerEmail"
                                 type="email"
+                                defaultValue={klagendeParteiAnwaltEmail}
                               />
                             </div>
                             <div className="kern-form-input flex-1">
@@ -889,6 +925,7 @@ export default function VerfahrenNeuBearbeiten() {
                                 id="lawyer-telefon"
                                 name="lawyerTelefon"
                                 type="tel"
+                                defaultValue={klagendeParteiAnwaltTelefon}
                               />
                             </div>
                           </div>
