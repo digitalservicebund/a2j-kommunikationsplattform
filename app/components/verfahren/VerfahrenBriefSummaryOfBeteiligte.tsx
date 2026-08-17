@@ -31,7 +31,6 @@ export default function VerfahrenBriefSummaryOfBeteiligte({
   fallbackLabel,
   notAvailableLabel,
 }: Readonly<VerfahrenBriefSummaryOfBeteiligteProps>) {
-  console.log("beteiligte", beteiligte);
   return (
     <div className="p-kern-space-default space-y-kern-space-default rounded-kern-default border border-(--kern-color-decorative-border-contextual)">
       <h3 className="kern-heading-small pb-kern-space-default border-b border-(--kern-color-decorative-border-contextual) px-0">

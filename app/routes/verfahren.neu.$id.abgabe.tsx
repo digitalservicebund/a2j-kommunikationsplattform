@@ -123,6 +123,9 @@ export default function VerfahrenNeuBearbeiten() {
     ROLE_CODE_BEKLAGTE,
   );
 
+  const rubrum =
+    verfahren.kurzrubrum || `${klaegerinnenNamen} ./. ${beklagteNamen}`;
+
   const isReady = einreichung.einreichungsStatus.ergebnis === "GRUEN";
   const readinessLabel = isReady
     ? routes.verfahrenNeu.step3.summary.badgeLabels.ready
@@ -246,9 +249,7 @@ export default function VerfahrenNeuBearbeiten() {
                     <div className="kern-card__container">
                       <div className="algin-start gap-kern-space-default flex w-full flex-wrap items-start">
                         <div className="flex-1">
-                          <h2 className="kern-heading-medium">
-                            {`${klaegerinnenNamen} ./. ${beklagteNamen}`}
-                          </h2>
+                          <h2 className="kern-heading-medium">{rubrum}</h2>
                           <div className="align-center kern-body kern-body--muted gap-kern-space-small flex flex-wrap">
                             <span>
                               {verfahren.aktenzeichen_gericht ??
