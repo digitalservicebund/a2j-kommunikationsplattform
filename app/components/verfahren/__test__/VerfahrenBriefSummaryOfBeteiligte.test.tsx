@@ -36,12 +36,27 @@ describe("VerfahrenBriefSummaryOfBeteiligte", () => {
                 anschrift: "Kanzleistraße 5, 54321 Hamburg",
                 email: "schmidt@kanzlei.de",
               },
+              {
+                name: "Kanzlei Böhm",
+                aktenzeichen: null,
+                anschrift: null,
+                email: null,
+              },
+              {
+                name: null,
+                aktenzeichen: null,
+                anschrift: null,
+                email: null,
+              },
             ],
           },
           {
             id: "bet-2",
             name: null,
-            prozessbevollmaechtigte: null,
+            anschrift: null,
+            email: null,
+            telefon: null,
+            prozessbevollmaechtigte: [],
           },
         ]}
         fallbackLabel="Keine Beteiligten vorhanden"
@@ -60,8 +75,9 @@ describe("VerfahrenBriefSummaryOfBeteiligte", () => {
       screen.getByText("Kanzleistraße 5, 54321 Hamburg"),
     ).toBeInTheDocument();
     expect(screen.getByText("schmidt@kanzlei.de")).toBeInTheDocument();
+    expect(screen.getByText("Kanzlei Böhm")).toBeInTheDocument();
 
     const unknownValues = screen.getAllByText("Unbekannt");
-    expect(unknownValues.length).toBeGreaterThanOrEqual(5);
+    expect(unknownValues.length).toBeGreaterThanOrEqual(7);
   });
 });

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   getBeteiligteByRoleCode,
+  getBeteiligteDisplayName,
   getBeteiligteNamesByRoleCode,
   getBeteiligungByRoleCode,
   getProzessbevollmaechtigteByReferenz,
@@ -120,5 +121,33 @@ describe("getProzessbevollmaechtigteByReferenz", () => {
     );
 
     expect(result).toBeUndefined();
+  });
+});
+
+describe("getBeteiligteDisplayName", () => {
+  test("joins vorname and nachname when nachname is present", () => {
+    expect(
+      getBeteiligteDisplayName({ vorname: "Emilia", nachname: "Kühn" }),
+    ).toBe("Emilia Kühn");
+  });
+
+  test("uses just nachname when vorname is missing", () => {
+    expect(getBeteiligteDisplayName({ vorname: null, nachname: "Kühn" })).toBe(
+      "Kühn",
+    );
+  });
+
+  test("falls back to bezeichnung when there is no nachname", () => {
+    expect(getBeteiligteDisplayName({ bezeichnung: "Kanzlei Böhm" })).toBe(
+      "Kanzlei Böhm",
+    );
+  });
+
+  test("returns undefined when neither nachname nor bezeichnung is present", () => {
+    expect(getBeteiligteDisplayName({})).toBeUndefined();
+  });
+
+  test("returns undefined for a missing beteiligung", () => {
+    expect(getBeteiligteDisplayName(undefined)).toBeUndefined();
   });
 });

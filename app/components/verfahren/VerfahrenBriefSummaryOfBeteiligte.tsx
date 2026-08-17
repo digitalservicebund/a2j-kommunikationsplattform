@@ -1,9 +1,7 @@
-type Prozessbevollmaechtigte = {
-  name?: string | null;
-  aktenzeichen?: string | null;
-  anschrift?: string | null;
-  email?: string | null;
-};
+import type {
+  BeteiligteSummaryItem,
+  ProzessbevollmaechtigterSummaryItem,
+} from "~/domains/verfahren/buildBeteiligteSummaryItems";
 
 type VerfahrenBriefSummaryOfBeteiligteProps = {
   title: string;
@@ -13,7 +11,7 @@ type VerfahrenBriefSummaryOfBeteiligteProps = {
 };
 
 function formatVertretungName(
-  prozessbevollmaechtigte: Prozessbevollmaechtigte,
+  prozessbevollmaechtigte: ProzessbevollmaechtigterSummaryItem,
   notAvailableLabel: string,
 ): string {
   const name = prozessbevollmaechtigte.name ?? notAvailableLabel;

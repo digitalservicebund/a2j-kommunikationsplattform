@@ -85,6 +85,50 @@ describe("buildBeteiligungFromFormValues", () => {
     expect(result?.anschriften).toBeNull();
   });
 
+  it("nulls out the individual address fields that were left empty", () => {
+    const partei: ParteiFormValues = {
+      ...emptyPartei,
+      nachname: "Kühn",
+      postleitzahl: "60323",
+    };
+
+    const result = buildBeteiligungFromFormValues(partei, codeIds);
+
+    expect(result?.anschriften).toEqual([
+      {
+        anschriftstyp_id: "typ-1",
+        strasse: null,
+        hausnummer: null,
+        postleitzahl: "60323",
+        ort: null,
+        postfachnummer: null,
+        staat_id: "staat-1",
+      },
+    ]);
+  });
+
+  it("nulls out postleitzahl when only ort was provided", () => {
+    const partei: ParteiFormValues = {
+      ...emptyPartei,
+      nachname: "Kühn",
+      ort: "Frankfurt am Main",
+    };
+
+    const result = buildBeteiligungFromFormValues(partei, codeIds);
+
+    expect(result?.anschriften).toEqual([
+      {
+        anschriftstyp_id: "typ-1",
+        strasse: null,
+        hausnummer: null,
+        postleitzahl: null,
+        ort: "Frankfurt am Main",
+        postfachnummer: null,
+        staat_id: "staat-1",
+      },
+    ]);
+  });
+
   it("only includes the email contact when no phone was provided", () => {
     const partei: ParteiFormValues = {
       ...emptyPartei,
