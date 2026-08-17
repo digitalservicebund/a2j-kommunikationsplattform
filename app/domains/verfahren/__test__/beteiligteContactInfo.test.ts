@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   formatAnschrift,
-  formatKontakt,
   getBeteiligteAnschrift,
   getBeteiligteEmail,
   getBeteiligteTelefon,
@@ -84,23 +83,5 @@ describe("formatAnschrift", () => {
         ort: null,
       }),
     ).toBeNull();
-  });
-});
-
-describe("formatKontakt", () => {
-  it("joins email and phone", () => {
-    expect(formatKontakt("emiliakuehn@posteo.de", "06921994731")).toBe(
-      "emiliakuehn@posteo.de, 06921994731",
-    );
-  });
-
-  it("returns just the email when there is no phone", () => {
-    expect(formatKontakt("emiliakuehn@posteo.de", "")).toBe(
-      "emiliakuehn@posteo.de",
-    );
-  });
-
-  it("returns null when neither is present", () => {
-    expect(formatKontakt("", "")).toBeNull();
   });
 });

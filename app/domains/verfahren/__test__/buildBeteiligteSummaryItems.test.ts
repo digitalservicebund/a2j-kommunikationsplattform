@@ -48,6 +48,16 @@ const beteiligungen = [
         },
         verbindung: "emiliakuehn@posteo.de",
       },
+      {
+        id: "t-2",
+        telekommunikationsart: {
+          id: "tk-2",
+          wert: "Mobiltelefon",
+          code: "004",
+          beschreibung: null,
+        },
+        verbindung: "06921994731",
+      },
     ],
   },
   {
@@ -69,8 +79,30 @@ const beteiligungen = [
         referenz: ROLE_CODE_KLAEGERIN,
       },
     ],
-    anschriften: null,
-    telekommunikation: null,
+    anschriften: [
+      {
+        id: "a-2",
+        anschriftstyp: { id: "at-1", wert: "Privatanschrift", code: "017" },
+        strasse: "Römerberg",
+        hausnummer: "2",
+        postleitzahl: "60311",
+        ort: "Frankfurt am Main",
+        postfachnummer: null,
+        staat: { id: "s-1", wert: "Deutschland", code: "000" },
+      },
+    ],
+    telekommunikation: [
+      {
+        id: "t-3",
+        telekommunikationsart: {
+          id: "tk-1",
+          wert: "E-Mail",
+          code: "001",
+          beschreibung: null,
+        },
+        verbindung: "kanzlei@ra-boehm.de",
+      },
+    ],
   },
   {
     beteiligtenart: "natuerlichePerson" as const,
@@ -98,7 +130,7 @@ const beteiligungen = [
 ];
 
 describe("buildBeteiligteSummaryItems", () => {
-  it("builds the Klägerin summary with address, contact and lawyer", () => {
+  it("builds the Klägerin summary with address, email, phone and lawyer details", () => {
     const result = buildBeteiligteSummaryItems(
       beteiligungen,
       ROLE_CODE_KLAEGERIN,
@@ -109,8 +141,16 @@ describe("buildBeteiligteSummaryItems", () => {
         id: "bet-1",
         name: "Emilia Kühn",
         anschrift: "Bockenheimer Landstraße 42-44, 60323 Frankfurt am Main",
-        kontakt: "emiliakuehn@posteo.de",
-        prozessbevollmaechtigte: [{ name: "Kanzlei Böhm", aktenzeichen: null }],
+        email: "emiliakuehn@posteo.de",
+        telefon: "06921994731",
+        prozessbevollmaechtigte: [
+          {
+            name: "Kanzlei Böhm",
+            aktenzeichen: null,
+            anschrift: "Römerberg 2, 60311 Frankfurt am Main",
+            email: "kanzlei@ra-boehm.de",
+          },
+        ],
       },
     ]);
   });
@@ -126,7 +166,8 @@ describe("buildBeteiligteSummaryItems", () => {
         id: "bet-3",
         name: "Max Mustermann",
         anschrift: null,
-        kontakt: null,
+        email: null,
+        telefon: null,
         prozessbevollmaechtigte: [],
       },
     ]);

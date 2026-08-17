@@ -18,7 +18,7 @@ describe("VerfahrenBriefSummaryOfBeteiligte", () => {
     expect(screen.getByText("Keine Beteiligten vorhanden")).toBeInTheDocument();
   });
 
-  it("renders beteiligte details with formatted vertretung values", () => {
+  it("renders beteiligte details with separate email/telefon and the Vertretung's own address/contact", () => {
     render(
       <VerfahrenBriefSummaryOfBeteiligte
         title="Beklagte"
@@ -27,14 +27,14 @@ describe("VerfahrenBriefSummaryOfBeteiligte", () => {
             id: "bet-1",
             name: "Erika Mustermann",
             anschrift: "Musterstraße 1, 12345 Berlin",
-            kontakt: "erika@example.com, 0123456789",
+            email: "erika@example.com",
+            telefon: "0123456789",
             prozessbevollmaechtigte: [
               {
                 name: "RA Schmidt",
                 aktenzeichen: "AZ-100",
-              },
-              {
-                name: null,
+                anschrift: "Kanzleistraße 5, 54321 Hamburg",
+                email: "schmidt@kanzlei.de",
               },
             ],
           },
@@ -53,14 +53,15 @@ describe("VerfahrenBriefSummaryOfBeteiligte", () => {
     expect(
       screen.getByText("Musterstraße 1, 12345 Berlin"),
     ).toBeInTheDocument();
+    expect(screen.getByText("erika@example.com")).toBeInTheDocument();
+    expect(screen.getByText("0123456789")).toBeInTheDocument();
+    expect(screen.getByText("RA Schmidt (AZ-100)")).toBeInTheDocument();
     expect(
-      screen.getByText("erika@example.com, 0123456789"),
+      screen.getByText("Kanzleistraße 5, 54321 Hamburg"),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText("RA Schmidt (AZ-100), Unbekannt"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("schmidt@kanzlei.de")).toBeInTheDocument();
 
     const unknownValues = screen.getAllByText("Unbekannt");
-    expect(unknownValues.length).toBeGreaterThanOrEqual(4);
+    expect(unknownValues.length).toBeGreaterThanOrEqual(5);
   });
 });
