@@ -293,40 +293,49 @@ export const action = async ({
       ),
     };
 
+    const klagendeParteiBeteiligung = buildBeteiligungFromFormValues(
+      getParteiFormValues(formData, "klagendePartei"),
+      {
+        ...sharedCodeIds,
+        rollenbezeichnungId: resolveCodeWertId(
+          rollenbezeichnungen,
+          ROLE_CODE_KLAEGERIN,
+        ),
+      },
+      ROLE_CODE_KLAEGERIN,
+    );
+    const beklagteParteiBeteiligung = buildBeteiligungFromFormValues(
+      getParteiFormValues(formData, "beklagtePartei"),
+      {
+        ...sharedCodeIds,
+        rollenbezeichnungId: resolveCodeWertId(
+          rollenbezeichnungen,
+          ROLE_CODE_BEKLAGTE,
+        ),
+      },
+    );
+    // Only include the Prozessbevollmächtigte(r) if the Klägerin they
+    // reference is actually part of this submission — otherwise their
+    // Rolle.referenz would be an orphan, pointing at a party that no longer exists.
+    const anwaltBeteiligung = klagendeParteiBeteiligung
+      ? buildRaKanzleiFromFormValues(
+          getAnwaltFormValues(formData),
+          {
+            ...sharedCodeIds,
+            rollenbezeichnungId: resolveCodeWertId(
+              rollenbezeichnungen,
+              ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+            ),
+            kanzleiformId: getFormText(formData, "lawyerKanzleiformId"),
+          },
+          ROLE_CODE_KLAEGERIN,
+        )
+      : null;
+
     const beteiligungen = [
-      buildBeteiligungFromFormValues(
-        getParteiFormValues(formData, "klagendePartei"),
-        {
-          ...sharedCodeIds,
-          rollenbezeichnungId: resolveCodeWertId(
-            rollenbezeichnungen,
-            ROLE_CODE_KLAEGERIN,
-          ),
-        },
-        ROLE_CODE_KLAEGERIN,
-      ),
-      buildBeteiligungFromFormValues(
-        getParteiFormValues(formData, "beklagtePartei"),
-        {
-          ...sharedCodeIds,
-          rollenbezeichnungId: resolveCodeWertId(
-            rollenbezeichnungen,
-            ROLE_CODE_BEKLAGTE,
-          ),
-        },
-      ),
-      buildRaKanzleiFromFormValues(
-        getAnwaltFormValues(formData),
-        {
-          ...sharedCodeIds,
-          rollenbezeichnungId: resolveCodeWertId(
-            rollenbezeichnungen,
-            ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
-          ),
-          kanzleiformId: getFormText(formData, "lawyerKanzleiformId"),
-        },
-        ROLE_CODE_KLAEGERIN,
-      ),
+      klagendeParteiBeteiligung,
+      beklagteParteiBeteiligung,
+      anwaltBeteiligung,
     ].filter((beteiligung) => beteiligung !== null);
 
     const formValues = {
