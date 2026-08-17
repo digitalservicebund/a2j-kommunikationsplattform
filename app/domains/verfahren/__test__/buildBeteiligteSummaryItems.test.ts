@@ -127,6 +127,25 @@ const beteiligungen = [
     anschriften: null,
     telekommunikation: null,
   },
+  {
+    beteiligtenart: "natuerlichePerson" as const,
+    id: "bet-4",
+    vorname: null,
+    nachname: "",
+    titel: null,
+    namensvorsatz: null,
+    rollen: [
+      {
+        id: "rolle-4",
+        rollennummer: null,
+        rollenbezeichnung: { id: "rb-4", wert: "Sonstige", code: "500" },
+        geschaeftszeichen: null,
+        referenz: null,
+      },
+    ],
+    anschriften: null,
+    telekommunikation: null,
+  },
 ];
 
 describe("buildBeteiligteSummaryItems", () => {
@@ -175,6 +194,21 @@ describe("buildBeteiligteSummaryItems", () => {
 
   it("returns an empty array when there is no beteiligung for the role", () => {
     expect(buildBeteiligteSummaryItems(beteiligungen, "999")).toEqual([]);
+  });
+
+  it("falls back to a null name when neither nachname nor bezeichnung resolve to a value", () => {
+    const result = buildBeteiligteSummaryItems(beteiligungen, "500");
+
+    expect(result).toEqual([
+      {
+        id: "bet-4",
+        name: null,
+        anschrift: null,
+        email: null,
+        telefon: null,
+        prozessbevollmaechtigte: [],
+      },
+    ]);
   });
 
   it("returns an empty array when beteiligungen is null", () => {
