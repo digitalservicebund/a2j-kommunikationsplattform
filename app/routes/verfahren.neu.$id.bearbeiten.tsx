@@ -656,6 +656,7 @@ export default function VerfahrenNeuBearbeiten() {
                             name="klagendeParteiNachname"
                             type="text"
                             defaultValue={klagendeParteiLastName}
+                            required
                           />
                         </div>
                       </div>
@@ -987,6 +988,7 @@ export default function VerfahrenNeuBearbeiten() {
                             name="beklagteParteiNachname"
                             type="text"
                             defaultValue={beklagteParteiLastName}
+                            required
                           />
                         </div>
                       </div>
