@@ -29,3 +29,13 @@ export const EinreichungSchema = z.object({
 });
 
 export const EinreichungenSchema = getListeResponseSchema(EinreichungSchema);
+
+/**
+ * EinreichenResponse
+ *
+ * Response of the "Einreichen" action, see:
+ * https://app.kompla-justiz.sinc.de/main/swagger/index.html
+ */
+export const EinreichenResponseSchema = z.object({
+  beleg_id: z.string(),
+});
