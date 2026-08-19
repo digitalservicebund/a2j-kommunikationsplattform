@@ -46,6 +46,10 @@ fileignoreconfig:
   checksum: 64e5e6fe7a7787a6c84f3c8ac347e54a421c400c6982b46ee2b6d4dd4497af75
 - filename: .github/workflows/dependabot-auto-merge.yml
   checksum: d38b76a2ffd2efaba9093bff446eb840f94327845cb588333b2405f4572605b3
+- filename: prototype/Kommunikationsplattform-Post-MVP.html
+  checksum: 1ed102775018be5f6feaae0b744620556c237651a828224926e1604e7bfd2910
+- filename: prototype/Kommunikationsplattform-MVP-Prototyp.html
+  checksum: 4e65e28cc0b8688025a800cdbbbb4d6da9e9de05580455050bee90035d1c892a
 - filename: app/components/hooks/**test**/useLogoutInactiveUser.test.tsx
   ignore_detectors: [filecontent]
 - filename: app/config/config.server.ts
