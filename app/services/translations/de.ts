@@ -226,6 +226,9 @@ export const de = {
           badgeLabels: {
             ready: "Bereit zur Abgabe",
             soon: "Noch wenige Schritte zur Abgabe",
+            checking: "Prüfung läuft",
+            problem: "Es liegt ein Problem vor",
+            warning: "Es liegen Hinweise vor",
           },
         },
         proceduralSteps: {
