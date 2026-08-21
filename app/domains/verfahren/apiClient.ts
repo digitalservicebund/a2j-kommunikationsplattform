@@ -29,6 +29,7 @@ type ApiRequestOptions = ApiRequestUrlOptions & {
   throwOnError?: boolean;
   schema?: z.ZodTypeAny;
   errorMessage?: string; // error message used for logging/parsing helpers
+  responseType?: "json" | "text"; // defaults to "json"; use "text" for non-JSON bodies (e.g. XML)
 };
 
 export type ApiRequestWithETagResult<T> = {
@@ -122,6 +123,7 @@ function hasNoResponseBody(responseBody: ResponseBodyType): boolean {
 
 async function readResponseBody(
   response: Response,
+  responseType: "json" | "text",
   errorMessage: string,
 ): Promise<unknown> {
   // 204/205 responses intentionally have no body.
@@ -130,9 +132,15 @@ async function readResponseBody(
   }
 
   try {
-    return await response.json();
+    return responseType === "text"
+      ? await response.text()
+      : await response.json();
   } catch (error) {
-    logParsingErrorAndThrow(error, errorMessage, "[unparsable JSON response]");
+    const unparsableBodyMessage =
+      responseType === "text"
+        ? "[unparsable text response]"
+        : "[unparsable JSON response]";
+    logParsingErrorAndThrow(error, errorMessage, unparsableBodyMessage);
   }
 }
 
@@ -211,6 +219,7 @@ export async function apiRequest<T = unknown>(
     throwOnError = true,
     schema,
     errorMessage,
+    responseType = "json",
   } = opts;
 
   const bearerToken = await getBearerToken(authData);
@@ -223,7 +232,7 @@ export async function apiRequest<T = unknown>(
 
   const headers: Record<string, string> = {
     Authorization: `Bearer ${bearerToken}`,
-    Accept: "application/json",
+    Accept: responseType === "text" ? "*/*" : "application/json",
     ...customHeaders,
   };
 
@@ -283,6 +292,7 @@ export async function apiRequest<T = unknown>(
 
   const responseBody = await readResponseBody(
     response,
+    responseType,
     errorMessage ?? "Failed to read/parse the response as JSON.",
   );
   const parsedData = parseSchemaOrThrow<T>(

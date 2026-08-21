@@ -51,6 +51,7 @@ import loadVerfahrenEinreichungBundle, {
   EinreichungWithStatus,
   Verfahren,
 } from "~/domains/verfahren/loadVerfahrenEinreichungBundle.server";
+import regenerateEinreichungXJustiz from "~/domains/verfahren/regenerateEinreichungXJustiz.server";
 import resolveCodeWertId from "~/domains/verfahren/resolveCodeWertId";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.server";
 import { CodeWertSchema } from "~/domains/verfahren/schemas/codeWertSchema";
@@ -356,6 +357,12 @@ export const action = async ({
     }
 
     await updateVerfahren(authData, verfahrenId, validatedForm.data);
+
+    const einreichungId = formData.get("einreichungId") as string;
+    await regenerateEinreichungXJustiz(authData, {
+      verfahrenId,
+      einreichungId,
+    });
 
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   }
