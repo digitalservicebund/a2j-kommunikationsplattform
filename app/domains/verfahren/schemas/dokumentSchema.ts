@@ -62,7 +62,8 @@ export const DokumentErstellenResponseSchema = z.object({
   hash: z.string(),
   hash_algorithmus: z.string(),
   typ: DokumentTypeSchema,
-  erstellt_von: z.string(),
+  // TODO: remove the nullable part after confirming it with SINC
+  erstellt_von: z.nullable(z.string()),
   erstellt_am: z.string(),
   sichtbarkeit_alle: z.boolean(),
 });

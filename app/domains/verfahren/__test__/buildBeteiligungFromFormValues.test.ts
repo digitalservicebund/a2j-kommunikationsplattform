@@ -198,7 +198,7 @@ describe("buildRaKanzleiFromFormValues", () => {
     ).toEqual({
       beteiligtenart: "raKanzlei",
       bezeichnung: "Kanzlei Böhm",
-      rechtsform: null,
+      rechtsform_id: null,
       kanzleiform_id: "kanzleiform-1",
       rollen: [
         {
