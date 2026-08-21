@@ -214,7 +214,7 @@ describe("fetchVerfahren", () => {
 
       await expect(result).rejects.toThrow();
     });
-    it("includes search_text parameter when provided", async () => {
+    it("includes suchbegriff parameter when search_text is provided", async () => {
       mocks.getBearerToken.mockResolvedValue("test-token");
       mocks.fetch.mockResolvedValue({
         ok: true,
@@ -227,11 +227,11 @@ describe("fetchVerfahren", () => {
       });
 
       expect(mocks.fetch).toHaveBeenCalledWith(
-        expect.stringContaining("search_text=legal+case"),
+        expect.stringContaining("suchbegriff=legal+case"),
         expect.any(Object),
       );
     });
-    it("excludes search_text parameter when null", async () => {
+    it("excludes suchbegriff parameter when search_text is null", async () => {
       mocks.getBearerToken.mockResolvedValue("test-token");
       mocks.fetch.mockResolvedValue({
         ok: true,
@@ -240,11 +240,11 @@ describe("fetchVerfahren", () => {
       const mockRequest = mockAuthData;
       await fetchVerfahren(mockRequest, { search_text: null });
       expect(mocks.fetch).toHaveBeenCalledWith(
-        expect.not.stringContaining("search_text="),
+        expect.not.stringContaining("suchbegriff="),
         expect.any(Object),
       );
     });
-    it("trims whitespace from search_text parameter", async () => {
+    it("trims whitespace from search_text before sending as suchbegriff", async () => {
       mocks.getBearerToken.mockResolvedValue("test-token");
       mocks.fetch.mockResolvedValue({
         ok: true,
@@ -257,7 +257,7 @@ describe("fetchVerfahren", () => {
       });
 
       expect(mocks.fetch).toHaveBeenCalledWith(
-        expect.stringContaining("search_text=trimmed+search"),
+        expect.stringContaining("suchbegriff=trimmed+search"),
         expect.any(Object),
       );
     });

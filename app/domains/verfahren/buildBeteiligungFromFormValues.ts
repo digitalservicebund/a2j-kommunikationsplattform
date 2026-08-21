@@ -134,7 +134,7 @@ export function buildRaKanzleiFromFormValues(
   return {
     beteiligtenart: "raKanzlei",
     bezeichnung: anwalt.name,
-    rechtsform: null,
+    rechtsform_id: null,
     kanzleiform_id: codeIds.kanzleiformId,
     rollen: [
       {

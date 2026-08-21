@@ -1,0 +1,12 @@
+info:
+  name: Get Rechtsformen
+  type: http
+  seq: 7
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/api/v1/codelisten/rechtsformen"
+  auth: inherit
+
+settings:
+  encodeUrl: true

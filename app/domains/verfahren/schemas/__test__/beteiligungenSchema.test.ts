@@ -50,15 +50,32 @@ describe("BeteiligungenSchema", () => {
         ...baseFields,
         beteiligtenart: "raKanzlei",
         bezeichnung: "Kanzlei Böhm",
-        rechtsform: "GbR",
+        rechtsform: { id: "rf-1", wert: "GbR", code: "GBR" },
         kanzleiform: { id: "kf-1", wert: "Einzelanwalt", code: "001" },
       },
     ]);
 
     expect(result?.[0]).toMatchObject({
       bezeichnung: "Kanzlei Böhm",
-      rechtsform: "GbR",
+      rechtsform: { id: "rf-1", wert: "GbR", code: "GBR" },
       kanzleiform: { id: "kf-1", wert: "Einzelanwalt", code: "001" },
+    });
+  });
+
+  it("parses a raKanzlei entry with a null rechtsform", () => {
+    const result = BeteiligungenSchema.parse([
+      {
+        ...baseFields,
+        beteiligtenart: "raKanzlei",
+        bezeichnung: "Kanzlei Böhm",
+        rechtsform: null,
+        kanzleiform: { id: "kf-1", wert: "Einzelanwalt", code: "001" },
+      },
+    ]);
+
+    expect(result?.[0]).toMatchObject({
+      bezeichnung: "Kanzlei Böhm",
+      rechtsform: null,
     });
   });
 });

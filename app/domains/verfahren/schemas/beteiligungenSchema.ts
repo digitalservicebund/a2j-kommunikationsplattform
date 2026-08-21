@@ -26,7 +26,8 @@ const OrganisationSchema = BeteiligteSchema.extend({
 const RaKanzleiSchema = BeteiligteSchema.extend({
   beteiligtenart: z.literal("raKanzlei"),
   bezeichnung: z.string(),
-  rechtsform: z.nullable(z.string()),
+  // TODO: remove the nullable part after confirming it with SINC
+  rechtsform: z.nullable(CodeWertSchema),
   kanzleiform: CodeWertSchema,
 });
 
