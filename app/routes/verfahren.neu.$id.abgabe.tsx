@@ -424,6 +424,15 @@ export default function VerfahrenNeuBearbeiten() {
                                       -{" "}
                                       {einreichung.name ?? NOT_AVAILABLE_LABEL}
                                     </h4>
+                                    {!hasValidationIssues && (
+                                      <p className="kern-preline">
+                                        <VerfahrenStatusBadge
+                                          small
+                                          tone={readinessBadgeClass}
+                                          label={readinessLabel}
+                                        />
+                                      </p>
+                                    )}
                                   </hgroup>
                                 </header>
                                 {hasValidationIssues && (
