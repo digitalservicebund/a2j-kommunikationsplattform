@@ -28,11 +28,17 @@ export default async function fetchVerfahren(
   authData: AuthenticationResponse,
   options?: FetchVerfahrenOptions,
 ): Promise<z.infer<typeof fetchVerfahrenSchema>> {
-  const parsed = fetchVerfahrenOptionsSchema.parse(options ?? {});
+  const { search_text, ...parsed } = fetchVerfahrenOptionsSchema.parse(
+    options ?? {},
+  );
 
   const url = new URL(`${serverConfig().KOMPLA_API_URL}/api/v1/verfahren`);
   // buildSearchParams returns a URLSearchParams-like map of strings
-  const searchParams = buildSearchParams(parsed);
+  // The API expects `suchbegriff` as the query parameter name.
+  const searchParams = buildSearchParams({
+    ...parsed,
+    suchbegriff: search_text,
+  });
 
   searchParams.forEach((value, key) => {
     url.searchParams.set(key, value);

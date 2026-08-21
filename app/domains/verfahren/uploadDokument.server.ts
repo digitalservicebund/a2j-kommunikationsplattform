@@ -45,5 +45,6 @@ export default async function uploadDokument(
   });
 
   const singleObject = extractSingleObject(rawData);
+  console.log("Successfully uploaded dokument", singleObject);
   return DokumentErstellenResponseSchema.parse(singleObject);
 }

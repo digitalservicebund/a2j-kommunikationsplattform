@@ -47,7 +47,23 @@ http:
             ],
             "anschriften": null,
             "kommunikationsanschluesse": null
-          }
+          },
+              {
+              "beteiligtenart": "raKanzlei",
+              "bezeichnung": "Kanzlei Böhm",
+              "rechtsform_id": null,
+              "kanzleiform_id": "d405a33e-3e11-25c4-6835-7f4f60eb4c98",
+              "rollen": [
+                {
+                  "rollenbezeichnung_id": "0e443639-0999-90bd-1394-3b982a8d2595",
+                  "rollennummer": null,
+                  "geschaeftszeichen": null,
+                  "referenz": null
+                }
+              ],
+              "anschriften": null,
+              "kommunikationsanschluesse": null
+            }
         ]
       }
   auth: inherit

@@ -64,7 +64,7 @@ const beteiligungen = [
     beteiligtenart: "raKanzlei" as const,
     id: "bet-2",
     bezeichnung: "Kanzlei Böhm",
-    rechtsform: null,
+    rechtsform: { id: "rf-1", wert: "GbR", code: "GBR" },
     kanzleiform: { id: "kf-1", wert: "Einzelanwalt", code: "001" },
     rollen: [
       {
