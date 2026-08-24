@@ -8,6 +8,7 @@ import {
   useLoaderData,
   useRevalidator,
 } from "react-router";
+import z from "zod";
 import Alert from "~/components/Alert";
 import VerfahrenBriefSummaryOfBeteiligte from "~/components/verfahren/VerfahrenBriefSummaryOfBeteiligte";
 import VerfahrenBriefSummaryOfGericht from "~/components/verfahren/VerfahrenBriefSummaryOfGericht.static";
@@ -26,6 +27,7 @@ import {
   getInitialEinreichungTimelineSteps,
 } from "~/domains/verfahren/buildInitialEinreichungTimelineSteps";
 import deleteDokumentFromEinreichung from "~/domains/verfahren/deleteDokumentFromEinreichung.server";
+import fetchDokumentValidierungsstatus from "~/domains/verfahren/fetchDokumentValidierungsstatus.server";
 import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
 import loadVerfahrenEinreichungBundle, {
   Dokument,
@@ -38,14 +40,20 @@ import {
   PROTOTYPE_EINREICHUNG_GZ,
 } from "~/domains/verfahren/presentationPlaceholders";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.server";
-import { getDokumentStatusPresentation } from "~/domains/verfahren/statusPresentation";
+import { ValidierungsstatusSchema } from "~/domains/verfahren/schemas/validierungsStatusSchema";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+
+type Validierungsstatus = z.infer<typeof ValidierungsstatusSchema>;
+
+type DokumentWithValidierungsstatus = Dokument & {
+  validierungsstatus: Validierungsstatus;
+};
 
 type LoaderData = {
   verfahren: Verfahren;
   einreichung: EinreichungWithStatus;
-  dokumente: Dokument[];
+  dokumente: DokumentWithValidierungsstatus[];
 };
 
 // Poll interval while the Einreichung's Validierungslauf is still running,
@@ -66,31 +74,31 @@ type ReadinessPresentation = {
 };
 
 function resolveReadinessPresentation(
-  einreichungsStatus: EinreichungWithStatus["einreichungsStatus"],
+  validierungsstatus: Validierungsstatus,
   badgeLabels: ReadinessBadgeLabels,
 ): ReadinessPresentation {
-  if (einreichungsStatus.validierungslauf_status !== "ABGESCHLOSSEN") {
+  if (validierungsstatus.validierungslauf_status !== "ABGESCHLOSSEN") {
     return {
       readinessLabel: badgeLabels.checking,
       readinessBadgeClass: "info",
     };
   }
 
-  if (einreichungsStatus.ergebnis === "GRUEN") {
+  if (validierungsstatus.ergebnis === "GRUEN") {
     return {
       readinessLabel: badgeLabels.ready,
       readinessBadgeClass: "success",
     };
   }
 
-  if (einreichungsStatus.ergebnis === "ROT") {
+  if (validierungsstatus.ergebnis === "ROT") {
     return {
       readinessLabel: badgeLabels.problem,
       readinessBadgeClass: "danger",
     };
   }
 
-  if (einreichungsStatus.ergebnis === "GELB") {
+  if (validierungsstatus.ergebnis === "GELB") {
     return {
       readinessLabel: badgeLabels.warning,
       readinessBadgeClass: "warning",
@@ -112,10 +120,25 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   const { verfahren, einreichung, dokumente } =
     await loadVerfahrenEinreichungBundle(authData, verfahrenId);
 
+  const dokumenteWithValidierungsstatus = await Promise.all(
+    dokumente.map(async (dokument) => {
+      const validierungsstatus = await fetchDokumentValidierungsstatus(
+        authData,
+        {
+          verfahrenId,
+          einreichungId: einreichung.id,
+          id: dokument.id,
+        },
+      );
+
+      return { ...dokument, validierungsstatus };
+    }),
+  );
+
   return {
     verfahren,
     einreichung,
-    dokumente,
+    dokumente: dokumenteWithValidierungsstatus,
   };
 };
 
@@ -563,89 +586,126 @@ export default function VerfahrenNeuBearbeiten() {
                                     ) : (
                                       <div className="mt-kern-space-default gap-kern-space-default flex w-full flex-col">
                                         {dokumente.map((dokument, index) => {
-                                          const dokumentStatus =
-                                            getDokumentStatusPresentation(
-                                              dokument.status,
-                                            );
+                                          const dokumentErgebnis =
+                                            dokument.validierungsstatus
+                                              .ergebnis;
+                                          const dokumentHasValidationIssues =
+                                            dokumentErgebnis === "ROT" ||
+                                            dokumentErgebnis === "GELB";
+                                          const {
+                                            readinessLabel: dokumentStatusLabel,
+                                            readinessBadgeClass:
+                                              dokumentStatusBadgeClass,
+                                          } = resolveReadinessPresentation(
+                                            dokument.validierungsstatus,
+                                            {
+                                              ...routes.verfahrenNeu.step3
+                                                .summary.badgeLabels,
+                                              ready:
+                                                routes.verfahrenNeu.step3
+                                                  .summary.badgeLabels
+                                                  .checkedClean,
+                                            },
+                                          );
 
                                           return (
                                             <div
                                               key={dokument.id}
-                                              className="rounded-kern-default p-kern-space-default align-center gap-kern-space-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)"
+                                              className="gap-kern-space-small flex w-full flex-col"
                                             >
-                                              <div className="flex-1">
-                                                <div className="kern-body kern-body--bold">
-                                                  {dokument.anzeigename}
+                                              <div className="rounded-kern-default p-kern-space-default align-center gap-kern-space-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)">
+                                                <div className="flex-1">
+                                                  <div className="kern-body kern-body--bold">
+                                                    {dokument.anzeigename}
+                                                  </div>
+                                                  <div className="kern-body kern-body--small kern-body--muted">
+                                                    {formatDokumentSize(
+                                                      dokument.size_in_bytes,
+                                                    )}
+                                                    {" · "}
+                                                    {
+                                                      routes.verfahrenNeu.step3
+                                                        .proceduralSteps
+                                                        .einreichung.dokumente
+                                                        .uploadedAtLabel
+                                                    }{" "}
+                                                    {new Date(
+                                                      einreichung.erstellt_am,
+                                                    ).toLocaleDateString() ??
+                                                      NOT_AVAILABLE_LABEL}
+                                                  </div>
                                                 </div>
-                                                <div className="kern-body kern-body--small kern-body--muted">
-                                                  {formatDokumentSize(
-                                                    dokument.size_in_bytes,
-                                                  )}
-                                                  {" · "}
-                                                  {
-                                                    routes.verfahrenNeu.step3
-                                                      .proceduralSteps
-                                                      .einreichung.dokumente
-                                                      .uploadedAtLabel
-                                                  }{" "}
-                                                  {new Date(
-                                                    einreichung.erstellt_am,
-                                                  ).toLocaleDateString() ??
-                                                    NOT_AVAILABLE_LABEL}
-                                                </div>
-                                              </div>
 
-                                              {index > 0 ? (
-                                                <Form
-                                                  method="post"
-                                                  className="gap-kern-space-small flex items-center"
-                                                >
-                                                  <input
-                                                    type="hidden"
-                                                    name="formType"
-                                                    value="delete"
-                                                  />
-                                                  <input
-                                                    type="hidden"
-                                                    name="einreichungId"
-                                                    value={einreichung.id}
-                                                  />
-                                                  <input
-                                                    type="hidden"
-                                                    name="dokumentId"
-                                                    value={dokument.id}
-                                                  />
-                                                  <button
-                                                    className="kern-btn kern-btn--secondary kern-btn--x-small"
-                                                    type="submit"
+                                                {index > 0 ? (
+                                                  <Form
+                                                    method="post"
+                                                    className="gap-kern-space-small flex items-center"
                                                   >
-                                                    <span
-                                                      className="kern-icon kern-icon--delete"
-                                                      aria-hidden="true"
-                                                    ></span>
-                                                    <span className="kern-label kern-sr-only">
-                                                      {
-                                                        shared.form
-                                                          .deleteDokument.label
+                                                    <input
+                                                      type="hidden"
+                                                      name="formType"
+                                                      value="delete"
+                                                    />
+                                                    <input
+                                                      type="hidden"
+                                                      name="einreichungId"
+                                                      value={einreichung.id}
+                                                    />
+                                                    <input
+                                                      type="hidden"
+                                                      name="dokumentId"
+                                                      value={dokument.id}
+                                                    />
+                                                    <button
+                                                      className="kern-btn kern-btn--secondary kern-btn--x-small"
+                                                      type="submit"
+                                                    >
+                                                      <span
+                                                        className="kern-icon kern-icon--delete"
+                                                        aria-hidden="true"
+                                                      ></span>
+                                                      <span className="kern-label kern-sr-only">
+                                                        {
+                                                          shared.form
+                                                            .deleteDokument
+                                                            .label
+                                                        }
+                                                      </span>
+                                                    </button>
+                                                    <VerfahrenStatusBadge
+                                                      tone={
+                                                        dokumentStatusBadgeClass
                                                       }
-                                                    </span>
-                                                  </button>
-                                                  <VerfahrenStatusBadge
-                                                    tone={
-                                                      dokumentStatus.badgeClassModifier
-                                                    }
-                                                    label={dokumentStatus.label}
-                                                  />
-                                                </Form>
-                                              ) : (
-                                                <div className="flex items-center">
-                                                  <VerfahrenStatusBadge
-                                                    tone={
-                                                      dokumentStatus.badgeClassModifier
-                                                    }
-                                                    label={dokumentStatus.label}
-                                                  />
-                                                </div>
+                                                      label={
+                                                        dokumentStatusLabel
+                                                      }
+                                                    />
+                                                  </Form>
+                                                ) : (
+                                                  <div className="flex items-center">
+                                                    <VerfahrenStatusBadge
+                                                      tone={
+                                                        dokumentStatusBadgeClass
+                                                      }
+                                                      label={
+                                                        dokumentStatusLabel
+                                                      }
+                                                    />
+                                                  </div>
+                                                )}
+                                              </div>
+                                              {dokumentHasValidationIssues && (
+                                                <Alert
+                                                  type={
+                                                    dokumentErgebnis === "ROT"
+                                                      ? "error"
+                                                      : "warning"
+                                                  }
+                                                  title={dokumentStatusLabel}
+                                                  message={dokument.validierungsstatus.fehler.join(
+                                                    "\n",
+                                                  )}
+                                                />
                                               )}
                                             </div>
                                           );

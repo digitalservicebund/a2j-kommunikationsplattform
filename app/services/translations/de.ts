@@ -229,6 +229,7 @@ export const de = {
             checking: "Prüfung läuft",
             problem: "Es liegt ein Problem vor",
             warning: "Es liegen Hinweise vor",
+            checkedClean: "Geprüft und virenfrei",
           },
         },
         proceduralSteps: {
