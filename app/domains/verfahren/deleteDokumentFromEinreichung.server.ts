@@ -1,4 +1,5 @@
 import { AuthenticationResponse } from "~/services/auth/auth.types";
+import canDeleteDokument from "./canDeleteDokument";
 import deleteDokument from "./deleteDokument.server";
 import fetchDokument from "./fetchDokument";
 import fetchDokumente from "./fetchDokumente";
@@ -12,8 +13,7 @@ type DeleteDokumentFromEinreichungOptions = {
 
 export type DeleteDokumentFromEinreichungResult =
   | { status: "invalid-form-data" }
-  // Klageschrift
-  | { status: "protected-initial-dokument" }
+  | { status: "protected-dokument" }
   | { status: "deleted" }
   | { status: "delete-failed" };
 
@@ -32,9 +32,12 @@ export default async function deleteDokumentFromEinreichung({
     einreichungId,
   });
 
-  // The first dokument is the initial filing and must not be deleted.
-  if (dokumente[0]?.id === dokumentId) {
-    return { status: "protected-initial-dokument" };
+  const targetDokument = dokumente.find(
+    (dokument) => dokument.id === dokumentId,
+  );
+
+  if (targetDokument && !canDeleteDokument(targetDokument)) {
+    return { status: "protected-dokument" };
   }
 
   const { eTag } = await fetchDokument(authData, {

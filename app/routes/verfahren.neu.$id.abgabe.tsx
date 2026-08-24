@@ -26,6 +26,7 @@ import {
   buildInitialTimelineStepData,
   getInitialEinreichungTimelineSteps,
 } from "~/domains/verfahren/buildInitialEinreichungTimelineSteps";
+import canDeleteDokument from "~/domains/verfahren/canDeleteDokument";
 import deleteDokumentFromEinreichung from "~/domains/verfahren/deleteDokumentFromEinreichung.server";
 import fetchDokumentValidierungsstatus from "~/domains/verfahren/fetchDokumentValidierungsstatus.server";
 import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
@@ -73,11 +74,24 @@ type ReadinessPresentation = {
   readinessBadgeClass: "success" | "warning" | "danger" | "info";
 };
 
+function isValidierungslaufRunning(
+  validierungsstatus: Validierungsstatus,
+): boolean {
+  return validierungsstatus.validierungslauf_status !== "ABGESCHLOSSEN";
+}
+
 function resolveReadinessPresentation(
   validierungsstatus: Validierungsstatus,
   badgeLabels: ReadinessBadgeLabels,
+  // Additional Validierungsstatus (e.g. of the Einreichung's Dokumente) that
+  // should also mark this badge as "still checking" — keeps an aggregate
+  // badge consistent with the individual badges it summarizes.
+  relatedValidierungsstatus: Validierungsstatus[] = [],
 ): ReadinessPresentation {
-  if (validierungsstatus.validierungslauf_status !== "ABGESCHLOSSEN") {
+  if (
+    isValidierungslaufRunning(validierungsstatus) ||
+    relatedValidierungsstatus.some(isValidierungslaufRunning)
+  ) {
     return {
       readinessLabel: badgeLabels.checking,
       readinessBadgeClass: "info",
@@ -202,12 +216,16 @@ export default function VerfahrenNeuBearbeiten() {
   const rubrum =
     verfahren.kurzrubrum || `${klaegerinnenNamen} ./. ${beklagteNamen}`;
 
-  const isValidating =
-    einreichung.einreichungsStatus.validierungslauf_status !== "ABGESCHLOSSEN";
+  const dokumenteValidierungsstatus = dokumente.map(
+    (dokument) => dokument.validierungsstatus,
+  );
+
   const { readinessLabel, readinessBadgeClass } = resolveReadinessPresentation(
     einreichung.einreichungsStatus,
     routes.verfahrenNeu.step3.summary.badgeLabels,
+    dokumenteValidierungsstatus,
   );
+  const isValidating = readinessBadgeClass === "info";
   const einreichungData = [{ einreichung, dokumente }];
   console.log("einreichungData", einreichungData);
   const timelineSteps = getInitialEinreichungTimelineSteps(dokumente);
@@ -585,7 +603,7 @@ export default function VerfahrenNeuBearbeiten() {
                                       </p>
                                     ) : (
                                       <div className="mt-kern-space-default gap-kern-space-default flex w-full flex-col">
-                                        {dokumente.map((dokument, index) => {
+                                        {dokumente.map((dokument) => {
                                           const dokumentErgebnis =
                                             dokument.validierungsstatus
                                               .ergebnis;
@@ -635,8 +653,7 @@ export default function VerfahrenNeuBearbeiten() {
                                                       NOT_AVAILABLE_LABEL}
                                                   </div>
                                                 </div>
-
-                                                {index > 0 ? (
+                                                {canDeleteDokument(dokument) ? (
                                                   <Form
                                                     method="post"
                                                     className="gap-kern-space-small flex items-center"

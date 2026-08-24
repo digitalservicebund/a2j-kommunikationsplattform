@@ -36,6 +36,7 @@ import buildBeteiligungFromFormValues, {
   buildRaKanzleiFromFormValues,
   ParteiFormValues,
 } from "~/domains/verfahren/buildBeteiligungFromFormValues";
+import canDeleteDokument from "~/domains/verfahren/canDeleteDokument";
 import { VerfahrenAendernRequestSchema } from "~/domains/verfahren/createVerfahren.server";
 import deleteDokument from "~/domains/verfahren/deleteDokument.server";
 import fetchAnschriftstypen from "~/domains/verfahren/fetchAnschriftstypen.service";
@@ -500,7 +501,9 @@ export default function VerfahrenNeuBearbeiten() {
 
   const [hasLawyer, setHasLawyer] = useState(hasExistingLawyer);
 
-  const uploadedDokumente = dokumente.filter((_, index) => index > 0);
+  const uploadedDokumente = dokumente.filter((dokument) =>
+    canDeleteDokument(dokument),
+  );
 
   const [selectedDokumentType, setSelectedDokumentType] = useState<string>(
     (formValues?.type as string) || "",
