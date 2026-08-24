@@ -16,7 +16,10 @@ export const ContentDispositionTypeSchema = z.enum(["INLINE", "ATTACHMENT"]);
 export const BelegSchema = z.object({
   id: z.string(),
   erstellt_am: z.string(),
-  typ: BelegTypSchema.optional(),
+  // The OpenAPI contract documents `typ` as optional-but-not-nullable, but
+  // the API returns `typ: null` while a Beleg is still IN_BEARBEITUNG (its
+  // Typ isn't determined until processing completes).
+  typ: z.nullish(BelegTypSchema),
   status: BelegStatusSchema,
   einreichung_id: z.string().optional(),
   anzeigename: z.nullable(z.string()).optional(),

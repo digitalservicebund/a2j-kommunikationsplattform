@@ -28,7 +28,10 @@ import {
 } from "~/domains/verfahren/buildInitialEinreichungTimelineSteps";
 import canDeleteDokument from "~/domains/verfahren/canDeleteDokument";
 import deleteDokumentFromEinreichung from "~/domains/verfahren/deleteDokumentFromEinreichung.server";
+import fetchBelegById from "~/domains/verfahren/fetchBelegById.server";
+import fetchBelege from "~/domains/verfahren/fetchBelege.server";
 import fetchDokumentValidierungsstatus from "~/domains/verfahren/fetchDokumentValidierungsstatus.server";
+import fetchEinreichungById from "~/domains/verfahren/fetchEinreichungById.server";
 import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
 import loadVerfahrenEinreichungBundle, {
   Dokument,
@@ -41,11 +44,14 @@ import {
   PROTOTYPE_EINREICHUNG_GZ,
 } from "~/domains/verfahren/presentationPlaceholders";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.server";
+import { BelegSchema } from "~/domains/verfahren/schemas/belegSchema";
 import { ValidierungsstatusSchema } from "~/domains/verfahren/schemas/validierungsStatusSchema";
+import submitEinreichungen from "~/domains/verfahren/submitEinreichungen.server";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
 type Validierungsstatus = z.infer<typeof ValidierungsstatusSchema>;
+type Beleg = z.infer<typeof BelegSchema>;
 
 type DokumentWithValidierungsstatus = Dokument & {
   validierungsstatus: Validierungsstatus;
@@ -55,6 +61,7 @@ type LoaderData = {
   verfahren: Verfahren;
   einreichung: EinreichungWithStatus;
   dokumente: DokumentWithValidierungsstatus[];
+  beleg: Beleg | null;
 };
 
 // Poll interval while the Einreichung's Validierungslauf is still running,
@@ -122,6 +129,25 @@ function resolveReadinessPresentation(
   return { readinessLabel: badgeLabels.soon, readinessBadgeClass: "warning" };
 }
 
+type BelegBadgeLabels = {
+  pending: string;
+  ready: string;
+};
+
+function resolveBelegPresentation(
+  beleg: Beleg,
+  badgeLabels: BelegBadgeLabels,
+): ReadinessPresentation {
+  if (beleg.status === "ERSTELLT") {
+    return {
+      readinessLabel: badgeLabels.ready,
+      readinessBadgeClass: "success",
+    };
+  }
+
+  return { readinessLabel: badgeLabels.pending, readinessBadgeClass: "info" };
+}
+
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
 
@@ -149,10 +175,22 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
     }),
   );
 
+  // The Beleg belongs to the Einreichung, so it's looked up via that
+  // relationship instead of threading its id through the URL.
+  const { elemente: belege } = await fetchBelege(authData, {
+    verfahrenId,
+    einreichungId: einreichung.id,
+  });
+  const latestBeleg = belege.at(-1) ?? null;
+  const beleg = latestBeleg
+    ? await fetchBelegById(authData, { verfahrenId, id: latestBeleg.id })
+    : null;
+
   return {
     verfahren,
     einreichung,
     dokumente: dokumenteWithValidierungsstatus,
+    beleg,
   };
 };
 
@@ -185,11 +223,40 @@ export const action = async ({
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   }
 
+  if (formType === "einreichen") {
+    const einreichungId = formData.get("einreichungId") as string;
+
+    // Guards against double-submits (e.g. a stale page, double-click, or
+    // back-navigation) — the API only accepts einreichen while the
+    // Einreichung is ERSTELLT/FEHLGESCHLAGEN, and rejects it with 409 once a
+    // Beleg already exists.
+    const { elemente: existingBelege } = await fetchBelege(authData, {
+      verfahrenId,
+      einreichungId,
+    });
+
+    if (existingBelege.length === 0) {
+      const { eTag } = await fetchEinreichungById(authData, {
+        verfahrenId,
+        id: einreichungId,
+      });
+
+      await submitEinreichungen(authData, {
+        verfahrenId,
+        id: einreichungId,
+        eTag: eTag ?? "",
+      });
+    }
+
+    return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
+  }
+
   return redirect(`/verfahren/${verfahrenId}`);
 };
 
 export default function VerfahrenNeuBearbeiten() {
-  const { verfahren, einreichung, dokumente } = useLoaderData<LoaderData>();
+  const { verfahren, einreichung, dokumente, beleg } =
+    useLoaderData<LoaderData>();
   console.log("verfahren", verfahren);
   console.log("dokumente", dokumente);
   const { routes, buttons, shared } = useTranslations();
@@ -226,6 +293,8 @@ export default function VerfahrenNeuBearbeiten() {
     dokumenteValidierungsstatus,
   );
   const isValidating = readinessBadgeClass === "info";
+  const isBelegReady = beleg !== null && beleg.status === "ERSTELLT";
+  const isBelegPending = beleg !== null && !isBelegReady;
   const einreichungData = [{ einreichung, dokumente }];
   console.log("einreichungData", einreichungData);
   const timelineSteps = getInitialEinreichungTimelineSteps(dokumente);
@@ -264,11 +333,11 @@ export default function VerfahrenNeuBearbeiten() {
   const formRef = useRef<HTMLFormElement>(null);
   const revalidator = useRevalidator();
 
-  // While the Validierungslauf is still running, its result isn't known yet
-  // — poll for updated data so the readiness badge reflects it without the
-  // user having to reload the page manually.
+  // While the Validierungslauf is still running or the Beleg hasn't been
+  // finalized yet, poll for updated data so the badges/alerts reflect the
+  // result without the user having to reload the page manually.
   useEffect(() => {
-    if (!isValidating) {
+    if (!isValidating && !isBelegPending) {
       return;
     }
 
@@ -279,7 +348,7 @@ export default function VerfahrenNeuBearbeiten() {
     }, VALIDIERUNGSSTATUS_POLL_INTERVAL_MS);
 
     return () => clearInterval(intervalId);
-  }, [isValidating, revalidator]);
+  }, [isValidating, isBelegPending, revalidator]);
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -350,445 +419,474 @@ export default function VerfahrenNeuBearbeiten() {
 
               <VerfahrenPrototypeHint />
 
-              {/* show a general error alert, if something went wrong */}
-              {error ? (
-                <Alert
-                  type="error"
-                  title={shared.form.submit.title}
-                  message={shared.form.submit.message}
-                />
-              ) : (
-                <>
-                  <article className="kern-card">
-                    <div className="kern-card__container">
-                      <div className="algin-start gap-kern-space-default flex w-full flex-wrap items-start">
-                        <div className="flex-1">
-                          <h2 className="kern-heading-medium">{rubrum}</h2>
-                          <div className="align-center kern-body kern-body--muted gap-kern-space-small flex flex-wrap">
-                            <span>
-                              {verfahren.aktenzeichen_gericht ??
-                                routes.verfahrenNeu.step3.summary.aktenzeichen}
-                            </span>
-                            <span>·</span>
-                            <span>
-                              {verfahren.gericht?.wert ??
-                                routes.verfahrenNeu.step3.summary.gericht}
-                            </span>
-                            <span>·</span>
-                            <span>
-                              {verfahren.verfahrensgegenstand ??
-                                NOT_AVAILABLE_LABEL}
-                            </span>
-                          </div>
-                        </div>
-                        <VerfahrenStatusBadge
-                          small
-                          tone={readinessBadgeClass}
-                          label={readinessLabel}
-                        />
-                      </div>
-                      <div className="gap-kern-space-default grid w-full grid-cols-1 md:grid-cols-3">
-                        <VerfahrenBriefSummaryOfBeteiligte
-                          notAvailableLabel={NOT_AVAILABLE_LABEL}
-                          title={shared.beteiligte.klaegerLabel}
-                          beteiligte={klaegerinnenSummary}
-                          fallbackLabel={shared.beteiligte.fallbackLabel}
-                        />
-                        <VerfahrenBriefSummaryOfBeteiligte
-                          notAvailableLabel={NOT_AVAILABLE_LABEL}
-                          title={shared.beteiligte.beklagteLabel}
-                          beteiligte={beklagteSummary}
-                          fallbackLabel={shared.beteiligte.fallbackLabel}
-                        />
-                        <VerfahrenBriefSummaryOfGericht
-                          title={shared.gericht.briefSummaryTitle}
-                          gerichtLabel={shared.gericht.label}
-                          gericht={
-                            verfahren.gericht?.wert ?? NOT_AVAILABLE_LABEL
-                          }
-                          azLabel={shared.gericht.azLabel}
-                          az={
-                            verfahren.aktenzeichen_gericht ??
-                            NOT_AVAILABLE_LABEL
-                          }
-                          kontoinhaberLabel={shared.gericht.kontoinhaberLabel}
-                          kontoinhaber={NOT_AVAILABLE_LABEL}
-                          ibanLabel={shared.gericht.ibanLabel}
-                          iban={NOT_AVAILABLE_LABEL}
-                        />
-                      </div>
-                    </div>
-                  </article>
-
-                  <section className="space-y-kern-space-default">
-                    <h3 className="kern-heading-medium">
-                      {routes.verfahrenNeu.step3.proceduralSteps.headline}
-                    </h3>
-                    <div className="gap-kern-space-default flex items-stretch">
-                      <div className="w-80 flex-[0_0_auto]">
-                        <span className="kern-body kern-body--small kern-body--muted">
-                          {
-                            routes.verfahrenNeu.step3.proceduralSteps
-                              .einreichung.timelineLabel
-                          }
+              <article className="kern-card">
+                <div className="kern-card__container">
+                  <div className="algin-start gap-kern-space-default flex w-full flex-wrap items-start">
+                    <div className="flex-1">
+                      <h2 className="kern-heading-medium">{rubrum}</h2>
+                      <div className="align-center kern-body kern-body--muted gap-kern-space-small flex flex-wrap">
+                        <span>
+                          {verfahren.aktenzeichen_gericht ??
+                            routes.verfahrenNeu.step3.summary.aktenzeichen}
+                        </span>
+                        <span>·</span>
+                        <span>
+                          {verfahren.gericht?.wert ??
+                            routes.verfahrenNeu.step3.summary.gericht}
+                        </span>
+                        <span>·</span>
+                        <span>
+                          {verfahren.verfahrensgegenstand ??
+                            NOT_AVAILABLE_LABEL}
                         </span>
                       </div>
-                      <div className="flex flex-[0_0_auto] flex-col items-center">
-                        <span
-                          className="kern-icon kern-icon--edit kern-icon--default"
-                          aria-hidden="true"
-                        ></span>
-                        <div className="mt-kern-space-small min-h-16 w-2 flex-1 bg-(--kern-color-decorative-border-default) p-0"></div>
-                      </div>
-                      <div className="pb-kern-space-default flex-1">
-                        {einreichungData.map(({ einreichung, dokumente }) => {
-                          const validationErgebnis =
-                            einreichung.einreichungsStatus.ergebnis;
-                          const hasValidationIssues =
-                            validationErgebnis === "ROT" ||
-                            validationErgebnis === "GELB";
-
-                          return (
-                            <article className="kern-card" key={einreichung.id}>
-                              <div className="kern-card__container">
-                                <header className="kern-card__header">
-                                  <hgroup className="kern-hgroup">
-                                    <h4
-                                      className="kern-title"
-                                      id="card-current-einreichung-heading"
-                                    >
-                                      {
-                                        routes.verfahrenNeu.step3
-                                          .proceduralSteps.einreichung
-                                          .basisdaten.titleLabel
-                                      }{" "}
-                                      -{" "}
-                                      {einreichung.name ?? NOT_AVAILABLE_LABEL}
-                                    </h4>
-                                    {!hasValidationIssues && (
-                                      <p className="kern-preline">
-                                        <VerfahrenStatusBadge
-                                          small
-                                          tone={readinessBadgeClass}
-                                          label={readinessLabel}
-                                        />
-                                      </p>
-                                    )}
-                                  </hgroup>
-                                </header>
-                                {hasValidationIssues && (
-                                  <Alert
-                                    type={
-                                      validationErgebnis === "ROT"
-                                        ? "error"
-                                        : "warning"
-                                    }
-                                    title={readinessLabel}
-                                    message={einreichung.einreichungsStatus.fehler.join(
-                                      "\n",
-                                    )}
-                                  />
-                                )}
-                                <section className="kern-card__body">
-                                  <div className="w-full">
-                                    <h5 className="kern-preline">
-                                      {
-                                        routes.verfahrenNeu.step3
-                                          .proceduralSteps.einreichung
-                                          .basisdaten.label
-                                      }
-                                    </h5>
-                                    <div className="mt-kern-space-default gap-kern-space-default rounded-kern-default grid grid-cols-1 border border-(--kern-color-decorative-border-contextual) md:grid-cols-2">
-                                      <dl className="kern-description-list kern-description-list--col">
-                                        <div className="kern-description-list-item">
-                                          <dt className="kern-description-list-item__key">
-                                            {
-                                              routes.verfahrenNeu.step3
-                                                .proceduralSteps.einreichung
-                                                .basisdaten.artLabel
-                                            }
-                                          </dt>
-                                          {/* Placeholder value until this field is available in API response. */}
-                                          <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
-                                            {PROTOTYPE_EINREICHUNG_ART}
-                                          </dd>
-                                        </div>
-                                        <div className="kern-description-list-item">
-                                          <dt className="kern-description-list-item__key">
-                                            {
-                                              routes.verfahrenNeu.step3
-                                                .proceduralSteps.einreichung
-                                                .basisdaten.gzLabel
-                                            }
-                                          </dt>
-                                          {/* Placeholder value until this field is available in API response. */}
-                                          <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
-                                            {PROTOTYPE_EINREICHUNG_GZ}
-                                          </dd>
-                                        </div>
-                                      </dl>
-                                      <dl className="kern-description-list kern-description-list--col">
-                                        <div className="kern-description-list-item">
-                                          <dt className="kern-description-list-item__key">
-                                            {shared.gericht.briefSummaryTitle}
-                                          </dt>
-                                          <dd className="kern-description-list-item__value">
-                                            {verfahren.gericht?.wert ??
-                                              NOT_AVAILABLE_LABEL}
-                                          </dd>
-                                        </div>
-                                        <div className="kern-description-list-item">
-                                          <dt className="kern-description-list-item__key">
-                                            {
-                                              routes.verfahrenNeu.step3
-                                                .proceduralSteps.einreichung
-                                                .basisdaten.createdLabel
-                                            }
-                                          </dt>
-                                          <dd className="kern-description-list-item__value">
-                                            {new Date(
-                                              einreichung.erstellt_am,
-                                            ).toLocaleDateString() ??
-                                              NOT_AVAILABLE_LABEL}
-                                          </dd>
-                                        </div>
-                                      </dl>
-                                    </div>
-                                  </div>
-                                  <div className="w-full">
-                                    <h5 className="kern-preline">
-                                      {
-                                        routes.verfahrenNeu.step3
-                                          .proceduralSteps.einreichung
-                                          .additionalData.label
-                                      }
-                                    </h5>
-                                    <div className="mt-kern-space-default gap-kern-space-default rounded-kern-default grid grid-cols-1 border border-(--kern-color-decorative-border-contextual)">
-                                      <dl className="kern-description-list kern-description-list--col">
-                                        <div className="kern-description-list-item">
-                                          <dt className="kern-description-list-item__key">
-                                            {
-                                              routes.verfahrenNeu.step3
-                                                .proceduralSteps.einreichung
-                                                .additionalData.rubrumLabel
-                                            }
-                                          </dt>
-                                          <dd className="kern-description-list-item__value">
-                                            {verfahren.kurzrubrum ??
-                                              NOT_AVAILABLE_LABEL}
-                                          </dd>
-                                        </div>
-                                        <div className="kern-description-list-item">
-                                          <dt className="kern-description-list-item__key">
-                                            {
-                                              routes.verfahrenNeu.step3
-                                                .proceduralSteps.einreichung
-                                                .additionalData
-                                                .verfahrensgegenstandLabel
-                                            }
-                                          </dt>
-                                          <dd className="kern-description-list-item__value">
-                                            {verfahren.verfahrensgegenstand ??
-                                              NOT_AVAILABLE_LABEL}
-                                          </dd>
-                                        </div>
-                                      </dl>
-                                    </div>
-                                  </div>
-                                  <div className="w-full">
-                                    <h5 className="kern-preline">Dokumente</h5>
-                                    {dokumente.length === 0 ? (
-                                      <p className="kern-body mt-kern-space-default m-0">
-                                        Keine Dokumente vorhanden.
-                                      </p>
-                                    ) : (
-                                      <div className="mt-kern-space-default gap-kern-space-default flex w-full flex-col">
-                                        {dokumente.map((dokument) => {
-                                          const dokumentErgebnis =
-                                            dokument.validierungsstatus
-                                              .ergebnis;
-                                          const dokumentHasValidationIssues =
-                                            dokumentErgebnis === "ROT" ||
-                                            dokumentErgebnis === "GELB";
-                                          const {
-                                            readinessLabel: dokumentStatusLabel,
-                                            readinessBadgeClass:
-                                              dokumentStatusBadgeClass,
-                                          } = resolveReadinessPresentation(
-                                            dokument.validierungsstatus,
-                                            {
-                                              ...routes.verfahrenNeu.step3
-                                                .summary.badgeLabels,
-                                              ready:
-                                                routes.verfahrenNeu.step3
-                                                  .summary.badgeLabels
-                                                  .checkedClean,
-                                            },
-                                          );
-
-                                          return (
-                                            <div
-                                              key={dokument.id}
-                                              className="gap-kern-space-small flex w-full flex-col"
-                                            >
-                                              <div className="rounded-kern-default p-kern-space-default align-center gap-kern-space-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)">
-                                                <div className="flex-1">
-                                                  <div className="kern-body kern-body--bold">
-                                                    {dokument.anzeigename}
-                                                  </div>
-                                                  <div className="kern-body kern-body--small kern-body--muted">
-                                                    {formatDokumentSize(
-                                                      dokument.size_in_bytes,
-                                                    )}
-                                                    {" · "}
-                                                    {
-                                                      routes.verfahrenNeu.step3
-                                                        .proceduralSteps
-                                                        .einreichung.dokumente
-                                                        .uploadedAtLabel
-                                                    }{" "}
-                                                    {new Date(
-                                                      einreichung.erstellt_am,
-                                                    ).toLocaleDateString() ??
-                                                      NOT_AVAILABLE_LABEL}
-                                                  </div>
-                                                </div>
-                                                {canDeleteDokument(dokument) ? (
-                                                  <Form
-                                                    method="post"
-                                                    className="gap-kern-space-small flex items-center"
-                                                  >
-                                                    <input
-                                                      type="hidden"
-                                                      name="formType"
-                                                      value="delete"
-                                                    />
-                                                    <input
-                                                      type="hidden"
-                                                      name="einreichungId"
-                                                      value={einreichung.id}
-                                                    />
-                                                    <input
-                                                      type="hidden"
-                                                      name="dokumentId"
-                                                      value={dokument.id}
-                                                    />
-                                                    <button
-                                                      className="kern-btn kern-btn--secondary kern-btn--x-small"
-                                                      type="submit"
-                                                    >
-                                                      <span
-                                                        className="kern-icon kern-icon--delete"
-                                                        aria-hidden="true"
-                                                      ></span>
-                                                      <span className="kern-label kern-sr-only">
-                                                        {
-                                                          shared.form
-                                                            .deleteDokument
-                                                            .label
-                                                        }
-                                                      </span>
-                                                    </button>
-                                                    <VerfahrenStatusBadge
-                                                      tone={
-                                                        dokumentStatusBadgeClass
-                                                      }
-                                                      label={
-                                                        dokumentStatusLabel
-                                                      }
-                                                    />
-                                                  </Form>
-                                                ) : (
-                                                  <div className="flex items-center">
-                                                    <VerfahrenStatusBadge
-                                                      tone={
-                                                        dokumentStatusBadgeClass
-                                                      }
-                                                      label={
-                                                        dokumentStatusLabel
-                                                      }
-                                                    />
-                                                  </div>
-                                                )}
-                                              </div>
-                                              {dokumentHasValidationIssues && (
-                                                <Alert
-                                                  type={
-                                                    dokumentErgebnis === "ROT"
-                                                      ? "error"
-                                                      : "warning"
-                                                  }
-                                                  title={dokumentStatusLabel}
-                                                  message={dokument.validierungsstatus.fehler.join(
-                                                    "\n",
-                                                  )}
-                                                />
-                                              )}
-                                            </div>
-                                          );
-                                        })}
-                                      </div>
-                                    )}
-                                  </div>
-                                </section>
-                                <footer className="kern-card__footer">
-                                  <Link
-                                    to={`/verfahren/neu/${verfahren.id}/bearbeiten`}
-                                    className="kern-btn kern-btn--secondary"
-                                  >
-                                    <span className="kern-label">
-                                      {shared.form.labels.edit}
-                                    </span>
-                                  </Link>
-
-                                  <Form
-                                    ref={formRef}
-                                    method="post"
-                                    encType="multipart/form-data"
-                                    onSubmit={handleSubmit}
-                                  >
-                                    <button
-                                      type="submit"
-                                      className="kern-btn kern-btn--primary"
-                                      aria-describedby="card-current-einreichung-heading"
-                                    >
-                                      <span className="kern-label">
-                                        {
-                                          routes.verfahrenNeu.step3
-                                            .proceduralSteps.einreichung.submit
-                                        }
-                                      </span>
-                                    </button>
-                                  </Form>
-                                </footer>
-                              </div>
-                            </article>
-                          );
-                        })}
-                      </div>
                     </div>
-                    {initialTimelineStepData.map((timelineStep, index) => {
-                      const isLastStep =
-                        index === initialTimelineStepData.length - 1;
-                      const editTo = isLastStep
-                        ? `/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichungData[0].einreichung.id}`
-                        : `/verfahren/neu/${verfahren.id}/bearbeiten`;
+                    <VerfahrenStatusBadge
+                      small
+                      tone={readinessBadgeClass}
+                      label={readinessLabel}
+                    />
+                  </div>
+                  <div className="gap-kern-space-default grid w-full grid-cols-1 md:grid-cols-3">
+                    <VerfahrenBriefSummaryOfBeteiligte
+                      notAvailableLabel={NOT_AVAILABLE_LABEL}
+                      title={shared.beteiligte.klaegerLabel}
+                      beteiligte={klaegerinnenSummary}
+                      fallbackLabel={shared.beteiligte.fallbackLabel}
+                    />
+                    <VerfahrenBriefSummaryOfBeteiligte
+                      notAvailableLabel={NOT_AVAILABLE_LABEL}
+                      title={shared.beteiligte.beklagteLabel}
+                      beteiligte={beklagteSummary}
+                      fallbackLabel={shared.beteiligte.fallbackLabel}
+                    />
+                    <VerfahrenBriefSummaryOfGericht
+                      title={shared.gericht.briefSummaryTitle}
+                      gerichtLabel={shared.gericht.label}
+                      gericht={verfahren.gericht?.wert ?? NOT_AVAILABLE_LABEL}
+                      azLabel={shared.gericht.azLabel}
+                      az={verfahren.aktenzeichen_gericht ?? NOT_AVAILABLE_LABEL}
+                      kontoinhaberLabel={shared.gericht.kontoinhaberLabel}
+                      kontoinhaber={NOT_AVAILABLE_LABEL}
+                      ibanLabel={shared.gericht.ibanLabel}
+                      iban={NOT_AVAILABLE_LABEL}
+                    />
+                  </div>
+                </div>
+              </article>
+
+              <section className="space-y-kern-space-default">
+                <h3 className="kern-heading-medium">
+                  {routes.verfahrenNeu.step3.proceduralSteps.headline}
+                </h3>
+                <div className="gap-kern-space-default flex items-stretch">
+                  <div className="w-80 flex-[0_0_auto]">
+                    <span className="kern-body kern-body--small kern-body--muted">
+                      {
+                        routes.verfahrenNeu.step3.proceduralSteps.einreichung
+                          .timelineLabel
+                      }
+                      {isBelegReady && (
+                        <>
+                          {" · "}
+                          {new Date(beleg.erstellt_am).toLocaleDateString()}
+                        </>
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex flex-[0_0_auto] flex-col items-center">
+                    <span
+                      className={`kern-icon ${isBelegReady ? "kern-icon--check" : "kern-icon--edit"} kern-icon--default`}
+                      aria-hidden="true"
+                    ></span>
+                    <div className="mt-kern-space-small min-h-16 w-2 flex-1 bg-(--kern-color-decorative-border-default) p-0"></div>
+                  </div>
+                  <div className="pb-kern-space-default flex-1">
+                    {einreichungData.map(({ einreichung, dokumente }) => {
+                      const validationErgebnis =
+                        einreichung.einreichungsStatus.ergebnis;
+                      const hasValidationIssues =
+                        validationErgebnis === "ROT" ||
+                        validationErgebnis === "GELB";
+                      const cardBadgePresentation = beleg
+                        ? resolveBelegPresentation(
+                            beleg,
+                            routes.verfahrenNeu.step3.belegStatus.badgeLabels,
+                          )
+                        : { readinessLabel, readinessBadgeClass };
 
                       return (
-                        <VerfahrenTimelineStepCard
-                          key={`${timelineStep.title}-${timelineStep.timelineLabel}`}
-                          timelineLabel={timelineStep.timelineLabel}
-                          title={timelineStep.title}
-                          body={timelineStep.body}
-                          editTo={editTo}
-                          editLabel={shared.form.labels.edit}
-                          showConnector={timelineStep.showConnector}
-                        />
+                        <article className="kern-card" key={einreichung.id}>
+                          <div className="kern-card__container">
+                            {error ? (
+                              <Alert
+                                type="error"
+                                title={shared.form.submit.title}
+                                message={shared.form.submit.message}
+                              />
+                            ) : beleg ? (
+                              <Alert
+                                type={isBelegReady ? "success" : "info"}
+                                title={
+                                  isBelegReady
+                                    ? routes.verfahrenNeu.step3.belegStatus
+                                        .ready.headline
+                                    : routes.verfahrenNeu.step3.belegStatus
+                                        .pending.headline
+                                }
+                                message={
+                                  isBelegReady
+                                    ? routes.verfahrenNeu.step3.belegStatus
+                                        .ready.copy
+                                    : routes.verfahrenNeu.step3.belegStatus
+                                        .pending.copy
+                                }
+                              />
+                            ) : (
+                              hasValidationIssues && (
+                                <Alert
+                                  type={
+                                    validationErgebnis === "ROT"
+                                      ? "error"
+                                      : "warning"
+                                  }
+                                  title={readinessLabel}
+                                  message={einreichung.einreichungsStatus.fehler.join(
+                                    "\n",
+                                  )}
+                                />
+                              )
+                            )}
+                            <header className="kern-card__header">
+                              <hgroup className="kern-hgroup">
+                                <h4
+                                  className="kern-title"
+                                  id="card-current-einreichung-heading"
+                                >
+                                  {
+                                    routes.verfahrenNeu.step3.proceduralSteps
+                                      .einreichung.basisdaten.titleLabel
+                                  }{" "}
+                                  - {einreichung.name ?? NOT_AVAILABLE_LABEL}
+                                </h4>
+                                {(beleg || !hasValidationIssues) && (
+                                  <p className="kern-preline">
+                                    <VerfahrenStatusBadge
+                                      small
+                                      tone={
+                                        cardBadgePresentation.readinessBadgeClass
+                                      }
+                                      label={
+                                        cardBadgePresentation.readinessLabel
+                                      }
+                                    />
+                                  </p>
+                                )}
+                              </hgroup>
+                            </header>
+                            <section className="kern-card__body">
+                              <div className="w-full">
+                                <h5 className="kern-preline">
+                                  {
+                                    routes.verfahrenNeu.step3.proceduralSteps
+                                      .einreichung.basisdaten.label
+                                  }
+                                </h5>
+                                <div className="mt-kern-space-default gap-kern-space-default rounded-kern-default grid grid-cols-1 border border-(--kern-color-decorative-border-contextual) md:grid-cols-2">
+                                  <dl className="kern-description-list kern-description-list--col">
+                                    <div className="kern-description-list-item">
+                                      <dt className="kern-description-list-item__key">
+                                        {
+                                          routes.verfahrenNeu.step3
+                                            .proceduralSteps.einreichung
+                                            .basisdaten.artLabel
+                                        }
+                                      </dt>
+                                      {/* Placeholder value until this field is available in API response. */}
+                                      <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
+                                        {PROTOTYPE_EINREICHUNG_ART}
+                                      </dd>
+                                    </div>
+                                    <div className="kern-description-list-item">
+                                      <dt className="kern-description-list-item__key">
+                                        {
+                                          routes.verfahrenNeu.step3
+                                            .proceduralSteps.einreichung
+                                            .basisdaten.gzLabel
+                                        }
+                                      </dt>
+                                      {/* Placeholder value until this field is available in API response. */}
+                                      <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
+                                        {PROTOTYPE_EINREICHUNG_GZ}
+                                      </dd>
+                                    </div>
+                                  </dl>
+                                  <dl className="kern-description-list kern-description-list--col">
+                                    <div className="kern-description-list-item">
+                                      <dt className="kern-description-list-item__key">
+                                        {shared.gericht.briefSummaryTitle}
+                                      </dt>
+                                      <dd className="kern-description-list-item__value">
+                                        {verfahren.gericht?.wert ??
+                                          NOT_AVAILABLE_LABEL}
+                                      </dd>
+                                    </div>
+                                    <div className="kern-description-list-item">
+                                      <dt className="kern-description-list-item__key">
+                                        {
+                                          routes.verfahrenNeu.step3
+                                            .proceduralSteps.einreichung
+                                            .basisdaten.createdLabel
+                                        }
+                                      </dt>
+                                      <dd className="kern-description-list-item__value">
+                                        {new Date(
+                                          einreichung.erstellt_am,
+                                        ).toLocaleDateString() ??
+                                          NOT_AVAILABLE_LABEL}
+                                      </dd>
+                                    </div>
+                                  </dl>
+                                </div>
+                              </div>
+                              <div className="w-full">
+                                <h5 className="kern-preline">
+                                  {
+                                    routes.verfahrenNeu.step3.proceduralSteps
+                                      .einreichung.additionalData.label
+                                  }
+                                </h5>
+                                <div className="mt-kern-space-default gap-kern-space-default rounded-kern-default grid grid-cols-1 border border-(--kern-color-decorative-border-contextual)">
+                                  <dl className="kern-description-list kern-description-list--col">
+                                    <div className="kern-description-list-item">
+                                      <dt className="kern-description-list-item__key">
+                                        {
+                                          routes.verfahrenNeu.step3
+                                            .proceduralSteps.einreichung
+                                            .additionalData.rubrumLabel
+                                        }
+                                      </dt>
+                                      <dd className="kern-description-list-item__value">
+                                        {verfahren.kurzrubrum ??
+                                          NOT_AVAILABLE_LABEL}
+                                      </dd>
+                                    </div>
+                                    <div className="kern-description-list-item">
+                                      <dt className="kern-description-list-item__key">
+                                        {
+                                          routes.verfahrenNeu.step3
+                                            .proceduralSteps.einreichung
+                                            .additionalData
+                                            .verfahrensgegenstandLabel
+                                        }
+                                      </dt>
+                                      <dd className="kern-description-list-item__value">
+                                        {verfahren.verfahrensgegenstand ??
+                                          NOT_AVAILABLE_LABEL}
+                                      </dd>
+                                    </div>
+                                  </dl>
+                                </div>
+                              </div>
+                              <div className="w-full">
+                                <h5 className="kern-preline">Dokumente</h5>
+                                {dokumente.length === 0 ? (
+                                  <p className="kern-body mt-kern-space-default m-0">
+                                    Keine Dokumente vorhanden.
+                                  </p>
+                                ) : (
+                                  <div className="mt-kern-space-default gap-kern-space-default flex w-full flex-col">
+                                    {dokumente.map((dokument) => {
+                                      const dokumentErgebnis =
+                                        dokument.validierungsstatus.ergebnis;
+                                      const dokumentHasValidationIssues =
+                                        dokumentErgebnis === "ROT" ||
+                                        dokumentErgebnis === "GELB";
+                                      const {
+                                        readinessLabel: dokumentStatusLabel,
+                                        readinessBadgeClass:
+                                          dokumentStatusBadgeClass,
+                                      } = resolveReadinessPresentation(
+                                        dokument.validierungsstatus,
+                                        {
+                                          ...routes.verfahrenNeu.step3.summary
+                                            .badgeLabels,
+                                          ready:
+                                            routes.verfahrenNeu.step3.summary
+                                              .badgeLabels.checkedClean,
+                                        },
+                                      );
+
+                                      return (
+                                        <div
+                                          key={dokument.id}
+                                          className="gap-kern-space-small flex w-full flex-col"
+                                        >
+                                          <div className="rounded-kern-default p-kern-space-default align-center gap-kern-space-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)">
+                                            <div className="flex-1">
+                                              <div className="kern-body kern-body--bold">
+                                                {dokument.anzeigename}
+                                              </div>
+                                              <div className="kern-body kern-body--small kern-body--muted">
+                                                {formatDokumentSize(
+                                                  dokument.size_in_bytes,
+                                                )}
+                                                {" · "}
+                                                {
+                                                  routes.verfahrenNeu.step3
+                                                    .proceduralSteps.einreichung
+                                                    .dokumente.uploadedAtLabel
+                                                }{" "}
+                                                {new Date(
+                                                  einreichung.erstellt_am,
+                                                ).toLocaleDateString() ??
+                                                  NOT_AVAILABLE_LABEL}
+                                              </div>
+                                            </div>
+                                            {canDeleteDokument(dokument) ? (
+                                              <Form
+                                                method="post"
+                                                className="gap-kern-space-small flex items-center"
+                                              >
+                                                <input
+                                                  type="hidden"
+                                                  name="formType"
+                                                  value="delete"
+                                                />
+                                                <input
+                                                  type="hidden"
+                                                  name="einreichungId"
+                                                  value={einreichung.id}
+                                                />
+                                                <input
+                                                  type="hidden"
+                                                  name="dokumentId"
+                                                  value={dokument.id}
+                                                />
+                                                <button
+                                                  className="kern-btn kern-btn--secondary kern-btn--x-small"
+                                                  type="submit"
+                                                >
+                                                  <span
+                                                    className="kern-icon kern-icon--delete"
+                                                    aria-hidden="true"
+                                                  ></span>
+                                                  <span className="kern-label kern-sr-only">
+                                                    {
+                                                      shared.form.deleteDokument
+                                                        .label
+                                                    }
+                                                  </span>
+                                                </button>
+                                                <VerfahrenStatusBadge
+                                                  tone={
+                                                    dokumentStatusBadgeClass
+                                                  }
+                                                  label={dokumentStatusLabel}
+                                                />
+                                              </Form>
+                                            ) : (
+                                              <div className="flex items-center">
+                                                <VerfahrenStatusBadge
+                                                  tone={
+                                                    dokumentStatusBadgeClass
+                                                  }
+                                                  label={dokumentStatusLabel}
+                                                />
+                                              </div>
+                                            )}
+                                          </div>
+                                          {dokumentHasValidationIssues && (
+                                            <Alert
+                                              type={
+                                                dokumentErgebnis === "ROT"
+                                                  ? "error"
+                                                  : "warning"
+                                              }
+                                              title={dokumentStatusLabel}
+                                              message={dokument.validierungsstatus.fehler.join(
+                                                "\n",
+                                              )}
+                                            />
+                                          )}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            </section>
+                            <footer className="kern-card__footer">
+                              <Link
+                                to={`/verfahren/neu/${verfahren.id}/bearbeiten`}
+                                className="kern-btn kern-btn--secondary"
+                              >
+                                <span className="kern-label">
+                                  {shared.form.labels.edit}
+                                </span>
+                              </Link>
+
+                              <Form
+                                ref={formRef}
+                                method="post"
+                                encType="multipart/form-data"
+                                onSubmit={handleSubmit}
+                              >
+                                <input
+                                  type="hidden"
+                                  name="formType"
+                                  value="einreichen"
+                                />
+                                <input
+                                  type="hidden"
+                                  name="einreichungId"
+                                  value={einreichung.id}
+                                />
+                                <button
+                                  type="submit"
+                                  className="kern-btn kern-btn--primary"
+                                  aria-describedby="card-current-einreichung-heading"
+                                  disabled={
+                                    isSubmitting === "submitting" ||
+                                    isValidating ||
+                                    beleg !== null
+                                  }
+                                >
+                                  <span className="kern-label">
+                                    {
+                                      routes.verfahrenNeu.step3.proceduralSteps
+                                        .einreichung.submit
+                                    }
+                                  </span>
+                                </button>
+                              </Form>
+                            </footer>
+                          </div>
+                        </article>
                       );
                     })}
-                  </section>
-                </>
-              )}
+                  </div>
+                </div>
+                {initialTimelineStepData.map((timelineStep, index) => {
+                  const isLastStep =
+                    index === initialTimelineStepData.length - 1;
+                  const editTo = isLastStep
+                    ? `/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichungData[0].einreichung.id}`
+                    : `/verfahren/neu/${verfahren.id}/bearbeiten`;
+
+                  return (
+                    <VerfahrenTimelineStepCard
+                      key={`${timelineStep.title}-${timelineStep.timelineLabel}`}
+                      timelineLabel={timelineStep.timelineLabel}
+                      title={timelineStep.title}
+                      body={timelineStep.body}
+                      editTo={editTo}
+                      editLabel={shared.form.labels.edit}
+                      showConnector={timelineStep.showConnector}
+                    />
+                  );
+                })}
+              </section>
             </div>
           </div>
           <VerfahrenLoader

@@ -28,7 +28,10 @@ describe("fetchEinreichungById", () => {
       name: "Klageschrift",
     };
 
-    mocks.apiRequest.mockResolvedValueOnce(einreichung);
+    mocks.apiRequest.mockResolvedValueOnce({
+      data: einreichung,
+      eTag: 'W/"1"',
+    });
 
     const result = await fetchEinreichungById(mockAuthData, {
       id: "e-1",
@@ -39,10 +42,11 @@ describe("fetchEinreichungById", () => {
       expect.objectContaining({
         authData: mockAuthData,
         path: "/api/v1/verfahren/v-1/einreichungen/e-1",
+        includeResponseETag: true,
         errorMessage:
           "Einreichung with id e-1 of Verfahren with id v-1 could not be fetched.",
       }),
     );
-    expect(result).toEqual(einreichung);
+    expect(result).toEqual({ einreichung, eTag: 'W/"1"' });
   });
 });

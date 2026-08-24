@@ -232,6 +232,20 @@ export const de = {
             checkedClean: "Geprüft und virenfrei",
           },
         },
+        belegStatus: {
+          pending: {
+            headline: "Klage entgegengenommen– wird geprüft",
+            copy: "Ihre Klage wurde an das Gericht übermittelt und wird nun automatisch geprüft. Das dauert nur wenige Minuten. Anschließend stellen wir Ihnen hier die Einreichungsbestätigung zur Verfügung.",
+          },
+          ready: {
+            headline: "Klage erfolgreich eingereicht",
+            copy: "Die Prüfung ist abgeschlossen. Ihre Klage ist beim Gericht eingegangen. Die Einreichungsbestätigung steht jetzt zum Download bereit.",
+          },
+          badgeLabels: {
+            pending: "Wird geprüft",
+            ready: "Eingereicht",
+          },
+        },
         proceduralSteps: {
           headline: "Verfahrensschritte",
           einreichung: {
@@ -251,7 +265,7 @@ export const de = {
             dokumente: {
               uploadedAtLabel: "hochgeladen am",
             },
-            submit: " Klage einreichen & Abgabe ans Gericht",
+            submit: "Klage einreichen & Abgabe ans Gericht",
           },
           assets: {
             title: "Anlagen & Beweismittel",

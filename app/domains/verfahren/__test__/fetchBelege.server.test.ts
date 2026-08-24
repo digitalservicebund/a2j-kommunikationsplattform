@@ -36,7 +36,7 @@ describe("fetchBelege", () => {
     );
   });
 
-  it("filters by einreichung-id when given", async () => {
+  it("filters by einreichung_id when given", async () => {
     mocks.apiRequest.mockResolvedValueOnce({ elemente: [] });
 
     await fetchBelege(mockAuthData, {
@@ -47,7 +47,7 @@ describe("fetchBelege", () => {
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         fullUrl:
-          "http://localhost:8080/api/v1/verfahren/v-1/belege?einreichung-id=e-1",
+          "http://localhost:8080/api/v1/verfahren/v-1/belege?einreichung_id=e-1",
       }),
     );
   });

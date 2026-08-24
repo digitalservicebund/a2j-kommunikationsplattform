@@ -21,7 +21,7 @@ export default async function fetchBelege(
     `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren/${options.verfahrenId}/belege`,
   );
   const searchParams = buildSearchParams({
-    "einreichung-id": options.einreichungId,
+    einreichung_id: options.einreichungId,
   });
 
   searchParams.forEach((value, key) => {
