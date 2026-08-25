@@ -1,7 +1,41 @@
+import { useEffect } from "react";
+import { useFetcher, useNavigate, useParams } from "react-router";
 import { z } from "zod";
+import Button from "~/components/Button";
 import { BelegSchema } from "~/domains/verfahren/schemas/belegSchema";
+import { useTranslations } from "~/services/translations/context";
+
+export type Beleg = z.infer<typeof BelegSchema>;
+
+type DownloadBelegActionResult = {
+  downloadUrl: string;
+};
+
 export default function VerfahrenBelegStatusAlert({ beleg }: { beleg: Beleg }) {
-  const { routes } = useTranslations();
+  const { routes, shared } = useTranslations();
+  const downloadFetcher = useFetcher<DownloadBelegActionResult>();
+  const isDownloading = downloadFetcher.state !== "idle";
+  const navigate = useNavigate();
+  const params = useParams();
+  const verfahrenID = params.id;
+
+  useEffect(() => {
+    if (downloadFetcher.data?.downloadUrl) {
+      globalThis.location.href = downloadFetcher.data.downloadUrl;
+    }
+  }, [downloadFetcher.data]);
+
+  const handleDownload = () => {
+    downloadFetcher.submit(
+      { formType: "download-beleg", belegId: beleg.id },
+      { method: "post" },
+    );
+  };
+
+  const handleToVerfahrenOverview = () => {
+    if (!verfahrenID) return;
+    navigate(`/verfahren/${verfahrenID}`);
+  };
 
   const typeClass = {
     ERSTELLT: "kern-alert--success",
@@ -27,14 +61,21 @@ export default function VerfahrenBelegStatusAlert({ beleg }: { beleg: Beleg }) {
       <span>{timeMessage}</span>
       <div className="space-x-kern-space-default flex items-center justify-start">
         <Button
+          type="button"
           appearance="primary"
+          disabled={isDownloading}
+          onClick={handleDownload}
           label={
-            routes.verfahrenNeu.step3.belegStatus.ready
-              .buttonLabelDownloadConfirmation
+            isDownloading
+              ? shared.loading
+              : routes.verfahrenNeu.step3.belegStatus.ready
+                  .buttonLabelDownloadConfirmation
           }
         />
         <Button
+          type="button"
           appearance="secondary"
+          onClick={handleToVerfahrenOverview}
           label={
             routes.verfahrenNeu.step3.belegStatus.ready
               .buttonLabelToVerfahrenOverview
@@ -62,8 +103,3 @@ export default function VerfahrenBelegStatusAlert({ beleg }: { beleg: Beleg }) {
     </div>
   );
 }
-
-import Button from "~/components/Button";
-import { useTranslations } from "~/services/translations/context";
-
-export type Beleg = z.infer<typeof BelegSchema>;

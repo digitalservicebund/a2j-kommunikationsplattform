@@ -30,6 +30,7 @@ import {
 import canDeleteDokument from "~/domains/verfahren/canDeleteDokument";
 import deleteDokumentFromEinreichung from "~/domains/verfahren/deleteDokumentFromEinreichung.server";
 import fetchBelegById from "~/domains/verfahren/fetchBelegById.server";
+import fetchBelegDownloadLink from "~/domains/verfahren/fetchBelegDownloadLink.server";
 import fetchBelege from "~/domains/verfahren/fetchBelege.server";
 import fetchDokumentValidierungsstatus from "~/domains/verfahren/fetchDokumentValidierungsstatus.server";
 import fetchEinreichungById from "~/domains/verfahren/fetchEinreichungById.server";
@@ -250,6 +251,18 @@ export const action = async ({
     }
 
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
+  }
+
+  if (formType === "download-beleg") {
+    const belegId = formData.get("belegId") as string;
+
+    const downloadUrl = await fetchBelegDownloadLink(authData, {
+      verfahrenId,
+      id: belegId,
+      dispositionType: "ATTACHMENT",
+    });
+
+    return { downloadUrl };
   }
 
   return redirect(`/verfahren/${verfahrenId}`);
