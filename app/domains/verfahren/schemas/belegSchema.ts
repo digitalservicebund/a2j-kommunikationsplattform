@@ -19,6 +19,7 @@ export const BelegSchema = z.object({
   // The OpenAPI contract documents `typ` as optional-but-not-nullable, but
   // the API returns `typ: null` while a Beleg is still IN_BEARBEITUNG (its
   // Typ isn't determined until processing completes).
+  // TODO:remove the nullable part after confirming it with SINC
   typ: z.nullish(BelegTypSchema),
   status: BelegStatusSchema,
   einreichung_id: z.string().optional(),

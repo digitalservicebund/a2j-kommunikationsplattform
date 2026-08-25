@@ -6,7 +6,11 @@ describe("canDeleteDokument", () => {
     expect(canDeleteDokument({ typ: "SCHRIFTSTUECK" })).toBe(false);
   });
 
-  it.each(["ANHANG", "SIGNATURDATEI", "XJUSTIZ"] as const)(
+  it("protects the auto-managed XJustiz-Dokument from deletion", () => {
+    expect(canDeleteDokument({ typ: "XJUSTIZ" })).toBe(false);
+  });
+
+  it.each(["ANHANG", "SIGNATURDATEI"] as const)(
     "allows deleting %s dokumente",
     (typ) => {
       expect(canDeleteDokument({ typ })).toBe(true);

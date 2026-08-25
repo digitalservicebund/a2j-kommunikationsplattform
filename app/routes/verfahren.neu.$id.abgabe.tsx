@@ -331,6 +331,7 @@ export default function VerfahrenNeuBearbeiten() {
     "idle",
   );
   const [error, setError] = useState<boolean>(false);
+  const [hasConfirmedAccuracy, setHasConfirmedAccuracy] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const revalidator = useRevalidator();
 
@@ -795,6 +796,30 @@ export default function VerfahrenNeuBearbeiten() {
                                 )}
                               </div>
                             </section>
+                            {!beleg && (
+                              <div className="kern-form-check px-kern-space-default mt-kern-space-default">
+                                <input
+                                  className="kern-form-check__checkbox"
+                                  id="confirm-accuracy"
+                                  type="checkbox"
+                                  checked={hasConfirmedAccuracy}
+                                  onChange={(event) =>
+                                    setHasConfirmedAccuracy(
+                                      event.target.checked,
+                                    )
+                                  }
+                                />
+                                <label
+                                  className="kern-label"
+                                  htmlFor="confirm-accuracy"
+                                >
+                                  {
+                                    routes.verfahrenNeu.step3.proceduralSteps
+                                      .einreichung.confirmAccuracyLabel
+                                  }
+                                </label>
+                              </div>
+                            )}
                             <footer className="kern-card__footer">
                               <Link
                                 to={`/verfahren/neu/${verfahren.id}/bearbeiten`}
@@ -821,6 +846,7 @@ export default function VerfahrenNeuBearbeiten() {
                                   name="einreichungId"
                                   value={einreichung.id}
                                 />
+
                                 <button
                                   type="submit"
                                   className="kern-btn kern-btn--primary"
@@ -828,7 +854,8 @@ export default function VerfahrenNeuBearbeiten() {
                                   disabled={
                                     isSubmitting === "submitting" ||
                                     isValidating ||
-                                    beleg !== null
+                                    beleg !== null ||
+                                    !hasConfirmedAccuracy
                                   }
                                 >
                                   <span className="kern-label">

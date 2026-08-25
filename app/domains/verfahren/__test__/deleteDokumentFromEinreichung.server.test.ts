@@ -99,13 +99,43 @@ describe("deleteDokumentFromEinreichung", () => {
     expect(mocks.deleteDokument).not.toHaveBeenCalled();
   });
 
+  test("protects the auto-managed XJustiz-Dokument from deletion", async () => {
+    mocks.fetchDokumente.mockResolvedValueOnce({
+      elemente: [
+        {
+          id: "d-1",
+          typ: "SCHRIFTSTUECK",
+          anzeigename: "Klageschrift.pdf",
+          erstellt_am: "2026-07-01T08:00:00.000Z",
+        },
+        {
+          id: "d-2",
+          typ: "XJUSTIZ",
+          anzeigename: "xjustiz.xml",
+          erstellt_am: "2026-07-02T08:00:00.000Z",
+        },
+      ],
+    });
+
+    const result = await deleteDokumentFromEinreichung({
+      authData: mockAuthData,
+      verfahrenId: "v-1",
+      einreichungId: "e-1",
+      dokumentId: "d-2",
+    });
+
+    expect(result).toEqual({ status: "protected-dokument" });
+    expect(mocks.fetchDokument).not.toHaveBeenCalled();
+    expect(mocks.deleteDokument).not.toHaveBeenCalled();
+  });
+
   test("allows deleting the first element when it is not a Schriftstück", async () => {
     mocks.fetchDokumente.mockResolvedValueOnce({
       elemente: [
         {
           id: "d-1",
-          typ: "XJUSTIZ",
-          anzeigename: "xjustiz.xml",
+          typ: "ANHANG",
+          anzeigename: "Anlage.pdf",
           erstellt_am: "2026-07-01T08:00:00.000Z",
         },
         {
