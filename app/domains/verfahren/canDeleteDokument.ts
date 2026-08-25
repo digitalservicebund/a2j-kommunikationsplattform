@@ -10,5 +10,5 @@ type DokumentType = z.infer<typeof DokumentTypeSchema>;
 export default function canDeleteDokument(dokument: {
   typ: DokumentType;
 }): boolean {
-  return dokument.typ !== "SCHRIFTSTUECK";
+  return dokument.typ !== "SCHRIFTSTUECK" && dokument.typ !== "XJUSTIZ";
 }

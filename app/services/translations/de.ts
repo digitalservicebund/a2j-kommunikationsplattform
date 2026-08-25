@@ -240,6 +240,9 @@ export const de = {
           ready: {
             headline: "Klage erfolgreich eingereicht",
             copy: "Die Prüfung ist abgeschlossen. Ihre Klage ist beim Gericht eingegangen. Die Einreichungsbestätigung steht jetzt zum Download bereit.",
+            buttonLabelDownloadConfirmation:
+              "Einreichungsbestätigung herunterladen",
+            buttonLabelToVerfahrenOverview: "Zur Verfahrensübersicht",
           },
           badgeLabels: {
             pending: "Wird geprüft",

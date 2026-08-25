@@ -10,6 +10,7 @@ import {
 } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
+import VerfahrenBelegStatusAlert from "~/components/verfahren/VerfahrenBelegStatusAlert";
 import VerfahrenBriefSummaryOfBeteiligte from "~/components/verfahren/VerfahrenBriefSummaryOfBeteiligte";
 import VerfahrenBriefSummaryOfGericht from "~/components/verfahren/VerfahrenBriefSummaryOfGericht.static";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
@@ -482,16 +483,10 @@ export default function VerfahrenNeuBearbeiten() {
                 <div className="gap-kern-space-default flex items-stretch">
                   <div className="w-80 flex-[0_0_auto]">
                     <span className="kern-body kern-body--small kern-body--muted">
-                      {
-                        routes.verfahrenNeu.step3.proceduralSteps.einreichung
-                          .timelineLabel
-                      }
-                      {isBelegReady && (
-                        <>
-                          {" · "}
-                          {new Date(beleg.erstellt_am).toLocaleDateString()}
-                        </>
-                      )}
+                      {isBelegReady
+                        ? new Date(beleg.erstellt_am).toLocaleDateString()
+                        : routes.verfahrenNeu.step3.proceduralSteps.einreichung
+                            .timelineLabel}
                     </span>
                   </div>
                   <div className="flex flex-[0_0_auto] flex-col items-center">
@@ -525,23 +520,7 @@ export default function VerfahrenNeuBearbeiten() {
                                 message={shared.form.submit.message}
                               />
                             ) : beleg ? (
-                              <Alert
-                                type={isBelegReady ? "success" : "info"}
-                                title={
-                                  isBelegReady
-                                    ? routes.verfahrenNeu.step3.belegStatus
-                                        .ready.headline
-                                    : routes.verfahrenNeu.step3.belegStatus
-                                        .pending.headline
-                                }
-                                message={
-                                  isBelegReady
-                                    ? routes.verfahrenNeu.step3.belegStatus
-                                        .ready.copy
-                                    : routes.verfahrenNeu.step3.belegStatus
-                                        .pending.copy
-                                }
-                              />
+                              <VerfahrenBelegStatusAlert beleg={beleg} />
                             ) : (
                               hasValidationIssues && (
                                 <Alert
