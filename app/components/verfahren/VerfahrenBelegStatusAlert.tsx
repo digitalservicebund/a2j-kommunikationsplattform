@@ -1,11 +1,8 @@
 import { useEffect } from "react";
 import { useFetcher, useNavigate, useParams } from "react-router";
-import { z } from "zod";
 import Button from "~/components/Button";
-import { BelegSchema } from "~/domains/verfahren/schemas/belegSchema";
+import type { Beleg } from "~/domains/verfahren/schemas/belegSchema";
 import { useTranslations } from "~/services/translations/context";
-
-export type Beleg = z.infer<typeof BelegSchema>;
 
 type DownloadBelegActionResult = {
   downloadUrl: string;

@@ -8,7 +8,6 @@ import {
   useLoaderData,
   useRevalidator,
 } from "react-router";
-import z from "zod";
 import Alert from "~/components/Alert";
 import VerfahrenBelegStatusAlert from "~/components/verfahren/VerfahrenBelegStatusAlert";
 import VerfahrenBriefSummaryOfBeteiligte from "~/components/verfahren/VerfahrenBriefSummaryOfBeteiligte";
@@ -29,11 +28,13 @@ import {
 } from "~/domains/verfahren/buildInitialEinreichungTimelineSteps";
 import canDeleteDokument from "~/domains/verfahren/canDeleteDokument";
 import deleteDokumentFromEinreichung from "~/domains/verfahren/deleteDokumentFromEinreichung.server";
-import fetchBelegById from "~/domains/verfahren/fetchBelegById.server";
+import {
+  resolveBelegPresentation,
+  resolveReadinessPresentation,
+} from "~/domains/verfahren/einreichungReadiness";
 import fetchBelegDownloadLink from "~/domains/verfahren/fetchBelegDownloadLink.server";
-import fetchBelege from "~/domains/verfahren/fetchBelege.server";
 import fetchDokumentValidierungsstatus from "~/domains/verfahren/fetchDokumentValidierungsstatus.server";
-import fetchEinreichungById from "~/domains/verfahren/fetchEinreichungById.server";
+import fetchLatestBelegForEinreichung from "~/domains/verfahren/fetchLatestBelegForEinreichung.server";
 import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
 import loadVerfahrenEinreichungBundle, {
   Dokument,
@@ -46,14 +47,11 @@ import {
   PROTOTYPE_EINREICHUNG_GZ,
 } from "~/domains/verfahren/presentationPlaceholders";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.server";
-import { BelegSchema } from "~/domains/verfahren/schemas/belegSchema";
-import { ValidierungsstatusSchema } from "~/domains/verfahren/schemas/validierungsStatusSchema";
-import submitEinreichungen from "~/domains/verfahren/submitEinreichungen.server";
+import { Beleg } from "~/domains/verfahren/schemas/belegSchema";
+import { Validierungsstatus } from "~/domains/verfahren/schemas/validierungsStatusSchema";
+import submitEinreichungIfNeeded from "~/domains/verfahren/submitEinreichungIfNeeded.server";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
-
-type Validierungsstatus = z.infer<typeof ValidierungsstatusSchema>;
-type Beleg = z.infer<typeof BelegSchema>;
 
 type DokumentWithValidierungsstatus = Dokument & {
   validierungsstatus: Validierungsstatus;
@@ -69,86 +67,6 @@ type LoaderData = {
 // Poll interval while the Einreichung's Validierungslauf is still running,
 // so the readiness badge picks up the result without a manual page reload.
 const VALIDIERUNGSSTATUS_POLL_INTERVAL_MS = 5_000;
-
-type ReadinessBadgeLabels = {
-  ready: string;
-  soon: string;
-  checking: string;
-  problem: string;
-  warning: string;
-};
-
-type ReadinessPresentation = {
-  readinessLabel: string;
-  readinessBadgeClass: "success" | "warning" | "danger" | "info";
-};
-
-function isValidierungslaufRunning(
-  validierungsstatus: Validierungsstatus,
-): boolean {
-  return validierungsstatus.validierungslauf_status !== "ABGESCHLOSSEN";
-}
-
-function resolveReadinessPresentation(
-  validierungsstatus: Validierungsstatus,
-  badgeLabels: ReadinessBadgeLabels,
-  // Additional Validierungsstatus (e.g. of the Einreichung's Dokumente) that
-  // should also mark this badge as "still checking" — keeps an aggregate
-  // badge consistent with the individual badges it summarizes.
-  relatedValidierungsstatus: Validierungsstatus[] = [],
-): ReadinessPresentation {
-  if (
-    isValidierungslaufRunning(validierungsstatus) ||
-    relatedValidierungsstatus.some(isValidierungslaufRunning)
-  ) {
-    return {
-      readinessLabel: badgeLabels.checking,
-      readinessBadgeClass: "info",
-    };
-  }
-
-  if (validierungsstatus.ergebnis === "GRUEN") {
-    return {
-      readinessLabel: badgeLabels.ready,
-      readinessBadgeClass: "success",
-    };
-  }
-
-  if (validierungsstatus.ergebnis === "ROT") {
-    return {
-      readinessLabel: badgeLabels.problem,
-      readinessBadgeClass: "danger",
-    };
-  }
-
-  if (validierungsstatus.ergebnis === "GELB") {
-    return {
-      readinessLabel: badgeLabels.warning,
-      readinessBadgeClass: "warning",
-    };
-  }
-
-  return { readinessLabel: badgeLabels.soon, readinessBadgeClass: "warning" };
-}
-
-type BelegBadgeLabels = {
-  pending: string;
-  ready: string;
-};
-
-function resolveBelegPresentation(
-  beleg: Beleg,
-  badgeLabels: BelegBadgeLabels,
-): ReadinessPresentation {
-  if (beleg.status === "ERSTELLT") {
-    return {
-      readinessLabel: badgeLabels.ready,
-      readinessBadgeClass: "success",
-    };
-  }
-
-  return { readinessLabel: badgeLabels.pending, readinessBadgeClass: "info" };
-}
 
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
@@ -177,16 +95,10 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
     }),
   );
 
-  // The Beleg belongs to the Einreichung, so it's looked up via that
-  // relationship instead of threading its id through the URL.
-  const { elemente: belege } = await fetchBelege(authData, {
+  const beleg = await fetchLatestBelegForEinreichung(authData, {
     verfahrenId,
     einreichungId: einreichung.id,
   });
-  const latestBeleg = belege.at(-1) ?? null;
-  const beleg = latestBeleg
-    ? await fetchBelegById(authData, { verfahrenId, id: latestBeleg.id })
-    : null;
 
   return {
     verfahren,
@@ -228,27 +140,7 @@ export const action = async ({
   if (formType === "einreichen") {
     const einreichungId = formData.get("einreichungId") as string;
 
-    // Guards against double-submits (e.g. a stale page, double-click, or
-    // back-navigation) — the API only accepts einreichen while the
-    // Einreichung is ERSTELLT/FEHLGESCHLAGEN, and rejects it with 409 once a
-    // Beleg already exists.
-    const { elemente: existingBelege } = await fetchBelege(authData, {
-      verfahrenId,
-      einreichungId,
-    });
-
-    if (existingBelege.length === 0) {
-      const { eTag } = await fetchEinreichungById(authData, {
-        verfahrenId,
-        id: einreichungId,
-      });
-
-      await submitEinreichungen(authData, {
-        verfahrenId,
-        id: einreichungId,
-        eTag: eTag ?? "",
-      });
-    }
+    await submitEinreichungIfNeeded(authData, { verfahrenId, einreichungId });
 
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   }

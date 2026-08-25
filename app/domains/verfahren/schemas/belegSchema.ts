@@ -30,3 +30,5 @@ export const BelegSchema = z.object({
 });
 
 export const BelegeSchema = getListeResponseSchema(BelegSchema);
+
+export type Beleg = z.infer<typeof BelegSchema>;

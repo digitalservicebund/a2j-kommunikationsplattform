@@ -1,4 +1,5 @@
 import type { SyntheticEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ActionFunctionArgs,
   Form,
@@ -6,9 +7,13 @@ import {
   LoaderFunctionArgs,
   redirect,
   useLoaderData,
+  useRevalidator,
 } from "react-router";
+import Alert from "~/components/Alert";
+import VerfahrenBelegStatusAlert from "~/components/verfahren/VerfahrenBelegStatusAlert";
 import VerfahrenBriefSummaryOfBeteiligte from "~/components/verfahren/VerfahrenBriefSummaryOfBeteiligte";
 import VerfahrenBriefSummaryOfGericht from "~/components/verfahren/VerfahrenBriefSummaryOfGericht.static";
+import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import VerfahrenTimelineStepCard from "~/components/verfahren/VerfahrenTimelineStepCard";
 import {
@@ -21,9 +26,21 @@ import {
   buildInitialTimelineStepData,
   getInitialEinreichungTimelineSteps,
 } from "~/domains/verfahren/buildInitialEinreichungTimelineSteps";
+import canDeleteDokument from "~/domains/verfahren/canDeleteDokument";
 import deleteDokumentFromEinreichung from "~/domains/verfahren/deleteDokumentFromEinreichung.server";
+import {
+  resolveBelegPresentation,
+  resolveReadinessPresentation,
+} from "~/domains/verfahren/einreichungReadiness";
+import fetchBelegDownloadLink from "~/domains/verfahren/fetchBelegDownloadLink.server";
+import fetchDokumentValidierungsstatus from "~/domains/verfahren/fetchDokumentValidierungsstatus.server";
+import fetchLatestBelegForEinreichung from "~/domains/verfahren/fetchLatestBelegForEinreichung.server";
 import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
-import type { Verfahren } from "~/domains/verfahren/loadVerfahrenEinreichungBundle.server";
+import type {
+  Dokument,
+  EinreichungWithStatus,
+  Verfahren,
+} from "~/domains/verfahren/loadVerfahrenEinreichungBundle.server";
 import loadVerfahrenEinreichungenOverview, {
   EinreichungSummary,
 } from "~/domains/verfahren/loadVerfahrenEinreichungenOverview.server";
@@ -33,17 +50,35 @@ import {
   PROTOTYPE_EINREICHUNG_GZ,
 } from "~/domains/verfahren/presentationPlaceholders";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.server";
+import type { Beleg } from "~/domains/verfahren/schemas/belegSchema";
+import type { Validierungsstatus } from "~/domains/verfahren/schemas/validierungsStatusSchema";
 import {
   getDokumentStatusPresentation,
   getVerfahrenStatusPresentation,
 } from "~/domains/verfahren/statusPresentation";
+import submitEinreichungIfNeeded from "~/domains/verfahren/submitEinreichungIfNeeded.server";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+
+type DokumentWithValidierungsstatus = Dokument & {
+  validierungsstatus: Validierungsstatus;
+};
+
+type InitialEinreichungData = {
+  einreichung: EinreichungWithStatus;
+  dokumente: DokumentWithValidierungsstatus[];
+  beleg: Beleg | null;
+};
 
 type LoaderData = {
   verfahren: Verfahren;
   einreichungen: EinreichungSummary[];
+  initialEinreichung: InitialEinreichungData | null;
 };
+
+// Poll interval while the Einreichung's Validierungslauf is still running,
+// so the readiness badge picks up the result without a manual page reload.
+const VALIDIERUNGSSTATUS_POLL_INTERVAL_MS = 5_000;
 
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
@@ -55,7 +90,56 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
     "loader",
   );
 
-  return loadVerfahrenEinreichungenOverview(authData, verfahrenId);
+  const { verfahren, einreichungen } = await loadVerfahrenEinreichungenOverview(
+    authData,
+    verfahrenId,
+  );
+
+  const initialEinreichungData = einreichungen[0];
+  // Only show the "current draft" card while there's exactly one Einreichung
+  // and neither it nor the Verfahren have been submitted yet — otherwise the
+  // page falls back to a plain history list further down.
+  const showInitialEinreichungDetails =
+    Boolean(initialEinreichungData) &&
+    einreichungen.length === 1 &&
+    verfahren.status !== "EINGEREICHT" &&
+    initialEinreichungData?.einreichung.status !== "EINGEREICHT";
+
+  if (!initialEinreichungData || !showInitialEinreichungDetails) {
+    return { verfahren, einreichungen, initialEinreichung: null };
+  }
+
+  const { einreichung, dokumente } = initialEinreichungData;
+
+  const dokumenteWithValidierungsstatus = await Promise.all(
+    dokumente.map(async (dokument) => {
+      const validierungsstatus = await fetchDokumentValidierungsstatus(
+        authData,
+        {
+          verfahrenId,
+          einreichungId: einreichung.id,
+          id: dokument.id,
+        },
+      );
+
+      return { ...dokument, validierungsstatus };
+    }),
+  );
+
+  const beleg = await fetchLatestBelegForEinreichung(authData, {
+    verfahrenId,
+    einreichungId: einreichung.id,
+  });
+
+  return {
+    verfahren,
+    einreichungen,
+    initialEinreichung: {
+      einreichung,
+      dokumente: dokumenteWithValidierungsstatus,
+      beleg,
+    },
+  };
 };
 
 export const action = async ({
@@ -84,16 +168,35 @@ export const action = async ({
       return redirect(`/verfahren/${verfahrenId}`);
     }
 
-    // So far the formType "delete" is only allowed and meant to be used for an inital
-    // Einreichung, therefor the user will be returned to the "neue Klage einreichen" flow.
-    return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
+    return redirect(`/verfahren/${verfahrenId}`);
+  }
+
+  if (formType === "einreichen") {
+    const einreichungId = formData.get("einreichungId") as string;
+
+    await submitEinreichungIfNeeded(authData, { verfahrenId, einreichungId });
+
+    return redirect(`/verfahren/${verfahrenId}`);
+  }
+
+  if (formType === "download-beleg") {
+    const belegId = formData.get("belegId") as string;
+
+    const downloadUrl = await fetchBelegDownloadLink(authData, {
+      verfahrenId,
+      id: belegId,
+      dispositionType: "ATTACHMENT",
+    });
+
+    return { downloadUrl };
   }
 
   return redirect(`/verfahren/${verfahrenId}`);
 };
 
 export default function VerfahrenId() {
-  const { verfahren, einreichungen } = useLoaderData<LoaderData>();
+  const { verfahren, einreichungen, initialEinreichung } =
+    useLoaderData<LoaderData>();
   const { routes, shared } = useTranslations();
 
   const formatDate = (value: string | null | undefined) => {
@@ -123,34 +226,47 @@ export default function VerfahrenId() {
     ROLE_CODE_BEKLAGTE,
   );
 
-  let overviewBadge = getVerfahrenStatusPresentation(verfahren.status);
+  const beleg = initialEinreichung?.beleg ?? null;
+  const isBelegReady = beleg !== null && beleg.status === "ERSTELLT";
+  const isBelegPending = beleg !== null && !isBelegReady;
 
-  const initialEinreichungData = einreichungen[0];
-  const initialEinreichung = initialEinreichungData?.einreichung;
-  const initialEinreichungDokumente = initialEinreichungData?.dokumente ?? [];
-  const showInitialEinreichungDetails =
-    Boolean(initialEinreichung) &&
-    einreichungen.length === 1 &&
-    verfahren.status !== "EINGEREICHT" &&
-    initialEinreichung?.status !== "EINGEREICHT";
-  const hasInitialEinreichung =
-    initialEinreichungData && showInitialEinreichungDetails;
+  const dokumenteValidierungsstatus =
+    initialEinreichung?.dokumente.map(
+      (dokument) => dokument.validierungsstatus,
+    ) ?? [];
 
-  const isInitialEinreichungReady =
-    initialEinreichung?.einreichungsStatus.ergebnis === "GRUEN";
-  const initialEinreichungBadge = isInitialEinreichungReady
+  const readinessPresentation = initialEinreichung
+    ? resolveReadinessPresentation(
+        initialEinreichung.einreichung.einreichungsStatus,
+        routes.verfahrenNeu.step3.summary.badgeLabels,
+        dokumenteValidierungsstatus,
+      )
+    : null;
+  const isValidating = readinessPresentation?.readinessBadgeClass === "info";
+
+  const validationErgebnis =
+    initialEinreichung?.einreichung.einreichungsStatus.ergebnis;
+  const hasValidationIssues =
+    validationErgebnis === "ROT" || validationErgebnis === "GELB";
+
+  const cardBadgePresentation =
+    beleg && readinessPresentation
+      ? resolveBelegPresentation(
+          beleg,
+          routes.verfahrenNeu.step3.belegStatus.badgeLabels,
+        )
+      : readinessPresentation;
+
+  const overviewBadge = readinessPresentation
     ? {
-        label: routes.verfahrenNeu.step3.summary.badgeLabels.ready,
-        badgeClassModifier: "success" as const,
+        label: readinessPresentation.readinessLabel,
+        badgeClassModifier: readinessPresentation.readinessBadgeClass,
       }
-    : {
-        label: routes.verfahrenNeu.step3.summary.badgeLabels.soon,
-        badgeClassModifier: "warning" as const,
-      };
+    : getVerfahrenStatusPresentation(verfahren.status);
 
   const initialTimelineStepData = initialEinreichung
     ? buildInitialTimelineStepData(
-        getInitialEinreichungTimelineSteps(initialEinreichungDokumente),
+        getInitialEinreichungTimelineSteps(initialEinreichung.dokumente),
         verfahren.status_geaendert_am,
         {
           klaeger: klaegerinnenSummary.length > 0,
@@ -178,17 +294,62 @@ export default function VerfahrenId() {
       )
     : [];
 
-  if (hasInitialEinreichung) {
-    overviewBadge = initialEinreichungBadge;
-  }
+  const [isSubmitting, setIsSubmitting] = useState<"idle" | "submitting">(
+    "idle",
+  );
+  const [error, setError] = useState<boolean>(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const revalidator = useRevalidator();
 
-  const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
+  // While the Validierungslauf is still running or the Beleg hasn't been
+  // finalized yet, poll for updated data so the badges/alerts reflect the
+  // result without the user having to reload the page manually.
+  useEffect(() => {
+    if (!isValidating && !isBelegPending) {
+      return;
+    }
+
+    const intervalId = setInterval(() => {
+      if (revalidator.state === "idle") {
+        revalidator.revalidate();
+      }
+    }, VALIDIERUNGSSTATUS_POLL_INTERVAL_MS);
+
+    return () => clearInterval(intervalId);
+  }, [isValidating, isBelegPending, revalidator]);
+
+  const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
-    alert("Implementierung folgt bald.");
+    setError(false);
+    setIsSubmitting("submitting");
+
+    const formData = new FormData(formRef.current!);
+
+    try {
+      const response = await fetch(globalThis.location.href, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        setError(true);
+        setIsSubmitting("idle");
+        return;
+      }
+
+      // success - redirect will happen via action
+      formRef.current?.submit();
+    } catch (err) {
+      console.error(`/verfahren/${verfahren.id} form submission error: ${err}`);
+      setError(true);
+      setIsSubmitting("idle");
+    }
   };
 
   return (
-    <div className="relative">
+    <div
+      className={`${isSubmitting === "submitting" ? "pointer-events-none opacity-50" : ""} relative`}
+    >
       <div className="kern-row">
         <div className="kern-col-12 kern-col-xl-10 kern-col-xl-offset-1">
           <div className="kern-gap-lg flex flex-col">
@@ -253,20 +414,20 @@ export default function VerfahrenId() {
               <h3 className="kern-heading-medium">
                 {routes.verfahrenId.headline}
               </h3>
-              {hasInitialEinreichung ? (
+              {initialEinreichung ? (
                 <>
                   <div className="gap-kern-space-default flex items-stretch">
                     <div className="w-80 flex-[0_0_auto]">
                       <span className="kern-body kern-body--small kern-body--muted">
-                        {
-                          routes.verfahrenNeu.step3.proceduralSteps.einreichung
-                            .timelineLabel
-                        }
+                        {isBelegReady && beleg
+                          ? new Date(beleg.erstellt_am).toLocaleDateString()
+                          : routes.verfahrenNeu.step3.proceduralSteps
+                              .einreichung.timelineLabel}
                       </span>
                     </div>
                     <div className="flex flex-[0_0_auto] flex-col items-center">
                       <span
-                        className="kern-icon kern-icon--edit kern-icon--default"
+                        className={`kern-icon ${isBelegReady ? "kern-icon--check" : "kern-icon--edit"} kern-icon--default`}
                         aria-hidden="true"
                       ></span>
                       <div className="mt-kern-space-small min-h-16 w-2 flex-1 bg-(--kern-color-decorative-border-default) p-0"></div>
@@ -274,9 +435,34 @@ export default function VerfahrenId() {
                     <div className="pb-kern-space-default flex-1">
                       <article
                         className="kern-card"
-                        key={initialEinreichung.id}
+                        key={initialEinreichung.einreichung.id}
                       >
                         <div className="kern-card__container">
+                          {error ? (
+                            <Alert
+                              type="error"
+                              title={shared.form.submit.title}
+                              message={shared.form.submit.message}
+                            />
+                          ) : beleg ? (
+                            <VerfahrenBelegStatusAlert beleg={beleg} />
+                          ) : (
+                            hasValidationIssues && (
+                              <Alert
+                                type={
+                                  validationErgebnis === "ROT"
+                                    ? "error"
+                                    : "warning"
+                                }
+                                title={
+                                  readinessPresentation?.readinessLabel ?? ""
+                                }
+                                message={initialEinreichung.einreichung.einreichungsStatus.fehler.join(
+                                  "\n",
+                                )}
+                              />
+                            )
+                          )}
                           <header className="kern-card__header">
                             <hgroup className="kern-hgroup">
                               <h4
@@ -288,17 +474,23 @@ export default function VerfahrenId() {
                                     .einreichung.basisdaten.titleLabel
                                 }{" "}
                                 -{" "}
-                                {initialEinreichung.name ?? NOT_AVAILABLE_LABEL}
+                                {initialEinreichung.einreichung.name ??
+                                  NOT_AVAILABLE_LABEL}
                               </h4>
-                              <p className="kern-preline">
-                                <VerfahrenStatusBadge
-                                  small
-                                  tone={
-                                    initialEinreichungBadge.badgeClassModifier
-                                  }
-                                  label={initialEinreichungBadge.label}
-                                />
-                              </p>
+                              {(beleg || !hasValidationIssues) &&
+                                cardBadgePresentation && (
+                                  <p className="kern-preline">
+                                    <VerfahrenStatusBadge
+                                      small
+                                      tone={
+                                        cardBadgePresentation.readinessBadgeClass
+                                      }
+                                      label={
+                                        cardBadgePresentation.readinessLabel
+                                      }
+                                    />
+                                  </p>
+                                )}
                             </hgroup>
                           </header>
                           <section className="kern-card__body">
@@ -356,7 +548,8 @@ export default function VerfahrenId() {
                                     </dt>
                                     <dd className="kern-description-list-item__value">
                                       {formatDate(
-                                        initialEinreichung.erstellt_am,
+                                        initialEinreichung.einreichung
+                                          .erstellt_am,
                                       )}
                                     </dd>
                                   </div>
@@ -404,93 +597,127 @@ export default function VerfahrenId() {
                             </div>
                             <div className="w-full">
                               <h5 className="kern-preline">Dokumente</h5>
-                              {initialEinreichungDokumente.length === 0 ? (
+                              {initialEinreichung.dokumente.length === 0 ? (
                                 <p className="kern-body mt-kern-space-default m-0">
                                   Keine Dokumente vorhanden.
                                 </p>
                               ) : (
                                 <div className="mt-kern-space-default gap-kern-space-default flex w-full flex-col">
-                                  {initialEinreichungDokumente.map(
-                                    (dokument, index) => {
-                                      const dokumentStatus =
-                                        getDokumentStatusPresentation(
-                                          dokument.status,
-                                        );
+                                  {initialEinreichung.dokumente.map(
+                                    (dokument) => {
+                                      const dokumentErgebnis =
+                                        dokument.validierungsstatus.ergebnis;
+                                      const dokumentHasValidationIssues =
+                                        dokumentErgebnis === "ROT" ||
+                                        dokumentErgebnis === "GELB";
+                                      const {
+                                        readinessLabel: dokumentStatusLabel,
+                                        readinessBadgeClass:
+                                          dokumentStatusBadgeClass,
+                                      } = resolveReadinessPresentation(
+                                        dokument.validierungsstatus,
+                                        {
+                                          ...routes.verfahrenNeu.step3.summary
+                                            .badgeLabels,
+                                          ready:
+                                            routes.verfahrenNeu.step3.summary
+                                              .badgeLabels.checkedClean,
+                                        },
+                                      );
 
                                       return (
                                         <div
                                           key={dokument.id}
-                                          className="rounded-kern-default p-kern-space-default align-center gap-kern-space-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)"
+                                          className="gap-kern-space-small flex w-full flex-col"
                                         >
-                                          <div className="flex-1">
-                                            <div className="kern-body kern-body--bold">
-                                              {dokument.anzeigename}
+                                          <div className="rounded-kern-default p-kern-space-default align-center gap-kern-space-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)">
+                                            <div className="flex-1">
+                                              <div className="kern-body kern-body--bold">
+                                                {dokument.anzeigename}
+                                              </div>
+                                              <div className="kern-body kern-body--small kern-body--muted">
+                                                {formatDokumentSize(
+                                                  dokument.size_in_bytes,
+                                                )}
+                                                {" · "}
+                                                {
+                                                  routes.verfahrenNeu.step3
+                                                    .proceduralSteps.einreichung
+                                                    .dokumente.uploadedAtLabel
+                                                }{" "}
+                                                {formatDate(
+                                                  dokument.erstellt_am,
+                                                )}
+                                              </div>
                                             </div>
-                                            <div className="kern-body kern-body--small kern-body--muted">
-                                              {formatDokumentSize(
-                                                dokument.size_in_bytes,
-                                              )}
-                                              {" · "}
-                                              {
-                                                routes.verfahrenNeu.step3
-                                                  .proceduralSteps.einreichung
-                                                  .dokumente.uploadedAtLabel
-                                              }{" "}
-                                              {formatDate(dokument.erstellt_am)}
-                                            </div>
-                                          </div>
-
-                                          {index > 0 ? (
-                                            <Form
-                                              method="post"
-                                              className="gap-kern-space-small flex items-center"
-                                            >
-                                              <input
-                                                type="hidden"
-                                                name="formType"
-                                                value="delete"
-                                              />
-                                              <input
-                                                type="hidden"
-                                                name="einreichungId"
-                                                value={initialEinreichung.id}
-                                              />
-                                              <input
-                                                type="hidden"
-                                                name="dokumentId"
-                                                value={dokument.id}
-                                              />
-                                              <button
-                                                className="kern-btn kern-btn--secondary kern-btn--x-small"
-                                                type="submit"
+                                            {canDeleteDokument(dokument) ? (
+                                              <Form
+                                                method="post"
+                                                className="gap-kern-space-small flex items-center"
                                               >
-                                                <span
-                                                  className="kern-icon kern-icon--delete"
-                                                  aria-hidden="true"
-                                                ></span>
-                                                <span className="kern-label kern-sr-only">
-                                                  {
-                                                    shared.form.deleteDokument
-                                                      .label
+                                                <input
+                                                  type="hidden"
+                                                  name="formType"
+                                                  value="delete"
+                                                />
+                                                <input
+                                                  type="hidden"
+                                                  name="einreichungId"
+                                                  value={
+                                                    initialEinreichung
+                                                      .einreichung.id
                                                   }
-                                                </span>
-                                              </button>
-                                              <VerfahrenStatusBadge
-                                                tone={
-                                                  dokumentStatus.badgeClassModifier
-                                                }
-                                                label={dokumentStatus.label}
-                                              />
-                                            </Form>
-                                          ) : (
-                                            <div className="flex items-center">
-                                              <VerfahrenStatusBadge
-                                                tone={
-                                                  dokumentStatus.badgeClassModifier
-                                                }
-                                                label={dokumentStatus.label}
-                                              />
-                                            </div>
+                                                />
+                                                <input
+                                                  type="hidden"
+                                                  name="dokumentId"
+                                                  value={dokument.id}
+                                                />
+                                                <button
+                                                  className="kern-btn kern-btn--secondary kern-btn--x-small"
+                                                  type="submit"
+                                                >
+                                                  <span
+                                                    className="kern-icon kern-icon--delete"
+                                                    aria-hidden="true"
+                                                  ></span>
+                                                  <span className="kern-label kern-sr-only">
+                                                    {
+                                                      shared.form.deleteDokument
+                                                        .label
+                                                    }
+                                                  </span>
+                                                </button>
+                                                <VerfahrenStatusBadge
+                                                  tone={
+                                                    dokumentStatusBadgeClass
+                                                  }
+                                                  label={dokumentStatusLabel}
+                                                />
+                                              </Form>
+                                            ) : (
+                                              <div className="flex items-center">
+                                                <VerfahrenStatusBadge
+                                                  tone={
+                                                    dokumentStatusBadgeClass
+                                                  }
+                                                  label={dokumentStatusLabel}
+                                                />
+                                              </div>
+                                            )}
+                                          </div>
+                                          {dokumentHasValidationIssues && (
+                                            <Alert
+                                              type={
+                                                dokumentErgebnis === "ROT"
+                                                  ? "error"
+                                                  : "warning"
+                                              }
+                                              title={dokumentStatusLabel}
+                                              message={dokument.validierungsstatus.fehler.join(
+                                                "\n",
+                                              )}
+                                            />
                                           )}
                                         </div>
                                       );
@@ -511,14 +738,30 @@ export default function VerfahrenId() {
                             </Link>
 
                             <Form
+                              ref={formRef}
                               method="post"
                               encType="multipart/form-data"
                               onSubmit={handleSubmit}
                             >
+                              <input
+                                type="hidden"
+                                name="formType"
+                                value="einreichen"
+                              />
+                              <input
+                                type="hidden"
+                                name="einreichungId"
+                                value={initialEinreichung.einreichung.id}
+                              />
                               <button
                                 type="submit"
                                 className="kern-btn kern-btn--primary"
                                 aria-describedby="card-current-einreichung-heading"
+                                disabled={
+                                  isSubmitting === "submitting" ||
+                                  isValidating ||
+                                  beleg !== null
+                                }
                               >
                                 <span className="kern-label">
                                   {
@@ -537,7 +780,7 @@ export default function VerfahrenId() {
                     const isLastStep =
                       index === initialTimelineStepData.length - 1;
                     const editTo = isLastStep
-                      ? `/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${initialEinreichung.id}`
+                      ? `/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${initialEinreichung.einreichung.id}`
                       : `/verfahren/neu/${verfahren.id}/bearbeiten`;
 
                     return (
@@ -587,6 +830,10 @@ export default function VerfahrenId() {
               )}
             </section>
           </div>
+          <VerfahrenLoader
+            active={isSubmitting === "submitting"}
+            label="Wird geladen..."
+          />
         </div>
       </div>
     </div>
