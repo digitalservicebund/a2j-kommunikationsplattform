@@ -268,8 +268,6 @@ export const de = {
             dokumente: {
               uploadedAtLabel: "hochgeladen am",
             },
-            confirmAccuracyLabel:
-              "Ich versichere die Richtigkeit und Vollständigkeit der Angaben.",
             submit: "Klage einreichen & Abgabe ans Gericht",
           },
           assets: {
