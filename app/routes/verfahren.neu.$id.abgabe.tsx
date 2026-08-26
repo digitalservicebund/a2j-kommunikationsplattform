@@ -475,6 +475,7 @@ export default function VerfahrenNeuBearbeiten() {
                           <VerfahrenEinreichungOutcomeAlert
                             hasSubmitError={error}
                             beleg={beleg}
+                            isValidating={isValidating}
                             hasValidationIssues={hasValidationIssues}
                             isValidationErrorFatal={
                               validationErgebnis === "ROT"

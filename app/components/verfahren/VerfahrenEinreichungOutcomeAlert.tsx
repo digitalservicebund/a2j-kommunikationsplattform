@@ -6,6 +6,7 @@ import { useTranslations } from "~/services/translations/context";
 type VerfahrenEinreichungOutcomeAlertProps = {
   hasSubmitError: boolean;
   beleg: Beleg | null;
+  isValidating: boolean;
   hasValidationIssues: boolean;
   isValidationErrorFatal: boolean;
   readinessLabel: string;
@@ -19,6 +20,7 @@ type VerfahrenEinreichungOutcomeAlertProps = {
 export default function VerfahrenEinreichungOutcomeAlert({
   hasSubmitError,
   beleg,
+  isValidating,
   hasValidationIssues,
   isValidationErrorFatal,
   readinessLabel,
@@ -40,7 +42,11 @@ export default function VerfahrenEinreichungOutcomeAlert({
     return <VerfahrenBelegStatusAlert beleg={beleg} />;
   }
 
-  if (!hasValidationIssues) {
+  // A new Validierungslauf (e.g. after regenerating xjustiz.xml) can take a
+  // moment to start, during which `ergebnis`/`fehler` may still reflect the
+  // *previous* run — don't surface stale errors while a fresh check is
+  // already in progress.
+  if (isValidating || !hasValidationIssues) {
     return null;
   }
 

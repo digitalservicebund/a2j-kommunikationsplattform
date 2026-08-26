@@ -19,6 +19,7 @@ function renderOutcomeAlert(
         <VerfahrenEinreichungOutcomeAlert
           hasSubmitError={false}
           beleg={null}
+          isValidating={false}
           hasValidationIssues={false}
           isValidationErrorFatal={false}
           readinessLabel="Bereit zur Abgabe"
@@ -90,5 +91,19 @@ describe("VerfahrenEinreichungOutcomeAlert", () => {
 
     expect(screen.getByText("Es liegen Hinweise vor")).toBeInTheDocument();
     expect(screen.getByText("Hinweis zur Signatur")).toBeInTheDocument();
+  });
+
+  it("suppresses a stale validation Alert while a new Validierungslauf is running", () => {
+    // e.g. right after regenerating xjustiz.xml: validierungslauf_status has
+    // already flipped to LAEUFT, but ergebnis/fehler still reflect the
+    // previous, now-superseded run.
+    const { container } = renderOutcomeAlert({
+      isValidating: true,
+      hasValidationIssues: true,
+      isValidationErrorFatal: true,
+      fehler: ["Die Einreichung enthält kein XJustiz-Dokument"],
+    });
+
+    expect(container).toBeEmptyDOMElement();
   });
 });
