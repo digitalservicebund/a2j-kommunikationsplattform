@@ -185,6 +185,8 @@ export default function VerfahrenId() {
     useLoaderData<LoaderData>();
   const { routes, shared } = useTranslations();
 
+  console.log("verfahren", verfahren);
+  console.log("einreichungen", einreichungen);
   const formatDate = (value: string | null | undefined) => {
     if (!value) {
       return NOT_AVAILABLE_LABEL;
@@ -583,8 +585,10 @@ export default function VerfahrenId() {
                         timelineLabel={timelineStep.timelineLabel}
                         title={timelineStep.title}
                         body={timelineStep.body}
-                        editTo={editTo}
-                        editLabel={shared.form.labels.edit}
+                        editTo={beleg === null ? editTo : undefined}
+                        editLabel={
+                          beleg === null ? shared.form.labels.edit : undefined
+                        }
                         showConnector={timelineStep.showConnector}
                       />
                     );

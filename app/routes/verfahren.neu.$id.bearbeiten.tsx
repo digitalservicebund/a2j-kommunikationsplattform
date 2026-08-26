@@ -43,6 +43,7 @@ import fetchAnschriftstypen from "~/domains/verfahren/fetchAnschriftstypen.servi
 import fetchDokument from "~/domains/verfahren/fetchDokument";
 import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
 import fetchKanzleiformen from "~/domains/verfahren/fetchKanzleiformen.service";
+import fetchLatestBelegForEinreichung from "~/domains/verfahren/fetchLatestBelegForEinreichung.server";
 import fetchRollenbezeichnungen from "~/domains/verfahren/fetchRollenbezeichnungen.service";
 import fetchStaaten from "~/domains/verfahren/fetchStaaten.service";
 import fetchTelekommunikationsarten from "~/domains/verfahren/fetchTelekommunikationsarten.service";
@@ -173,6 +174,18 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   );
   const { verfahren, einreichung, dokumente } =
     await loadVerfahrenEinreichungBundle(authData, verfahrenId);
+
+  // Once the Einreichung has been submitted (a Beleg exists), the API no
+  // longer accepts changes to the Verfahren — bounce back instead of
+  // letting the user edit a form that will fail with a 409 on submit.
+  const beleg = await fetchLatestBelegForEinreichung(authData, {
+    verfahrenId,
+    einreichungId: einreichung.id,
+  });
+
+  if (beleg) {
+    return redirect(`/verfahren/${verfahrenId}`);
+  }
 
   const gerichtePromise = (async () => {
     const { elemente } = await fetchGerichte(authData);

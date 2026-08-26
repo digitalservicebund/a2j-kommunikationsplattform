@@ -249,18 +249,20 @@ export default function VerfahrenNeuBearbeiten() {
                     {routes.verfahrenNeu.step3.subline}
                   </h2>
                 </div>
-                <div className="kern-justify-content-end flex grow">
-                  <div className="gap-kern-space-default flex">
-                    <div>
-                      <Link
-                        to={`/verfahren/neu/${verfahren.id}/bearbeiten`}
-                        className="kern-btn kern-btn--secondary"
-                      >
-                        <span className="kern-label">{buttons.prev}</span>
-                      </Link>
+                {beleg === null && (
+                  <div className="kern-justify-content-end flex grow">
+                    <div className="gap-kern-space-default flex">
+                      <div>
+                        <Link
+                          to={`/verfahren/neu/${verfahren.id}/bearbeiten`}
+                          className="kern-btn kern-btn--secondary"
+                        >
+                          <span className="kern-label">{buttons.prev}</span>
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
 
               <VerfahrenPrototypeHint />
@@ -547,8 +549,10 @@ export default function VerfahrenNeuBearbeiten() {
                       timelineLabel={timelineStep.timelineLabel}
                       title={timelineStep.title}
                       body={timelineStep.body}
-                      editTo={editTo}
-                      editLabel={shared.form.labels.edit}
+                      editTo={beleg === null ? editTo : undefined}
+                      editLabel={
+                        beleg === null ? shared.form.labels.edit : undefined
+                      }
                       showConnector={timelineStep.showConnector}
                     />
                   );
