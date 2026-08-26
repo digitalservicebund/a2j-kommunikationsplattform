@@ -36,12 +36,14 @@ import buildBeteiligungFromFormValues, {
   buildRaKanzleiFromFormValues,
   ParteiFormValues,
 } from "~/domains/verfahren/buildBeteiligungFromFormValues";
+import canDeleteDokument from "~/domains/verfahren/canDeleteDokument";
 import { VerfahrenAendernRequestSchema } from "~/domains/verfahren/createVerfahren.server";
 import deleteDokument from "~/domains/verfahren/deleteDokument.server";
 import fetchAnschriftstypen from "~/domains/verfahren/fetchAnschriftstypen.service";
 import fetchDokument from "~/domains/verfahren/fetchDokument";
 import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
 import fetchKanzleiformen from "~/domains/verfahren/fetchKanzleiformen.service";
+import fetchLatestBelegForEinreichung from "~/domains/verfahren/fetchLatestBelegForEinreichung.server";
 import fetchRollenbezeichnungen from "~/domains/verfahren/fetchRollenbezeichnungen.service";
 import fetchStaaten from "~/domains/verfahren/fetchStaaten.service";
 import fetchTelekommunikationsarten from "~/domains/verfahren/fetchTelekommunikationsarten.service";
@@ -51,6 +53,7 @@ import loadVerfahrenEinreichungBundle, {
   EinreichungWithStatus,
   Verfahren,
 } from "~/domains/verfahren/loadVerfahrenEinreichungBundle.server";
+import regenerateEinreichungXJustiz from "~/domains/verfahren/regenerateEinreichungXJustiz.server";
 import resolveCodeWertId from "~/domains/verfahren/resolveCodeWertId";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.server";
 import { CodeWertSchema } from "~/domains/verfahren/schemas/codeWertSchema";
@@ -171,6 +174,18 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   );
   const { verfahren, einreichung, dokumente } =
     await loadVerfahrenEinreichungBundle(authData, verfahrenId);
+
+  // Once the Einreichung has been submitted (a Beleg exists), the API no
+  // longer accepts changes to the Verfahren — bounce back instead of
+  // letting the user edit a form that will fail with a 409 on submit.
+  const beleg = await fetchLatestBelegForEinreichung(authData, {
+    verfahrenId,
+    einreichungId: einreichung.id,
+  });
+
+  if (beleg) {
+    return redirect(`/verfahren/${verfahrenId}`);
+  }
 
   const gerichtePromise = (async () => {
     const { elemente } = await fetchGerichte(authData);
@@ -357,6 +372,12 @@ export const action = async ({
 
     await updateVerfahren(authData, verfahrenId, validatedForm.data);
 
+    const einreichungId = formData.get("einreichungId") as string;
+    await regenerateEinreichungXJustiz(authData, {
+      verfahrenId,
+      einreichungId,
+    });
+
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   }
 };
@@ -493,7 +514,9 @@ export default function VerfahrenNeuBearbeiten() {
 
   const [hasLawyer, setHasLawyer] = useState(hasExistingLawyer);
 
-  const uploadedDokumente = dokumente.filter((_, index) => index > 0);
+  const uploadedDokumente = dokumente.filter((dokument) =>
+    canDeleteDokument(dokument),
+  );
 
   const [selectedDokumentType, setSelectedDokumentType] = useState<string>(
     (formValues?.type as string) || "",

@@ -18,3 +18,5 @@ export const ValidierungsstatusSchema = z.object({
   ergebnis: ValidierungsstatusErgebnis,
   fehler: z.array(z.string()),
 });
+
+export type Validierungsstatus = z.infer<typeof ValidierungsstatusSchema>;

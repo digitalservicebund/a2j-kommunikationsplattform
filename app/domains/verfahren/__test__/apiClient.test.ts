@@ -378,6 +378,44 @@ describe("apiClient", () => {
       );
     });
 
+    it("parses text response and returns raw body when responseType is text", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      const xml = "<xjustiz>...</xjustiz>";
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        text: async () => xml,
+      });
+
+      const result = await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+        responseType: "text",
+      });
+
+      expect(result).toBe(xml);
+    });
+
+    it("requests */* via the Accept header when responseType is text", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        text: async () => "",
+      });
+
+      await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+        responseType: "text",
+      });
+
+      expect(mocks.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({ Accept: "*/*" }),
+        }),
+      );
+    });
+
     it("returns undefined for 204 responses without trying to read the body", async () => {
       mocks.getBearerToken.mockResolvedValue("token");
       const jsonSpy = vi.fn();

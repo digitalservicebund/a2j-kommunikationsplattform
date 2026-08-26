@@ -1,4 +1,6 @@
-export interface InputTextProps extends React.InputHTMLAttributes<HTMLInputElement> {
+import { InputHTMLAttributes } from "react";
+
+export interface InputTextProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   id: string;
   className?: string;

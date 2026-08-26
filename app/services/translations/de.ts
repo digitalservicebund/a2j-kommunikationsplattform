@@ -122,6 +122,36 @@ export const de = {
       kontoinhaberLabel: "Zahlungsempfänger",
       ibanLabel: "IBAN",
     },
+    statusPresentation: {
+      verfahren: {
+        erstellt: "Verfahren erstellt",
+        eingereicht: "Verfahren eingereicht",
+        gerichtsverfahrenAngelegt: "Gerichtsverfahren angelegt",
+        abgeschlossen: "Verfahren abgeschlossen",
+        geloescht: "Verfahren gelöscht",
+      },
+      dokument: {
+        erstellt: "Erstellt",
+        eingereicht: "Eingereicht",
+        wirdValidiert: "Wird validiert",
+      },
+      einreichung: {
+        gruen: "Grün",
+        rot: "Rot",
+        gelb: "Gelb",
+      },
+      virenScan: {
+        sauber: "Geprüft und virenfrei",
+        infiziertShort: "Infiziert",
+        infiziertLong: "Dokument ist infiziert",
+        fehlgeschlagenShort: "Fehlgeschlagen",
+        fehlgeschlagenLong: "Scan ist fehlgeschlagen",
+        inBearbeitungShort: "In Bearbeitung",
+        inBearbeitungLong: "Scan ist in Bearbeitung",
+        ausstehendShort: "In Bearbeitung",
+        ausstehendLong: "Scan ist ausstehend",
+      },
+    },
     HEADER_ARIA_LABEL: "Hauptmenü",
     FOOTER_ARIA_LABEL: "Rechtliche und weiterführende Informationen",
     UEBERSICHT_LABEL: "Übersicht",
@@ -226,6 +256,27 @@ export const de = {
           badgeLabels: {
             ready: "Bereit zur Abgabe",
             soon: "Noch wenige Schritte zur Abgabe",
+            checking: "Prüfung läuft",
+            problem: "Es liegt ein Problem vor",
+            warning: "Es liegen Hinweise vor",
+            checkedClean: "Geprüft und virenfrei",
+          },
+        },
+        belegStatus: {
+          pending: {
+            headline: "Klage entgegengenommen – wird geprüft",
+            copy: "Ihre Klage wurde an das Gericht übermittelt und wird nun automatisch geprüft. Das dauert nur wenige Minuten. Anschließend stellen wir Ihnen hier die Einreichungsbestätigung zur Verfügung.",
+          },
+          ready: {
+            headline: "Klage erfolgreich eingereicht",
+            copy: "Die Prüfung ist abgeschlossen. Ihre Klage ist beim Gericht eingegangen. Die Einreichungsbestätigung steht jetzt zum Download bereit.",
+            buttonLabelDownloadConfirmation:
+              "Einreichungsbestätigung herunterladen",
+            buttonLabelToVerfahrenOverview: "Zur Verfahrensübersicht",
+          },
+          badgeLabels: {
+            pending: "Wird geprüft",
+            ready: "Eingereicht",
           },
         },
         proceduralSteps: {
@@ -247,7 +298,7 @@ export const de = {
             dokumente: {
               uploadedAtLabel: "hochgeladen am",
             },
-            submit: " Klage einreichen & Abgabe ans Gericht",
+            submit: "Klage einreichen & Abgabe ans Gericht",
           },
           assets: {
             title: "Anlagen & Beweismittel",
