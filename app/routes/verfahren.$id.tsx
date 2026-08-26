@@ -237,12 +237,7 @@ export default function VerfahrenId() {
   const hasValidationIssues =
     validationErgebnis === "ROT" || validationErgebnis === "GELB";
 
-  const overviewBadge = readinessPresentation
-    ? {
-        label: readinessPresentation.readinessLabel,
-        badgeClassModifier: readinessPresentation.readinessBadgeClass,
-      }
-    : getVerfahrenStatusPresentation(verfahren.status);
+  const overviewBadge = getVerfahrenStatusPresentation(verfahren.status);
 
   const initialTimelineStepData = initialEinreichung
     ? buildInitialTimelineStepData(
@@ -284,6 +279,18 @@ export default function VerfahrenId() {
       <div className="kern-row">
         <div className="kern-col-12 kern-col-xl-10 kern-col-xl-offset-1">
           <div className="kern-gap-lg flex flex-col">
+            <VerfahrenEinreichungOutcomeBanner
+              hasSubmitError={error}
+              beleg={beleg}
+              isValidating={isValidating}
+              hasValidationIssues={hasValidationIssues}
+              isValidationErrorFatal={validationErgebnis === "ROT"}
+              readinessLabel={readinessPresentation?.readinessLabel ?? ""}
+              fehler={
+                initialEinreichung?.einreichung.einreichungsStatus.fehler ?? []
+              }
+            />
+
             <article className="kern-card">
               <div className="kern-card__container">
                 <div className="algin-start gap-kern-space-default flex w-full flex-wrap items-start">
@@ -369,22 +376,6 @@ export default function VerfahrenId() {
                         key={initialEinreichung.einreichung.id}
                       >
                         <div className="kern-card__container">
-                          <VerfahrenEinreichungOutcomeBanner
-                            hasSubmitError={error}
-                            beleg={beleg}
-                            isValidating={isValidating}
-                            hasValidationIssues={hasValidationIssues}
-                            isValidationErrorFatal={
-                              validationErgebnis === "ROT"
-                            }
-                            readinessLabel={
-                              readinessPresentation?.readinessLabel ?? ""
-                            }
-                            fehler={
-                              initialEinreichung.einreichung.einreichungsStatus
-                                .fehler
-                            }
-                          />
                           <header className="kern-card__header">
                             <hgroup className="kern-hgroup">
                               <h4

@@ -44,6 +44,7 @@ import {
 } from "~/domains/verfahren/presentationPlaceholders";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.server";
 import { Beleg } from "~/domains/verfahren/schemas/belegSchema";
+import { getVerfahrenStatusPresentation } from "~/domains/verfahren/statusPresentation";
 import submitEinreichungIfNeeded from "~/domains/verfahren/submitEinreichungIfNeeded.server";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
@@ -152,6 +153,10 @@ export default function VerfahrenNeuBearbeiten() {
     useLoaderData<LoaderData>();
   const { routes, buttons, shared } = useTranslations();
 
+  console.log("einreichung", einreichung);
+  console.log("dokumente", dokumente);
+  console.log("beleg", beleg);
+
   console.log("verfahren", verfahren);
 
   const klaegerinnenNamen = getBeteiligteNamesByRoleCode(
@@ -187,6 +192,9 @@ export default function VerfahrenNeuBearbeiten() {
   );
   const { readinessLabel, readinessBadgeClass } = readinessPresentation;
   const isValidating = readinessBadgeClass === "info";
+  const verfahrenStatusPresentation = getVerfahrenStatusPresentation(
+    verfahren.status,
+  );
   const isBelegReady = beleg !== null && beleg.status === "ERSTELLT";
   const isBelegPending = beleg !== null && !isBelegReady;
 
@@ -267,6 +275,16 @@ export default function VerfahrenNeuBearbeiten() {
 
               <VerfahrenPrototypeHint />
 
+              <VerfahrenEinreichungOutcomeBanner
+                hasSubmitError={error}
+                beleg={beleg}
+                isValidating={isValidating}
+                hasValidationIssues={hasValidationIssues}
+                isValidationErrorFatal={validationErgebnis === "ROT"}
+                readinessLabel={readinessLabel}
+                fehler={einreichung.einreichungsStatus.fehler}
+              />
+
               <article className="kern-card">
                 <div className="kern-card__container">
                   <div className="algin-start gap-kern-space-default flex w-full flex-wrap items-start">
@@ -291,8 +309,8 @@ export default function VerfahrenNeuBearbeiten() {
                     </div>
                     <VerfahrenStatusBadge
                       small
-                      tone={readinessBadgeClass}
-                      label={readinessLabel}
+                      tone={verfahrenStatusPresentation.badgeClassModifier}
+                      label={verfahrenStatusPresentation.label}
                     />
                   </div>
                   <div className="gap-kern-space-default grid w-full grid-cols-1 md:grid-cols-3">
@@ -474,17 +492,6 @@ export default function VerfahrenNeuBearbeiten() {
                               einreichungId={einreichung.id}
                             />
                           </div>
-                          <VerfahrenEinreichungOutcomeBanner
-                            hasSubmitError={error}
-                            beleg={beleg}
-                            isValidating={isValidating}
-                            hasValidationIssues={hasValidationIssues}
-                            isValidationErrorFatal={
-                              validationErgebnis === "ROT"
-                            }
-                            readinessLabel={readinessLabel}
-                            fehler={einreichung.einreichungsStatus.fehler}
-                          />
                         </section>
                         {beleg === null && (
                           <footer className="kern-card__footer">

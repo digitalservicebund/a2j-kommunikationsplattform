@@ -234,7 +234,7 @@ export const de = {
         },
         belegStatus: {
           pending: {
-            headline: "Klage entgegengenommen– wird geprüft",
+            headline: "Klage entgegengenommen – wird geprüft",
             copy: "Ihre Klage wurde an das Gericht übermittelt und wird nun automatisch geprüft. Das dauert nur wenige Minuten. Anschließend stellen wir Ihnen hier die Einreichungsbestätigung zur Verfügung.",
           },
           ready: {

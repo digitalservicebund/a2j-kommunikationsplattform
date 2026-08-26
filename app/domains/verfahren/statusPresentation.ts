@@ -57,9 +57,30 @@ export function getVerfahrenStatusPresentation(status: string): Presentation {
     };
   }
 
+  if (status === "GERICHTSVERFAHRENANGELEGT") {
+    return {
+      badgeClassModifier: "success",
+      label: "Gerichtsverfahren angelegt",
+    };
+  }
+
+  if (status === "ABGESCHLOSSEN") {
+    return {
+      badgeClassModifier: "success",
+      label: "Verfahren abgeschlossen",
+    };
+  }
+
+  if (status === "GELOESCHT") {
+    return {
+      badgeClassModifier: "danger",
+      label: "Verfahren gelöscht",
+    };
+  }
+
   return {
     badgeClassModifier: "info",
-    label: "Klage noch nicht eingereicht",
+    label: "Klage erstellt",
   };
 }
 
