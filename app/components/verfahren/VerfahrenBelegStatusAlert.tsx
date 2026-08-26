@@ -95,7 +95,7 @@ export default function VerfahrenBelegStatusAlert({ beleg }: { beleg: Beleg }) {
         <span className="kern-title">{belegTitle}</span>
       </div>
       <div className="kern-alert__body">
-        {belegMessage && <p className="kern-body">{belegMessage}</p>}
+        <div className="kern-body">{belegMessage}</div>
       </div>
     </div>
   );

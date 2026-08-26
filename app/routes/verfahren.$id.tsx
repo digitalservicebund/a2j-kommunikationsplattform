@@ -1,5 +1,3 @@
-import type { SyntheticEvent } from "react";
-import { useEffect, useRef, useState } from "react";
 import {
   ActionFunctionArgs,
   Form,
@@ -7,12 +5,15 @@ import {
   LoaderFunctionArgs,
   redirect,
   useLoaderData,
-  useRevalidator,
 } from "react-router";
-import Alert from "~/components/Alert";
-import VerfahrenBelegStatusAlert from "~/components/verfahren/VerfahrenBelegStatusAlert";
+import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
 import VerfahrenBriefSummaryOfBeteiligte from "~/components/verfahren/VerfahrenBriefSummaryOfBeteiligte";
 import VerfahrenBriefSummaryOfGericht from "~/components/verfahren/VerfahrenBriefSummaryOfGericht.static";
+import VerfahrenDokumenteList, {
+  DokumentWithValidierungsstatus,
+} from "~/components/verfahren/VerfahrenDokumenteList";
+import VerfahrenEinreichungOutcomeAlert from "~/components/verfahren/VerfahrenEinreichungOutcomeAlert";
+import VerfahrenEinreichungStatusBadge from "~/components/verfahren/VerfahrenEinreichungStatusBadge";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import VerfahrenTimelineStepCard from "~/components/verfahren/VerfahrenTimelineStepCard";
@@ -26,18 +27,12 @@ import {
   buildInitialTimelineStepData,
   getInitialEinreichungTimelineSteps,
 } from "~/domains/verfahren/buildInitialEinreichungTimelineSteps";
-import canDeleteDokument from "~/domains/verfahren/canDeleteDokument";
 import deleteDokumentFromEinreichung from "~/domains/verfahren/deleteDokumentFromEinreichung.server";
-import {
-  resolveBelegPresentation,
-  resolveReadinessPresentation,
-} from "~/domains/verfahren/einreichungReadiness";
+import { resolveReadinessPresentation } from "~/domains/verfahren/einreichungReadiness";
 import fetchBelegDownloadLink from "~/domains/verfahren/fetchBelegDownloadLink.server";
 import fetchDokumentValidierungsstatus from "~/domains/verfahren/fetchDokumentValidierungsstatus.server";
 import fetchLatestBelegForEinreichung from "~/domains/verfahren/fetchLatestBelegForEinreichung.server";
-import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
 import type {
-  Dokument,
   EinreichungWithStatus,
   Verfahren,
 } from "~/domains/verfahren/loadVerfahrenEinreichungBundle.server";
@@ -51,7 +46,6 @@ import {
 } from "~/domains/verfahren/presentationPlaceholders";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.server";
 import type { Beleg } from "~/domains/verfahren/schemas/belegSchema";
-import type { Validierungsstatus } from "~/domains/verfahren/schemas/validierungsStatusSchema";
 import {
   getDokumentStatusPresentation,
   getVerfahrenStatusPresentation,
@@ -59,10 +53,6 @@ import {
 import submitEinreichungIfNeeded from "~/domains/verfahren/submitEinreichungIfNeeded.server";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
-
-type DokumentWithValidierungsstatus = Dokument & {
-  validierungsstatus: Validierungsstatus;
-};
 
 type InitialEinreichungData = {
   einreichung: EinreichungWithStatus;
@@ -75,10 +65,6 @@ type LoaderData = {
   einreichungen: EinreichungSummary[];
   initialEinreichung: InitialEinreichungData | null;
 };
-
-// Poll interval while the Einreichung's Validierungslauf is still running,
-// so the readiness badge picks up the result without a manual page reload.
-const VALIDIERUNGSSTATUS_POLL_INTERVAL_MS = 5_000;
 
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
@@ -249,14 +235,6 @@ export default function VerfahrenId() {
   const hasValidationIssues =
     validationErgebnis === "ROT" || validationErgebnis === "GELB";
 
-  const cardBadgePresentation =
-    beleg && readinessPresentation
-      ? resolveBelegPresentation(
-          beleg,
-          routes.verfahrenNeu.step3.belegStatus.badgeLabels,
-        )
-      : readinessPresentation;
-
   const overviewBadge = readinessPresentation
     ? {
         label: readinessPresentation.readinessLabel,
@@ -294,57 +272,8 @@ export default function VerfahrenId() {
       )
     : [];
 
-  const [isSubmitting, setIsSubmitting] = useState<"idle" | "submitting">(
-    "idle",
-  );
-  const [error, setError] = useState<boolean>(false);
-  const formRef = useRef<HTMLFormElement>(null);
-  const revalidator = useRevalidator();
-
-  // While the Validierungslauf is still running or the Beleg hasn't been
-  // finalized yet, poll for updated data so the badges/alerts reflect the
-  // result without the user having to reload the page manually.
-  useEffect(() => {
-    if (!isValidating && !isBelegPending) {
-      return;
-    }
-
-    const intervalId = setInterval(() => {
-      if (revalidator.state === "idle") {
-        revalidator.revalidate();
-      }
-    }, VALIDIERUNGSSTATUS_POLL_INTERVAL_MS);
-
-    return () => clearInterval(intervalId);
-  }, [isValidating, isBelegPending, revalidator]);
-
-  const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError(false);
-    setIsSubmitting("submitting");
-
-    const formData = new FormData(formRef.current!);
-
-    try {
-      const response = await fetch(globalThis.location.href, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        setError(true);
-        setIsSubmitting("idle");
-        return;
-      }
-
-      // success - redirect will happen via action
-      formRef.current?.submit();
-    } catch (err) {
-      console.error(`/verfahren/${verfahren.id} form submission error: ${err}`);
-      setError(true);
-      setIsSubmitting("idle");
-    }
-  };
+  const { formRef, isSubmitting, error, handleSubmit } =
+    useEinreichenSubmission({ isValidating, isBelegPending });
 
   return (
     <div
@@ -438,31 +367,21 @@ export default function VerfahrenId() {
                         key={initialEinreichung.einreichung.id}
                       >
                         <div className="kern-card__container">
-                          {error ? (
-                            <Alert
-                              type="error"
-                              title={shared.form.submit.title}
-                              message={shared.form.submit.message}
-                            />
-                          ) : beleg ? (
-                            <VerfahrenBelegStatusAlert beleg={beleg} />
-                          ) : (
-                            hasValidationIssues && (
-                              <Alert
-                                type={
-                                  validationErgebnis === "ROT"
-                                    ? "error"
-                                    : "warning"
-                                }
-                                title={
-                                  readinessPresentation?.readinessLabel ?? ""
-                                }
-                                message={initialEinreichung.einreichung.einreichungsStatus.fehler.join(
-                                  "\n",
-                                )}
-                              />
-                            )
-                          )}
+                          <VerfahrenEinreichungOutcomeAlert
+                            hasSubmitError={error}
+                            beleg={beleg}
+                            hasValidationIssues={hasValidationIssues}
+                            isValidationErrorFatal={
+                              validationErgebnis === "ROT"
+                            }
+                            readinessLabel={
+                              readinessPresentation?.readinessLabel ?? ""
+                            }
+                            fehler={
+                              initialEinreichung.einreichung.einreichungsStatus
+                                .fehler
+                            }
+                          />
                           <header className="kern-card__header">
                             <hgroup className="kern-hgroup">
                               <h4
@@ -477,20 +396,15 @@ export default function VerfahrenId() {
                                 {initialEinreichung.einreichung.name ??
                                   NOT_AVAILABLE_LABEL}
                               </h4>
-                              {(beleg || !hasValidationIssues) &&
-                                cardBadgePresentation && (
-                                  <p className="kern-preline">
-                                    <VerfahrenStatusBadge
-                                      small
-                                      tone={
-                                        cardBadgePresentation.readinessBadgeClass
-                                      }
-                                      label={
-                                        cardBadgePresentation.readinessLabel
-                                      }
-                                    />
-                                  </p>
-                                )}
+                              <VerfahrenEinreichungStatusBadge
+                                beleg={beleg}
+                                readinessPresentation={readinessPresentation}
+                                hasValidationIssues={hasValidationIssues}
+                                belegBadgeLabels={
+                                  routes.verfahrenNeu.step3.belegStatus
+                                    .badgeLabels
+                                }
+                              />
                             </hgroup>
                           </header>
                           <section className="kern-card__body">
@@ -597,181 +511,60 @@ export default function VerfahrenId() {
                             </div>
                             <div className="w-full">
                               <h5 className="kern-preline">Dokumente</h5>
-                              {initialEinreichung.dokumente.length === 0 ? (
-                                <p className="kern-body mt-kern-space-default m-0">
-                                  Keine Dokumente vorhanden.
-                                </p>
-                              ) : (
-                                <div className="mt-kern-space-default gap-kern-space-default flex w-full flex-col">
-                                  {initialEinreichung.dokumente.map(
-                                    (dokument) => {
-                                      const dokumentErgebnis =
-                                        dokument.validierungsstatus.ergebnis;
-                                      const dokumentHasValidationIssues =
-                                        dokumentErgebnis === "ROT" ||
-                                        dokumentErgebnis === "GELB";
-                                      const {
-                                        readinessLabel: dokumentStatusLabel,
-                                        readinessBadgeClass:
-                                          dokumentStatusBadgeClass,
-                                      } = resolveReadinessPresentation(
-                                        dokument.validierungsstatus,
-                                        {
-                                          ...routes.verfahrenNeu.step3.summary
-                                            .badgeLabels,
-                                          ready:
-                                            routes.verfahrenNeu.step3.summary
-                                              .badgeLabels.checkedClean,
-                                        },
-                                      );
-
-                                      return (
-                                        <div
-                                          key={dokument.id}
-                                          className="gap-kern-space-small flex w-full flex-col"
-                                        >
-                                          <div className="rounded-kern-default p-kern-space-default align-center gap-kern-space-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)">
-                                            <div className="flex-1">
-                                              <div className="kern-body kern-body--bold">
-                                                {dokument.anzeigename}
-                                              </div>
-                                              <div className="kern-body kern-body--small kern-body--muted">
-                                                {formatDokumentSize(
-                                                  dokument.size_in_bytes,
-                                                )}
-                                                {" · "}
-                                                {
-                                                  routes.verfahrenNeu.step3
-                                                    .proceduralSteps.einreichung
-                                                    .dokumente.uploadedAtLabel
-                                                }{" "}
-                                                {formatDate(
-                                                  dokument.erstellt_am,
-                                                )}
-                                              </div>
-                                            </div>
-                                            {canDeleteDokument(dokument) ? (
-                                              <Form
-                                                method="post"
-                                                className="gap-kern-space-small flex items-center"
-                                              >
-                                                <input
-                                                  type="hidden"
-                                                  name="formType"
-                                                  value="delete"
-                                                />
-                                                <input
-                                                  type="hidden"
-                                                  name="einreichungId"
-                                                  value={
-                                                    initialEinreichung
-                                                      .einreichung.id
-                                                  }
-                                                />
-                                                <input
-                                                  type="hidden"
-                                                  name="dokumentId"
-                                                  value={dokument.id}
-                                                />
-                                                <button
-                                                  className="kern-btn kern-btn--secondary kern-btn--x-small"
-                                                  type="submit"
-                                                >
-                                                  <span
-                                                    className="kern-icon kern-icon--delete"
-                                                    aria-hidden="true"
-                                                  ></span>
-                                                  <span className="kern-label kern-sr-only">
-                                                    {
-                                                      shared.form.deleteDokument
-                                                        .label
-                                                    }
-                                                  </span>
-                                                </button>
-                                                <VerfahrenStatusBadge
-                                                  tone={
-                                                    dokumentStatusBadgeClass
-                                                  }
-                                                  label={dokumentStatusLabel}
-                                                />
-                                              </Form>
-                                            ) : (
-                                              <div className="flex items-center">
-                                                <VerfahrenStatusBadge
-                                                  tone={
-                                                    dokumentStatusBadgeClass
-                                                  }
-                                                  label={dokumentStatusLabel}
-                                                />
-                                              </div>
-                                            )}
-                                          </div>
-                                          {dokumentHasValidationIssues && (
-                                            <Alert
-                                              type={
-                                                dokumentErgebnis === "ROT"
-                                                  ? "error"
-                                                  : "warning"
-                                              }
-                                              title={dokumentStatusLabel}
-                                              message={dokument.validierungsstatus.fehler.join(
-                                                "\n",
-                                              )}
-                                            />
-                                          )}
-                                        </div>
-                                      );
-                                    },
-                                  )}
-                                </div>
-                              )}
+                              <VerfahrenDokumenteList
+                                dokumente={initialEinreichung.dokumente}
+                                einreichungId={
+                                  initialEinreichung.einreichung.id
+                                }
+                              />
                             </div>
                           </section>
-                          <footer className="kern-card__footer">
-                            <Link
-                              to={`/verfahren/neu/${verfahren.id}/bearbeiten`}
-                              className="kern-btn kern-btn--secondary"
-                            >
-                              <span className="kern-label">
-                                {shared.form.labels.edit}
-                              </span>
-                            </Link>
-
-                            <Form
-                              ref={formRef}
-                              method="post"
-                              encType="multipart/form-data"
-                              onSubmit={handleSubmit}
-                            >
-                              <input
-                                type="hidden"
-                                name="formType"
-                                value="einreichen"
-                              />
-                              <input
-                                type="hidden"
-                                name="einreichungId"
-                                value={initialEinreichung.einreichung.id}
-                              />
-                              <button
-                                type="submit"
-                                className="kern-btn kern-btn--primary"
-                                aria-describedby="card-current-einreichung-heading"
-                                disabled={
-                                  isSubmitting === "submitting" ||
-                                  isValidating ||
-                                  beleg !== null
-                                }
+                          {beleg === null && (
+                            <footer className="kern-card__footer">
+                              <Link
+                                to={`/verfahren/neu/${verfahren.id}/bearbeiten`}
+                                className="kern-btn kern-btn--secondary"
                               >
                                 <span className="kern-label">
-                                  {
-                                    routes.verfahrenNeu.step3.proceduralSteps
-                                      .einreichung.submit
-                                  }
+                                  {shared.form.labels.edit}
                                 </span>
-                              </button>
-                            </Form>
-                          </footer>
+                              </Link>
+
+                              <Form
+                                ref={formRef}
+                                method="post"
+                                encType="multipart/form-data"
+                                onSubmit={handleSubmit}
+                              >
+                                <input
+                                  type="hidden"
+                                  name="formType"
+                                  value="einreichen"
+                                />
+                                <input
+                                  type="hidden"
+                                  name="einreichungId"
+                                  value={initialEinreichung.einreichung.id}
+                                />
+                                <button
+                                  type="submit"
+                                  className="kern-btn kern-btn--primary"
+                                  aria-describedby="card-current-einreichung-heading"
+                                  disabled={
+                                    isSubmitting === "submitting" ||
+                                    isValidating
+                                  }
+                                >
+                                  <span className="kern-label">
+                                    {
+                                      routes.verfahrenNeu.step3.proceduralSteps
+                                        .einreichung.submit
+                                    }
+                                  </span>
+                                </button>
+                              </Form>
+                            </footer>
+                          )}
                         </div>
                       </article>
                     </div>
