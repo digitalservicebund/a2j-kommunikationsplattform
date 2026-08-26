@@ -41,11 +41,11 @@ describe("statusPresentation", () => {
   test("maps verfahren status", () => {
     expect(getVerfahrenStatusPresentation("ERSTELLT")).toEqual({
       badgeClassModifier: "info",
-      label: "Klage erstellt",
+      label: "Verfahren erstellt",
     });
     expect(getVerfahrenStatusPresentation("EINGEREICHT")).toEqual({
       badgeClassModifier: "success",
-      label: "Klage eingereicht",
+      label: "Verfahren eingereicht",
     });
     expect(getVerfahrenStatusPresentation("GERICHTSVERFAHRENANGELEGT")).toEqual(
       {

@@ -53,7 +53,7 @@ export function getVerfahrenStatusPresentation(status: string): Presentation {
   if (status === "EINGEREICHT") {
     return {
       badgeClassModifier: "success",
-      label: "Klage eingereicht",
+      label: "Verfahren eingereicht",
     };
   }
 
@@ -80,7 +80,7 @@ export function getVerfahrenStatusPresentation(status: string): Presentation {
 
   return {
     badgeClassModifier: "info",
-    label: "Klage erstellt",
+    label: "Verfahren erstellt",
   };
 }
 
