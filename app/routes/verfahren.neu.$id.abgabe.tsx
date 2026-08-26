@@ -194,6 +194,7 @@ export default function VerfahrenNeuBearbeiten() {
   const isValidating = readinessBadgeClass === "info";
   const verfahrenStatusPresentation = getVerfahrenStatusPresentation(
     verfahren.status,
+    shared.statusPresentation.verfahren,
   );
   const isBelegReady = beleg !== null && beleg.status === "ERSTELLT";
   const isBelegPending = beleg !== null && !isBelegReady;

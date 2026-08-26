@@ -7,102 +7,206 @@ import {
   isEinreichungReady,
 } from "../statusPresentation";
 
+const einreichungStatusBadgeLabels = {
+  gruen: "gruen",
+  rot: "rot",
+  gelb: "gelb",
+};
+
+const dokumentStatusBadgeLabels = {
+  erstellt: "erstellt",
+  eingereicht: "eingereicht",
+  wirdValidiert: "wirdValidiert",
+};
+
+const verfahrenStatusBadgeLabels = {
+  erstellt: "erstellt",
+  eingereicht: "eingereicht",
+  gerichtsverfahrenAngelegt: "gerichtsverfahrenAngelegt",
+  abgeschlossen: "abgeschlossen",
+  geloescht: "geloescht",
+};
+
+const virenScanStatusBadgeLabels = {
+  sauber: "sauber",
+  infiziertShort: "infiziertShort",
+  infiziertLong: "infiziertLong",
+  fehlgeschlagenShort: "fehlgeschlagenShort",
+  fehlgeschlagenLong: "fehlgeschlagenLong",
+  inBearbeitungShort: "inBearbeitungShort",
+  inBearbeitungLong: "inBearbeitungLong",
+  ausstehendShort: "ausstehendShort",
+  ausstehendLong: "ausstehendLong",
+};
+
 describe("statusPresentation", () => {
   test("maps einreichung status", () => {
-    expect(getEinreichungStatusPresentation("GRUEN")).toEqual({
+    expect(
+      getEinreichungStatusPresentation("GRUEN", einreichungStatusBadgeLabels),
+    ).toEqual({
       badgeClassModifier: "success",
-      label: "Grün",
+      label: "gruen",
     });
-    expect(getEinreichungStatusPresentation("ROT")).toEqual({
+    expect(
+      getEinreichungStatusPresentation("ROT", einreichungStatusBadgeLabels),
+    ).toEqual({
       badgeClassModifier: "danger",
-      label: "Rot",
+      label: "rot",
     });
-    expect(getEinreichungStatusPresentation("UNKNOWN")).toEqual({
+    expect(
+      getEinreichungStatusPresentation("UNKNOWN", einreichungStatusBadgeLabels),
+    ).toEqual({
       badgeClassModifier: "warning",
-      label: "Gelb",
+      label: "gelb",
     });
   });
 
   test("maps dokument status", () => {
-    expect(getDokumentStatusPresentation("ERSTELLT")).toEqual({
+    expect(
+      getDokumentStatusPresentation("ERSTELLT", dokumentStatusBadgeLabels),
+    ).toEqual({
       badgeClassModifier: "info",
-      label: "Erstellt",
+      label: "erstellt",
     });
-    expect(getDokumentStatusPresentation("EINGEREICHT")).toEqual({
+    expect(
+      getDokumentStatusPresentation("EINGEREICHT", dokumentStatusBadgeLabels),
+    ).toEqual({
       badgeClassModifier: "success",
-      label: "Eingereicht",
+      label: "eingereicht",
     });
-    expect(getDokumentStatusPresentation("OTHER")).toEqual({
+    expect(
+      getDokumentStatusPresentation("OTHER", dokumentStatusBadgeLabels),
+    ).toEqual({
       badgeClassModifier: "warning",
-      label: "Wird validiert",
+      label: "wirdValidiert",
     });
   });
 
   test("maps verfahren status", () => {
-    expect(getVerfahrenStatusPresentation("ERSTELLT")).toEqual({
+    expect(
+      getVerfahrenStatusPresentation("ERSTELLT", verfahrenStatusBadgeLabels),
+    ).toEqual({
       badgeClassModifier: "info",
-      label: "Verfahren erstellt",
+      label: "erstellt",
     });
-    expect(getVerfahrenStatusPresentation("EINGEREICHT")).toEqual({
+    expect(
+      getVerfahrenStatusPresentation("EINGEREICHT", verfahrenStatusBadgeLabels),
+    ).toEqual({
       badgeClassModifier: "success",
-      label: "Verfahren eingereicht",
+      label: "eingereicht",
     });
-    expect(getVerfahrenStatusPresentation("GERICHTSVERFAHRENANGELEGT")).toEqual(
-      {
-        badgeClassModifier: "success",
-        label: "Gerichtsverfahren angelegt",
-      },
-    );
-    expect(getVerfahrenStatusPresentation("ABGESCHLOSSEN")).toEqual({
+    expect(
+      getVerfahrenStatusPresentation(
+        "GERICHTSVERFAHRENANGELEGT",
+        verfahrenStatusBadgeLabels,
+      ),
+    ).toEqual({
       badgeClassModifier: "success",
-      label: "Verfahren abgeschlossen",
+      label: "gerichtsverfahrenAngelegt",
     });
-    expect(getVerfahrenStatusPresentation("GELOESCHT")).toEqual({
+    expect(
+      getVerfahrenStatusPresentation(
+        "ABGESCHLOSSEN",
+        verfahrenStatusBadgeLabels,
+      ),
+    ).toEqual({
+      badgeClassModifier: "success",
+      label: "abgeschlossen",
+    });
+    expect(
+      getVerfahrenStatusPresentation("GELOESCHT", verfahrenStatusBadgeLabels),
+    ).toEqual({
       badgeClassModifier: "danger",
-      label: "Verfahren gelöscht",
+      label: "geloescht",
     });
   });
 
   test("maps virenscan status with short and long labels", () => {
-    expect(getVirenScanStatusPresentation("SAUBER")).toEqual({
+    expect(
+      getVirenScanStatusPresentation("SAUBER", virenScanStatusBadgeLabels),
+    ).toEqual({
       badgeClassModifier: "success",
-      label: "Geprüft und virenfrei",
+      label: "sauber",
     });
 
-    expect(getVirenScanStatusPresentation("INFIZIERT", "short")).toEqual({
+    expect(
+      getVirenScanStatusPresentation(
+        "INFIZIERT",
+        virenScanStatusBadgeLabels,
+        "short",
+      ),
+    ).toEqual({
       badgeClassModifier: "danger",
-      label: "Infiziert",
+      label: "infiziertShort",
     });
-    expect(getVirenScanStatusPresentation("INFIZIERT", "long")).toEqual({
+    expect(
+      getVirenScanStatusPresentation(
+        "INFIZIERT",
+        virenScanStatusBadgeLabels,
+        "long",
+      ),
+    ).toEqual({
       badgeClassModifier: "danger",
-      label: "Dokument ist infiziert",
+      label: "infiziertLong",
     });
 
-    expect(getVirenScanStatusPresentation("FEHLGESCHLAGEN", "short")).toEqual({
+    expect(
+      getVirenScanStatusPresentation(
+        "FEHLGESCHLAGEN",
+        virenScanStatusBadgeLabels,
+        "short",
+      ),
+    ).toEqual({
       badgeClassModifier: "danger",
-      label: "Fehlgeschlagen",
+      label: "fehlgeschlagenShort",
     });
-    expect(getVirenScanStatusPresentation("FEHLGESCHLAGEN", "long")).toEqual({
+    expect(
+      getVirenScanStatusPresentation(
+        "FEHLGESCHLAGEN",
+        virenScanStatusBadgeLabels,
+        "long",
+      ),
+    ).toEqual({
       badgeClassModifier: "danger",
-      label: "Scan ist fehlgeschlagen",
+      label: "fehlgeschlagenLong",
     });
 
-    expect(getVirenScanStatusPresentation("IN_BEARBEITUNG", "short")).toEqual({
+    expect(
+      getVirenScanStatusPresentation(
+        "IN_BEARBEITUNG",
+        virenScanStatusBadgeLabels,
+        "short",
+      ),
+    ).toEqual({
       badgeClassModifier: "warning",
-      label: "In Bearbeitung",
+      label: "inBearbeitungShort",
     });
-    expect(getVirenScanStatusPresentation("IN_BEARBEITUNG", "long")).toEqual({
+    expect(
+      getVirenScanStatusPresentation(
+        "IN_BEARBEITUNG",
+        virenScanStatusBadgeLabels,
+        "long",
+      ),
+    ).toEqual({
       badgeClassModifier: "warning",
-      label: "Scan ist in Bearbeitung",
+      label: "inBearbeitungLong",
     });
 
-    expect(getVirenScanStatusPresentation("UNBEKANNT")).toEqual({
+    expect(
+      getVirenScanStatusPresentation("UNBEKANNT", virenScanStatusBadgeLabels),
+    ).toEqual({
       badgeClassModifier: "warning",
-      label: "In Bearbeitung",
+      label: "ausstehendShort",
     });
-    expect(getVirenScanStatusPresentation("UNBEKANNT", "long")).toEqual({
+    expect(
+      getVirenScanStatusPresentation(
+        "UNBEKANNT",
+        virenScanStatusBadgeLabels,
+        "long",
+      ),
+    ).toEqual({
       badgeClassModifier: "warning",
-      label: "Scan ist ausstehend",
+      label: "ausstehendLong",
     });
   });
 

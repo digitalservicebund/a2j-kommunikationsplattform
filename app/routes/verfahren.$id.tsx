@@ -237,7 +237,10 @@ export default function VerfahrenId() {
   const hasValidationIssues =
     validationErgebnis === "ROT" || validationErgebnis === "GELB";
 
-  const overviewBadge = getVerfahrenStatusPresentation(verfahren.status);
+  const overviewBadge = getVerfahrenStatusPresentation(
+    verfahren.status,
+    shared.statusPresentation.verfahren,
+  );
 
   const initialTimelineStepData = initialEinreichung
     ? buildInitialTimelineStepData(
@@ -591,6 +594,7 @@ export default function VerfahrenId() {
                     einreichungen.map(({ einreichung, dokumente }, index) => {
                       const statusPresentation = getDokumentStatusPresentation(
                         einreichung.status,
+                        shared.statusPresentation.dokument,
                       );
                       const timelineLabel = formatDate(
                         einreichung.eingereicht_am ?? einreichung.erstellt_am,
