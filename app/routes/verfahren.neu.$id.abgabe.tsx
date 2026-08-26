@@ -12,7 +12,7 @@ import VerfahrenBriefSummaryOfGericht from "~/components/verfahren/VerfahrenBrie
 import VerfahrenDokumenteList, {
   DokumentWithValidierungsstatus,
 } from "~/components/verfahren/VerfahrenDokumenteList";
-import VerfahrenEinreichungOutcomeAlert from "~/components/verfahren/VerfahrenEinreichungOutcomeAlert";
+import VerfahrenEinreichungOutcomeBanner from "~/components/verfahren/VerfahrenEinreichungOutcomeBanner";
 import VerfahrenEinreichungStatusBadge from "~/components/verfahren/VerfahrenEinreichungStatusBadge";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenPrototypeHint from "~/components/verfahren/VerfahrenPrototypeHint.static";
@@ -472,7 +472,7 @@ export default function VerfahrenNeuBearbeiten() {
                               einreichungId={einreichung.id}
                             />
                           </div>
-                          <VerfahrenEinreichungOutcomeAlert
+                          <VerfahrenEinreichungOutcomeBanner
                             hasSubmitError={error}
                             beleg={beleg}
                             isValidating={isValidating}

@@ -4,19 +4,19 @@ import { render, screen } from "@testing-library/react";
 import { createRoutesStub } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import de from "~/services/translations/de";
-import VerfahrenEinreichungOutcomeAlert from "../VerfahrenEinreichungOutcomeAlert";
+import VerfahrenEinreichungOutcomeBanner from "../VerfahrenEinreichungOutcomeBanner";
 
 const { belegStatus } = de.routes.verfahrenNeu.step3;
 const { form } = de.shared;
 
 function renderOutcomeAlert(
-  props: Partial<Parameters<typeof VerfahrenEinreichungOutcomeAlert>[0]> = {},
+  props: Partial<Parameters<typeof VerfahrenEinreichungOutcomeBanner>[0]> = {},
 ) {
   const Stub = createRoutesStub([
     {
       path: "/verfahren/:id",
       Component: () => (
-        <VerfahrenEinreichungOutcomeAlert
+        <VerfahrenEinreichungOutcomeBanner
           hasSubmitError={false}
           beleg={null}
           isValidating={false}
@@ -34,7 +34,7 @@ function renderOutcomeAlert(
   return render(<Stub initialEntries={["/verfahren/v-1"]} />);
 }
 
-describe("VerfahrenEinreichungOutcomeAlert", () => {
+describe("VerfahrenEinreichungOutcomeBanner", () => {
   it("renders nothing when there is no error, Beleg, or validation issue", () => {
     const { container } = renderOutcomeAlert();
 

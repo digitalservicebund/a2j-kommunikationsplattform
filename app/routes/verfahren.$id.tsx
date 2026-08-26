@@ -12,7 +12,7 @@ import VerfahrenBriefSummaryOfGericht from "~/components/verfahren/VerfahrenBrie
 import VerfahrenDokumenteList, {
   DokumentWithValidierungsstatus,
 } from "~/components/verfahren/VerfahrenDokumenteList";
-import VerfahrenEinreichungOutcomeAlert from "~/components/verfahren/VerfahrenEinreichungOutcomeAlert";
+import VerfahrenEinreichungOutcomeBanner from "~/components/verfahren/VerfahrenEinreichungOutcomeBanner";
 import VerfahrenEinreichungStatusBadge from "~/components/verfahren/VerfahrenEinreichungStatusBadge";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
@@ -367,7 +367,7 @@ export default function VerfahrenId() {
                         key={initialEinreichung.einreichung.id}
                       >
                         <div className="kern-card__container">
-                          <VerfahrenEinreichungOutcomeAlert
+                          <VerfahrenEinreichungOutcomeBanner
                             hasSubmitError={error}
                             beleg={beleg}
                             isValidating={isValidating}

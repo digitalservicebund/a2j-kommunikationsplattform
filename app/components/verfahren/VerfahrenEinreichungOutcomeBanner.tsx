@@ -3,7 +3,7 @@ import VerfahrenBelegStatusAlert from "~/components/verfahren/VerfahrenBelegStat
 import type { Beleg } from "~/domains/verfahren/schemas/belegSchema";
 import { useTranslations } from "~/services/translations/context";
 
-type VerfahrenEinreichungOutcomeAlertProps = {
+type VerfahrenEinreichungOutcomeBannerProps = {
   hasSubmitError: boolean;
   beleg: Beleg | null;
   isValidating: boolean;
@@ -17,7 +17,7 @@ type VerfahrenEinreichungOutcomeAlertProps = {
 // outcomes to show: a client-side submit failure, the Beleg's own
 // pending/ready status, or — before any Beleg exists — pre-submission
 // Validierungslauf issues.
-export default function VerfahrenEinreichungOutcomeAlert({
+export default function VerfahrenEinreichungOutcomeBanner({
   hasSubmitError,
   beleg,
   isValidating,
@@ -25,7 +25,7 @@ export default function VerfahrenEinreichungOutcomeAlert({
   isValidationErrorFatal,
   readinessLabel,
   fehler,
-}: Readonly<VerfahrenEinreichungOutcomeAlertProps>) {
+}: Readonly<VerfahrenEinreichungOutcomeBannerProps>) {
   const { shared } = useTranslations();
 
   if (hasSubmitError) {
