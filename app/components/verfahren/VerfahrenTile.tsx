@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import FolderInfoIcon from "~/components/icons/FolderInfoIcon.static";
+import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import {
   getBeteiligteDisplayName,
   getBeteiligungByRoleCode,
@@ -8,6 +9,7 @@ import {
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/beteiligteByRole";
 import { NOT_AVAILABLE_LABEL } from "~/domains/verfahren/presentationPlaceholders";
+import { getVerfahrenStatusPresentation } from "~/domains/verfahren/statusPresentation";
 import { Verfahren } from "~/routes/_index";
 import { useTranslations } from "~/services/translations/context";
 
@@ -57,10 +59,15 @@ export default function VerfahrenTile({
   withoutDetailsLink = false,
   ...verfahren
 }: VerfahrenTileProps) {
-  const { buttons } = useTranslations();
-  const { beteiligungen, status, id, gericht, aktenzeichen_gericht } =
-    verfahren;
-  // console.log("status", status);
+  const { buttons, shared } = useTranslations();
+  const {
+    beteiligungen,
+    status,
+    id,
+    gericht,
+    aktenzeichen_gericht,
+    kurzrubrum,
+  } = verfahren;
 
   // Extract values from beteiligungen based on rollen codes
   const klaegerinData = getBeteiligungByRoleCode(
@@ -84,23 +91,27 @@ export default function VerfahrenTile({
     ROLE_CODE_BEKLAGTE,
   );
 
+  const rubrum =
+    kurzrubrum ||
+    `${klaegerinName || NOT_AVAILABLE_LABEL} ./. ${beklagteName || NOT_AVAILABLE_LABEL}`;
+  const statusPresentation = getVerfahrenStatusPresentation(
+    status,
+    shared.statusPresentation.verfahren,
+  );
+
   return (
     <article className="gap-kern-space-large border-t-kern-layout-border pt-kern-dimension-x-large flex flex-col border-t-1 first-of-type:border-0 first-of-type:pt-0">
       <div className="flex flex-col justify-between md:flex-row">
-        <h2 className="kern-heading-medium">Platzhalter</h2>
+        <h2 className="kern-heading-medium">{rubrum}</h2>
         <div className="gap-kern-space-large inline-flex">
           {!withoutDetailsLink && (
             <>
               <div className="flex">
-                <span
-                  className={`kern-badge grow-0 ${status === "ERSTELLT" ? "kern-badge--info" : "kern-badge--warning"}`}
-                >
-                  <span className="kern-label kern-label--small">
-                    {status === "ERSTELLT"
-                      ? "Klage noch nicht eingereicht"
-                      : "Klage eingereicht"}
-                  </span>
-                </span>
+                <VerfahrenStatusBadge
+                  small
+                  tone={statusPresentation.badgeClassModifier}
+                  label={statusPresentation.label}
+                />
               </div>
 
               <Link

@@ -101,6 +101,7 @@ describe("VerfahrenTile", () => {
         </MemoryRouter>,
       );
 
+    expect(getByText("Klaus Müller ./. Maria Weber")).toBeInTheDocument();
     expect(getByText("Klaus Müller")).toBeInTheDocument();
     expect(getByText("Maria Weber")).toBeInTheDocument();
     expect(getByText("GZ-12345")).toBeInTheDocument();
@@ -124,7 +125,7 @@ describe("VerfahrenTile", () => {
 
     // badge is shown for submitted cases
     expect(container.querySelector(".kern-badge")).toBeInTheDocument();
-    expect(getByText("Klage eingereicht")).toBeInTheDocument();
+    expect(getByText("Verfahren eingereicht")).toBeInTheDocument();
 
     // no "disabled/muted" appearance
     expect(
@@ -144,5 +145,26 @@ describe("VerfahrenTile", () => {
 
     const notAvailableElements = getAllByText("Unbekannt");
     expect(notAvailableElements.length).toBeGreaterThan(0);
+  });
+
+  it("should prefer kurzrubrum over the beteiligte names when set", () => {
+    const { getByText, queryByText } = renderWithTestTranslations(
+      <MemoryRouter>
+        <VerfahrenTile {...mockVerfahren} kurzrubrum="Müller ./. Weber u.a." />
+      </MemoryRouter>,
+    );
+
+    expect(getByText("Müller ./. Weber u.a.")).toBeInTheDocument();
+    expect(queryByText("Klaus Müller ./. Maria Weber")).not.toBeInTheDocument();
+  });
+
+  it("should reflect the Verfahren status in the badge", () => {
+    const { getByText } = renderWithTestTranslations(
+      <MemoryRouter>
+        <VerfahrenTile {...mockVerfahren} status="GELOESCHT" />
+      </MemoryRouter>,
+    );
+
+    expect(getByText("Verfahren gelöscht")).toBeInTheDocument();
   });
 });
