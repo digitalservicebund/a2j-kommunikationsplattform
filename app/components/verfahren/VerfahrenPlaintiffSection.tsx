@@ -1,3 +1,4 @@
+import InputCheckbox from "~/components/InputCheckbox";
 import VerfahrenAdresseKontaktFields from "~/components/verfahren/VerfahrenAdresseKontaktFields";
 import VerfahrenKanzleiformSelect, {
   type KanzleiformSelectItem,
@@ -97,21 +98,16 @@ export default function VerfahrenPlaintiffSection({
             aria-hidden="true"
           />
 
-          <div
-            className={`${hasLawyer ? "my-kern-space-default" : "mt-kern-space-default"} kern-form-check`}
-          >
-            <input
-              className="kern-form-check__checkbox"
-              id="has-lawyer"
-              name="hasLawyer"
-              type="checkbox"
-              checked={hasLawyer}
-              onChange={(event) => onHasLawyerChange(event.target.checked)}
-            />
-            <label className="kern-label" htmlFor="has-lawyer">
-              {routes.verfahrenNeu.step2.form.plaintiff.hasLawyer.checkbox}
-            </label>
-          </div>
+          <InputCheckbox
+            className={
+              hasLawyer ? "my-kern-space-default" : "mt-kern-space-default"
+            }
+            label={routes.verfahrenNeu.step2.form.plaintiff.hasLawyer.checkbox}
+            id="has-lawyer"
+            name="hasLawyer"
+            checked={hasLawyer}
+            onChange={(event) => onHasLawyerChange(event.target.checked)}
+          />
 
           {hasLawyer && (
             <>

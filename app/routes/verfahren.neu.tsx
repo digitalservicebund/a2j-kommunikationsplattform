@@ -11,6 +11,7 @@ import {
 } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
+import InputCheckbox from "~/components/InputCheckbox";
 import Progress from "~/components/Progress";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenStatementOfClaimUploadFields from "~/components/verfahren/VerfahrenStatementOfClaimUploadFields";
@@ -284,17 +285,11 @@ export default function VerfahrenNeu() {
                       {routes.verfahrenNeu.step1.analysis.hint}
                     </div>
                     <div className="kern-fieldset__body">
-                      <div className="kern-form-check">
-                        <input
-                          className="kern-form-check__checkbox"
-                          id="enable-analysis"
-                          name="analysis"
-                          type="checkbox"
-                        />
-                        <label className="kern-label" htmlFor="enable-analysis">
-                          {routes.verfahrenNeu.step1.analysis.label}
-                        </label>
-                      </div>
+                      <InputCheckbox
+                        label={routes.verfahrenNeu.step1.analysis.label}
+                        id="enable-analysis"
+                        name="analysis"
+                      />
                     </div>
                   </fieldset>
 
