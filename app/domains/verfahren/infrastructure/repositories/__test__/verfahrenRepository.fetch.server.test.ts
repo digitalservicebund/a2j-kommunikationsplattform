@@ -67,7 +67,7 @@ describe("fetchVerfahren", () => {
     process.env.KOMPLA_API_URL = originalEnv;
   });
 
-  it("calls fetchFromApi with correct arguments and returns camelCase Verfahren", async () => {
+  it("calls the API with correct arguments and returns camelCase Verfahren", async () => {
     mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
@@ -275,7 +275,7 @@ describe("fetchVerfahrenById", () => {
     vi.clearAllMocks();
   });
 
-  it("calls fetchFromApi with correct arguments and returns camelCase Verfahren", async () => {
+  it("calls the API with correct arguments and returns camelCase Verfahren", async () => {
     mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
