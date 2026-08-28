@@ -1,7 +1,6 @@
-import { Suspense, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ActionFunctionArgs,
-  Await,
   Form,
   Link,
   LoaderFunctionArgs,
@@ -14,12 +13,11 @@ import {
 } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
-import InputText from "~/components/InputText";
-import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
-import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
-import VerfahrenGerichteSelect from "~/components/verfahren/VerfahrenGerichteSelect";
-import VerfahrenKanzleiformSelect from "~/components/verfahren/VerfahrenKanzleiformSelect";
+import VerfahrenDefendantSection from "~/components/verfahren/VerfahrenDefendantSection";
+import VerfahrenDetailsFormSection from "~/components/verfahren/VerfahrenDetailsFormSection";
+import VerfahrenDocumentsFormSection from "~/components/verfahren/VerfahrenDocumentsFormSection";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
+import VerfahrenPlaintiffSection from "~/components/verfahren/VerfahrenPlaintiffSection";
 import { config } from "~/config/config";
 import loadVerfahrenEinreichungBundle, {
   Dokument,
@@ -525,6 +523,22 @@ export default function VerfahrenNeuBearbeiten() {
   const [selectedDokumentType, setSelectedDokumentType] = useState<string>(
     (formValues?.type as string) || "",
   );
+  const dokumentTypeError =
+    errors?.fieldErrors?.type &&
+    selectedDokumentType === "" &&
+    shared.form.selectDokumentType.error;
+
+  const handleDeleteDokument = (dokument: Dokument) => {
+    setSubmitState("delete");
+    deleteFetcher.submit(
+      {
+        formType: "delete",
+        einreichungId: einreichung.id,
+        dokumentId: dokument.id,
+      },
+      { method: "post" },
+    );
+  };
 
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     const submitEvent = e.nativeEvent as SubmitEvent;
@@ -639,722 +653,50 @@ export default function VerfahrenNeuBearbeiten() {
               )}
 
               <div className="kern-gap-lg flex flex-col">
-                {/* plaintiff data */}
-                <div className="kern-card">
-                  <div className="kern-card__container mb-kern-space-default">
-                    <header className="kern-card__header">
-                      <hgroup>
-                        <h3 className="kern-title">
-                          {routes.verfahrenNeu.step2.form.plaintiff.title}
-                        </h3>
-                      </hgroup>
-                    </header>
-                    <section className="kern-card__body">
-                      <p className="kern-body">
-                        {routes.verfahrenNeu.step2.form.plaintiff.description}
-                      </p>
+                <VerfahrenPlaintiffSection
+                  firstName={klagendeParteiFirstName}
+                  lastName={klagendeParteiLastName}
+                  anschrift={klagendeParteiAnschrift}
+                  email={klagendeParteiEmail}
+                  telefon={klagendeParteiTelefon}
+                  hasLawyer={hasLawyer}
+                  onHasLawyerChange={setHasLawyer}
+                  lawyerName={klagendeParteiLawyerName}
+                  lawyerAnschrift={klagendeParteiAnwaltAnschrift}
+                  lawyerEmail={klagendeParteiAnwaltEmail}
+                  lawyerTelefon={klagendeParteiAnwaltTelefon}
+                  lawyerKanzleiformId={klagendeParteiAnwaltKanzleiformId}
+                  kanzleiformenPromise={kanzleiformen}
+                />
 
-                      <div className="kern-gap-md flex w-full">
-                        <div className="kern-form-input flex-1">
-                          <label
-                            className="kern-label"
-                            htmlFor="klagende-partei-vorname"
-                          >
-                            {shared.form.labels.forename}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="klagende-partei-vorname"
-                            name="klagendeParteiVorname"
-                            type="text"
-                            defaultValue={klagendeParteiFirstName}
-                          />
-                        </div>
-                        <div className="kern-form-input flex-1">
-                          <label
-                            className="kern-label"
-                            htmlFor="klagende-partei-nachname"
-                          >
-                            {shared.form.labels.lastname}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="klagende-partei-nachname"
-                            name="klagendeParteiNachname"
-                            type="text"
-                            defaultValue={klagendeParteiLastName}
-                            required
-                          />
-                        </div>
-                      </div>
+                <VerfahrenDefendantSection
+                  firstName={beklagteParteiFirstName}
+                  lastName={beklagteParteiLastName}
+                  anschrift={beklagteParteiAnschrift}
+                  email={beklagteParteiEmail}
+                  telefon={beklagteParteiTelefon}
+                />
 
-                      <div className="kern-gap-md flex w-full">
-                        <div className="kern-form-input flex-2">
-                          <label
-                            className="kern-label"
-                            htmlFor="klagende-partei-strasse"
-                          >
-                            {shared.form.labels.street}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="klagende-partei-strasse"
-                            name="klagendeParteiStrasse"
-                            type="text"
-                            defaultValue={
-                              klagendeParteiAnschrift?.strasse ?? ""
-                            }
-                          />
-                        </div>
-                        <div className="kern-form-input flex-1">
-                          <label
-                            className="kern-label"
-                            htmlFor="klagende-partei-hausnummer"
-                          >
-                            {shared.form.labels.houseNumber}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="klagende-partei-hausnummer"
-                            name="klagendeParteiHausnummer"
-                            type="text"
-                            defaultValue={
-                              klagendeParteiAnschrift?.hausnummer ?? ""
-                            }
-                          />
-                        </div>
-                      </div>
+                <VerfahrenDetailsFormSection
+                  kurzrubrum={verfahren?.kurzrubrum ?? ""}
+                  claimReference={claimReference}
+                  verfahrensgegenstand={verfahren?.verfahrensgegenstand ?? ""}
+                  courtId={courtId}
+                  gerichtePromise={gerichte}
+                />
 
-                      <div className="kern-gap-md flex w-full">
-                        <div className="kern-form-input flex-1">
-                          <label
-                            className="kern-label"
-                            htmlFor="klagende-partei-plz"
-                          >
-                            {shared.form.labels.postcode}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="klagende-partei-plz"
-                            name="klagendeParteiPlz"
-                            type="text"
-                            defaultValue={
-                              klagendeParteiAnschrift?.postleitzahl ?? ""
-                            }
-                          />
-                        </div>
-                        <div className="kern-form-input flex-2">
-                          <label
-                            className="kern-label"
-                            htmlFor="klagende-partei-ort"
-                          >
-                            {shared.form.labels.place}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="klagende-partei-ort"
-                            name="klagendeParteiOrt"
-                            type="text"
-                            defaultValue={klagendeParteiAnschrift?.ort ?? ""}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="kern-gap-md flex w-full">
-                        <div className="kern-form-input flex-1">
-                          <label
-                            className="kern-label"
-                            htmlFor="klagende-partei-email"
-                          >
-                            {shared.form.labels.eMail}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="klagende-partei-email"
-                            name="klagendeParteiEmail"
-                            type="email"
-                            defaultValue={klagendeParteiEmail}
-                          />
-                        </div>
-                        <div className="kern-form-input flex-1">
-                          <label
-                            className="kern-label"
-                            htmlFor="klagende-partei-telefon"
-                          >
-                            {shared.form.labels.phone}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="klagende-partei-telefon"
-                            name="klagendeParteiTelefon"
-                            type="tel"
-                            defaultValue={klagendeParteiTelefon}
-                          />
-                        </div>
-                      </div>
-
-                      <hr
-                        className="kern-divider border-kern-layout-border mt-kern-space-x-large w-full"
-                        aria-hidden="true"
-                      />
-
-                      <div
-                        className={`${hasLawyer ? "my-kern-space-default" : "mt-kern-space-default"} kern-form-check`}
-                      >
-                        <input
-                          className="kern-form-check__checkbox"
-                          id="has-lawyer"
-                          name="hasLawyer"
-                          type="checkbox"
-                          checked={hasLawyer}
-                          onChange={(event) =>
-                            setHasLawyer(event.target.checked)
-                          }
-                        />
-                        <label className="kern-label" htmlFor="has-lawyer">
-                          {
-                            routes.verfahrenNeu.step2.form.plaintiff.hasLawyer
-                              .checkbox
-                          }
-                        </label>
-                      </div>
-
-                      {hasLawyer && (
-                        <>
-                          <h3 className="kern-title kern-title--small">
-                            {
-                              routes.verfahrenNeu.step2.form.plaintiff.hasLawyer
-                                .title
-                            }
-                          </h3>
-                          <div className="kern-form-input">
-                            <label className="kern-label" htmlFor="lawyer-name">
-                              {
-                                routes.verfahrenNeu.step2.form.plaintiff
-                                  .hasLawyer.nameOfLawFirm
-                              }
-                            </label>
-                            <input
-                              className="kern-form-input__input"
-                              id="lawyer-name"
-                              name="lawyerName"
-                              type="text"
-                              defaultValue={klagendeParteiLawyerName}
-                            />
-                          </div>
-
-                          <VerfahrenKanzleiformSelect
-                            id="lawyerKanzleiformId"
-                            label={
-                              routes.verfahrenNeu.step2.form.plaintiff.hasLawyer
-                                .kanzleiform
-                            }
-                            placeholder={shared.form.select.placeholder}
-                            kanzleiformenPromise={kanzleiformen}
-                            initialSelectedValue={
-                              klagendeParteiAnwaltKanzleiformId
-                            }
-                            required
-                          />
-
-                          <div className="kern-gap-md flex w-full">
-                            <div className="kern-form-input flex-2">
-                              <label
-                                className="kern-label"
-                                htmlFor="lawyer-strasse"
-                              >
-                                {shared.form.labels.street}
-                              </label>
-                              <input
-                                className="kern-form-input__input"
-                                id="lawyer-strasse"
-                                name="lawyerStrasse"
-                                type="text"
-                                defaultValue={
-                                  klagendeParteiAnwaltAnschrift?.strasse ?? ""
-                                }
-                              />
-                            </div>
-                            <div className="kern-form-input flex-1">
-                              <label
-                                className="kern-label"
-                                htmlFor="lawyer-hausnummer"
-                              >
-                                {shared.form.labels.houseNumber}
-                              </label>
-                              <input
-                                className="kern-form-input__input"
-                                id="lawyer-hausnummer"
-                                name="lawyerHausnummer"
-                                type="text"
-                                defaultValue={
-                                  klagendeParteiAnwaltAnschrift?.hausnummer ??
-                                  ""
-                                }
-                              />
-                            </div>
-                          </div>
-
-                          <div className="kern-gap-md flex w-full">
-                            <div className="kern-form-input flex-1">
-                              <label
-                                className="kern-label"
-                                htmlFor="lawyer-plz"
-                              >
-                                {shared.form.labels.postcode}
-                              </label>
-                              <input
-                                className="kern-form-input__input"
-                                id="lawyer-plz"
-                                name="lawyerPlz"
-                                type="text"
-                                defaultValue={
-                                  klagendeParteiAnwaltAnschrift?.postleitzahl ??
-                                  ""
-                                }
-                              />
-                            </div>
-                            <div className="kern-form-input flex-2">
-                              <label
-                                className="kern-label"
-                                htmlFor="lawyer-ort"
-                              >
-                                {shared.form.labels.place}
-                              </label>
-                              <input
-                                className="kern-form-input__input"
-                                id="lawyer-ort"
-                                name="lawyerOrt"
-                                type="text"
-                                defaultValue={
-                                  klagendeParteiAnwaltAnschrift?.ort ?? ""
-                                }
-                              />
-                            </div>
-                          </div>
-
-                          <div className="kern-gap-md flex w-full">
-                            <div className="kern-form-input flex-1">
-                              <label
-                                className="kern-label"
-                                htmlFor="lawyer-email"
-                              >
-                                {shared.form.labels.eMail}
-                              </label>
-                              <input
-                                className="kern-form-input__input"
-                                id="lawyer-email"
-                                name="lawyerEmail"
-                                type="email"
-                                defaultValue={klagendeParteiAnwaltEmail}
-                              />
-                            </div>
-                            <div className="kern-form-input flex-1">
-                              <label
-                                className="kern-label"
-                                htmlFor="lawyer-telefon"
-                              >
-                                {shared.form.labels.phone}
-                              </label>
-                              <input
-                                className="kern-form-input__input"
-                                id="lawyer-telefon"
-                                name="lawyerTelefon"
-                                type="tel"
-                                defaultValue={klagendeParteiAnwaltTelefon}
-                              />
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </section>
-                  </div>
-                </div>
-
-                {/* defendant data */}
-                <div className="kern-card">
-                  <div className="kern-card__container mb-kern-space-default">
-                    <header className="kern-card__header">
-                      <hgroup>
-                        <h3 className="kern-title">
-                          {routes.verfahrenNeu.step2.form.defendant.title}
-                        </h3>
-                      </hgroup>
-                    </header>
-                    <section className="kern-card__body">
-                      <p className="kern-body">
-                        {routes.verfahrenNeu.step2.form.defendant.description}
-                      </p>
-
-                      <div className="kern-gap-md flex w-full">
-                        <div className="kern-form-input flex-1">
-                          <label
-                            className="kern-label"
-                            htmlFor="beklagte-partei-vorname"
-                          >
-                            {shared.form.labels.forename}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="beklagte-partei-vorname"
-                            name="beklagteParteiVorname"
-                            type="text"
-                            defaultValue={beklagteParteiFirstName}
-                          />
-                        </div>
-                        <div className="kern-form-input flex-1">
-                          <label
-                            className="kern-label"
-                            htmlFor="beklagte-partei-nachname"
-                          >
-                            {shared.form.labels.lastname}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="beklagte-partei-nachname"
-                            name="beklagteParteiNachname"
-                            type="text"
-                            defaultValue={beklagteParteiLastName}
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <div className="kern-gap-md flex w-full">
-                        <div className="kern-form-input flex-2">
-                          <label
-                            className="kern-label"
-                            htmlFor="beklagte-partei-strasse"
-                          >
-                            {shared.form.labels.street}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="beklagte-partei-strasse"
-                            name="beklagteParteiStrasse"
-                            type="text"
-                            defaultValue={
-                              beklagteParteiAnschrift?.strasse ?? ""
-                            }
-                          />
-                        </div>
-                        <div className="kern-form-input flex-1">
-                          <label
-                            className="kern-label"
-                            htmlFor="beklagte-partei-hausnummer"
-                          >
-                            {shared.form.labels.houseNumber}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="beklagte-partei-hausnummer"
-                            name="beklagteParteiHausnummer"
-                            type="text"
-                            defaultValue={
-                              beklagteParteiAnschrift?.hausnummer ?? ""
-                            }
-                          />
-                        </div>
-                      </div>
-
-                      <div className="kern-gap-md flex w-full">
-                        <div className="kern-form-input flex-1">
-                          <label
-                            className="kern-label"
-                            htmlFor="beklagte-partei-plz"
-                          >
-                            {shared.form.labels.postcode}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="beklagte-partei-plz"
-                            name="beklagteParteiPlz"
-                            type="text"
-                            defaultValue={
-                              beklagteParteiAnschrift?.postleitzahl ?? ""
-                            }
-                          />
-                        </div>
-                        <div className="kern-form-input flex-2">
-                          <label
-                            className="kern-label"
-                            htmlFor="beklagte-partei-ort"
-                          >
-                            {shared.form.labels.place}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="beklagte-partei-ort"
-                            name="beklagteParteiOrt"
-                            type="text"
-                            defaultValue={beklagteParteiAnschrift?.ort ?? ""}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="kern-gap-md flex w-full">
-                        <div className="kern-form-input flex-1">
-                          <label
-                            className="kern-label"
-                            htmlFor="beklagte-partei-email"
-                          >
-                            {shared.form.labels.eMail}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="beklagte-partei-email"
-                            name="beklagteParteiEmail"
-                            type="email"
-                            defaultValue={beklagteParteiEmail}
-                          />
-                        </div>
-                        <div className="kern-form-input flex-1">
-                          <label
-                            className="kern-label"
-                            htmlFor="beklagte-partei-telefon"
-                          >
-                            {shared.form.labels.phone}
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="beklagte-partei-telefon"
-                            name="beklagteParteiTelefon"
-                            type="tel"
-                            defaultValue={beklagteParteiTelefon}
-                          />
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </div>
-
-                {/* Verfahren details */}
-                <div className="kern-card">
-                  <div className="kern-card__container mb-kern-space-default">
-                    <header className="kern-card__header">
-                      <hgroup>
-                        <h3 className="kern-title">
-                          {
-                            routes.verfahrenNeu.step2.form.verfahrenDetails
-                              .title
-                          }
-                        </h3>
-                      </hgroup>
-                    </header>
-                    <section className="kern-card__body">
-                      <div className="kern-form-input">
-                        <InputText
-                          label={shared.form.labels.rubrum}
-                          id="claim-rubrum"
-                          name="claimRubrum"
-                          defaultValue={verfahren?.kurzrubrum ?? ""}
-                        />
-                      </div>
-
-                      <div className="kern-gap-md flex w-full">
-                        <div className="kern-form-input flex-1 self-end">
-                          <label
-                            className="kern-label"
-                            htmlFor="claim-reference"
-                          >
-                            {
-                              shared.form.labels
-                                .legalRepresentativesReferenceNumber
-                            }
-                          </label>
-                          <input
-                            className="kern-form-input__input"
-                            id="claim-reference"
-                            name="claimReference"
-                            type="text"
-                            defaultValue={claimReference}
-                          />
-                        </div>
-
-                        <VerfahrenGerichteSelect
-                          id="claim-court"
-                          label={shared.form.labels.recipientCourt}
-                          className="flex-1 self-end"
-                          placeholder={shared.form.select.placeholder}
-                          gerichtePromise={gerichte}
-                          initialSelectedValue={courtId}
-                        />
-                      </div>
-
-                      <div className="kern-form-input">
-                        <InputText
-                          label={
-                            shared.form.labels.subjectMatterOfTheProceedings
-                          }
-                          id="subject-matter-of-the-proceedings"
-                          name="subjectMatterOfTheProceedings"
-                          required
-                          defaultValue={verfahren?.verfahrensgegenstand ?? ""}
-                        />
-                      </div>
-                    </section>
-                  </div>
-                </div>
-
-                {/* Verfahren related docs */}
-                <div className="kern-card">
-                  <div className="kern-card__container mb-kern-space-default">
-                    <header className="kern-card__header">
-                      <hgroup>
-                        <h3 className="kern-title">
-                          {routes.verfahrenNeu.step2.form.assets.title}
-                        </h3>
-                      </hgroup>
-                    </header>
-                    <section className="kern-card__body">
-                      <p className="kern-body">
-                        {routes.verfahrenNeu.step2.form.assets.description}
-                      </p>
-
-                      <Suspense
-                        fallback={<div>Dokumente werden geladen ...</div>}
-                      >
-                        <Await resolve={dokumente}>
-                          {(resolvedData: Dokument[]) =>
-                            resolvedData.length > 1 && (
-                              <div className="mt-kern-space-default mb-kern-space-large gap-kern-space-default flex w-full flex-col">
-                                {uploadedDokumente.map((dokumente) => {
-                                  const dokument = dokumente;
-
-                                  if (!dokument) {
-                                    return null;
-                                  }
-
-                                  return (
-                                    <div
-                                      key={dokument.id}
-                                      className="p-kern-space-default align-center gap-kern-space-default rounded-kern-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)"
-                                    >
-                                      <div className="flex-1">
-                                        <div className="kern-body kern-body--bold">
-                                          {dokument.anzeigename}
-                                        </div>
-
-                                        <div className="kern-body kern-body--small">
-                                          {formatDokumentSize(
-                                            dokument.sizeInBytes,
-                                          )}
-                                        </div>
-                                      </div>
-
-                                      <div className="flex items-center">
-                                        <button
-                                          className="kern-btn kern-btn--secondary kern-btn--x-small"
-                                          type="button"
-                                          onClick={() => {
-                                            setSubmitState("delete");
-                                            deleteFetcher.submit(
-                                              {
-                                                formType: "delete",
-                                                einreichungId: einreichung.id,
-                                                dokumentId: dokument.id,
-                                              },
-                                              { method: "post" },
-                                            );
-                                          }}
-                                          disabled={submitState !== "idle"}
-                                        >
-                                          <span
-                                            className="kern-icon kern-icon--delete"
-                                            aria-hidden="true"
-                                          ></span>
-                                          <span className="kern-label">
-                                            {shared.form.deleteDokument.label}
-                                          </span>
-                                        </button>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )
-                          }
-                        </Await>
-                      </Suspense>
-
-                      <div className="gap-kern-space-default flex w-full flex-col">
-                        <div
-                          className={
-                            showFileInputError
-                              ? "kern-form-input--error kern-form-input"
-                              : "kern-form-input"
-                          }
-                        >
-                          <label className="kern-label" htmlFor="file">
-                            {shared.form.uploadDokument.label}
-                          </label>
-                          <div className="kern-hint" id="input-file-hint">
-                            {shared.form.uploadDokument.hint}
-                          </div>
-                          <input
-                            ref={uploadFileInputRef}
-                            className={
-                              showFileInputError
-                                ? "kern-form-input__input kern-form-input__input--error"
-                                : "kern-form-input__input"
-                            }
-                            id="file"
-                            name="file"
-                            type="file"
-                            onChange={() => setIsFileInputErrorDismissed(true)}
-                            aria-describedby={
-                              showFileInputError
-                                ? "input-file-hint file-input-error"
-                                : "input-file-hint"
-                            }
-                          />
-                          {showFileInputError && (
-                            <p className="kern-error" id="file-input-error">
-                              <span
-                                className="kern-icon kern-icon--danger kern-icon--md"
-                                aria-hidden="true"
-                              ></span>
-                              <span className="kern-body">
-                                {shared.form.uploadDokument.error}
-                              </span>
-                            </p>
-                          )}
-                        </div>
-                        <VerfahrenDokumentTypeSelect
-                          label={shared.form.selectDokumentType.label}
-                          id="type"
-                          placeholder={shared.form.select.placeholder}
-                          onChange={(e) =>
-                            setSelectedDokumentType(e.target.value)
-                          }
-                          selectedValue={selectedDokumentType}
-                          hint={shared.form.selectDokumentType.hint}
-                          error={
-                            errors?.fieldErrors?.type &&
-                            selectedDokumentType === "" &&
-                            shared.form.selectDokumentType.error
-                          }
-                        />
-
-                        <div className="flex justify-end">
-                          <button
-                            type="submit"
-                            name="formType"
-                            value="upload"
-                            className="kern-btn kern-btn--secondary"
-                            disabled={submitState !== "idle"}
-                          >
-                            <span className="kern-label">
-                              {submitState === "upload"
-                                ? "Wird hochgeladen..."
-                                : "Hochladen"}
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </div>
+                <VerfahrenDocumentsFormSection
+                  dokumente={dokumente}
+                  uploadedDokumente={uploadedDokumente}
+                  submitState={submitState}
+                  showFileInputError={showFileInputError}
+                  uploadFileInputRef={uploadFileInputRef}
+                  onFileInputChange={() => setIsFileInputErrorDismissed(true)}
+                  selectedDokumentType={selectedDokumentType}
+                  onDokumentTypeChange={setSelectedDokumentType}
+                  dokumentTypeError={dokumentTypeError}
+                  onDeleteDokument={handleDeleteDokument}
+                />
 
                 <div className="gap-kern-space-default flex flex-wrap justify-end">
                   <div className="gap-kern-space-default flex">

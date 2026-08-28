@@ -3,7 +3,7 @@ import {
   TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
 } from "~/domains/verfahren/services/verfahrenCodeConstants";
 
-type Anschrift = {
+export type Anschrift = {
   strasse?: string | null;
   hausnummer?: string | null;
   postleitzahl?: string | null;
