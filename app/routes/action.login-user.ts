@@ -1,20 +1,7 @@
 import type { ActionFunctionArgs } from "react-router";
-import { AuthenticationProvider } from "~/services/auth/auth.types";
+import { AuthenticationProvider, LoginType } from "~/services/auth/auth.types";
 import { loginAsDeveloper } from "~/services/auth/loginAsDeveloper.server";
 import { authenticator } from "~/services/auth/oAuth.server";
-
-export enum LoginError {
-  BeA = "bea-login-error",
-  Demo = "demo-login-error",
-  KomplaIdp = "kompla-idp-login-error",
-}
-
-export enum LoginType {
-  BeA = "bea-login",
-  Developer = "developer-login",
-  Demo = "demo-login",
-  KomplaIdp = "kompla-idp-login",
-}
 
 /**
  * /action/login-user

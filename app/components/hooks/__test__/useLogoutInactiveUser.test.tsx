@@ -4,7 +4,7 @@ import { act, renderHook } from "@testing-library/react";
 import { ReactNode } from "react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { LogoutType } from "~/routes/action.logout-user";
+import { LogoutType } from "~/services/auth/auth.types";
 import { useLogoutInactiveUser } from "../useLogoutInactiveUser";
 
 const oneMinute = 1000 * 60 * 1;

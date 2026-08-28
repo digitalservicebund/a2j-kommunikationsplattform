@@ -1,5 +1,5 @@
 import { Form } from "react-router";
-import { LogoutType } from "~/routes/action.logout-user";
+import { LogoutType } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 
 const LogoutButton = () => {

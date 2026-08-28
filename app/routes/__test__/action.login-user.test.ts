@@ -10,8 +10,8 @@ vi.mock("~/services/auth/oAuth.server", () => ({
   AuthenticationProvider: { BEA: "bea" },
 }));
 
-import { action, LoginType } from "~/routes/action.login-user";
-import { AuthenticationProvider } from "~/services/auth/auth.types";
+import { action } from "~/routes/action.login-user";
+import { AuthenticationProvider, LoginType } from "~/services/auth/auth.types";
 import { loginAsDeveloper } from "~/services/auth/loginAsDeveloper.server";
 import { authenticator } from "~/services/auth/oAuth.server";
 

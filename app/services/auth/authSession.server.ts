@@ -1,11 +1,11 @@
 import { createCookieSessionStorage, redirect } from "react-router";
 import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
-import { LogoutType } from "~/routes/action.logout-user";
 import {
   AuthenticationProvider,
   AuthenticationResponse,
   AuthenticationTokens,
+  LogoutType,
 } from "./auth.types";
 import {
   refreshAccessToken,
