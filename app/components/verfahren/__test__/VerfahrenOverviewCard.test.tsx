@@ -75,4 +75,15 @@ describe("VerfahrenOverviewCard", () => {
     expect(getAllByText("AZ-123").length).toBeGreaterThan(0);
     expect(getByText("Zahlungsklage")).toBeInTheDocument();
   });
+
+  it("prefers verfahren.kurzrubrum over the klaeger/beklagte names when set", () => {
+    const { getByText, queryByText } = renderWithTestTranslations(
+      <VerfahrenOverviewCard
+        verfahren={{ ...verfahren, kurzrubrum: "Müller ./. Weber u.a." }}
+      />,
+    );
+
+    expect(getByText("Müller ./. Weber u.a.")).toBeInTheDocument();
+    expect(queryByText("Klaus Müller ./. Maria Weber")).not.toBeInTheDocument();
+  });
 });

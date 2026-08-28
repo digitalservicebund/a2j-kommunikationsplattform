@@ -51,7 +51,8 @@ export default function VerfahrenOverviewCard({
         <div className="algin-start gap-kern-space-default flex w-full flex-wrap items-start">
           <div className="flex-1">
             <h2 className="kern-heading-medium">
-              {`${klaegerinnenNamen} ./. ${beklagteNamen}`}
+              {verfahren.kurzrubrum ??
+                `${klaegerinnenNamen} ./. ${beklagteNamen}`}
             </h2>
             <div className="align-center kern-body kern-body--muted gap-kern-space-small flex flex-wrap">
               <span>
