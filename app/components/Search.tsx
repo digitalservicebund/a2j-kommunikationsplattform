@@ -1,3 +1,4 @@
+import Button from "~/components/Button";
 import InputText from "~/components/InputText";
 import { useTranslations } from "~/services/translations/context";
 
@@ -28,17 +29,18 @@ export default function Search({
             className="grow"
             disabled={shouldDisableInputs}
           />
-          <button
+          <Button
+            appearance="primary"
             type="submit"
-            className="kern-btn kern-btn--primary h-max flex-none self-end"
+            className="h-max flex-none self-end"
             disabled={shouldDisableInputs}
+            label={buttons.SEARCH_BUTTON}
           >
             <span
               className="kern-icon kern-icon--search kern-icon--default"
               aria-hidden="true"
             ></span>
-            <span className="kern-label">{buttons.SEARCH_BUTTON}</span>
-          </button>
+          </Button>
         </div>
       </form>
     </search>

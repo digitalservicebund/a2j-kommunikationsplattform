@@ -6,6 +6,7 @@ import {
   useLoaderData,
   useSearchParams,
 } from "react-router";
+import Button from "~/components/Button";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
 import { LoginError, LoginType, LogoutType } from "~/services/auth/auth.types";
@@ -159,24 +160,22 @@ export default function LoginPage() {
               <input type="hidden" name="loginType" value={loginType} />
 
               {isDevelopment && (
-                <button
+                <Button
+                  appearance="primary"
                   type="submit"
-                  className="kern-btn kern-btn--block kern-btn--primary"
+                  className="kern-btn--block"
                   onClick={() => setLoginType(LoginType.Developer)}
-                >
-                  <span className="kern-label">
-                    {buttons.LOGIN_BUTTON_DEVELOPER}
-                  </span>
-                </button>
+                  label={buttons.LOGIN_BUTTON_DEVELOPER}
+                />
               )}
 
-              <button
+              <Button
+                appearance="primary"
                 type="submit"
-                className="kern-btn kern-btn--block kern-btn--primary"
+                className="kern-btn--block"
                 onClick={() => setLoginType(LoginType.BeA)}
-              >
-                <span className="kern-label">{buttons.LOGIN_BUTTON_BEA}</span>
-              </button>
+                label={buttons.LOGIN_BUTTON_BEA}
+              />
 
               <Link
                 to="/auth/start-demo-login"
@@ -192,15 +191,13 @@ export default function LoginPage() {
 
           <Form method="post" action="/action/login-user">
             <input type="hidden" name="loginType" value={LoginType.KomplaIdp} />
-            <button
+            <Button
+              appearance="secondary"
               type="submit"
-              className="kern-btn kern-btn--block kern-btn--secondary w-full"
+              className="kern-btn--block w-full"
               data-testid="kompla-idp-login-button"
-            >
-              <span className="kern-label">
-                {buttons.LOGIN_BUTTON_KOMPLA_IDP_LABEL}
-              </span>
-            </button>
+              label={buttons.LOGIN_BUTTON_KOMPLA_IDP_LABEL}
+            />
           </Form>
         </div>
       </div>

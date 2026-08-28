@@ -1,5 +1,6 @@
 import { Form } from "react-router";
 import Alert from "~/components/Alert";
+import Button from "~/components/Button";
 import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
 import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
@@ -77,8 +78,9 @@ export default function VerfahrenDokumenteList({
                     value={einreichungId}
                   />
                   <input type="hidden" name="dokumentId" value={dokument.id} />
-                  <button
-                    className="kern-btn kern-btn--secondary kern-btn--x-small"
+                  <Button
+                    appearance="secondary"
+                    className="kern-btn--x-small"
                     type="submit"
                   >
                     <span
@@ -88,7 +90,7 @@ export default function VerfahrenDokumenteList({
                     <span className="kern-label kern-sr-only">
                       {shared.form.deleteDokument.label}
                     </span>
-                  </button>
+                  </Button>
                   <VerfahrenStatusBadge
                     tone={dokumentStatusBadgeClass}
                     label={dokumentStatusLabel}

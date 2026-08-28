@@ -1,5 +1,6 @@
 import { RefObject, Suspense } from "react";
 import { Await } from "react-router";
+import Button from "~/components/Button";
 import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
 import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
 import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
@@ -75,20 +76,19 @@ export default function VerfahrenDocumentsFormSection({
                           </div>
 
                           <div className="flex items-center">
-                            <button
-                              className="kern-btn kern-btn--secondary kern-btn--x-small"
+                            <Button
+                              appearance="secondary"
+                              className="kern-btn--x-small"
                               type="button"
                               onClick={() => onDeleteDokument(dokument)}
                               disabled={submitState !== "idle"}
+                              label={shared.form.deleteDokument.label}
                             >
                               <span
                                 className="kern-icon kern-icon--delete"
                                 aria-hidden="true"
                               ></span>
-                              <span className="kern-label">
-                                {shared.form.deleteDokument.label}
-                              </span>
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       );
@@ -153,19 +153,16 @@ export default function VerfahrenDocumentsFormSection({
             />
 
             <div className="flex justify-end">
-              <button
+              <Button
+                appearance="secondary"
                 type="submit"
                 name="formType"
                 value="upload"
-                className="kern-btn kern-btn--secondary"
                 disabled={submitState !== "idle"}
-              >
-                <span className="kern-label">
-                  {submitState === "upload"
-                    ? "Wird hochgeladen..."
-                    : "Hochladen"}
-                </span>
-              </button>
+                label={
+                  submitState === "upload" ? "Wird hochgeladen..." : "Hochladen"
+                }
+              />
             </div>
           </div>
         </section>

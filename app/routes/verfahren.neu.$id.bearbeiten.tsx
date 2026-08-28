@@ -13,6 +13,7 @@ import {
 } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
+import Button from "~/components/Button";
 import VerfahrenDefendantSection from "~/components/verfahren/VerfahrenDefendantSection";
 import VerfahrenDetailsFormSection from "~/components/verfahren/VerfahrenDetailsFormSection";
 import VerfahrenDocumentsFormSection from "~/components/verfahren/VerfahrenDocumentsFormSection";
@@ -610,15 +611,13 @@ export default function VerfahrenNeuBearbeiten() {
                   </h2>
                   <p className="kern-body">{routes.verfahrenNeu.step2.intro}</p>
                   {config().ENVIRONMENT === "development" && (
-                    <button
+                    <Button
+                      appearance="secondary"
                       type="button"
-                      className="kern-btn kern-btn--secondary kern-btn--x-small mt-kern-space-small"
+                      className="kern-btn--x-small mt-kern-space-small"
                       onClick={handleFillDummyData}
-                    >
-                      <span className="kern-label">
-                        Fill details with dummy data
-                      </span>
-                    </button>
+                      label="Fill details with dummy data"
+                    />
                   )}
                 </div>
                 <div className="gap-kern-space-default flex">
@@ -628,11 +627,11 @@ export default function VerfahrenNeuBearbeiten() {
                   >
                     <span className="kern-label">{buttons.prev}</span>
                   </Link>
-                  <button
+                  <Button
+                    appearance="primary"
                     type="submit"
                     name="formType"
                     value="submit"
-                    className="kern-btn kern-btn--primary"
                     disabled={submitState !== "idle"}
                   >
                     <span className="kern-label">
@@ -642,7 +641,7 @@ export default function VerfahrenNeuBearbeiten() {
                       className="kern-icon kern-icon--arrow-forward"
                       aria-hidden="true"
                     ></span>
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -714,11 +713,11 @@ export default function VerfahrenNeuBearbeiten() {
                     >
                       <span className="kern-label">{buttons.prev}</span>
                     </Link>
-                    <button
+                    <Button
+                      appearance="primary"
                       type="submit"
                       name="formType"
                       value="submit"
-                      className="kern-btn kern-btn--primary"
                       disabled={submitState !== "idle"}
                     >
                       <span className="kern-label">
@@ -728,7 +727,7 @@ export default function VerfahrenNeuBearbeiten() {
                         className="kern-icon kern-icon--arrow-forward"
                         aria-hidden="true"
                       ></span>
-                    </button>
+                    </Button>
                   </div>
                 </div>
 

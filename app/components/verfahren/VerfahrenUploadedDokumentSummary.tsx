@@ -1,3 +1,4 @@
+import Button from "~/components/Button";
 import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
 import type { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { useTranslations } from "~/services/translations/context";
@@ -34,21 +35,20 @@ export default function VerfahrenUploadedDokumentSummary({
           <input type="hidden" name="verfahrenId" value={verfahrenId} />
           <input type="hidden" name="einreichungId" value={einreichungId} />
           <input type="hidden" name="dokumentId" value={uploadedDokument?.id} />
-          <button
-            className="kern-btn kern-btn--secondary kern-btn--x-small"
+          <Button
+            appearance="secondary"
+            className="kern-btn--x-small"
             type="submit"
             name="formType"
             value="delete"
             disabled={isSubmitting}
+            label={shared.form.deleteDokument.label}
           >
             <span
               className="kern-icon kern-icon--delete"
               aria-hidden="true"
             ></span>
-            <span className="kern-label">
-              {shared.form.deleteDokument.label}
-            </span>
-          </button>
+          </Button>
         </div>
       </div>
     </div>

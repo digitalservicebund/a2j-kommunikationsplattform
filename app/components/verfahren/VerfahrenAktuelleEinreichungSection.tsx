@@ -1,5 +1,6 @@
 import { RefObject, SyntheticEvent } from "react";
 import { Form, Link } from "react-router";
+import Button from "~/components/Button";
 import { buildBeteiligteSummaryItems } from "~/components/verfahren/presentation/buildBeteiligteSummaryItems";
 import {
   buildInitialTimelineStepData,
@@ -270,19 +271,16 @@ export default function VerfahrenAktuelleEinreichungSection({
                       name="einreichungId"
                       value={initialEinreichung.einreichung.id}
                     />
-                    <button
+                    <Button
+                      appearance="primary"
                       type="submit"
-                      className="kern-btn kern-btn--primary"
                       aria-describedby="card-current-einreichung-heading"
                       disabled={isSubmitting === "submitting" || isValidating}
-                    >
-                      <span className="kern-label">
-                        {
-                          routes.verfahrenNeu.step3.proceduralSteps.einreichung
-                            .submit
-                        }
-                      </span>
-                    </button>
+                      label={
+                        routes.verfahrenNeu.step3.proceduralSteps.einreichung
+                          .submit
+                      }
+                    />
                   </Form>
                 </footer>
               )}
