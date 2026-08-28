@@ -98,6 +98,9 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   };
 };
 
+// TODO: This action is near-identical to verfahren.neu.$id.abgabe.tsx's
+// (same three form types, same underlying calls — both redirect back to
+// their own route on success). We're not yet sure what actions should be performed on `verfahren.$id.tsx` and how much of an overlap there is between this route and `verfahren.neu.$id.abgabe.tsx`
 export const action = async ({
   request,
   context,
