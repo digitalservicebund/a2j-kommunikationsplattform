@@ -313,6 +313,7 @@ describe("apiClient", () => {
         headers: new Headers({ etag: 'W/"1"' }),
         eTag: 'W/"1"',
         errorBody: { message: "conflict" },
+        problemDetails: { message: "conflict" },
       });
     });
 
@@ -339,7 +340,68 @@ describe("apiClient", () => {
         headers: new Headers(),
         eTag: null,
         errorBody: undefined,
+        problemDetails: undefined,
       });
+    });
+
+    it("exposes the parsed ProblemDetails fields when throwOnError is false", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      const problemDetailsBody = {
+        title: "Conflict",
+        status: 412,
+        detail: "Die eTag stimmt nicht mit der aktuellen Ressource ueberein.",
+      };
+      mocks.fetch.mockResolvedValue({
+        ok: false,
+        status: 412,
+        headers: new Headers(),
+        json: async () => problemDetailsBody,
+      });
+
+      const result = await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+        throwOnError: false,
+      });
+
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.problemDetails?.title).toBe("Conflict");
+        expect(result.problemDetails?.status).toBe(412);
+        expect(result.problemDetails?.detail).toBe(
+          "Die eTag stimmt nicht mit der aktuellen Ressource ueberein.",
+        );
+      }
+    });
+
+    it("exposes field-level validation errors from a ValidationProblemDetails body", async () => {
+      mocks.getBearerToken.mockResolvedValue("token");
+      const validationProblemBody = {
+        title: "Validation failed",
+        status: 400,
+        errors: {
+          kurzrubrum: ["Feld darf nicht leer sein."],
+        },
+      };
+      mocks.fetch.mockResolvedValue({
+        ok: false,
+        status: 400,
+        headers: new Headers(),
+        json: async () => validationProblemBody,
+      });
+
+      const result = await apiRequest({
+        authData: mockAuthData,
+        path: "/api/v1/test",
+        throwOnError: false,
+      });
+
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.problemDetails?.errors).toEqual({
+          kurzrubrum: ["Feld darf nicht leer sein."],
+        });
+      }
     });
 
     it("parses JSON response and returns data", async () => {

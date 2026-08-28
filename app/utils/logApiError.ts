@@ -1,3 +1,6 @@
+import { ApiError } from "~/utils/apiError";
+import { parseProblemDetails } from "~/utils/problemDetails.schema";
+
 /**
  * Logs API error details (status + response body) before parsing.
  * Ensures error context is immediately available in stack traces.
@@ -14,14 +17,26 @@ export async function logApiErrorAndThrow(
     responseBody = "[Unable to read response body]";
   }
 
+  let parsedBody: unknown;
+  try {
+    parsedBody = JSON.parse(responseBody);
+  } catch {
+    parsedBody = undefined;
+  }
+
+  const problemDetails = parseProblemDetails(parsedBody);
+
   console.error(`[API Error] ${context}`, {
     status: response.status,
     statusText: response.statusText,
     url: response.url,
     body: responseBody,
+    problemDetails,
   });
 
-  throw new Error(context, {
+  throw new ApiError(context, {
+    status: response.status,
+    problemDetails,
     cause: `Serverantwort war nicht ok (Fehlercode ${response.status} ${response.statusText}). Body: ${responseBody}`,
   });
 }

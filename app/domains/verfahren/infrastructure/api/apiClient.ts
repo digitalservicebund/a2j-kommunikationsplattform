@@ -7,6 +7,10 @@ import {
   logApiErrorAndThrow,
   logParsingErrorAndThrow,
 } from "~/utils/logApiError";
+import {
+  parseProblemDetails,
+  ValidationProblemDetails,
+} from "~/utils/problemDetails.schema";
 
 type ApiRequestUrlOptions =
   | {
@@ -50,6 +54,7 @@ export type ApiRequestErrorResult = {
   headers: Headers;
   eTag: string | null;
   errorBody: unknown;
+  problemDetails: ValidationProblemDetails | undefined;
 };
 
 export type ApiRequestSuccessResult<T> = {
@@ -104,6 +109,7 @@ async function handleNonOkResponse(
     headers: response.headers,
     eTag: responseETag,
     errorBody,
+    problemDetails: parseProblemDetails(errorBody),
   };
 }
 
