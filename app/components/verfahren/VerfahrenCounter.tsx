@@ -2,8 +2,7 @@ import Alert from "~/components/Alert";
 import {
   TOO_MANY_RESULTS_THRESHOLD,
   VERFAHREN_PAGE_LIMIT,
-} from "~/config/verfahren";
-
+} from "~/domains/verfahren/services/verfahrenListOptions";
 import { useTranslations } from "~/services/translations/context";
 
 enum CounterState {

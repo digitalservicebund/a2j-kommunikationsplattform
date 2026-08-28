@@ -6,16 +6,20 @@ import { useParamsState } from "~/components/hooks/useParamsState";
 import InputSelect from "~/components/InputSelect";
 import ScrollToTopButton from "~/components/ScrollToTopButton";
 import Search from "~/components/Search";
+import { sortOptions } from "~/components/verfahren/presentation/sortOptions";
 import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
 import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
 import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
 import VerfahrenTileSkeleton from "~/components/verfahren/VerfahrenTileSkeleton.static";
-import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/config/verfahren";
 import { VERFAHREN_SKELETONS } from "~/config/verfahrenSkeletons";
 import type { CodeWert } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
-import { fetchVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
+import {
+  fetchVerfahren,
+  FetchVerfahrenOptions,
+} from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
+import { VERFAHREN_PAGE_LIMIT } from "~/domains/verfahren/services/verfahrenListOptions";
 import { authContext, authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
@@ -42,7 +46,8 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const offset = Number(url.searchParams.get("offset") || "0");
   const gericht = url.searchParams.get("gericht");
-  const sort = url.searchParams.get("sort") || sortOptions[0].value;
+  const sort = (url.searchParams.get("sort") ||
+    sortOptions[0].value) as FetchVerfahrenOptions["sort"];
   const search_text = url.searchParams.get("search_text");
 
   // TODO: refactor the handling of below promises

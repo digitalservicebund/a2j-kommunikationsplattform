@@ -1,9 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { sortOptions } from "~/config/verfahren";
 import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
+import {
+  SORT_VALUES,
+  toSortQueryValue,
+} from "~/domains/verfahren/services/verfahrenListOptions";
 import {
   fetchVerfahren,
   fetchVerfahrenById,
+  FetchVerfahrenOptions,
 } from "../verfahrenRepository.server";
 
 const mocks = vi.hoisted(() => {
@@ -78,7 +82,7 @@ describe("fetchVerfahren", () => {
       limit: 99,
       offset: 123,
       search_text: "test-search",
-      sort: sortOptions[0].value,
+      sort: SORT_VALUES[0],
     });
 
     const calledUrl = mocks.fetch.mock.calls[0][0] as string;
@@ -103,7 +107,7 @@ describe("fetchVerfahren", () => {
       json: async () => [{ invalid: true }],
     });
 
-    const result = fetchVerfahren(mockAuthData, { sort: sortOptions[0].value });
+    const result = fetchVerfahren(mockAuthData, { sort: SORT_VALUES[0] });
 
     await expect(result).rejects.toThrow("Verfahren could not be fetched.");
   });
@@ -147,7 +151,7 @@ describe("fetchVerfahren", () => {
         limit: 99,
         offset: 123,
         search_text: "test-search",
-        sort: sortOptions[0].value,
+        sort: SORT_VALUES[0],
       });
 
       expect(mocks.fetch).toHaveBeenCalledWith(
@@ -187,12 +191,12 @@ describe("fetchVerfahren", () => {
       });
 
       await fetchVerfahren(mockAuthData, {
-        sort: sortOptions[1].value,
+        sort: SORT_VALUES[1],
       });
 
       expect(mocks.fetch).toHaveBeenCalledWith(
         expect.stringContaining(
-          `sort=${encodeURIComponent(sortOptions[1].value)}`,
+          `sort=${encodeURIComponent(toSortQueryValue(SORT_VALUES[1]))}`,
         ),
         expect.any(Object),
       );
@@ -215,7 +219,7 @@ describe("fetchVerfahren", () => {
       mocks.getBearerToken.mockResolvedValue("test-token");
 
       const result = fetchVerfahren(mockAuthData, {
-        sort: "invalid-sort-value",
+        sort: "invalid-sort-value" as FetchVerfahrenOptions["sort"],
       });
 
       await expect(result).rejects.toThrow();
