@@ -1,4 +1,4 @@
-import InputText from "~/components/InputText";
+import InputField from "~/components/InputField";
 import VerfahrenGerichteSelect, {
   type GerichtSelectItem,
 } from "~/components/verfahren/VerfahrenGerichteSelect";
@@ -32,28 +32,21 @@ export default function VerfahrenDetailsFormSection({
           </hgroup>
         </header>
         <section className="kern-card__body">
-          <div className="kern-form-input">
-            <InputText
-              label={shared.form.labels.rubrum}
-              id="claim-rubrum"
-              name="claimRubrum"
-              defaultValue={kurzrubrum}
-            />
-          </div>
+          <InputField
+            label={shared.form.labels.rubrum}
+            id="claim-rubrum"
+            name="claimRubrum"
+            defaultValue={kurzrubrum}
+          />
 
           <div className="kern-gap-md flex w-full">
-            <div className="kern-form-input flex-1 self-end">
-              <label className="kern-label" htmlFor="claim-reference">
-                {shared.form.labels.legalRepresentativesReferenceNumber}
-              </label>
-              <input
-                className="kern-form-input__input"
-                id="claim-reference"
-                name="claimReference"
-                type="text"
-                defaultValue={claimReference}
-              />
-            </div>
+            <InputField
+              className="flex-1 self-end"
+              label={shared.form.labels.legalRepresentativesReferenceNumber}
+              id="claim-reference"
+              name="claimReference"
+              defaultValue={claimReference}
+            />
 
             <VerfahrenGerichteSelect
               id="claim-court"
@@ -65,15 +58,13 @@ export default function VerfahrenDetailsFormSection({
             />
           </div>
 
-          <div className="kern-form-input">
-            <InputText
-              label={shared.form.labels.subjectMatterOfTheProceedings}
-              id="subject-matter-of-the-proceedings"
-              name="subjectMatterOfTheProceedings"
-              required
-              defaultValue={verfahrensgegenstand}
-            />
-          </div>
+          <InputField
+            label={shared.form.labels.subjectMatterOfTheProceedings}
+            id="subject-matter-of-the-proceedings"
+            name="subjectMatterOfTheProceedings"
+            required
+            defaultValue={verfahrensgegenstand}
+          />
         </section>
       </div>
     </div>

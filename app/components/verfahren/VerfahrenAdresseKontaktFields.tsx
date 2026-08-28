@@ -1,3 +1,4 @@
+import InputField from "~/components/InputField";
 import { useTranslations } from "~/services/translations/context";
 
 type VerfahrenAdresseKontaktFieldsProps = {
@@ -26,84 +27,57 @@ export default function VerfahrenAdresseKontaktFields({
   return (
     <>
       <div className="kern-gap-md flex w-full">
-        <div className="kern-form-input flex-2">
-          <label className="kern-label" htmlFor={`${idPrefix}-strasse`}>
-            {shared.form.labels.street}
-          </label>
-          <input
-            className="kern-form-input__input"
-            id={`${idPrefix}-strasse`}
-            name={`${namePrefix}Strasse`}
-            type="text"
-            defaultValue={strasse}
-          />
-        </div>
-        <div className="kern-form-input flex-1">
-          <label className="kern-label" htmlFor={`${idPrefix}-hausnummer`}>
-            {shared.form.labels.houseNumber}
-          </label>
-          <input
-            className="kern-form-input__input"
-            id={`${idPrefix}-hausnummer`}
-            name={`${namePrefix}Hausnummer`}
-            type="text"
-            defaultValue={hausnummer}
-          />
-        </div>
+        <InputField
+          className="flex-2"
+          label={shared.form.labels.street}
+          id={`${idPrefix}-strasse`}
+          name={`${namePrefix}Strasse`}
+          defaultValue={strasse}
+        />
+        <InputField
+          className="flex-1"
+          label={shared.form.labels.houseNumber}
+          id={`${idPrefix}-hausnummer`}
+          name={`${namePrefix}Hausnummer`}
+          defaultValue={hausnummer}
+        />
       </div>
 
       <div className="kern-gap-md flex w-full">
-        <div className="kern-form-input flex-1">
-          <label className="kern-label" htmlFor={`${idPrefix}-plz`}>
-            {shared.form.labels.postcode}
-          </label>
-          <input
-            className="kern-form-input__input"
-            id={`${idPrefix}-plz`}
-            name={`${namePrefix}Plz`}
-            type="text"
-            defaultValue={postleitzahl}
-          />
-        </div>
-        <div className="kern-form-input flex-2">
-          <label className="kern-label" htmlFor={`${idPrefix}-ort`}>
-            {shared.form.labels.place}
-          </label>
-          <input
-            className="kern-form-input__input"
-            id={`${idPrefix}-ort`}
-            name={`${namePrefix}Ort`}
-            type="text"
-            defaultValue={ort}
-          />
-        </div>
+        <InputField
+          className="flex-1"
+          label={shared.form.labels.postcode}
+          id={`${idPrefix}-plz`}
+          name={`${namePrefix}Plz`}
+          inputMode="numeric"
+          defaultValue={postleitzahl}
+        />
+        <InputField
+          className="flex-2"
+          label={shared.form.labels.place}
+          id={`${idPrefix}-ort`}
+          name={`${namePrefix}Ort`}
+          defaultValue={ort}
+        />
       </div>
 
       <div className="kern-gap-md flex w-full">
-        <div className="kern-form-input flex-1">
-          <label className="kern-label" htmlFor={`${idPrefix}-email`}>
-            {shared.form.labels.eMail}
-          </label>
-          <input
-            className="kern-form-input__input"
-            id={`${idPrefix}-email`}
-            name={`${namePrefix}Email`}
-            type="email"
-            defaultValue={email}
-          />
-        </div>
-        <div className="kern-form-input flex-1">
-          <label className="kern-label" htmlFor={`${idPrefix}-telefon`}>
-            {shared.form.labels.phone}
-          </label>
-          <input
-            className="kern-form-input__input"
-            id={`${idPrefix}-telefon`}
-            name={`${namePrefix}Telefon`}
-            type="tel"
-            defaultValue={telefon}
-          />
-        </div>
+        <InputField
+          className="flex-1"
+          label={shared.form.labels.eMail}
+          id={`${idPrefix}-email`}
+          name={`${namePrefix}Email`}
+          type="email"
+          defaultValue={email}
+        />
+        <InputField
+          className="flex-1"
+          label={shared.form.labels.phone}
+          id={`${idPrefix}-telefon`}
+          name={`${namePrefix}Telefon`}
+          type="tel"
+          defaultValue={telefon}
+        />
       </div>
     </>
   );

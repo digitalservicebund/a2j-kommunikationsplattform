@@ -34,4 +34,24 @@ describe("VerfahrenAdresseKontaktFields", () => {
     expect(email.name).toBe("klagendeParteiEmail");
     expect(email.value).toBe("emilia@example.de");
   });
+
+  it("gives the postleitzahl field a numeric input mode", () => {
+    const { getByLabelText } = renderWithTestTranslations(
+      <VerfahrenAdresseKontaktFields
+        idPrefix="klagende-partei"
+        namePrefix="klagendePartei"
+        strasse=""
+        hausnummer=""
+        postleitzahl="60323"
+        ort=""
+        email=""
+        telefon=""
+      />,
+    );
+
+    expect(getByLabelText("Postleitzahl")).toHaveAttribute(
+      "inputmode",
+      "numeric",
+    );
+  });
 });

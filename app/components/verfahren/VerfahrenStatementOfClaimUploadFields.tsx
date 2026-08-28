@@ -1,4 +1,4 @@
-import InputText from "~/components/InputText";
+import InputField from "~/components/InputField";
 import VerfahrenGerichteSelect, {
   type GerichtSelectItem,
 } from "~/components/verfahren/VerfahrenGerichteSelect";
@@ -64,7 +64,7 @@ export default function VerfahrenStatementOfClaimUploadFields({
       </div>
 
       <div className="kern-gap-md flex w-full">
-        <InputText
+        <InputField
           label={shared.form.labels.verfahrensgegenstand}
           id="verfahrensgegenstand"
           required
