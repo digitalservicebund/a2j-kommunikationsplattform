@@ -1,16 +1,16 @@
 import z from "zod";
-import { AnschriftRequestSchema } from "~/domains/verfahren/infrastructure/schemas/requests/anschrift.request.schema";
+import { AnschriftInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/anschrift.input.schema";
 import {
-  NatuerlichePersonRequestSchema,
-  RaKanzleiRequestSchema,
-} from "~/domains/verfahren/infrastructure/schemas/requests/beteiligung.request.schema";
-import { KommunikationsanschlussRequestSchema } from "~/domains/verfahren/infrastructure/schemas/requests/kommunikationsanschluss.request.schema";
+  NatuerlichePersonInputSchema,
+  RaKanzleiInputSchema,
+} from "~/domains/verfahren/infrastructure/schemas/requests/beteiligung.input.schema";
+import { KommunikationsanschlussInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/kommunikationsanschluss.input.schema";
 
-type NatuerlichePersonRequest = z.infer<typeof NatuerlichePersonRequestSchema>;
-type RaKanzleiRequest = z.infer<typeof RaKanzleiRequestSchema>;
-type Anschriften = z.infer<typeof AnschriftRequestSchema>[] | null;
+type NatuerlichePersonInput = z.input<typeof NatuerlichePersonInputSchema>;
+type RaKanzleiInput = z.input<typeof RaKanzleiInputSchema>;
+type Anschriften = z.input<typeof AnschriftInputSchema>[] | null;
 type Kommunikationsanschluesse =
-  z.infer<typeof KommunikationsanschlussRequestSchema>[] | null;
+  z.input<typeof KommunikationsanschlussInputSchema>[] | null;
 
 type AdresseKontaktFormValues = {
   strasse: string;
@@ -59,13 +59,13 @@ function buildAnschriften(
 
   return [
     {
-      anschriftstyp_id: codeIds.anschriftstypId,
+      anschriftstypId: codeIds.anschriftstypId,
       strasse: formValues.strasse || null,
       hausnummer: formValues.hausnummer || null,
       postleitzahl: formValues.postleitzahl || null,
       ort: formValues.ort || null,
       postfachnummer: null,
-      staat_id: codeIds.staatId,
+      staatId: codeIds.staatId,
     },
   ];
 }
@@ -77,13 +77,13 @@ function buildKommunikationsanschluesse(
   const kommunikationsanschluesse = [
     formValues.email
       ? {
-          telekommunikationsart_id: codeIds.emailTelekommunikationsartId,
+          telekommunikationsartId: codeIds.emailTelekommunikationsartId,
           verbindung: formValues.email,
         }
       : null,
     formValues.telefon
       ? {
-          telekommunikationsart_id: codeIds.telefonTelekommunikationsartId,
+          telekommunikationsartId: codeIds.telefonTelekommunikationsartId,
           verbindung: formValues.telefon,
         }
       : null,
@@ -98,7 +98,7 @@ export default function buildBeteiligungFromFormValues(
   partei: ParteiFormValues,
   codeIds: BeteiligungCodeIds,
   rollennummer: string | null = null,
-): NatuerlichePersonRequest | null {
+): NatuerlichePersonInput | null {
   if (!partei.nachname) {
     return null;
   }
@@ -112,7 +112,7 @@ export default function buildBeteiligungFromFormValues(
     rollen: [
       {
         rollennummer,
-        rollenbezeichnung_id: codeIds.rollenbezeichnungId,
+        rollenbezeichnungId: codeIds.rollenbezeichnungId,
         geschaeftszeichen: null,
         referenz: null,
       },
@@ -126,7 +126,7 @@ export function buildRaKanzleiFromFormValues(
   anwalt: AnwaltFormValues,
   codeIds: AnwaltCodeIds,
   vertreteneRollennummer: string,
-): RaKanzleiRequest | null {
+): RaKanzleiInput | null {
   if (!anwalt.name) {
     return null;
   }
@@ -134,12 +134,12 @@ export function buildRaKanzleiFromFormValues(
   return {
     beteiligtenart: "raKanzlei",
     bezeichnung: anwalt.name,
-    rechtsform_id: null,
-    kanzleiform_id: codeIds.kanzleiformId,
+    rechtsformId: null,
+    kanzleiformId: codeIds.kanzleiformId,
     rollen: [
       {
         rollennummer: null,
-        rollenbezeichnung_id: codeIds.rollenbezeichnungId,
+        rollenbezeichnungId: codeIds.rollenbezeichnungId,
         geschaeftszeichen: null,
         referenz: vertreteneRollennummer,
       },

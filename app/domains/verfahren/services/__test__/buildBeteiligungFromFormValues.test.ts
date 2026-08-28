@@ -51,28 +51,28 @@ describe("buildBeteiligungFromFormValues", () => {
       rollen: [
         {
           rollennummer: null,
-          rollenbezeichnung_id: "rolle-1",
+          rollenbezeichnungId: "rolle-1",
           geschaeftszeichen: null,
           referenz: null,
         },
       ],
       anschriften: [
         {
-          anschriftstyp_id: "typ-1",
+          anschriftstypId: "typ-1",
           strasse: "Bockenheimer Landstraße",
           hausnummer: "42-44",
           postleitzahl: "60323",
           ort: "Frankfurt am Main",
           postfachnummer: null,
-          staat_id: "staat-1",
+          staatId: "staat-1",
         },
       ],
       kommunikationsanschluesse: [
         {
-          telekommunikationsart_id: "tka-email",
+          telekommunikationsartId: "tka-email",
           verbindung: "emiliakuehn@posteo.de",
         },
-        { telekommunikationsart_id: "tka-telefon", verbindung: "06921994731" },
+        { telekommunikationsartId: "tka-telefon", verbindung: "06921994731" },
       ],
     });
   });
@@ -96,13 +96,13 @@ describe("buildBeteiligungFromFormValues", () => {
 
     expect(result?.anschriften).toEqual([
       {
-        anschriftstyp_id: "typ-1",
+        anschriftstypId: "typ-1",
         strasse: null,
         hausnummer: null,
         postleitzahl: "60323",
         ort: null,
         postfachnummer: null,
-        staat_id: "staat-1",
+        staatId: "staat-1",
       },
     ]);
   });
@@ -118,13 +118,13 @@ describe("buildBeteiligungFromFormValues", () => {
 
     expect(result?.anschriften).toEqual([
       {
-        anschriftstyp_id: "typ-1",
+        anschriftstypId: "typ-1",
         strasse: null,
         hausnummer: null,
         postleitzahl: null,
         ort: "Frankfurt am Main",
         postfachnummer: null,
-        staat_id: "staat-1",
+        staatId: "staat-1",
       },
     ]);
   });
@@ -140,7 +140,7 @@ describe("buildBeteiligungFromFormValues", () => {
 
     expect(result?.kommunikationsanschluesse).toEqual([
       {
-        telekommunikationsart_id: "tka-email",
+        telekommunikationsartId: "tka-email",
         verbindung: "emiliakuehn@posteo.de",
       },
     ]);
@@ -198,33 +198,33 @@ describe("buildRaKanzleiFromFormValues", () => {
     ).toEqual({
       beteiligtenart: "raKanzlei",
       bezeichnung: "Kanzlei Böhm",
-      rechtsform_id: null,
-      kanzleiform_id: "kanzleiform-1",
+      rechtsformId: null,
+      kanzleiformId: "kanzleiform-1",
       rollen: [
         {
           rollennummer: null,
-          rollenbezeichnung_id: "rolle-1",
+          rollenbezeichnungId: "rolle-1",
           geschaeftszeichen: null,
           referenz: "klaegerin",
         },
       ],
       anschriften: [
         {
-          anschriftstyp_id: "typ-1",
+          anschriftstypId: "typ-1",
           strasse: "Römerberg",
           hausnummer: "2",
           postleitzahl: "60311",
           ort: "Frankfurt am Main",
           postfachnummer: null,
-          staat_id: "staat-1",
+          staatId: "staat-1",
         },
       ],
       kommunikationsanschluesse: [
         {
-          telekommunikationsart_id: "tka-email",
+          telekommunikationsartId: "tka-email",
           verbindung: "kanzlei@ra-boehm.de",
         },
-        { telekommunikationsart_id: "tka-telefon", verbindung: "06921994731" },
+        { telekommunikationsartId: "tka-telefon", verbindung: "06921994731" },
       ],
     });
   });

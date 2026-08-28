@@ -19,9 +19,6 @@ import { fetchVerfahren } from "~/domains/verfahren/infrastructure/repositories/
 import { authContext, authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
-export type { Verfahren };
-export type Gericht = CodeWert;
-
 export type VerfahrenLoaderData = {
   items: Verfahren[];
   hasMoreItems: boolean;
@@ -29,7 +26,7 @@ export type VerfahrenLoaderData = {
 
 export type LoaderData = {
   verfahren: Promise<VerfahrenLoaderData>;
-  gerichte: Promise<Gericht[]>;
+  gerichte: Promise<CodeWert[]>;
 };
 
 // this route requires users to be logged in
@@ -81,7 +78,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 
 export default function VerfahrenRoute() {
   const { data, showDebugInfo } = useLoaderData<{
-    data: Promise<[VerfahrenLoaderData, Gericht[]]>;
+    data: Promise<[VerfahrenLoaderData, CodeWert[]]>;
     showDebugInfo: boolean;
   }>();
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -148,7 +145,7 @@ function VerfahrenContent({
   ref,
 }: Readonly<{
   initialData: VerfahrenLoaderData;
-  gerichte: Gericht[];
+  gerichte: CodeWert[];
   ref: RefObject<HTMLHeadingElement | null>;
 }>) {
   const { shared } = useTranslations();

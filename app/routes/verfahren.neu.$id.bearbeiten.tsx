@@ -44,10 +44,8 @@ import {
   fetchStaaten,
   fetchTelekommunikationsarten,
 } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
-import {
-  updateVerfahren,
-  VerfahrenAendernRequestSchema,
-} from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
+import { updateVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
+import { VerfahrenAendernInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.input.schema";
 import {
   getBeteiligungByRoleCode,
   getProzessbevollmaechtigteByReferenz,
@@ -362,11 +360,11 @@ export const action = async ({
     const formValues = {
       verfahrensgegenstand: formData.get("subjectMatterOfTheProceedings"),
       kurzrubrum: formData.get("claimRubrum"),
-      gericht_id: formData.get("claim-court"),
+      gerichtId: formData.get("claim-court"),
       beteiligungen: beteiligungen.length > 0 ? beteiligungen : null,
     };
 
-    const validatedForm = VerfahrenAendernRequestSchema.safeParse(formValues);
+    const validatedForm = VerfahrenAendernInputSchema.safeParse(formValues);
 
     if (!validatedForm.success) {
       return {

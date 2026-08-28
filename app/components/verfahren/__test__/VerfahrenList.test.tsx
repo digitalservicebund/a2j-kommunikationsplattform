@@ -4,7 +4,7 @@ import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { describe } from "vitest";
 import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
-import { Verfahren } from "~/routes/_index";
+import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 
 const mockVerfahren: Verfahren[] = [
   {

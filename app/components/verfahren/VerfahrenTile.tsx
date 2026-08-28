@@ -3,6 +3,7 @@ import FolderInfoIcon from "~/components/icons/FolderInfoIcon.static";
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import { NOT_AVAILABLE_LABEL } from "~/components/verfahren/presentation/placeholders";
 import { getVerfahrenStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
+import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import {
   getBeteiligteDisplayName,
   getBeteiligungByRoleCode,
@@ -10,7 +11,6 @@ import {
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/services/beteiligteByRole";
-import { Verfahren } from "~/routes/_index";
 import { useTranslations } from "~/services/translations/context";
 
 function DataItem({

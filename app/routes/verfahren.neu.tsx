@@ -26,6 +26,7 @@ import {
 import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
 import { createVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
+import { VerfahrenAendernInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.input.schema";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
@@ -173,12 +174,13 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
   let einreichungId = existingEinreichungId;
 
   if (!verfahrenId || !einreichungId) {
-    const verfahren = await createVerfahren(authData, {
+    const verfahrenPayload = VerfahrenAendernInputSchema.parse({
       verfahrensgegenstand,
       kurzrubrum: null,
-      gericht_id: gerichtId,
+      gerichtId,
       beteiligungen: null,
     });
+    const verfahren = await createVerfahren(authData, verfahrenPayload);
     verfahrenId = verfahren.id;
     const einreichung = await createEinreichung(authData, verfahrenId);
     einreichungId = einreichung.id;

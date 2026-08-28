@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useFetcher, useSearchParams } from "react-router";
-import type {
-  LoaderData,
-  Verfahren,
-  VerfahrenLoaderData,
-} from "~/routes/_index";
+import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
+import type { LoaderData, VerfahrenLoaderData } from "~/routes/_index";
 
 const getFormData = (
   offset: number,

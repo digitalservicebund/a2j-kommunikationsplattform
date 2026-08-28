@@ -3,16 +3,10 @@ import { serverConfig } from "~/config/config.server";
 import { sortOptions } from "~/config/verfahren";
 import { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import { apiRequest } from "~/domains/verfahren/infrastructure/api/apiClient";
-import {
-  VerfahrenAendernRequestDTO,
-  VerfahrenAendernRequestSchema,
-} from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.request.schema";
+import { VerfahrenAendernRequestDTO } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.request.schema";
 import { VerfahrenSchema } from "~/domains/verfahren/infrastructure/schemas/verfahren.schema";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { buildSearchParams } from "~/utils/buildSearchParams";
-
-export { VerfahrenAendernRequestSchema };
-export type { VerfahrenAendernRequestDTO };
 
 const fetchVerfahrenOptionsSchema = z.object({
   offset: z.number().int().nonnegative().optional(),
