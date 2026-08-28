@@ -15,58 +15,64 @@ import {
 import z from "zod";
 import Alert from "~/components/Alert";
 import InputText from "~/components/InputText";
+import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
 import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
 import VerfahrenGerichteSelect from "~/components/verfahren/VerfahrenGerichteSelect";
 import VerfahrenKanzleiformSelect from "~/components/verfahren/VerfahrenKanzleiformSelect";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import { config } from "~/config/config";
+import loadVerfahrenEinreichungBundle, {
+  Dokument,
+  EinreichungWithStatus,
+  Verfahren,
+} from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import regenerateEinreichungXJustiz from "~/domains/verfahren/application/regenerateEinreichungXJustiz.server";
+import { requireAuthAndVerfahrenId } from "~/domains/verfahren/application/routeContext.server";
+import { CodeWertSchema } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
+import { DokumentTypeSchema } from "~/domains/verfahren/entities/dokument/dokument.entity";
+import { fetchLatestBelegForEinreichung } from "~/domains/verfahren/infrastructure/repositories/belegRepository.server";
+import {
+  deleteDokument,
+  fetchDokument,
+  uploadDokument,
+} from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
+import {
+  fetchAnschriftstypen,
+  fetchGerichte,
+  fetchKanzleiformen,
+  fetchRollenbezeichnungen,
+  fetchStaaten,
+  fetchTelekommunikationsarten,
+} from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
+import {
+  updateVerfahren,
+  VerfahrenAendernRequestSchema,
+} from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import {
   getBeteiligungByRoleCode,
   getProzessbevollmaechtigteByReferenz,
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
-} from "~/domains/verfahren/beteiligteByRole";
+} from "~/domains/verfahren/services/beteiligteByRole";
 import {
   getBeteiligteAnschrift,
   getBeteiligteEmail,
   getBeteiligteTelefon,
-} from "~/domains/verfahren/beteiligteContactInfo";
+} from "~/domains/verfahren/services/beteiligteContactInfo";
 import buildBeteiligungFromFormValues, {
   AnwaltFormValues,
   buildRaKanzleiFromFormValues,
   ParteiFormValues,
-} from "~/domains/verfahren/buildBeteiligungFromFormValues";
-import canDeleteDokument from "~/domains/verfahren/canDeleteDokument";
-import { VerfahrenAendernRequestSchema } from "~/domains/verfahren/createVerfahren.server";
-import deleteDokument from "~/domains/verfahren/deleteDokument.server";
-import fetchAnschriftstypen from "~/domains/verfahren/fetchAnschriftstypen.service";
-import fetchDokument from "~/domains/verfahren/fetchDokument";
-import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
-import fetchKanzleiformen from "~/domains/verfahren/fetchKanzleiformen.service";
-import fetchLatestBelegForEinreichung from "~/domains/verfahren/fetchLatestBelegForEinreichung.server";
-import fetchRollenbezeichnungen from "~/domains/verfahren/fetchRollenbezeichnungen.service";
-import fetchStaaten from "~/domains/verfahren/fetchStaaten.service";
-import fetchTelekommunikationsarten from "~/domains/verfahren/fetchTelekommunikationsarten.service";
-import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
-import loadVerfahrenEinreichungBundle, {
-  Dokument,
-  EinreichungWithStatus,
-  Verfahren,
-} from "~/domains/verfahren/loadVerfahrenEinreichungBundle.server";
-import regenerateEinreichungXJustiz from "~/domains/verfahren/regenerateEinreichungXJustiz.server";
-import resolveCodeWertId from "~/domains/verfahren/resolveCodeWertId";
-import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.server";
-import { CodeWertSchema } from "~/domains/verfahren/schemas/codeWertSchema";
-import { DokumentTypeSchema } from "~/domains/verfahren/schemas/dokumentSchema";
-import updateVerfahren from "~/domains/verfahren/updateVerfahren.server";
-import uploadDokument from "~/domains/verfahren/uploadDokument.server";
+} from "~/domains/verfahren/services/buildBeteiligungFromFormValues";
+import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
+import resolveCodeWertId from "~/domains/verfahren/services/resolveCodeWertId";
 import {
   ANSCHRIFTSTYP_CODE_PRIVATANSCHRIFT,
   ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
   STAAT_CODE_DEUTSCHLAND,
   TELEKOMMUNIKATIONSART_CODE_EMAIL,
   TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
-} from "~/domains/verfahren/verfahrenCodeConstants";
+} from "~/domains/verfahren/services/verfahrenCodeConstants";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
@@ -510,7 +516,7 @@ export default function VerfahrenNeuBearbeiten() {
       : "";
   const hasExistingLawyer = Boolean(klagendeParteiAnwalt);
   const courtId = verfahren.gericht?.id ?? "";
-  const claimReference = verfahren.aktenzeichen_gericht ?? "";
+  const claimReference = verfahren.aktenzeichenGericht ?? "";
 
   const [hasLawyer, setHasLawyer] = useState(hasExistingLawyer);
 
@@ -1233,7 +1239,7 @@ export default function VerfahrenNeuBearbeiten() {
 
                                         <div className="kern-body kern-body--small">
                                           {formatDokumentSize(
-                                            dokument.size_in_bytes,
+                                            dokument.sizeInBytes,
                                           )}
                                         </div>
                                       </div>

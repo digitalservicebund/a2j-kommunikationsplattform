@@ -1,6 +1,5 @@
 import React, { Ref, RefObject, Suspense, useRef } from "react";
 import { Await, Link, LoaderFunctionArgs, useLoaderData } from "react-router";
-import z from "zod";
 import Alert from "~/components/Alert";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { useParamsState } from "~/components/hooks/useParamsState";
@@ -13,15 +12,15 @@ import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMor
 import VerfahrenTileSkeleton from "~/components/verfahren/VerfahrenTileSkeleton.static";
 import { sortOptions, VERFAHREN_PAGE_LIMIT } from "~/config/verfahren";
 import { VERFAHREN_SKELETONS } from "~/config/verfahrenSkeletons";
-import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
-import fetchVerfahren from "~/domains/verfahren/fetchVerfahren.server";
-import { CodeWertSchema } from "~/domains/verfahren/schemas/codeWertSchema";
-import { VerfahrenSchema } from "~/domains/verfahren/schemas/verfahrenSchema";
+import type { CodeWert } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
+import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
+import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
+import { fetchVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { authContext, authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
-export type Verfahren = z.infer<typeof VerfahrenSchema>;
-export type Gericht = z.infer<typeof CodeWertSchema>;
+export type { Verfahren };
+export type Gericht = CodeWert;
 
 export type VerfahrenLoaderData = {
   items: Verfahren[];

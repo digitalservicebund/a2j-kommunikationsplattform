@@ -3,7 +3,7 @@
   "info": {
     "title": "Justiz KomPla API",
     "description": "Justiz KomPla API - Kommunikationsplattform zur Klageeinreichung und Verwaltung von Verfahrensdaten bei Gericht.",
-    "version": "v1"
+    "version": "0.5.0"
   },
   "servers": [
     {
@@ -31,7 +31,7 @@
             }
           },
           {
-            "name": "einreichung-id",
+            "name": "einreichung_id",
             "in": "query",
             "description": "Optionale Einreichungs-ID zum Einschränken der Belege.",
             "schema": {
@@ -145,7 +145,7 @@
           "Belege"
         ],
         "summary": "Ruft einen Beleg eines Verfahrens ab.",
-        "description": "Gibt den Beleg unabhängig von seinem Status zurück. Ein noch nicht fertiggestellter Beleg wird mit Status IN_BEARBEITUNG geliefert.",
+        "description": "Ruft einen Beleg eines Verfahrens ab, unabhängig von seinem Status.",
         "operationId": "VerfahrenEinreichungenBelegeController_GetAsync",
         "parameters": [
           {
@@ -980,6 +980,100 @@
         ]
       }
     },
+    "/api/v1/codelisten/rechtsformen": {
+      "get": {
+        "tags": [
+          "Codelisten"
+        ],
+        "summary": "Ruft die verfügbaren Rechtsformen ab.",
+        "description": "Gibt die Einträge der Codeliste `GDS.Rechtsform` zurück.\nDie zurückgegebenen Werte können verwendet werden, um die Rechtsform einer Rechtsanwaltskanzlei\ninnerhalb eines Verfahrens zu klassifizieren.",
+        "operationId": "CodelistenController_GetRechtsformenAsync",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RechtsformListeResponse"
+                },
+                "example": {
+                  "list_version": "3.4",
+                  "elemente": [
+                    {
+                      "id": "86a2c45e-db63-423d-8e9f-a4c4a3ef6ffb",
+                      "wert": "AG",
+                      "code": "AG"
+                    },
+                    {
+                      "id": "2d99055b-02e1-4910-a9cd-6fa63a3b37c5",
+                      "wert": "GbR",
+                      "code": "GbR"
+                    },
+                    {
+                      "id": "46a207b6-e5b1-4cbf-aed7-783992d2b6c3",
+                      "wert": "GmbH",
+                      "code": "GmbH"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authentication-failed": {
+                    "$ref": "#/components/examples/401_AuthenticationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "authorization-failed": {
+                    "$ref": "#/components/examples/403_AuthorizationFailed"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                "examples": {
+                  "internal-error": {
+                    "$ref": "#/components/examples/500_InternalError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "kompla.codelisten.read"
+            ]
+          }
+        ]
+      }
+    },
     "/api/v1/verfahren/{verfahren-id}/einreichungen/{einreichung-id}/dokumente/{id}": {
       "get": {
         "tags": [
@@ -1027,6 +1121,23 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DokumentResponse"
+                },
+                "example": {
+                  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                  "status": "EINGEREICHT",
+                  "validierungslauf_status": "ABGESCHLOSSEN",
+                  "dateiname": "klageschrift.pdf",
+                  "anzeigename": "Klageschrift",
+                  "size_in_bytes": 235875,
+                  "content_type": "application/pdf",
+                  "hash": "46d9edbb427e5275a6845cd982fab0b5d2381878d6d66b3f4c1500eecfa96a27bf3118da755bf56af3505b9606ec8135",
+                  "hash_algorithmus": "SHA3-384",
+                  "typ": "SCHRIFTSTUECK",
+                  "gesendet_am": "2026-07-02T14:05:06+00:00",
+                  "eingereicht_am": "2026-06-26T08:20:10+00:00",
+                  "erstellt_von": "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+                  "erstellt_am": "2026-06-22T11:28:15+00:00",
+                  "sichtbarkeit_alle": true
                 }
               }
             }
@@ -1213,6 +1324,23 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DokumentResponse"
+                },
+                "example": {
+                  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                  "status": "EINGEREICHT",
+                  "validierungslauf_status": "ABGESCHLOSSEN",
+                  "dateiname": "klageschrift.pdf",
+                  "anzeigename": "Klageschrift",
+                  "size_in_bytes": 235875,
+                  "content_type": "application/pdf",
+                  "hash": "46d9edbb427e5275a6845cd982fab0b5d2381878d6d66b3f4c1500eecfa96a27bf3118da755bf56af3505b9606ec8135",
+                  "hash_algorithmus": "SHA3-384",
+                  "typ": "SCHRIFTSTUECK",
+                  "gesendet_am": "2026-07-02T14:05:06+00:00",
+                  "eingereicht_am": "2026-06-26T08:20:10+00:00",
+                  "erstellt_von": "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+                  "erstellt_am": "2026-06-22T11:28:15+00:00",
+                  "sichtbarkeit_alle": true
                 }
               }
             }
@@ -1288,16 +1416,11 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 },
                 "examples": {
-                  "wrong-state": {
-                    "summary": "wrong-state",
-                    "description": "Dokument kann nicht aktualisiert werden",
-                    "value": {
-                      "type": "/problems/wrong-state",
-                      "title": "Dokument kann nicht aktualisiert werden",
-                      "status": 409,
-                      "detail": "Dokumente können nur aktualisiert werden, solange sie sich im Status ‚Erstellt‘ befinden."
-                    },
-                    "x-schema": "ProblemDetails"
+                  "wrong-state-dokument-einreichung-locked": {
+                    "$ref": "#/components/examples/409_WrongStateDokumentEinreichungLocked"
+                  },
+                  "wrong-state-dokument-update": {
+                    "$ref": "#/components/examples/409_WrongStateDokumentUpdate"
                   }
                 }
               }
@@ -1480,16 +1603,11 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 },
                 "examples": {
-                  "wrong-state": {
-                    "summary": "wrong-state",
-                    "description": "Dokument kann nicht gelöscht werden",
-                    "value": {
-                      "type": "/problems/wrong-state",
-                      "title": "Dokument kann nicht gelöscht werden",
-                      "status": 409,
-                      "detail": "Nur Dokumente mit dem Status ‚Erstellt‘ können gelöscht werden."
-                    },
-                    "x-schema": "ProblemDetails"
+                  "wrong-state-dokument-einreichung-locked": {
+                    "$ref": "#/components/examples/409_WrongStateDokumentEinreichungLocked"
+                  },
+                  "wrong-state-dokument-delete": {
+                    "$ref": "#/components/examples/409_WrongStateDokumentDelete"
                   }
                 }
               }
@@ -1858,16 +1976,8 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 },
                 "examples": {
-                  "wrong-state": {
-                    "summary": "wrong-state",
-                    "description": "Dokumentbearbeitung im aktuellen Status nicht erlaubt",
-                    "value": {
-                      "type": "/problems/wrong-state",
-                      "title": "Dokumentbearbeitung im aktuellen Status nicht erlaubt",
-                      "status": 409,
-                      "detail": "Das Löschen ist nicht möglich, da sich die Entität in einem Status befindet, der kein Löschen erlaubt. Eine Einreichung kann nur in den Status ERSTELLT oder FEHLGESCHLAGEN gelöscht werden."
-                    },
-                    "x-schema": "ProblemDetails"
+                  "wrong-state-dokument-einreichung-locked": {
+                    "$ref": "#/components/examples/409_WrongStateDokumentEinreichungLocked"
                   }
                 }
               }
@@ -2485,16 +2595,8 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 },
                 "examples": {
-                  "wrong-state": {
-                    "summary": "wrong-state",
-                    "description": "Aktualisierung im aktuellen Status nicht erlaubt",
-                    "value": {
-                      "type": "/problems/wrong-state",
-                      "title": "Aktualisierung im aktuellen Status nicht erlaubt",
-                      "status": 409,
-                      "detail": "Die Aktualisierung ist nur möglich, solange sich die Einreichung im Status ERSTELLT oder FEHLGESCHLAGEN befindet."
-                    },
-                    "x-schema": "ProblemDetails"
+                  "wrong-state-einreichung-update": {
+                    "$ref": "#/components/examples/409_WrongStateEinreichungUpdate"
                   }
                 }
               }
@@ -2667,16 +2769,8 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 },
                 "examples": {
-                  "wrong-state": {
-                    "summary": "wrong-state",
-                    "description": "Löschen im aktuellen Status nicht erlaubt",
-                    "value": {
-                      "type": "/problems/wrong-state",
-                      "title": "Löschen im aktuellen Status nicht erlaubt",
-                      "status": 409,
-                      "detail": "Das Löschen ist nicht möglich, da sich die Entität in einem Status befindet, der kein Löschen erlaubt. Eine Einreichung kann nur in den Status ERSTELLT oder FEHLGESCHLAGEN gelöscht werden."
-                    },
-                    "x-schema": "ProblemDetails"
+                  "wrong-state-einreichung-delete": {
+                    "$ref": "#/components/examples/409_WrongStateEinreichungDelete"
                   }
                 }
               }
@@ -3233,16 +3327,14 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 },
                 "examples": {
-                  "wrong-state": {
-                    "summary": "wrong-state",
-                    "description": "Einreichen im aktuellen Status nicht erlaubt",
-                    "value": {
-                      "type": "/problems/wrong-state",
-                      "title": "Einreichen im aktuellen Status nicht erlaubt",
-                      "status": 409,
-                      "detail": "Das Einreichen ist nur möglich, solange sich die Einreichung im Status ERSTELLT oder FEHLGESCHLAGEN befindet."
-                    },
-                    "x-schema": "ProblemDetails"
+                  "wrong-state-einreichen": {
+                    "$ref": "#/components/examples/409_WrongStateEinreichen"
+                  },
+                  "wrong-state-einreichen-dokumente-missing": {
+                    "$ref": "#/components/examples/409_WrongStateEinreichenDokumenteMissing"
+                  },
+                  "wrong-state-einreichen-violations": {
+                    "$ref": "#/components/examples/409_WrongStateEinreichenViolations"
                   }
                 }
               }
@@ -3663,14 +3755,14 @@
         "tags": [
           "Verfahren"
         ],
-        "summary": "Aktualisiert ein Verfahren basierend auf der angegebenen ID.",
-        "description": "Aktualisiert ein Verfahren, sofern es sich im Status ERSTELLT befindet. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
+        "summary": "Aktualisiert das Verfahren.",
+        "description": "Aktualisiert das Verfahren. Eine Aktualisierung ist nur möglich, solange sich das Verfahren im Status 'ERSTELLT' befindet; sobald das Verfahren eingereicht\nwurde, sind keine Änderungen mehr möglich. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
         "operationId": "VerfahrenController_UpdateAsync",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "Die eindeutige ID des zu aktualisierenden Verfahrens.",
+            "description": "Eindeutige ID des Verfahrens.",
             "required": true,
             "schema": {
               "type": "string",
@@ -3688,7 +3780,7 @@
           }
         ],
         "requestBody": {
-          "description": "Die Anfrage mit den zu aktualisierenden Verfahrensinhalten. Erforderliche Inhalte sind GerichtId und Verfahrensgegenstand.",
+          "description": "Verfahren Aktualisieren Request.",
           "content": {
             "application/json": {
               "schema": {
@@ -3776,16 +3868,8 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 },
                 "examples": {
-                  "wrong-state": {
-                    "summary": "wrong-state",
-                    "description": "Verfahren kann nicht aktualisiert werden.",
-                    "value": {
-                      "type": "/problems/wrong-state",
-                      "title": "Verfahren kann nicht aktualisiert werden.",
-                      "status": 409,
-                      "detail": "Ein Verfahren kann nur aktualisiert werden, wenn es den Status ‚Erstellt‘ hat und alle zugehörigen Einreichungen im Status ERSTELLT oder FEHLGESCHLAGEN sind."
-                    },
-                    "x-schema": "ProblemDetails"
+                  "wrong-state-verfahren-update": {
+                    "$ref": "#/components/examples/409_WrongStateVerfahrenUpdate"
                   }
                 }
               }
@@ -3948,16 +4032,8 @@
                   "$ref": "#/components/schemas/ProblemDetails"
                 },
                 "examples": {
-                  "wrong-state": {
-                    "summary": "wrong-state",
-                    "description": "Verfahren kann nicht gelöscht werden",
-                    "value": {
-                      "type": "/problems/wrong-state",
-                      "title": "Verfahren kann nicht gelöscht werden",
-                      "status": 409,
-                      "detail": "Ein Verfahren kann nur gelöscht werden, wenn es den Status ‚Erstellt‘ hat und alle zugehörigen Einreichungen im Status ERSTELLT oder FEHLGESCHLAGEN sind."
-                    },
-                    "x-schema": "ProblemDetails"
+                  "wrong-state-verfahren-delete": {
+                    "$ref": "#/components/examples/409_WrongStateVerfahrenDelete"
                   }
                 }
               }
@@ -4054,7 +4130,7 @@
             }
           },
           {
-            "name": "search_text",
+            "name": "suchbegriff",
             "in": "query",
             "description": "Volltextsuche über Beteiligung, Gericht, Aktenzeichen.",
             "schema": {
@@ -4156,10 +4232,10 @@
           "Verfahren"
         ],
         "summary": "Erstellt ein neues Verfahren für einen Anwalt.",
-        "description": "Erstellt ein neues Verfahren für den Benutzer mit der angegebenen Safe-ID unter Angabe der GerichtId, dem Verfahrensgegenstand und weiterer optionaler Verfahrensinhalte.\nDie Safe-ID wird überprüft und bei Bedarf einem neuen Benutzer zugeordnet.",
+        "description": "Erstellt ein neues Verfahren für den Benutzer mit der angegebenen Safe-ID. Die Safe-ID wird überprüft und bei Bedarf einem neuen Benutzer zugeordnet.",
         "operationId": "VerfahrenController_CreateAsync",
         "requestBody": {
-          "description": "Die Anfrage mit der Safe-ID des Anwalts und den Verfahrensinhalten. Erforderliche Inhalte sind GerichtId und Verfahrensgegenstand.",
+          "description": "Die Anfrage mit einer zugehörigen Safe-ID.",
           "content": {
             "application/json": {
               "schema": {
@@ -4260,7 +4336,7 @@
         "properties": {
           "anschriftstyp_id": {
             "type": "string",
-            "description": "Identifikator des zugehörigen Anschriftstyps.",
+            "description": "Eindeutige ID des Anschriftstyps.",
             "format": "uuid",
             "nullable": true
           },
@@ -4291,13 +4367,13 @@
           },
           "staat_id": {
             "type": "string",
-            "description": "Identifikator des zugehörigen Staates.",
+            "description": "Eindeutige ID des Staates.",
             "format": "uuid",
             "nullable": true
           }
         },
         "additionalProperties": false,
-        "description": "Anfrage-DTO für eine Anschrift einer Beteiligung im Verfahren."
+        "description": "Repräsentiert eine Anschrift mit spezifischen Eigenschaften wie Straße, Postleitzahl und Ort."
       },
       "AnschriftResponse": {
         "required": [
@@ -4307,7 +4383,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "description": "Eindeutige ID der Entität.",
             "format": "uuid"
           },
           "anschriftstyp": {
@@ -4343,7 +4419,7 @@
           }
         },
         "additionalProperties": false,
-        "description": "Repräsentiert eine Anschrift einer Beteiligung im Verfahren."
+        "description": "Repräsentiert eine Anschrift mit spezifischen Eigenschaften wie Straße, Postleitzahl und Ort."
       },
       "AnschriftstypListeResponse": {
         "required": [
@@ -4376,7 +4452,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "description": "Eindeutige ID der Entität.",
             "format": "uuid"
           },
           "wert": {
@@ -4435,7 +4511,7 @@
           }
         },
         "additionalProperties": false,
-        "description": "Enthält die Liste der Belege eines Verfahrens."
+        "description": "Repräsentiert die Antwort mit einer Liste von Belegen."
       },
       "BelegResponse": {
         "required": [
@@ -4465,22 +4541,22 @@
           },
           "einreichung_id": {
             "type": "string",
-            "description": "Eindeutige ID der zugehörigen Einreichung.",
+            "description": "Eindeutige ID der Einreichung.",
             "format": "uuid"
           },
           "anzeigename": {
             "type": "string",
-            "description": "Sprechender Anzeigename des Beleges.",
+            "description": "Sprechender Anzeigename des Beleges, z.B. \"Eingangsbestätigung\".",
             "nullable": true
           },
           "dateiname": {
             "type": "string",
-            "description": "Dateiname des Beleges inkl. Endung.",
+            "description": "Dateiname des Beleges inkl. Endung, z.B. \"eingangsbestaetigung.pdf\".",
             "nullable": true
           },
           "content_type": {
             "type": "string",
-            "description": "MIME-Type des Beleges.",
+            "description": "MIME-Type des Beleges, z.B. \"application/pdf\".",
             "nullable": true
           },
           "size_in_bytes": {
@@ -4491,7 +4567,7 @@
           }
         },
         "additionalProperties": false,
-        "description": "Repräsentiert einen Beleg einer Einreichung."
+        "description": "Beleg der Einreichung."
       },
       "BelegStatus": {
         "enum": [
@@ -4499,7 +4575,7 @@
           "ERSTELLT"
         ],
         "type": "string",
-        "description": "Status eines Beleges einer Einreichung."
+        "description": "Status eines Beleges der Einreichung."
       },
       "BelegTyp": {
         "enum": [
@@ -4507,7 +4583,7 @@
           "NACHWEIS"
         ],
         "type": "string",
-        "description": "Typ eines Beleges einer Einreichung."
+        "description": "Typ eines Beleges der Einreichung."
       },
       "BeteiligteRequest": {
         "required": [
@@ -4545,7 +4621,7 @@
           }
         },
         "additionalProperties": false,
-        "description": "Anfrage-DTO für eine beteiligte Person oder Organisation im Verfahren.",
+        "description": "Repräsentiert eine beteiligte Person oder Organisation im Verfahren.",
         "discriminator": {
           "propertyName": "beteiligtenart",
           "mapping": {
@@ -4567,7 +4643,7 @@
           },
           "id": {
             "type": "string",
-            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "description": "Eindeutige ID der Entität.",
             "format": "uuid"
           },
           "rollen": {
@@ -4631,7 +4707,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "description": "Eindeutige ID der Entität.",
             "format": "uuid"
           },
           "status": {
@@ -4722,7 +4798,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "description": "Eindeutige ID der Entität.",
             "format": "uuid"
           },
           "status": {
@@ -4855,7 +4931,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "description": "Eindeutige ID der Entität.",
             "format": "uuid"
           },
           "name": {
@@ -4923,7 +4999,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "description": "Eindeutige ID der Entität.",
             "format": "uuid"
           },
           "name": {
@@ -5029,7 +5105,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "description": "Eindeutige ID der Entität.",
             "format": "uuid"
           },
           "wert": {
@@ -5075,7 +5151,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "description": "Eindeutige ID der Entität.",
             "format": "uuid"
           },
           "wert": {
@@ -5099,17 +5175,17 @@
         "properties": {
           "telekommunikationsart_id": {
             "type": "string",
-            "description": "Identifikator der zugehörigen Telekommunikationsart.",
+            "description": "Eindeutige ID der Telekommunikationsart.",
             "format": "uuid"
           },
           "verbindung": {
             "minLength": 1,
             "type": "string",
-            "description": "Verbindungsangabe wie Telefonnummer, E-Mail-Adresse oder SAFE-ID."
+            "description": "Verbindungsangabe wie Telefonnummer, E-Mail-Adresse oder Safe-ID."
           }
         },
         "additionalProperties": false,
-        "description": "Anfrage-DTO für einen Kommunikationsanschluss einer Beteiligung im Verfahren."
+        "description": "Repräsentiert eine Kommunikationsanschluss."
       },
       "KommunikationsanschlussResponse": {
         "required": [
@@ -5121,7 +5197,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "description": "Eindeutige ID der Entität.",
             "format": "uuid"
           },
           "telekommunikationsart": {
@@ -5129,11 +5205,11 @@
           },
           "verbindung": {
             "type": "string",
-            "description": "Verbindungsangabe wie Telefonnummer, E-Mail-Adresse oder SAFE-ID."
+            "description": "Verbindungsangabe wie Telefonnummer, E-Mail-Adresse oder Safe-ID."
           }
         },
         "additionalProperties": false,
-        "description": "Repräsentiert einen Kommunikationsanschluss einer Beteiligung im Verfahren."
+        "description": "Repräsentiert einen Kommunikationsanschluss."
       },
       "NatuerlichePersonRequest": {
         "allOf": [
@@ -5148,7 +5224,7 @@
             "properties": {
               "vorname": {
                 "type": "string",
-                "description": "Vorname der Person.",
+                "description": "Vorname/n der Person.",
                 "nullable": true
               },
               "titel": {
@@ -5164,13 +5240,13 @@
               "nachname": {
                 "minLength": 1,
                 "type": "string",
-                "description": "Nachname der Person."
+                "description": "Nachname der Person. Falls der Nachname nicht bekannt ist, ist \"nicht bekannt\" anzugegeben."
               }
             },
             "additionalProperties": false
           }
         ],
-        "description": "Anfrage-DTO für eine natürliche Person als Beteiligte im Verfahren."
+        "description": "Angaben zu einer natürlichen Person."
       },
       "NatuerlichePersonResponse": {
         "allOf": [
@@ -5185,7 +5261,7 @@
             "properties": {
               "vorname": {
                 "type": "string",
-                "description": "Vorname der Person.",
+                "description": "Vorname/n der Person.",
                 "nullable": true
               },
               "titel": {
@@ -5200,13 +5276,13 @@
               },
               "nachname": {
                 "type": "string",
-                "description": "Nachname der Person."
+                "description": "Nachname der Person. Falls der Nachname nicht bekannt ist, ist \"nicht bekannt\" anzugeben."
               }
             },
             "additionalProperties": false
           }
         ],
-        "description": "Repräsentiert eine natürliche Person als Beteiligte im Verfahren."
+        "description": "Angaben zu einer natürlichen Person."
       },
       "OrganisationRequest": {
         "allOf": [
@@ -5228,7 +5304,7 @@
             "additionalProperties": false
           }
         ],
-        "description": "Anfrage-DTO für eine Organisation als Beteiligte im Verfahren."
+        "description": "Angaben zu einer Organisation."
       },
       "OrganisationResponse": {
         "allOf": [
@@ -5249,7 +5325,7 @@
             "additionalProperties": false
           }
         ],
-        "description": "Repräsentiert eine Organisation als Beteiligte im Verfahren."
+        "description": "Angaben zu einer Organisation."
       },
       "ProblemDetails": {
         "type": "object",
@@ -5295,21 +5371,22 @@
                 "type": "string",
                 "description": "Offizieller Name der Rechtsanwaltskanzlei."
               },
-              "rechtsform": {
+              "rechtsform_id": {
                 "type": "string",
-                "description": "Rechtsform der Rechtsanwaltskanzlei.",
+                "description": "Eindeutige ID der Rechtsform.",
+                "format": "uuid",
                 "nullable": true
               },
               "kanzleiform_id": {
                 "type": "string",
-                "description": "Identifikator der zugehörigen Kanzleiform.",
+                "description": "Eindeutige ID der Kanzleiform.",
                 "format": "uuid"
               }
             },
             "additionalProperties": false
           }
         ],
-        "description": "Anfrage-DTO für eine Rechtsanwaltskanzlei als Beteiligte im Verfahren."
+        "description": "Angaben zu einer Rechtsanwaltskanzlei."
       },
       "RaKanzleiResponse": {
         "allOf": [
@@ -5328,9 +5405,7 @@
                 "description": "Offizieller Name der Rechtsanwaltskanzlei."
               },
               "rechtsform": {
-                "type": "string",
-                "description": "Rechtsform der Rechtsanwaltskanzlei.",
-                "nullable": true
+                "$ref": "#/components/schemas/RechtsformResponse"
               },
               "kanzleiform": {
                 "$ref": "#/components/schemas/KanzleiformResponse"
@@ -5339,7 +5414,53 @@
             "additionalProperties": false
           }
         ],
-        "description": "Repräsentiert eine Rechtsanwaltskanzlei als Beteiligte im Verfahren."
+        "description": "Angaben zu einer Rechtsanwaltskanzlei."
+      },
+      "RechtsformListeResponse": {
+        "required": [
+          "elemente",
+          "list_version"
+        ],
+        "type": "object",
+        "properties": {
+          "list_version": {
+            "type": "string",
+            "description": "Die Versionsnummer der Codeliste."
+          },
+          "elemente": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RechtsformResponse"
+            },
+            "description": "Die Liste der enthaltenen Codelistenelemente."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert Rechtsformen mit spezifischen Attributen wie Wert und Code."
+      },
+      "RechtsformResponse": {
+        "required": [
+          "code",
+          "wert"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige ID der Entität.",
+            "format": "uuid"
+          },
+          "wert": {
+            "type": "string",
+            "description": "Der Wert der Rechtsform."
+          },
+          "code": {
+            "type": "string",
+            "description": "Der eindeutige Code der Rechtsform."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Repräsentiert eine Rechtsform mit spezifischen Attributen wie Wert und Code."
       },
       "RollenRequest": {
         "required": [
@@ -5354,7 +5475,7 @@
           },
           "rollenbezeichnung_id": {
             "type": "string",
-            "description": "Identifikator der zugehörigen Rollenbezeichnung.",
+            "description": "Eindeutige ID der Rollenbezeichnung.",
             "format": "uuid"
           },
           "geschaeftszeichen": {
@@ -5369,7 +5490,7 @@
           }
         },
         "additionalProperties": false,
-        "description": "Anfrage-DTO für die Zuordnung einer Rolle zu einer Beteiligung im Verfahren."
+        "description": "Bezeichnung und Kennzeichnung der Rolle im Verfahren."
       },
       "RollenResponse": {
         "required": [
@@ -5379,7 +5500,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "description": "Eindeutige ID der Rolle.",
             "format": "uuid"
           },
           "rollennummer": {
@@ -5402,7 +5523,7 @@
           }
         },
         "additionalProperties": false,
-        "description": "Repräsentiert die Zuordnung einer Rolle zu einer Beteiligung im Verfahren."
+        "description": "Bezeichnung und Kennzeichnung der Rolle im Verfahren."
       },
       "RollenbezeichnungListeResponse": {
         "required": [
@@ -5435,7 +5556,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "description": "Eindeutige ID der Entität.",
             "format": "uuid"
           },
           "wert": {
@@ -5481,7 +5602,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "description": "Eindeutige ID der Entität.",
             "format": "uuid"
           },
           "code": {
@@ -5527,7 +5648,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "description": "Eindeutige ID der Entität.",
             "format": "uuid"
           },
           "wert": {
@@ -5663,14 +5784,14 @@
                   "$ref": "#/components/schemas/RaKanzleiRequest"
                 }
               ],
-              "description": "Anfrage-DTO für eine beteiligte Person oder Organisation im Verfahren."
+              "description": "Repräsentiert eine beteiligte Person oder Organisation im Verfahren."
             },
             "description": "Liste der an einem Verfahren beteiligten Parteien.",
             "nullable": true
           }
         },
         "additionalProperties": false,
-        "description": "Anfrage-DTO für die Inhalte eines Verfahrens."
+        "description": "Repräsentiert ein Verfahren für die Übermittlung."
       },
       "VerfahrenErstellenRequest": {
         "required": [
@@ -5718,7 +5839,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Eindeutige Identifikationsnummer der Entität.",
+            "description": "Eindeutige ID der Entität.",
             "format": "uuid"
           },
           "aktenzeichen_gericht": {
@@ -5877,14 +5998,113 @@
         },
         "x-schema": "ProblemDetails"
       },
-      "409_WrongState": {
-        "summary": "wrong-state",
-        "description": "Vorgang im falschen Status",
+      "409_WrongStateDokumentDelete": {
+        "summary": "wrong-state-dokument-delete",
+        "description": "Löschen des Dokuments im aktuellen Status nicht möglich",
         "value": {
-          "type": "/problems/wrong-state",
-          "title": "Vorgang im falschen Status",
+          "type": "/problems/wrong-state-dokument-delete",
+          "title": "Löschen des Dokuments im aktuellen Status nicht möglich",
           "status": 409,
-          "detail": "Die Ressource befindet sich in einem Status, der diese Aktion nicht erlaubt."
+          "detail": "Das Löschen eines Dokuments ist nur möglich, wenn es sich im Status ERSTELLT befindet."
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "409_WrongStateDokumentEinreichungLocked": {
+        "summary": "wrong-state-dokument-einreichung-locked",
+        "description": "Bearbeiten des Dokuments im aktuellen Status der Einreichung nicht möglich",
+        "value": {
+          "type": "/problems/wrong-state-dokument-einreichung-locked",
+          "title": "Bearbeiten des Dokuments im aktuellen Status der Einreichung nicht möglich",
+          "status": 409,
+          "detail": "Dokumente dieser Einreichung können nur erstellt, aktualisiert oder gelöscht werden, wenn sich die Einreichung im Status ERSTELLT oder FEHLGESCHLAGEN befindet."
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "409_WrongStateDokumentUpdate": {
+        "summary": "wrong-state-dokument-update",
+        "description": "Bearbeiten des Dokuments im aktuellen Status nicht möglich",
+        "value": {
+          "type": "/problems/wrong-state-dokument-update",
+          "title": "Bearbeiten des Dokuments im aktuellen Status nicht möglich",
+          "status": 409,
+          "detail": "Die Aktualisierung eines Dokuments ist nur möglich, wenn es sich im Status ERSTELLT befindet."
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "409_WrongStateEinreichen": {
+        "summary": "wrong-state-einreichen",
+        "description": "Einreichen im aktuellen Status nicht möglich",
+        "value": {
+          "type": "/problems/wrong-state-einreichen",
+          "title": "Einreichen im aktuellen Status nicht möglich",
+          "status": 409,
+          "detail": "Nur Einreichungen mit dem Status ERSTELLT oder FEHLGESCHLAGEN können eingereicht werden."
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "409_WrongStateEinreichenDokumenteMissing": {
+        "summary": "wrong-state-einreichen-dokumente-missing",
+        "description": "Einreichung enthält keine Dokumente",
+        "value": {
+          "type": "/problems/wrong-state-einreichen-dokumente-missing",
+          "title": "Einreichung enthält keine Dokumente",
+          "status": 409,
+          "detail": "Das Einreichen ist nur möglich, wenn die Einreichung mindestens ein Dokument enthält."
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "409_WrongStateEinreichenViolations": {
+        "summary": "wrong-state-einreichen-violations",
+        "description": "Einreichung enthält Fehler",
+        "value": {
+          "type": "/problems/wrong-state-einreichen-violations",
+          "title": "Einreichung enthält Fehler",
+          "status": 409,
+          "detail": "Das Einreichen ist nicht möglich, wenn die Einreichung Validierungsfehler mit dem Status ROT enthält."
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "409_WrongStateEinreichungDelete": {
+        "summary": "wrong-state-einreichung-delete",
+        "description": "Löschen der Einreichung im aktuellen Status nicht möglich",
+        "value": {
+          "type": "/problems/wrong-state-einreichung-delete",
+          "title": "Löschen der Einreichung im aktuellen Status nicht möglich",
+          "status": 409,
+          "detail": "Das Löschen einer Einreichung ist nur möglich, wenn sie sich im Status ERSTELLT oder FEHLGESCHLAGEN befindet."
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "409_WrongStateEinreichungUpdate": {
+        "summary": "wrong-state-einreichung-update",
+        "description": "Bearbeiten der Einreichung im aktuellen Status nicht möglich",
+        "value": {
+          "type": "/problems/wrong-state-einreichung-update",
+          "title": "Bearbeiten der Einreichung im aktuellen Status nicht möglich",
+          "status": 409,
+          "detail": "Die Aktualisierung einer Einreichung ist nur möglich, wenn sie sich im Status ERSTELLT oder FEHLGESCHLAGEN befindet."
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "409_WrongStateVerfahrenDelete": {
+        "summary": "wrong-state-verfahren-delete",
+        "description": "Löschen des Verfahrens im aktuellen Status nicht möglich",
+        "value": {
+          "type": "/problems/wrong-state-verfahren-delete",
+          "title": "Löschen des Verfahrens im aktuellen Status nicht möglich",
+          "status": 409,
+          "detail": "Ein Verfahren kann nur gelöscht werden, wenn es den Status ERSTELLT hat und alle zugehörigen Einreichungen im Status ERSTELLT oder FEHLGESCHLAGEN sind."
+        },
+        "x-schema": "ProblemDetails"
+      },
+      "409_WrongStateVerfahrenUpdate": {
+        "summary": "wrong-state-verfahren-update",
+        "description": "Bearbeiten des Verfahrens im aktuellen Status nicht möglich",
+        "value": {
+          "type": "/problems/wrong-state-verfahren-update",
+          "title": "Bearbeiten des Verfahrens im aktuellen Status nicht möglich",
+          "status": 409,
+          "detail": "Ein Verfahren kann nur aktualisiert werden, wenn es den Status ERSTELLT hat und alle zugehörigen Einreichungen im Status ERSTELLT oder FEHLGESCHLAGEN sind."
         },
         "x-schema": "ProblemDetails"
       },
@@ -5998,7 +6218,8 @@
       "description": "Dokumente"
     },
     {
-      "name": "Belege"
+      "name": "Belege",
+      "description": "Belege"
     }
   ]
 }

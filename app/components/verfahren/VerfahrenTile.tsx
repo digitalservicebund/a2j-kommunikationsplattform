@@ -1,15 +1,15 @@
 import { Link } from "react-router";
 import FolderInfoIcon from "~/components/icons/FolderInfoIcon.static";
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
+import { NOT_AVAILABLE_LABEL } from "~/components/verfahren/presentation/placeholders";
+import { getVerfahrenStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
 import {
   getBeteiligteDisplayName,
   getBeteiligungByRoleCode,
   getGeschaeftszeichenByRoleCode,
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
-} from "~/domains/verfahren/beteiligteByRole";
-import { NOT_AVAILABLE_LABEL } from "~/domains/verfahren/presentationPlaceholders";
-import { getVerfahrenStatusPresentation } from "~/domains/verfahren/statusPresentation";
+} from "~/domains/verfahren/services/beteiligteByRole";
 import { Verfahren } from "~/routes/_index";
 import { useTranslations } from "~/services/translations/context";
 
@@ -65,7 +65,7 @@ export default function VerfahrenTile({
     status,
     id,
     gericht,
-    aktenzeichen_gericht,
+    aktenzeichenGericht,
     kurzrubrum,
   } = verfahren;
 
@@ -149,7 +149,7 @@ export default function VerfahrenTile({
           />
           <DataItem
             label="Aktenzeichen des Gerichts"
-            value={aktenzeichen_gericht || NOT_AVAILABLE_LABEL}
+            value={aktenzeichenGericht || NOT_AVAILABLE_LABEL}
           />
         </DataCard>
       </dl>

@@ -12,19 +12,20 @@ import {
 import z from "zod";
 import Alert from "~/components/Alert";
 import InputText from "~/components/InputText";
+import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
 import VerfahrenGerichteSelect from "~/components/verfahren/VerfahrenGerichteSelect";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
-import createEinreichung from "~/domains/verfahren/createEinreichung.server";
-import createVerfahren from "~/domains/verfahren/createVerfahren.server";
-import deleteDokument from "~/domains/verfahren/deleteDokument.server";
-import fetchDokument, {
-  type Dokument,
-} from "~/domains/verfahren/fetchDokument";
-import fetchDokumente from "~/domains/verfahren/fetchDokumente";
-import fetchGerichte from "~/domains/verfahren/fetchGerichte.service";
-import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
-import { requireAuthData } from "~/domains/verfahren/routeContext.server";
-import uploadDokument from "~/domains/verfahren/uploadDokument.server";
+import { requireAuthData } from "~/domains/verfahren/application/routeContext.server";
+import type { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
+import {
+  deleteDokument,
+  fetchDokument,
+  fetchDokumente,
+  uploadDokument,
+} from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
+import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
+import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
+import { createVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
@@ -267,7 +268,7 @@ export default function VerfahrenNeu() {
 
                           <div className="kern-body kern-body--small">
                             {formatDokumentSize(
-                              uploadedDokument?.size_in_bytes ?? 0,
+                              uploadedDokument?.sizeInBytes ?? 0,
                             )}
                           </div>
                         </div>

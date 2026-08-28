@@ -1,11 +1,11 @@
 import { Form } from "react-router";
 import Alert from "~/components/Alert";
+import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
+import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
-import canDeleteDokument from "~/domains/verfahren/canDeleteDokument";
-import { resolveReadinessPresentation } from "~/domains/verfahren/einreichungReadiness";
-import formatDokumentSize from "~/domains/verfahren/formatDokumentSize";
-import type { Dokument } from "~/domains/verfahren/loadVerfahrenEinreichungBundle.server";
-import type { Validierungsstatus } from "~/domains/verfahren/schemas/validierungsStatusSchema";
+import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import type { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
+import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
 import { useTranslations } from "~/services/translations/context";
 
 export type DokumentWithValidierungsstatus = Dokument & {
@@ -56,13 +56,13 @@ export default function VerfahrenDokumenteList({
                   {dokument.anzeigename}
                 </div>
                 <div className="kern-body kern-body--small kern-body--muted">
-                  {formatDokumentSize(dokument.size_in_bytes)}
+                  {formatDokumentSize(dokument.sizeInBytes)}
                   {" · "}
                   {
                     routes.verfahrenNeu.step3.proceduralSteps.einreichung
                       .dokumente.uploadedAtLabel
                   }{" "}
-                  {new Date(dokument.erstellt_am).toLocaleDateString()}
+                  {new Date(dokument.erstelltAm).toLocaleDateString()}
                 </div>
               </div>
               {canDeleteDokument(dokument) ? (

@@ -33,10 +33,10 @@ describe("VerfahrenBelegStatusAlert", () => {
     renderAlert({
       id: "b-1",
       status: "IN_BEARBEITUNG",
-      erstellt_am: "2026-08-24T15:18:20.000Z",
+      erstelltAm: "2026-08-24T15:18:20.000Z",
       typ: null,
       dateiname: null,
-      content_type: null,
+      contentType: null,
     });
 
     expect(screen.getByText(pending.headline)).toBeInTheDocument();
@@ -48,10 +48,10 @@ describe("VerfahrenBelegStatusAlert", () => {
     renderAlert({
       id: "b-1",
       status: "ERSTELLT",
-      erstellt_am: "2026-08-24T15:18:20.000Z",
+      erstelltAm: "2026-08-24T15:18:20.000Z",
       typ: "NACHWEIS",
       dateiname: "beleg.pdf",
-      content_type: "application/pdf",
+      contentType: "application/pdf",
     });
 
     expect(screen.getByText(ready.headline)).toBeInTheDocument();
@@ -72,10 +72,10 @@ describe("VerfahrenBelegStatusAlert", () => {
     const beleg = {
       id: "b-1",
       status: "ERSTELLT" as const,
-      erstellt_am: "2026-08-24T15:18:20.000Z",
+      erstelltAm: "2026-08-24T15:18:20.000Z",
       typ: "NACHWEIS" as const,
       dateiname: "beleg.pdf",
-      content_type: "application/pdf",
+      contentType: "application/pdf",
     };
 
     beforeEach(() => {
@@ -116,10 +116,10 @@ describe("VerfahrenBelegStatusAlert", () => {
     renderAlert({
       id: "b-1",
       status: "ERSTELLT",
-      erstellt_am: "2026-08-24T15:18:20.000Z",
+      erstelltAm: "2026-08-24T15:18:20.000Z",
       typ: "NACHWEIS",
       dateiname: "beleg.pdf",
-      content_type: "application/pdf",
+      contentType: "application/pdf",
     });
 
     await userEvent.click(

@@ -7,6 +7,18 @@ import {
   useLoaderData,
 } from "react-router";
 import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
+import { buildBeteiligteSummaryItems } from "~/components/verfahren/presentation/buildBeteiligteSummaryItems";
+import {
+  buildInitialTimelineStepData,
+  getInitialEinreichungTimelineSteps,
+} from "~/components/verfahren/presentation/buildInitialEinreichungTimelineSteps";
+import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
+import {
+  NOT_AVAILABLE_LABEL,
+  PROTOTYPE_EINREICHUNG_ART,
+  PROTOTYPE_EINREICHUNG_GZ,
+} from "~/components/verfahren/presentation/placeholders";
+import { getVerfahrenStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
 import VerfahrenBriefSummaryOfBeteiligte from "~/components/verfahren/VerfahrenBriefSummaryOfBeteiligte";
 import VerfahrenBriefSummaryOfGericht from "~/components/verfahren/VerfahrenBriefSummaryOfGericht.static";
 import VerfahrenDokumenteList, {
@@ -18,34 +30,26 @@ import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenPrototypeHint from "~/components/verfahren/VerfahrenPrototypeHint.static";
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import VerfahrenTimelineStepCard from "~/components/verfahren/VerfahrenTimelineStepCard";
+import loadVerfahrenEinreichungBundle, {
+  EinreichungWithStatus,
+  Verfahren,
+} from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import { requireAuthAndVerfahrenId } from "~/domains/verfahren/application/routeContext.server";
+import submitEinreichungIfNeeded from "~/domains/verfahren/application/submitEinreichungIfNeeded.server";
+import { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
+import {
+  fetchBelegDownloadLink,
+  fetchLatestBelegForEinreichung,
+} from "~/domains/verfahren/infrastructure/repositories/belegRepository.server";
+import {
+  deleteDokumentFromEinreichung,
+  fetchDokumentValidierungsstatus,
+} from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import {
   getBeteiligteNamesByRoleCode,
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
-} from "~/domains/verfahren/beteiligteByRole";
-import { buildBeteiligteSummaryItems } from "~/domains/verfahren/buildBeteiligteSummaryItems";
-import {
-  buildInitialTimelineStepData,
-  getInitialEinreichungTimelineSteps,
-} from "~/domains/verfahren/buildInitialEinreichungTimelineSteps";
-import deleteDokumentFromEinreichung from "~/domains/verfahren/deleteDokumentFromEinreichung.server";
-import { resolveReadinessPresentation } from "~/domains/verfahren/einreichungReadiness";
-import fetchBelegDownloadLink from "~/domains/verfahren/fetchBelegDownloadLink.server";
-import fetchDokumentValidierungsstatus from "~/domains/verfahren/fetchDokumentValidierungsstatus.server";
-import fetchLatestBelegForEinreichung from "~/domains/verfahren/fetchLatestBelegForEinreichung.server";
-import loadVerfahrenEinreichungBundle, {
-  EinreichungWithStatus,
-  Verfahren,
-} from "~/domains/verfahren/loadVerfahrenEinreichungBundle.server";
-import {
-  NOT_AVAILABLE_LABEL,
-  PROTOTYPE_EINREICHUNG_ART,
-  PROTOTYPE_EINREICHUNG_GZ,
-} from "~/domains/verfahren/presentationPlaceholders";
-import { requireAuthAndVerfahrenId } from "~/domains/verfahren/routeContext.server";
-import { Beleg } from "~/domains/verfahren/schemas/belegSchema";
-import { getVerfahrenStatusPresentation } from "~/domains/verfahren/statusPresentation";
-import submitEinreichungIfNeeded from "~/domains/verfahren/submitEinreichungIfNeeded.server";
+} from "~/domains/verfahren/services/beteiligteByRole";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
@@ -206,7 +210,7 @@ export default function VerfahrenNeuBearbeiten() {
   const timelineSteps = getInitialEinreichungTimelineSteps(dokumente);
   const initialTimelineStepData = buildInitialTimelineStepData(
     timelineSteps,
-    verfahren.status_geaendert_am,
+    verfahren.statusGeaendertAm,
     {
       klaeger: klaegerinnenSummary.length > 0,
       beklagter: beklagteSummary.length > 0,
@@ -293,7 +297,7 @@ export default function VerfahrenNeuBearbeiten() {
                       <h2 className="kern-heading-medium">{rubrum}</h2>
                       <div className="align-center kern-body kern-body--muted gap-kern-space-small flex flex-wrap">
                         <span>
-                          {verfahren.aktenzeichen_gericht ??
+                          {verfahren.aktenzeichenGericht ??
                             routes.verfahrenNeu.step3.summary.aktenzeichen}
                         </span>
                         <span>·</span>
@@ -332,7 +336,7 @@ export default function VerfahrenNeuBearbeiten() {
                       gerichtLabel={shared.gericht.label}
                       gericht={verfahren.gericht?.wert ?? NOT_AVAILABLE_LABEL}
                       azLabel={shared.gericht.azLabel}
-                      az={verfahren.aktenzeichen_gericht ?? NOT_AVAILABLE_LABEL}
+                      az={verfahren.aktenzeichenGericht ?? NOT_AVAILABLE_LABEL}
                       kontoinhaberLabel={shared.gericht.kontoinhaberLabel}
                       kontoinhaber={NOT_AVAILABLE_LABEL}
                       ibanLabel={shared.gericht.ibanLabel}
@@ -350,7 +354,7 @@ export default function VerfahrenNeuBearbeiten() {
                   <div className="w-80 flex-[0_0_auto]">
                     <span className="kern-body kern-body--small kern-body--muted">
                       {isBelegReady && beleg
-                        ? new Date(beleg.erstellt_am).toLocaleDateString()
+                        ? new Date(beleg.erstelltAm).toLocaleDateString()
                         : routes.verfahrenNeu.step3.proceduralSteps.einreichung
                             .timelineLabel}
                     </span>
@@ -442,7 +446,7 @@ export default function VerfahrenNeuBearbeiten() {
                                   </dt>
                                   <dd className="kern-description-list-item__value">
                                     {new Date(
-                                      einreichung.erstellt_am,
+                                      einreichung.erstelltAm,
                                     ).toLocaleDateString()}
                                   </dd>
                                 </div>

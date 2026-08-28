@@ -7,14 +7,14 @@ type VerfahrenTileProps = ComponentProps<typeof VerfahrenTile>;
 
 const mockVerfahrenComplete: VerfahrenTileProps = {
   id: "123",
-  aktenzeichen_gericht: "4 O 123/24",
+  aktenzeichenGericht: "4 O 123/24",
   verfahrensgegenstand: null,
   kurzrubrum: null,
   status: "EINGEREICHT",
-  status_geaendert_am: "2026-04-15T12:22:30.657924Z",
-  erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
-  erstellt_am: "2026-04-15T12:22:30.657924Z",
-  eingereicht_am: "2026-04-16T10:22:30.657924Z",
+  statusGeaendertAm: "2026-04-15T12:22:30.657924Z",
+  erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstelltAm: "2026-04-15T12:22:30.657924Z",
+  eingereichtAm: "2026-04-16T10:22:30.657924Z",
   gericht: {
     id: "gericht-1",
     wert: "Landgericht Frankfurt am Main",
@@ -61,14 +61,14 @@ const mockVerfahrenComplete: VerfahrenTileProps = {
 
 const mockVerfahrenMinimal: VerfahrenTileProps = {
   id: "019d9117-d2d5-775d-9821-8b74b0c6aaac",
-  aktenzeichen_gericht: null,
+  aktenzeichenGericht: null,
   verfahrensgegenstand: null,
   kurzrubrum: null,
   status: "ERSTELLT",
-  status_geaendert_am: "2026-04-09T12:22:30.657924Z",
-  erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
-  erstellt_am: "2026-04-09T12:22:30.657924Z",
-  eingereicht_am: null,
+  statusGeaendertAm: "2026-04-09T12:22:30.657924Z",
+  erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstelltAm: "2026-04-09T12:22:30.657924Z",
+  eingereichtAm: null,
   gericht: {
     id: "gericht-2",
     wert: "Amtsgericht Berlin-Mitte",
@@ -80,7 +80,7 @@ const mockVerfahrenMinimal: VerfahrenTileProps = {
 
 const mockVerfahrenPartial: VerfahrenTileProps = {
   id: "123d9117-d2d5-775d-9821-8b74b0c6aaac",
-  aktenzeichen_gericht: "1 S 456/24",
+  aktenzeichenGericht: "1 S 456/24",
   verfahrensgegenstand: null,
   kurzrubrum: null,
   gericht: {
@@ -110,10 +110,10 @@ const mockVerfahrenPartial: VerfahrenTileProps = {
     },
   ],
   status: "EINGEREICHT",
-  status_geaendert_am: "2026-05-01T12:22:30.657924Z",
-  erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
-  erstellt_am: "2026-05-01T12:22:30.657924Z",
-  eingereicht_am: "2026-04-28T12:22:30.657924Z",
+  statusGeaendertAm: "2026-05-01T12:22:30.657924Z",
+  erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstelltAm: "2026-05-01T12:22:30.657924Z",
+  eingereichtAm: "2026-04-28T12:22:30.657924Z",
 };
 
 export default function KitchensinkRoute() {
