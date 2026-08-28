@@ -3,15 +3,15 @@ import { Await, Link, LoaderFunctionArgs, useLoaderData } from "react-router";
 import Alert from "~/components/Alert";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { useParamsState } from "~/components/hooks/useParamsState";
-import InputSelect from "~/components/InputSelect";
 import ScrollToTopButton from "~/components/ScrollToTopButton";
-import Search from "~/components/Search";
 import { sortOptions } from "~/components/verfahren/presentation/sortOptions";
 import { VERFAHREN_SKELETONS } from "~/components/verfahren/presentation/verfahrenSkeletons";
 import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
+import VerfahrenFilterBar from "~/components/verfahren/VerfahrenFilterBar";
 import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
 import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
 import VerfahrenTileSkeleton from "~/components/verfahren/VerfahrenTileSkeleton.static";
+import { requireAuthData } from "~/domains/verfahren/application/routeContext.server";
 import type { CodeWert } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
@@ -20,7 +20,7 @@ import {
   FetchVerfahrenOptions,
 } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { VERFAHREN_PAGE_LIMIT } from "~/domains/verfahren/services/verfahrenListOptions";
-import { authContext, authMiddleware } from "~/middleware/auth.server";
+import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 
 export type VerfahrenLoaderData = {
@@ -37,11 +37,7 @@ export type LoaderData = {
 export const middleware = [authMiddleware];
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
-  const authData = context.get(authContext);
-
-  if (!authData) {
-    throw new Error("No auth data available in loader");
-  }
+  const authData = requireAuthData(context, "loader");
 
   const url = new URL(request.url);
   const offset = Number(url.searchParams.get("offset") || "0");
@@ -153,7 +149,6 @@ function VerfahrenContent({
   gerichte: CodeWert[];
   ref: RefObject<HTMLHeadingElement | null>;
 }>) {
-  const { shared } = useTranslations();
   const { allItems, hasMoreItems, isLoading, handleLoadMore } =
     useLoadMore(initialData);
   const { getParamValue, updateParam } = useParamsState<{
@@ -161,11 +156,6 @@ function VerfahrenContent({
     gericht: "";
     search_text: "";
   }>();
-
-  const gerichteOptions = gerichte.map((g) => ({
-    value: g.id,
-    label: g.wert || "",
-  }));
 
   const hasFilters = Boolean(
     getParamValue("search_text") || Boolean(getParamValue("gericht")),
@@ -184,41 +174,18 @@ function VerfahrenContent({
 
   return (
     <>
-      <div className="bg-kern-layout-background-default pt-kern-space-large space-y-kern-space-large sticky top-0 z-40 flex flex-col">
-        <div className="gap-kern-space-x-large grid grid-cols-1 items-start lg:grid-cols-4">
-          <div className="lg:col-span-2">
-            <Search
-              handleSearch={handleSearch}
-              disabled={isInputDisabled}
-              defaultValue={getParamValue(`search_text`) || ""}
-              id="search_text"
-            />
-          </div>
-          <InputSelect
-            label={shared.COURT_LABEL}
-            id="gericht"
-            placeholder={shared.SHOW_ALL_LABEL}
-            options={gerichteOptions}
-            onChange={(e) => updateParam("gericht", e.target.value || null)}
-            disabled={isInputDisabled}
-            selectedValue={getParamValue("gericht") || ""}
-          />
-          <InputSelect
-            label={shared.SORT_LABEL}
-            id="sort"
-            options={sortOptions}
-            onChange={(e) =>
-              updateParam("sort", e.target.value || sortOptions[0].value)
-            }
-            disabled={isInputDisabled}
-            selectedValue={getParamValue("sort") || sortOptions[0].value}
-          />
-        </div>
-        <hr
-          className="kern-divider border-kern-layout-border w-full"
-          aria-hidden="true"
-        />
-      </div>
+      <VerfahrenFilterBar
+        gerichte={gerichte}
+        isInputDisabled={isInputDisabled}
+        searchDefaultValue={getParamValue("search_text") || ""}
+        onSearch={handleSearch}
+        gerichtValue={getParamValue("gericht") || ""}
+        onGerichtChange={(e) => updateParam("gericht", e.target.value || null)}
+        sortValue={getParamValue("sort") || sortOptions[0].value}
+        onSortChange={(e) =>
+          updateParam("sort", e.target.value || sortOptions[0].value)
+        }
+      />
       <VerfahrenCounter count={allItems.length || 0} hasFilters={hasFilters} />
       <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
       <ScrollToTopButton refElement={ref} />
