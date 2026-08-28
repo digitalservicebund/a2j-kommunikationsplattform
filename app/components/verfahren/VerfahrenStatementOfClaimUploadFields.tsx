@@ -1,4 +1,5 @@
 import InputField from "~/components/InputField";
+import InputFile from "~/components/InputFile";
 import VerfahrenGerichteSelect, {
   type GerichtSelectItem,
 } from "~/components/verfahren/VerfahrenGerichteSelect";
@@ -21,47 +22,13 @@ export default function VerfahrenStatementOfClaimUploadFields({
 
   return (
     <>
-      <div
-        className={
-          hasFileError
-            ? "kern-form-input--error kern-form-input"
-            : "kern-form-input"
-        }
-      >
-        <label className="kern-label" htmlFor="file">
-          {shared.form.uploadDokument.label}
-        </label>
-        <div className="kern-hint" id="input-file-hint">
-          {shared.form.uploadDokument.hint}
-        </div>
-        <input
-          className={
-            hasFileError
-              ? "kern-form-input__input kern-form-input__input--error"
-              : "kern-form-input__input"
-          }
-          id="file"
-          name="file"
-          type="file"
-          aria-describedby={
-            hasFileError
-              ? "input-file-hint file-input-error"
-              : "input-file-hint"
-          }
-          required
-        />
-        {hasFileError && (
-          <p className="kern-error" id="file-input-error">
-            <span
-              className="kern-icon kern-icon--danger kern-icon--md"
-              aria-hidden="true"
-            ></span>
-            <span className="kern-body">
-              {shared.form.uploadDokument.error}
-            </span>
-          </p>
-        )}
-      </div>
+      <InputFile
+        label={shared.form.uploadDokument.label}
+        id="file"
+        hint={shared.form.uploadDokument.hint}
+        error={hasFileError ? shared.form.uploadDokument.error : undefined}
+        required
+      />
 
       <div className="kern-gap-md flex w-full">
         <InputField

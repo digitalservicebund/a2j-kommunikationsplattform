@@ -1,6 +1,7 @@
 import { RefObject, Suspense } from "react";
 import { Await } from "react-router";
 import Button from "~/components/Button";
+import InputFile from "~/components/InputFile";
 import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
 import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
 import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
@@ -100,48 +101,18 @@ export default function VerfahrenDocumentsFormSection({
           </Suspense>
 
           <div className="gap-kern-space-default flex w-full flex-col">
-            <div
-              className={
+            <InputFile
+              ref={uploadFileInputRef}
+              label={shared.form.uploadDokument.label}
+              id="file"
+              hint={shared.form.uploadDokument.hint}
+              error={
                 showFileInputError
-                  ? "kern-form-input--error kern-form-input"
-                  : "kern-form-input"
+                  ? shared.form.uploadDokument.error
+                  : undefined
               }
-            >
-              <label className="kern-label" htmlFor="file">
-                {shared.form.uploadDokument.label}
-              </label>
-              <div className="kern-hint" id="input-file-hint">
-                {shared.form.uploadDokument.hint}
-              </div>
-              <input
-                ref={uploadFileInputRef}
-                className={
-                  showFileInputError
-                    ? "kern-form-input__input kern-form-input__input--error"
-                    : "kern-form-input__input"
-                }
-                id="file"
-                name="file"
-                type="file"
-                onChange={onFileInputChange}
-                aria-describedby={
-                  showFileInputError
-                    ? "input-file-hint file-input-error"
-                    : "input-file-hint"
-                }
-              />
-              {showFileInputError && (
-                <p className="kern-error" id="file-input-error">
-                  <span
-                    className="kern-icon kern-icon--danger kern-icon--md"
-                    aria-hidden="true"
-                  ></span>
-                  <span className="kern-body">
-                    {shared.form.uploadDokument.error}
-                  </span>
-                </p>
-              )}
-            </div>
+              onChange={onFileInputChange}
+            />
             <VerfahrenDokumentTypeSelect
               label={shared.form.selectDokumentType.label}
               id="type"

@@ -30,7 +30,7 @@ describe("VerfahrenStatementOfClaimUploadFields", () => {
 
     expect(getByLabelText("Datei hochladen")).toHaveAttribute(
       "aria-describedby",
-      "input-file-hint file-input-error",
+      "file-hint file-error",
     );
   });
 });
