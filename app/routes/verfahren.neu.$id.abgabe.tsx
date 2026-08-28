@@ -92,6 +92,7 @@ export const action = async ({
   const formData = await request.formData();
   const formType = formData.get("formType");
 
+  // 1) Handle delete flow for an already uploaded document
   if (formType === "delete") {
     const deleteResult = await deleteDokumentFromEinreichung({
       authData,
@@ -107,6 +108,7 @@ export const action = async ({
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   }
 
+  // 2) Handle Einreichung submission (no-op if already submitted)
   if (formType === "einreichen") {
     const einreichungId = formData.get("einreichungId") as string;
 
@@ -115,6 +117,7 @@ export const action = async ({
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   }
 
+  // 3) Handle Beleg download link requests
   if (formType === "download-beleg") {
     const belegId = formData.get("belegId") as string;
 

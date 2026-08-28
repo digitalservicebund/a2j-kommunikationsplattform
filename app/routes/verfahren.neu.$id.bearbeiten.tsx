@@ -224,6 +224,7 @@ export const action = async ({
   const formData = await request.formData();
   const formType = formData.get("formType");
 
+  // 1) Handle document upload
   if (formType === "upload") {
     const formValues = {
       type: formData.get("type"),
@@ -251,6 +252,7 @@ export const action = async ({
     });
   }
 
+  // 2) Handle delete flow for an already uploaded document
   if (formType === "delete") {
     const einreichungId = formData.get("einreichungId") as string;
     const dokumentId = formData.get("dokumentId") as string;
@@ -281,7 +283,10 @@ export const action = async ({
     });
   }
 
+  // 3) Handle final submit — persist the Verfahren and its Beteiligungen,
+  // then regenerate the resulting XJustiz document
   if (formType === "submit") {
+    // Fetch the code lists needed to resolve Beteiligung/Rolle references
     const [
       { elemente: staaten },
       { elemente: anschriftstypen },
@@ -310,6 +315,8 @@ export const action = async ({
       ),
     };
 
+    // Build the Beteiligungen (plaintiff, defendant, and their lawyer) from
+    // the submitted form data
     const klagendeParteiBeteiligung = buildBeteiligungFromFormValues(
       getParteiFormValues(formData, "klagendePartei"),
       {
@@ -372,6 +379,7 @@ export const action = async ({
       };
     }
 
+    // Persist the Verfahren and regenerate the resulting XJustiz document
     await updateVerfahren(authData, verfahrenId, validatedForm.data);
 
     const einreichungId = formData.get("einreichungId") as string;
