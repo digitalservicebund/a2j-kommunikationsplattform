@@ -6,6 +6,7 @@ import {
   useLoaderData,
 } from "react-router";
 import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
+import Progress from "~/components/Progress";
 import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
 import VerfahrenAktuelleEinreichungSection from "~/components/verfahren/VerfahrenAktuelleEinreichungSection";
 import { DokumentWithValidierungsstatus } from "~/components/verfahren/VerfahrenDokumenteList";
@@ -174,12 +175,12 @@ export default function VerfahrenNeuBearbeiten() {
           <h1 className="kern-heading-large">
             {routes.verfahrenNeu.step3.headline}
           </h1>
-          <div className="kern-progress">
-            <label className="kern-label" htmlFor="progress1">
-              {routes.verfahrenNeu.step3.progress}
-            </label>
-            <progress id="progress-3" value="3" max="3"></progress>
-          </div>
+          <Progress
+            id="progress-3"
+            label={routes.verfahrenNeu.step3.progress}
+            value={3}
+            max={3}
+          />
           <div className="pt-kern-space-x-large">
             <div className="kern-gap-lg flex flex-col">
               <div className="gap-kern-space-default flex flex-col lg:flex-row">

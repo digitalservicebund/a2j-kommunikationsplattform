@@ -11,6 +11,7 @@ import {
 } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
+import Progress from "~/components/Progress";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenStatementOfClaimUploadFields from "~/components/verfahren/VerfahrenStatementOfClaimUploadFields";
 import VerfahrenUploadedDokumentSummary from "~/components/verfahren/VerfahrenUploadedDokumentSummary";
@@ -224,12 +225,12 @@ export default function VerfahrenNeu() {
           <h1 className="kern-heading-large">
             {routes.verfahrenNeu.step1.headline}
           </h1>
-          <div className="kern-progress">
-            <label className="kern-label" htmlFor="progress1">
-              {routes.verfahrenNeu.step1.progress}
-            </label>
-            <progress id="progress-1" value="1" max="3"></progress>
-          </div>
+          <Progress
+            id="progress-1"
+            label={routes.verfahrenNeu.step1.progress}
+            value={1}
+            max={3}
+          />
           <div className="pt-kern-space-x-large">
             <div className="border-kern-layout-border p-kern-space-large rounded-kern-default kern-gap-lg flex flex-col border">
               <h2 className="kern-heading-medium">

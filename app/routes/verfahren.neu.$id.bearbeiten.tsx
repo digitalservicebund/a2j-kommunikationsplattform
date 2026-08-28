@@ -14,6 +14,7 @@ import {
 import z from "zod";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
+import Progress from "~/components/Progress";
 import VerfahrenDefendantSection from "~/components/verfahren/VerfahrenDefendantSection";
 import VerfahrenDetailsFormSection from "~/components/verfahren/VerfahrenDetailsFormSection";
 import VerfahrenDocumentsFormSection from "~/components/verfahren/VerfahrenDocumentsFormSection";
@@ -585,12 +586,12 @@ export default function VerfahrenNeuBearbeiten() {
           <h1 className="kern-heading-large">
             {routes.verfahrenNeu.step2.headline}
           </h1>
-          <div className="kern-progress">
-            <label className="kern-label" htmlFor="progress1">
-              {routes.verfahrenNeu.step2.progress}
-            </label>
-            <progress id="progress-1" value="2" max="3"></progress>
-          </div>
+          <Progress
+            id="progress-2"
+            label={routes.verfahrenNeu.step2.progress}
+            value={2}
+            max={3}
+          />
           <div className="pt-kern-space-x-large">
             <Form
               ref={mainFormRef}
