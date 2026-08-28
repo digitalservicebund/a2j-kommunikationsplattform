@@ -11,10 +11,9 @@ import {
 } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
-import InputText from "~/components/InputText";
-import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
-import VerfahrenGerichteSelect from "~/components/verfahren/VerfahrenGerichteSelect";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
+import VerfahrenStatementOfClaimUploadFields from "~/components/verfahren/VerfahrenStatementOfClaimUploadFields";
+import VerfahrenUploadedDokumentSummary from "~/components/verfahren/VerfahrenUploadedDokumentSummary";
 import { requireAuthData } from "~/domains/verfahren/application/routeContext.server";
 import type { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import {
@@ -261,119 +260,19 @@ export default function VerfahrenNeu() {
               >
                 <div className="kern-gap-xl flex flex-col">
                   {hasUploadedDokument ? (
-                    <div className="gap-kern-space-default flex w-full flex-col">
-                      <div className="p-kern-space-default align-center gap-kern-space-default rounded-kern-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)">
-                        <div className="flex-1">
-                          <div className="kern-body kern-body--bold">
-                            {uploadedDokument?.anzeigename}
-                          </div>
-
-                          <div className="kern-body kern-body--small">
-                            {formatDokumentSize(
-                              uploadedDokument?.sizeInBytes ?? 0,
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center">
-                          <input
-                            type="hidden"
-                            name="verfahrenId"
-                            value={verfahrenId}
-                          />
-                          <input
-                            type="hidden"
-                            name="einreichungId"
-                            value={einreichungId}
-                          />
-                          <input
-                            type="hidden"
-                            name="dokumentId"
-                            value={uploadedDokument?.id}
-                          />
-                          <button
-                            className="kern-btn kern-btn--secondary kern-btn--x-small"
-                            type="submit"
-                            name="formType"
-                            value="delete"
-                            disabled={isSubmitting}
-                          >
-                            <span
-                              className="kern-icon kern-icon--delete"
-                              aria-hidden="true"
-                            ></span>
-                            <span className="kern-label">
-                              {shared.form.deleteDokument.label}
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                    <VerfahrenUploadedDokumentSummary
+                      uploadedDokument={uploadedDokument}
+                      verfahrenId={verfahrenId}
+                      einreichungId={einreichungId}
+                      isSubmitting={isSubmitting}
+                    />
                   ) : (
-                    <>
-                      <div
-                        className={
-                          errors?.fieldErrors?.file
-                            ? "kern-form-input--error kern-form-input"
-                            : "kern-form-input"
-                        }
-                      >
-                        <label className="kern-label" htmlFor="file">
-                          {shared.form.uploadDokument.label}
-                        </label>
-                        <div className="kern-hint" id="input-file-hint">
-                          {shared.form.uploadDokument.hint}
-                        </div>
-                        <input
-                          className={
-                            errors?.fieldErrors?.file
-                              ? "kern-form-input__input kern-form-input__input--error"
-                              : "kern-form-input__input"
-                          }
-                          id="file"
-                          name="file"
-                          type="file"
-                          aria-describedby={
-                            errors?.fieldErrors?.file
-                              ? "input-file-hint file-input-error"
-                              : "input-file-hint"
-                          }
-                          required={!hasUploadedDokument}
-                        />
-                        {errors?.fieldErrors?.file && (
-                          <p className="kern-error" id="file-input-error">
-                            <span
-                              className="kern-icon kern-icon--danger kern-icon--md"
-                              aria-hidden="true"
-                            ></span>
-                            <span className="kern-body">
-                              {shared.form.uploadDokument.error}
-                            </span>
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="kern-gap-md flex w-full">
-                        <InputText
-                          label={shared.form.labels.verfahrensgegenstand}
-                          id="verfahrensgegenstand"
-                          required
-                        />
-                      </div>
-
-                      <div className="kern-gap-md flex w-full">
-                        <VerfahrenGerichteSelect
-                          id="gerichtId"
-                          label={shared.form.labels.recipientCourt}
-                          className="bg-kern-feedback-info-background flex-1 self-end"
-                          placeholder={shared.form.select.placeholder}
-                          gerichtePromise={loaderData.gerichtePromise}
-                          initialSelectedValue={selectedGerichtId}
-                          onValueChange={setSelectedGerichtId}
-                          required
-                        />
-                      </div>
-                    </>
+                    <VerfahrenStatementOfClaimUploadFields
+                      hasFileError={Boolean(errors?.fieldErrors?.file)}
+                      gerichtePromise={loaderData.gerichtePromise}
+                      selectedGerichtId={selectedGerichtId}
+                      onGerichtIdChange={setSelectedGerichtId}
+                    />
                   )}
 
                   <fieldset
