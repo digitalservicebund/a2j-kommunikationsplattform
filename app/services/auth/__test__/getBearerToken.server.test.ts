@@ -2,11 +2,11 @@ import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
 import { AuthenticationProvider, AuthenticationResponse } from "../auth.types";
 import { getBearerToken } from "../getBearerToken.server";
 
-vi.mock("../../api/authorizeToken.server", () => ({
+vi.mock("../authorizeToken.server", () => ({
   authorizeToken: vi.fn(),
 }));
 
-import { authorizeToken } from "../../api/authorizeToken.server";
+import { authorizeToken } from "../authorizeToken.server";
 
 const beaAuthData: AuthenticationResponse = {
   authenticationTokens: {
