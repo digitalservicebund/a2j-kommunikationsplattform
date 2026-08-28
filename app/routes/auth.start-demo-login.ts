@@ -1,6 +1,6 @@
 import { redirect } from "react-router";
+import { LoginError } from "~/services/auth/auth.types";
 import { getDemoMagicLinkUrl } from "~/services/auth/oAuth.server";
-import { LoginError } from "./action.login-user";
 
 export const loader = async () => {
   try {

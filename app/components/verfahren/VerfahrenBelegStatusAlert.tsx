@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useFetcher, useNavigate, useParams } from "react-router";
 import Button from "~/components/Button";
-import type { Beleg } from "~/domains/verfahren/schemas/belegSchema";
+import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import { useTranslations } from "~/services/translations/context";
 
 type DownloadBelegActionResult = {
@@ -44,7 +44,7 @@ export default function VerfahrenBelegStatusAlert({ beleg }: { beleg: Beleg }) {
     IN_BEARBEITUNG: "kern-icon--info",
   }[beleg.status];
 
-  const timeStamp = new Date(beleg.erstellt_am).toLocaleDateString();
+  const timeStamp = new Date(beleg.erstelltAm).toLocaleDateString();
   const timeMessage = `Eingang: ${timeStamp}`;
   const belegPendingMessage = (
     <div className="space-y-kern-space-default flex flex-col">

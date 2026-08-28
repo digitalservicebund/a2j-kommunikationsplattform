@@ -1,11 +1,7 @@
 import { redirect, type ActionFunctionArgs } from "react-router";
+import { LogoutType } from "~/services/auth/auth.types";
 import { destroySession, getSession } from "~/services/auth/authSession.server";
 import { revokeAccessToken } from "~/services/auth/oAuth.server";
-
-export enum LogoutType {
-  Automatic = "auto-logged-out",
-  ByUser = "logged-out",
-}
 
 /**
  * /action/logout-user

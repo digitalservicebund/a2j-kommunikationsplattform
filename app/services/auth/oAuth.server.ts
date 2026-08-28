@@ -4,8 +4,11 @@ import { serverConfig } from "~/config/config.server";
 import { MagicLinkStrategy } from "./MagicLinkStrategy.server";
 import { setAuthSession } from "./authSession.server";
 
-import { LoginType } from "~/routes/action.login-user";
-import { AuthenticationProvider, AuthenticationResponse } from "./auth.types";
+import {
+  AuthenticationProvider,
+  AuthenticationResponse,
+  LoginType,
+} from "./auth.types";
 
 type DecodedJWT = Record<string, unknown>;
 

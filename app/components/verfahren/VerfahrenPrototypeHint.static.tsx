@@ -1,7 +1,7 @@
 import {
   PROTOTYPE_HIGHLIGHT_LABEL,
   PROTOTYPE_HINT_SUFFIX,
-} from "~/domains/verfahren/presentationPlaceholders";
+} from "~/components/verfahren/presentation/placeholders";
 
 type VerfahrenPrototypeHintProps = {
   className?: string;

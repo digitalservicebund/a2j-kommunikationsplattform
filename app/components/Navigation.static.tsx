@@ -1,5 +1,6 @@
 import { Form } from "react-router";
-import { LogoutType } from "~/routes/action.logout-user";
+import Button from "~/components/Button";
+import { LogoutType } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 
 const LogoutButton = () => {
@@ -7,10 +8,13 @@ const LogoutButton = () => {
   return (
     <Form method="post" action="/action/logout-user">
       <input type="hidden" name="logoutType" value={LogoutType.ByUser} />
-      <button type="submit" className="kern-btn kern-btn--tertiary">
+      <Button
+        appearance="tertiary"
+        type="submit"
+        label={buttons.ABMELDEN_BUTTON}
+      >
         <span className="kern-icon kern-icon--logout"></span>
-        <span className="kern-label">{buttons.ABMELDEN_BUTTON}</span>
-      </button>
+      </Button>
     </Form>
   );
 };

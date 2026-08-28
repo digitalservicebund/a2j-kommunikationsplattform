@@ -58,10 +58,10 @@ describe("VerfahrenEinreichungOutcomeBanner", () => {
       beleg: {
         id: "b-1",
         status: "IN_BEARBEITUNG",
-        erstellt_am: "2026-08-24T15:18:20.000Z",
+        erstelltAm: "2026-08-24T15:18:20.000Z",
         typ: null,
         dateiname: null,
-        content_type: null,
+        contentType: null,
       } as never,
       hasValidationIssues: true,
     });

@@ -1,4 +1,5 @@
-import InputText from "~/components/InputText";
+import Button from "~/components/Button";
+import InputField from "~/components/InputField";
 import { useTranslations } from "~/services/translations/context";
 
 export interface SearchProps {
@@ -19,7 +20,7 @@ export default function Search({
       <form onSubmit={handleSearch}>
         <div className="space-x-kern-space-x-large flex items-start justify-between">
           {/* using type text as there is no search input in KERN yet*/}
-          <InputText
+          <InputField
             onFocus={(e) => e.currentTarget.select()} // Select all text on focus - useful for quick replacement
             label={shared.SEARCH_LABEL}
             placeholder={shared.form.search.placeholder}
@@ -28,17 +29,18 @@ export default function Search({
             className="grow"
             disabled={shouldDisableInputs}
           />
-          <button
+          <Button
+            appearance="primary"
             type="submit"
-            className="kern-btn kern-btn--primary h-max flex-none self-end"
+            className="h-max flex-none self-end"
             disabled={shouldDisableInputs}
+            label={buttons.SEARCH_BUTTON}
           >
             <span
               className="kern-icon kern-icon--search kern-icon--default"
               aria-hidden="true"
             ></span>
-            <span className="kern-label">{buttons.SEARCH_BUTTON}</span>
-          </button>
+          </Button>
         </div>
       </form>
     </search>

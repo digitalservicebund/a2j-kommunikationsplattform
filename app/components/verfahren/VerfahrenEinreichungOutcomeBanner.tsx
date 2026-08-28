@@ -1,6 +1,6 @@
 import Alert from "~/components/Alert";
 import VerfahrenBelegStatusAlert from "~/components/verfahren/VerfahrenBelegStatusAlert";
-import type { Beleg } from "~/domains/verfahren/schemas/belegSchema";
+import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import { useTranslations } from "~/services/translations/context";
 
 type VerfahrenEinreichungOutcomeBannerProps = {

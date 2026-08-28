@@ -1,3 +1,4 @@
+import Button from "~/components/Button";
 import { useTranslations } from "~/services/translations/context";
 
 export function VerfahrenLoadMoreButton({
@@ -8,17 +9,17 @@ export function VerfahrenLoadMoreButton({
   const { buttons } = useTranslations();
   return (
     <div className="flex justify-center">
-      <button
+      <Button
+        appearance="tertiary"
         type="button"
-        className="kern-btn kern-btn--tertiary"
         onClick={loadMore}
+        label={buttons.LOAD_MORE_VERFAHREN}
       >
         <span
           className="kern-icon kern-icon--arrow-down kern-icon--default"
           aria-hidden="true"
         ></span>
-        <span className="kern-label">{buttons.LOAD_MORE_VERFAHREN}</span>
-      </button>
+      </Button>
     </div>
   );
 }

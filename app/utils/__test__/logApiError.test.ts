@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { ApiError } from "../apiError";
 import { logApiErrorAndThrow, logParsingErrorAndThrow } from "../logApiError";
 
 describe("logApiError", () => {
@@ -29,6 +30,58 @@ describe("logApiError", () => {
     );
 
     errorSpy.mockRestore();
+  });
+
+  it("throws an ApiError carrying the status and parsed problem details", async () => {
+    const problemDetailsBody = {
+      title: "Conflict",
+      status: 409,
+      detail: "Die Ressource wurde zwischenzeitlich geaendert.",
+    };
+    const response = {
+      ok: false,
+      status: 409,
+      statusText: "Conflict",
+      url: "https://api.test/endpoint",
+      clone: vi.fn().mockReturnValue({
+        text: vi.fn().mockResolvedValue(JSON.stringify(problemDetailsBody)),
+      }),
+    } as unknown as Response;
+
+    vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const error = await logApiErrorAndThrow(response, "Update failed").catch(
+      (thrown) => thrown,
+    );
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect((error as ApiError).status).toBe(409);
+    expect((error as ApiError).problemDetails).toEqual(problemDetailsBody);
+
+    vi.restoreAllMocks();
+  });
+
+  it("throws an ApiError with undefined problemDetails when the body isn't JSON", async () => {
+    const response = {
+      ok: false,
+      status: 500,
+      statusText: "Internal Server Error",
+      url: "https://api.test/endpoint",
+      clone: vi.fn().mockReturnValue({
+        text: vi.fn().mockResolvedValue("not json"),
+      }),
+    } as unknown as Response;
+
+    vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const error = await logApiErrorAndThrow(response, "Update failed").catch(
+      (thrown) => thrown,
+    );
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect((error as ApiError).problemDetails).toBeUndefined();
+
+    vi.restoreAllMocks();
   });
 
   it("uses fallback body when response clone fails", async () => {

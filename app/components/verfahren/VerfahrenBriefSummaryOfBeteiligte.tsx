@@ -1,7 +1,7 @@
 import type {
   BeteiligteSummaryItem,
   ProzessbevollmaechtigterSummaryItem,
-} from "~/domains/verfahren/buildBeteiligteSummaryItems";
+} from "~/components/verfahren/presentation/buildBeteiligteSummaryItems";
 
 type VerfahrenBriefSummaryOfBeteiligteProps = {
   title: string;

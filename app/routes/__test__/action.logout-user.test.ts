@@ -1,6 +1,7 @@
 import type { ActionFunctionArgs, RouterContextProvider } from "react-router";
 import { it } from "vitest";
-import { action, LogoutType } from "../action.logout-user";
+import { LogoutType } from "~/services/auth/auth.types";
+import { action } from "../action.logout-user";
 
 const testContext: Readonly<RouterContextProvider> = {
   get: () => {

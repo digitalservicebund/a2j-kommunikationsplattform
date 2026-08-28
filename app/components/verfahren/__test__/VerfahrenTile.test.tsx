@@ -10,14 +10,14 @@ import VerfahrenTile, { VerfahrenTileProps } from "../VerfahrenTile";
 
 const mockVerfahren: VerfahrenTileProps = {
   id: "123",
-  aktenzeichen_gericht: "AZ-123",
+  aktenzeichenGericht: "AZ-123",
   verfahrensgegenstand: null,
   kurzrubrum: null,
   status: "EINGEREICHT",
-  status_geaendert_am: "2026-05-22T14:02:31.832Z",
-  erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
-  erstellt_am: "2026-05-22T14:02:31.832Z",
-  eingereicht_am: "2026-05-22T14:02:31.832Z",
+  statusGeaendertAm: "2026-05-22T14:02:31.832Z",
+  erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstelltAm: "2026-05-22T14:02:31.832Z",
+  eingereichtAm: "2026-05-22T14:02:31.832Z",
   gericht: {
     id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
     wert: "Landgericht Frankfurt",
@@ -75,14 +75,14 @@ const mockVerfahren: VerfahrenTileProps = {
 
 const mockVerfahrenWithMissingData: VerfahrenTileProps = {
   id: "456",
-  aktenzeichen_gericht: "AZ-456",
+  aktenzeichenGericht: "AZ-456",
   verfahrensgegenstand: null,
   kurzrubrum: null,
   status: "EINGEREICHT",
-  status_geaendert_am: "2026-05-22T14:02:31.832Z",
-  erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
-  erstellt_am: "2026-05-22T14:02:31.832Z",
-  eingereicht_am: "2026-05-22T14:02:31.832Z",
+  statusGeaendertAm: "2026-05-22T14:02:31.832Z",
+  erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstelltAm: "2026-05-22T14:02:31.832Z",
+  eingereichtAm: "2026-05-22T14:02:31.832Z",
   gericht: {
     id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
     wert: "Landgericht Frankfurt",
