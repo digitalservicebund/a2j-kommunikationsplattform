@@ -30,7 +30,7 @@
     "compression": "^1.8.1",
     "express": "^5.2.1",
     "isbot": "^5.1.36",
-    "morgan": "^1.10.1",
+    "morgan": "^1.12.0",
     "pino-http": "^11.0.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
