@@ -40,7 +40,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.11.1",
+    "@axe-core/playwright": "^4.13.0",
     "@digitalservicebund/kern-ux-tailwind-theme": "^2.0.0",
     "@eslint/compat": "^2.0.2",
     "@eslint/js": "^9.39.2",
