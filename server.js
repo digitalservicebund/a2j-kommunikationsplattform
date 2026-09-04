@@ -54,6 +54,11 @@ const reactRouterHandler = createRequestHandler({
 });
 
 const app = express();
+// Trust one hop (the Traefik ingress), which terminates TLS and forwards
+// plain HTTP internally. Without this, req.protocol reports "http" while
+// the browser's Origin header is "https", which fails React Router's
+// single-fetch CSRF origin check and returns 400 on every action request.
+app.set("trust proxy", 1);
 app.use(compression());
 app.disable("x-powered-by");
 
