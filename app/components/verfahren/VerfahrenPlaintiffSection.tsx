@@ -41,7 +41,7 @@ export default function VerfahrenPlaintiffSection({
 
   return (
     <div className="kern-card">
-      <div className="kern-card__container mb-kern-space-default">
+      <div className="kern-card__container kern-mb-md">
         <header className="kern-card__header">
           <hgroup>
             <h3 className="kern-title">
@@ -94,14 +94,12 @@ export default function VerfahrenPlaintiffSection({
           />
 
           <hr
-            className="kern-divider border-kern-layout-border mt-kern-space-x-large w-full"
+            className="kern-divider border-kern-layout-border kern-mt-xl w-full"
             aria-hidden="true"
           />
 
           <InputCheckbox
-            className={
-              hasLawyer ? "my-kern-space-default" : "mt-kern-space-default"
-            }
+            className={hasLawyer ? "kern-my-md" : "kern-mt-md"}
             label={routes.verfahrenNeu.step2.form.plaintiff.hasLawyer.checkbox}
             id="has-lawyer"
             name="hasLawyer"

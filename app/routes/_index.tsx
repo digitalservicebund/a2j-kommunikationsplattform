@@ -86,7 +86,7 @@ export default function VerfahrenRoute() {
 
   return (
     <>
-      <div className="mb-kern-dimension-small flex justify-between">
+      <div className="mb-(--kern-metric-dimension-small) flex justify-between">
         <VerfahrenHeading ref={headingRef} />
         <Link
           to="/verfahren/neu"
@@ -99,7 +99,7 @@ export default function VerfahrenRoute() {
           ></span>
         </Link>
       </div>
-      <div className="space-y-kern-space-large flex flex-col">
+      <div className="flex flex-col space-y-(--kern-metric-space-large)">
         <Suspense
           fallback={VERFAHREN_SKELETONS.map((s) => (
             <VerfahrenTileSkeleton key={s.id} />
@@ -206,7 +206,7 @@ const VerfahrenHeading = ({ ref }: { ref?: Ref<HTMLHeadingElement> }) => {
 export function ErrorBoundary() {
   const { errorMessages } = useTranslations();
   return (
-    <div className="space-y-kern-space-large">
+    <div className="space-y-(--kern-metric-space-large)">
       <VerfahrenHeading />
       <Alert
         type="error"

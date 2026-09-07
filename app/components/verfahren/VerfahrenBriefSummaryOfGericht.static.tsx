@@ -22,8 +22,8 @@ export default function VerfahrenBriefSummaryOfGericht({
   iban,
 }: Readonly<VerfahrenBriefSummaryOfGerichtProps>) {
   return (
-    <div className="p-kern-space-default space-y-kern-space-default rounded-kern-default border border-(--kern-color-decorative-border-contextual)">
-      <h3 className="kern-heading-small pb-kern-space-default border-b border-(--kern-color-decorative-border-contextual) px-0">
+    <div className="kern-p-md rounded-kern-default space-y-(--kern-metric-space-default) border border-(--kern-color-decorative-border-contextual)">
+      <h3 className="kern-heading-small kern-pb-md border-b border-(--kern-color-decorative-border-contextual) px-0">
         {title}
       </h3>
       <dl className="kern-description-list kern-description-list--col">

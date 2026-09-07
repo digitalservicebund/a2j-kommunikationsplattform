@@ -40,6 +40,8 @@ fileignoreconfig:
   checksum: 1c7661fd991fc0338fe12c259b06f656503f92c7d7d8387466fe76f42fc83597
 - filename: .env.defaults
   checksum: 112c758585f05e082d888fa8fbdf4321fd08662333e6cdd121d048e60bbe0797
+- filename: app/components/__test__/InputCheckbox.test.tsx
+  checksum: f2029dd37f24819432dc8cf73b0fafa45d55e9489e635a5b0098e306bcca61b3
 - filename: app/config/**test**/config.server.test.ts
   checksum: e0032376dcb50535952654822230a18fce1ade507f9252cac9ba83055b4b1edc
 - filename: playwright.config.ts

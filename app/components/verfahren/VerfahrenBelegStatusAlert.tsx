@@ -47,16 +47,16 @@ export default function VerfahrenBelegStatusAlert({ beleg }: { beleg: Beleg }) {
   const timeStamp = new Date(beleg.erstelltAm).toLocaleDateString();
   const timeMessage = `Eingang: ${timeStamp}`;
   const belegPendingMessage = (
-    <div className="space-y-kern-space-default flex flex-col">
+    <div className="flex flex-col space-y-(--kern-metric-space-default)">
       <span>{routes.verfahrenNeu.step3.belegStatus.pending.copy}</span>
       <span>{`${timeMessage} · Aktenzeichen folgt mit der Bestätigung`}</span>
     </div>
   );
   const belegReadyMessage = (
-    <div className="space-y-kern-space-default flex flex-col">
+    <div className="flex flex-col space-y-(--kern-metric-space-default)">
       <span>{routes.verfahrenNeu.step3.belegStatus.ready.copy}</span>
       <span>{timeMessage}</span>
-      <div className="space-x-kern-space-default flex items-center justify-start">
+      <div className="flex items-center justify-start space-x-(--kern-metric-space-default)">
         <Button
           type="button"
           appearance="primary"

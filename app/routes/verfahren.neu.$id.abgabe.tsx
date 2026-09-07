@@ -181,9 +181,9 @@ export default function VerfahrenNeuBearbeiten() {
             value={3}
             max={3}
           />
-          <div className="pt-kern-space-x-large">
+          <div className="kern-pt-xl">
             <div className="kern-gap-lg flex flex-col">
-              <div className="gap-kern-space-default flex flex-col lg:flex-row">
+              <div className="kern-gap-md flex flex-col lg:flex-row">
                 <div>
                   <h2 className="kern-heading-medium">
                     {routes.verfahrenNeu.step3.subline}
@@ -191,7 +191,7 @@ export default function VerfahrenNeuBearbeiten() {
                 </div>
                 {beleg === null && (
                   <div className="kern-justify-content-end flex grow">
-                    <div className="gap-kern-space-default flex">
+                    <div className="kern-gap-md flex">
                       <div>
                         <Link
                           to={`/verfahren/neu/${verfahren.id}/bearbeiten`}
@@ -219,7 +219,7 @@ export default function VerfahrenNeuBearbeiten() {
 
               <VerfahrenOverviewCard verfahren={verfahren} />
 
-              <section className="space-y-kern-space-default">
+              <section className="space-y-(--kern-metric-space-default)">
                 <h3 className="kern-heading-medium">
                   {routes.verfahrenNeu.step3.proceduralSteps.headline}
                 </h3>

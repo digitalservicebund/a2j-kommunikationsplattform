@@ -36,7 +36,7 @@ export default function VerfahrenDocumentsFormSection({
 
   return (
     <div className="kern-card">
-      <div className="kern-card__container mb-kern-space-default">
+      <div className="kern-card__container kern-mb-md">
         <header className="kern-card__header">
           <hgroup>
             <h3 className="kern-title">
@@ -53,7 +53,7 @@ export default function VerfahrenDocumentsFormSection({
             <Await resolve={dokumente}>
               {(resolvedData: Dokument[]) =>
                 resolvedData.length > 1 && (
-                  <div className="mt-kern-space-default mb-kern-space-large gap-kern-space-default flex w-full flex-col">
+                  <div className="kern-mt-md kern-mb-lg kern-gap-md flex w-full flex-col">
                     {uploadedDokumente.map((dokumente) => {
                       const dokument = dokumente;
 
@@ -64,7 +64,7 @@ export default function VerfahrenDocumentsFormSection({
                       return (
                         <div
                           key={dokument.id}
-                          className="p-kern-space-default align-center gap-kern-space-default rounded-kern-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)"
+                          className="kern-p-md align-center kern-gap-md rounded-kern-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)"
                         >
                           <div className="flex-1">
                             <div className="kern-body kern-body--bold">
@@ -100,7 +100,7 @@ export default function VerfahrenDocumentsFormSection({
             </Await>
           </Suspense>
 
-          <div className="gap-kern-space-default flex w-full flex-col">
+          <div className="kern-gap-md flex w-full flex-col">
             <InputFile
               ref={uploadFileInputRef}
               label={shared.form.uploadDokument.label}

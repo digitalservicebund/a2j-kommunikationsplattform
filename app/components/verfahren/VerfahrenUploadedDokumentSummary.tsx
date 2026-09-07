@@ -19,8 +19,8 @@ export default function VerfahrenUploadedDokumentSummary({
   const { shared } = useTranslations();
 
   return (
-    <div className="gap-kern-space-default flex w-full flex-col">
-      <div className="p-kern-space-default align-center gap-kern-space-default rounded-kern-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)">
+    <div className="kern-gap-md flex w-full flex-col">
+      <div className="kern-p-md align-center kern-gap-md rounded-kern-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)">
         <div className="flex-1">
           <div className="kern-body kern-body--bold">
             {uploadedDokument?.anzeigename}

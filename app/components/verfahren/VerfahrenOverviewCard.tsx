@@ -48,13 +48,13 @@ export default function VerfahrenOverviewCard({
   return (
     <article className="kern-card">
       <div className="kern-card__container">
-        <div className="algin-start gap-kern-space-default flex w-full flex-wrap items-start">
+        <div className="algin-start kern-gap-md flex w-full flex-wrap items-start">
           <div className="flex-1">
             <h2 className="kern-heading-medium">
               {verfahren.kurzrubrum ??
                 `${klaegerinnenNamen} ./. ${beklagteNamen}`}
             </h2>
-            <div className="align-center kern-body kern-body--muted gap-kern-space-small flex flex-wrap">
+            <div className="align-center kern-body kern-body--muted kern-gap-sm flex flex-wrap">
               <span>
                 {verfahren.aktenzeichenGericht ??
                   routes.verfahrenNeu.step3.summary.aktenzeichen}
@@ -76,7 +76,7 @@ export default function VerfahrenOverviewCard({
             label={overviewBadge.label}
           />
         </div>
-        <div className="gap-kern-space-default grid w-full grid-cols-1 md:grid-cols-3">
+        <div className="kern-gap-md grid w-full grid-cols-1 md:grid-cols-3">
           <VerfahrenBriefSummaryOfBeteiligte
             notAvailableLabel={NOT_AVAILABLE_LABEL}
             title={shared.beteiligte.klaegerLabel}

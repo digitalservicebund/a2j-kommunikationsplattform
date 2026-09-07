@@ -18,7 +18,7 @@ export default function Search({
   return (
     <search>
       <form onSubmit={handleSearch}>
-        <div className="space-x-kern-space-x-large flex items-start justify-between">
+        <div className="flex items-start justify-between space-x-(--kern-metric-space-x-large)">
           {/* using type text as there is no search input in KERN yet*/}
           <InputField
             onFocus={(e) => e.currentTarget.select()} // Select all text on focus - useful for quick replacement

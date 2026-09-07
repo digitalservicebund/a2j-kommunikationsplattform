@@ -208,7 +208,7 @@ export default function VerfahrenId() {
 
             <VerfahrenOverviewCard verfahren={verfahren} />
 
-            <section className="space-y-kern-space-default">
+            <section className="space-y-(--kern-metric-space-default)">
               <h3 className="kern-heading-medium">
                 {routes.verfahrenId.headline}
               </h3>

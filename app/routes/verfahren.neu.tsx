@@ -232,8 +232,8 @@ export default function VerfahrenNeu() {
             value={1}
             max={3}
           />
-          <div className="pt-kern-space-x-large">
-            <div className="border-kern-layout-border p-kern-space-large rounded-kern-default kern-gap-lg flex flex-col border">
+          <div className="kern-pt-xl">
+            <div className="border-kern-layout-border kern-p-lg rounded-kern-default kern-gap-lg flex flex-col border">
               <h2 className="kern-heading-medium">
                 {routes.verfahrenNeu.step1.subline}
               </h2>
@@ -293,7 +293,7 @@ export default function VerfahrenNeu() {
                     </div>
                   </fieldset>
 
-                  <div className="gap-kern-space-default flex flex-wrap">
+                  <div className="kern-gap-md flex flex-wrap">
                     {hasUploadedDokument && (
                       <>
                         <input

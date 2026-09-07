@@ -16,7 +16,7 @@ export default function ScrollToTopButton({
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   return (
-    <div className="bottom-kern-space-large sticky z-40 flex justify-end">
+    <div className="sticky bottom-(--kern-metric-space-large) z-40 flex justify-end">
       <Button
         appearance="secondary"
         type="button"

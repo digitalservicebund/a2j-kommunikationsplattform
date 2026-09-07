@@ -29,7 +29,7 @@ export default function Navigation() {
     },
   ];
   return (
-    <ul className="gap-kern-space-small md:gap-kern-space-x-large my-0 flex list-none flex-col items-center justify-between pl-0 text-center md:flex-row md:text-left xl:flex-wrap">
+    <ul className="kern-gap-sm kern-gap-lg-md my-0 flex list-none flex-col items-center justify-between pl-0 text-center md:flex-row md:text-left xl:flex-wrap">
       {navigationLinksList.map((link) => (
         <li key={link.name}>
           <a
