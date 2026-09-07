@@ -40,7 +40,7 @@ function DataCard({
       <div className="w-full space-y-(--kern-metric-space-default)">
         <h4 className="kern-heading-small">{label}</h4>
         <hr
-          className="kern-divider border-kern-layout-border w-full"
+          className="kern-divider w-full border-(--kern-color-layout-border)"
           aria-hidden="true"
         />
       </div>
@@ -100,7 +100,7 @@ export default function VerfahrenTile({
   );
 
   return (
-    <article className="kern-gap-lg border-t-kern-layout-border flex flex-col border-t-1 pt-(--kern-metric-dimension-x-large) first-of-type:border-0 first-of-type:pt-0">
+    <article className="kern-gap-lg flex flex-col border-t-1 border-t-(--kern-color-layout-border) pt-(--kern-metric-dimension-x-large) first-of-type:border-0 first-of-type:pt-0">
       <div className="flex flex-col justify-between md:flex-row">
         <h2 className="kern-heading-medium">{rubrum}</h2>
         <div className="kern-gap-lg inline-flex">

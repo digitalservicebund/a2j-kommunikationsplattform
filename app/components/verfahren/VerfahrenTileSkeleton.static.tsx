@@ -16,7 +16,7 @@ const SkeletonBlock = () => (
 export default function VerfahrenTileSkeleton() {
   const cssClasses = clsx(
     "relative",
-    "after:border-y-1 sm:after:border-x-1 sm:after:rounded-kern-default after:border-kern-layout-border",
+    "after:border-y-1 sm:after:border-x-1 sm:after:rounded-kern-default after:border-(--kern-color-layout-border)",
     "after:absolute after:top-0 after:-right-16 after:bottom-0 after:-left-16",
   );
 

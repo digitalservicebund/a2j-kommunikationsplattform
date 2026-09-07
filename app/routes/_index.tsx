@@ -114,14 +114,14 @@ export default function VerfahrenRoute() {
                     <br />
                     <code>{JSON.stringify(verfahrenData, null, 2)}</code>
                     <hr
-                      className="kern-divider border-kern-layout-border w-full"
+                      className="kern-divider w-full border-(--kern-color-layout-border)"
                       aria-hidden="true"
                     />
                     gerichte
                     <br />
                     <code>{JSON.stringify(gerichte, null, 2)}</code>
                     <hr
-                      className="kern-divider border-kern-layout-border w-full"
+                      className="kern-divider w-full border-(--kern-color-layout-border)"
                       aria-hidden="true"
                     />
                   </>

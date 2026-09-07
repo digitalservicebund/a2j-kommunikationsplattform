@@ -94,7 +94,7 @@ export default function VerfahrenPlaintiffSection({
           />
 
           <hr
-            className="kern-divider border-kern-layout-border kern-mt-xl w-full"
+            className="kern-divider kern-mt-xl w-full border-(--kern-color-layout-border)"
             aria-hidden="true"
           />
 

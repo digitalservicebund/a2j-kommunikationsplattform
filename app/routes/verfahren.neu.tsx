@@ -233,7 +233,7 @@ export default function VerfahrenNeu() {
             max={3}
           />
           <div className="kern-pt-xl">
-            <div className="border-kern-layout-border kern-p-lg rounded-kern-default kern-gap-lg flex flex-col border">
+            <div className="kern-p-lg rounded-kern-default kern-gap-lg flex flex-col border border-(--kern-color-layout-border)">
               <h2 className="kern-heading-medium">
                 {routes.verfahrenNeu.step1.subline}
               </h2>
