@@ -52,12 +52,12 @@ describe("InputCheckbox", () => {
       <InputCheckbox
         label="Anwalt vorhanden"
         id="has-lawyer"
-        className="my-kern-space-default"
+        className="kern-my-md"
       />,
     );
 
     expect(container.querySelector(".kern-form-check")).toHaveClass(
-      "my-kern-space-default",
+      "kern-my-md",
     );
   });
 });

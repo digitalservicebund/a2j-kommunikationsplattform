@@ -99,7 +99,7 @@ export default function VerfahrenAktuelleEinreichungSection({
 
   return (
     <>
-      <div className="gap-kern-space-default flex items-stretch">
+      <div className="kern-gap-md flex items-stretch">
         <div className="w-80 flex-[0_0_auto]">
           <span className="kern-body kern-body--small kern-body--muted">
             {isBelegReady && beleg
@@ -113,9 +113,9 @@ export default function VerfahrenAktuelleEinreichungSection({
             className={`kern-icon ${isBelegReady ? "kern-icon--check" : "kern-icon--edit"} kern-icon--default`}
             aria-hidden="true"
           ></span>
-          <div className="mt-kern-space-small min-h-16 w-2 flex-1 bg-(--kern-color-decorative-border-default) p-0"></div>
+          <div className="kern-mt-sm min-h-16 w-2 flex-1 bg-(--kern-color-decorative-border-default) p-0"></div>
         </div>
-        <div className="pb-kern-space-default flex-1">
+        <div className="kern-pb-md flex-1">
           <article
             className="kern-card"
             key={initialEinreichung.einreichung.id}
@@ -152,7 +152,7 @@ export default function VerfahrenAktuelleEinreichungSection({
                         .basisdaten.label
                     }
                   </h5>
-                  <div className="mt-kern-space-default gap-kern-space-default rounded-kern-default grid grid-cols-1 border border-(--kern-color-decorative-border-contextual) md:grid-cols-2">
+                  <div className="kern-mt-md kern-gap-md rounded-kern-default grid grid-cols-1 border border-(--kern-color-decorative-border-contextual) md:grid-cols-2">
                     <dl className="kern-description-list kern-description-list--col">
                       <div className="kern-description-list-item">
                         <dt className="kern-description-list-item__key">
@@ -211,7 +211,7 @@ export default function VerfahrenAktuelleEinreichungSection({
                         .additionalData.label
                     }
                   </h5>
-                  <div className="mt-kern-space-default gap-kern-space-default rounded-kern-default grid grid-cols-1 border border-(--kern-color-decorative-border-contextual)">
+                  <div className="kern-mt-md kern-gap-md rounded-kern-default grid grid-cols-1 border border-(--kern-color-decorative-border-contextual)">
                     <dl className="kern-description-list kern-description-list--col">
                       <div className="kern-description-list-item">
                         <dt className="kern-description-list-item__key">

@@ -592,7 +592,7 @@ export default function VerfahrenNeuBearbeiten() {
             value={2}
             max={3}
           />
-          <div className="pt-kern-space-x-large">
+          <div className="kern-pt-xl">
             <Form
               ref={mainFormRef}
               method="post"
@@ -605,7 +605,7 @@ export default function VerfahrenNeuBearbeiten() {
                 name="einreichungId"
                 value={einreichung.id}
               />
-              <div className="gap-kern-space-default flex flex-wrap items-start justify-between">
+              <div className="kern-gap-md flex flex-wrap items-start justify-between">
                 <div>
                   <h2 className="kern-heading-medium">
                     {routes.verfahrenNeu.step2.subline}
@@ -615,13 +615,13 @@ export default function VerfahrenNeuBearbeiten() {
                     <Button
                       appearance="secondary"
                       type="button"
-                      className="kern-btn--x-small mt-kern-space-small"
+                      className="kern-btn--x-small kern-mt-sm"
                       onClick={handleFillDummyData}
                       label="Fill details with dummy data"
                     />
                   )}
                 </div>
-                <div className="gap-kern-space-default flex">
+                <div className="kern-gap-md flex">
                   <Link
                     to={`/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichung.id}`}
                     className="kern-btn kern-btn--secondary"
@@ -706,8 +706,8 @@ export default function VerfahrenNeuBearbeiten() {
                   onDeleteDokument={handleDeleteDokument}
                 />
 
-                <div className="gap-kern-space-default flex flex-wrap justify-end">
-                  <div className="gap-kern-space-default flex">
+                <div className="kern-gap-md flex flex-wrap justify-end">
+                  <div className="kern-gap-md flex">
                     <Link
                       to={`/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichung.id}`}
                       className="kern-btn kern-btn--secondary"

@@ -21,7 +21,7 @@ export default function VerfahrenDefendantSection({
 
   return (
     <div className="kern-card">
-      <div className="kern-card__container mb-kern-space-default">
+      <div className="kern-card__container kern-mb-md">
         <header className="kern-card__header">
           <hgroup>
             <h3 className="kern-title">

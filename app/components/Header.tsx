@@ -67,11 +67,11 @@ export default function Header({
       <Kopfzeile />
       <nav aria-label={shared.HEADER_ARIA_LABEL}>
         <div className="kern-container">
-          <div className="gap-kern-space-small pt-kern-space-default flex flex-col">
+          <div className="kern-gap-sm kern-pt-md flex flex-col">
             {/* (2) */}
             {!isContentPage && userProfile}
             <div
-              className={`gap-kern-space-small flex flex-col justify-between xl:flex-row ${isLoginPage ? "self-center" : "items-center"}`}
+              className={`kern-gap-sm flex flex-col justify-between xl:flex-row ${isLoginPage ? "self-center" : "items-center"}`}
             >
               {/* (3) */}
               <Logo />
@@ -79,7 +79,7 @@ export default function Header({
               {isContentPage ? goBackOrLoginButton : platformNavigation}
             </div>
           </div>
-          <div className="pt-kern-space-default pb-kern-space-large">
+          <div className="kern-pt-md kern-pb-lg">
             <hr className="kern-divider" aria-hidden="true" />
           </div>
         </div>

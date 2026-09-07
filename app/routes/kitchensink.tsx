@@ -119,14 +119,14 @@ const mockVerfahrenPartial: VerfahrenTileProps = {
 export default function KitchensinkRoute() {
   const { alerts } = useTranslations();
   return (
-    <div className="space-y-kern-dimension-large">
+    <div className="space-y-(--kern-metric-dimension-large)">
       <h1 className="kern-heading-medium">Kitchensink</h1>
       <Alert
         type="info"
         title={alerts.WORK_IN_PROGRESS_TITLE}
         message={alerts.WORK_IN_PROGRESS_MESSAGE}
       />
-      <div className="space-y-kern-dimension-large">
+      <div className="space-y-(--kern-metric-dimension-large)">
         <KitchensinkWrapper label="VerfahrenTile - All data available">
           <VerfahrenTile {...mockVerfahrenComplete} />
         </KitchensinkWrapper>
@@ -150,7 +150,7 @@ function KitchensinkWrapper({
 }>) {
   return (
     <section>
-      <div className="bg-kern-orange-050 p-kern-space-default space-x-kern-space-large rounded-kern-border-radius-default min-h-kern-dimension-5x-large flex items-center overflow-hidden">
+      <div className="bg-kern-orange-050 kern-p-md rounded-kern-border-radius-default flex min-h-(--kern-metric-dimension-5x-large) items-center space-x-(--kern-metric-space-large) overflow-hidden">
         <p className="kern-body kern-body--small kern-body--bold">{label}</p>
       </div>
       <div className="pointer-events-none">{children}</div>

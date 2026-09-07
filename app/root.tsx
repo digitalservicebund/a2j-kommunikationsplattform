@@ -76,7 +76,7 @@ export default function App() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:type" content="website" />
         {/* @TODO: https://digitalservicebund.atlassian.net/browse/KOMPLA-492 */}
-        {/* React Router v8 forwards ServerRouter nonce to Links on SSR only; 
+        {/* React Router v8 forwards ServerRouter nonce to Links on SSR only;
         keep this explicit empty nonce to avoid hydration attribute mismatch. */}
         <Links nonce="" />
         <script
@@ -133,7 +133,7 @@ export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
       <body>
         <Header />
         <main className="kern-container">
-          <div className="space-y-kern-space-large py-kern-space-large">
+          <div className="kern-py-lg space-y-(--kern-metric-space-large)">
             <ErrorBox {...errorContent} />
           </div>
         </main>

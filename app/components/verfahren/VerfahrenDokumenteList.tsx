@@ -26,14 +26,12 @@ export default function VerfahrenDokumenteList({
 
   if (dokumente.length === 0) {
     return (
-      <p className="kern-body mt-kern-space-default m-0">
-        Keine Dokumente vorhanden.
-      </p>
+      <p className="kern-body kern-mt-md m-0">Keine Dokumente vorhanden.</p>
     );
   }
 
   return (
-    <div className="mt-kern-space-default gap-kern-space-default flex w-full flex-col">
+    <div className="kern-mt-md kern-gap-md flex w-full flex-col">
       {dokumente.map((dokument) => {
         const dokumentErgebnis = dokument.validierungsstatus.ergebnis;
         const dokumentHasValidationIssues =
@@ -47,11 +45,8 @@ export default function VerfahrenDokumenteList({
         });
 
         return (
-          <div
-            key={dokument.id}
-            className="gap-kern-space-small flex w-full flex-col"
-          >
-            <div className="rounded-kern-default p-kern-space-default align-center gap-kern-space-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)">
+          <div key={dokument.id} className="kern-gap-sm flex w-full flex-col">
+            <div className="rounded-kern-default kern-p-md align-center kern-gap-md flex flex-wrap border border-(--kern-color-decorative-border-contextual)">
               <div className="flex-1">
                 <div className="kern-body kern-body--bold">
                   {dokument.anzeigename}
@@ -67,10 +62,7 @@ export default function VerfahrenDokumenteList({
                 </div>
               </div>
               {canDeleteDokument(dokument) ? (
-                <Form
-                  method="post"
-                  className="gap-kern-space-small flex items-center"
-                >
+                <Form method="post" className="kern-gap-sm flex items-center">
                   <input type="hidden" name="formType" value="delete" />
                   <input
                     type="hidden"

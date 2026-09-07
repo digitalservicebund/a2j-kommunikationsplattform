@@ -23,14 +23,12 @@ export default function VerfahrenEinreichungHistoryList({
 
   if (einreichungen.length === 0) {
     return (
-      <p className="kern-body mt-kern-space-default m-0">
-        Keine Einreichung vorhanden.
-      </p>
+      <p className="kern-body kern-mt-md m-0">Keine Einreichung vorhanden.</p>
     );
   }
 
   return (
-    <div className="space-y-kern-space-default">
+    <div className="space-y-(--kern-metric-space-default)">
       {einreichungen.map(({ einreichung, dokumente }, index) => {
         const statusPresentation = getDokumentStatusPresentation(
           einreichung.status,

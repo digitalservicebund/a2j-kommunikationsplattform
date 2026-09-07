@@ -5,7 +5,7 @@ export default function UserProfile() {
   // When we authenticate users, the user name would be fetched from the user session or context
   const userName = "Kim Neumann";
   return (
-    <div className="gap-kern-space-small flex flex-wrap items-center justify-end">
+    <div className="kern-gap-sm flex flex-wrap items-center justify-end">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"

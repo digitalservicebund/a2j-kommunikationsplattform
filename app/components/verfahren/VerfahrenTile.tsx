@@ -36,8 +36,8 @@ function DataCard({
   readonly children: React.ReactNode;
 }) {
   return (
-    <div className="p-kern-space-default gap-kern-space-large rounded-kern-border-radius-default bg-kern-layout-background-hued flex min-h-352 flex-col items-start overflow-hidden">
-      <div className="space-y-kern-space-default w-full">
+    <div className="kern-p-md kern-gap-lg rounded-kern-border-radius-default bg-kern-layout-background-hued flex min-h-352 flex-col items-start overflow-hidden">
+      <div className="w-full space-y-(--kern-metric-space-default)">
         <h4 className="kern-heading-small">{label}</h4>
         <hr
           className="kern-divider border-kern-layout-border w-full"
@@ -100,10 +100,10 @@ export default function VerfahrenTile({
   );
 
   return (
-    <article className="gap-kern-space-large border-t-kern-layout-border pt-kern-dimension-x-large flex flex-col border-t-1 first-of-type:border-0 first-of-type:pt-0">
+    <article className="kern-gap-lg border-t-kern-layout-border flex flex-col border-t-1 pt-(--kern-metric-dimension-x-large) first-of-type:border-0 first-of-type:pt-0">
       <div className="flex flex-col justify-between md:flex-row">
         <h2 className="kern-heading-medium">{rubrum}</h2>
-        <div className="gap-kern-space-large inline-flex">
+        <div className="kern-gap-lg inline-flex">
           {!withoutDetailsLink && (
             <>
               <div className="flex">
@@ -127,7 +127,7 @@ export default function VerfahrenTile({
           )}
         </div>
       </div>
-      <dl className="gap-kern-space-large my-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <dl className="kern-gap-lg my-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <DataCard label="Klagende Partei">
           <DataItem label="Name" value={klaegerinName || NOT_AVAILABLE_LABEL} />
           <DataItem
