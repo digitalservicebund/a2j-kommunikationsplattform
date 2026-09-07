@@ -36,7 +36,7 @@ function DataCard({
   readonly children: React.ReactNode;
 }) {
   return (
-    <div className="kern-p-md kern-gap-lg rounded-kern-border-radius-default bg-kern-layout-background-hued flex min-h-352 flex-col items-start overflow-hidden">
+    <div className="kern-p-md kern-gap-lg rounded-kern-border-radius-default flex min-h-352 flex-col items-start overflow-hidden bg-(--kern-color-layout-background-hued)">
       <div className="w-full space-y-(--kern-metric-space-default)">
         <h4 className="kern-heading-small">{label}</h4>
         <hr

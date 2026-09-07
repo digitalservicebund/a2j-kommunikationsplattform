@@ -3,12 +3,12 @@ import { clsx } from "clsx";
 const SkeletonBlock = () => (
   <div className="w-full space-y-(--kern-metric-space-x-large)">
     <div className="space-y-(--kern-metric-space-small)">
-      <div className="bg-kern-layout-background-hued rounded-kern-default h-(--kern-metric-dimension-large) max-w-352"></div>
-      <div className="bg-kern-layout-background-hued rounded-kern-default h-(--kern-metric-dimension-large) max-w-224"></div>
+      <div className="rounded-kern-default h-(--kern-metric-dimension-large) max-w-352 bg-(--kern-color-layout-background-hued)"></div>
+      <div className="rounded-kern-default h-(--kern-metric-dimension-large) max-w-224 bg-(--kern-color-layout-background-hued)"></div>
     </div>
     <div className="space-y-(--kern-metric-space-small)">
-      <div className="bg-kern-layout-background-hued rounded-kern-default h-(--kern-metric-dimension-large) max-w-352"></div>
-      <div className="bg-kern-layout-background-hued rounded-kern-default h-(--kern-metric-dimension-large) max-w-224"></div>
+      <div className="rounded-kern-default h-(--kern-metric-dimension-large) max-w-352 bg-(--kern-color-layout-background-hued)"></div>
+      <div className="rounded-kern-default h-(--kern-metric-dimension-large) max-w-224 bg-(--kern-color-layout-background-hued)"></div>
     </div>
   </div>
 );
@@ -28,10 +28,10 @@ export default function VerfahrenTileSkeleton() {
           <SkeletonBlock />
           <SkeletonBlock />
         </div>
-        <div className="bg-kern-layout-background-hued rounded-kern-default h-1 w-full"></div>
+        <div className="rounded-kern-default h-1 w-full bg-(--kern-color-layout-background-hued)"></div>
         <div className="flex w-full">
           <div className="w-full space-y-(--kern-metric-space-x-large)">
-            <div className="bg-kern-layout-background-hued rounded-kern-default h-(--kern-metric-dimension-x-large) w-352 max-w-full"></div>
+            <div className="rounded-kern-default h-(--kern-metric-dimension-x-large) w-352 max-w-full bg-(--kern-color-layout-background-hued)"></div>
           </div>
         </div>
       </div>

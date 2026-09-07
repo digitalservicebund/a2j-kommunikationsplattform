@@ -132,7 +132,9 @@ describe("VerfahrenTile", () => {
       container.querySelector("dd.text-kern-layout-text-muted"),
     ).not.toBeInTheDocument();
     expect(
-      container.querySelector(".after\\:bg-kern-layout-background-hued"),
+      container.querySelector(
+        ".after\\:bg-(--kern-color-layout-background-hued)",
+      ),
     ).not.toBeInTheDocument();
   });
 

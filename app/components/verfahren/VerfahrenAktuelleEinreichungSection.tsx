@@ -161,7 +161,7 @@ export default function VerfahrenAktuelleEinreichungSection({
                               .einreichung.basisdaten.artLabel
                           }
                         </dt>
-                        <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
+                        <dd className="kern-description-list-item__value bg-(--kern-color-feedback-info-background)">
                           {PROTOTYPE_EINREICHUNG_ART}
                         </dd>
                       </div>
@@ -172,7 +172,7 @@ export default function VerfahrenAktuelleEinreichungSection({
                               .einreichung.basisdaten.gzLabel
                           }
                         </dt>
-                        <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
+                        <dd className="kern-description-list-item__value bg-(--kern-color-feedback-info-background)">
                           {PROTOTYPE_EINREICHUNG_GZ}
                         </dd>
                       </div>

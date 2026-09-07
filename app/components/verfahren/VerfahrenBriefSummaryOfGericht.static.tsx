@@ -39,13 +39,13 @@ export default function VerfahrenBriefSummaryOfGericht({
           <dt className="kern-description-list-item__key">
             {kontoinhaberLabel}
           </dt>
-          <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
+          <dd className="kern-description-list-item__value bg-(--kern-color-feedback-info-background)">
             {kontoinhaber}
           </dd>
         </div>
         <div className="kern-description-list-item">
           <dt className="kern-description-list-item__key">{ibanLabel}</dt>
-          <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
+          <dd className="kern-description-list-item__value bg-(--kern-color-feedback-info-background)">
             {iban}
           </dd>
         </div>

@@ -150,7 +150,7 @@ function KitchensinkWrapper({
 }>) {
   return (
     <section>
-      <div className="bg-kern-orange-050 kern-p-md rounded-kern-border-radius-default flex min-h-(--kern-metric-dimension-5x-large) items-center space-x-(--kern-metric-space-large) overflow-hidden">
+      <div className="kern-p-md rounded-kern-border-radius-default flex min-h-(--kern-metric-dimension-5x-large) items-center space-x-(--kern-metric-space-large) overflow-hidden bg-(--kern-color-orange-050)">
         <p className="kern-body kern-body--small kern-body--bold">{label}</p>
       </div>
       <div className="pointer-events-none">{children}</div>

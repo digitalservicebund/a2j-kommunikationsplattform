@@ -12,7 +12,7 @@ export default function VerfahrenPrototypeHint({
 }: Readonly<VerfahrenPrototypeHintProps>) {
   return (
     <p className={className}>
-      <span className="bg-kern-feedback-info-background">
+      <span className="bg-(--kern-color-feedback-info-background)">
         {PROTOTYPE_HIGHLIGHT_LABEL}
       </span>{" "}
       {PROTOTYPE_HINT_SUFFIX}

@@ -42,7 +42,7 @@ export default function VerfahrenStatementOfClaimUploadFields({
         <VerfahrenGerichteSelect
           id="gerichtId"
           label={shared.form.labels.recipientCourt}
-          className="bg-kern-feedback-info-background flex-1 self-end"
+          className="flex-1 self-end bg-(--kern-color-feedback-info-background)"
           placeholder={shared.form.select.placeholder}
           gerichtePromise={gerichtePromise}
           initialSelectedValue={selectedGerichtId}

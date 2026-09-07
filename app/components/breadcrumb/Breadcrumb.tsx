@@ -118,7 +118,7 @@ export const Breadcrumb = () => {
                     {crumb.label}
                   </Link>
                   <span
-                    className="kern-icon kern-icon--keyboard-double-arrow-right bg-kern-layout-text-muted"
+                    className="kern-icon kern-icon--keyboard-double-arrow-right bg-(--kern-color-layout-text-muted)"
                     aria-hidden="true"
                   ></span>
                 </>

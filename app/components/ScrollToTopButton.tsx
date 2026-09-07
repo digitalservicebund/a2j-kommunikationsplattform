@@ -21,7 +21,7 @@ export default function ScrollToTopButton({
         appearance="secondary"
         type="button"
         onClick={scrollToTop}
-        className="bg-kern-layout-background-default"
+        className="bg-(--kern-color-layout-background-default)"
         aria-label={buttons.SCROLL_TO_TOP_BUTTON}
         title={buttons.SCROLL_TO_TOP_BUTTON}
         label={buttons.SCROLL_TO_TOP_BUTTON}

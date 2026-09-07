@@ -34,7 +34,7 @@ export default function VerfahrenFilterBar({
   }));
 
   return (
-    <div className="bg-kern-layout-background-default kern-pt-lg sticky top-0 z-40 flex flex-col space-y-(--kern-metric-space-large)">
+    <div className="kern-pt-lg sticky top-0 z-40 flex flex-col space-y-(--kern-metric-space-large) bg-(--kern-color-layout-background-default)">
       <div className="kern-gap-xl grid grid-cols-1 items-start lg:grid-cols-4">
         <div className="lg:col-span-2">
           <Search
