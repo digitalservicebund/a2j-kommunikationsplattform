@@ -113,7 +113,7 @@ export const Breadcrumb = () => {
                 <>
                   <Link
                     to={crumb.path}
-                    className="kern-body text-kern-layout-text-muted visited:text-kern-layout-text-muted no-underline hover:underline"
+                    className="kern-body text-(--kern-color-layout-text-muted) no-underline visited:text-(--kern-color-layout-text-muted) hover:underline"
                   >
                     {crumb.label}
                   </Link>

@@ -129,7 +129,7 @@ describe("VerfahrenTile", () => {
 
     // no "disabled/muted" appearance
     expect(
-      container.querySelector("dd.text-kern-layout-text-muted"),
+      container.querySelector("dd.text-\\(--kern-color-layout-text-muted\\)"),
     ).not.toBeInTheDocument();
     expect(
       container.querySelector(

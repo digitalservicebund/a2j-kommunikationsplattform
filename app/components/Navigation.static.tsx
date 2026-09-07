@@ -34,7 +34,7 @@ export default function Navigation() {
         <li key={link.name}>
           <a
             href={link.url}
-            className="kern-link visited:text-kern-action-default"
+            className="kern-link visited:text-(--kern-color-action-default)"
           >
             <span
               className={`kern-icon ${link.iconName} bg-current`}
