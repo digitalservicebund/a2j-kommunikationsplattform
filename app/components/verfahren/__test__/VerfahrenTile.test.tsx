@@ -133,7 +133,7 @@ describe("VerfahrenTile", () => {
     ).not.toBeInTheDocument();
     expect(
       container.querySelector(
-        ".after\\:bg-(--kern-color-layout-background-hued)",
+        ".after\\:bg-\\(--kern-color-layout-background-hued\\)",
       ),
     ).not.toBeInTheDocument();
   });
