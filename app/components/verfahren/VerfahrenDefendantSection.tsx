@@ -1,3 +1,4 @@
+import InputField from "~/components/InputField";
 import VerfahrenAdresseKontaktFields from "~/components/verfahren/VerfahrenAdresseKontaktFields";
 import type { Anschrift } from "~/domains/verfahren/services/beteiligteContactInfo";
 import { useTranslations } from "~/services/translations/context";
@@ -8,6 +9,7 @@ type VerfahrenDefendantSectionProps = {
   anschrift: Anschrift | undefined;
   email: string;
   telefon: string;
+  errors: Record<string, string[]>;
 };
 
 export default function VerfahrenDefendantSection({
@@ -16,6 +18,7 @@ export default function VerfahrenDefendantSection({
   anschrift,
   email,
   telefon,
+  errors,
 }: Readonly<VerfahrenDefendantSectionProps>) {
   const { routes, shared } = useTranslations();
 
@@ -35,31 +38,21 @@ export default function VerfahrenDefendantSection({
           </p>
 
           <div className="kern-gap-md flex w-full">
-            <div className="kern-form-input flex-1">
-              <label className="kern-label" htmlFor="beklagte-partei-vorname">
-                {shared.form.labels.forename}
-              </label>
-              <input
-                className="kern-form-input__input"
-                id="beklagte-partei-vorname"
-                name="beklagteParteiVorname"
-                type="text"
-                defaultValue={firstName}
-              />
-            </div>
-            <div className="kern-form-input flex-1">
-              <label className="kern-label" htmlFor="beklagte-partei-nachname">
-                {shared.form.labels.lastname}
-              </label>
-              <input
-                className="kern-form-input__input"
-                id="beklagte-partei-nachname"
-                name="beklagteParteiNachname"
-                type="text"
-                defaultValue={lastName}
-                required
-              />
-            </div>
+            <InputField
+              label={shared.form.labels.forename}
+              id="beklagte-partei-vorname"
+              name="beklagteParteiVorname"
+              defaultValue={firstName}
+              className="flex-1"
+            />
+            <InputField
+              label={shared.form.labels.lastname}
+              id="beklagte-partei-nachname"
+              name="beklagteParteiNachname"
+              defaultValue={lastName}
+              className="flex-1"
+              error={errors.beklagteParteiNachname?.join(" ")}
+            />
           </div>
 
           <VerfahrenAdresseKontaktFields

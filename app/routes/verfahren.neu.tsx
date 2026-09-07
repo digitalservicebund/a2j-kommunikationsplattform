@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   ActionFunctionArgs,
+  data,
   Form,
   Link,
   LoaderFunctionArgs,
@@ -30,11 +31,14 @@ import { createVerfahren } from "~/domains/verfahren/infrastructure/repositories
 import { VerfahrenAendernInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.input.schema";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+import { actionError, actionInvalid } from "~/utils/actionState";
 
 const StatementOfClaimUploadSchema = z.object({
-  file: z.file(),
-  verfahrensgegenstand: z.string().min(1),
-  gerichtId: z.string().min(1),
+  file: z.file().min(1, { error: "Bitte laden Sie eine Datei hoch." }),
+  verfahrensgegenstand: z
+    .string()
+    .min(2, { error: "Bitte geben Sie den Verfahrensgegenstand an." }),
+  gerichtId: z.string().min(1, { error: "Bitte wählen Sie ein Gericht aus." }),
   analysis: z.coerce.boolean().optional(),
 });
 
@@ -121,7 +125,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       typeof einreichungId !== "string" ||
       typeof dokumentId !== "string"
     ) {
-      return { error: true };
+      return data(actionError("Löschen fehlgeschlagen."), { status: 400 });
     }
 
     const { eTag } = await fetchDokument(authData, {
@@ -138,7 +142,12 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
     });
 
     if (!deleteResult.success) {
-      return { error: true, verfahrenId, einreichungId };
+      return data(
+        actionError("Löschen fehlgeschlagen.", {
+          data: { verfahrenId, einreichungId },
+        }),
+        { status: 500 },
+      );
     }
 
     return redirect(buildRouteUrl(verfahrenId, einreichungId));
@@ -146,7 +155,9 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
   // 2) Guard unsupported form submissions
   if (formType !== "submit") {
-    return { error: true };
+    return data(actionError("Ungültige Formularübermittlung."), {
+      status: 400,
+    });
   }
 
   // 3) If a draft already has uploads, continue in edit route
@@ -163,9 +174,13 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
   const formValues = Object.fromEntries(formData);
   const validatedForm = StatementOfClaimUploadSchema.safeParse(formValues);
-
   if (!validatedForm.success) {
-    return { errors: z.flattenError(validatedForm.error), formValues };
+    return data(
+      actionInvalid(z.flattenError(validatedForm.error).fieldErrors, {
+        data: { formValues },
+      }),
+      { status: 400 },
+    );
   }
 
   const { file, verfahrensgegenstand, gerichtId } = validatedForm.data;
@@ -202,9 +217,17 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 export default function VerfahrenNeu() {
   const { shared, routes, buttons } = useTranslations();
   const navigation = useNavigation();
-  const actionData = useActionData() || {};
+  const actionData = useActionData<typeof action>();
   const loaderData = useLoaderData<typeof loader>();
-  const { errors, formValues } = actionData;
+  const isActionError = actionData?.status === "error";
+  const isInvalid = actionData?.status === "invalid";
+  const fieldErrors = isInvalid ? actionData.fieldErrors : undefined;
+  const formValues = isInvalid
+    ? (
+        actionData.data as
+          { formValues?: Record<string, FormDataEntryValue> } | undefined
+      )?.formValues
+    : undefined;
   const [selectedGerichtId, setSelectedGerichtId] = useState<string>(
     (formValues?.gerichtId as string) || "",
   );
@@ -245,7 +268,7 @@ export default function VerfahrenNeu() {
               />
 
               {/* show a general error alert, if something went wrong */}
-              {actionData?.error && (
+              {isActionError && (
                 <Alert
                   type="error"
                   title={shared.form.submit.title}
@@ -270,7 +293,7 @@ export default function VerfahrenNeu() {
                     />
                   ) : (
                     <VerfahrenStatementOfClaimUploadFields
-                      hasFileError={Boolean(errors?.fieldErrors?.file)}
+                      errors={fieldErrors || {}}
                       gerichtePromise={loaderData.gerichtePromise}
                       selectedGerichtId={selectedGerichtId}
                       onGerichtIdChange={setSelectedGerichtId}

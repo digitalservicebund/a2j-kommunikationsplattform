@@ -13,6 +13,7 @@ describe("VerfahrenDefendantSection", () => {
         anschrift={{ strasse: "Römerberg", hausnummer: "2" }}
         email="max@example.de"
         telefon="0123456789"
+        errors={{}}
       />,
     );
 

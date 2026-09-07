@@ -1,4 +1,5 @@
 import InputCheckbox from "~/components/InputCheckbox";
+import InputField from "~/components/InputField";
 import VerfahrenAdresseKontaktFields from "~/components/verfahren/VerfahrenAdresseKontaktFields";
 import VerfahrenKanzleiformSelect, {
   type KanzleiformSelectItem,
@@ -20,6 +21,7 @@ type VerfahrenPlaintiffSectionProps = {
   lawyerTelefon: string;
   lawyerKanzleiformId: string;
   kanzleiformenPromise: Promise<KanzleiformSelectItem[]>;
+  errors: Record<string, string[]>;
 };
 
 export default function VerfahrenPlaintiffSection({
@@ -36,6 +38,7 @@ export default function VerfahrenPlaintiffSection({
   lawyerTelefon,
   lawyerKanzleiformId,
   kanzleiformenPromise,
+  errors,
 }: Readonly<VerfahrenPlaintiffSectionProps>) {
   const { routes, shared } = useTranslations();
 
@@ -55,31 +58,21 @@ export default function VerfahrenPlaintiffSection({
           </p>
 
           <div className="kern-gap-md flex w-full">
-            <div className="kern-form-input flex-1">
-              <label className="kern-label" htmlFor="klagende-partei-vorname">
-                {shared.form.labels.forename}
-              </label>
-              <input
-                className="kern-form-input__input"
-                id="klagende-partei-vorname"
-                name="klagendeParteiVorname"
-                type="text"
-                defaultValue={firstName}
-              />
-            </div>
-            <div className="kern-form-input flex-1">
-              <label className="kern-label" htmlFor="klagende-partei-nachname">
-                {shared.form.labels.lastname}
-              </label>
-              <input
-                className="kern-form-input__input"
-                id="klagende-partei-nachname"
-                name="klagendeParteiNachname"
-                type="text"
-                defaultValue={lastName}
-                required
-              />
-            </div>
+            <InputField
+              className="flex-1"
+              id="klagende-partei-vorname"
+              name="klagendeParteiVorname"
+              label={shared.form.labels.forename}
+              defaultValue={firstName}
+            />
+            <InputField
+              className="flex-1"
+              id="klagende-partei-nachname"
+              name="klagendeParteiNachname"
+              label={shared.form.labels.lastname}
+              defaultValue={lastName}
+              error={errors.klagendeParteiNachname?.join(" ")}
+            />
           </div>
 
           <VerfahrenAdresseKontaktFields

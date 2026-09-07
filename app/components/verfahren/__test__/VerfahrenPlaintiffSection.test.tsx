@@ -20,6 +20,7 @@ describe("VerfahrenPlaintiffSection", () => {
     lawyerTelefon: "",
     lawyerKanzleiformId: "",
     kanzleiformenPromise: Promise.resolve([]),
+    errors: {},
   };
 
   it("renders the plaintiff name fields and hides the lawyer sub-form by default", () => {
