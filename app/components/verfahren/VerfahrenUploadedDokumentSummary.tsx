@@ -20,7 +20,7 @@ export default function VerfahrenUploadedDokumentSummary({
 
   return (
     <div className="kern-gap-md flex w-full flex-col">
-      <div className="kern-p-md align-center kern-gap-md rounded-kern-default flex flex-wrap border border-(--kern-color-decorative-border-contextual)">
+      <div className="kern-p-md align-center kern-gap-md flex flex-wrap rounded-(--kern-metric-border-radius-default) border border-(--kern-color-decorative-border-contextual)">
         <div className="flex-1">
           <div className="kern-body kern-body--bold">
             {uploadedDokument?.anzeigename}
