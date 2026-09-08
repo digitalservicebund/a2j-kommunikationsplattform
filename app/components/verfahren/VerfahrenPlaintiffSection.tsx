@@ -86,11 +86,6 @@ export default function VerfahrenPlaintiffSection({
             telefon={telefon}
           />
 
-          <hr
-            className="kern-divider kern-mt-xl w-full border-(--kern-color-layout-border)"
-            aria-hidden="true"
-          />
-
           <InputCheckbox
             className={hasLawyer ? "kern-my-md" : "kern-mt-md"}
             label={routes.verfahrenNeu.step2.form.plaintiff.hasLawyer.checkbox}

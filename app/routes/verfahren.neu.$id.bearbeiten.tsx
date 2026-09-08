@@ -76,8 +76,9 @@ import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 import {
   actionError,
-  actionInvalid,
+  actionFieldErrorsResponse,
   ActionState,
+  actionStateFromApiError,
   actionSuccess,
 } from "~/utils/actionState";
 
@@ -248,19 +249,23 @@ export const action = async ({
     const validatedForm = DokumentUploadSchema.safeParse(formValues);
 
     if (!validatedForm.success) {
-      return data(
-        actionInvalid(z.flattenError(validatedForm.error).fieldErrors, {
-          data: { formValues, formType: "upload" },
-        }),
-        { status: 400 },
-      );
+      return actionFieldErrorsResponse(validatedForm.error, {
+        data: { formValues, formType: "upload" },
+      });
     }
 
     const einreichungId = formData.get("einreichungId") as string;
     const file = formValues.file as File;
     const type = formValues.type as DokumentType;
 
-    await uploadDokument(authData, verfahrenId, einreichungId, file, type);
+    try {
+      await uploadDokument(authData, verfahrenId, einreichungId, file, type);
+    } catch (error) {
+      return actionStateFromApiError(error, {
+        message: "Das Dokument konnte nicht hochgeladen werden.",
+        data: { formValues, formType: "upload" },
+      });
+    }
 
     return actionSuccess<DokumentActionData>({ formType: "upload" });
   }
@@ -270,24 +275,30 @@ export const action = async ({
     const einreichungId = formData.get("einreichungId") as string;
     const dokumentId = formData.get("dokumentId") as string;
 
-    const { eTag } = await fetchDokument(authData, {
-      verfahrenId,
-      einreichungId: einreichungId,
-      id: dokumentId,
-    });
+    try {
+      const { eTag } = await fetchDokument(authData, {
+        verfahrenId,
+        einreichungId: einreichungId,
+        id: dokumentId,
+      });
 
-    const deleteResult = await deleteDokument(authData, {
-      verfahrenId,
-      einreichungId,
-      id: dokumentId,
-      eTag: eTag ?? "",
-    });
+      const deleteResult = await deleteDokument(authData, {
+        verfahrenId,
+        einreichungId,
+        id: dokumentId,
+        eTag: eTag ?? "",
+      });
 
-    if (!deleteResult.success) {
-      return data(actionError("Löschen fehlgeschlagen."), { status: 500 });
+      if (!deleteResult.success) {
+        return data(actionError("Löschen fehlgeschlagen."), { status: 500 });
+      }
+
+      return actionSuccess(undefined);
+    } catch (error) {
+      return actionStateFromApiError(error, {
+        message: "Löschen fehlgeschlagen.",
+      });
     }
-
-    return actionSuccess(undefined);
   }
 
   // 3) Handle final submit — persist the Verfahren and its Beteiligungen,
@@ -303,26 +314,34 @@ export const action = async ({
     });
 
     if (!validatedNachnamen.success) {
-      return data(
-        actionInvalid(z.flattenError(validatedNachnamen.error).fieldErrors, {
-          data: { formType: "submit" },
-        }),
-        { status: 400 },
-      );
+      return actionFieldErrorsResponse(validatedNachnamen.error, {
+        data: { formType: "submit" },
+      });
     }
 
     // Fetch the code lists needed to resolve Beteiligung/Rolle references
-    const [
-      { elemente: staaten },
-      { elemente: anschriftstypen },
-      { elemente: telekommunikationsarten },
-      { elemente: rollenbezeichnungen },
-    ] = await Promise.all([
-      fetchStaaten(authData),
-      fetchAnschriftstypen(authData),
-      fetchTelekommunikationsarten(authData),
-      fetchRollenbezeichnungen(authData),
-    ]);
+    let staaten: CodeWertItem[];
+    let anschriftstypen: CodeWertItem[];
+    let telekommunikationsarten: CodeWertItem[];
+    let rollenbezeichnungen: CodeWertItem[];
+
+    try {
+      [
+        { elemente: staaten },
+        { elemente: anschriftstypen },
+        { elemente: telekommunikationsarten },
+        { elemente: rollenbezeichnungen },
+      ] = await Promise.all([
+        fetchStaaten(authData),
+        fetchAnschriftstypen(authData),
+        fetchTelekommunikationsarten(authData),
+        fetchRollenbezeichnungen(authData),
+      ]);
+    } catch (error) {
+      return actionStateFromApiError(error, {
+        message: "Die Änderungen konnten nicht gespeichert werden.",
+      });
+    }
 
     const sharedCodeIds = {
       anschriftstypId: resolveCodeWertId(
@@ -397,22 +416,26 @@ export const action = async ({
     const validatedForm = VerfahrenAendernInputSchema.safeParse(formValues);
 
     if (!validatedForm.success) {
-      return data(
-        actionInvalid(z.flattenError(validatedForm.error).fieldErrors, {
-          data: { formValues, formType: "submit" },
-        }),
-        { status: 400 },
-      );
+      return actionFieldErrorsResponse(validatedForm.error, {
+        data: { formValues, formType: "submit" },
+      });
     }
 
     // Persist the Verfahren and regenerate the resulting XJustiz document
-    await updateVerfahren(authData, verfahrenId, validatedForm.data);
+    try {
+      await updateVerfahren(authData, verfahrenId, validatedForm.data);
 
-    const einreichungId = formData.get("einreichungId") as string;
-    await regenerateEinreichungXJustiz(authData, {
-      verfahrenId,
-      einreichungId,
-    });
+      const einreichungId = formData.get("einreichungId") as string;
+      await regenerateEinreichungXJustiz(authData, {
+        verfahrenId,
+        einreichungId,
+      });
+    } catch (error) {
+      return actionStateFromApiError(error, {
+        message: "Die Änderungen konnten nicht gespeichert werden.",
+        data: { formValues, formType: "submit" },
+      });
+    }
 
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   }
@@ -422,7 +445,9 @@ export default function VerfahrenNeuBearbeiten() {
   const { verfahren, einreichung, dokumente, gerichte, kanzleiformen } =
     useLoaderData<LoaderData>();
   const actionData = useActionData<typeof action>();
+  console.log("actionData", actionData);
   const isInvalid = actionData?.status === "invalid";
+  const isError = actionData?.status === "error";
   const fieldErrors = isInvalid ? actionData.fieldErrors : undefined;
   const formValues = isInvalid
     ? (
@@ -685,11 +710,11 @@ export default function VerfahrenNeuBearbeiten() {
                 message={routes.verfahrenNeu.step2.notification.copy}
               />
 
-              {actionFormType === "submit" && fieldErrors && (
+              {isError && (
                 <Alert
                   type="error"
                   title={shared.form.submit.title}
-                  message={`${JSON.stringify(fieldErrors)}`}
+                  message={actionData.error ?? "An error occured"}
                 />
               )}
 
