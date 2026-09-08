@@ -3,12 +3,12 @@ import { clsx } from "clsx";
 const SkeletonBlock = () => (
   <div className="w-full space-y-(--kern-metric-space-x-large)">
     <div className="space-y-(--kern-metric-space-small)">
-      <div className="h-(--kern-metric-dimension-large) max-w-352 rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
-      <div className="h-(--kern-metric-dimension-large) max-w-224 rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
+      <div className="h-(--kern-metric-dimension-large) max-w-88 rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
+      <div className="h-(--kern-metric-dimension-large) max-w-56 rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
     </div>
     <div className="space-y-(--kern-metric-space-small)">
-      <div className="h-(--kern-metric-dimension-large) max-w-352 rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
-      <div className="h-(--kern-metric-dimension-large) max-w-224 rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
+      <div className="h-(--kern-metric-dimension-large) max-w-88 rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
+      <div className="h-(--kern-metric-dimension-large) max-w-56 rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
     </div>
   </div>
 );
@@ -28,10 +28,10 @@ export default function VerfahrenTileSkeleton() {
           <SkeletonBlock />
           <SkeletonBlock />
         </div>
-        <div className="h-1 w-full rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
+        <div className="h-0 w-full rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
         <div className="flex w-full">
           <div className="w-full space-y-(--kern-metric-space-x-large)">
-            <div className="h-(--kern-metric-dimension-x-large) w-352 max-w-full rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
+            <div className="h-(--kern-metric-dimension-x-large) w-88 max-w-full rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
           </div>
         </div>
       </div>

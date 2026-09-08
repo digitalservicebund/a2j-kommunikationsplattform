@@ -1,0 +1,11 @@
+@theme inline {
+  /*
+   * Overide Tailwind breakpoint values with KERN UX versions:
+   * https://www.kern-ux.de/design-system/foundations/layout#breakpoints
+   */
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  --breakpoint-2xl: 1600px;
+}

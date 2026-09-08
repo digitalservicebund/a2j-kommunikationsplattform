@@ -10,7 +10,7 @@
 @import "tailwindcss/utilities.css" layer(utilities) source("../app");
 
 /* use the KERN UX theme */
-@import "@digitalservicebund/kern-ux-tailwind-theme/theme.css" layer(theme);
+@import "./theme.css" layer(theme);
 
 /* disable Tailwind's container */
 @source not inline("container");
