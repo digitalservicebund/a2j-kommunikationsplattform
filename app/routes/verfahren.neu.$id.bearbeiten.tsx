@@ -108,6 +108,15 @@ const BeteiligtenNachnameSchema = z.object({
   }),
 });
 
+const LawyerRequiredFieldsSchema = z.object({
+  lawyerName: z.string().min(1, {
+    error: "Bitte geben Sie den Namen der Kanzlei an.",
+  }),
+  lawyerKanzleiformId: z.string().min(1, {
+    error: "Bitte wählen Sie die Kanzleiform aus.",
+  }),
+});
+
 // Dev-only convenience data for the "Fill details with dummy data" button below.
 const DUMMY_FORM_VALUES: Record<string, string> = {
   klagendeParteiVorname: "Test-Klaeger-Vorname",
@@ -319,6 +328,19 @@ export const action = async ({
       });
     }
 
+    if (formData.get("hasLawyer")) {
+      const validatedLawyer = LawyerRequiredFieldsSchema.safeParse({
+        lawyerName: formData.get("lawyerName"),
+        lawyerKanzleiformId: formData.get("lawyerKanzleiformId"),
+      });
+
+      if (!validatedLawyer.success) {
+        return actionFieldErrorsResponse(validatedLawyer.error, {
+          data: { formType: "submit" },
+        });
+      }
+    }
+
     // Fetch the code lists needed to resolve Beteiligung/Rolle references
     let staaten: CodeWertItem[];
     let anschriftstypen: CodeWertItem[];
@@ -445,7 +467,6 @@ export default function VerfahrenNeuBearbeiten() {
   const { verfahren, einreichung, dokumente, gerichte, kanzleiformen } =
     useLoaderData<LoaderData>();
   const actionData = useActionData<typeof action>();
-  console.log("actionData", actionData);
   const isInvalid = actionData?.status === "invalid";
   const isError = actionData?.status === "error";
   const fieldErrors = isInvalid ? actionData.fieldErrors : undefined;
@@ -468,8 +489,6 @@ export default function VerfahrenNeuBearbeiten() {
     useState(false);
   const showFileInputError =
     Boolean(fieldErrors?.file) && !isFileInputErrorDismissed;
-
-  console.log("verfahren", verfahren);
 
   useEffect(() => {
     if (actionData?.status === "success" && navigation.state === "idle") {

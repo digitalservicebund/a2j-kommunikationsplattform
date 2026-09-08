@@ -100,21 +100,16 @@ export default function VerfahrenPlaintiffSection({
               <h3 className="kern-title kern-title--small">
                 {routes.verfahrenNeu.step2.form.plaintiff.hasLawyer.title}
               </h3>
-              <div className="kern-form-input">
-                <label className="kern-label" htmlFor="lawyer-name">
-                  {
-                    routes.verfahrenNeu.step2.form.plaintiff.hasLawyer
-                      .nameOfLawFirm
-                  }
-                </label>
-                <input
-                  className="kern-form-input__input"
-                  id="lawyer-name"
-                  name="lawyerName"
-                  type="text"
-                  defaultValue={lawyerName}
-                />
-              </div>
+              <InputField
+                id="lawyer-name"
+                name="lawyerName"
+                label={
+                  routes.verfahrenNeu.step2.form.plaintiff.hasLawyer
+                    .nameOfLawFirm
+                }
+                defaultValue={lawyerName}
+                error={errors.lawyerName?.join(" ")}
+              />
 
               <VerfahrenKanzleiformSelect
                 id="lawyerKanzleiformId"
@@ -124,7 +119,7 @@ export default function VerfahrenPlaintiffSection({
                 placeholder={shared.form.select.placeholder}
                 kanzleiformenPromise={kanzleiformenPromise}
                 initialSelectedValue={lawyerKanzleiformId}
-                required
+                error={errors.lawyerKanzleiformId?.join(" ")}
               />
 
               <VerfahrenAdresseKontaktFields
