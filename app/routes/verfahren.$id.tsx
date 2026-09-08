@@ -224,7 +224,7 @@ export default function VerfahrenId() {
               hasValidationIssues={hasValidationIssues}
               isValidationErrorFatal={validationErgebnis === "ROT"}
               readinessLabel={readinessPresentation?.readinessLabel ?? ""}
-              fehler={
+              error={
                 initialEinreichung?.einreichung.einreichungsStatus.fehler ?? []
               }
             />

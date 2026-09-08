@@ -10,7 +10,7 @@ type VerfahrenEinreichungOutcomeBannerProps = {
   hasValidationIssues: boolean;
   isValidationErrorFatal: boolean;
   readinessLabel: string;
-  fehler: string[];
+  error: string[];
 };
 
 // Single place that decides which of the (mutually exclusive) einreichen
@@ -24,7 +24,7 @@ export default function VerfahrenEinreichungOutcomeBanner({
   hasValidationIssues,
   isValidationErrorFatal,
   readinessLabel,
-  fehler,
+  error,
 }: Readonly<VerfahrenEinreichungOutcomeBannerProps>) {
   const { shared } = useTranslations();
 
@@ -43,7 +43,7 @@ export default function VerfahrenEinreichungOutcomeBanner({
   }
 
   // A new Validierungslauf (e.g. after regenerating xjustiz.xml) can take a
-  // moment to start, during which `ergebnis`/`fehler` may still reflect the
+  // moment to start, during which `ergebnis`/`error` may still reflect the
   // *previous* run — don't surface stale errors while a fresh check is
   // already in progress.
   if (isValidating || !hasValidationIssues) {
@@ -54,7 +54,7 @@ export default function VerfahrenEinreichungOutcomeBanner({
     <Alert
       type={isValidationErrorFatal ? "error" : "warning"}
       title={readinessLabel}
-      message={fehler.join("\n")}
+      message={error.join("\n")}
     />
   );
 }

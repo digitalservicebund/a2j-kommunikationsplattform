@@ -237,7 +237,7 @@ export default function VerfahrenNeuBearbeiten() {
                 hasValidationIssues={hasValidationIssues}
                 isValidationErrorFatal={validationErgebnis === "ROT"}
                 readinessLabel={readinessLabel}
-                fehler={einreichung.einreichungsStatus.fehler}
+                error={einreichung.einreichungsStatus.fehler}
               />
 
               <VerfahrenOverviewCard verfahren={verfahren} />
