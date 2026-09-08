@@ -29,9 +29,15 @@ import { createEinreichung } from "~/domains/verfahren/infrastructure/repositori
 import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
 import { createVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { VerfahrenAendernInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.input.schema";
+import { VerfahrenAendernRequestDTO } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.request.schema";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
-import { actionError, actionInvalid } from "~/utils/actionState";
+import {
+  actionError,
+  actionFieldErrorsResponse,
+  actionStateFromApiError,
+  actionStateFromSchemaParsingError,
+} from "~/utils/actionState";
 
 const StatementOfClaimUploadSchema = z.object({
   file: z.file().min(1, { error: "Bitte laden Sie eine Datei hoch." }),
@@ -128,29 +134,36 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       return data(actionError("Löschen fehlgeschlagen."), { status: 400 });
     }
 
-    const { eTag } = await fetchDokument(authData, {
-      verfahrenId,
-      einreichungId,
-      id: dokumentId,
-    });
+    try {
+      const { eTag } = await fetchDokument(authData, {
+        verfahrenId,
+        einreichungId,
+        id: dokumentId,
+      });
 
-    const deleteResult = await deleteDokument(authData, {
-      verfahrenId,
-      einreichungId,
-      id: dokumentId,
-      eTag: eTag ?? "",
-    });
+      const deleteResult = await deleteDokument(authData, {
+        verfahrenId,
+        einreichungId,
+        id: dokumentId,
+        eTag: eTag ?? "",
+      });
 
-    if (!deleteResult.success) {
-      return data(
-        actionError("Löschen fehlgeschlagen.", {
-          data: { verfahrenId, einreichungId },
-        }),
-        { status: 500 },
-      );
+      if (!deleteResult.success) {
+        return data(
+          actionError("Löschen fehlgeschlagen.", {
+            data: { verfahrenId, einreichungId },
+          }),
+          { status: 500 },
+        );
+      }
+
+      return redirect(buildRouteUrl(verfahrenId, einreichungId));
+    } catch (error) {
+      return actionStateFromApiError(error, {
+        message: "Löschen fehlgeschlagen.",
+        data: { verfahrenId, einreichungId },
+      });
     }
-
-    return redirect(buildRouteUrl(verfahrenId, einreichungId));
   }
 
   // 2) Guard unsupported form submissions
@@ -162,25 +175,28 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
   // 3) If a draft already has uploads, continue in edit route
   if (existingVerfahrenId && existingEinreichungId) {
-    const { elemente: dokumente } = await fetchDokumente(authData, {
-      verfahrenId: existingVerfahrenId,
-      einreichungId: existingEinreichungId,
-    });
+    try {
+      const { elemente: dokumente } = await fetchDokumente(authData, {
+        verfahrenId: existingVerfahrenId,
+        einreichungId: existingEinreichungId,
+      });
 
-    if (dokumente.length > 0) {
-      return redirect(`/verfahren/neu/${existingVerfahrenId}/bearbeiten`);
+      if (dokumente.length > 0) {
+        return redirect(`/verfahren/neu/${existingVerfahrenId}/bearbeiten`);
+      }
+    } catch (error) {
+      return actionStateFromApiError(error, {
+        message: "Die Klage konnte nicht gespeichert werden.",
+      });
     }
   }
 
   const formValues = Object.fromEntries(formData);
   const validatedForm = StatementOfClaimUploadSchema.safeParse(formValues);
   if (!validatedForm.success) {
-    return data(
-      actionInvalid(z.flattenError(validatedForm.error).fieldErrors, {
-        data: { formValues },
-      }),
-      { status: 400 },
-    );
+    return actionFieldErrorsResponse(validatedForm.error, {
+      data: { formValues },
+    });
   }
 
   const { file, verfahrensgegenstand, gerichtId } = validatedForm.data;
@@ -190,25 +206,49 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
   let einreichungId = existingEinreichungId;
 
   if (!verfahrenId || !einreichungId) {
-    const verfahrenPayload = VerfahrenAendernInputSchema.parse({
-      verfahrensgegenstand,
-      kurzrubrum: null,
-      gerichtId,
-      beteiligungen: null,
-    });
-    const verfahren = await createVerfahren(authData, verfahrenPayload);
-    verfahrenId = verfahren.id;
-    const einreichung = await createEinreichung(authData, verfahrenId);
-    einreichungId = einreichung.id;
+    let verfahrenPayload: VerfahrenAendernRequestDTO;
+
+    try {
+      verfahrenPayload = VerfahrenAendernInputSchema.parse({
+        verfahrensgegenstand,
+        kurzrubrum: null,
+        gerichtId,
+        beteiligungen: null,
+      });
+    } catch (error) {
+      return actionStateFromSchemaParsingError(error, {
+        message: "Die Klage konnte nicht gespeichert werden.",
+        data: { formValues },
+      });
+    }
+
+    try {
+      const verfahren = await createVerfahren(authData, verfahrenPayload);
+      verfahrenId = verfahren.id;
+      const einreichung = await createEinreichung(authData, verfahrenId);
+      einreichungId = einreichung.id;
+    } catch (error) {
+      return actionStateFromApiError(error, {
+        message: "Die Klage konnte nicht gespeichert werden.",
+        data: { formValues },
+      });
+    }
   }
 
-  await uploadDokument(
-    authData,
-    verfahrenId,
-    einreichungId,
-    file,
-    "SCHRIFTSTUECK",
-  );
+  try {
+    await uploadDokument(
+      authData,
+      verfahrenId,
+      einreichungId,
+      file,
+      "SCHRIFTSTUECK",
+    );
+  } catch (error) {
+    return actionStateFromApiError(error, {
+      message: "Die Klage konnte nicht gespeichert werden.",
+      data: { formValues },
+    });
+  }
 
   // 5) Continue to bearbeiten step
   return redirect(`/verfahren/neu/${verfahrenId}/bearbeiten`);
