@@ -1,5 +1,6 @@
 import { data } from "react-router";
 import z from "zod";
+import de from "~/services/translations/de";
 import { ApiError } from "~/utils/apiError";
 
 export type ActionState<T = undefined> =
@@ -44,7 +45,7 @@ function actionStateFromUnknownError<T = undefined>(
   console.error("[Unexpected action error]", error);
 
   return data(
-    actionError(options?.message ?? "Ein unbekannter Fehler ist aufgetreten.", {
+    actionError(options?.message ?? de.shared.form.errors.unknown, {
       data: options?.data,
     }),
     { status: 500 },

@@ -31,6 +31,7 @@ import {
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+import de from "~/services/translations/de";
 import { actionStateFromApiError, actionSuccess } from "~/utils/actionState";
 
 type LoaderData = {
@@ -111,7 +112,7 @@ export const action = async ({
       return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
     } catch (error) {
       return actionStateFromApiError(error, {
-        message: "Löschen fehlgeschlagen.",
+        message: de.shared.form.errors.deleteFailed,
       });
     }
   }
@@ -129,7 +130,7 @@ export const action = async ({
       return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
     } catch (error) {
       return actionStateFromApiError(error, {
-        message: "Die Einreichung konnte nicht übermittelt werden.",
+        message: de.shared.form.errors.einreichungFailed,
       });
     }
   }
@@ -148,7 +149,7 @@ export const action = async ({
       return actionSuccess({ downloadUrl });
     } catch (error) {
       return actionStateFromApiError(error, {
-        message: "Der Beleg konnte nicht heruntergeladen werden.",
+        message: de.shared.form.errors.belegDownloadFailed,
       });
     }
   }

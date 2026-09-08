@@ -74,6 +74,7 @@ import {
 } from "~/domains/verfahren/services/verfahrenCodeConstants";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+import de from "~/services/translations/de";
 import {
   actionError,
   actionFieldErrorsResponse,
@@ -101,19 +102,19 @@ const DokumentUploadSchema = z.object({
 
 const BeteiligtenNachnameSchema = z.object({
   klagendeParteiNachname: z.string().min(1, {
-    error: "Bitte geben Sie den Nachnamen der klagenden Partei an.",
+    error: de.routes.verfahrenNeu.step2.form.validation.klagendeParteiNachname,
   }),
   beklagteParteiNachname: z.string().min(1, {
-    error: "Bitte geben Sie den Nachnamen der beklagten Partei an.",
+    error: de.routes.verfahrenNeu.step2.form.validation.beklagteParteiNachname,
   }),
 });
 
 const LawyerRequiredFieldsSchema = z.object({
   lawyerName: z.string().min(1, {
-    error: "Bitte geben Sie den Namen der Kanzlei an.",
+    error: de.routes.verfahrenNeu.step2.form.validation.lawyerName,
   }),
   lawyerKanzleiformId: z.string().min(1, {
-    error: "Bitte wählen Sie die Kanzleiform aus.",
+    error: de.routes.verfahrenNeu.step2.form.validation.lawyerKanzleiform,
   }),
 });
 
@@ -271,7 +272,7 @@ export const action = async ({
       await uploadDokument(authData, verfahrenId, einreichungId, file, type);
     } catch (error) {
       return actionStateFromApiError(error, {
-        message: "Das Dokument konnte nicht hochgeladen werden.",
+        message: de.shared.form.errors.uploadFailed,
         data: { formValues, formType: "upload" },
       });
     }
@@ -299,13 +300,15 @@ export const action = async ({
       });
 
       if (!deleteResult.success) {
-        return data(actionError("Löschen fehlgeschlagen."), { status: 500 });
+        return data(actionError(de.shared.form.errors.deleteFailed), {
+          status: 500,
+        });
       }
 
       return actionSuccess(undefined);
     } catch (error) {
       return actionStateFromApiError(error, {
-        message: "Löschen fehlgeschlagen.",
+        message: de.shared.form.errors.deleteFailed,
       });
     }
   }
@@ -361,7 +364,7 @@ export const action = async ({
       ]);
     } catch (error) {
       return actionStateFromApiError(error, {
-        message: "Die Änderungen konnten nicht gespeichert werden.",
+        message: de.shared.form.errors.saveFailed,
       });
     }
 
@@ -454,7 +457,7 @@ export const action = async ({
       });
     } catch (error) {
       return actionStateFromApiError(error, {
-        message: "Die Änderungen konnten nicht gespeichert werden.",
+        message: de.shared.form.errors.saveFailed,
         data: { formValues, formType: "submit" },
       });
     }
@@ -733,7 +736,7 @@ export default function VerfahrenNeuBearbeiten() {
                 <Alert
                   type="error"
                   title={shared.form.submit.title}
-                  message={actionData.error ?? "An error occured"}
+                  message={actionData.error ?? shared.form.submit.message}
                 />
               )}
 

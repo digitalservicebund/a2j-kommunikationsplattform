@@ -32,6 +32,7 @@ import { VerfahrenAendernInputSchema } from "~/domains/verfahren/infrastructure/
 import { VerfahrenAendernRequestDTO } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.request.schema";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+import de from "~/services/translations/de";
 import {
   actionError,
   actionFieldErrorsResponse,
@@ -40,11 +41,15 @@ import {
 } from "~/utils/actionState";
 
 const StatementOfClaimUploadSchema = z.object({
-  file: z.file().min(1, { error: "Bitte laden Sie eine Datei hoch." }),
-  verfahrensgegenstand: z
-    .string()
-    .min(2, { error: "Bitte geben Sie den Verfahrensgegenstand an." }),
-  gerichtId: z.string().min(1, { error: "Bitte wählen Sie ein Gericht aus." }),
+  file: z.file().min(1, {
+    error: de.routes.verfahrenNeu.step1.form.validation.file,
+  }),
+  verfahrensgegenstand: z.string().min(2, {
+    error: de.routes.verfahrenNeu.step1.form.validation.verfahrensgegenstand,
+  }),
+  gerichtId: z.string().min(1, {
+    error: de.routes.verfahrenNeu.step1.form.validation.gericht,
+  }),
   analysis: z.coerce.boolean().optional(),
 });
 
@@ -131,7 +136,9 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       typeof einreichungId !== "string" ||
       typeof dokumentId !== "string"
     ) {
-      return data(actionError("Löschen fehlgeschlagen."), { status: 400 });
+      return data(actionError(de.shared.form.errors.deleteFailed), {
+        status: 400,
+      });
     }
 
     try {
@@ -150,7 +157,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
       if (!deleteResult.success) {
         return data(
-          actionError("Löschen fehlgeschlagen.", {
+          actionError(de.shared.form.errors.deleteFailed, {
             data: { verfahrenId, einreichungId },
           }),
           { status: 500 },
@@ -160,7 +167,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       return redirect(buildRouteUrl(verfahrenId, einreichungId));
     } catch (error) {
       return actionStateFromApiError(error, {
-        message: "Löschen fehlgeschlagen.",
+        message: de.shared.form.errors.deleteFailed,
         data: { verfahrenId, einreichungId },
       });
     }
@@ -168,7 +175,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
   // 2) Guard unsupported form submissions
   if (formType !== "submit") {
-    return data(actionError("Ungültige Formularübermittlung."), {
+    return data(actionError(de.shared.form.errors.invalidSubmission), {
       status: 400,
     });
   }
@@ -186,7 +193,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       }
     } catch (error) {
       return actionStateFromApiError(error, {
-        message: "Die Klage konnte nicht gespeichert werden.",
+        message: de.shared.form.errors.submissionFailed,
       });
     }
   }
@@ -217,7 +224,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       });
     } catch (error) {
       return actionStateFromSchemaParsingError(error, {
-        message: "Die Klage konnte nicht gespeichert werden.",
+        message: de.shared.form.errors.submissionFailed,
         data: { formValues },
       });
     }
@@ -229,7 +236,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       einreichungId = einreichung.id;
     } catch (error) {
       return actionStateFromApiError(error, {
-        message: "Die Klage konnte nicht gespeichert werden.",
+        message: de.shared.form.errors.submissionFailed,
         data: { formValues },
       });
     }
@@ -245,7 +252,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
     );
   } catch (error) {
     return actionStateFromApiError(error, {
-      message: "Die Klage konnte nicht gespeichert werden.",
+      message: de.shared.form.errors.submissionFailed,
       data: { formValues },
     });
   }
