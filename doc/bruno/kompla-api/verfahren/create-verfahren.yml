@@ -9,7 +9,15 @@ http:
   body:
     type: json
     data: |-
-      {}
+      {
+        "safe_id": "{{SAFE_ID}}",
+        "verfahren": {
+          "verfahrensgegenstand": "Zahlungsklage",
+          "kurzrubrum": null,
+          "gericht_id": "{{GERICHT_ID}}",
+          "beteiligungen": null
+        }
+      }
   auth: inherit
 
 settings:

@@ -1,7 +1,7 @@
 import {
   PROTOTYPE_HIGHLIGHT_LABEL,
   PROTOTYPE_HINT_SUFFIX,
-} from "~/domains/verfahren/presentationPlaceholders";
+} from "~/components/verfahren/presentation/placeholders";
 
 type VerfahrenPrototypeHintProps = {
   className?: string;
@@ -12,7 +12,7 @@ export default function VerfahrenPrototypeHint({
 }: Readonly<VerfahrenPrototypeHintProps>) {
   return (
     <p className={className}>
-      <span className="bg-kern-feedback-info-background">
+      <span className="bg-(--kern-color-feedback-info-background)">
         {PROTOTYPE_HIGHLIGHT_LABEL}
       </span>{" "}
       {PROTOTYPE_HINT_SUFFIX}

@@ -1,14 +1,14 @@
 import { clsx } from "clsx";
 
 const SkeletonBlock = () => (
-  <div className="space-y-kern-space-x-large w-full">
-    <div className="space-y-kern-space-small">
-      <div className="bg-kern-layout-background-hued h-kern-dimension-large rounded-kern-default max-w-352"></div>
-      <div className="bg-kern-layout-background-hued h-kern-dimension-large rounded-kern-default max-w-224"></div>
+  <div className="w-full space-y-(--kern-metric-space-x-large)">
+    <div className="space-y-(--kern-metric-space-small)">
+      <div className="h-(--kern-metric-dimension-large) max-w-88 rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
+      <div className="h-(--kern-metric-dimension-large) max-w-56 rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
     </div>
-    <div className="space-y-kern-space-small">
-      <div className="bg-kern-layout-background-hued h-kern-dimension-large rounded-kern-default max-w-352"></div>
-      <div className="bg-kern-layout-background-hued h-kern-dimension-large rounded-kern-default max-w-224"></div>
+    <div className="space-y-(--kern-metric-space-small)">
+      <div className="h-(--kern-metric-dimension-large) max-w-88 rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
+      <div className="h-(--kern-metric-dimension-large) max-w-56 rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
     </div>
   </div>
 );
@@ -16,22 +16,22 @@ const SkeletonBlock = () => (
 export default function VerfahrenTileSkeleton() {
   const cssClasses = clsx(
     "relative",
-    "after:border-y-1 sm:after:border-x-1 sm:after:rounded-kern-default after:border-kern-layout-border",
+    "after:border-y-1 sm:after:border-x-1 sm:after:rounded-(--kern-metric-border-radius-default) after:border-(--kern-color-layout-border)",
     "after:absolute after:top-0 after:-right-16 after:bottom-0 after:-left-16",
   );
 
   return (
     <div className={cssClasses} data-testid="verfahren-tile-skeleton">
-      <div className="gap-kern-space-large py-kern-dimension-large px-kern-space-default flex w-full animate-pulse flex-col items-center">
-        <div className="space-x-kern-space-small flex w-full">
+      <div className="kern-gap-lg kern-px-md flex w-full animate-pulse flex-col items-center py-(--kern-metric-dimension-large)">
+        <div className="flex w-full space-x-(--kern-metric-space-small)">
           <SkeletonBlock />
           <SkeletonBlock />
           <SkeletonBlock />
         </div>
-        <div className="bg-kern-layout-background-hued rounded-kern-default h-1 w-full"></div>
+        <div className="h-0 w-full rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
         <div className="flex w-full">
-          <div className="space-y-kern-space-x-large w-full">
-            <div className="bg-kern-layout-background-hued h-kern-dimension-x-large rounded-kern-default w-352 max-w-full"></div>
+          <div className="w-full space-y-(--kern-metric-space-x-large)">
+            <div className="h-(--kern-metric-dimension-x-large) w-88 max-w-full rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)"></div>
           </div>
         </div>
       </div>

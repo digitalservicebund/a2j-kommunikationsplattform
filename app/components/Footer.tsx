@@ -4,12 +4,12 @@ import { useTranslations } from "~/services/translations/context";
 export default function Footer() {
   const { shared, descriptions, contentLinkLabels } = useTranslations();
   return (
-    <footer className="kern-container mt-kern-dimension-5x-large">
-      <div className="py-kern-space-large">
+    <footer className="kern-container mt-(--kern-metric-dimension-5x-large)">
+      <div className="kern-py-lg">
         <hr className="kern-divider" aria-hidden="true" />
       </div>
       <nav
-        className="gap-x-kern-space-default flex flex-row flex-wrap justify-between"
+        className="kern-gap-x-md flex flex-row flex-wrap justify-between"
         aria-label={shared.FOOTER_ARIA_LABEL}
       >
         <Link to="/datenschutz" className="kern-link">
@@ -31,7 +31,7 @@ export default function Footer() {
           {contentLinkLabels.IMPRESSUM_LINK_LABEL}
         </Link>
       </nav>
-      <div className="mt-kern-space-default mb-kern-space-x-large text-center">
+      <div className="kern-mt-md kern-mb-xl text-center">
         <p className="kern-body kern-body--small kern-body--muted">
           {descriptions.PROJECT_DESCRIPTION}
         </p>

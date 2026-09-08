@@ -1,0 +1,12 @@
+info:
+  name: Get Einreichung XJustiz
+  type: http
+  seq: 6
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/xjustiz"
+  auth: inherit
+
+settings:
+  encodeUrl: true

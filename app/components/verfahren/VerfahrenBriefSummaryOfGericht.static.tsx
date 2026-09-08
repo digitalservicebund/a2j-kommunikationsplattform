@@ -22,8 +22,8 @@ export default function VerfahrenBriefSummaryOfGericht({
   iban,
 }: Readonly<VerfahrenBriefSummaryOfGerichtProps>) {
   return (
-    <div className="p-kern-space-default space-y-kern-space-default rounded-kern-default border border-(--kern-color-decorative-border-contextual)">
-      <h3 className="kern-heading-small pb-kern-space-default border-b border-(--kern-color-decorative-border-contextual) px-0">
+    <div className="kern-p-md space-y-(--kern-metric-space-default) rounded-(--kern-metric-border-radius-default) border border-(--kern-color-decorative-border-contextual)">
+      <h3 className="kern-heading-small kern-pb-md border-b border-(--kern-color-decorative-border-contextual) px-0">
         {title}
       </h3>
       <dl className="kern-description-list kern-description-list--col">
@@ -39,13 +39,13 @@ export default function VerfahrenBriefSummaryOfGericht({
           <dt className="kern-description-list-item__key">
             {kontoinhaberLabel}
           </dt>
-          <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
+          <dd className="kern-description-list-item__value bg-(--kern-color-feedback-info-background)">
             {kontoinhaber}
           </dd>
         </div>
         <div className="kern-description-list-item">
           <dt className="kern-description-list-item__key">{ibanLabel}</dt>
-          <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
+          <dd className="kern-description-list-item__value bg-(--kern-color-feedback-info-background)">
             {iban}
           </dd>
         </div>

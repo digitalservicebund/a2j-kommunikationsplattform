@@ -1,0 +1,15 @@
+info:
+  name: Submit Einreichung
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/einreichungen/{{EINREICHUNG_ID}}/einreichen"
+  headers:
+    - name: If-Match
+      value: "{{ETAG}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true

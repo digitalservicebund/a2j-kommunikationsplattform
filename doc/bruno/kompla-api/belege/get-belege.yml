@@ -1,0 +1,17 @@
+info:
+  name: Get Belege
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}/belege"
+  params:
+    - name: einreichung-id
+      value: "{{EINREICHUNG_ID}}"
+      type: query
+      disabled: true
+  auth: inherit
+
+settings:
+  encodeUrl: true

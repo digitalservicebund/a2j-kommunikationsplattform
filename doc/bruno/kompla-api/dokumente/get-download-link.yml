@@ -11,6 +11,10 @@ http:
       value: "300"
       type: query
       disabled: true
+    - name: disposition_type
+      value: ATTACHMENT
+      type: query
+      disabled: true
   auth: inherit
 
 settings:

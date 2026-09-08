@@ -6,7 +6,7 @@ import VerfahrenSelect, {
 } from "~/components/verfahren/VerfahrenSelect";
 
 export type GerichtSelectItem = {
-  code?: string | null;
+  id?: string | null;
   wert?: string | null;
 };
 
@@ -14,7 +14,7 @@ export const buildGerichteOptions = (
   gerichte: GerichtSelectItem[],
 ): InputSelectOption[] => {
   return gerichte.map((gericht) => ({
-    value: gericht.code ?? "",
+    value: gericht.id ?? "",
     label: gericht.wert ?? "Wert fehlt",
   }));
 };

@@ -21,8 +21,8 @@ export default defineConfig({
         "app/**/__test__/*.test.{ts,tsx}",
         // exclude static files
         "app/**/*.static.tsx",
-        // exclude schema files
-        "app/**/schemas/*.ts",
+        // exclude schema files (including nested folders, e.g. schemas/requests/*.ts)
+        "app/**/schemas/**/*.ts",
         // exclude routes.ts
         "app/routes.ts",
         // exclude all files from constants directory

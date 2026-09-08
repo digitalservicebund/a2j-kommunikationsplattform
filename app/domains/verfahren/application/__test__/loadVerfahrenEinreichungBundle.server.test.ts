@@ -1,0 +1,87 @@
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
+import loadVerfahrenEinreichungBundle from "../loadVerfahrenEinreichungBundle.server";
+
+const mocks = vi.hoisted(() => ({
+  fetchVerfahrenById: vi.fn(),
+  fetchEinreichungenById: vi.fn(),
+  fetchEinreichungStatus: vi.fn(),
+  fetchDokumente: vi.fn(),
+}));
+
+vi.mock(
+  "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server",
+  () => ({
+    fetchVerfahrenById: mocks.fetchVerfahrenById,
+  }),
+);
+
+vi.mock(
+  "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server",
+  () => ({
+    fetchEinreichungenById: mocks.fetchEinreichungenById,
+    fetchEinreichungStatus: mocks.fetchEinreichungStatus,
+  }),
+);
+
+vi.mock(
+  "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server",
+  () => ({
+    fetchDokumente: mocks.fetchDokumente,
+  }),
+);
+
+describe("loadVerfahrenEinreichungBundle", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test("loads and combines verfahren, einreichung, status and dokumente", async () => {
+    const verfahren = { id: "v-1", status: "ERSTELLT" };
+    const einreichungsStatus = { status: "GRUEN", validation_messages: [] };
+    const dokumente = [{ id: "d-1", name: "klage.pdf", size_in_bytes: 1200 }];
+
+    mocks.fetchVerfahrenById.mockResolvedValueOnce(verfahren);
+    mocks.fetchEinreichungenById.mockResolvedValueOnce({
+      elemente: [{ id: "e-1" }],
+    });
+    mocks.fetchEinreichungStatus.mockResolvedValueOnce(einreichungsStatus);
+    mocks.fetchDokumente.mockResolvedValueOnce({ elemente: dokumente });
+
+    const result = await loadVerfahrenEinreichungBundle(mockAuthData, "v-1");
+
+    expect(mocks.fetchVerfahrenById).toHaveBeenCalledWith(mockAuthData, {
+      id: "v-1",
+    });
+    expect(mocks.fetchEinreichungenById).toHaveBeenCalledWith(mockAuthData, {
+      id: "v-1",
+    });
+    expect(mocks.fetchEinreichungStatus).toHaveBeenCalledWith(mockAuthData, {
+      id: "e-1",
+      verfahrenId: "v-1",
+    });
+    expect(mocks.fetchDokumente).toHaveBeenCalledWith(mockAuthData, {
+      einreichungId: "e-1",
+      verfahrenId: "v-1",
+    });
+
+    expect(result).toEqual({
+      verfahren,
+      einreichung: {
+        id: "e-1",
+        einreichungsStatus,
+      },
+      dokumente,
+      einreichungId: "e-1",
+    });
+  });
+
+  test("throws when no einreichung exists", async () => {
+    mocks.fetchVerfahrenById.mockResolvedValueOnce({ id: "v-1" });
+    mocks.fetchEinreichungenById.mockResolvedValueOnce({ elemente: [] });
+
+    await expect(
+      loadVerfahrenEinreichungBundle(mockAuthData, "v-1"),
+    ).rejects.toThrow("No Einreichung could be fetched");
+  });
+});

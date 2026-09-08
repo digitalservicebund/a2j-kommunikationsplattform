@@ -9,7 +9,9 @@ http:
   body:
     type: json
     data: |-
-      {}
+      {
+        "name": "Klageeinreichung"
+      }
   auth: inherit
 
 settings:

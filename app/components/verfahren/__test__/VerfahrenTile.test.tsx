@@ -10,10 +10,14 @@ import VerfahrenTile, { VerfahrenTileProps } from "../VerfahrenTile";
 
 const mockVerfahren: VerfahrenTileProps = {
   id: "123",
-  aktenzeichen_gericht: "AZ-123",
+  aktenzeichenGericht: "AZ-123",
+  verfahrensgegenstand: null,
+  kurzrubrum: null,
   status: "EINGEREICHT",
-  status_changed: "2026-05-22T14:02:31.832Z",
-  eingereicht_am: "2026-05-22T14:02:31.832Z",
+  statusGeaendertAm: "2026-05-22T14:02:31.832Z",
+  erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstelltAm: "2026-05-22T14:02:31.832Z",
+  eingereichtAm: "2026-05-22T14:02:31.832Z",
   gericht: {
     id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
     wert: "Landgericht Frankfurt",
@@ -21,50 +25,64 @@ const mockVerfahren: VerfahrenTileProps = {
   },
   beteiligungen: [
     {
+      beteiligtenart: "natuerlichePerson",
       id: "bet-1",
-      name: "Klaus Müller",
+      nachname: "Müller",
+      vorname: "Klaus",
+      titel: null,
+      namensvorsatz: null,
       rollen: [
         {
           id: "rolle-1",
-          wert: "Kläger:in",
-          code: "101",
+          rollennummer: null,
+          rollenbezeichnung: {
+            id: "rb-1",
+            wert: "Kläger:in",
+            code: "101",
+          },
+          geschaeftszeichen: "GZ-12345",
+          referenz: null,
         },
       ],
-      prozessbevollmaechtigte: [
-        {
-          aktenzeichen: "GZ-12345",
-          id: "bev-1",
-          name: "Rechtsanwalt Schmidt",
-        },
-      ],
+      anschriften: null,
+      telekommunikation: null,
     },
     {
+      beteiligtenart: "natuerlichePerson",
       id: "bet-2",
-      name: "Maria Weber",
+      nachname: "Weber",
+      vorname: "Maria",
+      titel: null,
+      namensvorsatz: null,
       rollen: [
         {
           id: "rolle-2",
-          wert: "Beklagte:r",
-          code: "028",
+          rollennummer: null,
+          rollenbezeichnung: {
+            id: "rb-2",
+            wert: "Beklagte:r",
+            code: "028",
+          },
+          geschaeftszeichen: "GZ-67890",
+          referenz: null,
         },
       ],
-      prozessbevollmaechtigte: [
-        {
-          aktenzeichen: "GZ-67890",
-          id: "bev-2",
-          name: "Rechtsanwältin Fischer",
-        },
-      ],
+      anschriften: null,
+      telekommunikation: null,
     },
   ],
 };
 
 const mockVerfahrenWithMissingData: VerfahrenTileProps = {
   id: "456",
-  aktenzeichen_gericht: "AZ-456",
+  aktenzeichenGericht: "AZ-456",
+  verfahrensgegenstand: null,
+  kurzrubrum: null,
   status: "EINGEREICHT",
-  status_changed: "2026-05-22T14:02:31.832Z",
-  eingereicht_am: "2026-05-22T14:02:31.832Z",
+  statusGeaendertAm: "2026-05-22T14:02:31.832Z",
+  erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstelltAm: "2026-05-22T14:02:31.832Z",
+  eingereichtAm: "2026-05-22T14:02:31.832Z",
   gericht: {
     id: "b727131c-0c32-91ba-3eaa-f44405967b6d",
     wert: "Landgericht Frankfurt",
@@ -83,6 +101,7 @@ describe("VerfahrenTile", () => {
         </MemoryRouter>,
       );
 
+    expect(getByText("Klaus Müller ./. Maria Weber")).toBeInTheDocument();
     expect(getByText("Klaus Müller")).toBeInTheDocument();
     expect(getByText("Maria Weber")).toBeInTheDocument();
     expect(getByText("GZ-12345")).toBeInTheDocument();
@@ -106,14 +125,16 @@ describe("VerfahrenTile", () => {
 
     // badge is shown for submitted cases
     expect(container.querySelector(".kern-badge")).toBeInTheDocument();
-    expect(getByText("Klage eingereicht")).toBeInTheDocument();
+    expect(getByText("Verfahren eingereicht")).toBeInTheDocument();
 
     // no "disabled/muted" appearance
     expect(
-      container.querySelector("dd.text-kern-layout-text-muted"),
+      container.querySelector("dd.text-\\(--kern-color-layout-text-muted\\)"),
     ).not.toBeInTheDocument();
     expect(
-      container.querySelector(".after\\:bg-kern-layout-background-hued"),
+      container.querySelector(
+        ".after\\:bg-\\(--kern-color-layout-background-hued\\)",
+      ),
     ).not.toBeInTheDocument();
   });
 
@@ -126,5 +147,26 @@ describe("VerfahrenTile", () => {
 
     const notAvailableElements = getAllByText("Unbekannt");
     expect(notAvailableElements.length).toBeGreaterThan(0);
+  });
+
+  it("should prefer kurzrubrum over the beteiligte names when set", () => {
+    const { getByText, queryByText } = renderWithTestTranslations(
+      <MemoryRouter>
+        <VerfahrenTile {...mockVerfahren} kurzrubrum="Müller ./. Weber u.a." />
+      </MemoryRouter>,
+    );
+
+    expect(getByText("Müller ./. Weber u.a.")).toBeInTheDocument();
+    expect(queryByText("Klaus Müller ./. Maria Weber")).not.toBeInTheDocument();
+  });
+
+  it("should reflect the Verfahren status in the badge", () => {
+    const { getByText } = renderWithTestTranslations(
+      <MemoryRouter>
+        <VerfahrenTile {...mockVerfahren} status="GELOESCHT" />
+      </MemoryRouter>,
+    );
+
+    expect(getByText("Verfahren gelöscht")).toBeInTheDocument();
   });
 });

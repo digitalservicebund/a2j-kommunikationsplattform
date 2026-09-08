@@ -5,7 +5,7 @@ scopeconfig:
 allowed_patterns:
 
 - key
-- 'uses:\s\*[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+@[a-fA-F0-9]{40}'
+- 'uses:\s*[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+@[a-fA-F0-9]{40}'
 - TRIVY_PASSWORD:\ \${{\ secrets.GITHUB_TOKEN\ }}
 - secrets:\ inherit
 - password:\ \${{\ secrets.GITHUB_TOKEN\ }}
@@ -33,19 +33,25 @@ fileignoreconfig:
 - filename: .github/workflows/sonarqube.yml
   checksum: fb26d92afd2c93fb6b909b0c78866bf3b79ad49fd5dc3a758f3a662d68ffaa5e
 - filename: .github/workflows/pipeline.yml
-  checksum: b99ceb3db19d2f87b1326859b406a3e754d64911f030a1d75fee73cf44a2755d
+  checksum: dbf5a3ce979118a6deab7979f3fc41bb45a0e32b5c396dd204f1cb56ef111e29
 - filename: .github/workflows/scan.yml
   checksum: ad9c0586638711e445110f81e7277dc69dc3a083ce6ecd541f5a3c5d13c6df46
 - filename: .env.op
   checksum: 1c7661fd991fc0338fe12c259b06f656503f92c7d7d8387466fe76f42fc83597
 - filename: .env.defaults
   checksum: 112c758585f05e082d888fa8fbdf4321fd08662333e6cdd121d048e60bbe0797
+- filename: app/components/__test__/InputCheckbox.test.tsx
+  checksum: f2029dd37f24819432dc8cf73b0fafa45d55e9489e635a5b0098e306bcca61b3
 - filename: app/config/**test**/config.server.test.ts
   checksum: e0032376dcb50535952654822230a18fce1ade507f9252cac9ba83055b4b1edc
 - filename: playwright.config.ts
   checksum: 64e5e6fe7a7787a6c84f3c8ac347e54a421c400c6982b46ee2b6d4dd4497af75
 - filename: .github/workflows/dependabot-auto-merge.yml
-  checksum: aa4ad6ddaa190d85cc7b027108e71dd7afbc63e4969fe0e196dd399be7cac89e
+  checksum: d38b76a2ffd2efaba9093bff446eb840f94327845cb588333b2405f4572605b3
+- filename: prototype/Kommunikationsplattform-Post-MVP.html
+  checksum: 1ed102775018be5f6feaae0b744620556c237651a828224926e1604e7bfd2910
+- filename: prototype/Kommunikationsplattform-MVP-Prototyp.html
+  checksum: 4e65e28cc0b8688025a800cdbbbb4d6da9e9de05580455050bee90035d1c892a
 - filename: app/components/hooks/**test**/useLogoutInactiveUser.test.tsx
   ignore_detectors: [filecontent]
 - filename: app/config/config.server.ts
@@ -63,6 +69,8 @@ fileignoreconfig:
 - filename: doc/HOW_TO_CONFIGURE_BRUNO.md
   ignore_detectors: [filecontent]
 - filename: doc/DEVELOPMENT.md
+  ignore_detectors: [filecontent]
+- filename: doc/adr/*
   ignore_detectors: [filecontent]
 - filename: README.md
   ignore_detectors: [filecontent]

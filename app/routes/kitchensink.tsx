@@ -7,10 +7,14 @@ type VerfahrenTileProps = ComponentProps<typeof VerfahrenTile>;
 
 const mockVerfahrenComplete: VerfahrenTileProps = {
   id: "123",
-  aktenzeichen_gericht: "4 O 123/24",
+  aktenzeichenGericht: "4 O 123/24",
+  verfahrensgegenstand: null,
+  kurzrubrum: null,
   status: "EINGEREICHT",
-  status_changed: "2026-04-15T12:22:30.657924Z",
-  eingereicht_am: "2026-04-16T10:22:30.657924Z",
+  statusGeaendertAm: "2026-04-15T12:22:30.657924Z",
+  erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstelltAm: "2026-04-15T12:22:30.657924Z",
+  eingereichtAm: "2026-04-16T10:22:30.657924Z",
   gericht: {
     id: "gericht-1",
     wert: "Landgericht Frankfurt am Main",
@@ -18,38 +22,53 @@ const mockVerfahrenComplete: VerfahrenTileProps = {
   },
   beteiligungen: [
     {
+      beteiligtenart: "natuerlichePerson",
       id: "bet-1",
-      name: "Klaus Müller",
-      rollen: [{ id: "rolle-1", wert: "Kläger:in", code: "101" }],
-      prozessbevollmaechtigte: [
+      nachname: "Müller",
+      vorname: "Klaus",
+      titel: null,
+      namensvorsatz: null,
+      rollen: [
         {
-          aktenzeichen: "GZ-2024/12345",
-          id: "bev-1",
-          name: "Rechtsanwalt Dr. Schmidt",
+          id: "rolle-1",
+          rollennummer: null,
+          rollenbezeichnung: { id: "rb-1", wert: "Kläger:in", code: "101" },
+          geschaeftszeichen: "GZ-2024/12345",
+          referenz: null,
         },
       ],
+      anschriften: null,
+      telekommunikation: null,
     },
     {
+      beteiligtenart: "organisation",
       id: "bet-2",
-      name: "Beispiel GmbH",
-      rollen: [{ id: "rolle-2", wert: "Beklagte:r", code: "028" }],
-      prozessbevollmaechtigte: [
+      bezeichnung: "Beispiel GmbH",
+      rollen: [
         {
-          aktenzeichen: "GZ-2024/67890",
-          id: "bev-2",
-          name: "Rechtsanwältin Fischer",
+          id: "rolle-2",
+          rollennummer: null,
+          rollenbezeichnung: { id: "rb-2", wert: "Beklagte:r", code: "028" },
+          geschaeftszeichen: "GZ-2024/67890",
+          referenz: null,
         },
       ],
+      anschriften: null,
+      telekommunikation: null,
     },
   ],
 };
 
 const mockVerfahrenMinimal: VerfahrenTileProps = {
   id: "019d9117-d2d5-775d-9821-8b74b0c6aaac",
-  aktenzeichen_gericht: null,
+  aktenzeichenGericht: null,
+  verfahrensgegenstand: null,
+  kurzrubrum: null,
   status: "ERSTELLT",
-  status_changed: "2026-04-09T12:22:30.657924Z",
-  eingereicht_am: null,
+  statusGeaendertAm: "2026-04-09T12:22:30.657924Z",
+  erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstelltAm: "2026-04-09T12:22:30.657924Z",
+  eingereichtAm: null,
   gericht: {
     id: "gericht-2",
     wert: "Amtsgericht Berlin-Mitte",
@@ -61,7 +80,9 @@ const mockVerfahrenMinimal: VerfahrenTileProps = {
 
 const mockVerfahrenPartial: VerfahrenTileProps = {
   id: "123d9117-d2d5-775d-9821-8b74b0c6aaac",
-  aktenzeichen_gericht: "1 S 456/24",
+  aktenzeichenGericht: "1 S 456/24",
+  verfahrensgegenstand: null,
+  kurzrubrum: null,
   gericht: {
     id: "gericht-2",
     wert: "Amtsgericht Berlin-Mitte",
@@ -69,28 +90,43 @@ const mockVerfahrenPartial: VerfahrenTileProps = {
   },
   beteiligungen: [
     {
+      beteiligtenart: "natuerlichePerson",
       id: "bet-3",
-      name: "Maria Weber",
-      rollen: [{ id: "rolle-3", wert: "Kläger:in", code: "101" }],
-      prozessbevollmaechtigte: [],
+      nachname: "Weber",
+      vorname: "Maria",
+      titel: null,
+      namensvorsatz: null,
+      rollen: [
+        {
+          id: "rolle-3",
+          rollennummer: null,
+          rollenbezeichnung: { id: "rb-3", wert: "Kläger:in", code: "101" },
+          geschaeftszeichen: null,
+          referenz: null,
+        },
+      ],
+      anschriften: null,
+      telekommunikation: null,
     },
   ],
   status: "EINGEREICHT",
-  status_changed: "2026-05-01T12:22:30.657924Z",
-  eingereicht_am: "2026-04-28T12:22:30.657924Z",
+  statusGeaendertAm: "2026-05-01T12:22:30.657924Z",
+  erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+  erstelltAm: "2026-05-01T12:22:30.657924Z",
+  eingereichtAm: "2026-04-28T12:22:30.657924Z",
 };
 
 export default function KitchensinkRoute() {
   const { alerts } = useTranslations();
   return (
-    <div className="space-y-kern-dimension-large">
+    <div className="space-y-(--kern-metric-dimension-large)">
       <h1 className="kern-heading-medium">Kitchensink</h1>
       <Alert
         type="info"
         title={alerts.WORK_IN_PROGRESS_TITLE}
         message={alerts.WORK_IN_PROGRESS_MESSAGE}
       />
-      <div className="space-y-kern-dimension-large">
+      <div className="space-y-(--kern-metric-dimension-large)">
         <KitchensinkWrapper label="VerfahrenTile - All data available">
           <VerfahrenTile {...mockVerfahrenComplete} />
         </KitchensinkWrapper>
@@ -114,7 +150,7 @@ function KitchensinkWrapper({
 }>) {
   return (
     <section>
-      <div className="bg-kern-orange-050 p-kern-space-default space-x-kern-space-large rounded-kern-border-radius-default min-h-kern-dimension-5x-large flex items-center overflow-hidden">
+      <div className="kern-p-md flex min-h-(--kern-metric-dimension-5x-large) items-center space-x-(--kern-metric-space-large) overflow-hidden rounded-(--kern-metric-border-radius-default) bg-(--kern-color-orange-050)">
         <p className="kern-body kern-body--small kern-body--bold">{label}</p>
       </div>
       <div className="pointer-events-none">{children}</div>

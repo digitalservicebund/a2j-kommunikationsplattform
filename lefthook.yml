@@ -11,6 +11,9 @@ pre-commit:
     check-format:
       tags: style
       run: npm run format:check
+    test:
+      tags: test
+      run: npm test
 pre-push:
   parallel: true
   commands:

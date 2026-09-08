@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useFetcher } from "react-router";
-import { LogoutType } from "~/routes/action.logout-user";
+import { LogoutType } from "~/services/auth/auth.types";
 
 /**
  * useLogoutInactiveUser custom hook

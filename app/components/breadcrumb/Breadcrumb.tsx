@@ -104,10 +104,7 @@ export const Breadcrumb = () => {
           const isLast = index === breadcrumbs.length - 1;
 
           return (
-            <li
-              key={crumb.path}
-              className="gap-kern-space-small flex items-center"
-            >
+            <li key={crumb.path} className="kern-gap-sm flex items-center">
               {isLast ? (
                 <span className="kern-body kern-body--muted">
                   {crumb.label}
@@ -116,12 +113,12 @@ export const Breadcrumb = () => {
                 <>
                   <Link
                     to={crumb.path}
-                    className="kern-body text-kern-layout-text-muted visited:text-kern-layout-text-muted no-underline hover:underline"
+                    className="kern-body text-(--kern-color-layout-text-muted) no-underline visited:text-(--kern-color-layout-text-muted) hover:underline"
                   >
                     {crumb.label}
                   </Link>
                   <span
-                    className="kern-icon kern-icon--keyboard-double-arrow-right bg-kern-layout-text-muted"
+                    className="kern-icon kern-icon--keyboard-double-arrow-right bg-(--kern-color-layout-text-muted)"
                     aria-hidden="true"
                   ></span>
                 </>

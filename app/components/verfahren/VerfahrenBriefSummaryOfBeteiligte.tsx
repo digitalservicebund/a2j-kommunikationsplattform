@@ -1,20 +1,27 @@
-type Prozessbevollmaechtigte = {
-  name?: string | null;
-  aktenzeichen?: string | null;
-};
-
-type Beteiligte = {
-  id: string;
-  name?: string | null;
-  prozessbevollmaechtigte?: Prozessbevollmaechtigte[] | null;
-};
+import type {
+  BeteiligteSummaryItem,
+  ProzessbevollmaechtigterSummaryItem,
+} from "~/components/verfahren/presentation/buildBeteiligteSummaryItems";
 
 type VerfahrenBriefSummaryOfBeteiligteProps = {
   title: string;
-  beteiligte: Beteiligte[];
+  beteiligte: BeteiligteSummaryItem[];
   fallbackLabel: string;
   notAvailableLabel: string;
 };
+
+function formatVertretungName(
+  prozessbevollmaechtigte: ProzessbevollmaechtigterSummaryItem,
+  notAvailableLabel: string,
+): string {
+  const name = prozessbevollmaechtigte.name ?? notAvailableLabel;
+
+  if (prozessbevollmaechtigte.aktenzeichen) {
+    return `${name} (${prozessbevollmaechtigte.aktenzeichen})`;
+  }
+
+  return name;
+}
 
 export default function VerfahrenBriefSummaryOfBeteiligte({
   title,
@@ -23,8 +30,8 @@ export default function VerfahrenBriefSummaryOfBeteiligte({
   notAvailableLabel,
 }: Readonly<VerfahrenBriefSummaryOfBeteiligteProps>) {
   return (
-    <div className="p-kern-space-default space-y-kern-space-default rounded-kern-default border border-(--kern-color-decorative-border-contextual)">
-      <h3 className="kern-heading-small pb-kern-space-default border-b border-(--kern-color-decorative-border-contextual) px-0">
+    <div className="kern-p-md space-y-(--kern-metric-space-default) rounded-(--kern-metric-border-radius-default) border border-(--kern-color-decorative-border-contextual)">
+      <h3 className="kern-heading-small kern-pb-md border-b border-(--kern-color-decorative-border-contextual) px-0">
         {title}
       </h3>
       <dl className="kern-description-list kern-description-list--col">
@@ -52,46 +59,77 @@ export default function VerfahrenBriefSummaryOfBeteiligte({
                   className="kern-description-list-item"
                 >
                   <dt className="kern-description-list-item__key">Anschrift</dt>
-                  <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
-                    {notAvailableLabel}
-                  </dd>
-                </div>
-
-                <div
-                  key={`${beteiligung.id}-kontakt`}
-                  className="kern-description-list-item"
-                >
-                  <dt className="kern-description-list-item__key">Kontakt</dt>
-                  <dd className="kern-description-list-item__value bg-kern-feedback-info-background">
-                    {notAvailableLabel}
-                  </dd>
-                </div>
-
-                <div
-                  key={`${beteiligung.id}-vertretung`}
-                  className="kern-description-list-item"
-                >
-                  <dt className="kern-description-list-item__key">
-                    Vertretung
-                  </dt>
                   <dd className="kern-description-list-item__value">
-                    {beteiligung.prozessbevollmaechtigte &&
-                    beteiligung.prozessbevollmaechtigte.length > 0
-                      ? beteiligung.prozessbevollmaechtigte
-                          .map((prozessbevollmaechtigte) => {
-                            const vertretungName =
-                              prozessbevollmaechtigte.name ?? notAvailableLabel;
-
-                            if (prozessbevollmaechtigte.aktenzeichen) {
-                              return `${vertretungName} (${prozessbevollmaechtigte.aktenzeichen})`;
-                            }
-
-                            return vertretungName;
-                          })
-                          .join(", ")
-                      : notAvailableLabel}
+                    {beteiligung.anschrift ?? notAvailableLabel}
                   </dd>
                 </div>
+
+                <div
+                  key={`${beteiligung.id}-email`}
+                  className="kern-description-list-item"
+                >
+                  <dt className="kern-description-list-item__key">E-Mail</dt>
+                  <dd className="kern-description-list-item__value">
+                    {beteiligung.email ?? notAvailableLabel}
+                  </dd>
+                </div>
+
+                <div
+                  key={`${beteiligung.id}-telefon`}
+                  className="kern-description-list-item"
+                >
+                  <dt className="kern-description-list-item__key">Telefon</dt>
+                  <dd className="kern-description-list-item__value">
+                    {beteiligung.telefon ?? notAvailableLabel}
+                  </dd>
+                </div>
+
+                {beteiligung.prozessbevollmaechtigte &&
+                beteiligung.prozessbevollmaechtigte.length > 0 ? (
+                  beteiligung.prozessbevollmaechtigte.map(
+                    (prozessbevollmaechtigte, index) => (
+                      <div key={`${beteiligung.id}-vertretung-${index}`}>
+                        <div className="kern-description-list-item">
+                          <dt className="kern-description-list-item__key">
+                            Vertretung
+                          </dt>
+                          <dd className="kern-description-list-item__value">
+                            {formatVertretungName(
+                              prozessbevollmaechtigte,
+                              notAvailableLabel,
+                            )}
+                          </dd>
+                        </div>
+                        <div className="kern-description-list-item">
+                          <dt className="kern-description-list-item__key">
+                            Anschrift der Vertretung
+                          </dt>
+                          <dd className="kern-description-list-item__value">
+                            {prozessbevollmaechtigte.anschrift ??
+                              notAvailableLabel}
+                          </dd>
+                        </div>
+                        <div className="kern-description-list-item">
+                          <dt className="kern-description-list-item__key">
+                            Kontakt der Vertretung
+                          </dt>
+                          <dd className="kern-description-list-item__value">
+                            {prozessbevollmaechtigte.email ?? notAvailableLabel}
+                          </dd>
+                        </div>
+                      </div>
+                    ),
+                  )
+                ) : (
+                  <div className="kern-description-list-item">
+                    <dt className="kern-description-list-item__key">
+                      Vertretung
+                    </dt>
+                    <dd className="kern-description-list-item__value">
+                      {notAvailableLabel}
+                    </dd>
+                  </div>
+                )}
               </div>
             ))}
           </>

@@ -9,10 +9,22 @@ http:
   headers:
     - name: If-Match
       value: "{{ETAG}}"
+    - name: Dokument-Typ
+      value: XJUSTIZ
+      disabled: true
+    - name: Dokument-Sichtbarkeit-Alle
+      value: "true"
+      disabled: true
+    - name: Dokument-Anzeigename
+      value: sample_klaver_3500001.xml
+      disabled: true
   body:
-    type: json
-    data: |-
-      "XJUSTIZ"
+    type: multipart-form
+    data:
+      - name: datei
+        value: "@file(../../data/xjustiz/sample_klaver_3500001.xml)"
+        contentType: ""
+        disabled: true
   auth: inherit
 
 settings:

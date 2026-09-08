@@ -16,24 +16,25 @@ let infoLog = `Info:
   -> API will be mocked: ${mockJustizBackendAPI ? "yes" : "no"}
 `;
 
-if (mockJustizBackendAPI) {
-  infoLog +=
-    "  -> Setting up a Justiz-Backend-API mock for local development\n";
-}
-
-if (!isProduction) {
-  infoLog += "  -> Setting up a viteDevServer for local development\n";
-}
-
-if (mockJustizBackendAPI) {
-  const mockJustizBackendService = mockJustizBackendAPI
-    ? await import("./mocks/api/node.js")
-    : undefined;
-
-  if (mockJustizBackendService) {
-    mockJustizBackendService.server.listen();
-  }
-}
+// TODO: uncomment below when ticket is completed
+// if (mockJustizBackendAPI) {
+//   infoLog +=
+//     "  -> Setting up a Justiz-Backend-API mock for local development\n";
+// }
+//
+// if (!isProduction) {
+//   infoLog += "  -> Setting up a viteDevServer for local development\n";
+// }
+//
+// if (mockJustizBackendAPI) {
+//   const mockJustizBackendService = mockJustizBackendAPI
+//     ? await import("./mocks/api/node.js")
+//     : undefined;
+//
+//   if (mockJustizBackendService) {
+//     mockJustizBackendService.server.listen();
+//   }
+// }
 
 const viteDevServer = isProduction
   ? undefined
@@ -53,6 +54,11 @@ const reactRouterHandler = createRequestHandler({
 });
 
 const app = express();
+// Trust one hop (the Traefik ingress), which terminates TLS and forwards
+// plain HTTP internally. Without this, req.protocol reports "http" while
+// the browser's Origin header is "https", which fails React Router's
+// single-fetch CSRF origin check and returns 400 on every action request.
+app.set("trust proxy", 1);
 app.use(compression());
 app.disable("x-powered-by");
 

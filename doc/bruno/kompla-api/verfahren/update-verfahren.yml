@@ -1,0 +1,75 @@
+info:
+  name: Update Verfahren
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{BASE_URL}}/api/v1/verfahren/{{VERFAHREN_ID}}"
+  headers:
+    - name: If-Match
+      value: "{{ETAG}}"
+  body:
+    type: json
+    data: |-
+      {
+        "verfahrensgegenstand": "Zahlungsklage",
+        "kurzrubrum": null,
+        "gericht_id": "{{GERICHT_ID}}",
+        "beteiligungen": [
+          {
+            "beteiligtenart": "natuerlichePerson",
+            "vorname": "Max",
+            "nachname": "Mustermann",
+            "titel": null,
+            "namensvorsatz": null,
+            "rollen": [
+              {
+                "rollenbezeichnung_id": "d46b6600-0ef7-1bdf-6c6e-390339367854",
+                "rollennummer": null,
+                "geschaeftszeichen": null,
+                "referenz": null
+              }
+            ],
+            "anschriften": null,
+            "kommunikationsanschluesse": null
+          },
+          {
+            "beteiligtenart": "organisation",
+            "bezeichnung": "Lufthansa",
+            "rollen": [
+              {
+                "rollenbezeichnung_id": "0e443639-0999-90bd-1394-3b982a8d2595",
+                "rollennummer": null,
+                "geschaeftszeichen": null,
+                "referenz": null
+              }
+            ],
+            "anschriften": null,
+            "kommunikationsanschluesse": null
+          },
+              {
+              "beteiligtenart": "raKanzlei",
+              "bezeichnung": "Kanzlei Böhm",
+              "rechtsform_id": null,
+              "kanzleiform_id": "d405a33e-3e11-25c4-6835-7f4f60eb4c98",
+              "rollen": [
+                {
+                  "rollenbezeichnung_id": "0e443639-0999-90bd-1394-3b982a8d2595",
+                  "rollennummer": null,
+                  "geschaeftszeichen": null,
+                  "referenz": null
+                }
+              ],
+              "anschriften": null,
+              "kommunikationsanschluesse": null
+            }
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

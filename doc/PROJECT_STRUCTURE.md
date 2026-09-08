@@ -15,18 +15,22 @@ app/
 ├── domains/                                 # Business area or feature-focused code
 │   ├── ...
 │   └── verfahren/                           # Verfahren domain
+│       ├── entities/                        # Domain types and business rules
+│       ├── services/                        # Pure domain logic (no I/O)
+│       ├── application/                     # Use cases orchestrating entities/services
+│       └── infrastructure/                  # I/O boundary: api/, repositories/, schemas/
 │
 ├── middleware/                              # Logic before and after response generation
 │
 ├── routes/
 │   ├── _index.tsx                           # Root route at /
 │   ├── ...
-│   ├── verfahren.neu.tsx                    # Each route has its own file to keep
-│   └── verfahren.tsx                        # it as simple as possible for now
+│   ├── verfahren.neu.tsx                    # Each route has its own file; heavier
+│   └── verfahren.tsx                        # JSX sections are extracted into
+│                                             # components/verfahren/ to keep routes small
 │
-├── services/                                # Reusable implementations (API, auth, storage)
-│   ├── ...
-│   ├── api/                                 # API
+├── services/                                # Reusable, cross-domain implementations
+│   ├── ...                                  # (auth, security, error handling)
 │   └── translations/                        # translations (only German for now)
 │
 ├── utils/                                   # Utilities

@@ -1,0 +1,12 @@
+info:
+  name: Get Rollenbezeichnungen
+  type: http
+  seq: 6
+
+http:
+  method: GET
+  url: "{{BASE_URL}}/api/v1/codelisten/rollenbezeichnungen"
+  auth: inherit
+
+settings:
+  encodeUrl: true
