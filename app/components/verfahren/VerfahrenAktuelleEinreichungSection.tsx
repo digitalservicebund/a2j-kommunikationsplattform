@@ -152,7 +152,7 @@ export default function VerfahrenAktuelleEinreichungSection({
                         .basisdaten.label
                     }
                   </h5>
-                  <div className="kern-mt-md kern-gap-md rounded-kern-default grid grid-cols-1 border border-(--kern-color-decorative-border-contextual) md:grid-cols-2">
+                  <div className="kern-mt-md kern-gap-md grid grid-cols-1 rounded-(--kern-metric-border-radius-default) border border-(--kern-color-decorative-border-contextual) md:grid-cols-2">
                     <dl className="kern-description-list kern-description-list--col">
                       <div className="kern-description-list-item">
                         <dt className="kern-description-list-item__key">
@@ -211,7 +211,7 @@ export default function VerfahrenAktuelleEinreichungSection({
                         .additionalData.label
                     }
                   </h5>
-                  <div className="kern-mt-md kern-gap-md rounded-kern-default grid grid-cols-1 border border-(--kern-color-decorative-border-contextual)">
+                  <div className="kern-mt-md kern-gap-md grid grid-cols-1 rounded-(--kern-metric-border-radius-default) border border-(--kern-color-decorative-border-contextual)">
                     <dl className="kern-description-list kern-description-list--col">
                       <div className="kern-description-list-item">
                         <dt className="kern-description-list-item__key">

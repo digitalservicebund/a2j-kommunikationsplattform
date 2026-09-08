@@ -63,7 +63,7 @@ export default function VerfahrenFilterBar({
         />
       </div>
       <hr
-        className="kern-divider border-kern-layout-border w-full"
+        className="kern-divider w-full border-(--kern-color-layout-border)"
         aria-hidden="true"
       />
     </div>
