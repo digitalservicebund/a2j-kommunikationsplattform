@@ -14,8 +14,8 @@ import z from "zod";
 import Alert from "~/components/Alert";
 import InputCheckbox from "~/components/InputCheckbox";
 import Progress from "~/components/Progress";
+import VerfahrenKlageschriftFormSection from "~/components/verfahren/VerfahrenKlageschriftFormSection";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
-import VerfahrenStatementOfClaimUploadFields from "~/components/verfahren/VerfahrenStatementOfClaimUploadFields";
 import VerfahrenUploadedDokumentSummary from "~/components/verfahren/VerfahrenUploadedDokumentSummary";
 import { requireAuthData } from "~/domains/verfahren/application/routeContext.server";
 import type { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
@@ -339,7 +339,7 @@ export default function VerfahrenNeu() {
                       isSubmitting={isSubmitting}
                     />
                   ) : (
-                    <VerfahrenStatementOfClaimUploadFields
+                    <VerfahrenKlageschriftFormSection
                       errors={fieldErrors || {}}
                       gerichtePromise={loaderData.gerichtePromise}
                       selectedGerichtId={selectedGerichtId}

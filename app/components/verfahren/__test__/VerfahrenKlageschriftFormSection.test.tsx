@@ -2,7 +2,7 @@
 
 import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
-import VerfahrenStatementOfClaimUploadFields from "../VerfahrenStatementOfClaimUploadFields";
+import VerfahrenKlageschriftFormSection from "../VerfahrenKlageschriftFormSection";
 
 const baseProps = {
   errors: {},
@@ -11,10 +11,10 @@ const baseProps = {
   onGerichtIdChange: vi.fn(),
 };
 
-describe("VerfahrenStatementOfClaimUploadFields", () => {
+describe("VerfahrenKlageschriftFormSection", () => {
   it("renders the file input, verfahrensgegenstand and gericht select without an error", () => {
     const { getByLabelText, queryByText } = renderWithTestTranslations(
-      <VerfahrenStatementOfClaimUploadFields {...baseProps} />,
+      <VerfahrenKlageschriftFormSection {...baseProps} />,
     );
 
     expect(getByLabelText("Datei hochladen")).toBeInTheDocument();
@@ -25,7 +25,7 @@ describe("VerfahrenStatementOfClaimUploadFields", () => {
 
   it("shows the file error message when the file field has an error", () => {
     const { getByLabelText } = renderWithTestTranslations(
-      <VerfahrenStatementOfClaimUploadFields
+      <VerfahrenKlageschriftFormSection
         {...baseProps}
         errors={{ file: ["Bitte laden Sie eine Datei hoch."] }}
       />,
@@ -39,7 +39,7 @@ describe("VerfahrenStatementOfClaimUploadFields", () => {
 
   it("joins multiple messages for the same field into one error", () => {
     const { getByText } = renderWithTestTranslations(
-      <VerfahrenStatementOfClaimUploadFields
+      <VerfahrenKlageschriftFormSection
         {...baseProps}
         errors={{ verfahrensgegenstand: ["Fehler eins.", "Fehler zwei."] }}
       />,

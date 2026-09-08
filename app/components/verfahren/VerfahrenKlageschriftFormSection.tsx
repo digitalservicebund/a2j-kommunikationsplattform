@@ -5,19 +5,19 @@ import VerfahrenGerichteSelect, {
 } from "~/components/verfahren/VerfahrenGerichteSelect";
 import { useTranslations } from "~/services/translations/context";
 
-type VerfahrenStatementOfClaimUploadFieldsProps = {
+type VerfahrenKlageschriftFormSectionProps = {
   errors: Record<string, string[]>;
   gerichtePromise: Promise<GerichtSelectItem[]>;
   selectedGerichtId: string;
   onGerichtIdChange: (selectedValue: string) => void;
 };
 
-export default function VerfahrenStatementOfClaimUploadFields({
+export default function VerfahrenKlageschriftFormSection({
   errors,
   gerichtePromise,
   selectedGerichtId,
   onGerichtIdChange,
-}: Readonly<VerfahrenStatementOfClaimUploadFieldsProps>) {
+}: Readonly<VerfahrenKlageschriftFormSectionProps>) {
   const { shared } = useTranslations();
 
   return (
