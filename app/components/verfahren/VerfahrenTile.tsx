@@ -36,7 +36,7 @@ function DataCard({
   readonly children: React.ReactNode;
 }) {
   return (
-    <div className="kern-p-md kern-gap-lg flex min-h-352 flex-col items-start overflow-hidden rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)">
+    <div className="kern-p-md kern-gap-lg flex min-h-88 flex-col items-start overflow-hidden rounded-(--kern-metric-border-radius-default) bg-(--kern-color-layout-background-hued)">
       <div className="w-full space-y-(--kern-metric-space-default)">
         <h4 className="kern-heading-small">{label}</h4>
         <hr
@@ -116,7 +116,7 @@ export default function VerfahrenTile({
 
               <Link
                 to={`/verfahren/${id}`}
-                className="kern-btn kern-btn--primary my-2.5"
+                className="kern-btn kern-btn--primary"
               >
                 <FolderInfoIcon />
                 <span className="kern-label">

@@ -88,10 +88,7 @@ export default function VerfahrenRoute() {
     <>
       <div className="mb-(--kern-metric-dimension-small) flex justify-between">
         <VerfahrenHeading ref={headingRef} />
-        <Link
-          to="/verfahren/neu"
-          className="kern-btn kern-btn--secondary my-2.5"
-        >
+        <Link to="/verfahren/neu" className="kern-btn kern-btn--secondary">
           <span className="kern-label">Neues Verfahren anlegen</span>
           <span
             className="kern-icon kern-icon--arrow-forward"

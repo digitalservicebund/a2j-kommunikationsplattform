@@ -100,7 +100,7 @@ export default function VerfahrenAktuelleEinreichungSection({
   return (
     <>
       <div className="kern-gap-md flex items-stretch">
-        <div className="w-80 flex-[0_0_auto]">
+        <div className="w-20 flex-[0_0_auto]">
           <span className="kern-body kern-body--small kern-body--muted">
             {isBelegReady && beleg
               ? new Date(beleg.erstelltAm).toLocaleDateString()
@@ -113,7 +113,7 @@ export default function VerfahrenAktuelleEinreichungSection({
             className={`kern-icon ${isBelegReady ? "kern-icon--check" : "kern-icon--edit"} kern-icon--default`}
             aria-hidden="true"
           ></span>
-          <div className="kern-mt-sm min-h-16 w-2 flex-1 bg-(--kern-color-decorative-border-default) p-0"></div>
+          <div className="kern-mt-sm min-h-4 w-0.5 flex-1 bg-(--kern-color-decorative-border-default) p-0"></div>
         </div>
         <div className="kern-pb-md flex-1">
           <article
