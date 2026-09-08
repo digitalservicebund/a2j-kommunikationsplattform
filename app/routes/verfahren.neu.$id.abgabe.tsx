@@ -31,6 +31,7 @@ import {
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+import { actionStateFromApiError, actionSuccess } from "~/utils/actionState";
 
 type LoaderData = {
   verfahren: Verfahren;
@@ -95,40 +96,61 @@ export const action = async ({
 
   // 1) Handle delete flow for an already uploaded document
   if (formType === "delete") {
-    const deleteResult = await deleteDokumentFromEinreichung({
-      authData,
-      verfahrenId,
-      einreichungId: formData.get("einreichungId"),
-      dokumentId: formData.get("dokumentId"),
-    });
+    try {
+      const deleteResult = await deleteDokumentFromEinreichung({
+        authData,
+        verfahrenId,
+        einreichungId: formData.get("einreichungId"),
+        dokumentId: formData.get("dokumentId"),
+      });
 
-    if (deleteResult.status === "invalid-form-data") {
-      return redirect(`/verfahren/${verfahrenId}`);
+      if (deleteResult.status === "invalid-form-data") {
+        return redirect(`/verfahren/${verfahrenId}`);
+      }
+
+      return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
+    } catch (error) {
+      return actionStateFromApiError(error, {
+        message: "Löschen fehlgeschlagen.",
+      });
     }
-
-    return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   }
 
   // 2) Handle Einreichung submission (no-op if already submitted)
   if (formType === "einreichen") {
     const einreichungId = formData.get("einreichungId") as string;
 
-    await submitEinreichungIfNeeded(authData, { verfahrenId, einreichungId });
+    try {
+      await submitEinreichungIfNeeded(authData, {
+        verfahrenId,
+        einreichungId,
+      });
 
-    return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
+      return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
+    } catch (error) {
+      return actionStateFromApiError(error, {
+        message: "Die Einreichung konnte nicht übermittelt werden.",
+      });
+    }
   }
 
   // 3) Handle Beleg download link requests
   if (formType === "download-beleg") {
     const belegId = formData.get("belegId") as string;
 
-    const downloadUrl = await fetchBelegDownloadLink(authData, {
-      verfahrenId,
-      id: belegId,
-      dispositionType: "ATTACHMENT",
-    });
+    try {
+      const downloadUrl = await fetchBelegDownloadLink(authData, {
+        verfahrenId,
+        id: belegId,
+        dispositionType: "ATTACHMENT",
+      });
 
-    return { downloadUrl };
+      return actionSuccess({ downloadUrl });
+    } catch (error) {
+      return actionStateFromApiError(error, {
+        message: "Der Beleg konnte nicht heruntergeladen werden.",
+      });
+    }
   }
 
   return redirect(`/verfahren/${verfahrenId}`);
