@@ -3,7 +3,7 @@ import VerfahrenAdresseKontaktFields from "~/components/verfahren/VerfahrenAdres
 import type { Anschrift } from "~/domains/verfahren/services/beteiligteContactInfo";
 import { useTranslations } from "~/services/translations/context";
 
-type VerfahrenDefendantSectionProps = {
+type VerfahrenBeklagterSectionProps = {
   firstName: string;
   lastName: string;
   anschrift: Anschrift | undefined;
@@ -12,14 +12,14 @@ type VerfahrenDefendantSectionProps = {
   errors: Record<string, string[]>;
 };
 
-export default function VerfahrenDefendantSection({
+export default function VerfahrenBeklagterSection({
   firstName,
   lastName,
   anschrift,
   email,
   telefon,
   errors,
-}: Readonly<VerfahrenDefendantSectionProps>) {
+}: Readonly<VerfahrenBeklagterSectionProps>) {
   const { routes, shared } = useTranslations();
 
   return (

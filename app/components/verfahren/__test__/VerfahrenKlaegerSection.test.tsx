@@ -3,9 +3,9 @@
 import userEvent from "@testing-library/user-event";
 import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
-import VerfahrenPlaintiffSection from "../VerfahrenPlaintiffSection";
+import VerfahrenKlaegerSection from "../VerfahrenKlaegerSection";
 
-describe("VerfahrenPlaintiffSection", () => {
+describe("VerfahrenKlaegerSection", () => {
   const baseProps = {
     firstName: "Emilia",
     lastName: "Kühn",
@@ -25,7 +25,7 @@ describe("VerfahrenPlaintiffSection", () => {
 
   it("renders the plaintiff name fields and hides the lawyer sub-form by default", () => {
     const { getByText, getByLabelText, queryByLabelText } =
-      renderWithTestTranslations(<VerfahrenPlaintiffSection {...baseProps} />);
+      renderWithTestTranslations(<VerfahrenKlaegerSection {...baseProps} />);
 
     expect(getByText("Klagende Partei")).toBeInTheDocument();
     expect((getByLabelText("Vorname") as HTMLInputElement).value).toBe(
@@ -39,7 +39,7 @@ describe("VerfahrenPlaintiffSection", () => {
 
   it("shows the lawyer sub-form when hasLawyer is true", () => {
     const { getByText } = renderWithTestTranslations(
-      <VerfahrenPlaintiffSection
+      <VerfahrenKlaegerSection
         {...baseProps}
         hasLawyer
         lawyerName="Kanzlei Böhm"
@@ -51,7 +51,7 @@ describe("VerfahrenPlaintiffSection", () => {
 
   it("shows a validation error on the lawyer name field", () => {
     const { getByText } = renderWithTestTranslations(
-      <VerfahrenPlaintiffSection
+      <VerfahrenKlaegerSection
         {...baseProps}
         hasLawyer
         errors={{
@@ -67,7 +67,7 @@ describe("VerfahrenPlaintiffSection", () => {
 
   it("shows a validation error on the Kanzleiform select", () => {
     const { getByText } = renderWithTestTranslations(
-      <VerfahrenPlaintiffSection
+      <VerfahrenKlaegerSection
         {...baseProps}
         hasLawyer
         lawyerName="Kanzlei Böhm"
@@ -87,7 +87,7 @@ describe("VerfahrenPlaintiffSection", () => {
     const onHasLawyerChange = vi.fn();
 
     const { getByLabelText } = renderWithTestTranslations(
-      <VerfahrenPlaintiffSection
+      <VerfahrenKlaegerSection
         {...baseProps}
         onHasLawyerChange={onHasLawyerChange}
       />,

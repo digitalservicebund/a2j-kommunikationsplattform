@@ -16,11 +16,11 @@ import z from "zod";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import Progress from "~/components/Progress";
-import VerfahrenDefendantSection from "~/components/verfahren/VerfahrenDefendantSection";
+import VerfahrenBeklagterSection from "~/components/verfahren/VerfahrenBeklagterSection";
 import VerfahrenDetailsFormSection from "~/components/verfahren/VerfahrenDetailsFormSection";
 import VerfahrenDocumentsFormSection from "~/components/verfahren/VerfahrenDocumentsFormSection";
+import VerfahrenKlaegerSection from "~/components/verfahren/VerfahrenKlaegerSection";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
-import VerfahrenPlaintiffSection from "~/components/verfahren/VerfahrenPlaintiffSection";
 import { config } from "~/config/config";
 import loadVerfahrenEinreichungBundle, {
   Dokument,
@@ -741,7 +741,7 @@ export default function VerfahrenNeuBearbeiten() {
               )}
 
               <div className="kern-gap-lg flex flex-col">
-                <VerfahrenPlaintiffSection
+                <VerfahrenKlaegerSection
                   firstName={klagendeParteiFirstName}
                   lastName={klagendeParteiLastName}
                   anschrift={klagendeParteiAnschrift}
@@ -758,7 +758,7 @@ export default function VerfahrenNeuBearbeiten() {
                   errors={fieldErrors || {}}
                 />
 
-                <VerfahrenDefendantSection
+                <VerfahrenBeklagterSection
                   firstName={beklagteParteiFirstName}
                   lastName={beklagteParteiLastName}
                   anschrift={beklagteParteiAnschrift}

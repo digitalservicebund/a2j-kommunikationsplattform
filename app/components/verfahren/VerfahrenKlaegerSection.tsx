@@ -7,7 +7,7 @@ import VerfahrenKanzleiformSelect, {
 import type { Anschrift } from "~/domains/verfahren/services/beteiligteContactInfo";
 import { useTranslations } from "~/services/translations/context";
 
-type VerfahrenPlaintiffSectionProps = {
+type VerfahrenKlaegerSectionProps = {
   firstName: string;
   lastName: string;
   anschrift: Anschrift | undefined;
@@ -24,7 +24,7 @@ type VerfahrenPlaintiffSectionProps = {
   errors: Record<string, string[]>;
 };
 
-export default function VerfahrenPlaintiffSection({
+export default function VerfahrenKlaegerSection({
   firstName,
   lastName,
   anschrift,
@@ -39,7 +39,7 @@ export default function VerfahrenPlaintiffSection({
   lawyerKanzleiformId,
   kanzleiformenPromise,
   errors,
-}: Readonly<VerfahrenPlaintiffSectionProps>) {
+}: Readonly<VerfahrenKlaegerSectionProps>) {
   const { routes, shared } = useTranslations();
 
   return (
