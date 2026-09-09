@@ -18,6 +18,7 @@ export default function InputFile({
   className = "",
   hint,
   error,
+  accept,
   ref,
   ...inputProps
 }: Readonly<InputFileProps>) {
@@ -42,6 +43,7 @@ export default function InputFile({
         className={`kern-form-input__input ${error ? "kern-form-input__input--error" : ""}`.trim()}
         id={id}
         name={id}
+        accept={accept}
         aria-describedby={
           [hintId, errorId].filter(Boolean).join(" ") || undefined
         }

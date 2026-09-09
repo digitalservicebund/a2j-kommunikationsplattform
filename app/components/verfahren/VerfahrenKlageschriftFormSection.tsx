@@ -5,19 +5,28 @@ import VerfahrenGerichteSelect, {
 } from "~/components/verfahren/VerfahrenGerichteSelect";
 import { useTranslations } from "~/services/translations/context";
 
-type VerfahrenKlageschriftFormSectionProps = {
+const ACCEPTED_KLAGESCHRIFT_FILE_TYPES = [
+  // Word
+  ".docx",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  // PDF
+  ".pdf",
+  "application/pdf",
+].join(",");
+
+type VerfahrenStatementOfClaimUploadFieldsProps = {
   errors: Record<string, string[]>;
   gerichtePromise: Promise<GerichtSelectItem[]>;
   selectedGerichtId: string;
   onGerichtIdChange: (selectedValue: string) => void;
 };
 
-export default function VerfahrenKlageschriftFormSection({
+export default function VerfahrenStatementOfClaimUploadFields({
   errors,
   gerichtePromise,
   selectedGerichtId,
   onGerichtIdChange,
-}: Readonly<VerfahrenKlageschriftFormSectionProps>) {
+}: Readonly<VerfahrenStatementOfClaimUploadFieldsProps>) {
   const { shared } = useTranslations();
 
   return (
@@ -26,6 +35,7 @@ export default function VerfahrenKlageschriftFormSection({
         label={shared.form.uploadDokument.label}
         id="file"
         hint={shared.form.uploadDokument.hint}
+        accept={ACCEPTED_KLAGESCHRIFT_FILE_TYPES}
         error={errors.file ? shared.form.uploadDokument.error : undefined}
       />
 
