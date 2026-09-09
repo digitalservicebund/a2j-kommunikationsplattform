@@ -54,9 +54,7 @@ export default function VerfahrenDocumentsFormSection({
               {(resolvedData: Dokument[]) =>
                 resolvedData.length > 1 && (
                   <div className="kern-mt-md kern-mb-lg kern-gap-md flex w-full flex-col">
-                    {uploadedDokumente.map((dokumente) => {
-                      const dokument = dokumente;
-
+                    {uploadedDokumente.map((dokument) => {
                       if (!dokument) {
                         return null;
                       }

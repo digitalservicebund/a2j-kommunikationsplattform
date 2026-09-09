@@ -64,7 +64,7 @@ export const setAuthSession = async ({
     return await commitSession(session);
   } catch (error) {
     console.error("Error while setting/updating auth session:", error);
-    throw new Error("Failed to set/update auth session");
+    throw new Error("Failed to set/update auth session", { cause: error });
   }
 };
 

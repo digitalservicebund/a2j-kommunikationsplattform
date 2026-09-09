@@ -531,6 +531,14 @@ export default function VerfahrenNeuBearbeiten() {
     }
   }, [fieldErrors?.file]);
 
+  const [selectedDokumentType, setSelectedDokumentType] = useState<string>(
+    (formValues?.type as string) || "",
+  );
+  const dokumentTypeError =
+    fieldErrors?.type &&
+    selectedDokumentType === "" &&
+    shared.form.selectDokumentType.error;
+
   useEffect(() => {
     if (
       navigation.state !== "idle" ||
@@ -609,14 +617,6 @@ export default function VerfahrenNeuBearbeiten() {
   const uploadedDokumente = dokumente.filter((dokument) =>
     canDeleteDokument(dokument),
   );
-
-  const [selectedDokumentType, setSelectedDokumentType] = useState<string>(
-    (formValues?.type as string) || "",
-  );
-  const dokumentTypeError =
-    fieldErrors?.type &&
-    selectedDokumentType === "" &&
-    shared.form.selectDokumentType.error;
 
   const handleDeleteDokument = (dokument: Dokument) => {
     setSubmitState("delete");

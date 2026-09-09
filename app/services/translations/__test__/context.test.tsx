@@ -23,7 +23,7 @@ describe("useTranslations", () => {
       shared: { ...dictionaries.de.shared, A: "A2" },
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // oxlint-disable-next-line no-unused-vars
     const setValueRef = { current: (_: typeof custom1) => {} };
 
     const wrapper = ({ children }: { children: React.ReactNode }) => {

@@ -8,8 +8,8 @@ export type ActionResult<T = undefined> =
   | { status: "invalid"; fieldErrors: Record<string, string[]>; data?: T }
   | { status: "error"; error: string; data?: T };
 
-export function actionSuccess<T>(data: T): ActionResult<T> {
-  return { status: "success", data };
+export function actionSuccess<T>(resultData: T): ActionResult<T> {
+  return { status: "success", data: resultData };
 }
 
 export function actionInvalid<T = undefined>(
