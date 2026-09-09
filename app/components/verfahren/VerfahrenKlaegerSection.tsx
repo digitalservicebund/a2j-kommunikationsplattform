@@ -71,7 +71,7 @@ export default function VerfahrenKlaegerSection({
               name="klagendeParteiNachname"
               label={shared.form.labels.lastname}
               defaultValue={lastName}
-              error={errors.klagendeParteiNachname?.join(" ")}
+              errors={errors}
             />
           </div>
 
@@ -108,7 +108,7 @@ export default function VerfahrenKlaegerSection({
                     .nameOfLawFirm
                 }
                 defaultValue={lawyerName}
-                error={errors.lawyerName?.join(" ")}
+                errors={errors}
               />
 
               <VerfahrenKanzleiformSelect

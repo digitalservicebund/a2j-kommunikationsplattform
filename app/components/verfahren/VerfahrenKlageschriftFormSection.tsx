@@ -43,7 +43,7 @@ export default function VerfahrenStatementOfClaimUploadFields({
         <InputField
           label={shared.form.labels.verfahrensgegenstand}
           id="verfahrensgegenstand"
-          error={errors.verfahrensgegenstand?.join(" ")}
+          errors={errors}
         />
       </div>
 

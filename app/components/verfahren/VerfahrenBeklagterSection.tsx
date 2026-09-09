@@ -51,7 +51,7 @@ export default function VerfahrenBeklagterSection({
               name="beklagteParteiNachname"
               defaultValue={lastName}
               className="flex-1"
-              error={errors.beklagteParteiNachname?.join(" ")}
+              errors={errors}
             />
           </div>
 

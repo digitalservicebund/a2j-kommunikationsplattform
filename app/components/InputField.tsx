@@ -6,7 +6,7 @@ export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   className?: string;
   optional?: boolean;
   hint?: string;
-  error?: string;
+  errors?: Record<string, string[]>;
 }
 
 export default function InputField({
@@ -16,11 +16,13 @@ export default function InputField({
   optional,
   disabled,
   hint,
-  error,
+  errors,
   type = "text",
+  name = id,
   ...inputProps
 }: Readonly<InputFieldProps>) {
   const hintId = hint ? `${id}-hint` : undefined;
+  const error = errors?.[name]?.join(" ");
   const errorId = error ? `${id}-error` : undefined;
 
   return (
@@ -40,7 +42,7 @@ export default function InputField({
         type={type}
         className={`kern-form-input__input ${error ? "kern-form-input__input--error" : ""}`.trim()}
         id={id}
-        name={id}
+        name={name}
         aria-disabled={disabled}
         aria-describedby={
           [hintId, errorId].filter(Boolean).join(" ") || undefined

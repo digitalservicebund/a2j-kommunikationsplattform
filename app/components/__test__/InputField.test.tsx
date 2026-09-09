@@ -78,7 +78,13 @@ describe("InputField", () => {
   });
 
   it("renders an error, applies the error classes, and wires it via aria-describedby", () => {
-    render(<InputField label="Name" id="name-input" error="Pflichtfeld" />);
+    render(
+      <InputField
+        label="Name"
+        id="name-input"
+        errors={{ "name-input": ["Pflichtfeld"] }}
+      />,
+    );
     const input = screen.getByRole("textbox");
     const wrapper = input.closest(".kern-form-input");
 
@@ -88,13 +94,36 @@ describe("InputField", () => {
     expect(input).toHaveAttribute("aria-describedby", "name-input-error");
   });
 
+  it("joins multiple error messages for the same field with a space", () => {
+    render(
+      <InputField
+        label="Name"
+        id="name-input"
+        errors={{ "name-input": ["Pflichtfeld", "Zu kurz"] }}
+      />,
+    );
+    expect(screen.getByText("Pflichtfeld Zu kurz")).toBeInTheDocument();
+  });
+
+  it("looks up errors by name when it differs from id", () => {
+    render(
+      <InputField
+        label="Name"
+        id="name-input"
+        name="fieldName"
+        errors={{ fieldName: ["Pflichtfeld"] }}
+      />,
+    );
+    expect(screen.getByText("Pflichtfeld")).toBeInTheDocument();
+  });
+
   it("joins hint and error ids in aria-describedby when both are present", () => {
     render(
       <InputField
         label="Name"
         id="name-input"
         hint="Wie im Ausweis"
-        error="Pflichtfeld"
+        errors={{ "name-input": ["Pflichtfeld"] }}
       />,
     );
     const input = screen.getByRole("textbox");
