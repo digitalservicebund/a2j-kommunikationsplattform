@@ -5,13 +5,15 @@ import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import { useTranslations } from "~/services/translations/context";
 import type { ActionResult } from "~/utils/actionResult";
 
-type DownloadBelegActionData = {
+type DownloadBelegActionResult = {
   downloadUrl: string;
 };
 
-export default function VerfahrenBelegStatusAlert({ beleg }: { beleg: Beleg }) {
+export default function VerfahrenBelegStatusAlert({
+  beleg,
+}: Readonly<{ beleg: Beleg }>) {
   const { routes, shared } = useTranslations();
-  const downloadFetcher = useFetcher<ActionResult<DownloadBelegActionData>>();
+  const downloadFetcher = useFetcher<ActionResult<DownloadBelegActionResult>>();
   const isDownloading = downloadFetcher.state !== "idle";
   const navigate = useNavigate();
   const params = useParams();
