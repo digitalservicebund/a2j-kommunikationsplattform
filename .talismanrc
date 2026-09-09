@@ -28,6 +28,8 @@ allowed_patterns:
 
 fileignoreconfig:
 
+- filename: app/components/__test__/InputField.test.tsx
+  checksum: 896c22e22296d81084455568ddb1bc30403478e9b4ebd35d3ecb0247df52c2e4
 - filename: .github/workflows/secrets-check.yml
   checksum: 8c2ba65488519c72b54af1653a157e1b7f03eaf45111032d492d5fd38d99cbb9
 - filename: .github/workflows/sonarqube.yml
