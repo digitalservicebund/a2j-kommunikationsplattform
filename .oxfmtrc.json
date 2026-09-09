@@ -1,0 +1,7 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": ["data/api/openapi.json", "prototype/"],
+  "printWidth": 80,
+  "sortImports": { "newlinesBetween": false },
+  "sortTailwindcss": { "stylesheet": "./app/styles.css" }
+}

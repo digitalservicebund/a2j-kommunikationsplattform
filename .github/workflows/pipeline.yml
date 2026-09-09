@@ -69,8 +69,7 @@ jobs:
           path: |
             /tmp/.docker-cache
           key: ${{ runner.os }}-docker-${{ github.sha }}
-          restore-keys:
-            | # If the exact cache can't be found, a partial match will still be useful here, since it will allow docker to reuse the layers from the cached image that are still valid.
+          restore-keys: | # If the exact cache can't be found, a partial match will still be useful here, since it will allow docker to reuse the layers from the cached image that are still valid.
             ${{ runner.os }}-docker-
 
       - name: Build and cache image from Dockerfile

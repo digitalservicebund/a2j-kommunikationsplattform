@@ -126,7 +126,9 @@ describe("useScrolledPastThreshold", () => {
 
     const { rerender } = renderHook(
       ({ ref }) => useScrolledPastThreshold(ref),
-      { initialProps: { ref: mockRef } },
+      {
+        initialProps: { ref: mockRef },
+      },
     );
 
     expect(mockObserver.observe).toHaveBeenCalledWith(element1);

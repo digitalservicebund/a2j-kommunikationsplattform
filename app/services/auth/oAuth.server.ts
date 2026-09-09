@@ -1,14 +1,13 @@
 import { Authenticator } from "remix-auth";
 import { CodeChallengeMethod, OAuth2Strategy } from "remix-auth-oauth2";
 import { serverConfig } from "~/config/config.server";
-import { MagicLinkStrategy } from "./MagicLinkStrategy.server";
-import { setAuthSession } from "./authSession.server";
-
 import {
   AuthenticationProvider,
   AuthenticationResponse,
   LoginType,
 } from "./auth.types";
+import { setAuthSession } from "./authSession.server";
+import { MagicLinkStrategy } from "./MagicLinkStrategy.server";
 
 type DecodedJWT = Record<string, unknown>;
 
