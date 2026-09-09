@@ -5,6 +5,15 @@ import VerfahrenGerichteSelect, {
 } from "~/components/verfahren/VerfahrenGerichteSelect";
 import { useTranslations } from "~/services/translations/context";
 
+const ACCEPTED_KLAGESCHRIFT_FILE_TYPES = [
+  // Word
+  ".docx",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  // PDF
+  ".pdf",
+  "application/pdf",
+].join(",");
+
 type VerfahrenStatementOfClaimUploadFieldsProps = {
   hasFileError: boolean;
   gerichtePromise: Promise<GerichtSelectItem[]>;
@@ -27,6 +36,7 @@ export default function VerfahrenStatementOfClaimUploadFields({
         id="file"
         hint={shared.form.uploadDokument.hint}
         error={hasFileError ? shared.form.uploadDokument.error : undefined}
+        accept={ACCEPTED_KLAGESCHRIFT_FILE_TYPES}
         required
       />
 
