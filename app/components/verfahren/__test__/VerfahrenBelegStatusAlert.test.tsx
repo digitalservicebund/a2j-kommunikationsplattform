@@ -94,7 +94,7 @@ describe("VerfahrenBelegStatusAlert", () => {
         expect(formData.get("formType")).toBe("download-beleg");
         expect(formData.get("belegId")).toBe("b-1");
 
-        return { downloadUrl };
+        return { status: "success", data: { downloadUrl } };
       });
 
       renderAlert(beleg, action);

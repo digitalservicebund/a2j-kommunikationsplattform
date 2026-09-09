@@ -29,6 +29,8 @@ import {
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+import de from "~/services/translations/de";
+import { actionResultFromApiError, actionSuccess } from "~/utils/actionResult";
 
 type LoaderData = {
   verfahren: Verfahren;
@@ -116,38 +118,59 @@ export const action = async ({
   const formType = formData.get("formType");
 
   if (formType === "delete") {
-    const deleteResult = await deleteDokumentFromEinreichung({
-      authData,
-      verfahrenId,
-      einreichungId: formData.get("einreichungId"),
-      dokumentId: formData.get("dokumentId"),
-    });
+    try {
+      const deleteResult = await deleteDokumentFromEinreichung({
+        authData,
+        verfahrenId,
+        einreichungId: formData.get("einreichungId"),
+        dokumentId: formData.get("dokumentId"),
+      });
 
-    if (deleteResult.status === "invalid-form-data") {
+      if (deleteResult.status === "invalid-form-data") {
+        return redirect(`/verfahren/${verfahrenId}`);
+      }
+
       return redirect(`/verfahren/${verfahrenId}`);
+    } catch (error) {
+      return actionResultFromApiError(error, {
+        message: de.shared.form.errors.deleteFailed,
+      });
     }
-
-    return redirect(`/verfahren/${verfahrenId}`);
   }
 
   if (formType === "einreichen") {
     const einreichungId = formData.get("einreichungId") as string;
 
-    await submitEinreichungIfNeeded(authData, { verfahrenId, einreichungId });
+    try {
+      await submitEinreichungIfNeeded(authData, {
+        verfahrenId,
+        einreichungId,
+      });
 
-    return redirect(`/verfahren/${verfahrenId}`);
+      return redirect(`/verfahren/${verfahrenId}`);
+    } catch (error) {
+      return actionResultFromApiError(error, {
+        message: de.shared.form.errors.einreichungFailed,
+      });
+    }
   }
 
   if (formType === "download-beleg") {
     const belegId = formData.get("belegId") as string;
 
-    const downloadUrl = await fetchBelegDownloadLink(authData, {
-      verfahrenId,
-      id: belegId,
-      dispositionType: "ATTACHMENT",
-    });
+    try {
+      const downloadUrl = await fetchBelegDownloadLink(authData, {
+        verfahrenId,
+        id: belegId,
+        dispositionType: "ATTACHMENT",
+      });
 
-    return { downloadUrl };
+      return actionSuccess({ downloadUrl });
+    } catch (error) {
+      return actionResultFromApiError(error, {
+        message: de.shared.form.errors.belegDownloadFailed,
+      });
+    }
   }
 
   return redirect(`/verfahren/${verfahrenId}`);
@@ -201,7 +224,7 @@ export default function VerfahrenId() {
               hasValidationIssues={hasValidationIssues}
               isValidationErrorFatal={validationErgebnis === "ROT"}
               readinessLabel={readinessPresentation?.readinessLabel ?? ""}
-              fehler={
+              error={
                 initialEinreichung?.einreichung.einreichungsStatus.fehler ?? []
               }
             />

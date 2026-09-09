@@ -3,9 +3,9 @@
 import userEvent from "@testing-library/user-event";
 import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
-import VerfahrenPlaintiffSection from "../VerfahrenPlaintiffSection";
+import VerfahrenKlaegerSection from "../VerfahrenKlaegerSection";
 
-describe("VerfahrenPlaintiffSection", () => {
+describe("VerfahrenKlaegerSection", () => {
   const baseProps = {
     firstName: "Emilia",
     lastName: "Kühn",
@@ -20,11 +20,12 @@ describe("VerfahrenPlaintiffSection", () => {
     lawyerTelefon: "",
     lawyerKanzleiformId: "",
     kanzleiformenPromise: Promise.resolve([]),
+    errors: {},
   };
 
   it("renders the plaintiff name fields and hides the lawyer sub-form by default", () => {
     const { getByText, getByLabelText, queryByLabelText } =
-      renderWithTestTranslations(<VerfahrenPlaintiffSection {...baseProps} />);
+      renderWithTestTranslations(<VerfahrenKlaegerSection {...baseProps} />);
 
     expect(getByText("Klagende Partei")).toBeInTheDocument();
     expect((getByLabelText("Vorname") as HTMLInputElement).value).toBe(
@@ -38,7 +39,7 @@ describe("VerfahrenPlaintiffSection", () => {
 
   it("shows the lawyer sub-form when hasLawyer is true", () => {
     const { getByText } = renderWithTestTranslations(
-      <VerfahrenPlaintiffSection
+      <VerfahrenKlaegerSection
         {...baseProps}
         hasLawyer
         lawyerName="Kanzlei Böhm"
@@ -48,12 +49,45 @@ describe("VerfahrenPlaintiffSection", () => {
     expect(getByText("Angaben zum Anwalt")).toBeInTheDocument();
   });
 
+  it("shows a validation error on the lawyer name field", () => {
+    const { getByText } = renderWithTestTranslations(
+      <VerfahrenKlaegerSection
+        {...baseProps}
+        hasLawyer
+        errors={{
+          lawyerName: ["Bitte geben Sie den Namen der Kanzlei an."],
+        }}
+      />,
+    );
+
+    expect(
+      getByText("Bitte geben Sie den Namen der Kanzlei an."),
+    ).toBeInTheDocument();
+  });
+
+  it("shows a validation error on the Kanzleiform select", () => {
+    const { getByText } = renderWithTestTranslations(
+      <VerfahrenKlaegerSection
+        {...baseProps}
+        hasLawyer
+        lawyerName="Kanzlei Böhm"
+        errors={{
+          lawyerKanzleiformId: ["Bitte wählen Sie die Kanzleiform aus."],
+        }}
+      />,
+    );
+
+    expect(
+      getByText("Bitte wählen Sie die Kanzleiform aus."),
+    ).toBeInTheDocument();
+  });
+
   it("calls onHasLawyerChange when the checkbox is toggled", async () => {
     const user = userEvent.setup();
     const onHasLawyerChange = vi.fn();
 
     const { getByLabelText } = renderWithTestTranslations(
-      <VerfahrenPlaintiffSection
+      <VerfahrenKlaegerSection
         {...baseProps}
         onHasLawyerChange={onHasLawyerChange}
       />,

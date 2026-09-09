@@ -23,7 +23,7 @@ function renderOutcomeAlert(
           hasValidationIssues={false}
           isValidationErrorFatal={false}
           readinessLabel="Bereit zur Abgabe"
-          fehler={[]}
+          error={[]}
           {...props}
         />
       ),
@@ -74,7 +74,7 @@ describe("VerfahrenEinreichungOutcomeBanner", () => {
       hasValidationIssues: true,
       isValidationErrorFatal: true,
       readinessLabel: "Es liegt ein Problem vor",
-      fehler: ["Datei ist beschädigt"],
+      error: ["Datei ist beschädigt"],
     });
 
     expect(screen.getByText("Es liegt ein Problem vor")).toBeInTheDocument();
@@ -86,7 +86,7 @@ describe("VerfahrenEinreichungOutcomeBanner", () => {
       hasValidationIssues: true,
       isValidationErrorFatal: false,
       readinessLabel: "Es liegen Hinweise vor",
-      fehler: ["Hinweis zur Signatur"],
+      error: ["Hinweis zur Signatur"],
     });
 
     expect(screen.getByText("Es liegen Hinweise vor")).toBeInTheDocument();
@@ -95,13 +95,13 @@ describe("VerfahrenEinreichungOutcomeBanner", () => {
 
   it("suppresses a stale validation Alert while a new Validierungslauf is running", () => {
     // e.g. right after regenerating xjustiz.xml: validierungslauf_status has
-    // already flipped to LAEUFT, but ergebnis/fehler still reflect the
+    // already flipped to LAEUFT, but ergebnis/error still reflect the
     // previous, now-superseded run.
     const { container } = renderOutcomeAlert({
       isValidating: true,
       hasValidationIssues: true,
       isValidationErrorFatal: true,
-      fehler: ["Die Einreichung enthält kein XJustiz-Dokument"],
+      error: ["Die Einreichung enthält kein XJustiz-Dokument"],
     });
 
     expect(container).toBeEmptyDOMElement();

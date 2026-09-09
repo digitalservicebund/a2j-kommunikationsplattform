@@ -92,6 +92,16 @@ export const de = {
         title: "Fehler beim Absenden des Formulars",
         message: "Bitte versuchen Sie es später erneut.",
       },
+      errors: {
+        deleteFailed: "Löschen fehlgeschlagen.",
+        invalidSubmission: "Ungültige Formularübermittlung.",
+        saveFailed: "Die Änderungen konnten nicht gespeichert werden.",
+        uploadFailed: "Das Dokument konnte nicht hochgeladen werden.",
+        submissionFailed: "Die Klage konnte nicht gespeichert werden.",
+        einreichungFailed: "Die Einreichung konnte nicht übermittelt werden.",
+        belegDownloadFailed: "Der Beleg konnte nicht heruntergeladen werden.",
+        unknown: "Ein unbekannter Fehler ist aufgetreten.",
+      },
       labels: {
         forename: "Vorname",
         lastname: "Nachname",
@@ -202,6 +212,14 @@ export const de = {
         navigation: {
           next: "Datei hochladen und weiter",
         },
+        form: {
+          validation: {
+            file: "Bitte laden Sie eine Datei hoch.",
+            verfahrensgegenstand:
+              "Bitte geben Sie den Verfahrensgegenstand an.",
+            gericht: "Bitte wählen Sie ein Gericht aus.",
+          },
+        },
       },
       step2: {
         headline: "Neue Klage einreichen",
@@ -240,6 +258,14 @@ export const de = {
             title: "Anlagen & Beweismittel",
             description:
               "Fügen Sie Beweismittel und weitere Dokumente hinzu (optional).",
+          },
+          validation: {
+            klagendeParteiNachname:
+              "Bitte geben Sie den Nachnamen der klagenden Partei an.",
+            beklagteParteiNachname:
+              "Bitte geben Sie den Nachnamen der beklagten Partei an.",
+            lawyerName: "Bitte geben Sie den Namen der Kanzlei an.",
+            lawyerKanzleiform: "Bitte wählen Sie die Kanzleiform aus.",
           },
         },
       },

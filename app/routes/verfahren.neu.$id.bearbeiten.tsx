@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ActionFunctionArgs,
+  data,
   Form,
   Link,
   LoaderFunctionArgs,
@@ -15,11 +16,11 @@ import z from "zod";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import Progress from "~/components/Progress";
-import VerfahrenDefendantSection from "~/components/verfahren/VerfahrenDefendantSection";
+import VerfahrenBeklagterSection from "~/components/verfahren/VerfahrenBeklagterSection";
 import VerfahrenDetailsFormSection from "~/components/verfahren/VerfahrenDetailsFormSection";
 import VerfahrenDocumentsFormSection from "~/components/verfahren/VerfahrenDocumentsFormSection";
+import VerfahrenKlaegerSection from "~/components/verfahren/VerfahrenKlaegerSection";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
-import VerfahrenPlaintiffSection from "~/components/verfahren/VerfahrenPlaintiffSection";
 import { config } from "~/config/config";
 import loadVerfahrenEinreichungBundle, {
   Dokument,
@@ -73,6 +74,14 @@ import {
 } from "~/domains/verfahren/services/verfahrenCodeConstants";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+import de from "~/services/translations/de";
+import {
+  actionError,
+  actionFieldErrorsResponse,
+  ActionResult,
+  actionResultFromApiError,
+  actionSuccess,
+} from "~/utils/actionResult";
 
 type DokumentType = z.infer<typeof DokumentTypeSchema>;
 type CodeWertItem = z.infer<typeof CodeWertSchema>;
@@ -84,14 +93,29 @@ type LoaderData = {
   kanzleiformen: Promise<CodeWertItem[]>;
 };
 type SubmitState = "idle" | "submit" | "upload" | "delete";
-type DokumentActionResult = {
-  success?: boolean;
-  formType?: SubmitState;
-};
+type DokumentActionData = { formType?: SubmitState };
 
 const DokumentUploadSchema = z.object({
   type: DokumentTypeSchema,
   file: z.file().min(1),
+});
+
+const BeteiligtenNachnameSchema = z.object({
+  klagendeParteiNachname: z.string().min(1, {
+    error: de.routes.verfahrenNeu.step2.form.validation.klagendeParteiNachname,
+  }),
+  beklagteParteiNachname: z.string().min(1, {
+    error: de.routes.verfahrenNeu.step2.form.validation.beklagteParteiNachname,
+  }),
+});
+
+const LawyerRequiredFieldsSchema = z.object({
+  lawyerName: z.string().min(1, {
+    error: de.routes.verfahrenNeu.step2.form.validation.lawyerName,
+  }),
+  lawyerKanzleiformId: z.string().min(1, {
+    error: de.routes.verfahrenNeu.step2.form.validation.lawyerKanzleiform,
+  }),
 });
 
 // Dev-only convenience data for the "Fill details with dummy data" button below.
@@ -235,23 +259,25 @@ export const action = async ({
     const validatedForm = DokumentUploadSchema.safeParse(formValues);
 
     if (!validatedForm.success) {
-      return {
-        errors: z.flattenError(validatedForm.error),
-        formValues,
-        formType: "upload",
-      };
+      return actionFieldErrorsResponse(validatedForm.error, {
+        data: { formValues, formType: "upload" },
+      });
     }
 
     const einreichungId = formData.get("einreichungId") as string;
     const file = formValues.file as File;
     const type = formValues.type as DokumentType;
 
-    await uploadDokument(authData, verfahrenId, einreichungId, file, type);
+    try {
+      await uploadDokument(authData, verfahrenId, einreichungId, file, type);
+    } catch (error) {
+      return actionResultFromApiError(error, {
+        message: de.shared.form.errors.uploadFailed,
+        data: { formValues, formType: "upload" },
+      });
+    }
 
-    return new Response(JSON.stringify({ success: true, formType: "upload" }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return actionSuccess<DokumentActionData>({ formType: "upload" });
   }
 
   // 2) Handle delete flow for an already uploaded document
@@ -259,47 +285,88 @@ export const action = async ({
     const einreichungId = formData.get("einreichungId") as string;
     const dokumentId = formData.get("dokumentId") as string;
 
-    const { eTag } = await fetchDokument(authData, {
-      verfahrenId,
-      einreichungId: einreichungId,
-      id: dokumentId,
-    });
+    try {
+      const { eTag } = await fetchDokument(authData, {
+        verfahrenId,
+        einreichungId: einreichungId,
+        id: dokumentId,
+      });
 
-    const deleteResult = await deleteDokument(authData, {
-      verfahrenId,
-      einreichungId,
-      id: dokumentId,
-      eTag: eTag ?? "",
-    });
+      const deleteResult = await deleteDokument(authData, {
+        verfahrenId,
+        einreichungId,
+        id: dokumentId,
+        eTag: eTag ?? "",
+      });
 
-    if (!deleteResult.success) {
-      return new Response(JSON.stringify({ success: false }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
+      if (!deleteResult.success) {
+        return data(actionError(de.shared.form.errors.deleteFailed), {
+          status: 500,
+        });
+      }
+
+      return actionSuccess(undefined);
+    } catch (error) {
+      return actionResultFromApiError(error, {
+        message: de.shared.form.errors.deleteFailed,
       });
     }
-
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
   }
 
   // 3) Handle final submit — persist the Verfahren and its Beteiligungen,
   // then regenerate the resulting XJustiz document
   if (formType === "submit") {
+    // buildBeteiligungFromFormValues() silently omits a Partei from the
+    // submission when their Nachname is blank instead of failing — validate
+    // it here first so a blank Nachname is reported as a field error rather
+    // than the party quietly disappearing from the Klage.
+    const validatedNachnamen = BeteiligtenNachnameSchema.safeParse({
+      klagendeParteiNachname: formData.get("klagendeParteiNachname"),
+      beklagteParteiNachname: formData.get("beklagteParteiNachname"),
+    });
+
+    if (!validatedNachnamen.success) {
+      return actionFieldErrorsResponse(validatedNachnamen.error, {
+        data: { formType: "submit" },
+      });
+    }
+
+    if (formData.get("hasLawyer")) {
+      const validatedLawyer = LawyerRequiredFieldsSchema.safeParse({
+        lawyerName: formData.get("lawyerName"),
+        lawyerKanzleiformId: formData.get("lawyerKanzleiformId"),
+      });
+
+      if (!validatedLawyer.success) {
+        return actionFieldErrorsResponse(validatedLawyer.error, {
+          data: { formType: "submit" },
+        });
+      }
+    }
+
     // Fetch the code lists needed to resolve Beteiligung/Rolle references
-    const [
-      { elemente: staaten },
-      { elemente: anschriftstypen },
-      { elemente: telekommunikationsarten },
-      { elemente: rollenbezeichnungen },
-    ] = await Promise.all([
-      fetchStaaten(authData),
-      fetchAnschriftstypen(authData),
-      fetchTelekommunikationsarten(authData),
-      fetchRollenbezeichnungen(authData),
-    ]);
+    let staaten: CodeWertItem[];
+    let anschriftstypen: CodeWertItem[];
+    let telekommunikationsarten: CodeWertItem[];
+    let rollenbezeichnungen: CodeWertItem[];
+
+    try {
+      [
+        { elemente: staaten },
+        { elemente: anschriftstypen },
+        { elemente: telekommunikationsarten },
+        { elemente: rollenbezeichnungen },
+      ] = await Promise.all([
+        fetchStaaten(authData),
+        fetchAnschriftstypen(authData),
+        fetchTelekommunikationsarten(authData),
+        fetchRollenbezeichnungen(authData),
+      ]);
+    } catch (error) {
+      return actionResultFromApiError(error, {
+        message: de.shared.form.errors.saveFailed,
+      });
+    }
 
     const sharedCodeIds = {
       anschriftstypId: resolveCodeWertId(
@@ -374,21 +441,26 @@ export const action = async ({
     const validatedForm = VerfahrenAendernInputSchema.safeParse(formValues);
 
     if (!validatedForm.success) {
-      return {
-        errors: z.flattenError(validatedForm.error),
-        formValues,
-        formType: "submit",
-      };
+      return actionFieldErrorsResponse(validatedForm.error, {
+        data: { formValues, formType: "submit" },
+      });
     }
 
     // Persist the Verfahren and regenerate the resulting XJustiz document
-    await updateVerfahren(authData, verfahrenId, validatedForm.data);
+    try {
+      await updateVerfahren(authData, verfahrenId, validatedForm.data);
 
-    const einreichungId = formData.get("einreichungId") as string;
-    await regenerateEinreichungXJustiz(authData, {
-      verfahrenId,
-      einreichungId,
-    });
+      const einreichungId = formData.get("einreichungId") as string;
+      await regenerateEinreichungXJustiz(authData, {
+        verfahrenId,
+        einreichungId,
+      });
+    } catch (error) {
+      return actionResultFromApiError(error, {
+        message: de.shared.form.errors.saveFailed,
+        data: { formValues, formType: "submit" },
+      });
+    }
 
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   }
@@ -397,27 +469,35 @@ export const action = async ({
 export default function VerfahrenNeuBearbeiten() {
   const { verfahren, einreichung, dokumente, gerichte, kanzleiformen } =
     useLoaderData<LoaderData>();
-  const actionData = useActionData() || {};
-  const { errors, formValues } = actionData;
+  const actionData = useActionData<typeof action>();
+  const isInvalid = actionData?.status === "invalid";
+  const isError = actionData?.status === "error";
+  const fieldErrors = isInvalid ? actionData.fieldErrors : undefined;
+  const formValues = isInvalid
+    ? (
+        actionData.data as
+          { formValues?: Record<string, FormDataEntryValue> } | undefined
+      )?.formValues
+    : undefined;
+  const actionFormType = (actionData?.data as DokumentActionData | undefined)
+    ?.formType;
   const { routes, buttons, shared } = useTranslations();
   const navigation = useNavigation();
   const revalidator = useRevalidator();
-  const deleteFetcher = useFetcher<DokumentActionResult>();
+  const deleteFetcher = useFetcher<ActionResult>();
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const uploadFileInputRef = useRef<HTMLInputElement>(null);
   const mainFormRef = useRef<HTMLFormElement>(null);
   const [isFileInputErrorDismissed, setIsFileInputErrorDismissed] =
     useState(false);
   const showFileInputError =
-    Boolean(errors?.fieldErrors?.file) && !isFileInputErrorDismissed;
-
-  console.log("verfahren", verfahren);
+    Boolean(fieldErrors?.file) && !isFileInputErrorDismissed;
 
   useEffect(() => {
-    if (actionData?.success && navigation.state === "idle") {
+    if (actionData?.status === "success" && navigation.state === "idle") {
       revalidator.revalidate();
     }
-  }, [actionData?.success, navigation.state, revalidator]);
+  }, [actionData?.status, navigation.state, revalidator]);
 
   useEffect(() => {
     if (navigation.state === "idle") {
@@ -429,7 +509,7 @@ export default function VerfahrenNeuBearbeiten() {
     if (
       submitState === "delete" &&
       deleteFetcher.state === "idle" &&
-      deleteFetcher.data?.success
+      deleteFetcher.data?.status === "success"
     ) {
       revalidator.revalidate();
       setSubmitState("idle");
@@ -439,23 +519,23 @@ export default function VerfahrenNeuBearbeiten() {
       setSubmitState("idle");
     }
   }, [
-    deleteFetcher.data?.success,
+    deleteFetcher.data?.status,
     deleteFetcher.state,
     revalidator,
     submitState,
   ]);
 
   useEffect(() => {
-    if (errors?.fieldErrors?.file) {
+    if (fieldErrors?.file) {
       setIsFileInputErrorDismissed(false);
     }
-  }, [errors?.fieldErrors?.file]);
+  }, [fieldErrors?.file]);
 
   useEffect(() => {
     if (
       navigation.state !== "idle" ||
-      actionData?.formType !== "upload" ||
-      errors?.fieldErrors
+      actionFormType !== "upload" ||
+      fieldErrors
     ) {
       return;
     }
@@ -465,7 +545,7 @@ export default function VerfahrenNeuBearbeiten() {
     if (uploadFileInputRef.current) {
       uploadFileInputRef.current.value = "";
     }
-  }, [actionData, navigation.state]);
+  }, [actionFormType, fieldErrors, navigation.state]);
 
   const klagendePartei = getBeteiligungByRoleCode(
     verfahren.beteiligungen,
@@ -534,7 +614,7 @@ export default function VerfahrenNeuBearbeiten() {
     (formValues?.type as string) || "",
   );
   const dokumentTypeError =
-    errors?.fieldErrors?.type &&
+    fieldErrors?.type &&
     selectedDokumentType === "" &&
     shared.form.selectDokumentType.error;
 
@@ -652,16 +732,16 @@ export default function VerfahrenNeuBearbeiten() {
                 message={routes.verfahrenNeu.step2.notification.copy}
               />
 
-              {actionData?.formType === "submit" && errors && (
+              {isError && (
                 <Alert
                   type="error"
                   title={shared.form.submit.title}
-                  message={`${JSON.stringify(errors)}`}
+                  message={actionData.error ?? shared.form.submit.message}
                 />
               )}
 
               <div className="kern-gap-lg flex flex-col">
-                <VerfahrenPlaintiffSection
+                <VerfahrenKlaegerSection
                   firstName={klagendeParteiFirstName}
                   lastName={klagendeParteiLastName}
                   anschrift={klagendeParteiAnschrift}
@@ -675,14 +755,16 @@ export default function VerfahrenNeuBearbeiten() {
                   lawyerTelefon={klagendeParteiAnwaltTelefon}
                   lawyerKanzleiformId={klagendeParteiAnwaltKanzleiformId}
                   kanzleiformenPromise={kanzleiformen}
+                  errors={fieldErrors || {}}
                 />
 
-                <VerfahrenDefendantSection
+                <VerfahrenBeklagterSection
                   firstName={beklagteParteiFirstName}
                   lastName={beklagteParteiLastName}
                   anschrift={beklagteParteiAnschrift}
                   email={beklagteParteiEmail}
                   telefon={beklagteParteiTelefon}
+                  errors={fieldErrors || {}}
                 />
 
                 <VerfahrenDetailsFormSection

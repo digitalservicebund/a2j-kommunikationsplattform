@@ -1,4 +1,5 @@
 import InputCheckbox from "~/components/InputCheckbox";
+import InputField from "~/components/InputField";
 import VerfahrenAdresseKontaktFields from "~/components/verfahren/VerfahrenAdresseKontaktFields";
 import VerfahrenKanzleiformSelect, {
   type KanzleiformSelectItem,
@@ -6,7 +7,7 @@ import VerfahrenKanzleiformSelect, {
 import type { Anschrift } from "~/domains/verfahren/services/beteiligteContactInfo";
 import { useTranslations } from "~/services/translations/context";
 
-type VerfahrenPlaintiffSectionProps = {
+type VerfahrenKlaegerSectionProps = {
   firstName: string;
   lastName: string;
   anschrift: Anschrift | undefined;
@@ -20,9 +21,10 @@ type VerfahrenPlaintiffSectionProps = {
   lawyerTelefon: string;
   lawyerKanzleiformId: string;
   kanzleiformenPromise: Promise<KanzleiformSelectItem[]>;
+  errors: Record<string, string[]>;
 };
 
-export default function VerfahrenPlaintiffSection({
+export default function VerfahrenKlaegerSection({
   firstName,
   lastName,
   anschrift,
@@ -36,7 +38,8 @@ export default function VerfahrenPlaintiffSection({
   lawyerTelefon,
   lawyerKanzleiformId,
   kanzleiformenPromise,
-}: Readonly<VerfahrenPlaintiffSectionProps>) {
+  errors,
+}: Readonly<VerfahrenKlaegerSectionProps>) {
   const { routes, shared } = useTranslations();
 
   return (
@@ -55,31 +58,21 @@ export default function VerfahrenPlaintiffSection({
           </p>
 
           <div className="kern-gap-md flex w-full">
-            <div className="kern-form-input flex-1">
-              <label className="kern-label" htmlFor="klagende-partei-vorname">
-                {shared.form.labels.forename}
-              </label>
-              <input
-                className="kern-form-input__input"
-                id="klagende-partei-vorname"
-                name="klagendeParteiVorname"
-                type="text"
-                defaultValue={firstName}
-              />
-            </div>
-            <div className="kern-form-input flex-1">
-              <label className="kern-label" htmlFor="klagende-partei-nachname">
-                {shared.form.labels.lastname}
-              </label>
-              <input
-                className="kern-form-input__input"
-                id="klagende-partei-nachname"
-                name="klagendeParteiNachname"
-                type="text"
-                defaultValue={lastName}
-                required
-              />
-            </div>
+            <InputField
+              className="flex-1"
+              id="klagende-partei-vorname"
+              name="klagendeParteiVorname"
+              label={shared.form.labels.forename}
+              defaultValue={firstName}
+            />
+            <InputField
+              className="flex-1"
+              id="klagende-partei-nachname"
+              name="klagendeParteiNachname"
+              label={shared.form.labels.lastname}
+              defaultValue={lastName}
+              errors={errors}
+            />
           </div>
 
           <VerfahrenAdresseKontaktFields
@@ -91,11 +84,6 @@ export default function VerfahrenPlaintiffSection({
             ort={anschrift?.ort ?? ""}
             email={email}
             telefon={telefon}
-          />
-
-          <hr
-            className="kern-divider kern-mt-xl w-full border-(--kern-color-layout-border)"
-            aria-hidden="true"
           />
 
           <InputCheckbox
@@ -112,21 +100,16 @@ export default function VerfahrenPlaintiffSection({
               <h3 className="kern-title kern-title--small">
                 {routes.verfahrenNeu.step2.form.plaintiff.hasLawyer.title}
               </h3>
-              <div className="kern-form-input">
-                <label className="kern-label" htmlFor="lawyer-name">
-                  {
-                    routes.verfahrenNeu.step2.form.plaintiff.hasLawyer
-                      .nameOfLawFirm
-                  }
-                </label>
-                <input
-                  className="kern-form-input__input"
-                  id="lawyer-name"
-                  name="lawyerName"
-                  type="text"
-                  defaultValue={lawyerName}
-                />
-              </div>
+              <InputField
+                id="lawyer-name"
+                name="lawyerName"
+                label={
+                  routes.verfahrenNeu.step2.form.plaintiff.hasLawyer
+                    .nameOfLawFirm
+                }
+                defaultValue={lawyerName}
+                errors={errors}
+              />
 
               <VerfahrenKanzleiformSelect
                 id="lawyerKanzleiformId"
@@ -136,7 +119,7 @@ export default function VerfahrenPlaintiffSection({
                 placeholder={shared.form.select.placeholder}
                 kanzleiformenPromise={kanzleiformenPromise}
                 initialSelectedValue={lawyerKanzleiformId}
-                required
+                error={errors.lawyerKanzleiformId?.join(" ")}
               />
 
               <VerfahrenAdresseKontaktFields

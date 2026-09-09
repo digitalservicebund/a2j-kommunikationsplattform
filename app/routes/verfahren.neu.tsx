@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   ActionFunctionArgs,
+  data,
   Form,
   Link,
   LoaderFunctionArgs,
@@ -13,8 +14,8 @@ import z from "zod";
 import Alert from "~/components/Alert";
 import InputCheckbox from "~/components/InputCheckbox";
 import Progress from "~/components/Progress";
+import VerfahrenKlageschriftFormSection from "~/components/verfahren/VerfahrenKlageschriftFormSection";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
-import VerfahrenStatementOfClaimUploadFields from "~/components/verfahren/VerfahrenStatementOfClaimUploadFields";
 import VerfahrenUploadedDokumentSummary from "~/components/verfahren/VerfahrenUploadedDokumentSummary";
 import { requireAuthData } from "~/domains/verfahren/application/routeContext.server";
 import type { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
@@ -28,13 +29,27 @@ import { createEinreichung } from "~/domains/verfahren/infrastructure/repositori
 import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
 import { createVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { VerfahrenAendernInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.input.schema";
+import { VerfahrenAendernRequestDTO } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.request.schema";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+import de from "~/services/translations/de";
+import {
+  actionError,
+  actionFieldErrorsResponse,
+  actionResultFromApiError,
+  actionResultFromSchemaParsingError,
+} from "~/utils/actionResult";
 
 const StatementOfClaimUploadSchema = z.object({
-  file: z.file(),
-  verfahrensgegenstand: z.string().min(1),
-  gerichtId: z.string().min(1),
+  file: z.file().min(1, {
+    error: de.routes.verfahrenNeu.step1.form.validation.file,
+  }),
+  verfahrensgegenstand: z.string().min(2, {
+    error: de.routes.verfahrenNeu.step1.form.validation.verfahrensgegenstand,
+  }),
+  gerichtId: z.string().min(1, {
+    error: de.routes.verfahrenNeu.step1.form.validation.gericht,
+  }),
   analysis: z.coerce.boolean().optional(),
 });
 
@@ -121,51 +136,74 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       typeof einreichungId !== "string" ||
       typeof dokumentId !== "string"
     ) {
-      return { error: true };
+      return data(actionError(de.shared.form.errors.deleteFailed), {
+        status: 400,
+      });
     }
 
-    const { eTag } = await fetchDokument(authData, {
-      verfahrenId,
-      einreichungId,
-      id: dokumentId,
-    });
+    try {
+      const { eTag } = await fetchDokument(authData, {
+        verfahrenId,
+        einreichungId,
+        id: dokumentId,
+      });
 
-    const deleteResult = await deleteDokument(authData, {
-      verfahrenId,
-      einreichungId,
-      id: dokumentId,
-      eTag: eTag ?? "",
-    });
+      const deleteResult = await deleteDokument(authData, {
+        verfahrenId,
+        einreichungId,
+        id: dokumentId,
+        eTag: eTag ?? "",
+      });
 
-    if (!deleteResult.success) {
-      return { error: true, verfahrenId, einreichungId };
+      if (!deleteResult.success) {
+        return data(
+          actionError(de.shared.form.errors.deleteFailed, {
+            data: { verfahrenId, einreichungId },
+          }),
+          { status: 500 },
+        );
+      }
+
+      return redirect(buildRouteUrl(verfahrenId, einreichungId));
+    } catch (error) {
+      return actionResultFromApiError(error, {
+        message: de.shared.form.errors.deleteFailed,
+        data: { verfahrenId, einreichungId },
+      });
     }
-
-    return redirect(buildRouteUrl(verfahrenId, einreichungId));
   }
 
   // 2) Guard unsupported form submissions
   if (formType !== "submit") {
-    return { error: true };
+    return data(actionError(de.shared.form.errors.invalidSubmission), {
+      status: 400,
+    });
   }
 
   // 3) If a draft already has uploads, continue in edit route
   if (existingVerfahrenId && existingEinreichungId) {
-    const { elemente: dokumente } = await fetchDokumente(authData, {
-      verfahrenId: existingVerfahrenId,
-      einreichungId: existingEinreichungId,
-    });
+    try {
+      const { elemente: dokumente } = await fetchDokumente(authData, {
+        verfahrenId: existingVerfahrenId,
+        einreichungId: existingEinreichungId,
+      });
 
-    if (dokumente.length > 0) {
-      return redirect(`/verfahren/neu/${existingVerfahrenId}/bearbeiten`);
+      if (dokumente.length > 0) {
+        return redirect(`/verfahren/neu/${existingVerfahrenId}/bearbeiten`);
+      }
+    } catch (error) {
+      return actionResultFromApiError(error, {
+        message: de.shared.form.errors.submissionFailed,
+      });
     }
   }
 
   const formValues = Object.fromEntries(formData);
   const validatedForm = StatementOfClaimUploadSchema.safeParse(formValues);
-
   if (!validatedForm.success) {
-    return { errors: z.flattenError(validatedForm.error), formValues };
+    return actionFieldErrorsResponse(validatedForm.error, {
+      data: { formValues },
+    });
   }
 
   const { file, verfahrensgegenstand, gerichtId } = validatedForm.data;
@@ -175,25 +213,49 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
   let einreichungId = existingEinreichungId;
 
   if (!verfahrenId || !einreichungId) {
-    const verfahrenPayload = VerfahrenAendernInputSchema.parse({
-      verfahrensgegenstand,
-      kurzrubrum: null,
-      gerichtId,
-      beteiligungen: null,
-    });
-    const verfahren = await createVerfahren(authData, verfahrenPayload);
-    verfahrenId = verfahren.id;
-    const einreichung = await createEinreichung(authData, verfahrenId);
-    einreichungId = einreichung.id;
+    let verfahrenPayload: VerfahrenAendernRequestDTO;
+
+    try {
+      verfahrenPayload = VerfahrenAendernInputSchema.parse({
+        verfahrensgegenstand,
+        kurzrubrum: null,
+        gerichtId,
+        beteiligungen: null,
+      });
+    } catch (error) {
+      return actionResultFromSchemaParsingError(error, {
+        message: de.shared.form.errors.submissionFailed,
+        data: { formValues },
+      });
+    }
+
+    try {
+      const verfahren = await createVerfahren(authData, verfahrenPayload);
+      verfahrenId = verfahren.id;
+      const einreichung = await createEinreichung(authData, verfahrenId);
+      einreichungId = einreichung.id;
+    } catch (error) {
+      return actionResultFromApiError(error, {
+        message: de.shared.form.errors.submissionFailed,
+        data: { formValues },
+      });
+    }
   }
 
-  await uploadDokument(
-    authData,
-    verfahrenId,
-    einreichungId,
-    file,
-    "SCHRIFTSTUECK",
-  );
+  try {
+    await uploadDokument(
+      authData,
+      verfahrenId,
+      einreichungId,
+      file,
+      "SCHRIFTSTUECK",
+    );
+  } catch (error) {
+    return actionResultFromApiError(error, {
+      message: de.shared.form.errors.submissionFailed,
+      data: { formValues },
+    });
+  }
 
   // 5) Continue to bearbeiten step
   return redirect(`/verfahren/neu/${verfahrenId}/bearbeiten`);
@@ -202,9 +264,17 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 export default function VerfahrenNeu() {
   const { shared, routes, buttons } = useTranslations();
   const navigation = useNavigation();
-  const actionData = useActionData() || {};
+  const actionData = useActionData<typeof action>();
   const loaderData = useLoaderData<typeof loader>();
-  const { errors, formValues } = actionData;
+  const isActionError = actionData?.status === "error";
+  const isInvalid = actionData?.status === "invalid";
+  const fieldErrors = isInvalid ? actionData.fieldErrors : undefined;
+  const formValues = isInvalid
+    ? (
+        actionData.data as
+          { formValues?: Record<string, FormDataEntryValue> } | undefined
+      )?.formValues
+    : undefined;
   const [selectedGerichtId, setSelectedGerichtId] = useState<string>(
     (formValues?.gerichtId as string) || "",
   );
@@ -245,7 +315,7 @@ export default function VerfahrenNeu() {
               />
 
               {/* show a general error alert, if something went wrong */}
-              {actionData?.error && (
+              {isActionError && (
                 <Alert
                   type="error"
                   title={shared.form.submit.title}
@@ -269,8 +339,8 @@ export default function VerfahrenNeu() {
                       isSubmitting={isSubmitting}
                     />
                   ) : (
-                    <VerfahrenStatementOfClaimUploadFields
-                      hasFileError={Boolean(errors?.fieldErrors?.file)}
+                    <VerfahrenKlageschriftFormSection
+                      errors={fieldErrors || {}}
                       gerichtePromise={loaderData.gerichtePromise}
                       selectedGerichtId={selectedGerichtId}
                       onGerichtIdChange={setSelectedGerichtId}

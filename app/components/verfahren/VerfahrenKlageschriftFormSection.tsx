@@ -15,14 +15,14 @@ const ACCEPTED_KLAGESCHRIFT_FILE_TYPES = [
 ].join(",");
 
 type VerfahrenStatementOfClaimUploadFieldsProps = {
-  hasFileError: boolean;
+  errors: Record<string, string[]>;
   gerichtePromise: Promise<GerichtSelectItem[]>;
   selectedGerichtId: string;
   onGerichtIdChange: (selectedValue: string) => void;
 };
 
 export default function VerfahrenStatementOfClaimUploadFields({
-  hasFileError,
+  errors,
   gerichtePromise,
   selectedGerichtId,
   onGerichtIdChange,
@@ -35,16 +35,15 @@ export default function VerfahrenStatementOfClaimUploadFields({
         label={shared.form.uploadDokument.label}
         id="file"
         hint={shared.form.uploadDokument.hint}
-        error={hasFileError ? shared.form.uploadDokument.error : undefined}
         accept={ACCEPTED_KLAGESCHRIFT_FILE_TYPES}
-        required
+        error={errors.file ? shared.form.uploadDokument.error : undefined}
       />
 
       <div className="kern-gap-md flex w-full">
         <InputField
           label={shared.form.labels.verfahrensgegenstand}
           id="verfahrensgegenstand"
-          required
+          errors={errors}
         />
       </div>
 
@@ -52,12 +51,12 @@ export default function VerfahrenStatementOfClaimUploadFields({
         <VerfahrenGerichteSelect
           id="gerichtId"
           label={shared.form.labels.recipientCourt}
-          className="flex-1 self-end bg-(--kern-color-feedback-info-background)"
+          className="bg-kern-feedback-info-background flex-1 self-end"
           placeholder={shared.form.select.placeholder}
           gerichtePromise={gerichtePromise}
           initialSelectedValue={selectedGerichtId}
           onValueChange={onGerichtIdChange}
-          required
+          error={errors.gerichtId?.join(" ")}
         />
       </div>
     </>
