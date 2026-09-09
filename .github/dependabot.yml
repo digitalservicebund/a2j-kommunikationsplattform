@@ -7,6 +7,16 @@ updates:
     cooldown:
       default-days: 3
     groups:
+      eslint:
+        patterns:
+          - "eslint"
+          - "@eslint/*"
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
       react-router:
         patterns:
           - "@react-router/*"
@@ -15,12 +25,6 @@ updates:
         patterns:
           - "vitest*"
           - "@vitest*"
-      react:
-        patterns:
-          - "react"
-          - "react-dom"
-          - "@types/react"
-          - "@types/react-dom"
 
   - package-ecosystem: "docker"
     directories:
