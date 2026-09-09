@@ -3,7 +3,7 @@ import { useFetcher, useNavigate, useParams } from "react-router";
 import Button from "~/components/Button";
 import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import { useTranslations } from "~/services/translations/context";
-import type { ActionState } from "~/utils/actionState";
+import type { ActionResult } from "~/utils/actionResult";
 
 type DownloadBelegActionData = {
   downloadUrl: string;
@@ -11,7 +11,7 @@ type DownloadBelegActionData = {
 
 export default function VerfahrenBelegStatusAlert({ beleg }: { beleg: Beleg }) {
   const { routes, shared } = useTranslations();
-  const downloadFetcher = useFetcher<ActionState<DownloadBelegActionData>>();
+  const downloadFetcher = useFetcher<ActionResult<DownloadBelegActionData>>();
   const isDownloading = downloadFetcher.state !== "idle";
   const navigate = useNavigate();
   const params = useParams();

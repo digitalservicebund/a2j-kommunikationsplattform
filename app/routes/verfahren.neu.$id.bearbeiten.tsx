@@ -78,10 +78,10 @@ import de from "~/services/translations/de";
 import {
   actionError,
   actionFieldErrorsResponse,
-  ActionState,
-  actionStateFromApiError,
+  ActionResult,
+  actionResultFromApiError,
   actionSuccess,
-} from "~/utils/actionState";
+} from "~/utils/actionResult";
 
 type DokumentType = z.infer<typeof DokumentTypeSchema>;
 type CodeWertItem = z.infer<typeof CodeWertSchema>;
@@ -271,7 +271,7 @@ export const action = async ({
     try {
       await uploadDokument(authData, verfahrenId, einreichungId, file, type);
     } catch (error) {
-      return actionStateFromApiError(error, {
+      return actionResultFromApiError(error, {
         message: de.shared.form.errors.uploadFailed,
         data: { formValues, formType: "upload" },
       });
@@ -307,7 +307,7 @@ export const action = async ({
 
       return actionSuccess(undefined);
     } catch (error) {
-      return actionStateFromApiError(error, {
+      return actionResultFromApiError(error, {
         message: de.shared.form.errors.deleteFailed,
       });
     }
@@ -363,7 +363,7 @@ export const action = async ({
         fetchRollenbezeichnungen(authData),
       ]);
     } catch (error) {
-      return actionStateFromApiError(error, {
+      return actionResultFromApiError(error, {
         message: de.shared.form.errors.saveFailed,
       });
     }
@@ -456,7 +456,7 @@ export const action = async ({
         einreichungId,
       });
     } catch (error) {
-      return actionStateFromApiError(error, {
+      return actionResultFromApiError(error, {
         message: de.shared.form.errors.saveFailed,
         data: { formValues, formType: "submit" },
       });
@@ -484,7 +484,7 @@ export default function VerfahrenNeuBearbeiten() {
   const { routes, buttons, shared } = useTranslations();
   const navigation = useNavigation();
   const revalidator = useRevalidator();
-  const deleteFetcher = useFetcher<ActionState>();
+  const deleteFetcher = useFetcher<ActionResult>();
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const uploadFileInputRef = useRef<HTMLInputElement>(null);
   const mainFormRef = useRef<HTMLFormElement>(null);

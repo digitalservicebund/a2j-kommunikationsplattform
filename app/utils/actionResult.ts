@@ -3,26 +3,26 @@ import z from "zod";
 import de from "~/services/translations/de";
 import { ApiError } from "~/utils/apiError";
 
-export type ActionState<T = undefined> =
+export type ActionResult<T = undefined> =
   | { status: "success"; data: T }
   | { status: "invalid"; fieldErrors: Record<string, string[]>; data?: T }
   | { status: "error"; error: string; data?: T };
 
-export function actionSuccess<T>(data: T): ActionState<T> {
+export function actionSuccess<T>(data: T): ActionResult<T> {
   return { status: "success", data };
 }
 
 export function actionInvalid<T = undefined>(
   fieldErrors: Record<string, string[]>,
   options?: { data?: T },
-): ActionState<T> {
+): ActionResult<T> {
   return { status: "invalid", fieldErrors, ...options };
 }
 
 export function actionError<T = undefined>(
   error: string,
   options?: { data?: T },
-): ActionState<T> {
+): ActionResult<T> {
   return { status: "error", error, ...options };
 }
 
@@ -35,7 +35,7 @@ export function actionFieldErrorsResponse<T = undefined>(
   });
 }
 
-function actionStateFromUnknownError<T = undefined>(
+function actionResultFromUnknownError<T = undefined>(
   error: unknown,
   options?: { data?: T; message?: string },
 ) {
@@ -51,7 +51,7 @@ function actionStateFromUnknownError<T = undefined>(
     { status: 500 },
   );
 }
-export function actionStateFromApiError<T = undefined>(
+export function actionResultFromApiError<T = undefined>(
   error: unknown,
   options?: { data?: T; message?: string },
 ) {
@@ -62,10 +62,10 @@ export function actionStateFromApiError<T = undefined>(
     );
   }
 
-  return actionStateFromUnknownError(error, options);
+  return actionResultFromUnknownError(error, options);
 }
 
-export function actionStateFromInputParsingError<T = undefined>(
+export function actionResultFromInputParsingError<T = undefined>(
   error: unknown,
   options?: { data?: T; message?: string },
 ) {
@@ -73,12 +73,12 @@ export function actionStateFromInputParsingError<T = undefined>(
     return actionFieldErrorsResponse(error, { data: options?.data });
   }
 
-  return actionStateFromUnknownError(error, options);
+  return actionResultFromUnknownError(error, options);
 }
 
-export function actionStateFromSchemaParsingError<T = undefined>(
+export function actionResultFromSchemaParsingError<T = undefined>(
   error: unknown,
   options?: { data?: T; message?: string },
 ) {
-  return actionStateFromUnknownError(error, options);
+  return actionResultFromUnknownError(error, options);
 }

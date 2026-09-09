@@ -5,15 +5,15 @@ import {
   actionError,
   actionFieldErrorsResponse,
   actionInvalid,
-  actionStateFromApiError,
-  actionStateFromInputParsingError,
-  actionStateFromSchemaParsingError,
+  actionResultFromApiError,
+  actionResultFromInputParsingError,
+  actionResultFromSchemaParsingError,
   actionSuccess,
-} from "../actionState";
+} from "../actionResult";
 import { ApiError } from "../apiError";
 
 describe("actionSuccess", () => {
-  it("returns a success ActionState carrying the given data", () => {
+  it("returns a success ActionResult carrying the given data", () => {
     expect(actionSuccess({ id: "v-1" })).toEqual({
       status: "success",
       data: { id: "v-1" },
@@ -22,7 +22,7 @@ describe("actionSuccess", () => {
 });
 
 describe("actionInvalid", () => {
-  it("returns an invalid ActionState with the given field errors", () => {
+  it("returns an invalid ActionResult with the given field errors", () => {
     expect(actionInvalid({ name: ["Pflichtfeld"] })).toEqual({
       status: "invalid",
       fieldErrors: { name: ["Pflichtfeld"] },
@@ -44,7 +44,7 @@ describe("actionInvalid", () => {
 });
 
 describe("actionError", () => {
-  it("returns an error ActionState with the given message", () => {
+  it("returns an error ActionResult with the given message", () => {
     expect(actionError("Löschen fehlgeschlagen.")).toEqual({
       status: "error",
       error: "Löschen fehlgeschlagen.",
@@ -83,13 +83,13 @@ describe("actionFieldErrorsResponse", () => {
   });
 });
 
-describe("actionStateFromApiError", () => {
+describe("actionResultFromApiError", () => {
   it("uses the ApiError's own status and message when no override is given", () => {
     const error = new ApiError("Fehler beim Bearbeiten des Verfahrens.", {
       status: 409,
     });
 
-    const response = actionStateFromApiError(error);
+    const response = actionResultFromApiError(error);
 
     expect(response.init).toEqual({ status: 409 });
     expect(response.data).toEqual({
@@ -103,7 +103,7 @@ describe("actionStateFromApiError", () => {
       status: 400,
     });
 
-    const response = actionStateFromApiError(error, {
+    const response = actionResultFromApiError(error, {
       message: de.shared.form.errors.saveFailed,
       data: { formType: "submit" },
     });
@@ -120,7 +120,7 @@ describe("actionStateFromApiError", () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const error = new Error("boom");
 
-    const response = actionStateFromApiError(error, {
+    const response = actionResultFromApiError(error, {
       data: { formType: "submit" },
     });
 
@@ -136,13 +136,13 @@ describe("actionStateFromApiError", () => {
   });
 });
 
-describe("actionStateFromInputParsingError", () => {
+describe("actionResultFromInputParsingError", () => {
   it("flattens a ZodError into a 400 field errors response", () => {
     const schema = z.object({ email: z.string().min(1) });
     const result = schema.safeParse({ email: "" });
     if (result.success) throw new Error("expected validation to fail");
 
-    const response = actionStateFromInputParsingError(result.error, {
+    const response = actionResultFromInputParsingError(result.error, {
       data: { formType: "submit" },
     });
 
@@ -158,7 +158,7 @@ describe("actionStateFromInputParsingError", () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const error = new Error("not a zod error");
 
-    const response = actionStateFromInputParsingError(error);
+    const response = actionResultFromInputParsingError(error);
 
     expect(response.init).toEqual({ status: 500 });
     expect(response.data).toEqual({
@@ -170,12 +170,12 @@ describe("actionStateFromInputParsingError", () => {
   });
 });
 
-describe("actionStateFromSchemaParsingError", () => {
+describe("actionResultFromSchemaParsingError", () => {
   it("always logs and falls back to a generic 500 error", () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const error = new Error("schema parsing failed");
 
-    const response = actionStateFromSchemaParsingError(error, {
+    const response = actionResultFromSchemaParsingError(error, {
       message: "Die Klage konnte nicht gespeichert werden.",
       data: { formType: "submit" },
     });

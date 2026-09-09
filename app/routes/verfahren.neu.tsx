@@ -36,9 +36,9 @@ import de from "~/services/translations/de";
 import {
   actionError,
   actionFieldErrorsResponse,
-  actionStateFromApiError,
-  actionStateFromSchemaParsingError,
-} from "~/utils/actionState";
+  actionResultFromApiError,
+  actionResultFromSchemaParsingError,
+} from "~/utils/actionResult";
 
 const StatementOfClaimUploadSchema = z.object({
   file: z.file().min(1, {
@@ -166,7 +166,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
       return redirect(buildRouteUrl(verfahrenId, einreichungId));
     } catch (error) {
-      return actionStateFromApiError(error, {
+      return actionResultFromApiError(error, {
         message: de.shared.form.errors.deleteFailed,
         data: { verfahrenId, einreichungId },
       });
@@ -192,7 +192,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
         return redirect(`/verfahren/neu/${existingVerfahrenId}/bearbeiten`);
       }
     } catch (error) {
-      return actionStateFromApiError(error, {
+      return actionResultFromApiError(error, {
         message: de.shared.form.errors.submissionFailed,
       });
     }
@@ -223,7 +223,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
         beteiligungen: null,
       });
     } catch (error) {
-      return actionStateFromSchemaParsingError(error, {
+      return actionResultFromSchemaParsingError(error, {
         message: de.shared.form.errors.submissionFailed,
         data: { formValues },
       });
@@ -235,7 +235,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       const einreichung = await createEinreichung(authData, verfahrenId);
       einreichungId = einreichung.id;
     } catch (error) {
-      return actionStateFromApiError(error, {
+      return actionResultFromApiError(error, {
         message: de.shared.form.errors.submissionFailed,
         data: { formValues },
       });
@@ -251,7 +251,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       "SCHRIFTSTUECK",
     );
   } catch (error) {
-    return actionStateFromApiError(error, {
+    return actionResultFromApiError(error, {
       message: de.shared.form.errors.submissionFailed,
       data: { formValues },
     });

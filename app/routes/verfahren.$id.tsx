@@ -30,7 +30,7 @@ import {
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
-import { actionStateFromApiError, actionSuccess } from "~/utils/actionState";
+import { actionResultFromApiError, actionSuccess } from "~/utils/actionResult";
 
 type LoaderData = {
   verfahren: Verfahren;
@@ -132,7 +132,7 @@ export const action = async ({
 
       return redirect(`/verfahren/${verfahrenId}`);
     } catch (error) {
-      return actionStateFromApiError(error, {
+      return actionResultFromApiError(error, {
         message: de.shared.form.errors.deleteFailed,
       });
     }
@@ -149,7 +149,7 @@ export const action = async ({
 
       return redirect(`/verfahren/${verfahrenId}`);
     } catch (error) {
-      return actionStateFromApiError(error, {
+      return actionResultFromApiError(error, {
         message: de.shared.form.errors.einreichungFailed,
       });
     }
@@ -167,7 +167,7 @@ export const action = async ({
 
       return actionSuccess({ downloadUrl });
     } catch (error) {
-      return actionStateFromApiError(error, {
+      return actionResultFromApiError(error, {
         message: de.shared.form.errors.belegDownloadFailed,
       });
     }
