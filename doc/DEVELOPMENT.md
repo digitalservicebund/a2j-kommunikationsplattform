@@ -10,10 +10,20 @@ Please install [Homebrew](https://brew.sh/), if not already installed on your ma
 
 We aim to use the current active [version of Node.js](https://nodejs.dev/en/about/releases/), which is V26 at the time of writing. There is a `.nvmrc` file to simplify Node.js version setup using [nvm](https://github.com/nvm-sh/nvm) (`brew install nvm`). Use `nvm install` to install specified version in `.nvmrc` file.
 
+### 1Password CLI
+
 1Password CLI is needed for secret management locally, have a look at [the docs and install the CLI](https://www.1password.dev/cli/get-started) on your machine, if needed.
 
-Additionally we use [Git Hooks](https://git-scm.com/book/ms/v2/Customizing-Git-Git-Hooks). For that you will need to install [lefthook](https://github.com/evilmartians/lefthook)
-(git hook manager) and [talisman](https://github.com/thoughtworks/talisman/) (secrets scanner) `brew install lefthook talisman`. Afterwards execute `lefthook install` to initialize the hooks or run `lefthook run pre-commit` before commiting new changes. See `lefthook.yml` for more details in regards to the currently configured git hooks.
+### Lefthook
+
+We use [Lefthook](https://github.com/evilmartians/lefthook) to manage [Git hooks](https://git-scm.com/book/ms/v2/Customizing-Git-Git-Hooks) for this repository. Install and set it up with:
+
+```sh
+brew install lefthook
+lefthook install
+```
+
+See [`lefthook.yml`](../lefthook.yml) for the currently configured Git hooks.
 
 ### Project dependencies
 

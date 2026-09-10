@@ -147,9 +147,6 @@ dist
 # Lefthook
 lefthook-local.yml
 
-# Talisman
-talisman_report
-
 # Sentry Config File
 .env.sentry-build-plugin
 
