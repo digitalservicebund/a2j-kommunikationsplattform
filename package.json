@@ -1,8 +1,8 @@
 {
   "name": "a2j-kommunikationsplattform",
   "private": true,
-  "sideEffects": false,
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "build": "react-router build",
     "dev:op": "op run --no-masking node --env-file=.env.defaults --env-file=.env.op ./server.js",
@@ -14,8 +14,8 @@
     "test:e2e": "playwright test",
     "lint:check": "oxlint",
     "lint:fix": "npm run lint:check -- --fix",
-    "format:check": "prettier --check .",
-    "format:fix": "prettier --write --ignore-unknown .",
+    "format:check": "oxfmt --check",
+    "format:fix": "oxfmt",
     "preinstall": "echo 'Please disable script execution: npm config set ignore-scripts true' && exit 1",
     "style:check": "npm run format:check && npm run lint:check",
     "style:fix": "npm run format:fix && npm run lint:fix"
@@ -60,8 +60,8 @@
     "globals": "^17.3.0",
     "jsdom": "^29.0.0",
     "msw": "^2.12.14",
+    "oxfmt": "^0.67.0",
     "oxlint": "^1.82.0",
-    "prettier": "^3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "ts-node": "^10.9.2",
@@ -71,10 +71,10 @@
   },
   "overrides": {
     "@isaacs/brace-expansion": "5.0.1",
-    "minimatch": "10.2.3",
     "@react-router/serve": {
       "path-to-regexp": "0.1.13"
     },
+    "minimatch": "10.2.3",
     "router": {
       "path-to-regexp": "8.4.0"
     }

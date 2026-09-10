@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 import FolderInfoIcon from "~/components/icons/FolderInfoIcon.static";
-import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import { NOT_AVAILABLE_LABEL } from "~/components/verfahren/presentation/placeholders";
 import { getVerfahrenStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
+import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import {
   getBeteiligteDisplayName,

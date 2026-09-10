@@ -1,8 +1,7 @@
 // @vitest-environment jsdom
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
-
 import { useFetcher, useSearchParams } from "react-router";
+import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { VerfahrenLoaderData } from "~/routes/_index";
 

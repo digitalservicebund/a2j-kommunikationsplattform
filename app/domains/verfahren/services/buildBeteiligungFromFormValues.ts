@@ -10,7 +10,8 @@ type NatuerlichePersonInput = z.input<typeof NatuerlichePersonInputSchema>;
 type RaKanzleiInput = z.input<typeof RaKanzleiInputSchema>;
 type Anschriften = z.input<typeof AnschriftInputSchema>[] | null;
 type Kommunikationsanschluesse =
-  z.input<typeof KommunikationsanschlussInputSchema>[] | null;
+  | z.input<typeof KommunikationsanschlussInputSchema>[]
+  | null;
 
 type AdresseKontaktFormValues = {
   strasse: string;

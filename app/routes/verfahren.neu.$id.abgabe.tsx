@@ -207,7 +207,10 @@ export default function VerfahrenNeuBearbeiten() {
     validationErgebnis === "ROT" || validationErgebnis === "GELB";
 
   const { formRef, isSubmitting, error, handleSubmit } =
-    useEinreichenSubmission({ isValidating, isBelegPending });
+    useEinreichenSubmission({
+      isValidating,
+      isBelegPending,
+    });
 
   return (
     <div
