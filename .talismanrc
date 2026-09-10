@@ -54,6 +54,8 @@ fileignoreconfig:
   checksum: 1ed102775018be5f6feaae0b744620556c237651a828224926e1604e7bfd2910
 - filename: prototype/Kommunikationsplattform-MVP-Prototyp.html
   checksum: 4e65e28cc0b8688025a800cdbbbb4d6da9e9de05580455050bee90035d1c892a
+- filename: prototype/Justizportal Iteration 1 (offline).html
+  checksum: 844396ecf4ba23f33813a768583d1f7b84e80c02291253f585317ba745ed2d46
 - filename: app/components/hooks/**test**/useLogoutInactiveUser.test.tsx
   ignore_detectors: [filecontent]
 - filename: app/config/config.server.ts
