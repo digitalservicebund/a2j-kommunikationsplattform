@@ -272,7 +272,8 @@ export default function VerfahrenNeu() {
   const formValues = isInvalid
     ? (
         actionData.data as
-          { formValues?: Record<string, FormDataEntryValue> } | undefined
+          | { formValues?: Record<string, FormDataEntryValue> }
+          | undefined
       )?.formValues
     : undefined;
   const [selectedGerichtId, setSelectedGerichtId] = useState<string>(

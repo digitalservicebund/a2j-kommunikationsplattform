@@ -476,7 +476,8 @@ export default function VerfahrenNeuBearbeiten() {
   const formValues = isInvalid
     ? (
         actionData.data as
-          { formValues?: Record<string, FormDataEntryValue> } | undefined
+          | { formValues?: Record<string, FormDataEntryValue> }
+          | undefined
       )?.formValues
     : undefined;
   const actionFormType = (actionData?.data as DokumentActionData | undefined)

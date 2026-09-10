@@ -106,7 +106,7 @@ The application has
 
 ### Code quality checks (linting & formatting)
 
-The project uses [ESLint](https://eslint.org/docs/latest/) for linting and [Prettier](https://prettier.io/docs/en/). for formatting.
+The project uses [Oxlint](https://oxc.rs/docs/guide/usage/linter.html) and [Oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) as linter and formatter, respectively.
 
 **Commands**
 

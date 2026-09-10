@@ -32,7 +32,9 @@ export default async function loadVerfahrenEinreichungenOverview(
 
   const { elemente: einreichungenList } = await fetchEinreichungenById(
     authData,
-    { id: verfahrenId },
+    {
+      id: verfahrenId,
+    },
   );
 
   console.log("einreichungenList", einreichungenList);

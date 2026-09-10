@@ -1,8 +1,8 @@
-import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import {
   ReadinessPresentation,
   resolveBelegPresentation,
 } from "~/components/verfahren/presentation/einreichungReadiness";
+import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 
 type VerfahrenEinreichungStatusBadgeProps = {

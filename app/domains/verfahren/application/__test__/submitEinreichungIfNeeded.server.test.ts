@@ -10,7 +10,9 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock(
   "~/domains/verfahren/infrastructure/repositories/belegRepository.server",
-  () => ({ fetchBelege: mocks.fetchBelege }),
+  () => ({
+    fetchBelege: mocks.fetchBelege,
+  }),
 );
 vi.mock(
   "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server",

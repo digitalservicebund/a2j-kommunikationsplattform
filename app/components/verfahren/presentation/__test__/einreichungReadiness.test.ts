@@ -86,7 +86,10 @@ describe("resolveBelegPresentation", () => {
         { status: "ERSTELLT" } as never,
         belegBadgeLabels,
       ),
-    ).toEqual({ readinessLabel: "ready", readinessBadgeClass: "success" });
+    ).toEqual({
+      readinessLabel: "ready",
+      readinessBadgeClass: "success",
+    });
   });
 
   it("is info while IN_BEARBEITUNG", () => {
