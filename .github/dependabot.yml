@@ -7,10 +7,6 @@ updates:
     cooldown:
       default-days: 3
     groups:
-      eslint:
-        patterns:
-          - "eslint"
-          - "@eslint/*"
       react:
         patterns:
           - "react"

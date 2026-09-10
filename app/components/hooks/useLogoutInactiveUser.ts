@@ -13,14 +13,14 @@ export const useLogoutInactiveUser = (
   timeout = 1000 * 60 * 60,
 ): void => {
   const fetcher = useFetcher();
-  const [lastActivity, setLastActivity] = useState(Date.now());
+  const [lastActivity, setLastActivity] = useState(() => Date.now());
 
   // resets the activity timer on activity
   const handleActivity = useCallback(() => {
     if (!handleInactivity) return;
 
     setLastActivity(Date.now());
-  }, []);
+  }, [handleInactivity]);
 
   // effect to set up/clean up event listeners on user activity
   useEffect(() => {
@@ -38,7 +38,7 @@ export const useLogoutInactiveUser = (
       window.removeEventListener("scroll", handleActivity);
       window.removeEventListener("click", handleActivity);
     };
-  }, [handleActivity]);
+  }, [handleActivity, handleInactivity]);
 
   // this effect manages the countdown timer and triggers a form submit
   // to a logout-user action route when the timeout has expired
@@ -62,5 +62,5 @@ export const useLogoutInactiveUser = (
 
     // cleanup function for the timer timeout
     return () => clearTimeout(timer);
-  }, [lastActivity, fetcher, timeout]);
+  }, [handleInactivity, lastActivity, fetcher, timeout]);
 };

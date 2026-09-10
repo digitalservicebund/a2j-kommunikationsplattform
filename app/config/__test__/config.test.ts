@@ -5,7 +5,6 @@ import * as configModule from "../config";
 
 describe("config()", () => {
   const originalEnv = process.env;
-  /* eslint-disable @typescript-eslint/no-explicit-any */
   let originalWindowEnv: any;
 
   beforeEach(() => {
@@ -39,5 +38,4 @@ describe("config()", () => {
       SENTRY_DSN: "first",
     });
   });
-  /* eslint-enable @typescript-eslint/no-explicit-any */
 });

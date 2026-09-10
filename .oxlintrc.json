@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "jsx-a11y"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error"
+  },
+  "env": {
+    "builtin": true,
+    "es2024": true,
+    "browser": true
+  },
+  "settings": {
+    "react": {
+      // Consider react-router <Form> a form element for the purpose of
+      // form-related React rules.
+      "formComponents": ["Form"]
+    }
+  },
+  "ignorePatterns": ["**/*", "!app/**", "!tests/**"],
+  "rules": {
+    "react/react-in-jsx-scope": "off", // obsolete in React 17+
+    "react/set-state-in-effect": "off", // TODO: Fix errors reported by this rule
+    "no-underscore-dangle": ["error", { "allow": ["__mocks__"] }]
+  }
+}

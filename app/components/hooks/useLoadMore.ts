@@ -60,7 +60,7 @@ export const useLoadMore = (initialData: VerfahrenLoaderData) => {
 
     const formData = getFormData(allItems.length, searchParams);
     fetcher.submit(formData, { method: "get" });
-  }, [allItems.length, fetcher, hasMoreItems, searchParams, fetcher.state]);
+  }, [allItems.length, fetcher, hasMoreItems, searchParams]);
 
   return {
     allItems,

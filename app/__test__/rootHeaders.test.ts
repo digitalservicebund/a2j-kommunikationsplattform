@@ -1,7 +1,7 @@
 import { it } from "vitest";
 import { defaultHeaders, headers } from "~/rootHeaders";
 
-const mockHeaders = (headers: Record<string, string>) => new Headers(headers);
+const mockHeaders = (data: Record<string, string>) => new Headers(data);
 
 describe("Headers", () => {
   const mockheaders = {
