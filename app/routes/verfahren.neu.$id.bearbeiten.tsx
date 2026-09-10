@@ -73,6 +73,7 @@ import {
   TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
 } from "~/domains/verfahren/services/verfahrenCodeConstants";
 import { authMiddleware } from "~/middleware/auth.server";
+import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
 import {
@@ -236,6 +237,239 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   };
 };
 
+type FormActionContext = {
+  authData: AuthenticationResponse;
+  verfahrenId: string;
+};
+
+async function handleUploadAction(
+  formData: FormData,
+  { authData, verfahrenId }: FormActionContext,
+) {
+  const formValues = {
+    type: formData.get("type"),
+    file: formData.get("file"),
+  };
+  const validatedForm = DokumentUploadSchema.safeParse(formValues);
+
+  if (!validatedForm.success) {
+    return actionFieldErrorsResponse(validatedForm.error, {
+      data: { formValues, formType: "upload" },
+    });
+  }
+
+  const einreichungId = formData.get("einreichungId") as string;
+  const file = formValues.file as File;
+  const type = formValues.type as DokumentType;
+
+  try {
+    await uploadDokument(authData, verfahrenId, einreichungId, file, type);
+  } catch (error) {
+    return actionResultFromApiError(error, {
+      message: de.shared.form.errors.uploadFailed,
+      data: { formValues, formType: "upload" },
+    });
+  }
+
+  return actionSuccess<DokumentActionData>({ formType: "upload" });
+}
+
+async function handleDeleteAction(
+  formData: FormData,
+  { authData, verfahrenId }: FormActionContext,
+) {
+  const einreichungId = formData.get("einreichungId") as string;
+  const dokumentId = formData.get("dokumentId") as string;
+
+  try {
+    const { eTag } = await fetchDokument(authData, {
+      verfahrenId,
+      einreichungId: einreichungId,
+      id: dokumentId,
+    });
+
+    const deleteResult = await deleteDokument(authData, {
+      verfahrenId,
+      einreichungId,
+      id: dokumentId,
+      eTag: eTag ?? "",
+    });
+
+    if (!deleteResult.success) {
+      return data(actionError(de.shared.form.errors.deleteFailed), {
+        status: 500,
+      });
+    }
+
+    return actionSuccess(undefined);
+  } catch (error) {
+    return actionResultFromApiError(error, {
+      message: de.shared.form.errors.deleteFailed,
+    });
+  }
+}
+
+// Persists the Verfahren and its Beteiligungen, then regenerates the
+// resulting XJustiz document.
+async function handleSubmitAction(
+  formData: FormData,
+  { authData, verfahrenId }: FormActionContext,
+) {
+  // buildBeteiligungFromFormValues() silently omits a Partei from the
+  // submission when their Nachname is blank instead of failing — validate
+  // it here first so a blank Nachname is reported as a field error rather
+  // than the party quietly disappearing from the Klage.
+  const validatedNachnamen = BeteiligtenNachnameSchema.safeParse({
+    klagendeParteiNachname: formData.get("klagendeParteiNachname"),
+    beklagteParteiNachname: formData.get("beklagteParteiNachname"),
+  });
+
+  if (!validatedNachnamen.success) {
+    return actionFieldErrorsResponse(validatedNachnamen.error, {
+      data: { formType: "submit" },
+    });
+  }
+
+  if (formData.get("hasLawyer")) {
+    const validatedLawyer = LawyerRequiredFieldsSchema.safeParse({
+      lawyerName: formData.get("lawyerName"),
+      lawyerKanzleiformId: formData.get("lawyerKanzleiformId"),
+    });
+
+    if (!validatedLawyer.success) {
+      return actionFieldErrorsResponse(validatedLawyer.error, {
+        data: { formType: "submit" },
+      });
+    }
+  }
+
+  // Fetch the code lists needed to resolve Beteiligung/Rolle references
+  let staaten: CodeWertItem[];
+  let anschriftstypen: CodeWertItem[];
+  let telekommunikationsarten: CodeWertItem[];
+  let rollenbezeichnungen: CodeWertItem[];
+
+  try {
+    [
+      { elemente: staaten },
+      { elemente: anschriftstypen },
+      { elemente: telekommunikationsarten },
+      { elemente: rollenbezeichnungen },
+    ] = await Promise.all([
+      fetchStaaten(authData),
+      fetchAnschriftstypen(authData),
+      fetchTelekommunikationsarten(authData),
+      fetchRollenbezeichnungen(authData),
+    ]);
+  } catch (error) {
+    return actionResultFromApiError(error, {
+      message: de.shared.form.errors.saveFailed,
+    });
+  }
+
+  const sharedCodeIds = {
+    anschriftstypId: resolveCodeWertId(
+      anschriftstypen,
+      ANSCHRIFTSTYP_CODE_PRIVATANSCHRIFT,
+    ),
+    staatId: resolveCodeWertId(staaten, STAAT_CODE_DEUTSCHLAND),
+    emailTelekommunikationsartId: resolveCodeWertId(
+      telekommunikationsarten,
+      TELEKOMMUNIKATIONSART_CODE_EMAIL,
+    ),
+    telefonTelekommunikationsartId: resolveCodeWertId(
+      telekommunikationsarten,
+      TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
+    ),
+  };
+
+  // Build the Beteiligungen (plaintiff, defendant, and their lawyer) from
+  // the submitted form data
+  const klagendeParteiBeteiligung = buildBeteiligungFromFormValues(
+    getParteiFormValues(formData, "klagendePartei"),
+    {
+      ...sharedCodeIds,
+      rollenbezeichnungId: resolveCodeWertId(
+        rollenbezeichnungen,
+        ROLE_CODE_KLAEGERIN,
+      ),
+    },
+    ROLE_CODE_KLAEGERIN,
+  );
+  const beklagteParteiBeteiligung = buildBeteiligungFromFormValues(
+    getParteiFormValues(formData, "beklagtePartei"),
+    {
+      ...sharedCodeIds,
+      rollenbezeichnungId: resolveCodeWertId(
+        rollenbezeichnungen,
+        ROLE_CODE_BEKLAGTE,
+      ),
+    },
+  );
+  // Only include the Prozessbevollmächtigte(r) if the Klägerin they
+  // reference is actually part of this submission — otherwise their
+  // Rolle.referenz would be an orphan, pointing at a party that no longer exists.
+  const anwaltBeteiligung = klagendeParteiBeteiligung
+    ? buildRaKanzleiFromFormValues(
+        getAnwaltFormValues(formData),
+        {
+          ...sharedCodeIds,
+          rollenbezeichnungId: resolveCodeWertId(
+            rollenbezeichnungen,
+            ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+          ),
+          kanzleiformId: getFormText(formData, "lawyerKanzleiformId"),
+        },
+        ROLE_CODE_KLAEGERIN,
+      )
+    : null;
+
+  const beteiligungen = [
+    klagendeParteiBeteiligung,
+    beklagteParteiBeteiligung,
+    anwaltBeteiligung,
+  ].filter((beteiligung) => beteiligung !== null);
+
+  const formValues = {
+    verfahrensgegenstand: formData.get("subjectMatterOfTheProceedings"),
+    kurzrubrum: formData.get("claimRubrum"),
+    gerichtId: formData.get("claim-court"),
+    beteiligungen: beteiligungen.length > 0 ? beteiligungen : null,
+  };
+
+  const validatedForm = VerfahrenAendernInputSchema.safeParse(formValues);
+
+  if (!validatedForm.success) {
+    return actionFieldErrorsResponse(validatedForm.error, {
+      data: { formValues, formType: "submit" },
+    });
+  }
+
+  // Persist the Verfahren and regenerate the resulting XJustiz document
+  try {
+    await updateVerfahren(authData, verfahrenId, validatedForm.data);
+
+    const einreichungId = formData.get("einreichungId") as string;
+    await regenerateEinreichungXJustiz(authData, {
+      verfahrenId,
+      einreichungId,
+    });
+  } catch (error) {
+    return actionResultFromApiError(error, {
+      message: de.shared.form.errors.saveFailed,
+      data: { formValues, formType: "submit" },
+    });
+  }
+
+  return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
+}
+
+const formActionHandlers = {
+  upload: handleUploadAction,
+  delete: handleDeleteAction,
+  submit: handleSubmitAction,
+} as const;
+
 export const action = async ({
   request,
   context,
@@ -250,220 +484,16 @@ export const action = async ({
   const formData = await request.formData();
   const formType = formData.get("formType");
 
-  // 1) Handle document upload
-  if (formType === "upload") {
-    const formValues = {
-      type: formData.get("type"),
-      file: formData.get("file"),
-    };
-    const validatedForm = DokumentUploadSchema.safeParse(formValues);
-
-    if (!validatedForm.success) {
-      return actionFieldErrorsResponse(validatedForm.error, {
-        data: { formValues, formType: "upload" },
-      });
-    }
-
-    const einreichungId = formData.get("einreichungId") as string;
-    const file = formValues.file as File;
-    const type = formValues.type as DokumentType;
-
-    try {
-      await uploadDokument(authData, verfahrenId, einreichungId, file, type);
-    } catch (error) {
-      return actionResultFromApiError(error, {
-        message: de.shared.form.errors.uploadFailed,
-        data: { formValues, formType: "upload" },
-      });
-    }
-
-    return actionSuccess<DokumentActionData>({ formType: "upload" });
-  }
-
-  // 2) Handle delete flow for an already uploaded document
-  if (formType === "delete") {
-    const einreichungId = formData.get("einreichungId") as string;
-    const dokumentId = formData.get("dokumentId") as string;
-
-    try {
-      const { eTag } = await fetchDokument(authData, {
-        verfahrenId,
-        einreichungId: einreichungId,
-        id: dokumentId,
-      });
-
-      const deleteResult = await deleteDokument(authData, {
-        verfahrenId,
-        einreichungId,
-        id: dokumentId,
-        eTag: eTag ?? "",
-      });
-
-      if (!deleteResult.success) {
-        return data(actionError(de.shared.form.errors.deleteFailed), {
-          status: 500,
-        });
-      }
-
-      return actionSuccess(undefined);
-    } catch (error) {
-      return actionResultFromApiError(error, {
-        message: de.shared.form.errors.deleteFailed,
-      });
-    }
-  }
-
-  // 3) Handle final submit — persist the Verfahren and its Beteiligungen,
-  // then regenerate the resulting XJustiz document
-  if (formType === "submit") {
-    // buildBeteiligungFromFormValues() silently omits a Partei from the
-    // submission when their Nachname is blank instead of failing — validate
-    // it here first so a blank Nachname is reported as a field error rather
-    // than the party quietly disappearing from the Klage.
-    const validatedNachnamen = BeteiligtenNachnameSchema.safeParse({
-      klagendeParteiNachname: formData.get("klagendeParteiNachname"),
-      beklagteParteiNachname: formData.get("beklagteParteiNachname"),
-    });
-
-    if (!validatedNachnamen.success) {
-      return actionFieldErrorsResponse(validatedNachnamen.error, {
-        data: { formType: "submit" },
-      });
-    }
-
-    if (formData.get("hasLawyer")) {
-      const validatedLawyer = LawyerRequiredFieldsSchema.safeParse({
-        lawyerName: formData.get("lawyerName"),
-        lawyerKanzleiformId: formData.get("lawyerKanzleiformId"),
-      });
-
-      if (!validatedLawyer.success) {
-        return actionFieldErrorsResponse(validatedLawyer.error, {
-          data: { formType: "submit" },
-        });
-      }
-    }
-
-    // Fetch the code lists needed to resolve Beteiligung/Rolle references
-    let staaten: CodeWertItem[];
-    let anschriftstypen: CodeWertItem[];
-    let telekommunikationsarten: CodeWertItem[];
-    let rollenbezeichnungen: CodeWertItem[];
-
-    try {
-      [
-        { elemente: staaten },
-        { elemente: anschriftstypen },
-        { elemente: telekommunikationsarten },
-        { elemente: rollenbezeichnungen },
-      ] = await Promise.all([
-        fetchStaaten(authData),
-        fetchAnschriftstypen(authData),
-        fetchTelekommunikationsarten(authData),
-        fetchRollenbezeichnungen(authData),
-      ]);
-    } catch (error) {
-      return actionResultFromApiError(error, {
-        message: de.shared.form.errors.saveFailed,
-      });
-    }
-
-    const sharedCodeIds = {
-      anschriftstypId: resolveCodeWertId(
-        anschriftstypen,
-        ANSCHRIFTSTYP_CODE_PRIVATANSCHRIFT,
-      ),
-      staatId: resolveCodeWertId(staaten, STAAT_CODE_DEUTSCHLAND),
-      emailTelekommunikationsartId: resolveCodeWertId(
-        telekommunikationsarten,
-        TELEKOMMUNIKATIONSART_CODE_EMAIL,
-      ),
-      telefonTelekommunikationsartId: resolveCodeWertId(
-        telekommunikationsarten,
-        TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
-      ),
-    };
-
-    // Build the Beteiligungen (plaintiff, defendant, and their lawyer) from
-    // the submitted form data
-    const klagendeParteiBeteiligung = buildBeteiligungFromFormValues(
-      getParteiFormValues(formData, "klagendePartei"),
-      {
-        ...sharedCodeIds,
-        rollenbezeichnungId: resolveCodeWertId(
-          rollenbezeichnungen,
-          ROLE_CODE_KLAEGERIN,
-        ),
-      },
-      ROLE_CODE_KLAEGERIN,
-    );
-    const beklagteParteiBeteiligung = buildBeteiligungFromFormValues(
-      getParteiFormValues(formData, "beklagtePartei"),
-      {
-        ...sharedCodeIds,
-        rollenbezeichnungId: resolveCodeWertId(
-          rollenbezeichnungen,
-          ROLE_CODE_BEKLAGTE,
-        ),
-      },
-    );
-    // Only include the Prozessbevollmächtigte(r) if the Klägerin they
-    // reference is actually part of this submission — otherwise their
-    // Rolle.referenz would be an orphan, pointing at a party that no longer exists.
-    const anwaltBeteiligung = klagendeParteiBeteiligung
-      ? buildRaKanzleiFromFormValues(
-          getAnwaltFormValues(formData),
-          {
-            ...sharedCodeIds,
-            rollenbezeichnungId: resolveCodeWertId(
-              rollenbezeichnungen,
-              ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
-            ),
-            kanzleiformId: getFormText(formData, "lawyerKanzleiformId"),
-          },
-          ROLE_CODE_KLAEGERIN,
-        )
+  const handlerKey =
+    typeof formType === "string" && formType in formActionHandlers
+      ? (formType as keyof typeof formActionHandlers)
       : null;
 
-    const beteiligungen = [
-      klagendeParteiBeteiligung,
-      beklagteParteiBeteiligung,
-      anwaltBeteiligung,
-    ].filter((beteiligung) => beteiligung !== null);
-
-    const formValues = {
-      verfahrensgegenstand: formData.get("subjectMatterOfTheProceedings"),
-      kurzrubrum: formData.get("claimRubrum"),
-      gerichtId: formData.get("claim-court"),
-      beteiligungen: beteiligungen.length > 0 ? beteiligungen : null,
-    };
-
-    const validatedForm = VerfahrenAendernInputSchema.safeParse(formValues);
-
-    if (!validatedForm.success) {
-      return actionFieldErrorsResponse(validatedForm.error, {
-        data: { formValues, formType: "submit" },
-      });
-    }
-
-    // Persist the Verfahren and regenerate the resulting XJustiz document
-    try {
-      await updateVerfahren(authData, verfahrenId, validatedForm.data);
-
-      const einreichungId = formData.get("einreichungId") as string;
-      await regenerateEinreichungXJustiz(authData, {
-        verfahrenId,
-        einreichungId,
-      });
-    } catch (error) {
-      return actionResultFromApiError(error, {
-        message: de.shared.form.errors.saveFailed,
-        data: { formValues, formType: "submit" },
-      });
-    }
-
-    return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
+  if (!handlerKey) {
+    return;
   }
+
+  return formActionHandlers[handlerKey](formData, { authData, verfahrenId });
 };
 
 export default function VerfahrenNeuBearbeiten() {
