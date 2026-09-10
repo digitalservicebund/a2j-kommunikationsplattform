@@ -1,7 +1,6 @@
 import FiraSansMedium from "@kern-ux/native/dist/fonts/fira-sans/FiraSans-Medium.woff2?url";
 import FiraSansRegular from "@kern-ux/native/dist/fonts/fira-sans/FiraSans-Regular.woff2?url";
 import FiraSansSemiBold from "@kern-ux/native/dist/fonts/fira-sans/FiraSans-SemiBold.woff2?url";
-import * as Sentry from "@sentry/react-router";
 import {
   data,
   Links,
@@ -13,7 +12,7 @@ import {
   useLoaderData,
 } from "react-router";
 import ErrorBox from "~/components/ErrorBox";
-import { buildErrorContext } from "~/services/error/buildErrorContext";
+import { buildErrorContent } from "~/services/error/buildErrorContent";
 import { useNonce } from "~/services/security/nonce";
 import { dictionaries } from "~/services/translations";
 import { TranslationsContext } from "~/services/translations/context";
@@ -110,14 +109,13 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
-  const { errorContent, errorToReport } = buildErrorContext(
-    error,
-    import.meta.env.DEV,
-  );
-
-  if (errorToReport) {
-    Sentry.captureException(errorToReport);
-  }
+  // TODO: We cannot use `useTranslations` here because the error could have
+  // occurred before the `TranslationsContext.Provider` has been mounted. For
+  // now, we hardcode German as the language for error messages.
+  const errorContent = buildErrorContent(error, {
+    locale: "de",
+    isDev: import.meta.env.DEV,
+  });
 
   return (
     <html lang="de">
