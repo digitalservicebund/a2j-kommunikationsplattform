@@ -31,6 +31,7 @@ import { createVerfahren } from "~/domains/verfahren/infrastructure/repositories
 import { VerfahrenAendernInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.input.schema";
 import { VerfahrenAendernRequestDTO } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.request.schema";
 import { authMiddleware } from "~/middleware/auth.server";
+import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
 import {
@@ -105,82 +106,70 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   return { verfahrenId, einreichungId, uploadedDokument, gerichtePromise };
 };
 
-export const action = async ({ request, context }: ActionFunctionArgs) => {
-  const authData = requireAuthData(context, "action");
+type FormActionContext = {
+  authData: AuthenticationResponse;
+  existingVerfahrenId: string | undefined;
+  existingEinreichungId: string | undefined;
+};
 
-  const formData = await request.formData();
-  const formType = formData.get("formType");
-  const url = new URL(request.url);
-  const urlContext = getVerfahrenContextFromUrl(url);
+// Handles delete for an already uploaded document
+async function handleDelete(
+  formData: FormData,
+  { authData }: FormActionContext,
+) {
+  const verfahrenId = formData.get("verfahrenId");
+  const einreichungId = formData.get("einreichungId");
+  const dokumentId = formData.get("dokumentId");
 
-  const submittedVerfahrenId = formData.get("verfahrenId");
-  const submittedEinreichungId = formData.get("einreichungId");
-
-  const existingVerfahrenId =
-    typeof submittedVerfahrenId === "string"
-      ? submittedVerfahrenId
-      : urlContext.verfahrenId;
-  const existingEinreichungId =
-    typeof submittedEinreichungId === "string"
-      ? submittedEinreichungId
-      : urlContext.einreichungId;
-
-  // 1) Handle delete flow for an already uploaded document
-  if (formType === "delete") {
-    const verfahrenId = formData.get("verfahrenId");
-    const einreichungId = formData.get("einreichungId");
-    const dokumentId = formData.get("dokumentId");
-
-    if (
-      typeof verfahrenId !== "string" ||
-      typeof einreichungId !== "string" ||
-      typeof dokumentId !== "string"
-    ) {
-      return data(actionError(de.shared.form.errors.deleteFailed), {
-        status: 400,
-      });
-    }
-
-    try {
-      const { eTag } = await fetchDokument(authData, {
-        verfahrenId,
-        einreichungId,
-        id: dokumentId,
-      });
-
-      const deleteResult = await deleteDokument(authData, {
-        verfahrenId,
-        einreichungId,
-        id: dokumentId,
-        eTag: eTag ?? "",
-      });
-
-      if (!deleteResult.success) {
-        return data(
-          actionError(de.shared.form.errors.deleteFailed, {
-            data: { verfahrenId, einreichungId },
-          }),
-          { status: 500 },
-        );
-      }
-
-      return redirect(buildRouteUrl(verfahrenId, einreichungId));
-    } catch (error) {
-      return actionResultFromApiError(error, {
-        message: de.shared.form.errors.deleteFailed,
-        data: { verfahrenId, einreichungId },
-      });
-    }
-  }
-
-  // 2) Guard unsupported form submissions
-  if (formType !== "submit") {
-    return data(actionError(de.shared.form.errors.invalidSubmission), {
+  if (
+    typeof verfahrenId !== "string" ||
+    typeof einreichungId !== "string" ||
+    typeof dokumentId !== "string"
+  ) {
+    return data(actionError(de.shared.form.errors.deleteFailed), {
       status: 400,
     });
   }
 
-  // 3) If a draft already has uploads, continue in edit route
+  try {
+    const { eTag } = await fetchDokument(authData, {
+      verfahrenId,
+      einreichungId,
+      id: dokumentId,
+    });
+
+    const deleteResult = await deleteDokument(authData, {
+      verfahrenId,
+      einreichungId,
+      id: dokumentId,
+      eTag: eTag ?? "",
+    });
+
+    if (!deleteResult.success) {
+      return data(
+        actionError(de.shared.form.errors.deleteFailed, {
+          data: { verfahrenId, einreichungId },
+        }),
+        { status: 500 },
+      );
+    }
+
+    return redirect(buildRouteUrl(verfahrenId, einreichungId));
+  } catch (error) {
+    return actionResultFromApiError(error, {
+      message: de.shared.form.errors.deleteFailed,
+      data: { verfahrenId, einreichungId },
+    });
+  }
+}
+
+// Uploads the Klageschrift, creating the Verfahren/Einreichung on first
+// submit, then continues to the bearbeiten step
+async function handleSubmit(
+  formData: FormData,
+  { authData, existingVerfahrenId, existingEinreichungId }: FormActionContext,
+) {
+  // If a draft already has uploads, continue in edit route
   if (existingVerfahrenId && existingEinreichungId) {
     try {
       const { elemente: dokumente } = await fetchDokumente(authData, {
@@ -208,7 +197,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
   const { file, verfahrensgegenstand, gerichtId } = validatedForm.data;
 
-  // 4) Ensure verfahren/einreichung exist (create on first submit)
+  // Ensure verfahren/einreichung exist (create on first submit)
   let verfahrenId = existingVerfahrenId;
   let einreichungId = existingEinreichungId;
 
@@ -257,8 +246,51 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
     });
   }
 
-  // 5) Continue to bearbeiten step
   return redirect(`/verfahren/neu/${verfahrenId}/bearbeiten`);
+}
+
+const formActionHandlers = {
+  delete: handleDelete,
+  submit: handleSubmit,
+} as const;
+
+export const action = async ({ request, context }: ActionFunctionArgs) => {
+  const authData = requireAuthData(context, "action");
+
+  const formData = await request.formData();
+  const formType = formData.get("formType");
+  const url = new URL(request.url);
+  const urlContext = getVerfahrenContextFromUrl(url);
+
+  const submittedVerfahrenId = formData.get("verfahrenId");
+  const submittedEinreichungId = formData.get("einreichungId");
+
+  const existingVerfahrenId =
+    typeof submittedVerfahrenId === "string"
+      ? submittedVerfahrenId
+      : urlContext.verfahrenId;
+  const existingEinreichungId =
+    typeof submittedEinreichungId === "string"
+      ? submittedEinreichungId
+      : urlContext.einreichungId;
+
+  const handlerKey =
+    typeof formType === "string" && formType in formActionHandlers
+      ? (formType as keyof typeof formActionHandlers)
+      : null;
+
+  // Guards unsupported form submissions (only "delete" and "submit" exist)
+  if (!handlerKey) {
+    return data(actionError(de.shared.form.errors.invalidSubmission), {
+      status: 400,
+    });
+  }
+
+  return formActionHandlers[handlerKey](formData, {
+    authData,
+    existingVerfahrenId,
+    existingEinreichungId,
+  });
 };
 
 export default function VerfahrenNeu() {
