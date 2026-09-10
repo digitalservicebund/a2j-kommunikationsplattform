@@ -1,4 +1,4 @@
-## Contributing
+# Contributing
 
 🇬🇧
 Everyone is welcome to contribute the development of the _a2j-kommunikationsplattform_. You can contribute by opening pull request,
@@ -8,9 +8,9 @@ providing documentation or answering questions or giving feedback. Please always
 🇩🇪
 Jede:r ist herzlich eingeladen, die Entwicklung der _a2j-kommunikationsplattform_ mitzugestalten. Du kannst einen Beitrag leisten,
 indem du Pull-Requests eröffnest, die Dokumentation erweiterst, Fragen beantwortest oder Feedback gibst.
-Bitte befolge immer die Richtlinien und unseren [Verhaltenskodex](./CODE_OF_CONDUCT_DE.md).
+Bitte befolge immer die Richtlinien und unseren [Verhaltenskodex](./CODE_OF_CONDUCT.md).
 
-## Contributing code
+## Code Contributions
 
 🇬🇧
 Open a pull request with your changes and it will be reviewed by someone from the team. When you submit a pull request,
@@ -26,3 +26,8 @@ lizenzieren. Durch das Einreichen des Patches erklärst du dich damit einverstan
 MIT-Lizenz lizenziert sind.
 
 Bitte stelle sicher, dass deine Änderungen getestet wurden, bevor du einen Pull-Request sendest.
+
+## Resources
+
+- [Development guide](./doc/DEVELOPMENT.md)
+- [Architecture documentation](./doc/ARCHITECTURE.md)
