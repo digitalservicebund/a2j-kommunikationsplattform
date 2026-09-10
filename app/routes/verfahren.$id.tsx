@@ -32,6 +32,7 @@ import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
 import { actionResultFromApiError, actionSuccess } from "~/utils/actionResult";
+import { dispatchFormAction } from "~/utils/dispatchFormAction";
 
 type LoaderData = {
   verfahren: Verfahren;
@@ -185,18 +186,13 @@ export const action = async ({
   );
 
   const formData = await request.formData();
-  const formType = formData.get("formType");
 
-  const handlerKey =
-    typeof formType === "string" && formType in formActionHandlers
-      ? (formType as keyof typeof formActionHandlers)
-      : null;
-
-  if (!handlerKey) {
-    return redirect(`/verfahren/${verfahrenId}`);
-  }
-
-  return formActionHandlers[handlerKey](formData, { authData, verfahrenId });
+  return dispatchFormAction(
+    formData,
+    formActionHandlers,
+    { authData, verfahrenId },
+    () => redirect(`/verfahren/${verfahrenId}`),
+  );
 };
 
 export default function VerfahrenId() {

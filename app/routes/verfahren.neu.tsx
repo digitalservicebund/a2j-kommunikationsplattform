@@ -40,6 +40,7 @@ import {
   actionResultFromApiError,
   actionResultFromSchemaParsingError,
 } from "~/utils/actionResult";
+import { dispatchFormAction } from "~/utils/dispatchFormAction";
 
 const StatementOfClaimUploadSchema = z.object({
   file: z.file().min(1, {
@@ -258,7 +259,6 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
   const authData = requireAuthData(context, "action");
 
   const formData = await request.formData();
-  const formType = formData.get("formType");
   const url = new URL(request.url);
   const urlContext = getVerfahrenContextFromUrl(url);
 
@@ -274,23 +274,16 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       ? submittedEinreichungId
       : urlContext.einreichungId;
 
-  const handlerKey =
-    typeof formType === "string" && formType in formActionHandlers
-      ? (formType as keyof typeof formActionHandlers)
-      : null;
-
-  // Guards unsupported form submissions (only "delete" and "submit" exist)
-  if (!handlerKey) {
-    return data(actionError(de.shared.form.errors.invalidSubmission), {
-      status: 400,
-    });
-  }
-
-  return formActionHandlers[handlerKey](formData, {
-    authData,
-    existingVerfahrenId,
-    existingEinreichungId,
-  });
+  return dispatchFormAction(
+    formData,
+    formActionHandlers,
+    { authData, existingVerfahrenId, existingEinreichungId },
+    // Guards unsupported form submissions (only "delete" and "submit" exist)
+    () =>
+      data(actionError(de.shared.form.errors.invalidSubmission), {
+        status: 400,
+      }),
+  );
 };
 
 export default function VerfahrenNeu() {

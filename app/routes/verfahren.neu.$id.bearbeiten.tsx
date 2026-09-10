@@ -83,6 +83,7 @@ import {
   actionResultFromApiError,
   actionSuccess,
 } from "~/utils/actionResult";
+import { dispatchFormAction } from "~/utils/dispatchFormAction";
 
 type DokumentType = z.infer<typeof DokumentTypeSchema>;
 type CodeWertItem = z.infer<typeof CodeWertSchema>;
@@ -482,18 +483,13 @@ export const action = async ({
   );
 
   const formData = await request.formData();
-  const formType = formData.get("formType");
 
-  const handlerKey =
-    typeof formType === "string" && formType in formActionHandlers
-      ? (formType as keyof typeof formActionHandlers)
-      : null;
-
-  if (!handlerKey) {
-    return;
-  }
-
-  return formActionHandlers[handlerKey](formData, { authData, verfahrenId });
+  return dispatchFormAction(
+    formData,
+    formActionHandlers,
+    { authData, verfahrenId },
+    () => undefined,
+  );
 };
 
 export default function VerfahrenNeuBearbeiten() {
