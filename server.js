@@ -4,16 +4,21 @@ import express from "express";
 import morgan from "morgan";
 import logger from "pino-http";
 import { RouterContextProvider } from "react-router";
+import { initializeSentryOnServer } from "./app/sentry.ts";
+
+initializeSentryOnServer();
 
 const environment = process.env.ENVIRONMENT?.trim() ?? "";
 const mockJustizBackendAPI = environment === "development";
 const isProduction = process.env.NODE_ENV === "production";
+const isSendingToSentry = !!process.env.SENTRY_DSN?.trim();
 
 // info logs
 let infoLog = `Info:
   -> Environment is "${environment}"
   -> Production build: ${isProduction ? "yes" : "no"}
   -> API will be mocked: ${mockJustizBackendAPI ? "yes" : "no"}
+  -> Errors will be sent to Sentry: ${isSendingToSentry ? "yes" : "no"}
 `;
 
 // TODO: uncomment below when ticket is completed

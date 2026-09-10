@@ -1,187 +1,20 @@
-/**
- * By default, React Router will handle generating the HTTP Response for you.
- * For more information, see https://reactrouter.com/explanation/special-files#entryservertsx
- */
-
 import { createReadableStreamFromReadable } from "@react-router/node";
 import * as Sentry from "@sentry/react-router";
-import { isbot } from "isbot";
-import { PassThrough } from "node:stream";
 import { renderToPipeableStream } from "react-dom/server";
-import {
-  HandleErrorFunction,
+import { ServerRouter } from "react-router";
+
+export const handleError = Sentry.createSentryHandleError({
+  logErrors: true,
+});
+
+const handleRequest = Sentry.createSentryHandleRequest({
   ServerRouter,
-  type EntryContext,
-} from "react-router";
-import { generateNonce } from "~/services/security/nonce.server";
+  renderToPipeableStream,
+  createReadableStreamFromReadable,
+  // Increased stream timeout to handle token refresh (which happens on expired
+  // cookies) + multiple API calls without causing stream timeouts that result
+  // in 502 errors
+  streamTimeout: 15_000,
+});
 
-import { config } from "~/config/config";
-import { getCspHeader } from "~/services/security/cspHeader.server";
-import { originFromUrlString } from "~/utils/originFromUrlString";
-import { NonceContext } from "./services/security/nonce";
-
-// Reject/cancel all pending promises after 15 seconds
-// Increased to handle token refresh (which happens on expired cookies)
-// + multiple API calls without causing stream timeouts that result in 502 errors
-export const streamTimeout = 15000;
-const CONNECT_SOURCES = [originFromUrlString(config().SENTRY_DSN)].filter(
-  (origin) => origin !== undefined,
-);
-
-export const handleError: HandleErrorFunction = (error, { request }) => {
-  // React Router may abort some interrupted requests, report those
-  if (!request.signal.aborted) {
-    Sentry.captureException(error);
-    console.error(error);
-  }
-};
-
-export default function handleRequest(
-  request: Request,
-  responseStatusCode: number,
-  responseHeaders: Headers,
-  routerContext: EntryContext,
-) {
-  return isbot(request.headers.get("user-agent"))
-    ? handleBotRequest(
-        request,
-        responseStatusCode,
-        responseHeaders,
-        routerContext,
-      )
-    : handleBrowserRequest(
-        request,
-        responseStatusCode,
-        responseHeaders,
-        routerContext,
-      );
-}
-
-function handleBotRequest(
-  request: Request,
-  responseStatusCode: number,
-  responseHeaders: Headers,
-  routerContext: EntryContext,
-) {
-  return new Promise((resolve, reject) => {
-    let shellRendered = false;
-    const cspNonce = generateNonce();
-    const { pipe, abort } = renderToPipeableStream(
-      <NonceContext.Provider value={cspNonce}>
-        <ServerRouter
-          context={routerContext}
-          url={request.url}
-          nonce={cspNonce}
-        />
-      </NonceContext.Provider>,
-      {
-        onAllReady() {
-          shellRendered = true;
-          const body = new PassThrough();
-          const stream = createReadableStreamFromReadable(body);
-
-          responseHeaders.set("Content-Type", "text/html");
-
-          resolve(
-            new Response(stream, {
-              headers: responseHeaders,
-              status: responseStatusCode,
-            }),
-          );
-
-          pipe(body);
-        },
-        onShellError(error: unknown) {
-          reject(error);
-        },
-        onError(error: unknown) {
-          responseStatusCode = 500;
-          // Log streaming rendering errors from inside the shell.  Don't log
-          // errors encountered during initial shell rendering since they'll
-          // reject and get logged in handleDocumentRequest.
-          if (shellRendered) {
-            console.error(error);
-          }
-        },
-      },
-    );
-
-    // Automatically timeout the React renderer after 16 seconds, which ensures
-    // React has enough time to flush down the rejected boundary contents
-    setTimeout(() => {
-      console.error(
-        `Bot request stream timeout after ${streamTimeout + 1000}ms for ${request.url}`,
-      );
-      abort();
-    }, streamTimeout + 1000);
-  });
-}
-
-function handleBrowserRequest(
-  request: Request,
-  responseStatusCode: number,
-  responseHeaders: Headers,
-  routerContext: EntryContext,
-) {
-  return new Promise((resolve, reject) => {
-    let shellRendered = false;
-    const cspNonce = generateNonce();
-    responseHeaders.set(
-      "Content-Security-Policy",
-      getCspHeader({
-        nonce: cspNonce,
-        environment: config().ENVIRONMENT,
-        additionalConnectSrc: CONNECT_SOURCES,
-      }),
-    );
-    const { pipe, abort } = renderToPipeableStream(
-      <NonceContext.Provider value={cspNonce}>
-        <ServerRouter
-          context={routerContext}
-          url={request.url}
-          nonce={cspNonce}
-        />
-      </NonceContext.Provider>,
-      {
-        nonce: cspNonce,
-        onShellReady() {
-          shellRendered = true;
-          const body = new PassThrough();
-          const stream = createReadableStreamFromReadable(body);
-
-          responseHeaders.set("Content-Type", "text/html");
-
-          resolve(
-            new Response(stream, {
-              headers: responseHeaders,
-              status: responseStatusCode,
-            }),
-          );
-
-          pipe(body);
-        },
-        onShellError(error: unknown) {
-          reject(error);
-        },
-        onError(error: unknown) {
-          responseStatusCode = 500;
-          // Log streaming rendering errors from inside the shell.  Don't log
-          // errors encountered during initial shell rendering since they'll
-          // reject and get logged in handleDocumentRequest.
-          if (shellRendered) {
-            console.error(error);
-          }
-        },
-      },
-    );
-
-    // Automatically timeout the React renderer after 16 seconds, which ensures
-    // React has enough time to flush down the rejected boundary contents
-    setTimeout(() => {
-      console.error(
-        `Browser request stream timeout after ${streamTimeout + 1000}ms for ${request.url}`,
-      );
-      abort();
-    }, streamTimeout + 1000);
-  });
-}
+export default handleRequest;

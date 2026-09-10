@@ -2,7 +2,7 @@ import de from "./de";
 
 export const dictionaries = { de } as const;
 
-export type Language = keyof typeof dictionaries;
+export type Locale = keyof typeof dictionaries;
 
 // This converts all properties from DE translations to strings,
 // hence making the type usable for type safety in other languages without enforcing the german text

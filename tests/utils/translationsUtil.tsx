@@ -1,13 +1,13 @@
 import { render } from "@testing-library/react";
 import React from "react";
-import { dictionaries, Language } from "~/services/translations";
+import { dictionaries, Locale } from "~/services/translations";
 import { TranslationsProvider } from "~/services/translations/context";
 
-const TEST_LANGUAGE: Language = "de";
+const TEST_LOCALE: Locale = "de";
 
 export function getTestTranslations() {
   // Returning DE translations for tests, but in the future we might want to make this configurable to work with other languages
-  return dictionaries[TEST_LANGUAGE];
+  return dictionaries[TEST_LOCALE];
 }
 
 /**
