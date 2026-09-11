@@ -21,6 +21,25 @@ function decodeSafeId(rawIdToken: string): string {
 // BRAK IdP uses "Authorization Code" OAuth 2.0 flow
 export const authenticator = new Authenticator<AuthenticationResponse>();
 
+// Exception: `arctic` (used internally by `remix-auth-oauth2`) discards the response
+// body for any token-endpoint status other than 200/400/401, so IdP error details are
+// otherwise lost. `OAuth2Strategy` has no custom-fetch hook, so this wraps global fetch,
+// narrowly scoped to the BRAK token endpoint, purely to log what arctic would hide.
+// TODO: remove the below after investigating the BeA login failure.
+const brakTokenEndpoint = `${serverConfig().BRAK_IDP_OIDC_ISSUER}/protocol/openid-connect/token`;
+const originalFetch = globalThis.fetch;
+globalThis.fetch = async (input, init) => {
+  const response = await originalFetch(input, init);
+  if (!response.ok && response.url === brakTokenEndpoint) {
+    console.error(
+      "BRAK token endpoint returned an error response:",
+      response.status,
+      await response.clone().text(),
+    );
+  }
+  return response;
+};
+
 // TODO: Remove module-level auth state (`idToken`, `komplaIdpIdToken`, `loginType`) and derive
 // provider/token data from the current request session instead, so concurrent logins do not
 // share mutable process memory.
