@@ -3,8 +3,10 @@ export type FormActionHandler<TContext> = (
   context: TContext,
 ) => unknown;
 
-// Looks up the handler registered for formData's "formType" and invokes it,
-// falling back to `onUnmatchedHandlerKey` when there is no matching handler.
+/**
+ * Looks up the handler registered for formData's "formType" and invokes it,
+ * falling back to `onUnmatchedHandlerKey` when there is no matching handler.
+ */
 export function dispatchFormAction<
   TContext,
   THandlers extends Record<string, FormActionHandler<TContext>>,
