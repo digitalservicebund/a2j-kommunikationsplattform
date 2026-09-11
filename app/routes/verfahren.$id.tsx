@@ -28,9 +28,11 @@ import {
   fetchDokumentValidierungsstatus,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { authMiddleware } from "~/middleware/auth.server";
+import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
 import { actionResultFromApiError, actionSuccess } from "~/utils/actionResult";
+import { dispatchFormAction } from "~/utils/dispatchFormAction";
 
 type LoaderData = {
   verfahren: Verfahren;
@@ -100,6 +102,75 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   };
 };
 
+type FormActionContext = {
+  authData: AuthenticationResponse;
+  verfahrenId: string;
+};
+
+async function handleDelete(
+  formData: FormData,
+  { authData, verfahrenId }: FormActionContext,
+) {
+  try {
+    await deleteDokumentFromEinreichung({
+      authData,
+      verfahrenId,
+      einreichungId: formData.get("einreichungId"),
+      dokumentId: formData.get("dokumentId"),
+    });
+
+    return redirect(`/verfahren/${verfahrenId}`);
+  } catch (error) {
+    return actionResultFromApiError(error, {
+      message: de.shared.form.errors.deleteFailed,
+    });
+  }
+}
+
+async function handleEinreichen(
+  formData: FormData,
+  { authData, verfahrenId }: FormActionContext,
+) {
+  const einreichungId = formData.get("einreichungId") as string;
+
+  try {
+    await submitEinreichungIfNeeded(authData, { verfahrenId, einreichungId });
+
+    return redirect(`/verfahren/${verfahrenId}`);
+  } catch (error) {
+    return actionResultFromApiError(error, {
+      message: de.shared.form.errors.einreichungFailed,
+    });
+  }
+}
+
+async function handleDownloadBeleg(
+  formData: FormData,
+  { authData, verfahrenId }: FormActionContext,
+) {
+  const belegId = formData.get("belegId") as string;
+
+  try {
+    const downloadUrl = await fetchBelegDownloadLink(authData, {
+      verfahrenId,
+      id: belegId,
+      dispositionType: "ATTACHMENT",
+    });
+
+    return actionSuccess({ downloadUrl });
+  } catch (error) {
+    return actionResultFromApiError(error, {
+      message: de.shared.form.errors.belegDownloadFailed,
+    });
+  }
+}
+
+const formActionHandlers = {
+  delete: handleDelete,
+  einreichen: handleEinreichen,
+  "download-beleg": handleDownloadBeleg,
+} as const;
+
 // TODO: This action is near-identical to verfahren.neu.$id.abgabe.tsx's
 // (same three form types, same underlying calls — both redirect back to
 // their own route on success). We're not yet sure what actions should be performed on `verfahren.$id.tsx` and how much of an overlap there is between this route and `verfahren.neu.$id.abgabe.tsx`
@@ -115,65 +186,13 @@ export const action = async ({
   );
 
   const formData = await request.formData();
-  const formType = formData.get("formType");
 
-  if (formType === "delete") {
-    try {
-      const deleteResult = await deleteDokumentFromEinreichung({
-        authData,
-        verfahrenId,
-        einreichungId: formData.get("einreichungId"),
-        dokumentId: formData.get("dokumentId"),
-      });
-
-      if (deleteResult.status === "invalid-form-data") {
-        return redirect(`/verfahren/${verfahrenId}`);
-      }
-
-      return redirect(`/verfahren/${verfahrenId}`);
-    } catch (error) {
-      return actionResultFromApiError(error, {
-        message: de.shared.form.errors.deleteFailed,
-      });
-    }
-  }
-
-  if (formType === "einreichen") {
-    const einreichungId = formData.get("einreichungId") as string;
-
-    try {
-      await submitEinreichungIfNeeded(authData, {
-        verfahrenId,
-        einreichungId,
-      });
-
-      return redirect(`/verfahren/${verfahrenId}`);
-    } catch (error) {
-      return actionResultFromApiError(error, {
-        message: de.shared.form.errors.einreichungFailed,
-      });
-    }
-  }
-
-  if (formType === "download-beleg") {
-    const belegId = formData.get("belegId") as string;
-
-    try {
-      const downloadUrl = await fetchBelegDownloadLink(authData, {
-        verfahrenId,
-        id: belegId,
-        dispositionType: "ATTACHMENT",
-      });
-
-      return actionSuccess({ downloadUrl });
-    } catch (error) {
-      return actionResultFromApiError(error, {
-        message: de.shared.form.errors.belegDownloadFailed,
-      });
-    }
-  }
-
-  return redirect(`/verfahren/${verfahrenId}`);
+  return dispatchFormAction(
+    formData,
+    formActionHandlers,
+    { authData, verfahrenId },
+    () => redirect(`/verfahren/${verfahrenId}`),
+  );
 };
 
 export default function VerfahrenId() {
