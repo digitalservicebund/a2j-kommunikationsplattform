@@ -2,10 +2,7 @@ import { RefObject, SyntheticEvent } from "react";
 import { Form, Link } from "react-router";
 import Button from "~/components/Button";
 import { buildBeteiligteSummaryItems } from "~/components/verfahren/presentation/buildBeteiligteSummaryItems";
-import {
-  buildInitialTimelineStepData,
-  getInitialEinreichungTimelineSteps,
-} from "~/components/verfahren/presentation/buildInitialEinreichungTimelineSteps";
+import { buildInitialEinreichungTimelineSteps } from "~/components/verfahren/presentation/buildInitialEinreichungTimelineSteps";
 import type { ReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
 import {
   NOT_AVAILABLE_LABEL,
@@ -55,7 +52,7 @@ export default function VerfahrenAktuelleEinreichungSection({
   formRef,
   handleSubmit,
 }: Readonly<VerfahrenAktuelleEinreichungSectionProps>) {
-  const { routes, shared } = useTranslations();
+  const translations = useTranslations();
 
   const beleg = initialEinreichung.beleg;
   const isBelegReady = beleg !== null && beleg.status === "ERSTELLT";
@@ -69,45 +66,36 @@ export default function VerfahrenAktuelleEinreichungSection({
     ROLE_CODE_BEKLAGTE,
   );
 
-  const initialTimelineStepData = buildInitialTimelineStepData(
-    getInitialEinreichungTimelineSteps(initialEinreichung.dokumente),
-    verfahren.statusGeaendertAm,
-    {
+  const initialEinreichungTimelineSteps = buildInitialEinreichungTimelineSteps({
+    verfahrenId: verfahren.id,
+    verfahrenStatusGeaendertAm: verfahren.statusGeaendertAm,
+    einreichungId: initialEinreichung.einreichung.id,
+    einreichungStatus: initialEinreichung.einreichung.status,
+    einreichungDokumente: initialEinreichung.dokumente,
+    detailsCompleted: {
       klaeger: klaegerinnenSummary.length > 0,
       beklagter: beklagteSummary.length > 0,
       rubrum: Boolean(verfahren.kurzrubrum),
       gericht: Boolean(verfahren.gericht),
     },
-    {
-      assetsTitle: routes.verfahrenNeu.step3.proceduralSteps.assets.title,
-      filesAddedLabel:
-        routes.verfahrenNeu.step3.proceduralSteps.assets.filesAddedLabel,
-      addDetailsTitle:
-        routes.verfahrenNeu.step3.proceduralSteps.addDetails.title,
-      klageschriftUploadTitle:
-        routes.verfahrenNeu.step3.proceduralSteps.klageschriftUpload.title,
-      klaegerLabel:
-        routes.verfahrenNeu.step3.proceduralSteps.addDetails.klaegerLabel,
-      beklagterLabel:
-        routes.verfahrenNeu.step3.proceduralSteps.addDetails.beklagterLabel,
-      rubrumLabel:
-        routes.verfahrenNeu.step3.proceduralSteps.addDetails.rubrumLabel,
-      gerichtLabel:
-        routes.verfahrenNeu.step3.proceduralSteps.addDetails.gerichtLabel,
-    },
-  );
+    translations,
+  });
 
   return (
     <>
+      {/* Aktuelle Einreichung */}
       <div className="kern-gap-md flex items-stretch">
+        {/* Status Text */}
         <div className="w-20 flex-[0_0_auto]">
           <span className="kern-body kern-body--small kern-body--muted">
             {isBelegReady && beleg
               ? new Date(beleg.erstelltAm).toLocaleDateString()
-              : routes.verfahrenNeu.step3.proceduralSteps.einreichung
-                  .timelineLabel}
+              : translations.routes.verfahrenNeu.step3.proceduralSteps
+                  .einreichung.draft}
           </span>
         </div>
+
+        {/* Status Icon */}
         <div className="flex flex-[0_0_auto] flex-col items-center">
           <span
             className={`kern-icon ${isBelegReady ? "kern-icon--check" : "kern-icon--edit"} kern-icon--default`}
@@ -115,12 +103,15 @@ export default function VerfahrenAktuelleEinreichungSection({
           ></span>
           <div className="kern-mt-sm min-h-4 w-0.5 flex-1 bg-(--kern-color-decorative-border-default) p-0"></div>
         </div>
+
+        {/* Einreichung Summary */}
         <div className="kern-pb-md flex-1">
           <article
             className="kern-card"
             key={initialEinreichung.einreichung.id}
           >
             <div className="kern-card__container">
+              {/* Einreichung Header */}
               <header className="kern-card__header">
                 <hgroup className="kern-hgroup">
                   <h4
@@ -128,8 +119,8 @@ export default function VerfahrenAktuelleEinreichungSection({
                     id="card-current-einreichung-heading"
                   >
                     {
-                      routes.verfahrenNeu.step3.proceduralSteps.einreichung
-                        .basisdaten.titleLabel
+                      translations.routes.verfahrenNeu.step3.proceduralSteps
+                        .einreichung.basisdaten.title
                     }{" "}
                     -{" "}
                     {initialEinreichung.einreichung.name ?? NOT_AVAILABLE_LABEL}
@@ -139,26 +130,30 @@ export default function VerfahrenAktuelleEinreichungSection({
                     readinessPresentation={readinessPresentation}
                     hasValidationIssues={hasValidationIssues}
                     belegBadgeLabels={
-                      routes.verfahrenNeu.step3.belegStatus.badgeLabels
+                      translations.routes.verfahrenNeu.step3.belegStatus
+                        .badgeLabels
                     }
                   />
                 </hgroup>
               </header>
+
               <section className="kern-card__body">
+                {/* Basic Data */}
                 <div className="w-full">
                   <h5 className="kern-preline">
                     {
-                      routes.verfahrenNeu.step3.proceduralSteps.einreichung
-                        .basisdaten.label
+                      translations.routes.verfahrenNeu.step3.proceduralSteps
+                        .einreichung.basisdaten.label
                     }
                   </h5>
+
                   <div className="kern-mt-md kern-gap-md grid grid-cols-1 rounded-(--kern-metric-border-radius-default) border border-(--kern-color-decorative-border-contextual) md:grid-cols-2">
                     <dl className="kern-description-list kern-description-list--col">
                       <div className="kern-description-list-item">
                         <dt className="kern-description-list-item__key">
                           {
-                            routes.verfahrenNeu.step3.proceduralSteps
-                              .einreichung.basisdaten.artLabel
+                            translations.routes.verfahrenNeu.step3
+                              .proceduralSteps.einreichung.basisdaten.art
                           }
                         </dt>
                         <dd className="kern-description-list-item__value bg-(--kern-color-feedback-info-background)">
@@ -168,8 +163,8 @@ export default function VerfahrenAktuelleEinreichungSection({
                       <div className="kern-description-list-item">
                         <dt className="kern-description-list-item__key">
                           {
-                            routes.verfahrenNeu.step3.proceduralSteps
-                              .einreichung.basisdaten.gzLabel
+                            translations.routes.verfahrenNeu.step3
+                              .proceduralSteps.einreichung.basisdaten.gz
                           }
                         </dt>
                         <dd className="kern-description-list-item__value bg-(--kern-color-feedback-info-background)">
@@ -177,10 +172,11 @@ export default function VerfahrenAktuelleEinreichungSection({
                         </dd>
                       </div>
                     </dl>
+
                     <dl className="kern-description-list kern-description-list--col">
                       <div className="kern-description-list-item">
                         <dt className="kern-description-list-item__key">
-                          {shared.gericht.briefSummaryTitle}
+                          {translations.shared.gericht.briefSummaryTitle}
                         </dt>
                         <dd className="kern-description-list-item__value">
                           {verfahren.gericht?.wert ?? NOT_AVAILABLE_LABEL}
@@ -189,8 +185,8 @@ export default function VerfahrenAktuelleEinreichungSection({
                       <div className="kern-description-list-item">
                         <dt className="kern-description-list-item__key">
                           {
-                            routes.verfahrenNeu.step3.proceduralSteps
-                              .einreichung.basisdaten.createdLabel
+                            translations.routes.verfahrenNeu.step3
+                              .proceduralSteps.einreichung.basisdaten.erstelltAm
                           }
                         </dt>
                         <dd className="kern-description-list-item__value">
@@ -204,11 +200,13 @@ export default function VerfahrenAktuelleEinreichungSection({
                     </dl>
                   </div>
                 </div>
+
+                {/* Additional Data */}
                 <div className="w-full">
                   <h5 className="kern-preline">
                     {
-                      routes.verfahrenNeu.step3.proceduralSteps.einreichung
-                        .additionalData.label
+                      translations.routes.verfahrenNeu.step3.proceduralSteps
+                        .einreichung.additionalData.label
                     }
                   </h5>
                   <div className="kern-mt-md kern-gap-md grid grid-cols-1 rounded-(--kern-metric-border-radius-default) border border-(--kern-color-decorative-border-contextual)">
@@ -216,8 +214,9 @@ export default function VerfahrenAktuelleEinreichungSection({
                       <div className="kern-description-list-item">
                         <dt className="kern-description-list-item__key">
                           {
-                            routes.verfahrenNeu.step3.proceduralSteps
-                              .einreichung.additionalData.rubrumLabel
+                            translations.routes.verfahrenNeu.step3
+                              .proceduralSteps.einreichung.additionalData
+                              .rubrumLabel
                           }
                         </dt>
                         <dd className="kern-description-list-item__value">
@@ -227,8 +226,8 @@ export default function VerfahrenAktuelleEinreichungSection({
                       <div className="kern-description-list-item">
                         <dt className="kern-description-list-item__key">
                           {
-                            routes.verfahrenNeu.step3.proceduralSteps
-                              .einreichung.additionalData
+                            translations.routes.verfahrenNeu.step3
+                              .proceduralSteps.einreichung.additionalData
                               .verfahrensgegenstandLabel
                           }
                         </dt>
@@ -240,6 +239,8 @@ export default function VerfahrenAktuelleEinreichungSection({
                     </dl>
                   </div>
                 </div>
+
+                {/* Documents */}
                 <div className="w-full">
                   <h5 className="kern-preline">Dokumente</h5>
                   <VerfahrenDokumenteList
@@ -248,17 +249,21 @@ export default function VerfahrenAktuelleEinreichungSection({
                   />
                 </div>
               </section>
+
+              {/* Actions */}
               {beleg === null && (
                 <footer className="kern-card__footer">
+                  {/* Edit */}
                   <Link
                     to={`/verfahren/neu/${verfahren.id}/bearbeiten`}
                     className="kern-btn kern-btn--secondary"
                   >
                     <span className="kern-label">
-                      {shared.form.labels.edit}
+                      {translations.shared.form.labels.edit}
                     </span>
                   </Link>
 
+                  {/* Einreichen (Submit) */}
                   <Form
                     ref={formRef}
                     method="post"
@@ -277,8 +282,8 @@ export default function VerfahrenAktuelleEinreichungSection({
                       aria-describedby="card-current-einreichung-heading"
                       disabled={isSubmitting === "submitting" || isValidating}
                       label={
-                        routes.verfahrenNeu.step3.proceduralSteps.einreichung
-                          .submit
+                        translations.routes.verfahrenNeu.step3.proceduralSteps
+                          .einreichung.submit
                       }
                     />
                   </Form>
@@ -288,24 +293,14 @@ export default function VerfahrenAktuelleEinreichungSection({
           </article>
         </div>
       </div>
-      {initialTimelineStepData.map((timelineStep, index) => {
-        const isLastStep = index === initialTimelineStepData.length - 1;
-        const editTo = isLastStep
-          ? `/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${initialEinreichung.einreichung.id}`
-          : `/verfahren/neu/${verfahren.id}/bearbeiten`;
 
-        return (
-          <VerfahrenTimelineStepCard
-            key={`${timelineStep.title}-${timelineStep.timelineLabel}`}
-            timelineLabel={timelineStep.timelineLabel}
-            title={timelineStep.title}
-            body={timelineStep.body}
-            editTo={beleg === null ? editTo : undefined}
-            editLabel={beleg === null ? shared.form.labels.edit : undefined}
-            showConnector={timelineStep.showConnector}
-          />
-        );
-      })}
+      {/* Timeline */}
+      {initialEinreichungTimelineSteps.map((step) => (
+        <VerfahrenTimelineStepCard
+          {...step}
+          key={`${step.title}-${step.timelineLabel}`}
+        />
+      ))}
     </>
   );
 }

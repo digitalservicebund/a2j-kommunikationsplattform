@@ -803,6 +803,7 @@ export default function VerfahrenNeuBearbeiten() {
                 />
 
                 <VerfahrenDocumentsFormSection
+                  id="dokumente"
                   dokumente={dokumente}
                   uploadedDokumente={uploadedDokumente}
                   submitState={submitState}
