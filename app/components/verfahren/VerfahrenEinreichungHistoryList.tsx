@@ -1,25 +1,24 @@
-import { NOT_AVAILABLE_LABEL } from "~/components/verfahren/presentation/placeholders";
 import { getDokumentStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
 import VerfahrenTimelineStepCard from "~/components/verfahren/VerfahrenTimelineStepCard";
 import type { EinreichungSummary } from "~/domains/verfahren/application/loadVerfahrenEinreichungenOverview.server";
 import { useTranslations } from "~/services/translations/context";
+import { formatDate } from "~/utils/dates";
 
 type VerfahrenEinreichungHistoryListProps = {
   einreichungen: EinreichungSummary[];
 };
 
-const formatDate = (value: string | null | undefined) => {
-  if (!value) {
-    return NOT_AVAILABLE_LABEL;
-  }
-
-  return new Date(value).toLocaleDateString();
-};
-
 export default function VerfahrenEinreichungHistoryList({
   einreichungen,
 }: Readonly<VerfahrenEinreichungHistoryListProps>) {
-  const { routes, shared } = useTranslations();
+  const {
+    shared: sharedTranslations,
+    routes: {
+      verfahrenNeu: {
+        step3: { proceduralSteps: timelineStepTranslations },
+      },
+    },
+  } = useTranslations();
 
   if (einreichungen.length === 0) {
     return (
@@ -30,24 +29,43 @@ export default function VerfahrenEinreichungHistoryList({
   return (
     <div className="space-y-(--kern-metric-space-default)">
       {einreichungen.map(({ einreichung, dokumente }, index) => {
-        const statusPresentation = getDokumentStatusPresentation(
-          einreichung.status,
-          shared.statusPresentation.dokument,
-        );
-        const timelineLabel = formatDate(
-          einreichung.eingereichtAm ?? einreichung.erstelltAm,
-        );
-        const title =
+        const timelineDate =
+          einreichung.eingereichtAm ?? einreichung.erstelltAm;
+        const timelineLabel = formatDate(timelineDate);
+
+        const stepTitle =
           einreichung.name ??
-          `${routes.verfahrenNeu.step3.proceduralSteps.einreichung.basisdaten.titleLabel} ${index + 1}`;
-        const body = `${statusPresentation.label} · ${routes.verfahrenNeu.step3.proceduralSteps.einreichung.basisdaten.createdLabel} ${formatDate(einreichung.erstelltAm)} · ${dokumente.length} ${routes.verfahrenNeu.step3.proceduralSteps.assets.filesAddedLabel}`;
+          timelineStepTranslations.einreichung.fallbackTitle.replace(
+            "{{number}}",
+            String(dokumente.length - index),
+          );
+
+        const stepBody = [
+          // Status
+          getDokumentStatusPresentation(
+            einreichung.status,
+            sharedTranslations.statusPresentation.dokument,
+          ).label,
+
+          // Erstellt am (creation date)
+          timelineStepTranslations.einreichung.basisdaten.erstelltAmWithDate.replace(
+            "{{date}}",
+            formatDate(einreichung.erstelltAm),
+          ),
+
+          // Dokument count
+          timelineStepTranslations.additionalDokumenteAdded.filesAdded.replace(
+            "{{count}}",
+            String(dokumente.length),
+          ),
+        ].join(" · ");
 
         return (
           <VerfahrenTimelineStepCard
             key={einreichung.id}
             timelineLabel={timelineLabel}
-            title={title}
-            body={body}
+            title={stepTitle}
+            body={stepBody}
             showConnector={index < einreichungen.length - 1}
           />
         );

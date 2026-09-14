@@ -308,13 +308,15 @@ export const de = {
         proceduralSteps: {
           headline: "Verfahrensschritte",
           einreichung: {
-            timelineLabel: "Entwurf",
+            draft: "Entwurf",
+            fallbackTitle: "Einreichung {{number}}",
             basisdaten: {
               label: "Basisdaten",
-              titleLabel: "Aktuelle Einreichung",
-              artLabel: "Art der Einreichung",
-              gzLabel: "Geschäftszeichen",
-              createdLabel: "Erstellt am",
+              title: "Aktuelle Einreichung",
+              art: "Art der Einreichung",
+              gz: "Geschäftszeichen",
+              erstelltAm: "Erstellt am",
+              erstelltAmWithDate: "Erstellt am {{date}}",
             },
             additionalData: {
               label: "Weitere Daten",
@@ -326,18 +328,18 @@ export const de = {
             },
             submit: "Klage einreichen & Abgabe ans Gericht",
           },
-          assets: {
+          additionalDokumenteAdded: {
             title: "Anlagen & Beweismittel",
-            filesAddedLabel: "Datei(en) hinzugefügt",
+            filesAdded: "{{count}} Datei(en) hinzugefügt",
           },
-          addDetails: {
+          detailsAdded: {
             title: "Verfahrensbeteiligte & Details erfasst",
-            klaegerLabel: "Kläger",
-            beklagterLabel: "Beklagter",
-            rubrumLabel: "Rubrum",
-            gerichtLabel: "Gericht",
+            klaeger: "Kläger",
+            beklagter: "Beklagter",
+            rubrum: "Rubrum",
+            gericht: "Gericht",
           },
-          klageschriftUpload: {
+          klageschriftUploaded: {
             title: "Klageschrift hochgeladen",
           },
         },

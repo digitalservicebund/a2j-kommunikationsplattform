@@ -8,6 +8,7 @@ import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinr
 import { useTranslations } from "~/services/translations/context";
 
 type VerfahrenDocumentsFormSectionProps = {
+  id?: string;
   dokumente: Dokument[];
   uploadedDokumente: Dokument[];
   submitState: string;
@@ -21,6 +22,7 @@ type VerfahrenDocumentsFormSectionProps = {
 };
 
 export default function VerfahrenDocumentsFormSection({
+  id,
   dokumente,
   uploadedDokumente,
   submitState,
@@ -35,7 +37,7 @@ export default function VerfahrenDocumentsFormSection({
   const { routes, shared } = useTranslations();
 
   return (
-    <div className="kern-card">
+    <div className="kern-card" id={id}>
       <div className="kern-card__container kern-mb-md">
         <header className="kern-card__header">
           <hgroup>

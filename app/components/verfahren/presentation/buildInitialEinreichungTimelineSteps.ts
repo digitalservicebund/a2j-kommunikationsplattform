@@ -1,101 +1,103 @@
-const NOT_AVAILABLE_LABEL = "Unbekannt";
+import { VerfahrenTimelineStepCardProps } from "~/components/verfahren/VerfahrenTimelineStepCard";
+import { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
+import { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
+import { isDraftEinreichungStatus } from "~/domains/verfahren/services/einreichungStatus";
+import type { Translations } from "~/services/translations";
+import { formatDate } from "~/utils/dates";
 
-const formatDate = (value: string | null | undefined): string => {
-  if (!value) {
-    return NOT_AVAILABLE_LABEL;
+export type EinreichungTimelineStepParams = {
+  verfahrenId: string;
+  verfahrenStatusGeaendertAm: string;
+  einreichungId: string;
+  einreichungStatus: Einreichung["status"];
+  einreichungDokumente: Pick<Dokument, "anzeigename" | "erstelltAm">[];
+  detailsCompleted: {
+    klaeger: boolean;
+    beklagter: boolean;
+    rubrum: boolean;
+    gericht: boolean;
+  };
+  translations: Translations;
+};
+
+export type InitialEinreichungTimelineStep = VerfahrenTimelineStepCardProps;
+
+/**
+ * Returns the additional steps to show in the Verfahren timeline while the
+ * initial Einreichung is still a draft (meaning that the Einreichung data
+ * can still be edited). The steps are returned in the order they should
+ * be displayed, from latest to earliest.
+ */
+export function buildInitialEinreichungTimelineSteps({
+  verfahrenId,
+  verfahrenStatusGeaendertAm,
+  einreichungId,
+  einreichungStatus,
+  einreichungDokumente: dokumente,
+  detailsCompleted,
+  translations,
+}: EinreichungTimelineStepParams): InitialEinreichungTimelineStep[] {
+  const timeline: InitialEinreichungTimelineStep[] = [];
+
+  const {
+    routes: {
+      verfahrenNeu: {
+        step3: { proceduralSteps: stepTranslations },
+      },
+    },
+  } = translations;
+
+  // NOTE: This code assumes that the first Dokument of the initial Einreichung
+  // is always the Klageschrift. For Einreichungen created through this
+  // frontend, this is always the case due to how the user flow is structured,
+  // but it is not enforced by the API at present (as of 2026-09-14).
+  const [klageschrift, ...additionalDokumente] = dokumente;
+
+  // Step 1: Klageschrift
+  if (klageschrift) {
+    timeline.push({
+      timelineLabel: formatDate(klageschrift.erstelltAm),
+      title: stepTranslations.klageschriftUploaded.title,
+      body: klageschrift.anzeigename,
+      showConnector: false,
+      ...(isDraftEinreichungStatus(einreichungStatus) && {
+        editTo: `/verfahren/neu?verfahrenId=${verfahrenId}&einreichungId=${einreichungId}`,
+      }),
+    });
   }
 
-  return new Date(value).toLocaleDateString();
-};
+  // Step 2: Completed Details
+  timeline.push({
+    timelineLabel: formatDate(verfahrenStatusGeaendertAm),
+    title: stepTranslations.detailsAdded.title,
+    body: [
+      detailsCompleted.klaeger && stepTranslations.detailsAdded.klaeger,
+      detailsCompleted.beklagter && stepTranslations.detailsAdded.beklagter,
+      detailsCompleted.rubrum && stepTranslations.detailsAdded.rubrum,
+      detailsCompleted.gericht && stepTranslations.detailsAdded.gericht,
+    ]
+      .filter((label): label is string => Boolean(label))
+      .join(", "),
+    ...(isDraftEinreichungStatus(einreichungStatus) && {
+      editTo: `/verfahren/neu/${verfahrenId}/bearbeiten`,
+    }),
+  });
 
-export type InitialEinreichungTimelineSteps = {
-  latestDokumentDate: string;
-  firstDokumentDate: string;
-  firstDokumentName: string;
-  additionalDokumenteCount: number;
-};
+  // Step 3: Additional Dokumente
+  timeline.push({
+    timelineLabel: formatDate(
+      additionalDokumente.at(-1)?.erstelltAm ?? verfahrenStatusGeaendertAm,
+    ),
+    title: stepTranslations.additionalDokumenteAdded.title,
+    body: stepTranslations.additionalDokumenteAdded.filesAdded.replace(
+      "{{count}}",
+      String(additionalDokumente.length),
+    ),
+    ...(isDraftEinreichungStatus(einreichungStatus) && {
+      editTo: `/verfahren/neu/${verfahrenId}/bearbeiten#dokumente`,
+    }),
+  });
 
-export function getInitialEinreichungTimelineSteps(
-  dokumente: Array<{ anzeigename: string; erstelltAm: string }>,
-): InitialEinreichungTimelineSteps {
-  const additionalDokumenteCount = Math.max(dokumente.length - 1, 0);
-  const firstDokumentName = dokumente[0]?.anzeigename ?? NOT_AVAILABLE_LABEL;
-  const latestDokumentDate = dokumente.length
-    ? formatDate(dokumente.at(-1)?.erstelltAm)
-    : NOT_AVAILABLE_LABEL;
-  const firstDokumentDate = dokumente[0]?.erstelltAm
-    ? formatDate(dokumente[0].erstelltAm)
-    : NOT_AVAILABLE_LABEL;
-
-  return {
-    latestDokumentDate,
-    firstDokumentDate,
-    firstDokumentName,
-    additionalDokumenteCount,
-  };
-}
-
-export type TimelineStepData = {
-  timelineLabel: string;
-  title: string;
-  body: string;
-  showConnector?: boolean;
-};
-
-type TimelineStepTranslations = {
-  assetsTitle: string;
-  filesAddedLabel: string;
-  addDetailsTitle: string;
-  klageschriftUploadTitle: string;
-  klaegerLabel: string;
-  beklagterLabel: string;
-  rubrumLabel: string;
-  gerichtLabel: string;
-};
-
-export type CompletedEinreichungDetails = {
-  klaeger: boolean;
-  beklagter: boolean;
-  rubrum: boolean;
-  gericht: boolean;
-};
-
-function buildCompletedDetailsBody(
-  completedDetails: CompletedEinreichungDetails,
-  translations: TimelineStepTranslations,
-): string {
-  return [
-    completedDetails.klaeger && translations.klaegerLabel,
-    completedDetails.beklagter && translations.beklagterLabel,
-    completedDetails.rubrum && translations.rubrumLabel,
-    completedDetails.gericht && translations.gerichtLabel,
-  ]
-    .filter((label): label is string => Boolean(label))
-    .join(", ");
-}
-
-export function buildInitialTimelineStepData(
-  timelineSteps: InitialEinreichungTimelineSteps,
-  verfahrenStatusChanged: string,
-  completedDetails: CompletedEinreichungDetails,
-  translations: TimelineStepTranslations,
-): TimelineStepData[] {
-  return [
-    {
-      timelineLabel: timelineSteps.latestDokumentDate,
-      title: translations.assetsTitle,
-      body: `${timelineSteps.additionalDokumenteCount} ${translations.filesAddedLabel}`,
-    },
-    {
-      timelineLabel: new Date(verfahrenStatusChanged).toLocaleDateString(),
-      title: translations.addDetailsTitle,
-      body: buildCompletedDetailsBody(completedDetails, translations),
-    },
-    {
-      timelineLabel: timelineSteps.firstDokumentDate,
-      title: translations.klageschriftUploadTitle,
-      body: timelineSteps.firstDokumentName,
-      showConnector: false,
-    },
-  ];
+  // Return timeline steps from most to least recent
+  return timeline.reverse();
 }

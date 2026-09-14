@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
 import { Link } from "react-router";
+import { useTranslations } from "~/services/translations/context";
 
-type VerfahrenTimelineStepCardProps = {
+export type VerfahrenTimelineStepCardProps = {
   timelineLabel: string;
   title: string;
   body: ReactNode;
@@ -20,6 +21,8 @@ export default function VerfahrenTimelineStepCard({
   showConnector = true,
   iconClassName = "kern-icon--check",
 }: Readonly<VerfahrenTimelineStepCardProps>) {
+  const translations = useTranslations();
+
   return (
     <div className="kern-gap-md flex items-stretch">
       <div className="w-20 flex-[0_0_auto]">
@@ -48,9 +51,11 @@ export default function VerfahrenTimelineStepCard({
             <section className="kern-card__body">
               <div className="flex w-full flex-row items-center justify-between">
                 <p className="kern-body">{body}</p>
-                {editTo && editLabel && (
+                {editTo && (
                   <Link to={editTo} className="kern-btn kern-btn--tertiary">
-                    <span className="kern-label">{editLabel}</span>
+                    <span className="kern-label">
+                      {editLabel ?? translations.shared.form.labels.edit}
+                    </span>
                   </Link>
                 )}
               </div>
