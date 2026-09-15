@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BeteiligungenSchema } from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
+import { BeteiligungSchema } from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
 
 const baseFields = {
   id: "bet-1",
@@ -18,44 +18,38 @@ const baseFields = {
 
 describe("BeteiligungenSchema", () => {
   it("parses a natuerlichePerson entry", () => {
-    const result = BeteiligungenSchema.parse([
-      {
-        ...baseFields,
-        beteiligtenart: "natuerlichePerson",
-        vorname: "Emilia",
-        titel: null,
-        namensvorsatz: null,
-        nachname: "Kühn",
-      },
-    ]);
+    const result = BeteiligungSchema.parse({
+      ...baseFields,
+      beteiligtenart: "natuerlichePerson",
+      vorname: "Emilia",
+      titel: null,
+      namensvorsatz: null,
+      nachname: "Kühn",
+    });
 
-    expect(result?.[0]).toMatchObject({ nachname: "Kühn" });
+    expect(result).toMatchObject({ nachname: "Kühn" });
   });
 
   it("parses an organisation entry", () => {
-    const result = BeteiligungenSchema.parse([
-      {
-        ...baseFields,
-        beteiligtenart: "organisation",
-        bezeichnung: "Lufthansa",
-      },
-    ]);
+    const result = BeteiligungSchema.parse({
+      ...baseFields,
+      beteiligtenart: "organisation",
+      bezeichnung: "Lufthansa",
+    });
 
-    expect(result?.[0]).toMatchObject({ bezeichnung: "Lufthansa" });
+    expect(result).toMatchObject({ bezeichnung: "Lufthansa" });
   });
 
   it("parses a raKanzlei entry and retains kanzleiform/rechtsform", () => {
-    const result = BeteiligungenSchema.parse([
-      {
-        ...baseFields,
-        beteiligtenart: "raKanzlei",
-        bezeichnung: "Kanzlei Böhm",
-        rechtsform: { id: "rf-1", wert: "GbR", code: "GBR" },
-        kanzleiform: { id: "kf-1", wert: "Einzelanwalt", code: "001" },
-      },
-    ]);
+    const result = BeteiligungSchema.parse({
+      ...baseFields,
+      beteiligtenart: "raKanzlei",
+      bezeichnung: "Kanzlei Böhm",
+      rechtsform: { id: "rf-1", wert: "GbR", code: "GBR" },
+      kanzleiform: { id: "kf-1", wert: "Einzelanwalt", code: "001" },
+    });
 
-    expect(result?.[0]).toMatchObject({
+    expect(result).toMatchObject({
       bezeichnung: "Kanzlei Böhm",
       rechtsform: { id: "rf-1", wert: "GbR", code: "GBR" },
       kanzleiform: { id: "kf-1", wert: "Einzelanwalt", code: "001" },
@@ -63,17 +57,15 @@ describe("BeteiligungenSchema", () => {
   });
 
   it("parses a raKanzlei entry with a null rechtsform", () => {
-    const result = BeteiligungenSchema.parse([
-      {
-        ...baseFields,
-        beteiligtenart: "raKanzlei",
-        bezeichnung: "Kanzlei Böhm",
-        rechtsform: null,
-        kanzleiform: { id: "kf-1", wert: "Einzelanwalt", code: "001" },
-      },
-    ]);
+    const result = BeteiligungSchema.parse({
+      ...baseFields,
+      beteiligtenart: "raKanzlei",
+      bezeichnung: "Kanzlei Böhm",
+      rechtsform: null,
+      kanzleiform: { id: "kf-1", wert: "Einzelanwalt", code: "001" },
+    });
 
-    expect(result?.[0]).toMatchObject({
+    expect(result).toMatchObject({
       bezeichnung: "Kanzlei Böhm",
       rechtsform: null,
     });
