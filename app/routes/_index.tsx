@@ -3,6 +3,7 @@ import { Await, Link, LoaderFunctionArgs, useLoaderData } from "react-router";
 import Alert from "~/components/Alert";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { useParamsState } from "~/components/hooks/useParamsState";
+import { PageMetadata } from "~/components/PageMetadata";
 import ScrollToTopButton from "~/components/ScrollToTopButton";
 import { sortOptions } from "~/components/verfahren/presentation/sortOptions";
 import { VERFAHREN_SKELETONS } from "~/components/verfahren/presentation/verfahrenSkeletons";
@@ -86,6 +87,8 @@ export default function VerfahrenRoute() {
 
   return (
     <>
+      <PageMetadata />
+
       <div className="mb-(--kern-metric-dimension-small) flex justify-between">
         <VerfahrenHeading ref={headingRef} />
         <Link to="/verfahren/neu" className="kern-btn kern-btn--secondary">
@@ -96,6 +99,7 @@ export default function VerfahrenRoute() {
           ></span>
         </Link>
       </div>
+
       <div className="flex flex-col space-y-(--kern-metric-space-large)">
         <Suspense
           fallback={VERFAHREN_SKELETONS.map((s) => (

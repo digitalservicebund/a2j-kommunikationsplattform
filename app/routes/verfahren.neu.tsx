@@ -13,6 +13,7 @@ import {
 import z from "zod";
 import Alert from "~/components/Alert";
 import InputCheckbox from "~/components/InputCheckbox";
+import { PageMetadata } from "~/components/PageMetadata";
 import Progress from "~/components/Progress";
 import VerfahrenKlageschriftFormSection from "~/components/verfahren/VerfahrenKlageschriftFormSection";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
@@ -314,125 +315,129 @@ export default function VerfahrenNeu() {
   );
 
   return (
-    <div
-      className={`${isSubmitting ? "pointer-events-none opacity-50" : ""} relative`}
-    >
-      <div className="kern-row">
-        <div className="kern-col-12 kern-col-xl-10 kern-col-xl-offset-1">
-          <h1 className="kern-heading-large">
-            {routes.verfahrenNeu.step1.headline}
-          </h1>
-          <Progress
-            id="progress-1"
-            label={routes.verfahrenNeu.step1.progress}
-            value={1}
-            max={3}
-          />
-          <div className="kern-pt-xl">
-            <div className="kern-p-lg kern-gap-lg flex flex-col rounded-(--kern-metric-border-radius-default) border border-(--kern-color-layout-border)">
-              <h2 className="kern-heading-medium">
-                {routes.verfahrenNeu.step1.subline}
-              </h2>
+    <>
+      <PageMetadata />
 
-              <Alert
-                type="info"
-                title="Vorläufige Ansicht"
-                message="Diese Seite ist ein vorläufiger Prototyp zur API-Validierung. Das endgültige Design folgt."
-              />
+      <div
+        className={`${isSubmitting ? "pointer-events-none opacity-50" : ""} relative`}
+      >
+        <div className="kern-row">
+          <div className="kern-col-12 kern-col-xl-10 kern-col-xl-offset-1">
+            <h1 className="kern-heading-large">
+              {routes.verfahrenNeu.step1.headline}
+            </h1>
+            <Progress
+              id="progress-1"
+              label={routes.verfahrenNeu.step1.progress}
+              value={1}
+              max={3}
+            />
+            <div className="kern-pt-xl">
+              <div className="kern-p-lg kern-gap-lg flex flex-col rounded-(--kern-metric-border-radius-default) border border-(--kern-color-layout-border)">
+                <h2 className="kern-heading-medium">
+                  {routes.verfahrenNeu.step1.subline}
+                </h2>
 
-              {/* show a general error alert, if something went wrong */}
-              {isActionError && (
                 <Alert
-                  type="error"
-                  title={shared.form.submit.title}
-                  message={shared.form.submit.message}
+                  type="info"
+                  title="Vorläufige Ansicht"
+                  message="Diese Seite ist ein vorläufiger Prototyp zur API-Validierung. Das endgültige Design folgt."
                 />
-              )}
 
-              <p className="kern-body">{routes.verfahrenNeu.step1.intro}</p>
+                {/* show a general error alert, if something went wrong */}
+                {isActionError && (
+                  <Alert
+                    type="error"
+                    title={shared.form.submit.title}
+                    message={shared.form.submit.message}
+                  />
+                )}
 
-              <Form
-                method="post"
-                encType="multipart/form-data"
-                className="relative"
-              >
-                <div className="kern-gap-xl flex flex-col">
-                  {hasUploadedDokument ? (
-                    <VerfahrenUploadedDokumentSummary
-                      uploadedDokument={uploadedDokument}
-                      verfahrenId={verfahrenId}
-                      einreichungId={einreichungId}
-                      isSubmitting={isSubmitting}
-                    />
-                  ) : (
-                    <VerfahrenKlageschriftFormSection
-                      errors={fieldErrors || {}}
-                      gerichtePromise={loaderData.gerichtePromise}
-                      selectedGerichtId={selectedGerichtId}
-                      onGerichtIdChange={setSelectedGerichtId}
-                    />
-                  )}
+                <p className="kern-body">{routes.verfahrenNeu.step1.intro}</p>
 
-                  <fieldset
-                    className={`${isSubmitting ? "pointer-events-none" : ""} kern-fieldset`}
-                    aria-describedby="enable-analysis-hint"
-                  >
-                    <div className="kern-hint" id="enable-analysis-hint">
-                      {routes.verfahrenNeu.step1.analysis.hint}
-                    </div>
-                    <div className="kern-fieldset__body">
-                      <InputCheckbox
-                        label={routes.verfahrenNeu.step1.analysis.label}
-                        id="enable-analysis"
-                        name="analysis"
+                <Form
+                  method="post"
+                  encType="multipart/form-data"
+                  className="relative"
+                >
+                  <div className="kern-gap-xl flex flex-col">
+                    {hasUploadedDokument ? (
+                      <VerfahrenUploadedDokumentSummary
+                        uploadedDokument={uploadedDokument}
+                        verfahrenId={verfahrenId}
+                        einreichungId={einreichungId}
+                        isSubmitting={isSubmitting}
                       />
-                    </div>
-                  </fieldset>
-
-                  <div className="kern-gap-md flex flex-wrap">
-                    {hasUploadedDokument && (
-                      <>
-                        <input
-                          type="hidden"
-                          name="verfahrenId"
-                          value={verfahrenId}
-                        />
-                        <input
-                          type="hidden"
-                          name="einreichungId"
-                          value={einreichungId}
-                        />
-                      </>
+                    ) : (
+                      <VerfahrenKlageschriftFormSection
+                        errors={fieldErrors || {}}
+                        gerichtePromise={loaderData.gerichtePromise}
+                        selectedGerichtId={selectedGerichtId}
+                        onGerichtIdChange={setSelectedGerichtId}
+                      />
                     )}
-                    <Link
-                      to="/"
-                      className={`${isSubmitting ? "pointer-events-none" : ""} kern-btn kern-btn--secondary`}
+
+                    <fieldset
+                      className={`${isSubmitting ? "pointer-events-none" : ""} kern-fieldset`}
+                      aria-describedby="enable-analysis-hint"
                     >
-                      <span className="kern-label">{buttons.prev}</span>
-                    </Link>
-                    <button
-                      type="submit"
-                      name="formType"
-                      value="submit"
-                      className="kern-btn kern-btn--primary"
-                      disabled={isSubmitting}
-                    >
-                      <span className="kern-label">
-                        {routes.verfahrenNeu.step1.navigation.next}
-                      </span>
-                      <span
-                        className="kern-icon kern-icon--arrow-forward"
-                        aria-hidden="true"
-                      ></span>
-                    </button>
+                      <div className="kern-hint" id="enable-analysis-hint">
+                        {routes.verfahrenNeu.step1.analysis.hint}
+                      </div>
+                      <div className="kern-fieldset__body">
+                        <InputCheckbox
+                          label={routes.verfahrenNeu.step1.analysis.label}
+                          id="enable-analysis"
+                          name="analysis"
+                        />
+                      </div>
+                    </fieldset>
+
+                    <div className="kern-gap-md flex flex-wrap">
+                      {hasUploadedDokument && (
+                        <>
+                          <input
+                            type="hidden"
+                            name="verfahrenId"
+                            value={verfahrenId}
+                          />
+                          <input
+                            type="hidden"
+                            name="einreichungId"
+                            value={einreichungId}
+                          />
+                        </>
+                      )}
+                      <Link
+                        to="/"
+                        className={`${isSubmitting ? "pointer-events-none" : ""} kern-btn kern-btn--secondary`}
+                      >
+                        <span className="kern-label">{buttons.prev}</span>
+                      </Link>
+                      <button
+                        type="submit"
+                        name="formType"
+                        value="submit"
+                        className="kern-btn kern-btn--primary"
+                        disabled={isSubmitting}
+                      >
+                        <span className="kern-label">
+                          {routes.verfahrenNeu.step1.navigation.next}
+                        </span>
+                        <span
+                          className="kern-icon kern-icon--arrow-forward"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </Form>
+                </Form>
+              </div>
             </div>
           </div>
         </div>
+        <VerfahrenLoader active={isSubmitting} label={shared.loading} />
       </div>
-      <VerfahrenLoader active={isSubmitting} label={shared.loading} />
-    </div>
+    </>
   );
 }

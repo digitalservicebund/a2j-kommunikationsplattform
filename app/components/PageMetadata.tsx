@@ -9,21 +9,15 @@ export function PageMetadata({
   title,
   description,
 }: Readonly<PageMetadataOptions>) {
-  const { routes, descriptions } = useTranslations();
-  function pageTitle(text?: string) {
-    if (text) {
-      return `${text} | ${routes.PLATFORM_TITLE}`;
-    } else {
-      return routes.PLATFORM_TITLE;
-    }
-  }
+  const {
+    routes: { PLATFORM_TITLE },
+    descriptions: { PLATFORM_DESCRIPTION },
+  } = useTranslations();
+
   return (
     <>
-      <title>{pageTitle(title)}</title>
-      <meta
-        name="description"
-        content={description || descriptions.PLATFORM_DESCRIPTION}
-      />
+      <title>{title ? `${title} | ${PLATFORM_TITLE}` : PLATFORM_TITLE}</title>
+      <meta name="description" content={description || PLATFORM_DESCRIPTION} />
     </>
   );
 }

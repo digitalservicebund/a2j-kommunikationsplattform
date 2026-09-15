@@ -15,6 +15,7 @@ import {
 import z from "zod";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
+import { PageMetadata } from "~/components/PageMetadata";
 import Progress from "~/components/Progress";
 import VerfahrenBeklagterSection from "~/components/verfahren/VerfahrenBeklagterSection";
 import VerfahrenDetailsFormSection from "~/components/verfahren/VerfahrenDetailsFormSection";
@@ -685,138 +686,54 @@ export default function VerfahrenNeuBearbeiten() {
   };
 
   return (
-    <div
-      className={`${submitState === "submit" ? "pointer-events-none opacity-50" : ""} relative`}
-    >
-      <div className="kern-row">
-        <div className="kern-col-12 kern-col-xl-10 kern-col-xl-offset-1">
-          <h1 className="kern-heading-large">
-            {routes.verfahrenNeu.step2.headline}
-          </h1>
-          <Progress
-            id="progress-2"
-            label={routes.verfahrenNeu.step2.progress}
-            value={2}
-            max={3}
-          />
-          <div className="kern-pt-xl">
-            <Form
-              ref={mainFormRef}
-              method="post"
-              encType="multipart/form-data"
-              className="kern-gap-lg flex flex-col"
-              onSubmit={handleSubmit}
-            >
-              <input
-                type="hidden"
-                name="einreichungId"
-                value={einreichung.id}
-              />
-              <div className="kern-gap-md flex flex-wrap items-start justify-between">
-                <div>
-                  <h2 className="kern-heading-medium">
-                    {routes.verfahrenNeu.step2.subline}
-                  </h2>
-                  <p className="kern-body">{routes.verfahrenNeu.step2.intro}</p>
-                  {config().ENVIRONMENT === "development" && (
-                    <Button
-                      appearance="secondary"
-                      type="button"
-                      className="kern-btn--x-small kern-mt-sm"
-                      onClick={handleFillDummyData}
-                      label="Fill details with dummy data"
-                    />
-                  )}
-                </div>
-                <div className="kern-gap-md flex">
-                  <Link
-                    to={`/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichung.id}`}
-                    className="kern-btn kern-btn--secondary"
-                  >
-                    <span className="kern-label">{buttons.prev}</span>
-                  </Link>
-                  <Button
-                    appearance="primary"
-                    type="submit"
-                    name="formType"
-                    value="submit"
-                    disabled={submitState !== "idle"}
-                  >
-                    <span className="kern-label">
-                      {routes.verfahrenNeu.step2.navigation.next}
-                    </span>
-                    <span
-                      className="kern-icon kern-icon--arrow-forward"
-                      aria-hidden="true"
-                    ></span>
-                  </Button>
-                </div>
-              </div>
+    <>
+      <PageMetadata />
 
-              <Alert
-                type="success"
-                title={routes.verfahrenNeu.step2.notification.headline}
-                message={routes.verfahrenNeu.step2.notification.copy}
-              />
-
-              {isError && (
-                <Alert
-                  type="error"
-                  title={shared.form.submit.title}
-                  message={actionData.error ?? shared.form.submit.message}
+      <div
+        className={`${submitState === "submit" ? "pointer-events-none opacity-50" : ""} relative`}
+      >
+        <div className="kern-row">
+          <div className="kern-col-12 kern-col-xl-10 kern-col-xl-offset-1">
+            <h1 className="kern-heading-large">
+              {routes.verfahrenNeu.step2.headline}
+            </h1>
+            <Progress
+              id="progress-2"
+              label={routes.verfahrenNeu.step2.progress}
+              value={2}
+              max={3}
+            />
+            <div className="kern-pt-xl">
+              <Form
+                ref={mainFormRef}
+                method="post"
+                encType="multipart/form-data"
+                className="kern-gap-lg flex flex-col"
+                onSubmit={handleSubmit}
+              >
+                <input
+                  type="hidden"
+                  name="einreichungId"
+                  value={einreichung.id}
                 />
-              )}
-
-              <div className="kern-gap-lg flex flex-col">
-                <VerfahrenKlaegerSection
-                  firstName={klagendeParteiFirstName}
-                  lastName={klagendeParteiLastName}
-                  anschrift={klagendeParteiAnschrift}
-                  email={klagendeParteiEmail}
-                  telefon={klagendeParteiTelefon}
-                  hasLawyer={hasLawyer}
-                  onHasLawyerChange={setHasLawyer}
-                  lawyerName={klagendeParteiLawyerName}
-                  lawyerAnschrift={klagendeParteiAnwaltAnschrift}
-                  lawyerEmail={klagendeParteiAnwaltEmail}
-                  lawyerTelefon={klagendeParteiAnwaltTelefon}
-                  lawyerKanzleiformId={klagendeParteiAnwaltKanzleiformId}
-                  kanzleiformenPromise={kanzleiformen}
-                  errors={fieldErrors || {}}
-                />
-
-                <VerfahrenBeklagterSection
-                  firstName={beklagteParteiFirstName}
-                  lastName={beklagteParteiLastName}
-                  anschrift={beklagteParteiAnschrift}
-                  email={beklagteParteiEmail}
-                  telefon={beklagteParteiTelefon}
-                  errors={fieldErrors || {}}
-                />
-
-                <VerfahrenDetailsFormSection
-                  kurzrubrum={verfahren?.kurzrubrum ?? ""}
-                  claimReference={claimReference}
-                  verfahrensgegenstand={verfahren?.verfahrensgegenstand ?? ""}
-                  courtId={courtId}
-                  gerichtePromise={gerichte}
-                />
-
-                <VerfahrenDocumentsFormSection
-                  id="dokumente"
-                  dokumente={dokumente}
-                  uploadedDokumente={uploadedDokumente}
-                  submitState={submitState}
-                  showFileInputError={showFileInputError}
-                  uploadFileInputRef={uploadFileInputRef}
-                  onFileInputChange={() => setIsFileInputErrorDismissed(true)}
-                  selectedDokumentType={selectedDokumentType}
-                  onDokumentTypeChange={setSelectedDokumentType}
-                  dokumentTypeError={dokumentTypeError}
-                  onDeleteDokument={handleDeleteDokument}
-                />
-
-                <div className="kern-gap-md flex flex-wrap justify-end">
+                <div className="kern-gap-md flex flex-wrap items-start justify-between">
+                  <div>
+                    <h2 className="kern-heading-medium">
+                      {routes.verfahrenNeu.step2.subline}
+                    </h2>
+                    <p className="kern-body">
+                      {routes.verfahrenNeu.step2.intro}
+                    </p>
+                    {config().ENVIRONMENT === "development" && (
+                      <Button
+                        appearance="secondary"
+                        type="button"
+                        className="kern-btn--x-small kern-mt-sm"
+                        onClick={handleFillDummyData}
+                        label="Fill details with dummy data"
+                      />
+                    )}
+                  </div>
                   <div className="kern-gap-md flex">
                     <Link
                       to={`/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichung.id}`}
@@ -842,15 +759,105 @@ export default function VerfahrenNeuBearbeiten() {
                   </div>
                 </div>
 
-                <VerfahrenLoader
-                  active={submitState === "submit"}
-                  label="Wird geladen..."
+                <Alert
+                  type="success"
+                  title={routes.verfahrenNeu.step2.notification.headline}
+                  message={routes.verfahrenNeu.step2.notification.copy}
                 />
-              </div>
-            </Form>
+
+                {isError && (
+                  <Alert
+                    type="error"
+                    title={shared.form.submit.title}
+                    message={actionData.error ?? shared.form.submit.message}
+                  />
+                )}
+
+                <div className="kern-gap-lg flex flex-col">
+                  <VerfahrenKlaegerSection
+                    firstName={klagendeParteiFirstName}
+                    lastName={klagendeParteiLastName}
+                    anschrift={klagendeParteiAnschrift}
+                    email={klagendeParteiEmail}
+                    telefon={klagendeParteiTelefon}
+                    hasLawyer={hasLawyer}
+                    onHasLawyerChange={setHasLawyer}
+                    lawyerName={klagendeParteiLawyerName}
+                    lawyerAnschrift={klagendeParteiAnwaltAnschrift}
+                    lawyerEmail={klagendeParteiAnwaltEmail}
+                    lawyerTelefon={klagendeParteiAnwaltTelefon}
+                    lawyerKanzleiformId={klagendeParteiAnwaltKanzleiformId}
+                    kanzleiformenPromise={kanzleiformen}
+                    errors={fieldErrors || {}}
+                  />
+
+                  <VerfahrenBeklagterSection
+                    firstName={beklagteParteiFirstName}
+                    lastName={beklagteParteiLastName}
+                    anschrift={beklagteParteiAnschrift}
+                    email={beklagteParteiEmail}
+                    telefon={beklagteParteiTelefon}
+                    errors={fieldErrors || {}}
+                  />
+
+                  <VerfahrenDetailsFormSection
+                    kurzrubrum={verfahren?.kurzrubrum ?? ""}
+                    claimReference={claimReference}
+                    verfahrensgegenstand={verfahren?.verfahrensgegenstand ?? ""}
+                    courtId={courtId}
+                    gerichtePromise={gerichte}
+                  />
+
+                  <VerfahrenDocumentsFormSection
+                    id="dokumente"
+                    dokumente={dokumente}
+                    uploadedDokumente={uploadedDokumente}
+                    submitState={submitState}
+                    showFileInputError={showFileInputError}
+                    uploadFileInputRef={uploadFileInputRef}
+                    onFileInputChange={() => setIsFileInputErrorDismissed(true)}
+                    selectedDokumentType={selectedDokumentType}
+                    onDokumentTypeChange={setSelectedDokumentType}
+                    dokumentTypeError={dokumentTypeError}
+                    onDeleteDokument={handleDeleteDokument}
+                  />
+
+                  <div className="kern-gap-md flex flex-wrap justify-end">
+                    <div className="kern-gap-md flex">
+                      <Link
+                        to={`/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichung.id}`}
+                        className="kern-btn kern-btn--secondary"
+                      >
+                        <span className="kern-label">{buttons.prev}</span>
+                      </Link>
+                      <Button
+                        appearance="primary"
+                        type="submit"
+                        name="formType"
+                        value="submit"
+                        disabled={submitState !== "idle"}
+                      >
+                        <span className="kern-label">
+                          {routes.verfahrenNeu.step2.navigation.next}
+                        </span>
+                        <span
+                          className="kern-icon kern-icon--arrow-forward"
+                          aria-hidden="true"
+                        ></span>
+                      </Button>
+                    </div>
+                  </div>
+
+                  <VerfahrenLoader
+                    active={submitState === "submit"}
+                    label="Wird geladen..."
+                  />
+                </div>
+              </Form>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

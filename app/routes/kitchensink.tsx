@@ -1,5 +1,6 @@
 import { ComponentProps } from "react";
 import Alert from "~/components/Alert";
+import { PageMetadata } from "~/components/PageMetadata";
 import VerfahrenTile from "~/components/verfahren/VerfahrenTile";
 import { useTranslations } from "~/services/translations/context";
 
@@ -118,26 +119,31 @@ const mockVerfahrenPartial: VerfahrenTileProps = {
 
 export default function KitchensinkRoute() {
   const { alerts } = useTranslations();
+
   return (
-    <div className="space-y-(--kern-metric-dimension-large)">
-      <h1 className="kern-heading-medium">Kitchensink</h1>
-      <Alert
-        type="info"
-        title={alerts.WORK_IN_PROGRESS_TITLE}
-        message={alerts.WORK_IN_PROGRESS_MESSAGE}
-      />
+    <>
+      <PageMetadata title="Kitchensink" />
+
       <div className="space-y-(--kern-metric-dimension-large)">
-        <KitchensinkWrapper label="VerfahrenTile - All data available">
-          <VerfahrenTile {...mockVerfahrenComplete} />
-        </KitchensinkWrapper>
-        <KitchensinkWrapper label="VerfahrenTile - Minimal data available (no Beteiligungen)">
-          <VerfahrenTile {...mockVerfahrenMinimal} />
-        </KitchensinkWrapper>
-        <KitchensinkWrapper label="VerfahrenTile - Partial data available">
-          <VerfahrenTile {...mockVerfahrenPartial} />
-        </KitchensinkWrapper>
+        <h1 className="kern-heading-medium">Kitchensink</h1>
+        <Alert
+          type="info"
+          title={alerts.WORK_IN_PROGRESS_TITLE}
+          message={alerts.WORK_IN_PROGRESS_MESSAGE}
+        />
+        <div className="space-y-(--kern-metric-dimension-large)">
+          <KitchensinkWrapper label="VerfahrenTile - All data available">
+            <VerfahrenTile {...mockVerfahrenComplete} />
+          </KitchensinkWrapper>
+          <KitchensinkWrapper label="VerfahrenTile - Minimal data available (no Beteiligungen)">
+            <VerfahrenTile {...mockVerfahrenMinimal} />
+          </KitchensinkWrapper>
+          <KitchensinkWrapper label="VerfahrenTile - Partial data available">
+            <VerfahrenTile {...mockVerfahrenPartial} />
+          </KitchensinkWrapper>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

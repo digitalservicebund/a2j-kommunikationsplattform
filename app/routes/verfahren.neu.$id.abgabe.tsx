@@ -6,6 +6,7 @@ import {
   useLoaderData,
 } from "react-router";
 import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
+import { PageMetadata } from "~/components/PageMetadata";
 import Progress from "~/components/Progress";
 import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
 import VerfahrenAktuelleEinreichungSection from "~/components/verfahren/VerfahrenAktuelleEinreichungSection";
@@ -213,81 +214,85 @@ export default function VerfahrenNeuBearbeiten() {
     });
 
   return (
-    <div
-      className={`${isSubmitting === "submitting" ? "pointer-events-none opacity-50" : ""} relative`}
-    >
-      <div className="kern-row">
-        <div className="kern-col-12 kern-col-xl-10 kern-col-xl-offset-1">
-          <h1 className="kern-heading-large">
-            {routes.verfahrenNeu.step3.headline}
-          </h1>
-          <Progress
-            id="progress-3"
-            label={routes.verfahrenNeu.step3.progress}
-            value={3}
-            max={3}
-          />
-          <div className="kern-pt-xl">
-            <div className="kern-gap-lg flex flex-col">
-              <div className="kern-gap-md flex flex-col lg:flex-row">
-                <div>
-                  <h2 className="kern-heading-medium">
-                    {routes.verfahrenNeu.step3.subline}
-                  </h2>
-                </div>
-                {beleg === null && (
-                  <div className="kern-justify-content-end flex grow">
-                    <div className="kern-gap-md flex">
-                      <div>
-                        <Link
-                          to={`/verfahren/neu/${verfahren.id}/bearbeiten`}
-                          className="kern-btn kern-btn--secondary"
-                        >
-                          <span className="kern-label">{buttons.prev}</span>
-                        </Link>
+    <>
+      <PageMetadata />
+
+      <div
+        className={`${isSubmitting === "submitting" ? "pointer-events-none opacity-50" : ""} relative`}
+      >
+        <div className="kern-row">
+          <div className="kern-col-12 kern-col-xl-10 kern-col-xl-offset-1">
+            <h1 className="kern-heading-large">
+              {routes.verfahrenNeu.step3.headline}
+            </h1>
+            <Progress
+              id="progress-3"
+              label={routes.verfahrenNeu.step3.progress}
+              value={3}
+              max={3}
+            />
+            <div className="kern-pt-xl">
+              <div className="kern-gap-lg flex flex-col">
+                <div className="kern-gap-md flex flex-col lg:flex-row">
+                  <div>
+                    <h2 className="kern-heading-medium">
+                      {routes.verfahrenNeu.step3.subline}
+                    </h2>
+                  </div>
+                  {beleg === null && (
+                    <div className="kern-justify-content-end flex grow">
+                      <div className="kern-gap-md flex">
+                        <div>
+                          <Link
+                            to={`/verfahren/neu/${verfahren.id}/bearbeiten`}
+                            className="kern-btn kern-btn--secondary"
+                          >
+                            <span className="kern-label">{buttons.prev}</span>
+                          </Link>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
 
-              <VerfahrenPrototypeHint />
+                <VerfahrenPrototypeHint />
 
-              <VerfahrenEinreichungOutcomeBanner
-                hasSubmitError={error}
-                beleg={beleg}
-                isValidating={isValidating}
-                hasValidationIssues={hasValidationIssues}
-                isValidationErrorFatal={validationErgebnis === "ROT"}
-                readinessLabel={readinessLabel}
-                error={einreichung.einreichungsStatus.fehler}
-              />
-
-              <VerfahrenOverviewCard verfahren={verfahren} />
-
-              <section className="space-y-(--kern-metric-space-default)">
-                <h3 className="kern-heading-medium">
-                  {routes.verfahrenNeu.step3.proceduralSteps.headline}
-                </h3>
-                <VerfahrenAktuelleEinreichungSection
-                  initialEinreichung={{ einreichung, dokumente, beleg }}
-                  verfahren={verfahren}
-                  readinessPresentation={readinessPresentation}
-                  hasValidationIssues={hasValidationIssues}
+                <VerfahrenEinreichungOutcomeBanner
+                  hasSubmitError={error}
+                  beleg={beleg}
                   isValidating={isValidating}
-                  isSubmitting={isSubmitting}
-                  formRef={formRef}
-                  handleSubmit={handleSubmit}
+                  hasValidationIssues={hasValidationIssues}
+                  isValidationErrorFatal={validationErgebnis === "ROT"}
+                  readinessLabel={readinessLabel}
+                  error={einreichung.einreichungsStatus.fehler}
                 />
-              </section>
+
+                <VerfahrenOverviewCard verfahren={verfahren} />
+
+                <section className="space-y-(--kern-metric-space-default)">
+                  <h3 className="kern-heading-medium">
+                    {routes.verfahrenNeu.step3.proceduralSteps.headline}
+                  </h3>
+                  <VerfahrenAktuelleEinreichungSection
+                    initialEinreichung={{ einreichung, dokumente, beleg }}
+                    verfahren={verfahren}
+                    readinessPresentation={readinessPresentation}
+                    hasValidationIssues={hasValidationIssues}
+                    isValidating={isValidating}
+                    isSubmitting={isSubmitting}
+                    formRef={formRef}
+                    handleSubmit={handleSubmit}
+                  />
+                </section>
+              </div>
             </div>
+            <VerfahrenLoader
+              active={isSubmitting === "submitting"}
+              label="Wird geladen..."
+            />
           </div>
-          <VerfahrenLoader
-            active={isSubmitting === "submitting"}
-            label="Wird geladen..."
-          />
         </div>
       </div>
-    </div>
+    </>
   );
 }

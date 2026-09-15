@@ -5,6 +5,7 @@ import {
   useLoaderData,
 } from "react-router";
 import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
+import { PageMetadata } from "~/components/PageMetadata";
 import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
 import VerfahrenAktuelleEinreichungSection, {
   type InitialEinreichungData,
@@ -233,54 +234,59 @@ export default function VerfahrenId() {
     });
 
   return (
-    <div
-      className={`${isSubmitting === "submitting" ? "pointer-events-none opacity-50" : ""} relative`}
-    >
-      <div className="kern-row">
-        <div className="kern-col-12 kern-col-xl-10 kern-col-xl-offset-1">
-          <div className="kern-gap-lg flex flex-col">
-            <VerfahrenEinreichungOutcomeBanner
-              hasSubmitError={error}
-              beleg={beleg}
-              isValidating={isValidating}
-              hasValidationIssues={hasValidationIssues}
-              isValidationErrorFatal={validationErgebnis === "ROT"}
-              readinessLabel={readinessPresentation?.readinessLabel ?? ""}
-              error={
-                initialEinreichung?.einreichung.einreichungsStatus.fehler ?? []
-              }
+    <>
+      <PageMetadata />
+
+      <div
+        className={`${isSubmitting === "submitting" ? "pointer-events-none opacity-50" : ""} relative`}
+      >
+        <div className="kern-row">
+          <div className="kern-col-12 kern-col-xl-10 kern-col-xl-offset-1">
+            <div className="kern-gap-lg flex flex-col">
+              <VerfahrenEinreichungOutcomeBanner
+                hasSubmitError={error}
+                beleg={beleg}
+                isValidating={isValidating}
+                hasValidationIssues={hasValidationIssues}
+                isValidationErrorFatal={validationErgebnis === "ROT"}
+                readinessLabel={readinessPresentation?.readinessLabel ?? ""}
+                error={
+                  initialEinreichung?.einreichung.einreichungsStatus.fehler ??
+                  []
+                }
+              />
+
+              <VerfahrenOverviewCard verfahren={verfahren} />
+
+              <section className="space-y-(--kern-metric-space-default)">
+                <h3 className="kern-heading-medium">
+                  {routes.verfahrenId.headline}
+                </h3>
+                {initialEinreichung ? (
+                  <VerfahrenAktuelleEinreichungSection
+                    initialEinreichung={initialEinreichung}
+                    verfahren={verfahren}
+                    readinessPresentation={readinessPresentation}
+                    hasValidationIssues={hasValidationIssues}
+                    isValidating={isValidating}
+                    isSubmitting={isSubmitting}
+                    formRef={formRef}
+                    handleSubmit={handleSubmit}
+                  />
+                ) : (
+                  <VerfahrenEinreichungHistoryList
+                    einreichungen={einreichungen}
+                  />
+                )}
+              </section>
+            </div>
+            <VerfahrenLoader
+              active={isSubmitting === "submitting"}
+              label="Wird geladen..."
             />
-
-            <VerfahrenOverviewCard verfahren={verfahren} />
-
-            <section className="space-y-(--kern-metric-space-default)">
-              <h3 className="kern-heading-medium">
-                {routes.verfahrenId.headline}
-              </h3>
-              {initialEinreichung ? (
-                <VerfahrenAktuelleEinreichungSection
-                  initialEinreichung={initialEinreichung}
-                  verfahren={verfahren}
-                  readinessPresentation={readinessPresentation}
-                  hasValidationIssues={hasValidationIssues}
-                  isValidating={isValidating}
-                  isSubmitting={isSubmitting}
-                  formRef={formRef}
-                  handleSubmit={handleSubmit}
-                />
-              ) : (
-                <VerfahrenEinreichungHistoryList
-                  einreichungen={einreichungen}
-                />
-              )}
-            </section>
           </div>
-          <VerfahrenLoader
-            active={isSubmitting === "submitting"}
-            label="Wird geladen..."
-          />
         </div>
       </div>
-    </div>
+    </>
   );
 }
