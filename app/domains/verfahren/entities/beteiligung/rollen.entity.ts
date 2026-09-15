@@ -1,7 +1,7 @@
 import z from "zod";
 import { CodeWertSchema } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
 
-export const RollenSchema = z.object({
+export const RolleSchema = z.object({
   id: z.string(),
   rollennummer: z.nullable(z.string()),
   rollenbezeichnung: CodeWertSchema,
@@ -9,4 +9,4 @@ export const RollenSchema = z.object({
   referenz: z.nullable(z.string()),
 });
 
-export type Rollen = z.infer<typeof RollenSchema>;
+export type Rolle = z.infer<typeof RolleSchema>;
