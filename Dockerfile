@@ -33,7 +33,8 @@ WORKDIR /kompla
 COPY --link --from=build-dependencies /build-deps/build ./build/
 COPY --link --from=build-dependencies /build-deps/public ./public/
 COPY --link --from=app-dependencies /app-deps/node_modules ./node_modules/
-COPY server.js package.json app/sentry.ts ./
+COPY server.js package.json ./
+COPY app/sentry.ts ./app/
 
 # Prepare prod build stage
 FROM kompla AS app-copy
