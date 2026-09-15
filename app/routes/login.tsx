@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Form,
   Link,
@@ -6,12 +5,12 @@ import {
   useLoaderData,
   useSearchParams,
 } from "react-router";
-import Button from "~/components/Button";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
-import { LoginError, LoginType, LogoutType } from "~/services/auth/auth.types";
 import { getAuthData } from "~/services/auth/authSession.server";
 import { useTranslations } from "~/services/translations/context";
+import { LoginError, LoginType } from "./action.login-user";
+import { LogoutType } from "./action.logout-user";
 
 // Alert state type
 type AlertState =
@@ -37,7 +36,6 @@ export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const { environment } = useLoaderData<typeof loader>();
   const { alerts, buttons, routes } = useTranslations();
-  const [loginType, setLoginType] = useState<LoginType | undefined>(undefined);
   const alertStatus = searchParams.get("status") as AlertState;
   const isDevelopment = environment === "development";
 
@@ -45,7 +43,10 @@ export default function LoginPage() {
   switch (alertStatus) {
     case LogoutType.Automatic:
       alertMarkup = (
-        <div className="kern-alert kern-alert--warning kern-my-md" role="alert">
+        <div
+          className="kern-alert kern-alert--warning my-kern-space-default"
+          role="alert"
+        >
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--warning kern-icon--small"
@@ -61,7 +62,10 @@ export default function LoginPage() {
       break;
     case LogoutType.ByUser:
       alertMarkup = (
-        <div className="kern-alert kern-alert--success kern-my-md" role="alert">
+        <div
+          className="kern-alert kern-alert--success my-kern-space-default"
+          role="alert"
+        >
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--success kern-icon--small"
@@ -74,7 +78,10 @@ export default function LoginPage() {
       break;
     case LoginError.BeA:
       alertMarkup = (
-        <div className="kern-alert kern-alert--danger kern-my-md" role="alert">
+        <div
+          className="kern-alert kern-alert--danger my-kern-space-default"
+          role="alert"
+        >
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--danger kern-icon--small"
@@ -90,7 +97,10 @@ export default function LoginPage() {
       break;
     case LoginError.Demo:
       alertMarkup = (
-        <div className="kern-alert kern-alert--danger kern-my-md" role="alert">
+        <div
+          className="kern-alert kern-alert--danger my-kern-space-default"
+          role="alert"
+        >
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--danger kern-icon--small"
@@ -106,7 +116,10 @@ export default function LoginPage() {
       break;
     case LoginError.KomplaIdp:
       alertMarkup = (
-        <div className="kern-alert kern-alert--danger kern-my-md" role="alert">
+        <div
+          className="kern-alert kern-alert--danger my-kern-space-default"
+          role="alert"
+        >
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--danger kern-icon--small"
@@ -136,31 +149,33 @@ export default function LoginPage() {
             {routes.login.headline}
           </h1>
 
-          <p className="kern-subline kern-my-md text-center">
+          <p className="kern-subline my-kern-space-default text-center">
             {routes.login.intro}
           </p>
 
           <Form method="post" action="/action/login-user">
-            <div className="kern-py-lg kern-gap-md flex flex-row flex-wrap items-start self-stretch">
-              <input type="hidden" name="loginType" value={loginType} />
-
+            <div className="py-kern-space-large gap-kern-space-default flex flex-row flex-wrap items-start self-stretch">
               {isDevelopment && (
-                <Button
-                  appearance="primary"
+                <button
                   type="submit"
-                  className="kern-btn--block"
-                  onClick={() => setLoginType(LoginType.Developer)}
-                  label={buttons.LOGIN_BUTTON_DEVELOPER}
-                />
+                  name="loginType"
+                  value={LoginType.Developer}
+                  className="kern-btn kern-btn--block kern-btn--primary"
+                >
+                  <span className="kern-label">
+                    {buttons.LOGIN_BUTTON_DEVELOPER}
+                  </span>
+                </button>
               )}
 
-              <Button
-                appearance="primary"
+              <button
                 type="submit"
-                className="kern-btn--block"
-                onClick={() => setLoginType(LoginType.BeA)}
-                label={buttons.LOGIN_BUTTON_BEA}
-              />
+                name="loginType"
+                value={LoginType.BeA}
+                className="kern-btn kern-btn--block kern-btn--primary"
+              >
+                <span className="kern-label">{buttons.LOGIN_BUTTON_BEA}</span>
+              </button>
 
               <Link
                 to="/auth/start-demo-login"
@@ -175,14 +190,17 @@ export default function LoginPage() {
           </Form>
 
           <Form method="post" action="/action/login-user">
-            <input type="hidden" name="loginType" value={LoginType.KomplaIdp} />
-            <Button
-              appearance="secondary"
+            <button
               type="submit"
-              className="kern-btn--block w-full"
+              name="loginType"
+              value={LoginType.KomplaIdp}
+              className="kern-btn kern-btn--block kern-btn--secondary w-full"
               data-testid="kompla-idp-login-button"
-              label={buttons.LOGIN_BUTTON_KOMPLA_IDP_LABEL}
-            />
+            >
+              <span className="kern-label">
+                {buttons.LOGIN_BUTTON_KOMPLA_IDP_LABEL}
+              </span>
+            </button>
           </Form>
         </div>
       </div>

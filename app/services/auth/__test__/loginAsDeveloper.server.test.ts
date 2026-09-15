@@ -1,50 +1,47 @@
-import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
-import { setAuthSession } from "../authSession.server";
-import { loginAsDeveloper } from "../loginAsDeveloper.server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// mock module dependencies
-vi.mock("../authSession.server", () => ({
-  setAuthSession: vi.fn(),
+vi.mock("../betterAuth.server", () => ({
+  auth: { api: { signInCustom: vi.fn() } },
 }));
 
-// import mocks after vi.mock calls so TS sees mocked shapes
-
-const testRequest = new Request("https://a.login/request");
-const happyPathResponse = new Response(null, {
-  status: 302,
-  headers: {
-    Location: "/",
-    "Set-Cookie": "a-cookie-value",
-  },
-});
-const unhappyPathResponse = new Response(null, {
-  status: 500,
-});
+import { AuthenticationProvider } from "../auth.types";
+import { auth } from "../betterAuth.server";
+import { loginAsDeveloper } from "../loginAsDeveloper.server";
 
 describe("loginAsDeveloper", () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
+  it("establishes a custom Better Auth session and redirects to /", async () => {
+    vi.mocked(auth.api.signInCustom).mockResolvedValue(
+      new Response(null, {
+        headers: { "Set-Cookie": "a-cookie-value" },
+      }) as never,
+    );
+
+    const result = await loginAsDeveloper();
+
+    expect(auth.api.signInCustom).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.objectContaining({
+          provider: AuthenticationProvider.DEVELOPMENT,
+        }),
+        asResponse: true,
+      }),
+    );
+    expect(result.status).toBe(302);
+    expect(result.headers.get("Location")).toBe("/");
+    expect(result.headers.get("Set-Cookie")).toBe("a-cookie-value");
   });
 
-  it("sets session cookie header for local development", async () => {
-    (vi.mocked(setAuthSession) as Mock).mockResolvedValue("a-cookie-value");
+  it("returns a 500 response when signInCustom fails", async () => {
+    vi.mocked(auth.api.signInCustom).mockRejectedValue(
+      new Error("could not set session data"),
+    );
 
-    const result = await loginAsDeveloper(testRequest);
+    const result = await loginAsDeveloper();
 
-    expect(setAuthSession).toHaveBeenCalled();
-    expect(result).toStrictEqual(happyPathResponse);
-  });
-
-  it("throws error when something went wrong", async () => {
-    const error = new Error("could not set session data");
-    (setAuthSession as unknown as Mock).mockRejectedValue(error);
-
-    const result = await loginAsDeveloper(testRequest);
-
-    expect(result).toStrictEqual(unhappyPathResponse);
+    expect(result.status).toBe(500);
   });
 });

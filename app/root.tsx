@@ -78,8 +78,12 @@ export default function App() {
         {/* React Router v8 forwards ServerRouter nonce to Links on SSR only;
         keep this explicit empty nonce to avoid hydration attribute mismatch. */}
         <Links nonce="" />
+        {/* The browser strips the nonce attribute after applying it, so the
+        client re-render always sees "" here even though the server sent the
+        real nonce — expected divergence, not a real mismatch. */}
         <script
           nonce={nonce}
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `window.ENV = ${JSON.stringify(config())}`,
           }}

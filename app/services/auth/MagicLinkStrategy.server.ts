@@ -1,14 +1,5 @@
-import { Strategy } from "remix-auth/strategy";
 import { logApiErrorAndThrow } from "~/utils/logApiError";
-import type {
-  AuthenticationResponse,
-  AuthenticationTokens,
-} from "./auth.types";
-
-export interface MagicLinkVerifyOptions {
-  tokens: AuthenticationTokens;
-  request: Request;
-}
+import type { AuthenticationTokens } from "./auth.types";
 
 interface MagicLinkConfig {
   idpIssuer: string;
@@ -20,21 +11,10 @@ interface MagicLinkConfig {
   email: string;
 }
 
-export class MagicLinkStrategy extends Strategy<
-  AuthenticationResponse,
-  MagicLinkVerifyOptions
-> {
-  name = "magic-link";
+export class MagicLinkStrategy {
   private readonly config: MagicLinkConfig;
 
-  constructor(
-    config: MagicLinkConfig,
-    verify: Strategy.VerifyFunction<
-      AuthenticationResponse,
-      MagicLinkVerifyOptions
-    >,
-  ) {
-    super(verify);
+  constructor(config: MagicLinkConfig) {
     this.config = config;
   }
 
@@ -54,22 +34,10 @@ export class MagicLinkStrategy extends Strategy<
    * Phase 2 — called from the callback loader once Keycloak has redirected
    * the browser back with ?code=. Exchanges the code for tokens.
    */
-  async authenticate(request: Request): Promise<AuthenticationResponse> {
+  async exchangeCodeForTokens(code: string): Promise<AuthenticationTokens> {
     this.assertConfig();
-
-    const url = new URL(request.url);
-    const code = url.searchParams.get("code");
-
-    if (!code) {
-      throw new Error(
-        "MagicLinkStrategy: no auth code in request URL. " +
-          "Use getMagicLinkUrl() for phase 1.",
-      );
-    }
-
     console.log("MagicLinkStrategy: phase 2 — exchanging auth code for tokens");
-    const tokens = await this.exchangeCodeForTokens(code);
-    return this.verify({ tokens, request });
+    return this.doExchangeCodeForTokens(code);
   }
 
   // Helper to ensure all required config values are present before making requests.
@@ -223,7 +191,7 @@ export class MagicLinkStrategy extends Strategy<
     return this.parseTokenResponse(data, refreshToken);
   }
 
-  private async exchangeCodeForTokens(
+  private async doExchangeCodeForTokens(
     code: string,
   ): Promise<AuthenticationTokens> {
     const tokenEndpoint = `${this.config.idpIssuer}/protocol/openid-connect/token`;

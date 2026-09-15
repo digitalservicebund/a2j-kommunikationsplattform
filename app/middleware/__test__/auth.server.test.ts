@@ -12,7 +12,7 @@ async function withMocks({
       expiresAt: number;
       refreshToken: string;
     };
-    sessionCookieHeader: string;
+    sessionCookieHeader: string[];
   } | null;
 } = {}) {
   vi.resetModules();
@@ -84,7 +84,7 @@ describe("authMiddleware", () => {
         expiresAt: Date.now() + 60000, // 1 minute in the future
         refreshToken: "refresh",
       },
-      sessionCookieHeader: "",
+      sessionCookieHeader: [],
     };
     const { module, restore } = await withMocks({ authData });
 
@@ -112,7 +112,7 @@ describe("authMiddleware", () => {
         expiresAt: Date.now() + 60000,
         refreshToken: "refresh",
       },
-      sessionCookieHeader: "__session=abc123; Path=/; HttpOnly",
+      sessionCookieHeader: ["__session=abc123; Path=/; HttpOnly"],
     };
     const { module, restore } = await withMocks({ authData });
 
@@ -146,7 +146,7 @@ describe("authMiddleware", () => {
         expiresAt: Date.now() + 60000,
         refreshToken: "refresh",
       },
-      sessionCookieHeader: "__session=xyz",
+      sessionCookieHeader: ["__session=xyz"],
     };
     const { module, restore } = await withMocks({ authData });
 

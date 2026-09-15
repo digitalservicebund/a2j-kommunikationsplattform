@@ -10,6 +10,6 @@ export const mockAuthData: AuthenticationResponse = {
     expiresAt: Date.now() + 60_000,
     refreshToken: "refresh-token",
   },
-  sessionCookieHeader: "",
+  sessionCookieHeader: [],
   provider: AuthenticationProvider.BEA,
 };
