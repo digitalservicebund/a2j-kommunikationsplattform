@@ -1,10 +1,6 @@
 import { redirect, type ActionFunctionArgs } from "react-router";
+import { LogoutType } from "~/services/auth/auth.types.ts";
 import { auth } from "~/services/auth/betterAuth.server";
-
-export enum LogoutType {
-  Automatic = "auto-logged-out",
-  ByUser = "logged-out",
-}
 
 /**
  * /action/logout-user

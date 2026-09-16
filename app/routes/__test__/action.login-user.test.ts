@@ -14,7 +14,8 @@ vi.mock("~/config/config", () => ({
 }));
 
 import { config } from "~/config/config";
-import { action, LoginType } from "~/routes/action.login-user";
+import { action } from "~/routes/action.login-user";
+import { LoginType } from "~/services/auth/auth.types.ts";
 import { auth } from "~/services/auth/betterAuth.server";
 import { loginAsDeveloper } from "~/services/auth/loginAsDeveloper.server";
 

@@ -7,9 +7,9 @@ import {
 } from "react-router";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
+import { LoginError, LoginType } from "~/services/auth/auth.types.ts";
 import { getAuthData } from "~/services/auth/authSession.server";
 import { useTranslations } from "~/services/translations/context";
-import { LoginError, LoginType } from "./action.login-user";
 import { LogoutType } from "./action.logout-user";
 
 // Alert state type

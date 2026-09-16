@@ -1,21 +1,12 @@
 import { redirect, type ActionFunctionArgs } from "react-router";
 import { config } from "~/config/config";
-import { AuthenticationProvider } from "~/services/auth/auth.types";
+import {
+  AuthenticationProvider,
+  LoginError,
+  LoginType,
+} from "~/services/auth/auth.types";
 import { auth } from "~/services/auth/betterAuth.server";
 import { loginAsDeveloper } from "~/services/auth/loginAsDeveloper.server";
-
-export enum LoginError {
-  BeA = "bea-login-error",
-  Demo = "demo-login-error",
-  KomplaIdp = "kompla-idp-login-error",
-}
-
-export enum LoginType {
-  BeA = "bea-login",
-  Developer = "developer-login",
-  Demo = "demo-login",
-  KomplaIdp = "kompla-idp-login",
-}
 
 const errorStatusByProvider: Record<
   AuthenticationProvider.BEA | AuthenticationProvider.KOMPLA_IDP,
@@ -64,8 +55,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   console.log("loginType is", loginType);
 
   if (loginType === LoginType.Developer) {
-    // The login page only renders this button in development, but that's a
-    // UI convenience, not a security boundary — enforce it server-side too.
     if (config().ENVIRONMENT !== "development") {
       return new Response("Developer login is only available in development", {
         status: 403,

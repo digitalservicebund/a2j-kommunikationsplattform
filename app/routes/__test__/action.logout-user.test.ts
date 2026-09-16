@@ -5,8 +5,9 @@ vi.mock("~/services/auth/betterAuth.server", () => ({
   auth: { api: { signOut: vi.fn() } },
 }));
 
+import { LogoutType } from "~/services/auth/auth.types.ts";
 import { auth } from "~/services/auth/betterAuth.server";
-import { action, LogoutType } from "../action.logout-user";
+import { action } from "../action.logout-user";
 
 const testContext: Readonly<RouterContextProvider> = {
   get: () => {
