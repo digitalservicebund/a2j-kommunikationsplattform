@@ -4,12 +4,13 @@ import { AuthenticationProvider } from "../auth.types";
 vi.mock("../betterAuth.server", () => {
   const getSession = vi.fn();
   const getAccessToken = vi.fn();
+  const listUserAccounts = vi.fn();
   const findAccountByUserId = vi.fn();
   const updateAccount = vi.fn();
 
   return {
     auth: {
-      api: { getSession, getAccessToken },
+      api: { getSession, getAccessToken, listUserAccounts },
       $context: Promise.resolve({
         internalAdapter: { findAccountByUserId, updateAccount },
       }),
@@ -17,6 +18,7 @@ vi.mock("../betterAuth.server", () => {
     __mocks__: {
       getSession,
       getAccessToken,
+      listUserAccounts,
       findAccountByUserId,
       updateAccount,
     },
@@ -36,6 +38,7 @@ const mocks = (
     __mocks__: {
       getSession: ReturnType<typeof vi.fn>;
       getAccessToken: ReturnType<typeof vi.fn>;
+      listUserAccounts: ReturnType<typeof vi.fn>;
       findAccountByUserId: ReturnType<typeof vi.fn>;
       updateAccount: ReturnType<typeof vi.fn>;
     };
@@ -72,7 +75,7 @@ describe("getAuthData", () => {
       authProvider: AuthenticationProvider.BEA,
       safeId: "DE.BRAK_SPT.abc",
     });
-    mocks.findAccountByUserId.mockResolvedValue([
+    mocks.listUserAccounts.mockResolvedValue([
       {
         id: "bea-row-id-1",
         providerId: AuthenticationProvider.BEA,
@@ -105,7 +108,7 @@ describe("getAuthData", () => {
       authProvider: AuthenticationProvider.KOMPLA_IDP,
       safeId: "DE.KOMPLA_SPT.xyz",
     });
-    mocks.findAccountByUserId.mockResolvedValue([
+    mocks.listUserAccounts.mockResolvedValue([
       {
         id: "kompla-row-id-1",
         providerId: AuthenticationProvider.KOMPLA_IDP,

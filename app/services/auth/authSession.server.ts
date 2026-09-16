@@ -12,8 +12,9 @@ async function getOAuth2Tokens(
   userId: string,
   provider: AuthenticationProvider,
 ) {
-  const ctx = await auth.$context;
-  const accounts = await ctx.internalAdapter.findAccountByUserId(userId);
+  const accounts = await auth.api.listUserAccounts({
+    headers: request.headers,
+  });
   const account = accounts.find((a) => a.providerId === provider);
 
   if (!account) {
