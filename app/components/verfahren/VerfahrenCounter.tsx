@@ -39,7 +39,7 @@ export function VerfahrenCounter({
   const formattedCount =
     count >= VERFAHREN_PAGE_LIMIT
       ? shared.MORE_THAN_100_VERFAHREN_LABEL
-      : `${count} ${shared.VERFAHREN_LABEL}`;
+      : `${count} ${shared.verfahren}`;
 
   let countInfo: string;
   let alertTitle: string | null = null;
@@ -47,7 +47,7 @@ export function VerfahrenCounter({
 
   switch (displayState) {
     case CounterState.NoVerfahren: {
-      countInfo = `0 ${shared.VERFAHREN_LABEL}`;
+      countInfo = `0 ${shared.verfahren}`;
       alertTitle = alerts.NO_VERFAHREN_FOUND_TITLE;
       alertMessage = alerts.NO_VERFAHREN_FOUND_MESSAGE;
       break;

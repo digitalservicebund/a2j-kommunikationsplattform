@@ -32,7 +32,7 @@ export default function VerfahrenOverviewCard({
 
   const overviewBadge = getVerfahrenStatusPresentation(
     verfahren.status,
-    shared.statusPresentation.verfahren,
+    shared.status.verfahren,
   );
 
   return (

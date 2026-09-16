@@ -3,21 +3,18 @@ import {
   makeNatuerlichePersonBeteiligung,
   makeRAKanzleiBeteiligung,
 } from "./beteiligung";
+import { makeGericht } from "./gericht";
 import { makeBeklagteRolle, makeKlaegerinRolle } from "./rolle";
 
 export function makeVerfahren(params?: Partial<Verfahren>): Verfahren {
   return {
     id: crypto.randomUUID(),
-    erstelltVon: "",
+    erstelltVon: "7c7b6a8e-fdb9-4f38-944d-3ef010a4cab0",
     erstelltAm: "2026-09-30T12:24:56.789Z",
     eingereichtAm: "2026-09-30T12:34:56.789Z",
     status: "EINGEREICHT",
     statusGeaendertAm: "2026-09-30T12:34:56.789Z",
-    gericht: {
-      id: "78355359-57e9-31bb-8366-7bda03795c15",
-      wert: "Amtsgericht München",
-      code: "D2601",
-    },
+    gericht: makeGericht(),
     aktenzeichenGericht: "8 C 7900/26",
     kurzrubrum: "Beispiel",
     verfahrensgegenstand:

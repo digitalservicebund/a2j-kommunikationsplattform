@@ -44,7 +44,7 @@ export default function VerfahrenEinreichungHistoryList({
           // Status
           getDokumentStatusPresentation(
             einreichung.status,
-            sharedTranslations.statusPresentation.dokument,
+            sharedTranslations.status.dokument,
           ).label,
 
           // Erstellt am (creation date)

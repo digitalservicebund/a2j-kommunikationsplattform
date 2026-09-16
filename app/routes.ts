@@ -1,5 +1,4 @@
 import { prefix, route, RouteConfig } from "@react-router/dev/routes";
-import { config } from "./config/config";
 import { META_PAGES } from "./config/metaPages";
 
 export default [
@@ -37,9 +36,4 @@ export default [
 
   // Beitrittscode (Lift)
   route("beitreten", "./routes/beitreten.tsx"),
-
-  // exclude route(s) from production environment
-  ...(config().ENVIRONMENT === "production"
-    ? []
-    : [route("kitchensink", "./routes/kitchensink.tsx")]),
 ] satisfies RouteConfig;

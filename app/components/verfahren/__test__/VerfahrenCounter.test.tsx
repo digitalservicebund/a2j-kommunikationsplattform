@@ -26,13 +26,13 @@ describe("VerfahrenCounter", () => {
       it("displays '0 Verfahren' when count is 0", () => {
         renderComponent(0, false);
         const text = container.querySelector("p");
-        expect(text).toHaveTextContent(`0 ${shared.VERFAHREN_LABEL}`);
+        expect(text).toHaveTextContent(`0 ${shared.verfahren}`);
       });
 
       it("displays exact count when less than 100", () => {
         renderComponent(50, false);
         const text = container.querySelector("p");
-        expect(text).toHaveTextContent(`50 ${shared.VERFAHREN_LABEL}`);
+        expect(text).toHaveTextContent(`50 ${shared.verfahren}`);
       });
 
       it("displays generic message when 100 or more", () => {
@@ -84,7 +84,7 @@ describe("VerfahrenCounter", () => {
       it("displays exact count when less than 100", () => {
         renderComponent(30, true);
         const text = container.querySelector("p");
-        expect(text).toHaveTextContent(`30 ${shared.VERFAHREN_LABEL}`);
+        expect(text).toHaveTextContent(`30 ${shared.verfahren}`);
       });
 
       it("displays generic message when 100 or more", () => {
