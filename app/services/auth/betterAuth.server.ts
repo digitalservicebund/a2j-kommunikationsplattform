@@ -38,6 +38,24 @@ export function getUserInfoFromIdToken(
   };
 }
 
+/**
+ * Server-only by design — no `createAuthClient` (better-auth.com/docs/integrations/react-router)
+ * is used anywhere in this app, and that's intentional, not an omission:
+ *
+ * 1. BRAK's and KomPla's registered `redirect_uri`s are fixed to
+ *    `app/routes/auth.callback.tsx` / `auth.kompla-idp-callback.tsx`, not
+ *    Better Auth's own `/api/auth/callback/{provider}` path. A client-side
+ *    `authClient.signIn.social(...)` redirects the browser straight to the
+ *    one provided by Better Auth, bypassing those proxy routes.
+ * 2. Login also covers the Developer bypass (see action.login-user.ts),
+ *    which must be gated server-side (`config().ENVIRONMENT`) — a client
+ *    SDK call has no way to enforce that without trusting the browser.
+ * 3. This is SSR framework mode: loaders/actions already read sessions
+ *    server-side (`getAuthData`, `authMiddleware`), which is what
+ *    `createAuthClient`'s `useSession()` exists to provide in client-only
+ *    apps. Adding it here would be a second, harder-to-reconcile way to
+ *    track session state alongside the server-side one.
+ */
 export const auth = betterAuth({
   secret: serverConfig().BETTER_AUTH_SECRET,
   baseURL: serverConfig().BETTER_AUTH_URL,
