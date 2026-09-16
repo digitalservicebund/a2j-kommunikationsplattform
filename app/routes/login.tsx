@@ -43,10 +43,7 @@ export default function LoginPage() {
   switch (alertStatus) {
     case LogoutType.Automatic:
       alertMarkup = (
-        <div
-          className="kern-alert kern-alert--warning my-kern-space-default"
-          role="alert"
-        >
+        <div className="kern-alert kern-alert--warning kern-my-md" role="alert">
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--warning kern-icon--small"
@@ -62,10 +59,7 @@ export default function LoginPage() {
       break;
     case LogoutType.ByUser:
       alertMarkup = (
-        <div
-          className="kern-alert kern-alert--success my-kern-space-default"
-          role="alert"
-        >
+        <div className="kern-alert kern-alert--success kern-my-md" role="alert">
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--success kern-icon--small"
@@ -78,10 +72,7 @@ export default function LoginPage() {
       break;
     case LoginError.BeA:
       alertMarkup = (
-        <div
-          className="kern-alert kern-alert--danger my-kern-space-default"
-          role="alert"
-        >
+        <div className="kern-alert kern-alert--danger kern-my-md" role="alert">
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--danger kern-icon--small"
@@ -97,10 +88,7 @@ export default function LoginPage() {
       break;
     case LoginError.Demo:
       alertMarkup = (
-        <div
-          className="kern-alert kern-alert--danger my-kern-space-default"
-          role="alert"
-        >
+        <div className="kern-alert kern-alert--danger kern-my-md" role="alert">
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--danger kern-icon--small"
@@ -116,10 +104,7 @@ export default function LoginPage() {
       break;
     case LoginError.KomplaIdp:
       alertMarkup = (
-        <div
-          className="kern-alert kern-alert--danger my-kern-space-default"
-          role="alert"
-        >
+        <div className="kern-alert kern-alert--danger kern-my-md" role="alert">
           <div className="kern-alert__header">
             <span
               className="kern-icon kern-icon--danger kern-icon--small"
@@ -149,12 +134,12 @@ export default function LoginPage() {
             {routes.login.headline}
           </h1>
 
-          <p className="kern-subline my-kern-space-default text-center">
+          <p className="kern-subline kern-my-md text-center">
             {routes.login.intro}
           </p>
 
           <Form method="post" action="/action/login-user">
-            <div className="py-kern-space-large gap-kern-space-default flex flex-row flex-wrap items-start self-stretch">
+            <div className="kern-py-lg kern-gap-md flex flex-row flex-wrap items-start self-stretch">
               {isDevelopment && (
                 <button
                   type="submit"
