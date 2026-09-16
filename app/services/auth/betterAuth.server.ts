@@ -17,6 +17,12 @@ function decodeIdTokenClaims(idToken: string): Record<string, unknown> {
  * stable identifier is the "safe-id"/"sub" claim in the ID token. Better
  * Auth requires a non-empty email per user, so we derive a synthetic,
  * provider-scoped one from that claim.
+ *
+ * Unlike the pre-Better-Auth oAuth.server.ts (module-level `let idToken`,
+ * `komplaIdpIdToken`, `loginType` shared across all concurrent requests —
+ * see https://digitalservicebund.atlassian.net/browse/AKM-386), everything
+ * here is derived from the `tokens` argument passed in per-call. No shared
+ * mutable state for concurrent logins to stomp on.
  */
 export function getUserInfoFromIdToken(
   provider: AuthenticationProvider,
@@ -71,6 +77,14 @@ export const auth = betterAuth({
     cookieCache: {
       enabled: true,
       strategy: "jwe",
+      // `refreshCache` is only valid for DB-less setups like this one (no
+      // `database`/`secondaryStorage` configured) — it keeps the session
+      // cache cookie self-renewing so requests don't fall back to the
+      // ephemeral in-memory session store. If a real database is added
+      // later, remove this: Better Auth disables it automatically with a
+      // warning in that case, and keeping it would let a cached cookie
+      // stay "valid" for up to cookieCache.maxAge (default 5 min) past a
+      // real server-side revocation (e.g. sign-out).
       refreshCache: true,
     },
   },
