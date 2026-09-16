@@ -6,11 +6,11 @@ import VerfahrenBriefSummaryOfGericht from "~/components/verfahren/VerfahrenBrie
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import type { Verfahren } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
 import {
-  getBeteiligteNamesByRoleCode,
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/services/beteiligteByRole";
 import { useTranslations } from "~/services/translations/context";
+import { getVerfahrenDisplayName } from "./presentation/verfahrenDisplayName";
 
 type VerfahrenOverviewCardProps = {
   verfahren: Verfahren;
@@ -21,16 +21,6 @@ export default function VerfahrenOverviewCard({
 }: Readonly<VerfahrenOverviewCardProps>) {
   const { routes, shared } = useTranslations();
 
-  const klaegerinnenNamen = getBeteiligteNamesByRoleCode(
-    verfahren.beteiligungen,
-    ROLE_CODE_KLAEGERIN,
-    NOT_AVAILABLE_LABEL,
-  );
-  const beklagteNamen = getBeteiligteNamesByRoleCode(
-    verfahren.beteiligungen,
-    ROLE_CODE_BEKLAGTE,
-    NOT_AVAILABLE_LABEL,
-  );
   const klaegerinnenSummary = buildBeteiligteSummaryItems(
     verfahren.beteiligungen,
     ROLE_CODE_KLAEGERIN,
@@ -51,8 +41,7 @@ export default function VerfahrenOverviewCard({
         <div className="algin-start kern-gap-md flex w-full flex-wrap items-start">
           <div className="flex-1">
             <h2 className="kern-heading-medium">
-              {verfahren.kurzrubrum ??
-                `${klaegerinnenNamen} ./. ${beklagteNamen}`}
+              {getVerfahrenDisplayName(verfahren)}
             </h2>
             <div className="align-center kern-body kern-body--muted kern-gap-sm flex flex-wrap">
               <span>

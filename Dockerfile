@@ -35,6 +35,7 @@ COPY --link --from=build-dependencies /build-deps/public ./public/
 COPY --link --from=app-dependencies /app-deps/node_modules ./node_modules/
 COPY server.js package.json ./
 COPY app/sentry.ts ./app/
+COPY app/config/config.ts ./app/config/
 
 # Prepare prod build stage
 FROM kompla AS app-copy
