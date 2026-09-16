@@ -1,6 +1,6 @@
 import { redirect } from "react-router";
+import { LoginError } from "~/services/auth/auth.types.ts";
 import { magicLinkClient } from "~/services/auth/magicLinkClient.server";
-import { LoginError } from "./action.login-user";
 
 export const loader = async () => {
   try {

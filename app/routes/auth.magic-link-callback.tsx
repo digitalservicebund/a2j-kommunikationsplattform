@@ -1,8 +1,7 @@
 import { redirect, type LoaderFunction } from "react-router";
-import { AuthenticationProvider } from "~/services/auth/auth.types";
+import { AuthenticationProvider, LoginError } from "~/services/auth/auth.types";
 import { auth } from "~/services/auth/betterAuth.server";
 import { magicLinkClient } from "~/services/auth/magicLinkClient.server";
-import { LoginError } from "./action.login-user";
 
 export const loader: LoaderFunction = async ({ request }) => {
   try {
