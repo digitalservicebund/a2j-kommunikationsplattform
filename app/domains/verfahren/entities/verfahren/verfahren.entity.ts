@@ -1,5 +1,5 @@
 import z from "zod";
-import { BeteiligungenSchema } from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
+import { BeteiligungSchema } from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
 import { CodeWertSchema } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
 
 export const VerfahrenStatusSchema = z.enum([
@@ -26,7 +26,7 @@ export const VerfahrenSchema = z.object({
   erstelltAm: z.iso.datetime(),
   eingereichtAm: z.nullable(z.iso.datetime()),
   gericht: CodeWertSchema,
-  beteiligungen: BeteiligungenSchema,
+  beteiligungen: z.nullable(z.array(BeteiligungSchema)),
 });
 
 export type Verfahren = z.infer<typeof VerfahrenSchema>;
