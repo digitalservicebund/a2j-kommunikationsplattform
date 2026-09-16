@@ -94,7 +94,7 @@ describe("apiClient", () => {
       );
     });
 
-    it("throws error when bearer token is not available", async () => {
+    it("throws a 401 Response when bearer token is not available", async () => {
       mocks.getBearerToken.mockResolvedValue(null);
 
       await expect(
@@ -102,7 +102,18 @@ describe("apiClient", () => {
           authData: mockAuthData,
           path: "/api/v1/test",
         }),
-      ).rejects.toThrow("No bearer token available");
+      ).rejects.toMatchObject({ status: 401 });
+    });
+
+    it("throws a 401 Response when getBearerToken fails", async () => {
+      mocks.getBearerToken.mockRejectedValue(new Error("token error"));
+
+      await expect(
+        apiRequest({
+          authData: mockAuthData,
+          path: "/api/v1/test",
+        }),
+      ).rejects.toMatchObject({ status: 401 });
     });
 
     it("performs GET request by default", async () => {
