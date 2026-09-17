@@ -3,10 +3,8 @@ import { AuthenticationProvider } from "~/services/auth/auth.types";
 import { auth } from "~/services/auth/betterAuth.server";
 
 /**
- * Keeps the redirect_uri registered with the real KomPla IdP client stable
- * (unaffected by the Better Auth migration) by forwarding this request to
- * Better Auth's own auto-mounted OAuth2 callback handler, which does the
- * actual code exchange and session creation.
+ * Keeps the redirect_uri registered with KomPla IdP's client stable by
+ * forwarding this request to Better Auth's own OAuth2 callback handler.
  */
 export const loader = ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);

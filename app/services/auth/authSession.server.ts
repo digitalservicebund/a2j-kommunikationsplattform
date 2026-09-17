@@ -117,10 +117,8 @@ export const getAuthData = async (
     return {
       authenticationTokens: {
         accessToken: tokens.accessToken,
-        // Both BEA and KOMPLA_IDP return a "safe-id" claim, persisted on the
-        // user record at account creation (see betterAuth.server.ts's
-        // mapProfileToUser) — the KomPla API requires it as `safe_id` when
-        // creating a Verfahren.
+        // safeId (see betterAuth.server.ts's mapProfileToUser) is required
+        // as `safe_id` when creating a Verfahren via the KomPla API.
         idToken: (user as { safeId?: string }).safeId ?? tokens.idToken,
         expiresAt: tokens.expiresAt,
         refreshToken: tokens.refreshToken,

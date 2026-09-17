@@ -15,11 +15,8 @@ const signInCustomBodySchema = z.object({
 });
 
 /**
- * Mints a Better Auth session for the Demo (magic-link) and Developer login
- * paths, neither of which goes through a real OAuth2 round-trip via the
- * `generic-oauth` plugin. The caller (auth.start-demo-login /
- * auth.magic-link-callback / loginAsDeveloper) is responsible for obtaining
- * the tokens beforehand.
+ * Mints a Better Auth session for the Demo/Developer login paths, which
+ * skip the real OAuth2 round-trip; the caller must obtain tokens beforehand.
  */
 export function customAuthPlugin() {
   return {

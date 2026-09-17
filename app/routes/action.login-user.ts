@@ -20,9 +20,8 @@ async function startOAuth2Login(
   request: Request,
   providerId: AuthenticationProvider.BEA | AuthenticationProvider.KOMPLA_IDP,
 ) {
-  // The oauth `state`/PKCE code_verifier Better Auth generates here is
-  // persisted via a Set-Cookie header (there's no database) — it must be
-  // forwarded to the browser or the callback's state check will fail.
+  // The oauth state/PKCE verifier is persisted via Set-Cookie (no database)
+  // and must reach the browser or the callback's state check will fail.
   const { response, headers } = await auth.api.signInSocial({
     body: {
       provider: providerId,

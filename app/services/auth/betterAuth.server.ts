@@ -13,16 +13,8 @@ function decodeIdTokenClaims(idToken: string): Record<string, unknown> {
 }
 
 /**
- * BRAK IdP and KomPla IdP don't return a real email address — the only
- * stable identifier is the "safe-id"/"sub" claim in the ID token. Better
- * Auth requires a non-empty email per user, so we derive a synthetic,
- * provider-scoped one from that claim.
- *
- * Unlike the pre-Better-Auth oAuth.server.ts (module-level `let idToken`,
- * `komplaIdpIdToken`, `loginType` shared across all concurrent requests —
- * see https://digitalservicebund.atlassian.net/browse/AKM-386), everything
- * here is derived from the `tokens` argument passed in per-call. No shared
- * mutable state for concurrent logins to stomp on.
+ * BRAK/KomPla don't return a real email, so derive one from the "safe-id"/
+ * "sub" claim — Better Auth requires a non-empty email per user.
  */
 export function getUserInfoFromIdToken(
   provider: AuthenticationProvider,
@@ -45,60 +37,45 @@ export function getUserInfoFromIdToken(
 }
 
 /**
- * Server-only by design — no `createAuthClient` (better-auth.com/docs/integrations/react-router)
- * is used anywhere in this app, and that's intentional, not an omission:
- *
- * 1. BRAK's and KomPla's registered `redirect_uri`s are fixed to
- *    `app/routes/auth.callback.tsx` / `auth.kompla-idp-callback.tsx`, not
- *    Better Auth's own `/api/auth/callback/{provider}` path. A client-side
- *    `authClient.signIn.social(...)` redirects the browser straight to the
- *    one provided by Better Auth, bypassing those proxy routes.
- * 2. Login also covers the Developer bypass (see action.login-user.ts),
- *    which must be gated server-side (`config().ENVIRONMENT`) — a client
- *    SDK call has no way to enforce that without trusting the browser.
- * 3. This is SSR framework mode: loaders/actions already read sessions
- *    server-side (`getAuthData`, `authMiddleware`), which is what
- *    `createAuthClient`'s `useSession()` exists to provide in client-only
- *    apps. Adding it here would be a second, harder-to-reconcile way to
- *    track session state alongside the server-side one.
+ * Server-only by design: no `createAuthClient` is used anywhere in this app.
+ * BRAK/KomPla's registered redirect_uris are pinned to the proxy callback
+ * routes rather than Better Auth's own callback path, and SSR loaders/actions
+ * already read sessions server-side via `getAuthData`/`authMiddleware`.
  */
 export const auth = betterAuth({
   secret: serverConfig().BETTER_AUTH_SECRET,
   baseURL: serverConfig().BETTER_AUTH_URL,
   basePath: "/api/auth",
-  // `signInCustom` (customAuthPlugin.server.ts) mints a session from
-  // caller-supplied tokens with no way to verify they're genuine — it must
-  // only ever be reached via the server-side `auth.api.signInCustom(...)`
-  // call (from loginAsDeveloper / auth.magic-link-callback), never as a
-  // public HTTP endpoint. `disabledPaths` blocks it at the router level
-  // (404) without affecting `auth.api.*` calls, which bypass the router.
+  // signInCustom (customAuthPlugin.server.ts) trusts caller-supplied tokens
+  // with no verification, so it must stay unreachable as a public HTTP
+  // endpoint; auth.api.signInCustom (server-side) bypasses disabledPaths.
   disabledPaths: ["/sign-in/custom"],
+  account: {
+    // Without this, Better Auth mirrors the full OAuth account record (real
+    // access/refresh/ID tokens) into a ~14KB cookie this app never reads —
+    // tokens are re-derived server-side on every request instead (see ADR 0008).
+    storeAccountCookie: false,
+  },
   session: {
     cookieCache: {
       enabled: true,
       strategy: "jwe",
-      // `refreshCache` is only valid for DB-less setups like this one (no
-      // `database`/`secondaryStorage` configured) — it keeps the session
-      // cache cookie self-renewing so requests don't fall back to the
-      // ephemeral in-memory session store. If a real database is added
-      // later, remove this: Better Auth disables it automatically with a
-      // warning in that case, and keeping it would let a cached cookie
-      // stay "valid" for up to cookieCache.maxAge (default 5 min) past a
-      // real server-side revocation (e.g. sign-out).
+      // Keeps the session cache cookie self-renewing without a database;
+      // remove if a real database is ever added (Better Auth disables this
+      // automatically in that case).
       refreshCache: true,
     },
   },
   user: {
     additionalFields: {
-      // input must stay true (the default) — mapProfileToUser/createUser
-      // both feed this field through the create-record "input" pipeline;
-      // input: false blocks it from being set there at all.
+      // Must stay `input: true` (the default) so mapProfileToUser/createUser
+      // can set it.
       authProvider: {
         type: "string",
         required: true,
       },
-      // BRAK IdP's "safe-id" claim — the only stable identifier it returns.
-      // Used as the `safe_id` field when creating a Verfahren via the KomPla API.
+      // BRAK/KomPla's only stable identifier; used as `safe_id` when
+      // creating a Verfahren via the KomPla API.
       safeId: {
         type: "string",
         required: false,
@@ -114,9 +91,8 @@ export const auth = betterAuth({
           clientSecret: serverConfig().BRAK_IDP_OIDC_CLIENT_SECRET,
           authorizationUrl: `${serverConfig().BRAK_IDP_OIDC_ISSUER}/protocol/openid-connect/auth`,
           tokenUrl: `${serverConfig().BRAK_IDP_OIDC_ISSUER}/protocol/openid-connect/token`,
-          // Keeps the redirect_uri registered with the real BRAK IdP client
-          // unchanged — app/routes/auth.callback.tsx forwards the resulting
-          // request to Better Auth's own callback handler.
+          // Matches the redirect_uri registered with BRAK's IdP client;
+          // auth.callback.tsx proxies to Better Auth's own callback handler.
           redirectURI: serverConfig().BRAK_IDP_OIDC_REDIRECT_URI,
           scopes: ["openid"],
           pkce: true,
@@ -124,9 +100,8 @@ export const auth = betterAuth({
             AuthenticationProvider.BEA,
             "bea-user",
           ),
-          // additionalFields (authProvider, safeId) aren't reflected in
-          // generic-oauth's mapProfileToUser return type, though Better Auth
-          // persists them at runtime via the user's additionalFields schema.
+          // additionalFields aren't in generic-oauth's mapProfileToUser
+          // return type but are persisted via the user's additionalFields schema.
           mapProfileToUser: (profile) =>
             ({
               authProvider: AuthenticationProvider.BEA,
@@ -139,9 +114,8 @@ export const auth = betterAuth({
           clientSecret: serverConfig().KOMPLA_IDP_OIDC_CLIENT_SECRET,
           authorizationUrl: `${serverConfig().KOMPLA_IDP_OIDC_ISSUER}/protocol/openid-connect/auth`,
           tokenUrl: `${serverConfig().KOMPLA_IDP_OIDC_ISSUER}/protocol/openid-connect/token`,
-          // Keeps the redirect_uri registered with the real KomPla IdP client
-          // unchanged — app/routes/auth.kompla-idp-callback.tsx forwards the
-          // resulting request to Better Auth's own callback handler.
+          // Matches the redirect_uri registered with KomPla IdP's client;
+          // auth.kompla-idp-callback.tsx proxies to Better Auth's own callback handler.
           redirectURI: serverConfig().KOMPLA_IDP_OIDC_REDIRECT_URI,
           scopes: ["openid"],
           pkce: true,
@@ -149,9 +123,7 @@ export const auth = betterAuth({
             AuthenticationProvider.KOMPLA_IDP,
             "kompla-idp-user",
           ),
-          // See the BEA config's mapProfileToUser comment above. KomPla IdP
-          // also returns a "safe-id" claim (same as BEA/BRAK) that the
-          // KomPla API requires as `safe_id` when creating a Verfahren.
+          // Same as the BEA config above — KomPla IdP also returns "safe-id".
           mapProfileToUser: (profile) =>
             ({
               authProvider: AuthenticationProvider.KOMPLA_IDP,
