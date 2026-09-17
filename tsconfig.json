@@ -6,6 +6,7 @@
     ".react-router/types/**/*"
   ],
   "compilerOptions": {
+    "strict": true,
     "allowJs": true,
     "allowImportingTsExtensions": true,
     "forceConsistentCasingInFileNames": true,

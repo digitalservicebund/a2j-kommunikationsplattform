@@ -1,7 +1,6 @@
 import { redirect, type ActionFunctionArgs } from "react-router";
-import { LogoutType } from "~/services/auth/auth.types";
-import { destroySession, getSession } from "~/services/auth/authSession.server";
-import { revokeAccessToken } from "~/services/auth/oAuth.server";
+import { LogoutType } from "~/services/auth/auth.types.ts";
+import { auth } from "~/services/auth/betterAuth.server";
 
 /**
  * /action/logout-user
@@ -12,16 +11,13 @@ import { revokeAccessToken } from "~/services/auth/oAuth.server";
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const logoutType = formData.get("logoutType") as LogoutType;
-  const session = await getSession(request.headers.get("Cookie"));
-  const accessToken = session.get("accessToken");
 
-  if (accessToken) {
-    await revokeAccessToken(accessToken);
-  }
+  const response = await auth.api.signOut({
+    headers: request.headers,
+    asResponse: true,
+  });
 
   return redirect(`/login?status=${logoutType}`, {
-    headers: {
-      "Set-Cookie": await destroySession(session),
-    },
+    headers: response.headers,
   });
 };

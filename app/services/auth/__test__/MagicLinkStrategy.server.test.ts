@@ -1,9 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AuthenticationProvider, AuthenticationResponse } from "../auth.types";
 import { MagicLinkStrategy } from "../MagicLinkStrategy.server";
-
-// NOTE: do NOT mock "remix-auth/strategy" — doing so prevents Istanbul
-// from instrumenting MagicLinkStrategy (the subclass), resulting in 0% coverage.
 
 const validConfig = {
   idpIssuer: "https://auth.example.com/realms/test",
@@ -22,22 +18,11 @@ const mockTokenResponse = {
 };
 
 function makeStrategy(configOverrides: Partial<typeof validConfig> = {}) {
-  const verify = vi
-    .fn<() => Promise<AuthenticationResponse>>()
-    .mockResolvedValue({
-      authenticationTokens: {
-        accessToken: "at",
-        expiresAt: Date.now() + 60_000,
-        refreshToken: "rt",
-      },
-      sessionCookieHeader: "",
-      provider: AuthenticationProvider.DEMO,
-    });
-  const strategy = new MagicLinkStrategy(
-    { ...validConfig, ...configOverrides },
-    verify,
-  );
-  return { strategy, verify };
+  const strategy = new MagicLinkStrategy({
+    ...validConfig,
+    ...configOverrides,
+  });
+  return { strategy };
 }
 
 function stubFetch(
@@ -83,18 +68,15 @@ describe("MagicLinkStrategy", () => {
     });
 
     it("throws when all config values are missing", async () => {
-      const strategy = new MagicLinkStrategy(
-        {
-          idpIssuer: "",
-          serviceClientId: "",
-          serviceClientSecret: "",
-          clientId: "",
-          redirectUri: "",
-          username: "",
-          email: "",
-        },
-        vi.fn(),
-      );
+      const strategy = new MagicLinkStrategy({
+        idpIssuer: "",
+        serviceClientId: "",
+        serviceClientSecret: "",
+        clientId: "",
+        redirectUri: "",
+        username: "",
+        email: "",
+      });
       await expect(strategy.getMagicLinkUrl()).rejects.toThrow(
         "MagicLinkStrategy: missing required env vars",
       );
@@ -183,29 +165,17 @@ describe("MagicLinkStrategy", () => {
     });
   });
 
-  describe("authenticate", () => {
-    it("throws when request has no ?code= parameter", async () => {
-      const { strategy } = makeStrategy();
-      const request = new Request("https://example.com/callback");
-      await expect(strategy.authenticate(request)).rejects.toThrow(
-        "MagicLinkStrategy: no auth code in request URL",
-      );
-    });
-
-    it("exchanges code for tokens and calls verify with parsed tokens", async () => {
+  describe("exchangeCodeForTokens", () => {
+    it("exchanges an auth code for parsed tokens", async () => {
       stubFetch({ ok: true, json: async () => mockTokenResponse });
-      const { strategy, verify } = makeStrategy();
-      const request = new Request(
-        "https://example.com/callback?code=auth-code-123",
-      );
-      await strategy.authenticate(request);
-      expect(verify).toHaveBeenCalledWith({
-        tokens: expect.objectContaining({
+      const { strategy } = makeStrategy();
+      const tokens = await strategy.exchangeCodeForTokens("auth-code-123");
+      expect(tokens).toEqual(
+        expect.objectContaining({
           accessToken: "at-123",
           refreshToken: "rt-456",
         }),
-        request,
-      });
+      );
     });
 
     it("throws when token exchange returns non-ok response", async () => {
@@ -216,30 +186,9 @@ describe("MagicLinkStrategy", () => {
         text: async () => "invalid_code",
       });
       const { strategy } = makeStrategy();
-      const request = new Request("https://example.com/callback?code=bad-code");
-      await expect(strategy.authenticate(request)).rejects.toThrow(
+      await expect(strategy.exchangeCodeForTokens("bad-code")).rejects.toThrow(
         "MagicLinkStrategy: token exchange failed",
       );
-    });
-
-    it("returns the result of verify", async () => {
-      stubFetch({ ok: true, json: async () => mockTokenResponse });
-      const { strategy, verify } = makeStrategy();
-      const expectedResponse: AuthenticationResponse = {
-        authenticationTokens: {
-          accessToken: "verified-at",
-          expiresAt: 9999,
-          refreshToken: "verified-rt",
-        },
-        sessionCookieHeader: "cookie=value",
-        provider: AuthenticationProvider.DEMO,
-      };
-      verify.mockResolvedValueOnce(expectedResponse);
-      const request = new Request(
-        "https://example.com/callback?code=valid-code",
-      );
-      const result = await strategy.authenticate(request);
-      expect(result).toEqual(expectedResponse);
     });
   });
 

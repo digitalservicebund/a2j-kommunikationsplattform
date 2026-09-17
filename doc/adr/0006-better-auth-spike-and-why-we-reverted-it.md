@@ -7,6 +7,8 @@
 
 Accepted
 
+Superseded by [ADR 0008](0008-switching-back-to-better-auth.md) regarding the "Consequences" section below — this ADR is kept for historical context on why the first Better Auth spike was reverted.
+
 ## Context
 
 [ADR 0004](0004-how-we-do-user-and-api-authentication.md) describes this app's original authentication design: a single signed, `httpOnly` session cookie holding the BRAK access and refresh tokens, with everything else (including the KomPla bearer, via `authorizeToken.server.ts`'s OAuth 2.0 Token Exchange) re-derived fresh on every request. No server-side session store, by design — the app is a thin OIDC client to two external identity providers (BRAK IdP, KomPla IdP), not an owner of user identity.

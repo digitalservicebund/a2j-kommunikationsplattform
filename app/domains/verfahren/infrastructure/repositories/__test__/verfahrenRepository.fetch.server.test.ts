@@ -112,12 +112,12 @@ describe("fetchVerfahren", () => {
     await expect(result).rejects.toThrow("Verfahren could not be fetched.");
   });
 
-  it("throws error when bearer token is not available", async () => {
+  it("throws a 401 Response when bearer token is not available", async () => {
     mocks.getBearerToken.mockResolvedValue(null);
 
     const result = fetchVerfahren(mockAuthData);
 
-    await expect(result).rejects.toThrow("No bearer token available");
+    await expect(result).rejects.toMatchObject({ status: 401 });
   });
 
   it("throws error when API returns non-ok response", async () => {
