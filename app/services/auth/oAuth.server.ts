@@ -21,14 +21,34 @@ function decodeSafeId(rawIdToken: string): string {
 // BRAK IdP uses "Authorization Code" OAuth 2.0 flow
 export const authenticator = new Authenticator<AuthenticationResponse>();
 
-// Exception: `arctic` (used internally by `remix-auth-oauth2`) discards the response
-// body for any token-endpoint status other than 200/400/401, so IdP error details are
-// otherwise lost. `OAuth2Strategy` has no custom-fetch hook, so this wraps global fetch,
-// narrowly scoped to the BRAK token endpoint, purely to log what arctic would hide.
 // TODO: remove the below after investigating the BeA login failure.
 const brakTokenEndpoint = `${serverConfig().BRAK_IDP_OIDC_ISSUER}/protocol/openid-connect/token`;
+const REDACTED_BODY_PARAMS = ["code", "code_verifier", "client_secret"];
+
+function redactBody(rawBody: string): string {
+  const params = new URLSearchParams(rawBody);
+  for (const param of REDACTED_BODY_PARAMS) {
+    if (params.has(param)) params.set(param, "<redacted>");
+  }
+  return params.toString();
+}
+
 const originalFetch = globalThis.fetch;
 globalThis.fetch = async (input, init) => {
+  const requestForLogging =
+    input instanceof Request ? input.clone() : new Request(input, init);
+  if (requestForLogging.url === brakTokenEndpoint) {
+    console.log(
+      "BRAK token endpoint request:",
+      requestForLogging.method,
+      "Authorization header present:",
+      requestForLogging.headers.has("Authorization"),
+      "Content-Type:",
+      requestForLogging.headers.get("Content-Type"),
+      "body:",
+      redactBody(await requestForLogging.text()),
+    );
+  }
   const response = await originalFetch(input, init);
   if (!response.ok && response.url === brakTokenEndpoint) {
     console.error(
