@@ -34,9 +34,6 @@ async function getOAuth2Tokens(
       expiresAt: response.accessTokenExpiresAt
         ? new Date(response.accessTokenExpiresAt).getTime()
         : Date.now(),
-      // refreshToken isn't returned by /get-access-token — Better Auth
-      // refreshes it internally and getBearerToken never needs the raw value.
-      refreshToken: "",
       setCookieHeaders: headers.getSetCookie(),
     };
   } catch (error) {
@@ -128,7 +125,6 @@ export const getAuthData = async (
         // as `safe_id` when creating a Verfahren via the KomPla API.
         idToken: (user as { safeId?: string }).safeId ?? tokens.idToken,
         expiresAt: tokens.expiresAt,
-        refreshToken: tokens.refreshToken,
       },
       sessionCookieHeader: [...setCookieHeaders, ...tokens.setCookieHeaders],
       provider,

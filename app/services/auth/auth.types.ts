@@ -30,8 +30,12 @@ export interface AuthenticationTokens {
   refreshToken: string;
 }
 
+// Better Auth manages/rotates the OAuth2 refresh token internally and never
+// exposes it, so it's optional here (only Demo/Developer logins provide one).
 export interface AuthenticationResponse {
-  authenticationTokens: AuthenticationTokens;
+  authenticationTokens: Omit<AuthenticationTokens, "refreshToken"> & {
+    refreshToken?: string;
+  };
   sessionCookieHeader: string[];
   provider: AuthenticationProvider;
 }
