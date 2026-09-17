@@ -209,4 +209,43 @@ describe("getAuthData", () => {
 
     expect(result).toBeNull();
   });
+
+  it("returns null instead of throwing when getAccessToken fails (e.g. expired refresh token)", async () => {
+    mockSession({
+      id: "user-7",
+      authProvider: AuthenticationProvider.BEA,
+      safeId: "DE.BRAK_SPT.abc",
+    });
+    mocks.listUserAccounts.mockResolvedValue([
+      {
+        id: "bea-row-id-2",
+        providerId: AuthenticationProvider.BEA,
+        accountId: "bea-provider-account-2",
+      },
+    ]);
+    mocks.getAccessToken.mockRejectedValue(
+      new Error("Failed to get a valid access token"),
+    );
+
+    await expect(getAuthData(request)).resolves.toBeNull();
+  });
+
+  it("returns null instead of throwing when refreshing an expired DEMO token fails", async () => {
+    mockSession({ id: "user-8", authProvider: AuthenticationProvider.DEMO });
+    mocks.findAccountByUserId.mockResolvedValue([
+      {
+        id: "account-4",
+        providerId: AuthenticationProvider.DEMO,
+        accessToken: "old-access-token",
+        refreshToken: "old-refresh-token",
+        accessTokenExpiresAt: pastDate(),
+      },
+    ]);
+    vi.mocked(magicLinkClient.refreshAccessToken).mockRejectedValue(
+      new Error("refresh token expired"),
+    );
+
+    await expect(getAuthData(request)).resolves.toBeNull();
+    expect(mocks.updateAccount).not.toHaveBeenCalled();
+  });
 });

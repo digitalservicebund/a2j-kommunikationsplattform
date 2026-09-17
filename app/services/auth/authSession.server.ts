@@ -21,26 +21,28 @@ async function getOAuth2Tokens(
     return null;
   }
 
-  const { response, headers } = await auth.api.getAccessToken({
-    // `accountId` here is the account row's primary key (`account.id`), not
-    // the provider-side `account.accountId` — better-auth's
-    // resolveUserAccount matches on `candidate.id === selection.accountId`.
-    body: { accountId: account.id, userId },
-    headers: request.headers,
-    returnHeaders: true,
-  });
+  try {
+    const { response, headers } = await auth.api.getAccessToken({
+      body: { accountId: account.id, userId },
+      headers: request.headers,
+      returnHeaders: true,
+    });
 
-  return {
-    accessToken: response.accessToken,
-    idToken: response.idToken,
-    expiresAt: response.accessTokenExpiresAt
-      ? new Date(response.accessTokenExpiresAt).getTime()
-      : Date.now(),
-    // refreshToken isn't returned by /get-access-token — Better Auth
-    // refreshes it internally and getBearerToken never needs the raw value.
-    refreshToken: "",
-    setCookieHeaders: headers.getSetCookie(),
-  };
+    return {
+      accessToken: response.accessToken,
+      idToken: response.idToken,
+      expiresAt: response.accessTokenExpiresAt
+        ? new Date(response.accessTokenExpiresAt).getTime()
+        : Date.now(),
+      // refreshToken isn't returned by /get-access-token — Better Auth
+      // refreshes it internally and getBearerToken never needs the raw value.
+      refreshToken: "",
+      setCookieHeaders: headers.getSetCookie(),
+    };
+  } catch (error) {
+    console.error("getOAuth2Tokens: Failed to refresh access token", error);
+    return null;
+  }
 }
 
 async function getCustomProviderTokens(
@@ -68,21 +70,26 @@ async function getCustomProviderTokens(
   }
 
   console.log("getAuthData: Demo token expired, refreshing");
-  const refreshed = await magicLinkClient.refreshAccessToken(
-    account.refreshToken,
-  );
-  await ctx.internalAdapter.updateAccount(account.id, {
-    accessToken: refreshed.accessToken,
-    refreshToken: refreshed.refreshToken,
-    accessTokenExpiresAt: new Date(refreshed.expiresAt),
-  });
+  try {
+    const refreshed = await magicLinkClient.refreshAccessToken(
+      account.refreshToken,
+    );
+    await ctx.internalAdapter.updateAccount(account.id, {
+      accessToken: refreshed.accessToken,
+      refreshToken: refreshed.refreshToken,
+      accessTokenExpiresAt: new Date(refreshed.expiresAt),
+    });
 
-  return {
-    accessToken: refreshed.accessToken,
-    idToken: undefined,
-    expiresAt: refreshed.expiresAt,
-    refreshToken: refreshed.refreshToken,
-  };
+    return {
+      accessToken: refreshed.accessToken,
+      idToken: undefined,
+      expiresAt: refreshed.expiresAt,
+      refreshToken: refreshed.refreshToken,
+    };
+  } catch (error) {
+    console.error("getCustomProviderTokens: Failed to refresh token", error);
+    return null;
+  }
 }
 
 /**
