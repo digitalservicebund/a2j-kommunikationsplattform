@@ -5,10 +5,14 @@ import {
   useLoaderData,
   useSearchParams,
 } from "react-router";
+import Button from "~/components/Button";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
-import { LoginError, LoginType } from "~/services/auth/auth.types.ts";
-import { LogoutType } from "~/services/auth/auth.types.ts";
+import {
+  LoginError,
+  LoginType,
+  LogoutType,
+} from "~/services/auth/auth.types.ts";
 import { getAuthData } from "~/services/auth/authSession.server";
 import { useTranslations } from "~/services/translations/context";
 
@@ -141,26 +145,24 @@ export default function LoginPage() {
           <Form method="post" action="/action/login-user">
             <div className="kern-py-lg kern-gap-md flex flex-row flex-wrap items-start self-stretch">
               {isDevelopment && (
-                <button
+                <Button
                   type="submit"
                   name="loginType"
                   value={LoginType.Developer}
-                  className="kern-btn kern-btn--block kern-btn--primary"
-                >
-                  <span className="kern-label">
-                    {buttons.LOGIN_BUTTON_DEVELOPER}
-                  </span>
-                </button>
+                  appearance="primary"
+                  className="kern-btn--block"
+                  label={buttons.LOGIN_BUTTON_DEVELOPER}
+                />
               )}
 
-              <button
+              <Button
                 type="submit"
                 name="loginType"
                 value={LoginType.BeA}
-                className="kern-btn kern-btn--block kern-btn--primary"
-              >
-                <span className="kern-label">{buttons.LOGIN_BUTTON_BEA}</span>
-              </button>
+                appearance="primary"
+                className="kern-btn--block"
+                label={buttons.LOGIN_BUTTON_BEA}
+              />
 
               <Link
                 to="/auth/start-demo-login"
@@ -175,17 +177,15 @@ export default function LoginPage() {
           </Form>
 
           <Form method="post" action="/action/login-user">
-            <button
+            <Button
               type="submit"
               name="loginType"
               value={LoginType.KomplaIdp}
-              className="kern-btn kern-btn--block kern-btn--secondary w-full"
+              appearance="secondary"
+              className="kern-btn--block w-full"
               data-testid="kompla-idp-login-button"
-            >
-              <span className="kern-label">
-                {buttons.LOGIN_BUTTON_KOMPLA_IDP_LABEL}
-              </span>
-            </button>
+              label={buttons.LOGIN_BUTTON_KOMPLA_IDP_LABEL}
+            />
           </Form>
         </div>
       </div>
