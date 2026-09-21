@@ -22,9 +22,9 @@
   },
   "dependencies": {
     "@kern-ux/native": "^2.8.0",
-    "@react-router/express": "^8.3.1",
-    "@react-router/node": "^8.3.1",
-    "@react-router/serve": "^8.3.1",
+    "@react-router/express": "^8.4.0",
+    "@react-router/node": "^8.4.0",
+    "@react-router/serve": "^8.4.0",
     "@sentry/react-router": "^10.74.0",
     "clsx": "^2.1.1",
     "compression": "^1.8.2",
@@ -34,7 +34,7 @@
     "pino-http": "^11.0.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "react-router": "^8.3.1",
+    "react-router": "^8.4.0",
     "remix-auth": "^4.2.0",
     "remix-auth-oauth2": "^3.4.1",
     "zod": "^4.6.4"
@@ -42,7 +42,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.63.0",
-    "@react-router/dev": "^8.3.1",
+    "@react-router/dev": "^8.4.0",
     "@tailwindcss/vite": "^4.2.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
