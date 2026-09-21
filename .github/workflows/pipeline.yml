@@ -286,7 +286,7 @@ jobs:
     if: always() && failure() && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - uses: digitalservicebund/notify-on-failure-gha@671832f192aee0a068fd92b2f6deb975df794a84 # v1.6.1
+      - uses: digitalservicebund/notify-on-failure-gha@9fafd6e97d275a51126f80bec2285a2cf2beb1fc # v1.8.0
         with:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
