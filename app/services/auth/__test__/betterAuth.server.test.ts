@@ -1,6 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AuthenticationProvider } from "../auth.types";
-import { getUserInfoFromIdToken } from "../betterAuth.server";
+import { makeGetUserInfo } from "../betterAuth.server";
+
+// Mock the `betterAuth()` function as otherwise it attempts to fetch from the
+// OpenID Connect discovery URLs to resolve the authorization and token
+// endpoints.
+vi.mock("better-auth", () => ({
+  betterAuth: () => {},
+}));
 
 function makeIdToken(claims: Record<string, unknown>): string {
   const header = Buffer.from(JSON.stringify({ alg: "none" })).toString(
@@ -10,47 +17,58 @@ function makeIdToken(claims: Record<string, unknown>): string {
   return `${header}.${payload}.sig`;
 }
 
-describe("getUserInfoFromIdToken", () => {
-  it("derives a synthetic, provider-scoped user from the safe-id claim", async () => {
-    const idToken = makeIdToken({ "safe-id": "DE.BRAK_SPT.abc-123" });
-    const getUserInfo = getUserInfoFromIdToken(
-      AuthenticationProvider.BEA,
-      "fallback-id",
-    );
+describe("makeGetUserInfo", () => {
+  it("returns user info from the ID token", async () => {
+    const idToken = makeIdToken({
+      sub: "user-123",
+      email: "user-123@example.com",
+      name: "Voller Name",
+      "safe-id": "DE.BRAK_SPT.abc-123",
+    });
 
+    const getUserInfo = makeGetUserInfo(AuthenticationProvider.BEA);
     const userInfo = await getUserInfo({ idToken });
 
     expect(userInfo).toEqual({
-      id: "DE.BRAK_SPT.abc-123",
-      email: "bea-DE.BRAK_SPT.abc-123@no-email.kompla-justiz.internal",
+      sub: "user-123",
+      email: "user-123@example.com",
       emailVerified: false,
-      name: "DE.BRAK_SPT.abc-123",
+      name: "Voller Name",
+      "safe-id": "DE.BRAK_SPT.abc-123",
+    });
+  });
+
+  it("synthesizes an email address if there is no 'email' claim", async () => {
+    const idToken = makeIdToken({
+      sub: "user-123",
+      "safe-id": "DE.BRAK_SPT.abc-123",
+    });
+
+    const getUserInfo = makeGetUserInfo(AuthenticationProvider.BEA);
+    const userInfo = await getUserInfo({ idToken });
+
+    expect(userInfo).toMatchObject({
+      email: "bea-DE.BRAK_SPT.abc-123@no-email.kompla-justiz.internal",
     });
   });
 
   it("falls back to the sub claim when safe-id is absent", async () => {
     const idToken = makeIdToken({ sub: "user-sub-456" });
-    const getUserInfo = getUserInfoFromIdToken(
-      AuthenticationProvider.KOMPLA_IDP,
-      "fallback-id",
-    );
 
+    const getUserInfo = makeGetUserInfo(AuthenticationProvider.KOMPLA_IDP);
     const userInfo = await getUserInfo({ idToken });
 
-    expect(userInfo.id).toBe("user-sub-456");
-    expect(userInfo.email).toBe(
+    expect(userInfo).toBeDefined();
+    expect(userInfo!.sub).toBe("user-sub-456");
+    expect(userInfo!.email).toBe(
       "kompla-idp-user-sub-456@no-email.kompla-justiz.internal",
     );
   });
 
-  it("falls back to the given fallbackId when there is no idToken", async () => {
-    const getUserInfo = getUserInfoFromIdToken(
-      AuthenticationProvider.BEA,
-      "bea-user",
-    );
-
+  it("returns null if there is no ID token", async () => {
+    const getUserInfo = makeGetUserInfo(AuthenticationProvider.BEA);
     const userInfo = await getUserInfo({});
 
-    expect(userInfo.id).toBe("bea-user");
+    expect(userInfo).toBeNull();
   });
 });
