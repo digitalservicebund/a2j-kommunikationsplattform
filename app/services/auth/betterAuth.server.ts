@@ -157,7 +157,9 @@ export const auth = betterAuth({
           scopes: ["openid"],
           pkce: true,
           getUserInfo: makeGetUserInfo(AuthenticationProvider.KOMPLA_IDP),
-          mapProfileToUser: makeMapProfileToUser(AuthenticationProvider.BEA),
+          mapProfileToUser: makeMapProfileToUser(
+            AuthenticationProvider.KOMPLA_IDP,
+          ),
         },
       ],
     }),
