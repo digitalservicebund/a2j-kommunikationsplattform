@@ -229,10 +229,16 @@ export async function apiRequest<T = unknown>(
     responseType = "json",
   } = opts;
 
-  const bearerToken = await getBearerToken(authData);
+  let bearerToken: string;
+  try {
+    bearerToken = await getBearerToken(authData);
+  } catch (error) {
+    console.error("[API Error] Failed to authorize token", error);
+    throw new Response("Failed to authorize token", { status: 401 });
+  }
 
   if (!bearerToken) {
-    throw new Error("No bearer token available");
+    throw new Response("No bearer token available", { status: 401 });
   }
 
   const url = fullUrl ?? `${serverConfig().KOMPLA_API_URL}${path}`;

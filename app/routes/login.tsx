@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Form,
   Link,
@@ -9,7 +8,11 @@ import {
 import Button from "~/components/Button";
 import { PageMetadata } from "~/components/PageMetadata";
 import { config } from "~/config/config";
-import { LoginError, LoginType, LogoutType } from "~/services/auth/auth.types";
+import {
+  LoginError,
+  LoginType,
+  LogoutType,
+} from "~/services/auth/auth.types.ts";
 import { getAuthData } from "~/services/auth/authSession.server";
 import { useTranslations } from "~/services/translations/context";
 
@@ -37,7 +40,6 @@ export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const { environment } = useLoaderData<typeof loader>();
   const { alerts, buttons, routes } = useTranslations();
-  const [loginType, setLoginType] = useState<LoginType | undefined>(undefined);
   const alertStatus = searchParams.get("status") as AlertState;
   const isDevelopment = environment === "development";
 
@@ -142,23 +144,23 @@ export default function LoginPage() {
 
           <Form method="post" action="/action/login-user">
             <div className="kern-py-lg kern-gap-md flex flex-row flex-wrap items-start self-stretch">
-              <input type="hidden" name="loginType" value={loginType} />
-
               {isDevelopment && (
                 <Button
-                  appearance="primary"
                   type="submit"
+                  name="loginType"
+                  value={LoginType.Developer}
+                  appearance="primary"
                   className="kern-btn--block"
-                  onClick={() => setLoginType(LoginType.Developer)}
                   label={buttons.LOGIN_BUTTON_DEVELOPER}
                 />
               )}
 
               <Button
-                appearance="primary"
                 type="submit"
+                name="loginType"
+                value={LoginType.BeA}
+                appearance="primary"
                 className="kern-btn--block"
-                onClick={() => setLoginType(LoginType.BeA)}
                 label={buttons.LOGIN_BUTTON_BEA}
               />
 
@@ -175,10 +177,11 @@ export default function LoginPage() {
           </Form>
 
           <Form method="post" action="/action/login-user">
-            <input type="hidden" name="loginType" value={LoginType.KomplaIdp} />
             <Button
-              appearance="secondary"
               type="submit"
+              name="loginType"
+              value={LoginType.KomplaIdp}
+              appearance="secondary"
               className="kern-btn--block w-full"
               data-testid="kompla-idp-login-button"
               label={buttons.LOGIN_BUTTON_KOMPLA_IDP_LABEL}

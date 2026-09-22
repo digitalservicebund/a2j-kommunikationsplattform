@@ -6,6 +6,13 @@ import {
   requireVerfahrenId,
 } from "../routeContext.server";
 
+// Mock the `betterAuth()` function (called by the indirectly imported
+// `betterAuth.server.ts`)  as otherwise it attempts to fetch from the OpenID
+// Connect discovery URLs to resolve the authorization and token endpoints.
+vi.mock("better-auth", () => ({
+  betterAuth: () => {},
+}));
+
 describe("routeContext helpers", () => {
   test("requireAuthData returns auth data", () => {
     const context = {

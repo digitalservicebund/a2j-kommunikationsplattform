@@ -2,6 +2,8 @@ import { existsSync, readFileSync } from "fs";
 import { config } from "./config";
 
 interface ServerConfig {
+  BETTER_AUTH_SECRET: string;
+  BETTER_AUTH_URL: string;
   BRAK_IDP_OIDC_CLIENT_ID: string;
   BRAK_IDP_OIDC_CLIENT_SECRET: string;
   BRAK_IDP_OIDC_ISSUER: string;
@@ -20,6 +22,14 @@ interface ServerConfig {
   KOMPLA_MAGIC_LINK_DEMO_EMAIL: string;
   KOMPLA_IDP_OIDC_REDIRECT_URI: string;
   SENTRY_DSN: string;
+}
+
+const betterAuthSecretFilePath = "/etc/secrets/BETTER_AUTH_SECRET";
+const betterAuthSecretFileExists = existsSync(betterAuthSecretFilePath);
+let betterAuthSecretFallback = "";
+if (config().ENVIRONMENT === "development") {
+  betterAuthSecretFallback =
+    process.env.BETTER_AUTH_SECRET?.trim() ?? "default-better-auth-secret";
 }
 
 const brakOidcClientSecretFilePath = "/etc/secrets/BRAK_IDP_OIDC_CLIENT_SECRET";
@@ -51,6 +61,11 @@ if (config().ENVIRONMENT === "development") {
 
 export function serverConfig(): ServerConfig {
   return {
+    BETTER_AUTH_SECRET: betterAuthSecretFileExists
+      ? readFileSync(betterAuthSecretFilePath, "utf-8")?.trim()
+      : betterAuthSecretFallback,
+    BETTER_AUTH_URL:
+      process.env.BETTER_AUTH_URL?.trim() ?? "http://localhost:3000",
     BRAK_IDP_OIDC_CLIENT_ID: process.env.BRAK_IDP_OIDC_CLIENT_ID?.trim() ?? "",
     BRAK_IDP_OIDC_CLIENT_SECRET: brakOidcClientSecretFileExists
       ? readFileSync(brakOidcClientSecretFilePath, "utf-8")?.trim()

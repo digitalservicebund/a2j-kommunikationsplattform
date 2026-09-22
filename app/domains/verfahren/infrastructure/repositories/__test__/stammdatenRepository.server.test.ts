@@ -109,12 +109,12 @@ describe("fetchGerichte", () => {
     expect(result).toEqual(mockGerichte);
   });
 
-  it("throws error when bearer token is not available", async () => {
+  it("throws a 401 Response when bearer token is not available", async () => {
     mocks.getBearerToken.mockResolvedValue(null);
 
-    await expect(fetchGerichte(mockAuthData)).rejects.toThrow(
-      "No bearer token available",
-    );
+    await expect(fetchGerichte(mockAuthData)).rejects.toMatchObject({
+      status: 401,
+    });
   });
 
   it("throws error when API returns non-ok response", async () => {
