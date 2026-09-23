@@ -1,7 +1,7 @@
-import * as https from "node:https";
 import { authorizationCodeRequest } from "better-auth";
 import type { GenericOAuthConfig } from "better-auth/plugins/generic-oauth";
 import { memoize } from "es-toolkit/compat";
+import { Agent, fetch } from "undici";
 import { serverConfig } from "~/config/config.server";
 import { AuthenticationProvider } from "./auth.types";
 
@@ -84,13 +84,15 @@ export function brakIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvider.
   const scopes = ["openid"];
 
   // The BRAK IdP requires us to present a client certificate when calling
-  // the token endpoint (mTLS). To do so, we need a Node.js `https.Agent`
-  // that we can pass to `fetch`.
-  const getHttpsAgent = memoize(
+  // the token endpoint (mTLS). To do so, we need to create an Undici `Agent`
+  // with the certificate and private key that we can pass to `fetch`.
+  const getAgentWithClientCertificate = memoize(
     () =>
-      new https.Agent({
-        cert: config.BRAK_IDP_OIDC_CLIENT_CERTIFICATE,
-        key: config.BRAK_IDP_OIDC_CLIENT_CERTIFICATE_KEY,
+      new Agent({
+        connect: {
+          cert: config.BRAK_IDP_OIDC_CLIENT_CERTIFICATE,
+          key: config.BRAK_IDP_OIDC_CLIENT_CERTIFICATE_KEY,
+        },
       }),
   );
 
@@ -102,14 +104,18 @@ export function brakIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvider.
   const discoverTokenUrl = memoize(async () => {
     try {
       const response = await fetch(discoveryUrl);
-      const doc = (await response.json()) as { token_endpoint: string };
-      if (response.ok) {
-        return doc.token_endpoint;
-      } else {
+      if (!response.ok) {
         throw new Error(
-          `BRAK IdP discovery endpoint failed with status ${response.status}`,
+          `Discovery request failed with status ${response.status}`,
         );
       }
+
+      const doc = (await response.json()) as { token_endpoint?: string };
+      if (!doc.token_endpoint) {
+        throw new Error("Discovery document has no 'token_endpoint'");
+      }
+
+      return doc.token_endpoint;
     } catch (error) {
       throw new Error("Failed to resolve BRAK IdP token endpoint", {
         cause: error,
@@ -153,14 +159,11 @@ export function brakIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvider.
         throw error;
       }
 
-      const agent = getHttpsAgent();
-
       const response = await fetch(tokenUrl, {
         ...params,
         method: "POST",
-        dispatcher: agent,
-        agent,
-      } as RequestInit);
+        dispatcher: getAgentWithClientCertificate(),
+      });
 
       if (!response.ok) {
         let responseBody: string;
