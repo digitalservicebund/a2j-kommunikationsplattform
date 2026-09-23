@@ -1,13 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { AuthenticationProvider } from "../auth.types";
-import { makeGetUserInfo } from "../betterAuth.server";
-
-// Mock the `betterAuth()` function as otherwise it attempts to fetch from the
-// OpenID Connect discovery URLs to resolve the authorization and token
-// endpoints.
-vi.mock("better-auth", () => ({
-  betterAuth: () => {},
-}));
+import { makeGetUserInfo } from "../oAuth.server";
 
 function makeIdToken(claims: Record<string, unknown>): string {
   const header = Buffer.from(JSON.stringify({ alg: "none" })).toString(

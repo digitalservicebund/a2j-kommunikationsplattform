@@ -7,6 +7,8 @@ interface ServerConfig {
   BETTER_AUTH_URL: string;
   BRAK_IDP_OIDC_CLIENT_ID: string;
   BRAK_IDP_OIDC_CLIENT_SECRET: string;
+  BRAK_IDP_OIDC_CLIENT_CERTIFICATE: string;
+  BRAK_IDP_OIDC_CLIENT_CERTIFICATE_KEY: string;
   BRAK_IDP_OIDC_ISSUER: string;
   BRAK_IDP_OIDC_REDIRECT_URI: string;
   KOMPLA_API_URL: string;
@@ -65,6 +67,14 @@ export const serverConfig = memoize((): ServerConfig => ({
   BRAK_IDP_OIDC_CLIENT_SECRET: configValue("BRAK_IDP_OIDC_CLIENT_SECRET", {
     secret: true,
   }),
+  BRAK_IDP_OIDC_CLIENT_CERTIFICATE: configValue(
+    "BRAK_IDP_OIDC_CLIENT_CERTIFICATE",
+    { secret: true },
+  ),
+  BRAK_IDP_OIDC_CLIENT_CERTIFICATE_KEY: configValue(
+    "BRAK_IDP_OIDC_CLIENT_CERTIFICATE_KEY",
+    { secret: true },
+  ),
   BRAK_IDP_OIDC_ISSUER: configValue("BRAK_IDP_OIDC_ISSUER"),
   BRAK_IDP_OIDC_REDIRECT_URI: configValue("BRAK_IDP_OIDC_REDIRECT_URI"),
 
