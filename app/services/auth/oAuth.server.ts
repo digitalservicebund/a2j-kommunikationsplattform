@@ -74,18 +74,22 @@ export function makeMapProfileToUser<P extends AuthenticationProvider>(
 }
 
 /**
- * OAuth configuration for the BRAK Identiy Provier (beA Login).
+ * Creates an OAuth `getToken` implementation specialized for the BRAK
+ * Identity Provider (beA), whose token endpoint requires a mutual TLS (mTLS)
+ * connection with an approved client certificate.
  */
-export function brakIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvider.BEA> {
+export function makeGetTokenFromBrakIdp(options: {
+  clientId: string;
+  clientSecret: string;
+  scopes: string[];
+}): NonNullable<GenericOAuthConfig<AuthenticationProvider.BEA>["getToken"]> {
   const config = serverConfig();
-  const clientId = config.BRAK_IDP_OIDC_CLIENT_ID;
-  const clientSecret = config.BRAK_IDP_OIDC_CLIENT_SECRET;
   const discoveryUrl = `${config.BRAK_IDP_OIDC_ISSUER}/.well-known/openid-configuration`;
-  const scopes = ["openid"];
 
-  // The BRAK IdP requires us to present a client certificate when calling
-  // the token endpoint (mTLS). To do so, we need to create an Undici `Agent`
-  // with the certificate and private key that we can pass to `fetch`.
+  /**
+   * Returns an Undici `Agent` configured with the client certificate so that
+   * we can pass it to `fetch`.
+   */
   const getAgentWithClientCertificate = memoize(
     () =>
       new Agent({
@@ -96,11 +100,13 @@ export function brakIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvider.
       }),
   );
 
-  // For our custom `getToken` implementation (see above), we
-  // NOTE: This is usually done automatically by Better Auth, but we need to
-  // do it ourselves separately because our custom `getToken` implementation
-  // needs the discovered token endpoint URL and Better Auth does not expose
-  // it: https://github.com/better-auth/better-auth/issues/11362
+  /**
+   * Resolves the token endpoint URL using the provider's discovery endpoint.
+   *
+   * NOTE: Better Auth does this as well, but does not expose the discovered
+   * token URL to the `getToken` function, so we need to do it ourselves
+   * separately. See: https://github.com/better-auth/better-auth/issues/11362
+   */
   const discoverTokenUrl = memoize(async () => {
     try {
       const response = await fetch(discoveryUrl);
@@ -123,6 +129,79 @@ export function brakIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvider.
     }
   });
 
+  return async function getToken({
+    code,
+    redirectURI,
+    codeVerifier,
+    deviceId,
+  }) {
+    const params = await authorizationCodeRequest({
+      code,
+      redirectURI,
+      codeVerifier,
+      deviceId,
+      options: {
+        clientId: options.clientId,
+        clientSecret: options.clientSecret,
+        scope: options.scopes,
+      },
+    });
+
+    let tokenUrl: string;
+    try {
+      tokenUrl = await discoverTokenUrl();
+    } catch (error) {
+      // Remove the rejected Promise from the memoization cache so that
+      // the token URL discovery is re-run the next time.
+      discoverTokenUrl.cache.clear?.();
+      throw error;
+    }
+
+    const response = await fetch(tokenUrl, {
+      ...params,
+      method: "POST",
+      dispatcher: getAgentWithClientCertificate(),
+    });
+
+    if (!response.ok) {
+      let responseBody: string;
+      try {
+        responseBody = await response.text();
+      } catch {
+        responseBody = "[Unable to read response body]";
+      }
+      throw new Error(
+        `Token request failed with status ${response.status}: ${responseBody}`,
+      );
+    }
+
+    const data = (await response.json()) as {
+      access_token: string;
+      refresh_token: string;
+      id_token: string;
+      scope?: string;
+    };
+
+    return {
+      accessToken: data.access_token,
+      refreshToken: data.refresh_token,
+      idToken: data.id_token,
+      scopes: data.scope?.split(" ") ?? [],
+      raw: data,
+    };
+  };
+}
+
+/**
+ * OAuth configuration for the BRAK Identiy Provier (beA Login).
+ */
+export function brakIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvider.BEA> {
+  const config = serverConfig();
+  const clientId = config.BRAK_IDP_OIDC_CLIENT_ID;
+  const clientSecret = config.BRAK_IDP_OIDC_CLIENT_SECRET;
+  const discoveryUrl = `${config.BRAK_IDP_OIDC_ISSUER}/.well-known/openid-configuration`;
+  const scopes = ["openid"];
+
   return {
     providerId: AuthenticationProvider.BEA,
     clientId,
@@ -135,63 +214,7 @@ export function brakIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvider.
     pkce: true,
     getUserInfo: makeGetUserInfo(AuthenticationProvider.BEA),
     mapProfileToUser: makeMapProfileToUser(AuthenticationProvider.BEA),
-
-    getToken: async ({ code, redirectURI, codeVerifier, deviceId }) => {
-      const params = await authorizationCodeRequest({
-        code,
-        redirectURI,
-        codeVerifier,
-        deviceId,
-        options: {
-          clientId,
-          clientSecret,
-          scope: scopes,
-        },
-      });
-
-      let tokenUrl: string;
-      try {
-        tokenUrl = await discoverTokenUrl();
-      } catch (error) {
-        // Remove the rejected Promise from the memoization cache so that
-        // the token URL discovery is re-run the next time.
-        discoverTokenUrl.cache.clear?.();
-        throw error;
-      }
-
-      const response = await fetch(tokenUrl, {
-        ...params,
-        method: "POST",
-        dispatcher: getAgentWithClientCertificate(),
-      });
-
-      if (!response.ok) {
-        let responseBody: string;
-        try {
-          responseBody = await response.text();
-        } catch {
-          responseBody = "[Unable to read response body]";
-        }
-        throw new Error(
-          `Token request failed with status ${response.status}: ${responseBody}`,
-        );
-      }
-
-      const data = (await response.json()) as {
-        access_token: string;
-        refresh_token: string;
-        id_token: string;
-        scope?: string;
-      };
-
-      return {
-        accessToken: data.access_token,
-        refreshToken: data.refresh_token,
-        idToken: data.id_token,
-        scopes: data.scope?.split(" ") ?? [],
-        raw: data,
-      };
-    },
+    getToken: makeGetTokenFromBrakIdp({ clientId, clientSecret, scopes }),
   };
 }
 
