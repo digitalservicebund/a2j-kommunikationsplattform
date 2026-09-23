@@ -175,6 +175,7 @@ export function makeGetTokenFromBrakIdp(options: {
       access_token: string;
       refresh_token: string;
       id_token: string;
+      expires_in?: number;
       scope?: string;
     };
 
@@ -182,6 +183,13 @@ export function makeGetTokenFromBrakIdp(options: {
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
       idToken: data.id_token,
+      // Without this, Better Auth never sees the token as expired (see
+      // `getAccessToken`'s `accessTokenExpiresAt &&` check) and keeps
+      // returning the original short-lived BRAK access token forever,
+      // instead of refreshing it once it actually expires.
+      accessTokenExpiresAt: data.expires_in
+        ? new Date(Date.now() + data.expires_in * 1000)
+        : undefined,
       scopes: data.scope?.split(" ") ?? [],
       raw: data,
     };

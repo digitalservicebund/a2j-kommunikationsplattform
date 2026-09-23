@@ -251,6 +251,48 @@ describe("makeGetTokenFromBrakIdp", () => {
     ).rejects.toThrow("Failed to resolve BRAK IdP token endpoint");
   });
 
+  it("computes accessTokenExpiresAt from the token response's expires_in", async () => {
+    const getToken = makeTokenGetter();
+    mocks.fetch.mockImplementation(async (url: string) => {
+      if (url === discoveryUrl) {
+        return jsonResponse({ token_endpoint: tokenEndpoint });
+      }
+      if (url === tokenEndpoint) {
+        return jsonResponse({
+          access_token: "access-token",
+          refresh_token: "refresh-token",
+          id_token: "id-token",
+          expires_in: 60,
+          scope: "openid profile",
+        });
+      }
+      throw new Error(`Unexpected fetch call to "${url}"`);
+    });
+
+    const before = Date.now();
+    const result = await getToken({
+      code: "auth-code",
+      redirectURI: "https://app.example/callback",
+    });
+    const after = Date.now();
+
+    expect(result.accessTokenExpiresAt).toBeInstanceOf(Date);
+    const expiresAtMs = result.accessTokenExpiresAt!.getTime();
+    expect(expiresAtMs).toBeGreaterThanOrEqual(before + 60_000);
+    expect(expiresAtMs).toBeLessThanOrEqual(after + 60_000);
+  });
+
+  it("leaves accessTokenExpiresAt undefined when the response omits expires_in", async () => {
+    const getToken = makeTokenGetter();
+
+    const result = await getToken({
+      code: "auth-code",
+      redirectURI: "https://app.example/callback",
+    });
+
+    expect(result.accessTokenExpiresAt).toBeUndefined();
+  });
+
   it("throws if the token request fails", async () => {
     const getToken = makeTokenGetter();
 
