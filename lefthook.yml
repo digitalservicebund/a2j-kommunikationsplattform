@@ -15,3 +15,5 @@ pre-commit:
     test:
       tags: test
       run: npm test
+      env:
+        CI: "true"
