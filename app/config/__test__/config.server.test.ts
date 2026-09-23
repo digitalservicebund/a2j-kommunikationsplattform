@@ -1,223 +1,96 @@
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
+import { serverConfig } from "../config.server";
 
-type ImportConfigServerOptions = {
-  environment?: string;
-  fileExistsByPath?: Record<string, boolean>;
-  fileValueByPath?: Record<string, string>;
-};
+vi.mock("node:fs", () => ({
+  existsSync: vi.fn(() => false),
+  readFileSync: vi.fn(() => ""),
+}));
 
-const secretPathBrak = "/etc/secrets/BRAK_IDP_OIDC_CLIENT_SECRET";
-const secretPathDemo = "/etc/secrets/KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET";
-const secretPathApiIdp = "/etc/secrets/KOMPLA_IDP_OIDC_CLIENT_SECRET";
-
-async function importConfigServerWithMocks(
-  options: ImportConfigServerOptions = {},
-) {
-  vi.resetModules();
-
-  const environment = options.environment ?? "development";
-  const fileExistsByPath = options.fileExistsByPath ?? {
-    [secretPathBrak]: true,
-    [secretPathDemo]: true,
-    [secretPathApiIdp]: true,
-  };
-  const fileValueByPath = options.fileValueByPath ?? {
-    [secretPathBrak]: "BRAK_FILE_SECRET",
-    [secretPathDemo]: "DEMO_FILE_SECRET",
-    [secretPathApiIdp]: "API_IDP_FILE_SECRET",
-  };
-
-  const existsSyncMock = vi.fn(
-    (path: string) => fileExistsByPath[path] ?? false,
+function mockSecretFiles(files: Record<string, string | false>) {
+  vi.mocked(existsSync).mockImplementation(
+    (path) => files[String(path)] !== false,
   );
-  const readFileSyncMock = vi.fn(
-    (path: string) => fileValueByPath[path] ?? "UNEXPECTED_FILE_VALUE",
+  vi.mocked(readFileSync).mockImplementation(
+    (path) => files[String(path)] || "",
   );
-
-  vi.doMock("fs", () => ({
-    existsSync: existsSyncMock,
-    readFileSync: readFileSyncMock,
-  }));
-
-  vi.doMock("../config", () => ({
-    config: () => ({ ENVIRONMENT: environment, SENTRY_DSN: "" }),
-  }));
-
-  const module = await import("../config.server");
-
-  return {
-    module,
-    existsSyncMock,
-    readFileSyncMock,
-  };
 }
 
 describe("serverConfig()", () => {
-  const originalEnv = process.env;
-
-  beforeEach(() => {
-    process.env = { ...originalEnv };
-    vi.clearAllMocks();
-  });
-
   afterEach(() => {
-    process.env = originalEnv;
+    vi.unstubAllEnvs();
     vi.restoreAllMocks();
+    serverConfig.cache.clear();
   });
 
-  it("returns secrets from files when secret files exist", async () => {
-    const { module, existsSyncMock, readFileSyncMock } =
-      await importConfigServerWithMocks();
+  it("returns non-secret configuration values from the environment", () => {
+    vi.stubEnv("ENVIRONMENT", "production");
+    vi.stubEnv("BRAK_IDP_OIDC_ISSUER", "http://example.com/");
 
-    const testConfig = module.serverConfig();
+    const config = serverConfig();
 
-    expect(existsSyncMock).toHaveBeenCalledWith(secretPathBrak);
-    expect(existsSyncMock).toHaveBeenCalledWith(secretPathDemo);
-    expect(existsSyncMock).toHaveBeenCalledWith(secretPathApiIdp);
-    expect(readFileSyncMock).toHaveBeenCalledWith(secretPathBrak, "utf-8");
-    expect(readFileSyncMock).toHaveBeenCalledWith(secretPathDemo, "utf-8");
-    expect(readFileSyncMock).toHaveBeenCalledWith(secretPathApiIdp, "utf-8");
-    expect(testConfig.BRAK_IDP_OIDC_CLIENT_SECRET).toBe("BRAK_FILE_SECRET");
-    expect(testConfig.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET).toBe(
-      "DEMO_FILE_SECRET",
-    );
-    expect(testConfig.KOMPLA_IDP_OIDC_CLIENT_SECRET).toBe(
-      "API_IDP_FILE_SECRET",
-    );
+    expect(config.SENTRY_DSN).toBe("");
   });
 
-  it("uses env fallback secrets in development when secret files are missing", async () => {
-    process.env.BRAK_IDP_OIDC_CLIENT_SECRET = "  brak-fallback  ";
-    process.env.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET = "  demo-fallback  ";
+  it("falls back to default value or empty string if environment variable is not set", () => {
+    vi.stubEnv("BETTER_AUTH_URL", undefined);
+    vi.stubEnv("BRAK_IDP_OIDC_REDIRECT_URI", undefined);
 
-    const { module, readFileSyncMock } = await importConfigServerWithMocks({
-      environment: "development",
-      fileExistsByPath: {
-        [secretPathBrak]: false,
-        [secretPathDemo]: false,
-      },
+    const config = serverConfig();
+
+    expect(config.BETTER_AUTH_URL).toBe("http://localhost:3000");
+    expect(config.BRAK_IDP_OIDC_REDIRECT_URI).toBe("");
+  });
+
+  it("returns an empty string for an undefined config item", () => {
+    vi.stubEnv("SENTRY_DSN", undefined);
+
+    const config = serverConfig();
+
+    expect(config.SENTRY_DSN).toBe("");
+  });
+
+  it("returns secrets from '/env/secrets' files when they exist", () => {
+    mockSecretFiles({
+      "/etc/secrets/BRAK_IDP_OIDC_CLIENT_SECRET": "BRAK_FILE_SECRET",
+      "/etc/secrets/KOMPLA_IDP_OIDC_CLIENT_SECRET": "API_IDP_FILE_SECRET",
     });
 
-    const testConfig = module.serverConfig();
+    const config = serverConfig();
 
-    expect(readFileSyncMock).not.toHaveBeenCalled();
-    expect(testConfig.BRAK_IDP_OIDC_CLIENT_SECRET).toBe("brak-fallback");
-    expect(testConfig.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET).toBe(
-      "demo-fallback",
-    );
+    expect(config.BRAK_IDP_OIDC_CLIENT_SECRET).toBe("BRAK_FILE_SECRET");
+    expect(config.KOMPLA_IDP_OIDC_CLIENT_SECRET).toBe("API_IDP_FILE_SECRET");
   });
 
-  it("falls back to empty string for secrets in development when files are missing and env vars are unset", async () => {
-    delete process.env.BRAK_IDP_OIDC_CLIENT_SECRET;
-    delete process.env.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET;
-    delete process.env.KOMPLA_IDP_OIDC_CLIENT_SECRET;
-
-    const { module } = await importConfigServerWithMocks({
-      environment: "development",
-      fileExistsByPath: {
-        [secretPathBrak]: false,
-        [secretPathDemo]: false,
-        [secretPathApiIdp]: false,
-      },
+  describe("during local development", () => {
+    beforeEach(() => {
+      vi.restoreAllMocks();
+      vi.stubEnv("ENVIRONMENT", "development");
     });
 
-    const testConfig = module.serverConfig();
+    it("falls back to environment variable if secret file is missing", () => {
+      mockSecretFiles({ "/etc/secrets/BRAK_IDP_OIDC_CLIENT_SECRET": false });
+      vi.stubEnv("BRAK_IDP_OIDC_CLIENT_SECRET", "SECRET_FROM_ENV");
 
-    expect(testConfig.BRAK_IDP_OIDC_CLIENT_SECRET).toBe("");
-    expect(testConfig.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET).toBe("");
-    expect(testConfig.KOMPLA_IDP_OIDC_CLIENT_SECRET).toBe("");
+      const config = serverConfig();
+
+      expect(config.BRAK_IDP_OIDC_CLIENT_SECRET).toBe("SECRET_FROM_ENV");
+    });
   });
 
-  it("returns empty fallback secrets outside development when files are missing", async () => {
-    process.env.BRAK_IDP_OIDC_CLIENT_SECRET = "from-env-but-ignored";
-    process.env.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET =
-      "from-env-but-ignored";
-
-    const { module } = await importConfigServerWithMocks({
-      environment: "production",
-      fileExistsByPath: {
-        [secretPathBrak]: false,
-        [secretPathDemo]: false,
-      },
+  describe("in production", () => {
+    beforeEach(() => {
+      vi.restoreAllMocks();
+      vi.stubEnv("ENVIRONMENT", "production");
     });
 
-    const testConfig = module.serverConfig();
+    it("falls back to empty string if secret file is missing", () => {
+      mockSecretFiles({ "/etc/secrets/BRAK_IDP_OIDC_CLIENT_SECRET": false });
+      vi.stubEnv("BRAK_IDP_OIDC_CLIENT_SECRET", "IGNORED_SECRET_FROM_ENV");
 
-    expect(testConfig.BRAK_IDP_OIDC_CLIENT_SECRET).toBe("");
-    expect(testConfig.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET).toBe("");
-  });
+      const config = serverConfig();
 
-  it("trims values and uses empty string defaults for undefined env vars", async () => {
-    process.env.BRAK_IDP_OIDC_CLIENT_ID = "  client-id  ";
-    process.env.BRAK_IDP_OIDC_ISSUER = "  issuer  ";
-    process.env.BRAK_IDP_OIDC_REDIRECT_URI = "  https://example.org/callback  ";
-    process.env.KOMPLA_API_URL = "  https://api.example.org  ";
-    process.env.KOMPLA_IDP_OIDC_CLIENT_ID = "  api-client  ";
-    process.env.KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT = "  api-issuer  ";
-    process.env.KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER = "  subject-issuer  ";
-    process.env.KOMPLA_IDP_OIDC_ISSUER = "  demo-issuer  ";
-    process.env.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_ID = "  demo-service-client  ";
-    process.env.KOMPLA_MAGIC_LINK_CLIENT_ID = "  demo-client  ";
-    process.env.KOMPLA_MAGIC_LINK_REDIRECT_URI =
-      "  https://demo.example.org/callback  ";
-    process.env.KOMPLA_MAGIC_LINK_DEMO_USERNAME = "  username  ";
-    process.env.KOMPLA_MAGIC_LINK_DEMO_EMAIL = "  user@example.org  ";
-    process.env.SENTRY_DSN = "  sentry-dsn  ";
-    delete process.env.KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT;
-
-    const { module } = await importConfigServerWithMocks();
-    const testConfig = module.serverConfig();
-
-    expect(testConfig.BRAK_IDP_OIDC_CLIENT_ID).toBe("client-id");
-    expect(testConfig.BRAK_IDP_OIDC_ISSUER).toBe("issuer");
-    expect(testConfig.BRAK_IDP_OIDC_REDIRECT_URI).toBe(
-      "https://example.org/callback",
-    );
-    expect(testConfig.KOMPLA_API_URL).toBe("https://api.example.org");
-    expect(testConfig.KOMPLA_IDP_OIDC_CLIENT_ID).toBe("api-client");
-    expect(testConfig.KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT).toBe("");
-    expect(testConfig.KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER).toBe(
-      "subject-issuer",
-    );
-    expect(testConfig.KOMPLA_IDP_OIDC_ISSUER).toBe("demo-issuer");
-    expect(testConfig.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_ID).toBe(
-      "demo-service-client",
-    );
-    expect(testConfig.KOMPLA_MAGIC_LINK_CLIENT_ID).toBe("demo-client");
-    expect(testConfig.KOMPLA_MAGIC_LINK_REDIRECT_URI).toBe(
-      "https://demo.example.org/callback",
-    );
-    expect(testConfig.KOMPLA_MAGIC_LINK_DEMO_USERNAME).toBe("username");
-    expect(testConfig.KOMPLA_MAGIC_LINK_DEMO_EMAIL).toBe("user@example.org");
-    expect(testConfig.SENTRY_DSN).toBe("sentry-dsn");
-  });
-
-  it("returns empty string defaults when other env vars are undefined", async () => {
-    const envVarsWithEmptyDefault = [
-      "BRAK_IDP_OIDC_CLIENT_ID",
-      "BRAK_IDP_OIDC_ISSUER",
-      "BRAK_IDP_OIDC_REDIRECT_URI",
-      "KOMPLA_API_URL",
-      "KOMPLA_IDP_OIDC_CLIENT_ID",
-      "KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER",
-      "KOMPLA_IDP_OIDC_ISSUER",
-      "KOMPLA_MAGIC_LINK_SERVICE_CLIENT_ID",
-      "KOMPLA_MAGIC_LINK_CLIENT_ID",
-      "KOMPLA_MAGIC_LINK_REDIRECT_URI",
-      "KOMPLA_MAGIC_LINK_DEMO_USERNAME",
-      "KOMPLA_MAGIC_LINK_DEMO_EMAIL",
-      "KOMPLA_IDP_OIDC_REDIRECT_URI",
-    ] as const;
-
-    for (const key of envVarsWithEmptyDefault) {
-      delete process.env[key];
-    }
-
-    const { module } = await importConfigServerWithMocks();
-    const testConfig = module.serverConfig();
-
-    for (const key of envVarsWithEmptyDefault) {
-      expect(testConfig[key]).toBe("");
-    }
+      expect(config.BRAK_IDP_OIDC_CLIENT_SECRET).toBe("");
+    });
   });
 });

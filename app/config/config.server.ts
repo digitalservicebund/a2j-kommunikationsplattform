@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from "fs";
+import { memoize } from "es-toolkit";
 import { config } from "./config";
 
 interface ServerConfig {
@@ -24,96 +25,79 @@ interface ServerConfig {
   SENTRY_DSN: string;
 }
 
-const betterAuthSecretFilePath = "/etc/secrets/BETTER_AUTH_SECRET";
-const betterAuthSecretFileExists = existsSync(betterAuthSecretFilePath);
-let betterAuthSecretFallback = "";
-if (config().ENVIRONMENT === "development") {
-  betterAuthSecretFallback =
-    process.env.BETTER_AUTH_SECRET?.trim() ?? "default-better-auth-secret";
+function isReadingSecretsFromEnvironmentAllowed() {
+  return config().ENVIRONMENT === "development";
 }
 
-const brakOidcClientSecretFilePath = "/etc/secrets/BRAK_IDP_OIDC_CLIENT_SECRET";
-const brakOidcClientSecretFileExists = existsSync(brakOidcClientSecretFilePath);
-let brakOidcClientSecretFallback = "";
-if (config().ENVIRONMENT === "development") {
-  brakOidcClientSecretFallback =
-    process.env.BRAK_IDP_OIDC_CLIENT_SECRET?.trim() ?? "";
+function configValue(
+  key: string,
+  options?: { secret?: boolean; default?: string },
+): string {
+  let value = undefined;
+
+  // If the configuration value is a secret, try reading it from `/etc/secrets`
+  // first, where we mount secrets to in the deployed version of the app.
+  // Only fall back to reading secrets from the environment during local
+  // development.
+  if (options?.secret) {
+    const secretFilePath = `/etc/secrets/${key}`;
+    if (existsSync(secretFilePath)) {
+      value = readFileSync(secretFilePath, "utf-8");
+    } else if (isReadingSecretsFromEnvironmentAllowed()) {
+      value = process.env[key];
+    }
+  } else {
+    value = process.env[key];
+  }
+
+  return value?.trim() ?? options?.default ?? "";
 }
 
-const demoServiceClientSecretFilePath =
-  "/etc/secrets/KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET";
-const demoServiceClientSecretFileExists = existsSync(
-  demoServiceClientSecretFilePath,
-);
-let demoServiceClientSecretFallback = "";
-if (config().ENVIRONMENT === "development") {
-  demoServiceClientSecretFallback =
-    process.env.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET?.trim() ?? "";
-}
+export const serverConfig = memoize((): ServerConfig => ({
+  // Better Auth
+  BETTER_AUTH_SECRET: configValue("BETTER_AUTH_SECRET", { secret: true }),
+  BETTER_AUTH_URL: configValue("BETTER_AUTH_URL", {
+    default: "http://localhost:3000",
+  }),
 
-const apiIdpClientSecretFilePath = "/etc/secrets/KOMPLA_IDP_OIDC_CLIENT_SECRET";
-const apiIdpClientSecretFileExists = existsSync(apiIdpClientSecretFilePath);
-let apiIdpClientSecretFallback = "";
-if (config().ENVIRONMENT === "development") {
-  apiIdpClientSecretFallback =
-    process.env.KOMPLA_IDP_OIDC_CLIENT_SECRET?.trim() ?? "";
-}
+  // BRAK Identity Provider (beA)
+  BRAK_IDP_OIDC_CLIENT_ID: configValue("BRAK_IDP_OIDC_CLIENT_ID"),
+  BRAK_IDP_OIDC_CLIENT_SECRET: configValue("BRAK_IDP_OIDC_CLIENT_SECRET", {
+    secret: true,
+  }),
+  BRAK_IDP_OIDC_ISSUER: configValue("BRAK_IDP_OIDC_ISSUER"),
+  BRAK_IDP_OIDC_REDIRECT_URI: configValue("BRAK_IDP_OIDC_REDIRECT_URI"),
 
-export function serverConfig(): ServerConfig {
-  return {
-    BETTER_AUTH_SECRET: betterAuthSecretFileExists
-      ? readFileSync(betterAuthSecretFilePath, "utf-8")?.trim()
-      : betterAuthSecretFallback,
-    BETTER_AUTH_URL:
-      process.env.BETTER_AUTH_URL?.trim() ?? "http://localhost:3000",
-    BRAK_IDP_OIDC_CLIENT_ID: process.env.BRAK_IDP_OIDC_CLIENT_ID?.trim() ?? "",
-    BRAK_IDP_OIDC_CLIENT_SECRET: brakOidcClientSecretFileExists
-      ? readFileSync(brakOidcClientSecretFilePath, "utf-8")?.trim()
-      : brakOidcClientSecretFallback,
-    BRAK_IDP_OIDC_ISSUER: process.env.BRAK_IDP_OIDC_ISSUER?.trim() ?? "",
-    BRAK_IDP_OIDC_REDIRECT_URI:
-      process.env.BRAK_IDP_OIDC_REDIRECT_URI?.trim() ?? "",
-    KOMPLA_API_URL: process.env.KOMPLA_API_URL?.trim() ?? "",
-    KOMPLA_IDP_OIDC_CLIENT_ID:
-      process.env.KOMPLA_IDP_OIDC_CLIENT_ID?.trim() ?? "",
-    KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT:
-      process.env.KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT?.trim() ?? "",
-    KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER:
-      process.env.KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER?.trim() ?? "",
-    KOMPLA_IDP_OIDC_CLIENT_SECRET: apiIdpClientSecretFileExists
-      ? readFileSync(apiIdpClientSecretFilePath, "utf-8")?.trim()
-      : apiIdpClientSecretFallback,
-    KOMPLA_IDP_OIDC_ISSUER: process.env.KOMPLA_IDP_OIDC_ISSUER?.trim() ?? "",
-    KOMPLA_MAGIC_LINK_SERVICE_CLIENT_ID:
-      process.env.KOMPLA_MAGIC_LINK_SERVICE_CLIENT_ID?.trim() ?? "",
-    KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET: demoServiceClientSecretFileExists
-      ? readFileSync(demoServiceClientSecretFilePath, "utf-8")?.trim()
-      : demoServiceClientSecretFallback,
-    KOMPLA_MAGIC_LINK_CLIENT_ID:
-      process.env.KOMPLA_MAGIC_LINK_CLIENT_ID?.trim() ?? "",
-    KOMPLA_MAGIC_LINK_REDIRECT_URI:
-      process.env.KOMPLA_MAGIC_LINK_REDIRECT_URI?.trim() ?? "",
-    KOMPLA_MAGIC_LINK_DEMO_USERNAME:
-      process.env.KOMPLA_MAGIC_LINK_DEMO_USERNAME?.trim() ?? "",
-    KOMPLA_MAGIC_LINK_DEMO_EMAIL:
-      process.env.KOMPLA_MAGIC_LINK_DEMO_EMAIL?.trim() ?? "",
-    KOMPLA_IDP_OIDC_REDIRECT_URI:
-      process.env.KOMPLA_IDP_OIDC_REDIRECT_URI?.trim() ?? "",
-    SENTRY_DSN: process.env.SENTRY_DSN?.trim() ?? "",
-  };
-}
+  // KomPla Identity Provider
+  KOMPLA_API_URL: configValue("KOMPLA_API_URL"),
+  KOMPLA_IDP_OIDC_CLIENT_ID: configValue("KOMPLA_IDP_OIDC_CLIENT_ID"),
+  KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT: configValue(
+    "KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT",
+  ),
+  KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER: configValue(
+    "KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER",
+  ),
+  KOMPLA_IDP_OIDC_CLIENT_SECRET: configValue("KOMPLA_IDP_OIDC_CLIENT_SECRET", {
+    secret: true,
+  }),
+  KOMPLA_IDP_OIDC_ISSUER: configValue("KOMPLA_IDP_OIDC_ISSUER"),
 
-// in-source test suites
-if (import.meta.vitest) {
-  const { it, expect } = import.meta.vitest;
+  // Magic Link Login (Guest Access)
+  KOMPLA_MAGIC_LINK_SERVICE_CLIENT_ID: configValue(
+    "KOMPLA_MAGIC_LINK_SERVICE_CLIENT_ID",
+  ),
+  KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET: configValue(
+    "KOMPLA_MAGIC_LINK_SERVICE_CLIENT_SECRET",
+    { secret: true },
+  ),
+  KOMPLA_MAGIC_LINK_CLIENT_ID: configValue("KOMPLA_MAGIC_LINK_CLIENT_ID"),
+  KOMPLA_MAGIC_LINK_REDIRECT_URI: configValue("KOMPLA_MAGIC_LINK_REDIRECT_URI"),
+  KOMPLA_MAGIC_LINK_DEMO_USERNAME: configValue(
+    "KOMPLA_MAGIC_LINK_DEMO_USERNAME",
+  ),
+  KOMPLA_MAGIC_LINK_DEMO_EMAIL: configValue("KOMPLA_MAGIC_LINK_DEMO_EMAIL"),
+  KOMPLA_IDP_OIDC_REDIRECT_URI: configValue("KOMPLA_IDP_OIDC_REDIRECT_URI"),
 
-  it("serverConfig() returns an empty string for an undefined config item", () => {
-    // save original item
-    const originalEnvItem = global.process.env.SENTRY_DSN;
-    delete global.process.env.SENTRY_DSN;
-    const getConfig = serverConfig();
-    expect(getConfig?.SENTRY_DSN).toBe("");
-    // restore item
-    global.process.env.SENTRY_DSN = originalEnvItem;
-  });
-}
+  // Sentry
+  SENTRY_DSN: configValue("SENTRY_DSN"),
+}));
