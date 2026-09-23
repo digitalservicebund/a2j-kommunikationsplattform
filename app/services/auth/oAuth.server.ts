@@ -196,6 +196,7 @@ export function brakIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvider.
   const clientId = config.BRAK_IDP_OIDC_CLIENT_ID;
   const clientSecret = config.BRAK_IDP_OIDC_CLIENT_SECRET;
   const discoveryUrl = `${config.BRAK_IDP_OIDC_ISSUER}/.well-known/openid-configuration`;
+  const redirectURI = config.BRAK_IDP_OIDC_REDIRECT_URI;
   const scopes = ["openid"];
 
   return {
@@ -210,7 +211,12 @@ export function brakIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvider.
     pkce: true,
     getUserInfo: makeGetUserInfo(AuthenticationProvider.BEA),
     mapProfileToUser: makeMapProfileToUser(AuthenticationProvider.BEA),
-    getToken: makeGetTokenFromBrakIdp({ clientId, clientSecret, scopes }),
+    getToken: makeGetTokenFromBrakIdp({
+      clientId,
+      clientSecret,
+      scopes,
+      redirectURI,
+    }),
   };
 }
 
