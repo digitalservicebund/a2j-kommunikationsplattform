@@ -6,6 +6,9 @@ commit-msg:
 pre-commit:
   parallel: true
   commands:
+    typecheck:
+      tags: typecheck
+      run: npm run typecheck
     lint:
       tags: lint
       run: npm run lint:check
