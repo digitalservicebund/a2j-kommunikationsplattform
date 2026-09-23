@@ -37,6 +37,7 @@
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-router": "^8.4.0",
+    "undici": "^8.11.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {
