@@ -106,6 +106,7 @@ describe("makeGetTokenFromBrakIdp", () => {
       clientId: "client-id",
       clientSecret: "client-secret",
       scopes: ["openid"],
+      redirectURI: "https://app.example/callback",
     });
   }
 
@@ -137,7 +138,7 @@ describe("makeGetTokenFromBrakIdp", () => {
 
     const result = await getToken({
       code: "auth-code",
-      redirectURI: "https://app.example/callback",
+      redirectURI: "https://app.example/betterauth/callback/should/be/ignored",
       codeVerifier: "code-verifier",
       deviceId: "device-id",
     });
@@ -184,13 +185,16 @@ describe("makeGetTokenFromBrakIdp", () => {
     expect(requestInit.body.get("device_id")).toBe("device-id");
     expect(requestInit.body.get("client_id")).toBe("client-id");
     expect(requestInit.body.get("client_secret")).toBe("client-secret");
+    expect(requestInit.body.get("redirect_uri")).toBe(
+      "https://app.example/callback",
+    );
   });
 
   it("reuses the discovered token endpoint and mTLS agent across multiple calls", async () => {
     const getToken = makeTokenGetter();
     const tokenRequest = {
       code: "auth-code",
-      redirectURI: "https://app.example/callback",
+      redirectURI: "https://app.example/betterauth/callback/should/be/ignored",
     };
 
     await getToken(tokenRequest);
@@ -215,7 +219,7 @@ describe("makeGetTokenFromBrakIdp", () => {
     const getToken = makeTokenGetter();
     const tokenRequest = {
       code: "auth-code",
-      redirectURI: "https://app.example/callback",
+      redirectURI: "https://app.example/betterauth/callback/should/be/ignored",
     };
 
     mocks.fetch.mockImplementationOnce(async () =>
@@ -241,7 +245,8 @@ describe("makeGetTokenFromBrakIdp", () => {
     await expect(
       getToken({
         code: "auth-code",
-        redirectURI: "https://app.example/callback",
+        redirectURI:
+          "https://app.example/betterauth/callback/should/be/ignored",
       }),
     ).rejects.toThrow("Failed to resolve BRAK IdP token endpoint");
   });

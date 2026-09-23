@@ -82,6 +82,7 @@ export function makeGetTokenFromBrakIdp(options: {
   clientId: string;
   clientSecret: string;
   scopes: string[];
+  redirectURI: string;
 }): NonNullable<GenericOAuthConfig<AuthenticationProvider.BEA>["getToken"]> {
   const config = serverConfig();
   const discoveryUrl = `${config.BRAK_IDP_OIDC_ISSUER}/.well-known/openid-configuration`;
@@ -129,17 +130,12 @@ export function makeGetTokenFromBrakIdp(options: {
     }
   });
 
-  return async function getToken({
-    code,
-    redirectURI,
-    codeVerifier,
-    deviceId,
-  }) {
+  return async function getToken({ code, codeVerifier, deviceId }) {
     const params = await authorizationCodeRequest({
       code,
-      redirectURI,
       codeVerifier,
       deviceId,
+      redirectURI: options.redirectURI,
       options: {
         clientId: options.clientId,
         clientSecret: options.clientSecret,
