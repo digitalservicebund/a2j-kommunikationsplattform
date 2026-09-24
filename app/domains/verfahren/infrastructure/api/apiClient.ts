@@ -2,7 +2,6 @@ import z from "zod";
 import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
-import { getBearerToken } from "~/services/auth/getBearerToken.server";
 import {
   logApiErrorAndThrow,
   logParsingErrorAndThrow,
@@ -229,22 +228,10 @@ export async function apiRequest<T = unknown>(
     responseType = "json",
   } = opts;
 
-  let bearerToken: string;
-  try {
-    bearerToken = await getBearerToken(authData);
-  } catch (error) {
-    console.error("[API Error] Failed to authorize token", error);
-    throw new Response("Failed to authorize token", { status: 401 });
-  }
-
-  if (!bearerToken) {
-    throw new Response("No bearer token available", { status: 401 });
-  }
-
   const url = fullUrl ?? `${serverConfig().KOMPLA_API_URL}${path}`;
 
   const headers: Record<string, string> = {
-    Authorization: `Bearer ${bearerToken}`,
+    Authorization: `Bearer ${authData.authenticationTokens.accessToken}`,
     Accept: responseType === "text" ? "*/*" : "application/json",
     ...customHeaders,
   };

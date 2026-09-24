@@ -1,6 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthenticationProvider } from "../auth.types";
-import { makeGetTokenFromBrakIdp, makeGetUserInfo } from "../oAuth.server";
+import {
+  exchangeForKomPlaIdpTokens,
+  makeGetTokenFromBrakIdp,
+  makeGetUserInfo,
+} from "../oAuth.server";
 
 const mocks = vi.hoisted(() => ({
   fetch: vi.fn(),
@@ -17,8 +21,37 @@ vi.mock("~/config/config.server", () => ({
     BRAK_IDP_OIDC_ISSUER: "https://brak-idp.example",
     BRAK_IDP_OIDC_CLIENT_CERTIFICATE: "mock-cert-pem",
     BRAK_IDP_OIDC_CLIENT_CERTIFICATE_KEY: "mock-key-pem",
+    KOMPLA_IDP_OIDC_CLIENT_ID: "kompla-client-id",
+    KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT: "https://kompla-idp.example/token",
+    KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER: "brak-subject-issuer",
   }),
 }));
+
+const tokenExchangeResponse = {
+  access_token: "kompla-access-token",
+  expires_in: 300,
+  refresh_expires_in: 1800,
+  refresh_token: "kompla-refresh-token",
+  token_type: "Bearer",
+  "not-before-policy": 0,
+  session_state: "session-state",
+  scope: "kompla-api",
+  issued_token_type: "urn:ietf:params:oauth:token-type:refresh_token",
+};
+
+/**
+ * Stubs the global fetch (used for the token exchange, unlike Undici's fetch
+ * used for the BRAK IdP) to respond with the given response.
+ */
+function stubTokenExchange(response: () => Response) {
+  const globalFetch = vi.fn(async () => response());
+  vi.stubGlobal("fetch", globalFetch);
+  return vi.mocked(fetch);
+}
+
+function successfulTokenExchange() {
+  return Response.json(tokenExchangeResponse);
+}
 
 function makeIdToken(claims: Record<string, unknown>): string {
   const header = Buffer.from(JSON.stringify({ alg: "none" })).toString(
@@ -113,6 +146,7 @@ describe("makeGetTokenFromBrakIdp", () => {
   beforeEach(() => {
     mocks.fetch.mockReset();
     mocks.Agent.mockReset();
+    stubTokenExchange(successfulTokenExchange);
     mocks.fetch.mockImplementation(async (url: string) => {
       if (url === discoveryUrl) {
         return jsonResponse({ token_endpoint: tokenEndpoint });
@@ -130,6 +164,7 @@ describe("makeGetTokenFromBrakIdp", () => {
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
 
@@ -143,17 +178,10 @@ describe("makeGetTokenFromBrakIdp", () => {
       deviceId: "device-id",
     });
 
-    expect(result).toEqual({
-      accessToken: "access-token",
-      refreshToken: "refresh-token",
+    expect(result).toMatchObject({
+      accessToken: "kompla-access-token",
+      refreshToken: "kompla-refresh-token",
       idToken: "id-token",
-      scopes: ["openid", "profile"],
-      raw: {
-        access_token: "access-token",
-        refresh_token: "refresh-token",
-        id_token: "id-token",
-        scope: "openid profile",
-      },
     });
 
     expect(mocks.fetch).toHaveBeenNthCalledWith(1, discoveryUrl);
@@ -233,8 +261,43 @@ describe("makeGetTokenFromBrakIdp", () => {
 
     const result = await getToken(tokenRequest);
 
-    expect(result.accessToken).toBe("access-token");
+    expect(result.accessToken).toBe("kompla-access-token");
     expect(mocks.fetch).toHaveBeenCalledTimes(3);
+  });
+
+  it("exchanges the BRAK access token for KomPla IdP tokens, keeping the BRAK ID token", async () => {
+    const globalFetch = stubTokenExchange(successfulTokenExchange);
+    const getToken = makeTokenGetter();
+
+    const result = await getToken({
+      code: "auth-code",
+      redirectURI: "https://app.example/callback",
+    });
+
+    const [, requestInit] = globalFetch.mock.calls[0] as unknown as [
+      string,
+      { body: string },
+    ];
+    expect(new URLSearchParams(requestInit.body).get("subject_token")).toBe(
+      "access-token",
+    );
+    expect(result).toMatchObject({
+      accessToken: "kompla-access-token",
+      refreshToken: "kompla-refresh-token",
+      idToken: "id-token",
+    });
+  });
+
+  it("throws if the token exchange fails", async () => {
+    stubTokenExchange(() => new Response("Bad Request", { status: 400 }));
+    const getToken = makeTokenGetter();
+
+    await expect(
+      getToken({
+        code: "auth-code",
+        redirectURI: "https://app.example/callback",
+      }),
+    ).rejects.toThrow("Token exchange failed");
   });
 
   it("throws if the discovery document has no token_endpoint", async () => {
@@ -269,28 +332,12 @@ describe("makeGetTokenFromBrakIdp", () => {
       throw new Error(`Unexpected fetch call to "${url}"`);
     });
 
-    const before = Date.now();
     const result = await getToken({
       code: "auth-code",
       redirectURI: "https://app.example/callback",
     });
-    const after = Date.now();
 
     expect(result.accessTokenExpiresAt).toBeInstanceOf(Date);
-    const expiresAtMs = result.accessTokenExpiresAt!.getTime();
-    expect(expiresAtMs).toBeGreaterThanOrEqual(before + 60_000);
-    expect(expiresAtMs).toBeLessThanOrEqual(after + 60_000);
-  });
-
-  it("leaves accessTokenExpiresAt undefined when the response omits expires_in", async () => {
-    const getToken = makeTokenGetter();
-
-    const result = await getToken({
-      code: "auth-code",
-      redirectURI: "https://app.example/callback",
-    });
-
-    expect(result.accessTokenExpiresAt).toBeUndefined();
   });
 
   it("throws if the token request fails", async () => {
@@ -312,5 +359,78 @@ describe("makeGetTokenFromBrakIdp", () => {
         redirectURI: "https://app.example/callback",
       }),
     ).rejects.toThrow("Token request failed with status 401");
+  });
+});
+
+describe("exchangeForKomPlaIdpTokens", () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ now: new Date("2026-01-01T00:00:00Z") });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("exchanges the BRAK access token at the KomPla IdP (RFC 8693)", async () => {
+    const globalFetch = stubTokenExchange(successfulTokenExchange);
+
+    await exchangeForKomPlaIdpTokens("brak-access-token", "brak-id-token");
+
+    expect(globalFetch).toHaveBeenCalledWith(
+      "https://kompla-idp.example/token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: expect.any(String),
+      },
+    );
+
+    const [, requestInit] = globalFetch.mock.calls[0] as unknown as [
+      string,
+      { body: string },
+    ];
+    const requestBody = new URLSearchParams(requestInit.body);
+    expect(requestBody.get("grant_type")).toBe(
+      "urn:ietf:params:oauth:grant-type:token-exchange",
+    );
+    expect(requestBody.get("requested_token_type")).toBe(
+      "urn:ietf:params:oauth:token-type:refresh_token",
+    );
+    expect(requestBody.get("client_id")).toBe("kompla-client-id");
+    expect(requestBody.get("subject_issuer")).toBe("brak-subject-issuer");
+    expect(requestBody.get("scope")).toBe("kompla-api");
+    expect(requestBody.get("subject_token")).toBe("brak-access-token");
+  });
+
+  it("maps the response to Better Auth tokens, keeping the ID token from the login", async () => {
+    stubTokenExchange(successfulTokenExchange);
+
+    const result = await exchangeForKomPlaIdpTokens(
+      "brak-access-token",
+      "brak-id-token",
+    );
+
+    expect(result).toEqual({
+      tokenType: "Bearer",
+      accessToken: "kompla-access-token",
+      refreshToken: "kompla-refresh-token",
+      accessTokenExpiresAt: new Date("2026-01-01T00:05:00Z"),
+      refreshTokenExpiresAt: new Date("2026-01-01T00:30:00Z"),
+      scopes: ["kompla-api"],
+      idToken: "brak-id-token",
+      raw: tokenExchangeResponse,
+    });
+  });
+
+  it("throws if the token exchange fails", async () => {
+    stubTokenExchange(() => new Response("Bad Request", { status: 400 }));
+
+    await expect(
+      exchangeForKomPlaIdpTokens("brak-access-token", undefined),
+    ).rejects.toThrow("Token exchange failed");
   });
 });

@@ -5,16 +5,11 @@ import { apiRequest } from "~/domains/verfahren/infrastructure/api/apiClient";
 
 const mocks = vi.hoisted(() => {
   return {
-    getBearerToken: vi.fn(),
     logApiErrorAndThrow: vi.fn(),
     logParsingErrorAndThrow: vi.fn(),
     fetch: vi.fn(),
   };
 });
-
-vi.mock("~/services/auth/getBearerToken.server", () => ({
-  getBearerToken: mocks.getBearerToken,
-}));
 
 vi.mock("~/utils/logApiError", () => ({
   logApiErrorAndThrow: mocks.logApiErrorAndThrow,
@@ -24,20 +19,17 @@ vi.mock("~/utils/logApiError", () => ({
 globalThis.fetch = mocks.fetch;
 
 describe("apiClient", () => {
-  const originalEnv = process.env.KOMPLA_API_URL;
-
   beforeEach(() => {
-    vi.resetAllMocks();
-    process.env.KOMPLA_API_URL = "http://localhost:8080";
+    vi.stubEnv("KOMPLA_API_URL", "http://localhost:8080");
   });
 
   afterEach(() => {
-    process.env.KOMPLA_API_URL = originalEnv;
+    vi.unstubAllEnvs();
+    vi.resetAllMocks();
   });
 
   describe("apiRequest", () => {
     it("constructs URL with path when only path is provided", async () => {
-      mocks.getBearerToken.mockResolvedValue("test-token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({ id: "123" }),
@@ -55,7 +47,6 @@ describe("apiClient", () => {
     });
 
     it("uses fullUrl when provided instead of path", async () => {
-      mocks.getBearerToken.mockResolvedValue("test-token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({ id: "123" }),
@@ -73,7 +64,6 @@ describe("apiClient", () => {
     });
 
     it("sets authorization header with bearer token", async () => {
-      mocks.getBearerToken.mockResolvedValue("my-token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({}),
@@ -88,36 +78,13 @@ describe("apiClient", () => {
         expect.any(String),
         expect.objectContaining({
           headers: expect.objectContaining({
-            Authorization: "Bearer my-token",
+            Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
           }),
         }),
       );
     });
 
-    it("throws a 401 Response when bearer token is not available", async () => {
-      mocks.getBearerToken.mockResolvedValue(null);
-
-      await expect(
-        apiRequest({
-          authData: mockAuthData,
-          path: "/api/v1/test",
-        }),
-      ).rejects.toMatchObject({ status: 401 });
-    });
-
-    it("throws a 401 Response when getBearerToken fails", async () => {
-      mocks.getBearerToken.mockRejectedValue(new Error("token error"));
-
-      await expect(
-        apiRequest({
-          authData: mockAuthData,
-          path: "/api/v1/test",
-        }),
-      ).rejects.toMatchObject({ status: 401 });
-    });
-
     it("performs GET request by default", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({}),
@@ -137,7 +104,6 @@ describe("apiClient", () => {
     });
 
     it("uses custom method when provided", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({}),
@@ -158,7 +124,6 @@ describe("apiClient", () => {
     });
 
     it("sends JSON body with content-type header", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({}),
@@ -185,7 +150,6 @@ describe("apiClient", () => {
     });
 
     it("handles FormData body without setting content-type", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({}),
@@ -207,7 +171,6 @@ describe("apiClient", () => {
     });
 
     it("merges custom headers alongside Authorization for a FormData body", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({}),
@@ -226,14 +189,13 @@ describe("apiClient", () => {
 
       const [, config] = mocks.fetch.mock.calls[0];
       expect(config?.headers).toEqual({
-        Authorization: "Bearer token",
+        Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
         Accept: "application/json",
         "Dokument-Typ": "ANHANG",
       });
     });
 
     it("calls logApiErrorAndThrow when response is not ok", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: false,
         status: 404,
@@ -258,7 +220,6 @@ describe("apiClient", () => {
     });
 
     it("continues when logApiErrorAndThrow does not throw on non-ok response", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: false,
         status: 404,
@@ -281,7 +242,6 @@ describe("apiClient", () => {
     });
 
     it("uses default error message when not provided", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: false,
         status: 500,
@@ -304,7 +264,6 @@ describe("apiClient", () => {
     });
 
     it("returns handled error result when throwOnError is false", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: false,
         status: 409,
@@ -329,7 +288,6 @@ describe("apiClient", () => {
     });
 
     it("returns handled error result with undefined body when JSON parsing fails", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: false,
         status: 500,
@@ -356,7 +314,6 @@ describe("apiClient", () => {
     });
 
     it("exposes the parsed ProblemDetails fields when throwOnError is false", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       const problemDetailsBody = {
         title: "Conflict",
         status: 412,
@@ -386,7 +343,6 @@ describe("apiClient", () => {
     });
 
     it("exposes field-level validation errors from a ValidationProblemDetails body", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       const validationProblemBody = {
         title: "Validation failed",
         status: 400,
@@ -416,7 +372,6 @@ describe("apiClient", () => {
     });
 
     it("parses JSON response and returns data", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       const responseData = { id: "123", name: "test" };
       mocks.fetch.mockResolvedValue({
         ok: true,
@@ -432,7 +387,6 @@ describe("apiClient", () => {
     });
 
     it("requests application/json via the Accept header", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({}),
@@ -452,7 +406,6 @@ describe("apiClient", () => {
     });
 
     it("parses text response and returns raw body when responseType is text", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       const xml = "<xjustiz>...</xjustiz>";
       mocks.fetch.mockResolvedValue({
         ok: true,
@@ -469,7 +422,6 @@ describe("apiClient", () => {
     });
 
     it("requests */* via the Accept header when responseType is text", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         text: async () => "",
@@ -490,7 +442,6 @@ describe("apiClient", () => {
     });
 
     it("returns undefined for 204 responses without trying to read the body", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       const jsonSpy = vi.fn();
 
       mocks.fetch.mockResolvedValue({
@@ -510,7 +461,6 @@ describe("apiClient", () => {
     });
 
     it("returns undefined for content-length 0 responses", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       const jsonSpy = vi.fn();
 
       mocks.fetch.mockResolvedValue({
@@ -530,7 +480,6 @@ describe("apiClient", () => {
     });
 
     it("calls logParsingErrorAndThrow when JSON body cannot be parsed", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       const parseError = new SyntaxError("Unexpected end of JSON input");
       mocks.fetch.mockResolvedValue({
         ok: true,
@@ -560,7 +509,6 @@ describe("apiClient", () => {
     });
 
     it("validates response with zod schema when provided", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       const schema = z.object({
         id: z.string(),
         name: z.string(),
@@ -580,7 +528,6 @@ describe("apiClient", () => {
     });
 
     it("returns success result wrapper when throwOnError is false", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         status: 200,
@@ -604,7 +551,6 @@ describe("apiClient", () => {
     });
 
     it("returns response meta when includeResponseMeta is enabled", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       const headers = new Headers({ etag: 'W/"2"' });
       mocks.fetch.mockResolvedValue({
         ok: true,
@@ -628,7 +574,6 @@ describe("apiClient", () => {
     });
 
     it("returns data plus eTag when includeResponseETag is enabled", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         status: 200,
@@ -649,7 +594,6 @@ describe("apiClient", () => {
     });
 
     it("calls logParsingErrorAndThrow when schema validation fails", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       const schema = z.object({
         id: z.guid(),
         name: z.string().min(5),
@@ -681,7 +625,6 @@ describe("apiClient", () => {
     });
 
     it("adds If-Match header when eTag is provided", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({ id: "123" }),
@@ -704,7 +647,6 @@ describe("apiClient", () => {
     });
 
     it("returns parsed schema data when both JSON parsing and validation succeed", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       const schema = z.object({
         id: z.string(),
         count: z.number(),
@@ -726,7 +668,6 @@ describe("apiClient", () => {
     });
 
     it("handles array responses without schema", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       const arrayData = [{ id: "1" }, { id: "2" }];
 
       mocks.fetch.mockResolvedValue({
@@ -743,7 +684,6 @@ describe("apiClient", () => {
     });
 
     it("validates array response with array schema", async () => {
-      mocks.getBearerToken.mockResolvedValue("token");
       const schema = z.object({ id: z.string(), name: z.string() }).array();
       const arrayData = [
         { id: "1", name: "item1" },

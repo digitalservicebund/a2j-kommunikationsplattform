@@ -12,14 +12,9 @@ import {
 
 const mocks = vi.hoisted(() => {
   return {
-    getBearerToken: vi.fn(),
     fetch: vi.fn(),
   };
 });
-
-vi.mock("~/services/auth/getBearerToken.server", () => ({
-  getBearerToken: mocks.getBearerToken,
-}));
 
 globalThis.fetch = mocks.fetch;
 
@@ -72,7 +67,6 @@ describe("fetchVerfahren", () => {
   });
 
   it("calls the API with correct arguments and returns camelCase Verfahren", async () => {
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => ({ elemente: [apiVerfahren] }),
@@ -92,7 +86,7 @@ describe("fetchVerfahren", () => {
       expect.any(String),
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: "Bearer test-token",
+          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
         }),
       }),
     );
@@ -101,7 +95,6 @@ describe("fetchVerfahren", () => {
   });
 
   it("throws error on invalid schema", async () => {
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
@@ -112,16 +105,7 @@ describe("fetchVerfahren", () => {
     await expect(result).rejects.toThrow("Verfahren could not be fetched.");
   });
 
-  it("throws a 401 Response when bearer token is not available", async () => {
-    mocks.getBearerToken.mockResolvedValue(null);
-
-    const result = fetchVerfahren(mockAuthData);
-
-    await expect(result).rejects.toMatchObject({ status: 401 });
-  });
-
   it("throws error when API returns non-ok response", async () => {
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: false,
       status: 500,
@@ -140,7 +124,6 @@ describe("fetchVerfahren", () => {
 
   describe("gericht parameter handling", () => {
     it("includes gericht parameter when provided", async () => {
-      mocks.getBearerToken.mockResolvedValue("test-token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
@@ -161,7 +144,6 @@ describe("fetchVerfahren", () => {
     });
 
     it("excludes gericht parameter when null", async () => {
-      mocks.getBearerToken.mockResolvedValue("test-token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
@@ -174,8 +156,6 @@ describe("fetchVerfahren", () => {
     });
 
     it("rejects invalid UUID in gericht parameter", async () => {
-      mocks.getBearerToken.mockResolvedValue("test-token");
-
       const result = fetchVerfahren(mockAuthData, {
         gericht: "invalid-uuid",
       });
@@ -184,7 +164,6 @@ describe("fetchVerfahren", () => {
     });
 
     it("includes sort parameter when provided", async () => {
-      mocks.getBearerToken.mockResolvedValue("test-token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
@@ -203,7 +182,6 @@ describe("fetchVerfahren", () => {
     });
 
     it("excludes sort parameter when empty string", async () => {
-      mocks.getBearerToken.mockResolvedValue("test-token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
@@ -216,8 +194,6 @@ describe("fetchVerfahren", () => {
     });
 
     it("rejects invalid sort parameter", async () => {
-      mocks.getBearerToken.mockResolvedValue("test-token");
-
       const result = fetchVerfahren(mockAuthData, {
         sort: "invalid-sort-value" as FetchVerfahrenOptions["sort"],
       });
@@ -226,7 +202,6 @@ describe("fetchVerfahren", () => {
     });
 
     it("includes suchbegriff parameter when search_text is provided", async () => {
-      mocks.getBearerToken.mockResolvedValue("test-token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
@@ -243,7 +218,6 @@ describe("fetchVerfahren", () => {
     });
 
     it("excludes suchbegriff parameter when search_text is null", async () => {
-      mocks.getBearerToken.mockResolvedValue("test-token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
@@ -256,7 +230,6 @@ describe("fetchVerfahren", () => {
     });
 
     it("trims whitespace from search_text before sending as suchbegriff", async () => {
-      mocks.getBearerToken.mockResolvedValue("test-token");
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
@@ -280,7 +253,6 @@ describe("fetchVerfahrenById", () => {
   });
 
   it("calls the API with correct arguments and returns camelCase Verfahren", async () => {
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => apiVerfahren,
@@ -294,7 +266,7 @@ describe("fetchVerfahrenById", () => {
       expect.stringContaining(`/verfahren/${apiVerfahren.id}`),
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: "Bearer test-token",
+          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
         }),
       }),
     );
@@ -303,7 +275,6 @@ describe("fetchVerfahrenById", () => {
   });
 
   it("throws error on invalid schema", async () => {
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => ({ invalid: true }),

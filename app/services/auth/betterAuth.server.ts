@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins/generic-oauth";
 import { serverConfig } from "~/config/config.server";
+import { brakTokenExchangePlugin } from "./brakTokenExchangePlugin.server";
 import { customAuthPlugin } from "./customAuthPlugin.server";
 import { brakIdpOAuthConfig, komplaIdpOAuthConfig } from "./oAuth.server";
 
@@ -57,6 +58,7 @@ export const auth = betterAuth({
 
   plugins: [
     genericOAuth({ config: [brakIdpOAuthConfig(), komplaIdpOAuthConfig()] }),
+    brakTokenExchangePlugin(),
     customAuthPlugin(),
   ],
 });

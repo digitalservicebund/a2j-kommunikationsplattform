@@ -11,12 +11,7 @@ import {
 } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
 
 const mocks = vi.hoisted(() => ({
-  getBearerToken: vi.fn(),
   fetch: vi.fn(),
-}));
-
-vi.mock("~/services/auth/getBearerToken.server", () => ({
-  getBearerToken: mocks.getBearerToken,
 }));
 
 globalThis.fetch = mocks.fetch;
@@ -33,7 +28,6 @@ describe("fetchAnschriftstypen", () => {
       elemente: [{ id: "typ-1", wert: "Privatanschrift", code: "017" }],
     };
 
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => mockAnschriftstypen,
@@ -45,7 +39,7 @@ describe("fetchAnschriftstypen", () => {
       "http://localhost:8080/api/v1/codelisten/anschriftstypen",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: "Bearer test-token",
+          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
         }),
       }),
     );
@@ -53,7 +47,6 @@ describe("fetchAnschriftstypen", () => {
   });
 
   it("throws when the schema does not match", async () => {
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
@@ -89,7 +82,6 @@ describe("fetchGerichte", () => {
       ],
     };
 
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => mockGerichte,
@@ -101,7 +93,7 @@ describe("fetchGerichte", () => {
       "http://localhost:8080/api/v1/codelisten/gerichte",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: "Bearer test-token",
+          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
         }),
       }),
     );
@@ -109,16 +101,7 @@ describe("fetchGerichte", () => {
     expect(result).toEqual(mockGerichte);
   });
 
-  it("throws a 401 Response when bearer token is not available", async () => {
-    mocks.getBearerToken.mockResolvedValue(null);
-
-    await expect(fetchGerichte(mockAuthData)).rejects.toMatchObject({
-      status: 401,
-    });
-  });
-
   it("throws error when API returns non-ok response", async () => {
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: false,
       status: 404,
@@ -136,7 +119,6 @@ describe("fetchGerichte", () => {
   });
 
   it("throws error on invalid schema", async () => {
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
@@ -148,7 +130,6 @@ describe("fetchGerichte", () => {
   });
 
   it("returns empty list when API returns no elemente", async () => {
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => ({ list_version: "1", elemente: [] }),
@@ -172,7 +153,6 @@ describe("fetchKanzleiformen", () => {
       elemente: [{ id: "kanzleiform-1", wert: "Einzelanwalt", code: "001" }],
     };
 
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => mockKanzleiformen,
@@ -184,7 +164,7 @@ describe("fetchKanzleiformen", () => {
       "http://localhost:8080/api/v1/codelisten/kanzleiformen",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: "Bearer test-token",
+          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
         }),
       }),
     );
@@ -192,7 +172,6 @@ describe("fetchKanzleiformen", () => {
   });
 
   it("throws when the schema does not match", async () => {
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
@@ -216,7 +195,6 @@ describe("fetchRechtsformen", () => {
       elemente: [{ id: "rechtsform-1", wert: "GbR", code: "GbR" }],
     };
 
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => mockRechtsformen,
@@ -228,7 +206,7 @@ describe("fetchRechtsformen", () => {
       "http://localhost:8080/api/v1/codelisten/rechtsformen",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: "Bearer test-token",
+          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
         }),
       }),
     );
@@ -236,7 +214,6 @@ describe("fetchRechtsformen", () => {
   });
 
   it("throws when the schema does not match", async () => {
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
@@ -260,7 +237,6 @@ describe("fetchRollenbezeichnungen", () => {
       elemente: [{ id: "rolle-1", wert: "Kläger(in)", code: "101" }],
     };
 
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => mockRollenbezeichnungen,
@@ -272,7 +248,7 @@ describe("fetchRollenbezeichnungen", () => {
       "http://localhost:8080/api/v1/codelisten/rollenbezeichnungen",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: "Bearer test-token",
+          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
         }),
       }),
     );
@@ -280,7 +256,6 @@ describe("fetchRollenbezeichnungen", () => {
   });
 
   it("throws when the schema does not match", async () => {
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
@@ -304,7 +279,6 @@ describe("fetchStaaten", () => {
       elemente: [{ id: "staat-1", wert: "Deutschland", code: "000" }],
     };
 
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({ ok: true, json: async () => mockStaaten });
 
     const result = await fetchStaaten(mockAuthData);
@@ -313,7 +287,7 @@ describe("fetchStaaten", () => {
       "http://localhost:8080/api/v1/codelisten/staaten",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: "Bearer test-token",
+          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
         }),
       }),
     );
@@ -321,7 +295,6 @@ describe("fetchStaaten", () => {
   });
 
   it("throws when the schema does not match", async () => {
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
@@ -347,7 +320,6 @@ describe("fetchTelekommunikationsarten", () => {
       ],
     };
 
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => mockTelekommunikationsarten,
@@ -359,7 +331,7 @@ describe("fetchTelekommunikationsarten", () => {
       "http://localhost:8080/api/v1/codelisten/telekommunikationsarten",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: "Bearer test-token",
+          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
         }),
       }),
     );
@@ -367,7 +339,6 @@ describe("fetchTelekommunikationsarten", () => {
   });
 
   it("throws when the schema does not match", async () => {
-    mocks.getBearerToken.mockResolvedValue("test-token");
     mocks.fetch.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
