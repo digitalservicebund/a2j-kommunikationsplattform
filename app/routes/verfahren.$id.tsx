@@ -1,10 +1,13 @@
+import { useRef, useState, type ChangeEvent } from "react";
 import {
   ActionFunctionArgs,
+  Form,
   LoaderFunctionArgs,
   redirect,
   useLoaderData,
 } from "react-router";
 import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
+import InputSelect from "~/components/InputSelect";
 import { PageMetadata } from "~/components/PageMetadata";
 import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
 import VerfahrenAktuelleEinreichungSection, {
@@ -20,6 +23,7 @@ import loadVerfahrenEinreichungenOverview, {
 } from "~/domains/verfahren/application/loadVerfahrenEinreichungenOverview.server";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/application/routeContext.server";
 import submitEinreichungIfNeeded from "~/domains/verfahren/application/submitEinreichungIfNeeded.server";
+import { EinreichungArtSchema } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import {
   fetchBelegDownloadLink,
   fetchLatestBelegForEinreichung,
@@ -28,50 +32,33 @@ import {
   deleteDokumentFromEinreichung,
   fetchDokumentValidierungsstatus,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
+import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { authMiddleware } from "~/middleware/auth.server";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
-import { actionResultFromApiError, actionSuccess } from "~/utils/actionResult";
+import {
+  actionResultFromApiError,
+  actionResultFromInputParsingError,
+  actionSuccess,
+} from "~/utils/actionResult";
 import { dispatchFormAction } from "~/utils/dispatchFormAction";
 
 type LoaderData = {
   verfahren: Verfahren;
   einreichungen: EinreichungSummary[];
   initialEinreichung: InitialEinreichungData | null;
+  weitereEinreichung: InitialEinreichungData | null;
 };
 
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
 
-export const loader = async ({ context, params }: LoaderFunctionArgs) => {
-  const { authData, verfahrenId } = requireAuthAndVerfahrenId(
-    context,
-    params,
-    "loader",
-  );
-
-  const { verfahren, einreichungen } = await loadVerfahrenEinreichungenOverview(
-    authData,
-    verfahrenId,
-  );
-
-  const initialEinreichungData = einreichungen[0];
-  // Only show the "current draft" card while there's exactly one Einreichung
-  // and neither it nor the Verfahren have been submitted yet — otherwise the
-  // page falls back to a plain history list further down.
-  const showInitialEinreichungDetails =
-    Boolean(initialEinreichungData) &&
-    einreichungen.length === 1 &&
-    verfahren.status !== "EINGEREICHT" &&
-    initialEinreichungData?.einreichung.status !== "EINGEREICHT";
-
-  if (!initialEinreichungData || !showInitialEinreichungDetails) {
-    return { verfahren, einreichungen, initialEinreichung: null };
-  }
-
-  const { einreichung, dokumente } = initialEinreichungData;
-
+async function buildInitialEinreichungData(
+  authData: AuthenticationResponse,
+  verfahrenId: string,
+  { einreichung, dokumente }: EinreichungSummary,
+): Promise<InitialEinreichungData> {
   const dokumenteWithValidierungsstatus = await Promise.all(
     dokumente.map(async (dokument) => {
       const validierungsstatus = await fetchDokumentValidierungsstatus(
@@ -92,15 +79,67 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
     einreichungId: einreichung.id,
   });
 
-  return {
-    verfahren,
-    einreichungen,
-    initialEinreichung: {
-      einreichung,
-      dokumente: dokumenteWithValidierungsstatus,
-      beleg,
-    },
-  };
+  return { einreichung, dokumente: dokumenteWithValidierungsstatus, beleg };
+}
+
+export const loader = async ({
+  context,
+  params,
+  request,
+}: LoaderFunctionArgs) => {
+  const { authData, verfahrenId } = requireAuthAndVerfahrenId(
+    context,
+    params,
+    "loader",
+  );
+
+  const { verfahren, einreichungen } = await loadVerfahrenEinreichungenOverview(
+    authData,
+    verfahrenId,
+  );
+
+  const weitereEinreichungId = new URL(request.url).searchParams.get(
+    "weitereEinreichungId",
+  );
+  const weitereEinreichungData = weitereEinreichungId
+    ? einreichungen.find(
+        ({ einreichung }) => einreichung.id === weitereEinreichungId,
+      )
+    : undefined;
+  const weitereEinreichung = weitereEinreichungData
+    ? await buildInitialEinreichungData(
+        authData,
+        verfahrenId,
+        weitereEinreichungData,
+      )
+    : null;
+
+  const initialEinreichungData = einreichungen[0];
+  // Only show the "current draft" card while there's exactly one Einreichung
+  // and neither it nor the Verfahren have been submitted yet — otherwise the
+  // page falls back to a plain history list further down.
+  const showInitialEinreichungDetails =
+    Boolean(initialEinreichungData) &&
+    einreichungen.length === 1 &&
+    verfahren.status !== "EINGEREICHT" &&
+    initialEinreichungData?.einreichung.status !== "EINGEREICHT";
+
+  if (!initialEinreichungData || !showInitialEinreichungDetails) {
+    return {
+      verfahren,
+      einreichungen,
+      initialEinreichung: null,
+      weitereEinreichung,
+    };
+  }
+
+  const initialEinreichung = await buildInitialEinreichungData(
+    authData,
+    verfahrenId,
+    initialEinreichungData,
+  );
+
+  return { verfahren, einreichungen, initialEinreichung, weitereEinreichung };
 };
 
 type FormActionContext = {
@@ -145,6 +184,33 @@ async function handleEinreichen(
   }
 }
 
+async function handleCreateEinreichung(
+  formData: FormData,
+  { authData, verfahrenId }: FormActionContext,
+) {
+  const parsedArt = EinreichungArtSchema.safeParse(formData.get("art"));
+
+  if (!parsedArt.success) {
+    return actionResultFromInputParsingError(parsedArt.error);
+  }
+
+  try {
+    const created = await createEinreichung(
+      authData,
+      verfahrenId,
+      parsedArt.data,
+    );
+
+    return redirect(
+      `/verfahren/${verfahrenId}?weitereEinreichungId=${created.id}`,
+    );
+  } catch (error) {
+    return actionResultFromApiError(error, {
+      message: de.shared.form.errors.createEinreichungFailed,
+    });
+  }
+}
+
 async function handleDownloadBeleg(
   formData: FormData,
   { authData, verfahrenId }: FormActionContext,
@@ -170,6 +236,7 @@ const formActionHandlers = {
   delete: handleDelete,
   einreichen: handleEinreichen,
   "download-beleg": handleDownloadBeleg,
+  "create-einreichung": handleCreateEinreichung,
 } as const;
 
 // TODO: This action is near-identical to verfahren.neu.$id.abgabe.tsx's
@@ -197,12 +264,20 @@ export const action = async ({
 };
 
 export default function VerfahrenId() {
-  const { verfahren, einreichungen, initialEinreichung } =
+  const { verfahren, einreichungen, initialEinreichung, weitereEinreichung } =
     useLoaderData<LoaderData>();
-  const { routes } = useTranslations();
+  const { routes, shared } = useTranslations();
 
   console.log("verfahren", verfahren);
   console.log("einreichungen", einreichungen);
+
+  const createEinreichungFormRef = useRef<HTMLFormElement>(null);
+  const [art, setArt] = useState("");
+
+  function handleArtChange(event: ChangeEvent<HTMLSelectElement>) {
+    setArt(event.target.value);
+    createEinreichungFormRef.current?.requestSubmit();
+  }
 
   const beleg = initialEinreichung?.beleg ?? null;
   const isBelegReady = beleg !== null && beleg.status === "ERSTELLT";
@@ -262,6 +337,50 @@ export default function VerfahrenId() {
                 <h3 className="kern-heading-medium">
                   {routes.verfahrenId.headline}
                 </h3>
+                <div className="kern-pb-md flex-1">
+                  <article className="kern-card">
+                    <div className="kern-card__container">
+                      <header className="kern-card__header">
+                        <h2 className="kern-title">
+                          {routes.verfahrenId.weitereEinreichung.headline}
+                        </h2>
+                      </header>
+                      <section className="kern-card__body">
+                        <div className="w-full">
+                          {weitereEinreichung ? (
+                            <p className="kern-body">
+                              „{weitereEinreichung.einreichung.name}“ wurde
+                              erstellt (Status:{" "}
+                              {weitereEinreichung.einreichung.status}).
+                            </p>
+                          ) : (
+                            <Form method="post" ref={createEinreichungFormRef}>
+                              <input
+                                type="hidden"
+                                name="formType"
+                                value="create-einreichung"
+                              />
+                              <InputSelect
+                                id="art"
+                                label={
+                                  routes.verfahrenId.weitereEinreichung.artLabel
+                                }
+                                placeholder={shared.form.select.placeholder}
+                                options={EinreichungArtSchema.options.map(
+                                  (value) => ({ value, label: value }),
+                                )}
+                                selectedValue={art}
+                                onChange={handleArtChange}
+                              />
+                            </Form>
+                          )}
+                        </div>
+                        <div className="w-full"></div>
+                        <div className="w-full"></div>
+                      </section>
+                    </div>
+                  </article>
+                </div>
                 {initialEinreichung ? (
                   <VerfahrenAktuelleEinreichungSection
                     initialEinreichung={initialEinreichung}

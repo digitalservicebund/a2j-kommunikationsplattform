@@ -12,6 +12,27 @@ export const EinreichungStatusSchema = z.enum([
 ]);
 
 /**
+ * EinreichungArt — the fixed set of submission types a user can pick when
+ * creating a further Einreichung on an existing Verfahren (the initial
+ * Einreichung is always the "Klageeinreichung" and isn't part of this list).
+ * The API has no dedicated "Art" field — the selected value is sent as-is as
+ * the Einreichung's free-text `name`.
+ */
+export const EinreichungArtSchema = z.enum([
+  "Schriftsatz",
+  "Stellungnahme",
+  "Replik",
+  "Duplik",
+  "Klageerwiderung",
+  "Beweisangebot",
+  "Antrag",
+  "Berufung",
+  "Sonstiges",
+]);
+
+export type EinreichungArt = z.infer<typeof EinreichungArtSchema>;
+
+/**
  * Einreichung — domain shape (camelCase). Mirrors the wire contract defined
  * in infrastructure/schemas/einreichung.schema.ts, which is responsible for
  * mapping the API's snake_case response into this shape.

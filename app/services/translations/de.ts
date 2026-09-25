@@ -99,6 +99,8 @@ export const de = {
         uploadFailed: "Das Dokument konnte nicht hochgeladen werden.",
         submissionFailed: "Die Klage konnte nicht gespeichert werden.",
         einreichungFailed: "Die Einreichung konnte nicht übermittelt werden.",
+        createEinreichungFailed:
+          "Die weitere Einreichung konnte nicht erstellt werden.",
         belegDownloadFailed: "Der Beleg konnte nicht heruntergeladen werden.",
         unknown: "Ein unbekannter Fehler ist aufgetreten.",
       },
@@ -347,6 +349,10 @@ export const de = {
     },
     verfahrenId: {
       headline: "Verlauf der Akte",
+      weitereEinreichung: {
+        headline: "Neue Einreichung erstellen",
+        artLabel: "Art der Einreichung",
+      },
     },
     PLATFORM_TITLE: "Kommunikationsplattform | Justiz-Services",
     DATENSCHUTZ_TITLE: "Datenschutzerklärung zur Webseite",

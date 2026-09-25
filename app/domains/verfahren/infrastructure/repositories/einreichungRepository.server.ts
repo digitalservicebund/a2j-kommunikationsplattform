@@ -96,12 +96,13 @@ export async function fetchEinreichungXJustiz(
 export async function createEinreichung(
   authData: AuthenticationResponse,
   verfahrenId: string,
+  name: string,
 ): Promise<EinreichungErstellenResponse> {
   return apiRequest({
     authData,
     path: `/api/v1/verfahren/${verfahrenId}/einreichungen`,
     method: "POST",
-    body: { name: "Klageeinreichung" },
+    body: { name },
     schema: EinreichungErstellenResponseSchema,
     errorMessage: `Einreichung for Verfahren with id ${verfahrenId} could not be created.`,
   });

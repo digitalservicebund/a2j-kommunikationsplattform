@@ -223,7 +223,11 @@ async function handleSubmit(
     try {
       const verfahren = await createVerfahren(authData, verfahrenPayload);
       verfahrenId = verfahren.id;
-      const einreichung = await createEinreichung(authData, verfahrenId);
+      const einreichung = await createEinreichung(
+        authData,
+        verfahrenId,
+        "Klageeinreichung",
+      );
       einreichungId = einreichung.id;
     } catch (error) {
       return actionResultFromApiError(error, {
