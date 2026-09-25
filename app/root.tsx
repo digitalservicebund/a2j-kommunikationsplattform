@@ -39,10 +39,31 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export const links: LinksFunction = () => [
-  { rel: "icon", href: "/favicon.ico", sizes: "32x32" },
-  { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
-  { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
-  { rel: "manifest", href: "/site.webmanifest" },
+  {
+    rel: "icon",
+    href: "/favicon.ico",
+    sizes: "32x32",
+  },
+  {
+    rel: "icon",
+    href: "/favicon.svg",
+    type: "image/svg+xml",
+  },
+  {
+    rel: "apple-touch-icon",
+    href: "/apple-touch-icon.png",
+    sizes: "180x180",
+  },
+  {
+    rel: "manifest",
+    href: "/site.webmanifest",
+    // In contrast to other `<link>` types, `<link rel="manifest>` sends
+    // requests without credentials by default. This fails in non-production
+    // deployment environments, where the app is protected by HTTP Basic Auth.
+    // Therefore, we need `crossorigin="use-credentials` in those.
+    crossOrigin:
+      config().ENVIRONMENT === "production" ? "anonymous" : "use-credentials",
+  },
   {
     rel: "preload",
     href: FiraSansRegular,
@@ -61,7 +82,10 @@ export const links: LinksFunction = () => [
     as: "font",
     crossOrigin: "anonymous",
   },
-  { rel: "stylesheet", href: styles },
+  {
+    rel: "stylesheet",
+    href: styles,
+  },
 ];
 
 export default function App() {
@@ -75,9 +99,11 @@ export default function App() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:type" content="website" />
         {/* @TODO: https://digitalservicebund.atlassian.net/browse/KOMPLA-492 */}
+
         {/* React Router v8 forwards ServerRouter nonce to Links on SSR only;
         keep this explicit empty nonce to avoid hydration attribute mismatch. */}
         <Links nonce="" />
+
         {/* The browser strips the nonce attribute after applying it, so the
         client re-render always sees "" here even though the server sent the
         real nonce — expected divergence, not a real mismatch. */}
