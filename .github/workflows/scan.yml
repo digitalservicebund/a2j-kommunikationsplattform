@@ -1,4 +1,4 @@
-name: Scan
+name: Vulnerability Scan
 
 on:
   schedule:
@@ -13,7 +13,8 @@ env:
   CONTAINER_IMAGE_VERSION: latest
 
 jobs:
-  vulnerability-scan:
+  scan:
+    name: Scan
     runs-on: ubuntu-latest
     permissions:
       contents: read

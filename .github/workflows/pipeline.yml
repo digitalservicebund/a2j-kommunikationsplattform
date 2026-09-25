@@ -14,6 +14,7 @@ env:
 
 jobs:
   sonarqube:
+    name: SonarQube Scan
     uses: ./.github/workflows/sonarqube.yml
     secrets: inherit
     permissions:
@@ -74,6 +75,7 @@ jobs:
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
 
   vulnerability-scan:
+    name: Vulnerability Scan
     uses: ./.github/workflows/scan.yml
     secrets: inherit
     permissions:
@@ -158,7 +160,7 @@ jobs:
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
 
   deploy-staging-stackit:
-    name: Deploy (staging)
+    name: Deploy to staging
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' }}
     permissions:
@@ -256,7 +258,7 @@ jobs:
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
 
   github-pages:
-    name: Deploy prototype to GitHub pages
+    name: Deploy prototype to GitHub Pages
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     permissions:

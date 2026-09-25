@@ -1,4 +1,4 @@
-name: SonarQube
+name: SonarQube Scan
 
 on:
   workflow_call:
@@ -10,7 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  sonarqube-test-coverage:
+  scan:
+    name: Scan
     if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
