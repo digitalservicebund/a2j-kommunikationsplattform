@@ -21,13 +21,6 @@ export const auth = betterAuth({
   // endpoint; auth.api.signInCustom (server-side) bypasses disabledPaths.
   disabledPaths: ["/sign-in/custom"],
 
-  account: {
-    // Without this, Better Auth mirrors the full OAuth account record (real
-    // access/refresh/ID tokens) into a ~14KB cookie this app never reads —
-    // tokens are re-derived server-side on every request instead (see ADR 0008).
-    storeAccountCookie: false,
-  },
-
   session: {
     cookieCache: {
       enabled: true,
