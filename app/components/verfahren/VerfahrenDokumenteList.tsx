@@ -52,7 +52,7 @@ export default function VerfahrenDokumenteList({
                   {dokument.anzeigename}
                 </div>
                 <div className="kern-body kern-body--small kern-body--muted">
-                  {formatDokumentSize(dokument.sizeInBytes)}
+                  {formatDokumentSize(dokument.sizeInBytes ?? 0)}
                   {" · "}
                   {
                     routes.verfahrenNeu.step3.proceduralSteps.einreichung

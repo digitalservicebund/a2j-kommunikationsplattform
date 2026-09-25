@@ -19,12 +19,12 @@ const DokumentApiSchema = z.object({
   id: z.string(),
   status: DokumentStatusSchema,
   validierungslauf_status: ValidierungslaufStatusSchema,
-  dateiname: z.string(),
+  dateiname: z.nullish(z.string()),
   anzeigename: z.string(),
-  size_in_bytes: z.number(),
-  content_type: z.string(),
-  hash: z.string(),
-  hash_algorithmus: z.string(),
+  size_in_bytes: z.nullish(z.number()),
+  content_type: z.nullish(z.string()),
+  hash: z.nullish(z.string()),
+  hash_algorithmus: z.nullish(z.string()),
   typ: DokumentTypeSchema,
   gesendet_am: z.nullable(z.string()),
   eingereicht_am: z.nullable(z.string()),
@@ -56,21 +56,16 @@ export const DokumenteSchema = getListeResponseSchema(DokumentSchema);
 /**
  * DokumentErstellenResponseApiSchema
  *
- * Raw API contract (snake_case). Matches DokumentErstellenResponse:
- * returned when creating (uploading) a Dokument.
+ * Raw API contract (snake_case). Matches DokumentErstellenResponse: returned
+ * by `POST .../dokumente`, which only creates the Dokument's metadata (no
+ * binary content yet, so none of the file-derived fields are present).
  */
 const DokumentErstellenResponseApiSchema = z.object({
   id: z.string(),
   status: DokumentStatusSchema,
-  dateiname: z.string(),
   anzeigename: z.string(),
-  size_in_bytes: z.number(),
-  content_type: z.string(),
-  hash: z.string(),
-  hash_algorithmus: z.string(),
   typ: DokumentTypeSchema,
-  // TODO: remove the nullable part after confirming it with SINC
-  erstellt_von: z.nullable(z.string()),
+  erstellt_von: z.string(),
   erstellt_am: z.string(),
   sichtbarkeit_alle: z.boolean(),
 });
@@ -80,12 +75,7 @@ export const DokumentErstellenResponseSchema =
     (dto): DokumentErstellenResponse => ({
       id: dto.id,
       status: dto.status,
-      dateiname: dto.dateiname,
       anzeigename: dto.anzeigename,
-      sizeInBytes: dto.size_in_bytes,
-      contentType: dto.content_type,
-      hash: dto.hash,
-      hashAlgorithmus: dto.hash_algorithmus,
       typ: dto.typ,
       erstelltVon: dto.erstellt_von,
       erstelltAm: dto.erstellt_am,

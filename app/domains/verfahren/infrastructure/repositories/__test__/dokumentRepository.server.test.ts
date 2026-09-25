@@ -1,12 +1,14 @@
 import { beforeEach, describe, expect, it, test, vi } from "vitest";
 import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
 import {
+  createDokument,
   deleteDokument,
   deleteDokumentFromEinreichung,
   fetchDokument,
   fetchDokumente,
   fetchDokumentValidierungsstatus,
   uploadDokument,
+  uploadDokumentDatei,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 
 const mocks = vi.hoisted(() => ({
@@ -299,23 +301,125 @@ describe("deleteDokumentFromEinreichung", () => {
   });
 });
 
-describe("uploadDokument", () => {
-  it("posts FormData and parses array response first element", async () => {
-    const rawDokument = {
+describe("createDokument", () => {
+  it("posts the Dokument metadata as JSON and returns it with its eTag", async () => {
+    const dokument = {
+      id: "d-1",
+      status: "ANGELEGT",
+      anzeigename: "test.txt",
+      typ: "ANHANG",
+      erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+      erstelltAm: "2026-03-08T05:00:29.659Z",
+      sichtbarkeitAlle: true,
+    };
+    mocks.apiRequest.mockResolvedValueOnce({
+      data: dokument,
+      eTag: 'W/"0"',
+    });
+
+    const result = await createDokument(mockAuthData, {
+      verfahrenId: "v-1",
+      einreichungId: "e-1",
+      typ: "ANHANG",
+      anzeigename: "test.txt",
+      sichtbarkeitAlle: true,
+    });
+
+    expect(mocks.apiRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        authData: mockAuthData,
+        path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente",
+        method: "POST",
+        body: {
+          typ: "ANHANG",
+          anzeigename: "test.txt",
+          sichtbarkeit_alle: true,
+        },
+        includeResponseETag: true,
+        errorMessage:
+          "Dokument for Einreichung with id e-1 of Verfahren with id v-1 could not be created.",
+      }),
+    );
+    expect(result).toEqual({ dokument, eTag: 'W/"0"' });
+  });
+});
+
+describe("uploadDokumentDatei", () => {
+  it("puts the file as FormData with the If-Match eTag and returns the full Dokument", async () => {
+    const dokument = {
       id: "d-1",
       status: "ERSTELLT",
+      validierungslaufStatus: "AUSSTEHEND",
       dateiname: "test.txt",
       anzeigename: "test.txt",
-      size_in_bytes: 123,
-      content_type: "text/plain",
+      sizeInBytes: 3,
+      contentType: "text/plain",
       hash: "abc123",
-      hash_algorithmus: "SHA3-384",
+      hashAlgorithmus: "SHA3-384",
       typ: "ANHANG",
-      erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
-      erstellt_am: "2026-03-08T05:00:29.659Z",
-      sichtbarkeit_alle: true,
+      gesendetAm: null,
+      eingereichtAm: null,
+      erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+      erstelltAm: "2026-03-08T05:00:29.659Z",
+      sichtbarkeitAlle: true,
     };
-    mocks.apiRequest.mockResolvedValueOnce([rawDokument]);
+    mocks.apiRequest.mockResolvedValueOnce(dokument);
+    const file = new File(["abc"], "test.txt", { type: "text/plain" });
+
+    const result = await uploadDokumentDatei(mockAuthData, {
+      verfahrenId: "v-1",
+      einreichungId: "e-1",
+      id: "d-1",
+      file,
+      eTag: 'W/"0"',
+    });
+
+    const callArgs = mocks.apiRequest.mock.calls[0][0];
+    expect(callArgs.path).toBe(
+      "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1/datei",
+    );
+    expect(callArgs.method).toBe("PUT");
+    expect(callArgs.eTag).toBe('W/"0"');
+    expect(callArgs.body).toBeInstanceOf(FormData);
+    const body = callArgs.body as FormData;
+    expect(body.get("datei")).toBe(file);
+    expect([...body.keys()]).toEqual(["datei"]);
+    expect(result.dateiname).toBe("test.txt");
+    expect(result.status).toBe("ERSTELLT");
+  });
+});
+
+describe("uploadDokument", () => {
+  it("composes createDokument + uploadDokumentDatei", async () => {
+    mocks.apiRequest.mockResolvedValueOnce({
+      data: {
+        id: "d-1",
+        status: "ANGELEGT",
+        anzeigename: "test.txt",
+        typ: "ANHANG",
+        erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+        erstelltAm: "2026-03-08T05:00:29.659Z",
+        sichtbarkeitAlle: true,
+      },
+      eTag: 'W/"0"',
+    });
+    mocks.apiRequest.mockResolvedValueOnce({
+      id: "d-1",
+      status: "ERSTELLT",
+      validierungslaufStatus: "AUSSTEHEND",
+      dateiname: "test.txt",
+      anzeigename: "test.txt",
+      sizeInBytes: 3,
+      contentType: "text/plain",
+      hash: "abc123",
+      hashAlgorithmus: "SHA3-384",
+      typ: "ANHANG",
+      gesendetAm: null,
+      eingereichtAm: null,
+      erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+      erstelltAm: "2026-03-08T05:00:29.659Z",
+      sichtbarkeitAlle: true,
+    });
     const file = new File(["abc"], "test.txt", { type: "text/plain" });
 
     const result = await uploadDokument(
@@ -326,36 +430,84 @@ describe("uploadDokument", () => {
       "ANHANG",
     );
 
-    const firstCallArgs = mocks.apiRequest.mock.calls[0][0];
-    expect(firstCallArgs.path).toBe(
-      "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente",
+    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente",
+        method: "POST",
+        body: {
+          typ: "ANHANG",
+          anzeigename: "test.txt",
+          sichtbarkeit_alle: true,
+        },
+      }),
     );
-    expect(firstCallArgs.method).toBe("POST");
-    expect(firstCallArgs.errorMessage).toBe(
-      "Dokument upload for Einreichung with id e-1 of Verfahren with v-1 could not be uploaded.",
+    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1/datei",
+        method: "PUT",
+        eTag: 'W/"0"',
+      }),
     );
-    expect(firstCallArgs.body).toBeInstanceOf(FormData);
-    const body = firstCallArgs.body as FormData;
-    expect(body.get("datei")).toBe(file);
-    expect([...body.keys()]).toEqual(["datei"]);
-    expect(firstCallArgs.headers).toEqual({
-      "Dokument-Typ": "ANHANG",
-      "Dokument-Sichtbarkeit-Alle": "true",
-      "Dokument-Anzeigename": "test.txt",
+    expect(result.status).toBe("ERSTELLT");
+    expect(result.dateiname).toBe("test.txt");
+  });
+
+  it("deletes the orphaned metadata-only Dokument and rethrows when the file upload fails", async () => {
+    mocks.apiRequest.mockResolvedValueOnce({
+      data: {
+        id: "d-1",
+        status: "ANGELEGT",
+        anzeigename: "test.txt",
+        typ: "ANHANG",
+        erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+        erstelltAm: "2026-03-08T05:00:29.659Z",
+        sichtbarkeitAlle: true,
+      },
+      eTag: 'W/"0"',
     });
-    expect(result).toEqual({
-      id: "d-1",
-      status: "ERSTELLT",
-      dateiname: "test.txt",
-      anzeigename: "test.txt",
-      sizeInBytes: 123,
-      contentType: "text/plain",
-      hash: "abc123",
-      hashAlgorithmus: "SHA3-384",
-      typ: "ANHANG",
-      erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
-      erstelltAm: "2026-03-08T05:00:29.659Z",
-      sichtbarkeitAlle: true,
+    const uploadError = new Error("Datei upload failed");
+    mocks.apiRequest.mockRejectedValueOnce(uploadError);
+    mocks.apiRequest.mockResolvedValueOnce({ ok: true });
+    const file = new File(["abc"], "test.txt", { type: "text/plain" });
+
+    await expect(
+      uploadDokument(mockAuthData, "v-1", "e-1", file, "ANHANG"),
+    ).rejects.toBe(uploadError);
+
+    expect(mocks.apiRequest).toHaveBeenCalledTimes(3);
+    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+      3,
+      expect.objectContaining({
+        path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1",
+        method: "DELETE",
+        eTag: 'W/"0"',
+        throwOnError: false,
+      }),
+    );
+  });
+
+  it("still rethrows the original upload error even if the cleanup delete also fails", async () => {
+    mocks.apiRequest.mockResolvedValueOnce({
+      data: {
+        id: "d-1",
+        status: "ANGELEGT",
+        anzeigename: "test.txt",
+        typ: "ANHANG",
+        erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+        erstelltAm: "2026-03-08T05:00:29.659Z",
+        sichtbarkeitAlle: true,
+      },
+      eTag: 'W/"0"',
     });
+    const uploadError = new Error("Datei upload failed");
+    mocks.apiRequest.mockRejectedValueOnce(uploadError);
+    mocks.apiRequest.mockRejectedValueOnce(new Error("Delete also failed"));
+    const file = new File(["abc"], "test.txt", { type: "text/plain" });
+
+    await expect(
+      uploadDokument(mockAuthData, "v-1", "e-1", file, "ANHANG"),
+    ).rejects.toBe(uploadError);
   });
 });
