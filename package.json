@@ -25,7 +25,7 @@
     "@react-router/express": "^8.4.0",
     "@react-router/node": "^8.4.0",
     "@react-router/serve": "^8.4.0",
-    "@sentry/react-router": "^10.75.0",
+    "@sentry/react-router": "^10.75.2",
     "better-auth": "^1.7.5",
     "clsx": "^2.1.1",
     "compression": "^1.8.2",
