@@ -1,4 +1,5 @@
 import { ApiError } from "~/utils/apiError";
+import { logger } from "~/utils/logger.server";
 import { parseProblemDetails } from "~/utils/problemDetails.schema";
 
 /**
@@ -26,13 +27,16 @@ export async function logApiErrorAndThrow(
 
   const problemDetails = parseProblemDetails(parsedBody);
 
-  console.error(`[API Error] ${context}`, {
-    status: response.status,
-    statusText: response.statusText,
-    url: response.url,
-    body: responseBody,
-    problemDetails,
-  });
+  logger.error(
+    {
+      status: response.status,
+      statusText: response.statusText,
+      url: response.url,
+      body: responseBody,
+      problemDetails,
+    },
+    `API Error: ${context}`,
+  );
 
   throw new ApiError(context, {
     status: response.status,
@@ -49,10 +53,7 @@ export function logParsingErrorAndThrow(
   context: string,
   responseBody: string,
 ): never {
-  console.error(`[Parsing Error] ${context}`, {
-    responseBody,
-    error,
-  });
+  logger.error({ responseBody, err: error }, `Parsing Error: ${context}`);
 
   throw new Error(context, { cause: error });
 }

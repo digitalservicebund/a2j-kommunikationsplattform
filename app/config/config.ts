@@ -1,21 +1,26 @@
-interface ClientConfig {
+export interface Config {
   ENVIRONMENT: string;
+  LOG_LEVEL: string;
   SENTRY_DSN: string;
 }
 
-const envFromBrowser = () =>
-  typeof window === "object" && "ENV" in window
+function envFromBrowser() {
+  return typeof window === "object" && "ENV" in window
     ? (window?.ENV as Record<string, string | undefined>)
     : undefined;
+}
 
-const envFromNode = () =>
-  typeof process === "object" && "env" in process ? process?.env : undefined;
+function envFromNode() {
+  return typeof process === "object" && "env" in process
+    ? process?.env
+    : undefined;
+}
 
-export function config(): ClientConfig {
+export function config(): Config {
   const env = envFromBrowser() ?? envFromNode() ?? {};
-
   return {
     ENVIRONMENT: env.ENVIRONMENT?.trim() ?? "development",
+    LOG_LEVEL: env.LOG_LEVEL?.trim() ?? "info",
     SENTRY_DSN: env.SENTRY_DSN?.trim() ?? "",
   };
 }
@@ -36,6 +41,7 @@ if (import.meta.vitest) {
     const getConfig = config();
     expect(getConfig).toStrictEqual({
       ENVIRONMENT: "development",
+      LOG_LEVEL: "info",
       SENTRY_DSN: "",
     });
     // restore process

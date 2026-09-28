@@ -7,6 +7,7 @@ import {
 } from "~/services/auth/auth.types";
 import { auth } from "~/services/auth/betterAuth.server";
 import { loginAsDeveloper } from "~/services/auth/loginAsDeveloper.server";
+import { logger } from "~/utils/logger.server";
 
 const errorStatusByProvider: Record<
   AuthenticationProvider.BEA | AuthenticationProvider.KOMPLA_IDP,
@@ -51,7 +52,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.clone().formData();
   const loginType = formData.get("loginType") as LoginType;
 
-  console.log("loginType is", loginType);
+  logger.debug({ loginType }, "Login action invoked");
 
   if (loginType === LoginType.Developer) {
     if (config().ENVIRONMENT !== "development") {

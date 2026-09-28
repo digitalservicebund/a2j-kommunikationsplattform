@@ -183,12 +183,6 @@ export default function VerfahrenNeuBearbeiten() {
     useLoaderData<LoaderData>();
   const { routes, buttons } = useTranslations();
 
-  console.log("einreichung", einreichung);
-  console.log("dokumente", dokumente);
-  console.log("beleg", beleg);
-
-  console.log("verfahren", verfahren);
-
   const dokumenteValidierungsstatus = dokumente.map(
     (dokument) => dokument.validierungsstatus,
   );

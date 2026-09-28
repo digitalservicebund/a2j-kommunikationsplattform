@@ -1,8 +1,8 @@
 import { existsSync, readFileSync } from "fs";
 import { memoize } from "es-toolkit";
-import { config } from "./config";
+import { Config, config } from "./config";
 
-interface ServerConfig {
+interface ServerConfig extends Config {
   BETTER_AUTH_SECRET: string;
   BETTER_AUTH_URL: string;
   BRAK_IDP_OIDC_CLIENT_ID: string;
@@ -24,7 +24,6 @@ interface ServerConfig {
   KOMPLA_MAGIC_LINK_DEMO_USERNAME: string;
   KOMPLA_MAGIC_LINK_DEMO_EMAIL: string;
   KOMPLA_IDP_OIDC_REDIRECT_URI: string;
-  SENTRY_DSN: string;
 }
 
 function isReadingSecretsFromEnvironmentAllowed() {
@@ -56,6 +55,8 @@ function configValue(
 }
 
 export const serverConfig = memoize((): ServerConfig => ({
+  ...config(),
+
   // Better Auth
   BETTER_AUTH_SECRET: configValue("BETTER_AUTH_SECRET", { secret: true }),
   BETTER_AUTH_URL: configValue("BETTER_AUTH_URL", {
@@ -107,7 +108,4 @@ export const serverConfig = memoize((): ServerConfig => ({
   ),
   KOMPLA_MAGIC_LINK_DEMO_EMAIL: configValue("KOMPLA_MAGIC_LINK_DEMO_EMAIL"),
   KOMPLA_IDP_OIDC_REDIRECT_URI: configValue("KOMPLA_IDP_OIDC_REDIRECT_URI"),
-
-  // Sentry
-  SENTRY_DSN: configValue("SENTRY_DSN"),
 }));

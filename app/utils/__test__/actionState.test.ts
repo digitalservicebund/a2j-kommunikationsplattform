@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import z from "zod";
 import de from "~/services/translations/de";
+import { logger } from "~/utils/logger.server";
 import {
   actionError,
   actionFieldErrorsResponse,
@@ -11,6 +12,10 @@ import {
   actionSuccess,
 } from "../actionResult";
 import { ApiError } from "../apiError";
+
+vi.mock("~/utils/logger.server", () => ({
+  logger: { error: vi.fn() },
+}));
 
 describe("actionSuccess", () => {
   it("returns a success ActionResult carrying the given data", () => {
@@ -117,7 +122,6 @@ describe("actionResultFromApiError", () => {
   });
 
   it("logs and falls back to a generic 500 error for a non-ApiError", () => {
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const error = new Error("boom");
 
     const response = actionResultFromApiError(error, {
@@ -130,9 +134,10 @@ describe("actionResultFromApiError", () => {
       error: de.shared.form.errors.unknown,
       data: { formType: "submit" },
     });
-    expect(errorSpy).toHaveBeenCalledWith("[Unexpected action error]", error);
-
-    errorSpy.mockRestore();
+    expect(logger.error).toHaveBeenCalledWith(
+      { error },
+      "Unexpected action error",
+    );
   });
 });
 
@@ -155,7 +160,6 @@ describe("actionResultFromInputParsingError", () => {
   });
 
   it("logs and falls back to a generic 500 error for a non-ZodError", () => {
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const error = new Error("not a zod error");
 
     const response = actionResultFromInputParsingError(error);
@@ -165,14 +169,15 @@ describe("actionResultFromInputParsingError", () => {
       status: "error",
       error: de.shared.form.errors.unknown,
     });
-
-    errorSpy.mockRestore();
+    expect(logger.error).toHaveBeenCalledWith(
+      { error },
+      "Unexpected action error",
+    );
   });
 });
 
 describe("actionResultFromSchemaParsingError", () => {
   it("always logs and falls back to a generic 500 error", () => {
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const error = new Error("schema parsing failed");
 
     const response = actionResultFromSchemaParsingError(error, {
@@ -186,8 +191,9 @@ describe("actionResultFromSchemaParsingError", () => {
       error: "Die Klage konnte nicht gespeichert werden.",
       data: { formType: "submit" },
     });
-    expect(errorSpy).toHaveBeenCalledWith("[Unexpected action error]", error);
-
-    errorSpy.mockRestore();
+    expect(logger.error).toHaveBeenCalledWith(
+      { error },
+      "Unexpected action error",
+    );
   });
 });

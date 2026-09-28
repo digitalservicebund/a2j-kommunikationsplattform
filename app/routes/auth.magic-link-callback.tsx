@@ -2,6 +2,7 @@ import { redirect, type LoaderFunction } from "react-router";
 import { AuthenticationProvider, LoginError } from "~/services/auth/auth.types";
 import { auth } from "~/services/auth/betterAuth.server";
 import { magicLinkClient } from "~/services/auth/magicLinkClient.server";
+import { logger } from "~/utils/logger.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   try {
@@ -24,14 +25,11 @@ export const loader: LoaderFunction = async ({ request }) => {
       asResponse: true,
     });
 
-    console.log("MagicLinkStrategy: phase 2 callback done, redirecting to /");
+    logger.debug("MagicLinkStrategy: phase 2 callback done, redirecting to /");
 
     return redirect("/", { headers: response.headers });
   } catch (error) {
-    console.error(
-      "Magic link callback failed:",
-      error instanceof Error ? error.message : error,
-    );
+    logger.error({ error }, "Magic link callback failed");
 
     return redirect(`/login?status=${LoginError.Demo}`);
   }

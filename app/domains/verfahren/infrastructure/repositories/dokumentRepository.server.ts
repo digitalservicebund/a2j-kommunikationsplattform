@@ -14,6 +14,7 @@ import {
 import { ValidierungsstatusSchema } from "~/domains/verfahren/infrastructure/schemas/validierungsstatus.schema";
 import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { logger } from "~/utils/logger.server";
 
 type FetchDokumentOptions = {
   verfahrenId: string;
@@ -192,6 +193,6 @@ export async function uploadDokument(
   });
 
   const singleObject = extractSingleObject(rawData);
-  console.log("Successfully uploaded dokument", singleObject);
+  logger.info({ dokument: singleObject }, "Successfully uploaded Dokument");
   return DokumentErstellenResponseSchema.parse(singleObject);
 }

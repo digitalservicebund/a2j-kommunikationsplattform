@@ -1,7 +1,4 @@
-# 6. Better Auth spike, and why we reverted it
-
-- 2026-09-10: Drafted
-- 2026-09-10: Accepted
+# 7. Remove Talisman
 
 ## Status
 
