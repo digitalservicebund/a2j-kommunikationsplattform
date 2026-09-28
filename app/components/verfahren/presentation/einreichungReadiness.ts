@@ -8,6 +8,7 @@ export type ReadinessBadgeLabels = {
   checking: string;
   problem: string;
   warning: string;
+  notAvailable: string;
 };
 
 export type ReadinessPresentation = {
@@ -33,13 +34,6 @@ export function resolveReadinessPresentation(
     };
   }
 
-  if (validierungsstatus.ergebnis === "GRUEN") {
-    return {
-      readinessLabel: badgeLabels.ready,
-      readinessBadgeClass: "success",
-    };
-  }
-
   if (validierungsstatus.ergebnis === "ROT") {
     return {
       readinessLabel: badgeLabels.problem,
@@ -54,7 +48,17 @@ export function resolveReadinessPresentation(
     };
   }
 
-  return { readinessLabel: badgeLabels.soon, readinessBadgeClass: "warning" };
+  if (validierungsstatus.ergebnis === "NICHT_VERFUEGBAR") {
+    // Provisional: treating every NICHT_VERFUEGBAR the same regardless of
+    // Dokument typ, as it's non-blocking per the API
+    // Pending confirmed product requirements for this state.
+    return {
+      readinessLabel: badgeLabels.notAvailable,
+      readinessBadgeClass: "info",
+    };
+  }
+
+  return { readinessLabel: badgeLabels.ready, readinessBadgeClass: "success" };
 }
 
 export type BelegBadgeLabels = {
