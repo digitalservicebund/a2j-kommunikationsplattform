@@ -201,9 +201,6 @@ export default function VerfahrenId() {
     useLoaderData<LoaderData>();
   const { routes } = useTranslations();
 
-  console.log("verfahren", verfahren);
-  console.log("einreichungen", einreichungen);
-
   const beleg = initialEinreichung?.beleg ?? null;
   const isBelegReady = beleg !== null && beleg.status === "ERSTELLT";
   const isBelegPending = beleg !== null && !isBelegReady;

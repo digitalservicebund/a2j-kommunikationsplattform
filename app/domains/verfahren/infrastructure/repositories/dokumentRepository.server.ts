@@ -14,6 +14,7 @@ import {
 import { ValidierungsstatusSchema } from "~/domains/verfahren/infrastructure/schemas/validierungsstatus.schema";
 import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { logger } from "~/utils/logger.server";
 
 type FetchDokumentOptions = {
   verfahrenId: string;
@@ -256,16 +257,24 @@ export async function uploadDokument(
     });
   } catch (error) {
     // Best-effort cleanup: don't leave an orphaned, file-less Dokument
-    // (status ANGELEGT) behind if the actual file upload failed.
-    try {
-      await deleteDokument(authData, {
-        verfahrenId,
-        einreichungId,
-        id: dokument.id,
-        eTag: eTag ?? "",
-      });
-    } catch {
-      // Swallow — the original upload error below is what the caller needs to see.
+    // (status ANGELEGT) behind if the actual file upload failed. A cleanup
+    // failure is only logged — the original upload error is what the caller
+    // needs to see.
+    const cleanupSucceeded = await deleteDokument(authData, {
+      verfahrenId,
+      einreichungId,
+      id: dokument.id,
+      eTag: eTag ?? "",
+    }).then(
+      (result) => result.success,
+      () => false,
+    );
+
+    if (!cleanupSucceeded) {
+      logger.error(
+        { verfahrenId, einreichungId, dokumentId: dokument.id },
+        "Failed to delete orphaned Dokument after Datei upload failed",
+      );
     }
 
     throw error;

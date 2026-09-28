@@ -1,6 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
+import { logger } from "~/utils/logger.server";
 import { ApiError } from "../apiError";
 import { logApiErrorAndThrow, logParsingErrorAndThrow } from "../logApiError";
+
+vi.mock("~/utils/logger.server", () => ({
+  logger: { error: vi.fn() },
+}));
 
 describe("logApiError", () => {
   it("logs response body and throws an error for non-ok responses", async () => {
@@ -14,22 +19,18 @@ describe("logApiError", () => {
       }),
     } as unknown as Response;
 
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
     await expect(logApiErrorAndThrow(response, "Test error")).rejects.toThrow(
       "Test error",
     );
-    expect(errorSpy).toHaveBeenCalledWith(
-      "[API Error] Test error",
+    expect(logger.error).toHaveBeenCalledWith(
       expect.objectContaining({
         status: 500,
         statusText: "Internal Server Error",
         url: "https://api.test/endpoint",
         body: "error payload",
       }),
+      "API Error: Test error",
     );
-
-    errorSpy.mockRestore();
   });
 
   it("throws an ApiError carrying the status and parsed problem details", async () => {
@@ -48,8 +49,6 @@ describe("logApiError", () => {
       }),
     } as unknown as Response;
 
-    vi.spyOn(console, "error").mockImplementation(() => {});
-
     const error = await logApiErrorAndThrow(response, "Update failed").catch(
       (thrown) => thrown,
     );
@@ -57,8 +56,6 @@ describe("logApiError", () => {
     expect(error).toBeInstanceOf(ApiError);
     expect((error as ApiError).status).toBe(409);
     expect((error as ApiError).problemDetails).toEqual(problemDetailsBody);
-
-    vi.restoreAllMocks();
   });
 
   it("throws an ApiError with undefined problemDetails when the body isn't JSON", async () => {
@@ -72,16 +69,12 @@ describe("logApiError", () => {
       }),
     } as unknown as Response;
 
-    vi.spyOn(console, "error").mockImplementation(() => {});
-
     const error = await logApiErrorAndThrow(response, "Update failed").catch(
       (thrown) => thrown,
     );
 
     expect(error).toBeInstanceOf(ApiError);
     expect((error as ApiError).problemDetails).toBeUndefined();
-
-    vi.restoreAllMocks();
   });
 
   it("uses fallback body when response clone fails", async () => {
@@ -95,37 +88,27 @@ describe("logApiError", () => {
       }),
     } as unknown as Response;
 
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
     await expect(logApiErrorAndThrow(response, "Test error")).rejects.toThrow(
       "Test error",
     );
-    expect(errorSpy).toHaveBeenCalledWith(
-      "[API Error] Test error",
+    expect(logger.error).toHaveBeenCalledWith(
       expect.objectContaining({
         body: "[Unable to read response body]",
       }),
+      "API Error: Test error",
     );
-
-    errorSpy.mockRestore();
   });
 
   it("logs parsing error and rethrows the original error", () => {
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const originalError = new Error("bad parse");
 
     expect(() =>
       logParsingErrorAndThrow(originalError, "Parse failed", "raw body"),
     ).toThrow("Parse failed");
 
-    expect(errorSpy).toHaveBeenCalledWith(
-      "[Parsing Error] Parse failed",
-      expect.objectContaining({
-        responseBody: "raw body",
-        error: originalError,
-      }),
+    expect(logger.error).toHaveBeenCalledWith(
+      { responseBody: "raw body", err: originalError },
+      "Parsing Error: Parse failed",
     );
-
-    errorSpy.mockRestore();
   });
 });

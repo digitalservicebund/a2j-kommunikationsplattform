@@ -2,6 +2,7 @@ import { data } from "react-router";
 import z from "zod";
 import de from "~/services/translations/de";
 import { ApiError } from "~/utils/apiError";
+import { logger } from "~/utils/logger.server";
 
 export type ActionResult<T = undefined> =
   | { status: "success"; data: T }
@@ -42,7 +43,7 @@ function actionResultFromUnknownError<T = undefined>(
   // If we get here, something threw that wasn't an ApiError (or was an
   // ApiError in a context where that's not expected) — log it so it isn't
   // silently swallowed; the client only ever sees the generic message.
-  console.error("[Unexpected action error]", error);
+  logger.error({ error }, "Unexpected action error");
 
   return data(
     actionError(options?.message ?? de.shared.form.errors.unknown, {

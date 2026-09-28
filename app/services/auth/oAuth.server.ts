@@ -5,6 +5,7 @@ import { memoize } from "es-toolkit/compat";
 import { Agent, fetch } from "undici";
 import { serverConfig } from "~/config/config.server";
 import { logApiErrorAndThrow } from "~/utils/logApiError";
+import { logger } from "~/utils/logger.server";
 import { AuthenticationProvider } from "./auth.types";
 
 type IdTokenClaims = {
@@ -38,13 +39,11 @@ export function makeGetUserInfo<P extends AuthenticationProvider>(
     try {
       claims = decodeIdTokenClaims(tokens.idToken);
     } catch (error) {
-      console.error("Failed to decode ID token", error);
+      logger.error({ error }, "Failed to decode ID token");
       return null;
     }
 
-    console.log(
-      `Received ID token claims from "${provider}": ${JSON.stringify(claims)}`,
-    );
+    logger.debug({ provider, claims }, "Received ID token claims");
 
     // BRAK/KomPla don't return a real email, so derive one from the "safe-id"
     // or "sub" claim — Better Auth requires a non-empty email per user.
@@ -255,8 +254,6 @@ export function makeGetTokenFromBrakIdp(options: {
       access_token: string;
       id_token: string;
     };
-
-    console.log("Received beA access token:", data.access_token);
 
     return exchangeForKomPlaIdpTokens(data.access_token, data.id_token);
   };

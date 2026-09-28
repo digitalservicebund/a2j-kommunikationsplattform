@@ -5,6 +5,7 @@ import {
 } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { fetchVerfahrenById } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { logger } from "~/utils/logger.server";
 import type {
   Dokument,
   EinreichungStatus,
@@ -37,7 +38,7 @@ export default async function loadVerfahrenEinreichungenOverview(
     },
   );
 
-  console.log("einreichungenList", einreichungenList);
+  logger.debug({ einreichungenList }, "Fetched Einreichungen list");
 
   const einreichungen = await Promise.all(
     einreichungenList.map(async (einreichung) => {

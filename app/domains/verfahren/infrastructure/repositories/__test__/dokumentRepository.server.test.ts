@@ -13,10 +13,15 @@ import {
 
 const mocks = vi.hoisted(() => ({
   apiRequest: vi.fn(),
+  loggerError: vi.fn(),
 }));
 
 vi.mock("~/domains/verfahren/infrastructure/api/apiClient", () => ({
   apiRequest: mocks.apiRequest,
+}));
+
+vi.mock("~/utils/logger.server", () => ({
+  logger: { error: mocks.loggerError },
 }));
 
 beforeEach(() => {
@@ -476,6 +481,7 @@ describe("uploadDokument", () => {
       uploadDokument(mockAuthData, "v-1", "e-1", file, "ANHANG"),
     ).rejects.toBe(uploadError);
 
+    expect(mocks.loggerError).not.toHaveBeenCalled();
     expect(mocks.apiRequest).toHaveBeenCalledTimes(3);
     expect(mocks.apiRequest).toHaveBeenNthCalledWith(
       3,
@@ -509,5 +515,36 @@ describe("uploadDokument", () => {
     await expect(
       uploadDokument(mockAuthData, "v-1", "e-1", file, "ANHANG"),
     ).rejects.toBe(uploadError);
+    expect(mocks.loggerError).toHaveBeenCalledWith(
+      { verfahrenId: "v-1", einreichungId: "e-1", dokumentId: "d-1" },
+      "Failed to delete orphaned Dokument after Datei upload failed",
+    );
+  });
+
+  it("logs and rethrows the original upload error when the cleanup delete responds unsuccessfully", async () => {
+    mocks.apiRequest.mockResolvedValueOnce({
+      data: {
+        id: "d-1",
+        status: "ANGELEGT",
+        anzeigename: "test.txt",
+        typ: "ANHANG",
+        erstelltVon: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+        erstelltAm: "2026-03-08T05:00:29.659Z",
+        sichtbarkeitAlle: true,
+      },
+      eTag: 'W/"0"',
+    });
+    const uploadError = new Error("Datei upload failed");
+    mocks.apiRequest.mockRejectedValueOnce(uploadError);
+    mocks.apiRequest.mockResolvedValueOnce({ ok: false, status: 412 });
+    const file = new File(["abc"], "test.txt", { type: "text/plain" });
+
+    await expect(
+      uploadDokument(mockAuthData, "v-1", "e-1", file, "ANHANG"),
+    ).rejects.toBe(uploadError);
+    expect(mocks.loggerError).toHaveBeenCalledWith(
+      { verfahrenId: "v-1", einreichungId: "e-1", dokumentId: "d-1" },
+      "Failed to delete orphaned Dokument after Datei upload failed",
+    );
   });
 });
