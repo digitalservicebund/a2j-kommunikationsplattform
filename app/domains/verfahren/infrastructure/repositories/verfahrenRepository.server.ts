@@ -74,7 +74,7 @@ export async function fetchVerfahrenById(
 
 export async function createVerfahren(
   authData: AuthenticationResponse,
-  verfahren: VerfahrenAendernRequestDTO,
+  verfahren?: VerfahrenAendernRequestDTO,
 ): Promise<Verfahren> {
   const errorMessage = "Verfahren could not be created.";
   const safeId = authData.authenticationTokens.idToken;
