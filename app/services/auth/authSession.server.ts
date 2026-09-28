@@ -1,3 +1,4 @@
+import { logger } from "~/utils/logger.server";
 import { AuthenticationProvider, AuthenticationResponse } from "./auth.types";
 import { auth } from "./betterAuth.server";
 import { magicLinkClient } from "./magicLinkClient.server";
@@ -37,7 +38,7 @@ async function getOAuth2Tokens(
       setCookieHeaders: headers.getSetCookie(),
     };
   } catch (error) {
-    console.error("getOAuth2Tokens: Failed to refresh access token", error);
+    logger.error({ error }, "Failed to refresh access token");
     return null;
   }
 }
@@ -66,7 +67,7 @@ async function getCustomProviderTokens(
     };
   }
 
-  console.log("getAuthData: Demo token expired, refreshing");
+  logger.debug("Demo token expired, refreshing");
   try {
     const refreshed = await magicLinkClient.refreshAccessToken(
       account.refreshToken,
@@ -84,7 +85,7 @@ async function getCustomProviderTokens(
       refreshToken: refreshed.refreshToken,
     };
   } catch (error) {
-    console.error("getCustomProviderTokens: Failed to refresh token", error);
+    logger.error({ error }, "Failed to refresh token");
     return null;
   }
 }

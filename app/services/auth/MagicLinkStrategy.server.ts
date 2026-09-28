@@ -1,4 +1,5 @@
 import { logApiErrorAndThrow } from "~/utils/logApiError";
+import { logger } from "~/utils/logger.server";
 import type { AuthenticationTokens } from "./auth.types";
 
 interface MagicLinkConfig {
@@ -25,7 +26,7 @@ export class MagicLinkStrategy {
    */
   async getMagicLinkUrl(): Promise<string> {
     this.assertConfig();
-    console.log("MagicLinkStrategy: phase 1 — requesting magic link");
+    logger.debug("MagicLinkStrategy: phase 1 — requesting magic link");
     const serviceToken = await this.requestServiceToken();
     return this.requestMagicLink(serviceToken);
   }
@@ -36,7 +37,9 @@ export class MagicLinkStrategy {
    */
   async exchangeCodeForTokens(code: string): Promise<AuthenticationTokens> {
     this.assertConfig();
-    console.log("MagicLinkStrategy: phase 2 — exchanging auth code for tokens");
+    logger.debug(
+      "MagicLinkStrategy: phase 2 — exchanging auth code for tokens",
+    );
     return this.doExchangeCodeForTokens(code);
   }
 
@@ -74,9 +77,9 @@ export class MagicLinkStrategy {
   private async requestServiceToken(): Promise<string> {
     const tokenEndpoint = `${this.config.idpIssuer}/protocol/openid-connect/token`;
 
-    console.log(
-      "MagicLinkStrategy: requesting service token from",
-      tokenEndpoint,
+    logger.debug(
+      { tokenEndpoint },
+      "MagicLinkStrategy: requesting service token",
     );
 
     const body = new URLSearchParams({
@@ -99,7 +102,7 @@ export class MagicLinkStrategy {
     }
 
     const data = (await response.json()) as Record<string, unknown>;
-    console.log("MagicLinkStrategy: service token obtained");
+    logger.debug("MagicLinkStrategy: service token obtained");
     return data["access_token"] as string;
   }
 
@@ -110,9 +113,9 @@ export class MagicLinkStrategy {
   private async requestMagicLink(serviceToken: string): Promise<string> {
     const magicLinkEndpoint = `${this.config.idpIssuer}/magic-link`;
 
-    console.log(
-      "MagicLinkStrategy: requesting magic link from",
-      magicLinkEndpoint,
+    logger.debug(
+      { magicLinkEndpoint },
+      "MagicLinkStrategy: requesting magic link",
     );
 
     const response = await fetch(magicLinkEndpoint, {
@@ -146,7 +149,7 @@ export class MagicLinkStrategy {
       const data = (await response.json()) as Record<string, unknown>;
 
       if (typeof data["link"] === "string") {
-        console.log("MagicLinkStrategy: magic link obtained (JSON)");
+        logger.debug("MagicLinkStrategy: magic link obtained (JSON)");
         return data["link"];
       }
 
@@ -157,7 +160,7 @@ export class MagicLinkStrategy {
 
     // Plain text URL
     const link = (await response.text()).trim();
-    console.log("MagicLinkStrategy: magic link obtained (plain text)");
+    logger.debug("MagicLinkStrategy: magic link obtained (plain text)");
     return link;
   }
 
@@ -166,7 +169,7 @@ export class MagicLinkStrategy {
   ): Promise<AuthenticationTokens> {
     const tokenEndpoint = `${this.config.idpIssuer}/protocol/openid-connect/token`;
 
-    console.log("MagicLinkStrategy: refreshing access token");
+    logger.debug("MagicLinkStrategy: refreshing access token");
 
     const body = new URLSearchParams({
       grant_type: "refresh_token",
@@ -229,7 +232,10 @@ export class MagicLinkStrategy {
       (data["refresh_token"] as string) || fallbackRefreshToken || "";
     const expiresIn = (data["expires_in"] as number) ?? 300;
 
-    console.log("MagicLinkStrategy parseTokenResponse", JSON.stringify(data));
+    logger.debug(
+      { tokenResponse: data },
+      "MagicLinkStrategy: parsed token response",
+    );
 
     return {
       accessToken,

@@ -10,7 +10,11 @@ vi.mock("~/services/auth/betterAuth.server", () => ({
 }));
 
 vi.mock("~/config/config", () => ({
-  config: vi.fn(() => ({ ENVIRONMENT: "development", SENTRY_DSN: "" })),
+  config: vi.fn(() => ({
+    ENVIRONMENT: "development",
+    LOG_LEVEL: "info",
+    SENTRY_DSN: "",
+  })),
 }));
 
 import { config } from "~/config/config";
@@ -24,6 +28,7 @@ describe("/action/login-user action", () => {
     vi.resetAllMocks();
     vi.mocked(config).mockReturnValue({
       ENVIRONMENT: "development",
+      LOG_LEVEL: "info",
       SENTRY_DSN: "",
     });
   });
@@ -57,6 +62,7 @@ describe("/action/login-user action", () => {
   it("returns 403 for developer login outside development", async () => {
     vi.mocked(config).mockReturnValue({
       ENVIRONMENT: "production",
+      LOG_LEVEL: "info",
       SENTRY_DSN: "",
     });
 

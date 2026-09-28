@@ -1,6 +1,7 @@
 import { createContext, href, redirect } from "react-router";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { getAuthData } from "~/services/auth/authSession.server";
+import { logger } from "~/utils/logger.server";
 
 export const authContext = createContext<AuthenticationResponse | null>();
 
@@ -11,6 +12,8 @@ type MiddlewareArgs = {
   };
 };
 
+const localLogger = logger.child({ name: "authMiddleware" });
+
 export async function authMiddleware(
   { request, context }: MiddlewareArgs,
   next: () => Promise<Response>,
@@ -18,7 +21,7 @@ export async function authMiddleware(
   const authData = await getAuthData(request);
 
   if (!authData) {
-    console.log("authMiddleware: No auth data found, redirecting to login");
+    localLogger.info("No auth data found, redirecting to login");
     throw redirect(href("/login"));
   }
 
@@ -27,8 +30,8 @@ export async function authMiddleware(
   const response = await next();
 
   if (authData.sessionCookieHeader.length > 0) {
-    console.log(
-      "authMiddleware: sessionCookieHeader found, appending to response headers",
+    localLogger.debug(
+      "Session cookie found in auth data, appending to response headers",
     );
     const newResponse = new Response(response.body, {
       status: response.status,

@@ -35,6 +35,7 @@ describe("config()", () => {
     const browserConfig = configModule.config();
     expect(browserConfig).toStrictEqual({
       ENVIRONMENT: "testing",
+      LOG_LEVEL: "info",
       SENTRY_DSN: "first",
     });
   });

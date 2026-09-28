@@ -1,10 +1,10 @@
 import { createRequestHandler } from "@react-router/express";
 import compression from "compression";
 import express from "express";
-import morgan from "morgan";
-import logger from "pino-http";
+import pinoHttp from "pino-http";
 import { RouterContextProvider } from "react-router";
 import { initializeSentryOnServer } from "./app/sentry.ts";
+import { logger } from "./app/utils/logger.server.ts";
 
 initializeSentryOnServer();
 
@@ -87,14 +87,11 @@ if (viteDevServer) {
       res.set("X-Robots-Tag", "noindex");
       next();
     });
-
-    infoLog += "  -> Add pino HTTP logger\n";
-    app.use(logger());
   }
 }
 
 app.use(express.static("build/client", { maxAge: "1h" }));
-app.use(morgan("tiny"));
+app.use(pinoHttp({ logger }));
 
 /**
  * Express v5 upgrade is missing regular expression documentation
@@ -106,6 +103,6 @@ app.all(/(.*)/, reactRouterHandler);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(infoLog);
-  console.log(`Express server listening at http://localhost:${port}\n`);
+  logger.info(infoLog);
+  logger.info(`Express server listening at http://localhost:${port}`);
 });

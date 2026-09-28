@@ -1,4 +1,5 @@
 import z from "zod";
+import { logger } from "~/utils/logger.server";
 
 export const getListeResponseSchema = <T extends z.ZodTypeAny>(
   elementSchema: T,
@@ -14,7 +15,7 @@ export const extractElementeFromListeResponse = <T extends z.ZodTypeAny>(
   try {
     return responseData.elemente;
   } catch (error) {
-    console.error("Error extracting elemente from liste response:", error);
+    logger.error({ error }, "Error extracting Elemente from Liste response");
     return [];
   }
 };

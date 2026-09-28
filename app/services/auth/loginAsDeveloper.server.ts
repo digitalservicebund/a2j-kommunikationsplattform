@@ -1,10 +1,11 @@
 import { redirect } from "react-router";
+import { logger } from "~/utils/logger.server";
 import { AuthenticationProvider } from "./auth.types";
 import { auth } from "./betterAuth.server";
 
 export const loginAsDeveloper = async () => {
   try {
-    console.log("loginAsDeveloper");
+    logger.debug("loginAsDeveloper");
 
     const devAccessToken = "dev-access-token";
     const devIdToken = "DE.BRAK_SPT.cbceac6e-5fe8-11f1-b4b1-325096b39f47.28e6";
@@ -24,7 +25,7 @@ export const loginAsDeveloper = async () => {
 
     return redirect("/", { headers: response.headers });
   } catch (error) {
-    console.error("Dev login error:", error);
+    logger.error({ error }, "Dev login error");
     return new Response("Dev login failed", { status: 500 });
   }
 };
