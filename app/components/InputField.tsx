@@ -6,7 +6,13 @@ export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   className?: string;
   optional?: boolean;
   hint?: string;
-  errors?: Record<string, string[]>;
+
+  /**
+   * Either a arry of error messages or a form-level mapping of field names
+   * to such error message arrays. In the latter case, the field looks up
+   * its own errors by `name`.
+   */
+  errors?: string[] | Record<string, string[]>;
 }
 
 export default function InputField({
@@ -22,7 +28,8 @@ export default function InputField({
   ...inputProps
 }: Readonly<InputFieldProps>) {
   const hintId = hint ? `${id}-hint` : undefined;
-  const error = errors?.[name]?.join(" ");
+  const fieldErrors = Array.isArray(errors) ? errors : errors?.[name];
+  const error = fieldErrors?.join(" ");
   const errorId = error ? `${id}-error` : undefined;
 
   return (
@@ -33,11 +40,13 @@ export default function InputField({
         {label}
         {optional && <span className="kern-label__optional">- Optional</span>}
       </label>
+
       {hint && (
         <div className="kern-hint" id={hintId}>
           {hint}
         </div>
       )}
+
       <input
         type={type}
         className={`kern-form-input__input ${error ? "kern-form-input__input--error" : ""}`.trim()}
@@ -49,6 +58,7 @@ export default function InputField({
         }
         {...inputProps}
       />
+
       {error && (
         <p className="kern-error" id={errorId}>
           <span

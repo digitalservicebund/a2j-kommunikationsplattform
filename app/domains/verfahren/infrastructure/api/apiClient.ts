@@ -21,7 +21,7 @@ type ApiRequestUrlOptions =
       fullUrl: string;
     };
 
-type ApiRequestOptions = ApiRequestUrlOptions & {
+type ApiRequestOptions<T = unknown> = ApiRequestUrlOptions & {
   authData: AuthenticationResponse;
   method?: string;
   body?: unknown;
@@ -30,7 +30,7 @@ type ApiRequestOptions = ApiRequestUrlOptions & {
   includeResponseETag?: boolean;
   includeResponseMeta?: boolean;
   throwOnError?: boolean;
-  schema?: z.ZodTypeAny;
+  schema?: z.ZodType<T>;
   errorMessage?: string; // error message used for logging/parsing helpers
   responseType?: "json" | "text"; // defaults to "json"; use "text" for non-JSON bodies (e.g. XML)
 };
@@ -194,15 +194,15 @@ function buildSuccessReturn<T>(
 }
 
 export function apiRequest<T = unknown>(
-  opts: ApiRequestOptions & { throwOnError: false },
+  opts: ApiRequestOptions<T> & { throwOnError: false },
 ): Promise<ApiRequestHandledResult<T>>;
 export function apiRequest<T = unknown>(
-  opts: ApiRequestOptions & { includeResponseMeta: true },
+  opts: ApiRequestOptions<T> & { includeResponseMeta: true },
 ): Promise<ApiRequestWithMetaResult<T>>;
 export function apiRequest<T = unknown>(
-  opts: ApiRequestOptions & { includeResponseETag: true },
+  opts: ApiRequestOptions<T> & { includeResponseETag: true },
 ): Promise<ApiRequestWithETagResult<T>>;
-export function apiRequest<T = unknown>(opts: ApiRequestOptions): Promise<T>;
+export function apiRequest<T = unknown>(opts: ApiRequestOptions<T>): Promise<T>;
 
 export async function apiRequest<T = unknown>(
   opts: ApiRequestOptions,
