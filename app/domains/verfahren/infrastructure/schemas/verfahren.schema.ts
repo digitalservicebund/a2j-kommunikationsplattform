@@ -22,7 +22,7 @@ const VerfahrenApiSchema = z.object({
   erstellt_von: z.string(),
   erstellt_am: z.iso.datetime(),
   eingereicht_am: z.nullable(z.iso.datetime()),
-  gericht: CodeWertSchema,
+  gericht: z.nullable(CodeWertSchema),
   beteiligungen: BeteiligungenSchema,
 });
 

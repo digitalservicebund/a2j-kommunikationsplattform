@@ -25,7 +25,7 @@ export const VerfahrenSchema = z.object({
   erstelltVon: z.string(),
   erstelltAm: z.iso.datetime(),
   eingereichtAm: z.nullable(z.iso.datetime()),
-  gericht: CodeWertSchema,
+  gericht: z.nullable(CodeWertSchema),
   beteiligungen: z.nullable(z.array(BeteiligungSchema)),
 });
 
