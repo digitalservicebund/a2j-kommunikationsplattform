@@ -178,8 +178,10 @@ export type CreateDokumentResult = {
   eTag: string | null;
 };
 
-// Creates the Dokument's metadata (status ANGELEGT). The binary content is
-// uploaded separately afterwards via uploadDokumentDatei.
+/**
+ * Creates the Dokument's metadata (status `ANGELEGT`). The binary content is
+ * uploaded separately afterwards via `uploadDokumentDatei`.
+ */
 export async function createDokument(
   authData: AuthenticationResponse,
   options: CreateDokumentOptions,
