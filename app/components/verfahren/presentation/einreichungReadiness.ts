@@ -49,9 +49,12 @@ export function resolveReadinessPresentation(
   }
 
   if (validierungsstatus.ergebnis === "NICHT_VERFUEGBAR") {
-    // Provisional: treating every NICHT_VERFUEGBAR the same regardless of
-    // Dokument typ, as it's non-blocking per the API
-    // Pending confirmed product requirements for this state.
+    // Non-blocking per the API (only ROT prevents Einreichen, regardless of
+    // Dokument typ — see the einreichen endpoint's 409 contract), but it
+    // wasn't actually checked, so it must not be shown as "ready"/"checked
+    // clean". The XJustiz Dokument (the main source of this state) isn't
+    // rendered in VerfahrenDokumenteList at all, but other Dokument types
+    // can reach this state too, so this stays generic.
     return {
       readinessLabel: badgeLabels.notAvailable,
       readinessBadgeClass: "info",

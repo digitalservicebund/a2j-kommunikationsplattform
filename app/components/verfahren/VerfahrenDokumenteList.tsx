@@ -24,7 +24,13 @@ export default function VerfahrenDokumenteList({
 }: Readonly<VerfahrenDokumenteListProps>) {
   const { routes, shared } = useTranslations();
 
-  if (dokumente.length === 0) {
+  // The XJustiz Dokument is system-generated metadata, not a file the user
+  // submitted — it's never shown in this list.
+  const visibleDokumente = dokumente.filter(
+    (dokument) => dokument.typ !== "XJUSTIZ",
+  );
+
+  if (visibleDokumente.length === 0) {
     return (
       <p className="kern-body kern-mt-md m-0">Keine Dokumente vorhanden.</p>
     );
@@ -32,7 +38,7 @@ export default function VerfahrenDokumenteList({
 
   return (
     <div className="kern-mt-md kern-gap-md flex w-full flex-col">
-      {dokumente.map((dokument) => {
+      {visibleDokumente.map((dokument) => {
         const dokumentErgebnis = dokument.validierungsstatus.ergebnis;
         const dokumentHasValidationIssues =
           dokumentErgebnis === "ROT" || dokumentErgebnis === "GELB";
