@@ -72,7 +72,7 @@ export default function VerfahrenDocumentsFormSection({
                             </div>
 
                             <div className="kern-body kern-body--small">
-                              {formatDokumentSize(dokument.sizeInBytes)}
+                              {formatDokumentSize(dokument.sizeInBytes ?? 0)}
                             </div>
                           </div>
 

@@ -75,6 +75,24 @@ describe("createVerfahren", () => {
     });
     expect(result).toEqual(verfahren);
   });
+
+  it("omits verfahren from the request body when not provided", async () => {
+    mocks.apiRequest.mockResolvedValueOnce({});
+
+    await createVerfahren(mockAuthData);
+
+    expect(mocks.apiRequest).toHaveBeenCalledWith({
+      authData: mockAuthData,
+      path: "/api/v1/verfahren",
+      method: "POST",
+      body: {
+        safe_id: mockAuthData.authenticationTokens.idToken,
+        verfahren: undefined,
+      },
+      schema: expect.anything(),
+      errorMessage: "Verfahren could not be created.",
+    });
+  });
 });
 
 describe("updateVerfahren", () => {

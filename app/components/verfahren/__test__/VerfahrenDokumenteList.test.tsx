@@ -111,6 +111,15 @@ describe("VerfahrenDokumenteList", () => {
     });
   });
 
+  it("never shows the system-generated XJustiz Dokument", () => {
+    renderList([
+      buildDokument({ id: "d-1", typ: "XJUSTIZ", anzeigename: "xjustiz.xml" }),
+    ]);
+
+    expect(screen.getByText("Keine Dokumente vorhanden.")).toBeInTheDocument();
+    expect(screen.queryByText("xjustiz.xml")).not.toBeInTheDocument();
+  });
+
   it("shows a validation Alert when a Dokument's ergebnis is ROT", () => {
     renderList([
       buildDokument({
