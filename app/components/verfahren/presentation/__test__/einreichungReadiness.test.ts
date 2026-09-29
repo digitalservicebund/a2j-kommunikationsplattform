@@ -10,7 +10,6 @@ const badgeLabels = {
   checking: "checking",
   problem: "problem",
   warning: "warning",
-  notAvailable: "notAvailable",
 };
 
 describe("resolveReadinessPresentation", () => {
@@ -50,8 +49,10 @@ describe("resolveReadinessPresentation", () => {
     expect(result.readinessBadgeClass).toBe("info");
   });
 
-  it("maps GRUEN/ROT/GELB to the right tone once finished", () => {
-    const finished = (ergebnis: "GRUEN" | "ROT" | "GELB") =>
+  it("maps GRUEN/ROT/GELB/other to the right tone once finished", () => {
+    const finished = (
+      ergebnis: "GRUEN" | "ROT" | "GELB" | "NICHT_VERFUEGBAR",
+    ) =>
       resolveReadinessPresentation(
         { validierungslaufStatus: "ABGESCHLOSSEN", ergebnis, fehler: [] },
         badgeLabels,
@@ -69,25 +70,9 @@ describe("resolveReadinessPresentation", () => {
       readinessLabel: "warning",
       readinessBadgeClass: "warning",
     });
-  });
-
-  // Only ROT blocks Einreichen (per the API's einreichen 409 contract), so
-  // NICHT_VERFUEGBAR (e.g. the system-generated XJustiz Dokument, which
-  // isn't subject to content validation) is non-blocking — but it wasn't
-  // actually checked, so it gets its own neutral badge instead of "ready".
-  it("shows a neutral notAvailable badge for a finished NICHT_VERFUEGBAR result", () => {
-    const result = resolveReadinessPresentation(
-      {
-        validierungslaufStatus: "ABGESCHLOSSEN",
-        ergebnis: "NICHT_VERFUEGBAR",
-        fehler: [],
-      },
-      badgeLabels,
-    );
-
-    expect(result).toEqual({
-      readinessLabel: "notAvailable",
-      readinessBadgeClass: "info",
+    expect(finished("NICHT_VERFUEGBAR")).toEqual({
+      readinessLabel: "soon",
+      readinessBadgeClass: "warning",
     });
   });
 });

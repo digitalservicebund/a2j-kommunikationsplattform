@@ -8,7 +8,6 @@ export type ReadinessBadgeLabels = {
   checking: string;
   problem: string;
   warning: string;
-  notAvailable: string;
 };
 
 export type ReadinessPresentation = {
@@ -34,6 +33,13 @@ export function resolveReadinessPresentation(
     };
   }
 
+  if (validierungsstatus.ergebnis === "GRUEN") {
+    return {
+      readinessLabel: badgeLabels.ready,
+      readinessBadgeClass: "success",
+    };
+  }
+
   if (validierungsstatus.ergebnis === "ROT") {
     return {
       readinessLabel: badgeLabels.problem,
@@ -48,20 +54,7 @@ export function resolveReadinessPresentation(
     };
   }
 
-  if (validierungsstatus.ergebnis === "NICHT_VERFUEGBAR") {
-    // Non-blocking per the API (only ROT prevents Einreichen, regardless of
-    // Dokument typ — see the einreichen endpoint's 409 contract), but it
-    // wasn't actually checked, so it must not be shown as "ready"/"checked
-    // clean". The XJustiz Dokument (the main source of this state) isn't
-    // rendered in VerfahrenDokumenteList at all, but other Dokument types
-    // can reach this state too, so this stays generic.
-    return {
-      readinessLabel: badgeLabels.notAvailable,
-      readinessBadgeClass: "info",
-    };
-  }
-
-  return { readinessLabel: badgeLabels.ready, readinessBadgeClass: "success" };
+  return { readinessLabel: badgeLabels.soon, readinessBadgeClass: "warning" };
 }
 
 export type BelegBadgeLabels = {
