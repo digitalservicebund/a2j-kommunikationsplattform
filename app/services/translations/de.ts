@@ -286,7 +286,6 @@ export const de = {
             problem: "Es liegt ein Problem vor",
             warning: "Es liegen Hinweise vor",
             checkedClean: "Geprüft und virenfrei",
-            notAvailable: "Keine Prüfung verfügbar",
           },
         },
         belegStatus: {
