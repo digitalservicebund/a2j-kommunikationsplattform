@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "fs";
 import { memoize } from "es-toolkit";
-import { Config, config } from "./config";
+import { Config, config } from "./config.ts";
 
 interface ServerConfig extends Config {
   BETTER_AUTH_SECRET: string;
@@ -51,7 +51,7 @@ function configValue(
     value = process.env[key];
   }
 
-  return value?.trim() ?? options?.default ?? "";
+  return (value?.trim() || options?.default) ?? "";
 }
 
 export const serverConfig = memoize((): ServerConfig => ({

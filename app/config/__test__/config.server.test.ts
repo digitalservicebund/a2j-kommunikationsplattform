@@ -42,6 +42,16 @@ describe("serverConfig()", () => {
     expect(config.BRAK_IDP_OIDC_REDIRECT_URI).toBe("");
   });
 
+  it("falls back to default value or empty string if environment variable is set, but empty", () => {
+    vi.stubEnv("BETTER_AUTH_URL", "");
+    vi.stubEnv("BRAK_IDP_OIDC_REDIRECT_URI", "");
+
+    const config = serverConfig();
+
+    expect(config.BETTER_AUTH_URL).toBe("http://localhost:3000");
+    expect(config.BRAK_IDP_OIDC_REDIRECT_URI).toBe("");
+  });
+
   it("returns an empty string for an undefined config item", () => {
     vi.stubEnv("SENTRY_DSN", undefined);
 
