@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
 import {
   createEinreichung,
+  createEinreichungXJustiz,
   fetchEinreichungById,
   fetchEinreichungenById,
   fetchEinreichungStatus,
@@ -121,6 +122,29 @@ describe("fetchEinreichungXJustiz", () => {
         responseType: "text",
         errorMessage:
           "XJustiz-Nachricht for Einreichung with id e-1 of Verfahren with id v-1 could not be fetched.",
+      }),
+    );
+  });
+});
+
+describe("createEinreichungXJustiz", () => {
+  it("posts ersetzen to the xjustiz endpoint", async () => {
+    mocks.apiRequest.mockResolvedValueOnce(undefined);
+
+    await createEinreichungXJustiz(mockAuthData, {
+      verfahrenId: "v-1",
+      id: "e-1",
+      ersetzen: true,
+    });
+
+    expect(mocks.apiRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        authData: mockAuthData,
+        path: "/api/v1/verfahren/v-1/einreichungen/e-1/xjustiz",
+        method: "POST",
+        body: { ersetzen: true },
+        errorMessage:
+          "XJustiz-Dokument for Einreichung with id e-1 of Verfahren with id v-1 could not be created.",
       }),
     );
   });
