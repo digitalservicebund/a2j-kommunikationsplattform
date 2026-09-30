@@ -42,6 +42,26 @@ describe("VerfahrenSchema", () => {
     });
   });
 
+  it("allows a null gericht (not yet assigned a court)", () => {
+    const apiResponse = {
+      id: "2ab3cbc7-d00a-48bf-95a1-4d6f07406196",
+      aktenzeichen_gericht: null,
+      verfahrensgegenstand: null,
+      kurzrubrum: null,
+      status: "ERSTELLT",
+      status_geaendert_am: "2025-03-08T05:00:29.659Z",
+      erstellt_von: "DE.BRAK.bdda0cd6-ccdd-44a1-a42c-f13ced17235b.334d",
+      erstellt_am: "2025-03-08T05:00:29.659Z",
+      eingereicht_am: null,
+      gericht: null,
+      beteiligungen: [],
+    };
+
+    const result = VerfahrenSchema.parse(apiResponse);
+
+    expect(result.gericht).toBeNull();
+  });
+
   it("throws on an invalid response", () => {
     expect(() => VerfahrenSchema.parse({ invalid: true })).toThrow();
   });
