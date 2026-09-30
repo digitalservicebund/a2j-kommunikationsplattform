@@ -74,13 +74,13 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
 
-  #  vulnerability-scan:
-  #    name: Vulnerability Scan
-  #    uses: ./.github/workflows/scan.yml
-  #    secrets: inherit
-  #    permissions:
-  #      contents: read
-  #      security-events: write # trivy scan needs this
+  vulnerability-scan:
+    name: Vulnerability Scan
+    uses: ./.github/workflows/scan.yml
+    secrets: inherit
+    permissions:
+      contents: read
+      security-events: write # trivy scan needs this
 
   build-and-push-image:
     name: Build & push Docker image
@@ -88,7 +88,7 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
       - check
-    #      - vulnerability-scan
+      - vulnerability-scan
     permissions:
       contents: read
       id-token: write # This is used to complete the identity challenge with sigstore/fulcio..
