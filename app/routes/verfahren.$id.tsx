@@ -268,9 +268,6 @@ export default function VerfahrenId() {
     useLoaderData<LoaderData>();
   const { routes, shared } = useTranslations();
 
-  console.log("verfahren", verfahren);
-  console.log("einreichungen", einreichungen);
-
   const createEinreichungFormRef = useRef<HTMLFormElement>(null);
   const [art, setArt] = useState("");
 
