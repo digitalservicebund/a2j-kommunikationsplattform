@@ -23,6 +23,7 @@ import {
 import { VERFAHREN_PAGE_LIMIT } from "~/domains/verfahren/services/verfahrenListOptions";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+import { logger } from "~/utils/logger.server";
 
 export type VerfahrenLoaderData = {
   items: Verfahren[];
@@ -57,6 +58,8 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
       sort,
       search_text,
     });
+
+    logger.debug({ elemente: verfahren.elemente }, "verfahren");
 
     const hasMoreItems = verfahren.elemente.length > VERFAHREN_PAGE_LIMIT;
     const items: Verfahren[] = hasMoreItems
