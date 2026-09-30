@@ -1,9 +1,9 @@
 import { clsx } from "clsx";
-import { ReactNode } from "react";
+import { HTMLAttributes, ReactNode } from "react";
 
 export type CalloutType = "info" | "warning";
 
-export interface CalloutProps {
+export interface CalloutProps extends HTMLAttributes<HTMLElement> {
   type: CalloutType;
   title: string;
   children?: ReactNode;
@@ -13,6 +13,8 @@ export default function Callout({
   type,
   title,
   children,
+  className,
+  ...props
 }: Readonly<CalloutProps>) {
   const isInfo = type === "info";
   const isWarning = type === "warning";
@@ -33,7 +35,9 @@ export default function Callout({
         // Warning
         isWarning && "border-s-(--kern-color-feedback-warning-contextual)",
         isWarning && "bg-(--kern-color-feedback-warning-background-contextual)",
+        className,
       )}
+      {...props}
     >
       {/* Icon */}
       <span
