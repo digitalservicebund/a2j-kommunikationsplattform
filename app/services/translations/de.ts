@@ -364,7 +364,7 @@ export const de = {
       code: {
         label: "Beitrittscode",
         hint: "Den Code finden Sie im Anschreiben des Gerichts.",
-        placeholder: "z.B. K7M49PXQ2WRT",
+        placeholder: "z.B. K7M4-9PXQ-2WRT",
         invalid:
           "Der Code ist ungültig oder wurde bereits verwendet. Bitte prüfen Sie Ihre Eingabe und versuchen es erneut.",
       },

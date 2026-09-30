@@ -1,9 +1,10 @@
+import { clsx } from "clsx";
 import { InputHTMLAttributes } from "react";
 
 export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   id: string;
-  className?: string;
+  inputClassName?: string;
   optional?: boolean;
   hint?: string;
 
@@ -18,7 +19,8 @@ export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 export default function InputField({
   label,
   id,
-  className = "",
+  className,
+  inputClassName,
   optional,
   disabled,
   hint,
@@ -34,7 +36,11 @@ export default function InputField({
 
   return (
     <div
-      className={`kern-form-input ${error ? "kern-form-input--error" : ""} ${className}`.trim()}
+      className={clsx(
+        "kern-form-input",
+        !!error && "kern-form-input--error",
+        className,
+      )}
     >
       <label className="kern-label" htmlFor={id}>
         {label}
@@ -49,7 +55,11 @@ export default function InputField({
 
       <input
         type={type}
-        className={`kern-form-input__input ${error ? "kern-form-input__input--error" : ""}`.trim()}
+        className={clsx(
+          "kern-form-input__input",
+          !!error && "kern-form-input__input--error",
+          inputClassName,
+        )}
         id={id}
         name={name}
         aria-disabled={disabled}

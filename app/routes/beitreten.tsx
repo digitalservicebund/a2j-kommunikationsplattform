@@ -1,3 +1,5 @@
+import { clsx } from "clsx";
+import { InputEventHandler, useCallback } from "react";
 import {
   data,
   Form,
@@ -127,16 +129,38 @@ function LiftCodeValidationForm({
 }) {
   const t = useTranslations();
 
+  const handleCodeBeforeInput = useCallback<
+    InputEventHandler<HTMLInputElement>
+  >((e) => {
+    // Allow only letters, numbers and dashes to be inserted, which are the
+    // only characters allowed in lift codes.
+    if (e.data && !/^[a-zA-Z0-9-]+$/.test(e.data)) {
+      e.preventDefault();
+    }
+  }, []);
+
   return (
     <Form
       method="GET"
-      className="kern-mt-md kern-px-lg kern-py-md kern-gap-lg flex flex-col rounded-(--kern-metric-border-radius-large) border border-(--kern-color-decorative-border-contextual)"
+      className={clsx(
+        "kern-mt-md",
+        "kern-px-lg",
+        "kern-py-md",
+        "kern-gap-lg",
+        "flex",
+        "flex-col",
+        "rounded-(--kern-metric-border-radius-large)",
+        "border",
+        "border-(--kern-color-decorative-border-contextual)",
+      )}
     >
       <InputField
         id="code"
+        inputClassName="uppercase placeholder:normal-case"
         label={t.routes.beitreten.code.label}
         hint={t.routes.beitreten.code.hint}
         placeholder={t.routes.beitreten.code.placeholder}
+        onBeforeInput={handleCodeBeforeInput}
         defaultValue={initialCode}
         errors={error ? [t.routes.beitreten.code.invalid] : undefined}
       />

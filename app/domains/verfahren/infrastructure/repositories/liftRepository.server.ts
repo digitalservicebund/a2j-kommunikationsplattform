@@ -12,6 +12,14 @@ export const LiftResponseSchema = z.object({
 export type LiftResponse = z.infer<typeof LiftResponseSchema>;
 
 /**
+ * Converts a "lift code" (Beitrittscode) to its canonical form, by uppercasing
+ * it, removing dashes, and removing any whitespace.
+ */
+function normalizeLiftCode(code: string) {
+  return code.toUpperCase().replaceAll(/[-\s]/g, "");
+}
+
+/**
  * Check a "lift code" (Beitrittscode) for joining a particular Verfahren.
  * If it is valid and has not been used yet, the associated "lift", including
  * information about the associated Verfahren, is returned. Otherwise, an
@@ -24,7 +32,7 @@ export async function validateLiftCode(
   const { data: lift, eTag } = await apiRequest({
     authData,
     path: "/api/v1/lift?lift-schluessel=123",
-    headers: { "lift-schluessel": code },
+    headers: { "lift-schluessel": normalizeLiftCode(code) },
     schema: LiftResponseSchema,
     includeResponseETag: true,
   });
@@ -59,7 +67,7 @@ export async function performLift(
     path: `/api/v1/lift/${liftId}`,
     headers: { "If-Match": liftETag },
     body: {
-      lift_schluessel: code,
+      lift_schluessel: normalizeLiftCode(code),
       safe_id: safeId,
     },
     schema: PerformLiftResponseSchema,
