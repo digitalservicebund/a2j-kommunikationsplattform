@@ -369,7 +369,14 @@ export const de = {
           "Der Code ist ungültig oder wurde bereits verwendet. Bitte prüfen Sie Ihre Eingabe und versuchen es erneut.",
       },
       validateCode: "Code prüfen",
-      joinVerfahren: "Verfahren beitreten",
+      joinVerfahren: {
+        label: "Verfahren beitreten",
+        error: {
+          title: "Verfahren konnte nicht beigetreten werden",
+          description:
+            "Es handelt sich vermutlich um einen temporären Fehler. Bitte versuchen Sie es erneut.",
+        },
+      },
       yourRole: {
         title: "Ihre Rolle in diesem Verfahren",
         description:

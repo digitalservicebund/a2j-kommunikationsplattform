@@ -6,9 +6,11 @@ import {
   Link,
   LoaderFunctionArgs,
   redirect,
+  useActionData,
   useLoaderData,
   useSearchParams,
 } from "react-router";
+import Alert from "~/components/Alert";
 import Callout from "~/components/Callout";
 import InputField from "~/components/InputField";
 import { PageMetadata } from "~/components/PageMetadata";
@@ -85,7 +87,10 @@ export async function action({ request, context }: Route.ActionArgs) {
     logger.debug({ code, verfahrenId }, "Lift performed successfully");
     return redirect(`/verfahren/${verfahrenId}`);
   } catch {
-    return data(actionError("TODO"), { status: 500 });
+    return data(
+      actionError(de.routes.beitreten.joinVerfahren.error.description),
+      { status: 500 },
+    );
   }
 }
 
@@ -194,6 +199,7 @@ function LiftConfirmationForm({
   verfahren: Verfahren;
 }>) {
   const t = useTranslations();
+  const actionData = useActionData();
 
   const klagende = getBeteiligteByRoleCode(
     verfahren.beteiligungen,
@@ -274,6 +280,14 @@ function LiftConfirmationForm({
           />
         </Callout>
 
+        {actionData?.error && (
+          <Alert
+            type="error"
+            title={t.routes.beitreten.joinVerfahren.error.title}
+            message={actionData.error}
+          ></Alert>
+        )}
+
         <div className="kern-gap-md flex justify-end">
           <Link to="/beitreten" className="kern-btn kern-btn--secondary">
             <span
@@ -285,7 +299,7 @@ function LiftConfirmationForm({
 
           <button type="submit" className="kern-btn kern-btn--primary">
             <span className="kern-label">
-              {t.routes.beitreten.joinVerfahren}
+              {t.routes.beitreten.joinVerfahren.label}
             </span>
             <span
               className="kern-icon kern-icon--check"
