@@ -123,10 +123,10 @@ export default function Beitreten() {
 function LiftCodeValidationForm({
   initialCode,
   error,
-}: {
+}: Readonly<{
   initialCode?: string;
   error?: string;
-}) {
+}>) {
   const t = useTranslations();
 
   const handleCodeBeforeInput = useCallback<
