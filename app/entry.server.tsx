@@ -6,6 +6,8 @@ import { renderToPipeableStream } from "react-dom/server";
 import type { RenderToPipeableStreamOptions } from "react-dom/server";
 import {
   EntryContext,
+  HandleErrorFunction,
+  isRouteErrorResponse,
   RouterContextProvider,
   ServerRouter,
 } from "react-router";
@@ -13,6 +15,7 @@ import { config } from "~/config/config";
 import { getCspHeader } from "~/services/security/cspHeader.server";
 import { NonceContext } from "~/services/security/nonce";
 import { generateNonce } from "~/services/security/nonce.server";
+import { logger } from "~/utils/logger.server";
 import { originFromUrlString } from "~/utils/originFromUrlString";
 
 // =============================================================================
@@ -124,7 +127,7 @@ function handleRequest(
           // errors encountered during initial shell rendering since they'll
           // reject and get logged in handleDocumentRequest.
           if (shellRendered) {
-            console.error(error);
+            logger.error({ error }, "Error during stream rendering");
           }
         },
       },
@@ -137,9 +140,19 @@ function handleRequest(
 export default Sentry.wrapSentryHandleRequest(handleRequest);
 
 // CUSTOM: Define a custom error handler to integrate with Sentry.
-export const handleError = Sentry.createSentryHandleError({
-  logErrors: true,
-});
+// Pass `logErrors: false` to `createSentryHandleError()` so that we can log
+// errors using our own logger rather than directly calling `console.error`.
+const sentryErrorHandler = Sentry.createSentryHandleError({ logErrors: false });
+export const handleError: HandleErrorFunction = (error, args) => {
+  // Do not log aborted requests or expected error responses
+  if (
+    !args.request.signal.aborted &&
+    (!isRouteErrorResponse(error) || error.status >= 500)
+  ) {
+    logger.error({ error }, "Request handler failed");
+  }
+  return sentryErrorHandler(error, args);
+};
 
 // CUSTOM: Integrate Sentry into react-router's Instrumentation API.
 export const instrumentations = [Sentry.createSentryServerInstrumentation()];

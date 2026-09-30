@@ -4,6 +4,11 @@ import {
   extractElementeFromListeResponse,
   getListeResponseSchema,
 } from "~/domains/verfahren/infrastructure/api/listResponse";
+import { logger } from "~/utils/logger.server";
+
+vi.mock("~/utils/logger.server", () => ({
+  logger: { error: vi.fn() },
+}));
 
 const ElementSchema = z.object({ id: z.string(), wert: z.string() });
 
@@ -49,20 +54,14 @@ describe("extractElementeFromListeResponse", () => {
   });
 
   test("returns an empty array and logs an error when the response is missing", () => {
-    const consoleErrorSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
-
     expect(
       extractElementeFromListeResponse(
         undefined as unknown as { elemente: unknown[] },
       ),
     ).toEqual([]);
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "Error extracting elemente from liste response:",
-      expect.anything(),
+    expect(logger.error).toHaveBeenCalledWith(
+      { error: expect.anything() },
+      "Error extracting Elemente from Liste response",
     );
-
-    consoleErrorSpy.mockRestore();
   });
 });

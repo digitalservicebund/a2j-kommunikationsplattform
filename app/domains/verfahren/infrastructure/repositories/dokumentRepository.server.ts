@@ -14,6 +14,7 @@ import {
 import { ValidierungsstatusSchema } from "~/domains/verfahren/infrastructure/schemas/validierungsstatus.schema";
 import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { logger } from "~/utils/logger.server";
 
 type FetchDokumentOptions = {
   verfahrenId: string;
@@ -164,34 +165,120 @@ export async function deleteDokumentFromEinreichung({
   return { status: "deleted" };
 }
 
-function extractSingleObject(data: unknown): unknown {
-  return Array.isArray(data) ? data[0] : data;
+type CreateDokumentOptions = {
+  verfahrenId: string;
+  einreichungId: string;
+  typ: DokumentType;
+  anzeigename: string;
+  sichtbarkeitAlle: boolean;
+};
+
+export type CreateDokumentResult = {
+  dokument: DokumentErstellenResponse;
+  eTag: string | null;
+};
+
+/**
+ * Creates the Dokument's metadata (status `ANGELEGT`). The binary content is
+ * uploaded separately afterwards via `uploadDokumentDatei`.
+ */
+export async function createDokument(
+  authData: AuthenticationResponse,
+  options: CreateDokumentOptions,
+): Promise<CreateDokumentResult> {
+  const { data, eTag } = await apiRequest<DokumentErstellenResponse>({
+    authData,
+    path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.einreichungId}/dokumente`,
+    method: "POST",
+    body: {
+      typ: options.typ,
+      anzeigename: options.anzeigename,
+      sichtbarkeit_alle: options.sichtbarkeitAlle,
+    },
+    schema: DokumentErstellenResponseSchema,
+    includeResponseETag: true,
+    errorMessage: `Dokument for Einreichung with id ${options.einreichungId} of Verfahren with id ${options.verfahrenId} could not be created.`,
+  });
+
+  return { dokument: data, eTag };
 }
 
+type UploadDokumentDateiOptions = {
+  verfahrenId: string;
+  einreichungId: string;
+  id: string;
+  file: File;
+  eTag: string;
+};
+
+// Uploads the binary content for a Dokument that was already created via
+// createDokument. Requires the eTag from that creation (or a subsequent
+// fetch) for optimistic concurrency control.
+export async function uploadDokumentDatei(
+  authData: AuthenticationResponse,
+  options: UploadDokumentDateiOptions,
+): Promise<Dokument> {
+  const formData = new FormData();
+  formData.append("datei", options.file);
+
+  return apiRequest({
+    authData,
+    path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.einreichungId}/dokumente/${options.id}/datei`,
+    method: "PUT",
+    body: formData,
+    eTag: options.eTag,
+    schema: DokumentSchema,
+    errorMessage: `Datei for Dokument with id ${options.id} could not be uploaded.`,
+  });
+}
+
+// Convenience wrapper composing createDokument + uploadDokumentDatei, since
+// today every caller wants "create a Dokument from this file" as one step.
 export async function uploadDokument(
   authData: AuthenticationResponse,
   verfahrenId: string,
   einreichungId: string,
   file: File,
   type: DokumentType,
-): Promise<DokumentErstellenResponse> {
-  const formData = new FormData();
-  formData.append("datei", file);
-
-  const rawData = await apiRequest({
-    authData,
-    path: `/api/v1/verfahren/${verfahrenId}/einreichungen/${einreichungId}/dokumente`,
-    method: "POST",
-    body: formData,
-    headers: {
-      "Dokument-Typ": type,
-      "Dokument-Sichtbarkeit-Alle": "true",
-      "Dokument-Anzeigename": file.name,
-    },
-    errorMessage: `Dokument upload for Einreichung with id ${einreichungId} of Verfahren with ${verfahrenId} could not be uploaded.`,
+): Promise<Dokument> {
+  const { dokument, eTag } = await createDokument(authData, {
+    verfahrenId,
+    einreichungId,
+    typ: type,
+    anzeigename: file.name,
+    sichtbarkeitAlle: true,
   });
 
-  const singleObject = extractSingleObject(rawData);
-  console.log("Successfully uploaded dokument", singleObject);
-  return DokumentErstellenResponseSchema.parse(singleObject);
+  try {
+    return await uploadDokumentDatei(authData, {
+      verfahrenId,
+      einreichungId,
+      id: dokument.id,
+      file,
+      eTag: eTag ?? "",
+    });
+  } catch (error) {
+    // Best-effort cleanup: don't leave an orphaned, file-less Dokument
+    // (status ANGELEGT) behind if the actual file upload failed. A cleanup
+    // failure is only logged — the original upload error is what the caller
+    // needs to see.
+    const cleanupSucceeded = await deleteDokument(authData, {
+      verfahrenId,
+      einreichungId,
+      id: dokument.id,
+      eTag: eTag ?? "",
+    }).then(
+      (result) => result.success,
+      () => false,
+    );
+
+    if (!cleanupSucceeded) {
+      logger.error(
+        { verfahrenId, einreichungId, dokumentId: dokument.id },
+        "Failed to delete orphaned Dokument after Datei upload failed",
+      );
+    }
+
+    throw error;
+  }
 }

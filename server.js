@@ -1,47 +1,21 @@
 import { createRequestHandler } from "@react-router/express";
 import compression from "compression";
 import express from "express";
-import morgan from "morgan";
-import logger from "pino-http";
+import pinoHttp from "pino-http";
 import { RouterContextProvider } from "react-router";
+import { config } from "./app/config/config.ts";
 import { initializeSentryOnServer } from "./app/sentry.ts";
+import { logger } from "./app/utils/logger.server.ts";
 
 initializeSentryOnServer();
 
-const environment = process.env.ENVIRONMENT?.trim() ?? "";
-const mockJustizBackendAPI = environment === "development";
-const isProduction = process.env.NODE_ENV === "production";
-const isSendingToSentry = !!process.env.SENTRY_DSN?.trim();
+const environment = config().ENVIRONMENT;
+const port = process.env.PORT || 3000;
+const isProductionBuild = process.env.NODE_ENV === "production";
+const isSentryEnabled = !!config().SENTRY_DSN;
+const isNoindexHeaderEnabled = environment === "staging";
 
-// info logs
-let infoLog = `Info:
-  -> Environment is "${environment}"
-  -> Production build: ${isProduction ? "yes" : "no"}
-  -> API will be mocked: ${mockJustizBackendAPI ? "yes" : "no"}
-  -> Errors will be sent to Sentry: ${isSendingToSentry ? "yes" : "no"}
-`;
-
-// TODO: uncomment below when ticket is completed
-// if (mockJustizBackendAPI) {
-//   infoLog +=
-//     "  -> Setting up a Justiz-Backend-API mock for local development\n";
-// }
-//
-// if (!isProduction) {
-//   infoLog += "  -> Setting up a viteDevServer for local development\n";
-// }
-//
-// if (mockJustizBackendAPI) {
-//   const mockJustizBackendService = mockJustizBackendAPI
-//     ? await import("./mocks/api/node.js")
-//     : undefined;
-//
-//   if (mockJustizBackendService) {
-//     mockJustizBackendService.server.listen();
-//   }
-// }
-
-const viteDevServer = isProduction
+const viteDevServer = isProductionBuild
   ? undefined
   : await import("vite").then((vite) =>
       vite.createServer({
@@ -59,11 +33,13 @@ const reactRouterHandler = createRequestHandler({
 });
 
 const app = express();
+
 // Trust one hop (the Traefik ingress), which terminates TLS and forwards
 // plain HTTP internally. Without this, req.protocol reports "http" while
 // the browser's Origin header is "https", which fails React Router's
 // single-fetch CSRF origin check and returns 400 on every action request.
 app.set("trust proxy", 1);
+
 app.use(compression());
 app.disable("x-powered-by");
 
@@ -72,40 +48,34 @@ if (viteDevServer) {
 } else {
   app.use(
     "/assets",
-    express.static("build/client/assets", { immutable: true, maxAge: "1y" }),
+    express.static("build/client/assets", {
+      immutable: true,
+      maxAge: "1y",
+    }),
   );
-
-  if (environment === "staging") {
-    infoLog += '  -> Add "X-Robots-Tag: noindex" header to all requests\n';
-
-    app.use((req, res, next) => {
-      /**
-       * Set noindex header for all requests on staging environment
-       *
-       * @see: https://developers.google.com/search/docs/crawling-indexing/block-indexing?hl=en#http-response-header
-       */
+  if (isNoindexHeaderEnabled) {
+    // Set noindex header for all requests to the staging environment.
+    // See: https://developers.google.com/search/docs/crawling-indexing/block-indexing?hl=en#http-response-header
+    app.use((_req, res, next) => {
       res.set("X-Robots-Tag", "noindex");
       next();
     });
-
-    infoLog += "  -> Add pino HTTP logger\n";
-    app.use(logger());
   }
 }
 
 app.use(express.static("build/client", { maxAge: "1h" }));
-app.use(morgan("tiny"));
-
-/**
- * Express v5 upgrade is missing regular expression documentation
- *
- * @see: https://github.com/expressjs/express/issues/5936#issuecomment-2808486653 and
- * @see: https://expressjs.com/en/guide/migrating-5.html#path-syntax
- */
+app.use(pinoHttp({ logger }));
 app.all(/(.*)/, reactRouterHandler);
 
-const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(infoLog);
-  console.log(`Express server listening at http://localhost:${port}\n`);
+  logger.info(
+    {
+      url: `http://localhost:${port}`,
+      environment: config().ENVIRONMENT,
+      isProductionBuild,
+      isSentryEnabled,
+      isNoindexHeaderEnabled,
+    },
+    "Server started",
+  );
 });

@@ -1,11 +1,11 @@
 import z from "zod";
-import { config } from "~/config/config";
 import { serverConfig } from "~/config/config.server";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import {
   logApiErrorAndThrow,
   logParsingErrorAndThrow,
 } from "~/utils/logApiError";
+import { logger } from "~/utils/logger.server";
 import {
   parseProblemDetails,
   ValidationProblemDetails,
@@ -251,17 +251,18 @@ export async function apiRequest<T = unknown>(
     headers["If-Match"] = eTag;
   }
 
-  // This can result in carrier tokens and payload data being exposed
-  // in the logs. Therefore, this is only logged in non-production environments for now
-  const logWithHeaderAndBody =
-    config().ENVIRONMENT === "staging" ||
-    config().ENVIRONMENT === "development";
-  if (logWithHeaderAndBody) {
-    const logHeaders = headers ? `headers: ${JSON.stringify(headers)}` : "";
-    const logBody = body ? `body: ${JSON.stringify(fetchBody)}` : "";
-    const logETag = eTag ? `eTag: ${eTag}` : "";
-    console.log(`fetch ${method} ${url} ${logHeaders} ${logBody} ${logETag}`);
-  }
+  // Headers can carry bearer tokens, so API request request are only logged
+  // if `LOG_LEVEL=debug` (which is not the case in production).
+  logger.debug(
+    {
+      method,
+      url,
+      headers,
+      body: fetchBody,
+      eTag,
+    },
+    "Sending API request",
+  );
 
   const response = await fetch(url, {
     method,

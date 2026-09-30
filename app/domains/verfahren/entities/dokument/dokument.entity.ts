@@ -11,6 +11,7 @@ export const DokumentTypeSchema = z.enum([
 export type DokumentType = z.infer<typeof DokumentTypeSchema>;
 
 export const DokumentStatusSchema = z.enum([
+  "ANGELEGT",
   "ERSTELLT",
   "EINGEREICHT",
   "VERSENDET",
@@ -25,17 +26,21 @@ export type DokumentStatus = z.infer<typeof DokumentStatusSchema>;
  * Dokument — domain shape (camelCase). Mirrors the wire contract defined in
  * infrastructure/schemas/dokument.schema.ts, which is responsible for
  * mapping the API's snake_case response into this shape.
+ *
+ * dateiname/sizeInBytes/contentType/hash/hashAlgorithmus are only populated
+ * once the Dokument's binary content has been uploaded via
+ * `PUT .../dokumente/{id}/datei` (status ANGELEGT has none of these yet).
  */
 export const DokumentSchema = z.object({
   id: z.string(),
   status: DokumentStatusSchema,
   validierungslaufStatus: ValidierungslaufStatusSchema,
-  dateiname: z.string(),
+  dateiname: z.nullish(z.string()),
   anzeigename: z.string(),
-  sizeInBytes: z.number(),
-  contentType: z.string(),
-  hash: z.string(),
-  hashAlgorithmus: z.string(),
+  sizeInBytes: z.nullish(z.number()),
+  contentType: z.nullish(z.string()),
+  hash: z.nullish(z.string()),
+  hashAlgorithmus: z.nullish(z.string()),
   typ: DokumentTypeSchema,
   gesendetAm: z.nullable(z.string()),
   eingereichtAm: z.nullable(z.string()),
@@ -48,22 +53,18 @@ export type Dokument = z.infer<typeof DokumentSchema>;
 
 /**
  * DokumentErstellenResponse — domain shape (camelCase) for the result of
- * uploading (creating) a Dokument. Unlike Dokument, it has no
- * validierungslaufStatus/gesendetAm/eingereichtAm yet, since validation and
- * submission haven't happened at creation time.
+ * `POST .../dokumente`, which only creates the Dokument's metadata (status
+ * ANGELEGT). The binary content, and the fields that depend on it
+ * (dateiname/sizeInBytes/contentType/hash/hashAlgorithmus), are added
+ * afterwards by `PUT .../dokumente/{id}/datei`, whose response is a full
+ * Dokument.
  */
 export const DokumentErstellenResponseSchema = z.object({
   id: z.string(),
   status: DokumentStatusSchema,
-  dateiname: z.string(),
   anzeigename: z.string(),
-  sizeInBytes: z.number(),
-  contentType: z.string(),
-  hash: z.string(),
-  hashAlgorithmus: z.string(),
   typ: DokumentTypeSchema,
-  // TODO: remove the nullable part after confirming it with SINC
-  erstelltVon: z.nullable(z.string()),
+  erstelltVon: z.string(),
   erstelltAm: z.string(),
   sichtbarkeitAlle: z.boolean(),
 });

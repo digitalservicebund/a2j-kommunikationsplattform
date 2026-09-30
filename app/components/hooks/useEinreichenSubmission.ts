@@ -1,6 +1,7 @@
 import type { SyntheticEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { useRevalidator } from "react-router";
+import { logger } from "~/utils/logger.client";
 
 // Poll interval while the Einreichung's Validierungslauf is still running or
 // the Beleg hasn't been finalized yet, so badges/alerts pick up the result
@@ -67,7 +68,7 @@ export function useEinreichenSubmission({
       // success - redirect will happen via action
       formRef.current?.submit();
     } catch (err) {
-      console.error("Einreichung form submission error:", err);
+      logger.error({ error: err }, "Einreichung form submission error");
       setError(true);
       setIsSubmitting("idle");
     }
