@@ -20,6 +20,7 @@ import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenUploadedDokumentSummary from "~/components/verfahren/VerfahrenUploadedDokumentSummary";
 import { requireAuthData } from "~/domains/verfahren/application/routeContext.server";
 import type { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
+import { KLAGEEINREICHUNG_NAME } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import {
   deleteDokument,
   fetchDokument,
@@ -226,7 +227,7 @@ async function handleSubmit(
       const einreichung = await createEinreichung(
         authData,
         verfahrenId,
-        "Klageeinreichung",
+        KLAGEEINREICHUNG_NAME,
       );
       einreichungId = einreichung.id;
     } catch (error) {

@@ -25,14 +25,14 @@ import {
 } from "~/domains/verfahren/services/beteiligteByRole";
 import { useTranslations } from "~/services/translations/context";
 
-export type InitialEinreichungData = {
+export type EinreichungDetails = {
   einreichung: EinreichungWithStatus;
   dokumente: DokumentWithValidierungsstatus[];
   beleg: Beleg | null;
 };
 
 type VerfahrenAktuelleEinreichungSectionProps = {
-  initialEinreichung: InitialEinreichungData;
+  initialEinreichung: EinreichungDetails;
   verfahren: Verfahren;
   readinessPresentation: ReadinessPresentation | null;
   hasValidationIssues: boolean;

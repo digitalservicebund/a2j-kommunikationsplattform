@@ -8,7 +8,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { Verfahren } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
 import { TranslationsProvider } from "~/services/translations/context";
 import VerfahrenAktuelleEinreichungSection, {
-  type InitialEinreichungData,
+  type EinreichungDetails,
 } from "../VerfahrenAktuelleEinreichungSection";
 
 function renderWithRouter(children: ReactNode) {
@@ -44,7 +44,7 @@ const verfahren: Verfahren = {
   beteiligungen: [],
 };
 
-const initialEinreichung: InitialEinreichungData = {
+const initialEinreichung: EinreichungDetails = {
   einreichung: {
     id: "e-1",
     name: "Klageschrift",

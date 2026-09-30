@@ -2,7 +2,7 @@ import { Form } from "react-router";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
-import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
+import VerfahrenDokumentItem from "~/components/verfahren/VerfahrenDokumentItem";
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
 import type { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
@@ -52,21 +52,7 @@ export default function VerfahrenDokumenteList({
 
         return (
           <div key={dokument.id} className="kern-gap-sm flex w-full flex-col">
-            <div className="kern-p-md align-center kern-gap-md flex flex-wrap rounded-(--kern-metric-border-radius-default) border border-(--kern-color-decorative-border-contextual)">
-              <div className="flex-1">
-                <div className="kern-body kern-body--bold">
-                  {dokument.anzeigename}
-                </div>
-                <div className="kern-body kern-body--small kern-body--muted">
-                  {formatDokumentSize(dokument.sizeInBytes ?? 0)}
-                  {" · "}
-                  {
-                    routes.verfahrenNeu.step3.proceduralSteps.einreichung
-                      .dokumente.uploadedAtLabel
-                  }{" "}
-                  {new Date(dokument.erstelltAm).toLocaleDateString()}
-                </div>
-              </div>
+            <VerfahrenDokumentItem dokument={dokument}>
               {canDeleteDokument(dokument) ? (
                 <Form method="post" className="kern-gap-sm flex items-center">
                   <input type="hidden" name="formType" value="delete" />
@@ -102,7 +88,7 @@ export default function VerfahrenDokumenteList({
                   />
                 </div>
               )}
-            </div>
+            </VerfahrenDokumentItem>
             {dokumentHasValidationIssues && (
               <Alert
                 type={dokumentErgebnis === "ROT" ? "error" : "warning"}

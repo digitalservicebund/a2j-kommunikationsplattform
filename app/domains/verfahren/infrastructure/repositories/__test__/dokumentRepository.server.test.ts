@@ -459,6 +459,35 @@ describe("uploadDokument", () => {
     expect(result.dateiname).toBe("test.txt");
   });
 
+  it("creates the Dokument with the given Sichtbarkeit", async () => {
+    mocks.apiRequest.mockResolvedValueOnce({
+      data: { id: "d-1" },
+      eTag: 'W/"0"',
+    });
+    mocks.apiRequest.mockResolvedValueOnce({});
+    const file = new File(["abc"], "test.txt", { type: "text/plain" });
+
+    await uploadDokument(
+      mockAuthData,
+      "v-1",
+      "e-1",
+      file,
+      "SCHRIFTSTUECK",
+      false,
+    );
+
+    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        body: {
+          typ: "SCHRIFTSTUECK",
+          anzeigename: "test.txt",
+          sichtbarkeit_alle: false,
+        },
+      }),
+    );
+  });
+
   it("deletes the orphaned metadata-only Dokument and rethrows when the file upload fails", async () => {
     mocks.apiRequest.mockResolvedValueOnce({
       data: {

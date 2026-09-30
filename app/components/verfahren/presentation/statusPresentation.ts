@@ -1,14 +1,11 @@
+import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
+import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
+
 type BadgeTone = "success" | "warning" | "danger" | "info";
 
 type Presentation = {
   badgeClassModifier: BadgeTone;
   label: string;
-};
-
-export type DokumentStatusBadgeLabels = {
-  erstellt: string;
-  eingereicht: string;
-  wirdValidiert: string;
 };
 
 export type VerfahrenStatusBadgeLabels = {
@@ -19,64 +16,60 @@ export type VerfahrenStatusBadgeLabels = {
   geloescht: string;
 };
 
-export function getDokumentStatusPresentation(
-  status: string,
-  badgeLabels: DokumentStatusBadgeLabels,
+export type EinreichungStatusBadgeLabels = {
+  erstellt: string;
+  beantragt: string;
+  versendet: string;
+  eingereicht: string;
+  veraktet: string;
+  fehlgeschlagen: string;
+  geloescht: string;
+};
+
+// Records (rather than if-chains with a fallback) so every status must be
+// mapped explicitly — a new status in the enum fails the typecheck.
+const einreichungStatusPresentation: Record<
+  Einreichung["status"],
+  { tone: BadgeTone; labelKey: keyof EinreichungStatusBadgeLabels }
+> = {
+  ERSTELLT: { tone: "info", labelKey: "erstellt" },
+  // Submitted, but not yet confirmed as eingereicht.
+  BEANTRAGT: { tone: "info", labelKey: "beantragt" },
+  VERSENDET: { tone: "info", labelKey: "versendet" },
+  EINGEREICHT: { tone: "success", labelKey: "eingereicht" },
+  VERAKTET: { tone: "success", labelKey: "veraktet" },
+  FEHLGESCHLAGEN: { tone: "danger", labelKey: "fehlgeschlagen" },
+  GELOESCHT: { tone: "danger", labelKey: "geloescht" },
+};
+
+export function getEinreichungStatusPresentation(
+  status: Einreichung["status"],
+  badgeLabels: EinreichungStatusBadgeLabels,
 ): Presentation {
-  if (status === "ERSTELLT") {
-    return {
-      badgeClassModifier: "info",
-      label: badgeLabels.erstellt,
-    };
-  }
+  const { tone, labelKey } = einreichungStatusPresentation[status];
 
-  if (status === "EINGEREICHT") {
-    return {
-      badgeClassModifier: "success",
-      label: badgeLabels.eingereicht,
-    };
-  }
-
-  return {
-    badgeClassModifier: "warning",
-    label: badgeLabels.wirdValidiert,
-  };
+  return { badgeClassModifier: tone, label: badgeLabels[labelKey] };
 }
 
+const verfahrenStatusPresentation: Record<
+  Verfahren["status"],
+  { tone: BadgeTone; labelKey: keyof VerfahrenStatusBadgeLabels }
+> = {
+  ERSTELLT: { tone: "info", labelKey: "erstellt" },
+  EINGEREICHT: { tone: "success", labelKey: "eingereicht" },
+  GERICHTSVERFAHRENANGELEGT: {
+    tone: "success",
+    labelKey: "gerichtsverfahrenAngelegt",
+  },
+  ABGESCHLOSSEN: { tone: "success", labelKey: "abgeschlossen" },
+  GELOESCHT: { tone: "danger", labelKey: "geloescht" },
+};
+
 export function getVerfahrenStatusPresentation(
-  status: string,
+  status: Verfahren["status"],
   badgeLabels: VerfahrenStatusBadgeLabels,
 ): Presentation {
-  if (status === "EINGEREICHT") {
-    return {
-      badgeClassModifier: "success",
-      label: badgeLabels.eingereicht,
-    };
-  }
+  const { tone, labelKey } = verfahrenStatusPresentation[status];
 
-  if (status === "GERICHTSVERFAHRENANGELEGT") {
-    return {
-      badgeClassModifier: "success",
-      label: badgeLabels.gerichtsverfahrenAngelegt,
-    };
-  }
-
-  if (status === "ABGESCHLOSSEN") {
-    return {
-      badgeClassModifier: "success",
-      label: badgeLabels.abgeschlossen,
-    };
-  }
-
-  if (status === "GELOESCHT") {
-    return {
-      badgeClassModifier: "danger",
-      label: badgeLabels.geloescht,
-    };
-  }
-
-  return {
-    badgeClassModifier: "info",
-    label: badgeLabels.erstellt,
-  };
+  return { badgeClassModifier: tone, label: badgeLabels[labelKey] };
 }

@@ -6,17 +6,21 @@ import {
   redirect,
   useLoaderData,
 } from "react-router";
+import z from "zod";
 import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
 import InputSelect from "~/components/InputSelect";
 import { PageMetadata } from "~/components/PageMetadata";
 import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
 import VerfahrenAktuelleEinreichungSection, {
-  type InitialEinreichungData,
+  type EinreichungDetails,
 } from "~/components/verfahren/VerfahrenAktuelleEinreichungSection";
 import VerfahrenEinreichungHistoryList from "~/components/verfahren/VerfahrenEinreichungHistoryList";
 import VerfahrenEinreichungOutcomeBanner from "~/components/verfahren/VerfahrenEinreichungOutcomeBanner";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenOverviewCard from "~/components/verfahren/VerfahrenOverviewCard";
+import VerfahrenWeitereEinreichungSection, {
+  UPLOAD_WEITERE_DOKUMENT_FORM_TYPE,
+} from "~/components/verfahren/VerfahrenWeitereEinreichungSection";
 import type { Verfahren } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
 import loadVerfahrenEinreichungenOverview, {
   EinreichungSummary,
@@ -31,8 +35,11 @@ import {
 import {
   deleteDokumentFromEinreichung,
   fetchDokumentValidierungsstatus,
+  uploadDokument,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
+import findOpenEinreichung from "~/domains/verfahren/services/findOpenEinreichung";
+import isKlageeinreichung from "~/domains/verfahren/services/isKlageeinreichung";
 import { authMiddleware } from "~/middleware/auth.server";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
@@ -47,18 +54,18 @@ import { dispatchFormAction } from "~/utils/dispatchFormAction";
 type LoaderData = {
   verfahren: Verfahren;
   einreichungen: EinreichungSummary[];
-  initialEinreichung: InitialEinreichungData | null;
-  weitereEinreichung: InitialEinreichungData | null;
+  initialEinreichung: EinreichungDetails | null;
+  weitereEinreichung: EinreichungDetails | null;
 };
 
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
 
-async function buildInitialEinreichungData(
+async function loadEinreichungDetails(
   authData: AuthenticationResponse,
   verfahrenId: string,
   { einreichung, dokumente }: EinreichungSummary,
-): Promise<InitialEinreichungData> {
+): Promise<EinreichungDetails> {
   const dokumenteWithValidierungsstatus = await Promise.all(
     dokumente.map(async (dokument) => {
       const validierungsstatus = await fetchDokumentValidierungsstatus(
@@ -82,11 +89,7 @@ async function buildInitialEinreichungData(
   return { einreichung, dokumente: dokumenteWithValidierungsstatus, beleg };
 }
 
-export const loader = async ({
-  context,
-  params,
-  request,
-}: LoaderFunctionArgs) => {
+export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   const { authData, verfahrenId } = requireAuthAndVerfahrenId(
     context,
     params,
@@ -98,46 +101,24 @@ export const loader = async ({
     verfahrenId,
   );
 
-  const weitereEinreichungId = new URL(request.url).searchParams.get(
-    "weitereEinreichungId",
+  // A draft is an Einreichung that's still open (ERSTELLT/FEHLGESCHLAGEN) —
+  // the only statuses in which the API lets Dokumente be changed and the
+  // Einreichung be submitted. Once submitted, it's listed in the history.
+  const klageeinreichungDraft = findOpenEinreichung(
+    einreichungen.filter(({ einreichung }) => isKlageeinreichung(einreichung)),
   );
-  const weitereEinreichungData = weitereEinreichungId
-    ? einreichungen.find(
-        ({ einreichung }) => einreichung.id === weitereEinreichungId,
-      )
-    : undefined;
-  const weitereEinreichung = weitereEinreichungData
-    ? await buildInitialEinreichungData(
-        authData,
-        verfahrenId,
-        weitereEinreichungData,
-      )
-    : null;
-
-  const initialEinreichungData = einreichungen[0];
-  // Only show the "current draft" card while there's exactly one Einreichung
-  // and neither it nor the Verfahren have been submitted yet — otherwise the
-  // page falls back to a plain history list further down.
-  const showInitialEinreichungDetails =
-    Boolean(initialEinreichungData) &&
-    einreichungen.length === 1 &&
-    verfahren.status !== "EINGEREICHT" &&
-    initialEinreichungData?.einreichung.status !== "EINGEREICHT";
-
-  if (!initialEinreichungData || !showInitialEinreichungDetails) {
-    return {
-      verfahren,
-      einreichungen,
-      initialEinreichung: null,
-      weitereEinreichung,
-    };
-  }
-
-  const initialEinreichung = await buildInitialEinreichungData(
-    authData,
-    verfahrenId,
-    initialEinreichungData,
+  const weitereEinreichungDraft = findOpenEinreichung(
+    einreichungen.filter(({ einreichung }) => !isKlageeinreichung(einreichung)),
   );
+
+  const [initialEinreichung, weitereEinreichung] = await Promise.all([
+    klageeinreichungDraft
+      ? loadEinreichungDetails(authData, verfahrenId, klageeinreichungDraft)
+      : null,
+    weitereEinreichungDraft
+      ? loadEinreichungDetails(authData, verfahrenId, weitereEinreichungDraft)
+      : null,
+  ]);
 
   return { verfahren, einreichungen, initialEinreichung, weitereEinreichung };
 };
@@ -146,6 +127,12 @@ type FormActionContext = {
   authData: AuthenticationResponse;
   verfahrenId: string;
 };
+
+const WeitereDokumentUploadSchema = z.object({
+  einreichungId: z.string().min(1),
+  file: z.file().min(1),
+  sichtbarkeitAlle: z.enum(["true", "false"]).transform((v) => v === "true"),
+});
 
 async function handleDelete(
   formData: FormData,
@@ -195,18 +182,50 @@ async function handleCreateEinreichung(
   }
 
   try {
-    const created = await createEinreichung(
-      authData,
-      verfahrenId,
-      parsedArt.data,
-    );
+    await createEinreichung(authData, verfahrenId, parsedArt.data);
 
-    return redirect(
-      `/verfahren/${verfahrenId}?weitereEinreichungId=${created.id}`,
-    );
+    return redirect(`/verfahren/${verfahrenId}`);
   } catch (error) {
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.createEinreichungFailed,
+    });
+  }
+}
+
+async function handleUploadWeitereDokument(
+  formData: FormData,
+  { authData, verfahrenId }: FormActionContext,
+) {
+  const actionData = { formType: UPLOAD_WEITERE_DOKUMENT_FORM_TYPE };
+  const parsed = WeitereDokumentUploadSchema.safeParse({
+    einreichungId: formData.get("einreichungId"),
+    file: formData.get("file"),
+    sichtbarkeitAlle: formData.get("sichtbarkeitAlle"),
+  });
+
+  if (!parsed.success) {
+    return actionResultFromInputParsingError(parsed.error, {
+      data: actionData,
+    });
+  }
+
+  const { einreichungId, file, sichtbarkeitAlle } = parsed.data;
+
+  try {
+    await uploadDokument(
+      authData,
+      verfahrenId,
+      einreichungId,
+      file,
+      "SCHRIFTSTUECK",
+      sichtbarkeitAlle,
+    );
+
+    return redirect(`/verfahren/${verfahrenId}`);
+  } catch (error) {
+    return actionResultFromApiError(error, {
+      message: de.shared.form.errors.uploadFailed,
+      data: actionData,
     });
   }
 }
@@ -237,6 +256,7 @@ const formActionHandlers = {
   einreichen: handleEinreichen,
   "download-beleg": handleDownloadBeleg,
   "create-einreichung": handleCreateEinreichung,
+  [UPLOAD_WEITERE_DOKUMENT_FORM_TYPE]: handleUploadWeitereDokument,
 } as const;
 
 // TODO: This action is near-identical to verfahren.neu.$id.abgabe.tsx's
@@ -268,10 +288,18 @@ export default function VerfahrenId() {
     useLoaderData<LoaderData>();
   const { routes, shared } = useTranslations();
 
+  console.log("einreichungen", einreichungen);
+
   const createEinreichungFormRef = useRef<HTMLFormElement>(null);
-  const [art, setArt] = useState("");
+  const [art, setArt] = useState(weitereEinreichung?.einreichung.name ?? "");
 
   function handleArtChange(event: ChangeEvent<HTMLSelectElement>) {
+    // Once created, the Art is fixed — picking another one must not create
+    // a second Einreichung.
+    if (weitereEinreichung) {
+      return;
+    }
+
     setArt(event.target.value);
     createEinreichungFormRef.current?.requestSubmit();
   }
@@ -344,36 +372,32 @@ export default function VerfahrenId() {
                       </header>
                       <section className="kern-card__body">
                         <div className="w-full">
-                          {weitereEinreichung ? (
-                            <p className="kern-body">
-                              „{weitereEinreichung.einreichung.name}“ wurde
-                              erstellt (Status:{" "}
-                              {weitereEinreichung.einreichung.status}).
-                            </p>
-                          ) : (
-                            <Form method="post" ref={createEinreichungFormRef}>
-                              <input
-                                type="hidden"
-                                name="formType"
-                                value="create-einreichung"
-                              />
-                              <InputSelect
-                                id="art"
-                                label={
-                                  routes.verfahrenId.weitereEinreichung.artLabel
-                                }
-                                placeholder={shared.form.select.placeholder}
-                                options={EinreichungArtSchema.options.map(
-                                  (value) => ({ value, label: value }),
-                                )}
-                                selectedValue={art}
-                                onChange={handleArtChange}
-                              />
-                            </Form>
-                          )}
+                          <Form method="post" ref={createEinreichungFormRef}>
+                            <input
+                              type="hidden"
+                              name="formType"
+                              value="create-einreichung"
+                            />
+                            <InputSelect
+                              id="art"
+                              label={
+                                routes.verfahrenId.weitereEinreichung.artLabel
+                              }
+                              placeholder={shared.form.select.placeholder}
+                              options={EinreichungArtSchema.options.map(
+                                (value) => ({ value, label: value }),
+                              )}
+                              selectedValue={art}
+                              onChange={handleArtChange}
+                              disabled={Boolean(weitereEinreichung)}
+                            />
+                          </Form>
                         </div>
-                        <div className="w-full"></div>
-                        <div className="w-full"></div>
+                        {weitereEinreichung && (
+                          <VerfahrenWeitereEinreichungSection
+                            weitereEinreichung={weitereEinreichung}
+                          />
+                        )}
                       </section>
                     </div>
                   </article>
@@ -391,7 +415,10 @@ export default function VerfahrenId() {
                   />
                 ) : (
                   <VerfahrenEinreichungHistoryList
-                    einreichungen={einreichungen}
+                    einreichungen={einreichungen.filter(
+                      ({ einreichung }) =>
+                        einreichung.id !== weitereEinreichung?.einreichung.id,
+                    )}
                   />
                 )}
               </section>

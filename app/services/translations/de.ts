@@ -142,15 +142,14 @@ export const de = {
         abgeschlossen: "Verfahren abgeschlossen",
         geloescht: "Verfahren gelöscht",
       },
-      dokument: {
-        erstellt: "Erstellt",
-        eingereicht: "Eingereicht",
-        wirdValidiert: "Wird validiert",
-      },
       einreichung: {
-        gruen: "Grün",
-        rot: "Rot",
-        gelb: "Gelb",
+        erstellt: "Erstellt",
+        beantragt: "Beantragt",
+        versendet: "Versendet",
+        eingereicht: "Eingereicht",
+        veraktet: "Veraktet",
+        fehlgeschlagen: "Fehlgeschlagen",
+        geloescht: "Gelöscht",
       },
       virenScan: {
         sauber: "Geprüft und virenfrei",
@@ -349,9 +348,21 @@ export const de = {
     },
     verfahrenId: {
       headline: "Verlauf der Akte",
+      einreichungHistory: {
+        dokumenteCountSingular: "{{count}} Dokument",
+        dokumenteCount: "{{count}} Dokumente",
+      },
       weitereEinreichung: {
         headline: "Neue Einreichung erstellen",
         artLabel: "Art der Einreichung",
+        sichtbarkeit: {
+          label: "Sichtbarkeit",
+          alleParteien: "Alle Parteien",
+          nurGerichtUndPartei: "Nur Gericht und zugeordnete Partei",
+        },
+        upload: "Hochladen",
+        uploading: "Wird hochgeladen...",
+        submit: "Einreichen & Abgabe ans Gericht",
       },
     },
     PLATFORM_TITLE: "Kommunikationsplattform | Justiz-Services",

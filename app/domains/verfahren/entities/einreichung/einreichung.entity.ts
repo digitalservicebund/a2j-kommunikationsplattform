@@ -12,9 +12,17 @@ export const EinreichungStatusSchema = z.enum([
 ]);
 
 /**
+ * The name of the Einreichung that initiates the claim (Klage) and carries
+ * its SCHRIFTSTUECK. The API has no dedicated type for it, so this name is
+ * what identifies it among a Verfahren's Einreichungen.
+ */
+export const KLAGEEINREICHUNG_NAME = "Klageeinreichung";
+
+/**
  * EinreichungArt — the fixed set of submission types a user can pick when
  * creating a further Einreichung on an existing Verfahren (the initial
- * Einreichung is always the "Klageeinreichung" and isn't part of this list).
+ * Einreichung is always the KLAGEEINREICHUNG_NAME one and isn't part of this
+ * list).
  * The API has no dedicated "Art" field — the selected value is sent as-is as
  * the Einreichung's free-text `name`.
  */

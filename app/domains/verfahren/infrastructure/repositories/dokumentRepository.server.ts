@@ -240,13 +240,14 @@ export async function uploadDokument(
   einreichungId: string,
   file: File,
   type: DokumentType,
+  sichtbarkeitAlle = true,
 ): Promise<Dokument> {
   const { dokument, eTag } = await createDokument(authData, {
     verfahrenId,
     einreichungId,
     typ: type,
     anzeigename: file.name,
-    sichtbarkeitAlle: true,
+    sichtbarkeitAlle,
   });
 
   try {

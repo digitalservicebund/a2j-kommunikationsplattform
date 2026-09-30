@@ -1,8 +1,8 @@
-import { getDokumentStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
-import VerfahrenTimelineStepCard from "~/components/verfahren/VerfahrenTimelineStepCard";
+import { getEinreichungStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
+import VerfahrenDokumentItem from "~/components/verfahren/VerfahrenDokumentItem";
+import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import type { EinreichungSummary } from "~/domains/verfahren/application/loadVerfahrenEinreichungenOverview.server";
 import { useTranslations } from "~/services/translations/context";
-import { formatDate } from "~/utils/dates";
 
 type VerfahrenEinreichungHistoryListProps = {
   einreichungen: EinreichungSummary[];
@@ -11,14 +11,8 @@ type VerfahrenEinreichungHistoryListProps = {
 export default function VerfahrenEinreichungHistoryList({
   einreichungen,
 }: Readonly<VerfahrenEinreichungHistoryListProps>) {
-  const {
-    shared: sharedTranslations,
-    routes: {
-      verfahrenNeu: {
-        step3: { proceduralSteps: timelineStepTranslations },
-      },
-    },
-  } = useTranslations();
+  const { shared, routes } = useTranslations();
+  const labels = routes.verfahrenId.einreichungHistory;
 
   if (einreichungen.length === 0) {
     return (
@@ -27,47 +21,53 @@ export default function VerfahrenEinreichungHistoryList({
   }
 
   return (
-    <div className="space-y-(--kern-metric-space-default)">
-      {einreichungen.map(({ einreichung, dokumente }, index) => {
-        const timelineDate =
-          einreichung.eingereichtAm ?? einreichung.erstelltAm;
-        const timelineLabel = formatDate(timelineDate);
+    // No spacing between the items — KERN joins adjacent accordions itself
+    // (`.kern-accordion + .kern-accordion`).
+    <div>
+      {einreichungen.map(({ einreichung, dokumente }) => {
+        // The XJustiz Dokument is system-generated metadata, not a file the
+        // user submitted — same as in VerfahrenDokumenteList.
+        const visibleDokumente = dokumente.filter(
+          (dokument) => dokument.typ !== "XJUSTIZ",
+        );
+        const status = getEinreichungStatusPresentation(
+          einreichung.status,
+          shared.statusPresentation.einreichung,
+        );
 
-        const stepTitle =
-          einreichung.name ??
-          timelineStepTranslations.einreichung.fallbackTitle.replace(
-            "{{number}}",
-            String(dokumente.length - index),
-          );
-
-        const stepBody = [
-          // Status
-          getDokumentStatusPresentation(
-            einreichung.status,
-            sharedTranslations.statusPresentation.dokument,
-          ).label,
-
-          // Erstellt am (creation date)
-          timelineStepTranslations.einreichung.basisdaten.erstelltAmWithDate.replace(
-            "{{date}}",
-            formatDate(einreichung.erstelltAm),
-          ),
-
-          // Dokument count
-          timelineStepTranslations.additionalDokumenteAdded.filesAdded.replace(
-            "{{count}}",
-            String(dokumente.length),
-          ),
-        ].join(" · ");
+        const dokumenteCountLabel = (
+          visibleDokumente.length === 1
+            ? labels.dokumenteCountSingular
+            : labels.dokumenteCount
+        ).replace("{{count}}", String(visibleDokumente.length));
 
         return (
-          <VerfahrenTimelineStepCard
-            key={einreichung.id}
-            timelineLabel={timelineLabel}
-            title={stepTitle}
-            body={stepBody}
-            showConnector={index < einreichungen.length - 1}
-          />
+          <details key={einreichung.id} className="kern-accordion">
+            <summary className="kern-accordion__header">
+              <span className="kern-title flex-none">{einreichung.name}</span>
+              <VerfahrenStatusBadge
+                tone={status.badgeClassModifier}
+                label={status.label}
+              />
+              <span className="kern-body kern-body--muted ml-auto">
+                {dokumenteCountLabel}
+              </span>
+            </summary>
+            <section className="kern-accordion__body">
+              {visibleDokumente.length > 0 ? (
+                <div className="kern-gap-md flex w-full flex-col">
+                  {visibleDokumente.map((dokument) => (
+                    <VerfahrenDokumentItem
+                      key={dokument.id}
+                      dokument={dokument}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="kern-body m-0">Keine Dokumente vorhanden.</p>
+              )}
+            </section>
+          </details>
         );
       })}
     </div>
