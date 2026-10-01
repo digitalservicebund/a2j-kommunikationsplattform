@@ -31,6 +31,7 @@ import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 import { de } from "~/services/translations/de";
 import { actionError, actionSuccess } from "~/utils/actionResult";
+import { isClientSideApiError as is4xxApiError } from "~/utils/apiError";
 import { logger } from "~/utils/logger.server";
 import { Route } from "./+types/beitreten";
 
@@ -52,10 +53,13 @@ export async function loader({ url, context }: LoaderFunctionArgs) {
       const { lift, eTag } = await validateLiftCode(authData, code);
       logger.debug({ lift, eTag }, "Lift code validated successully");
       return data(actionSuccess({ lift, eTag }));
-    } catch {
-      return data(actionError(de.routes.beitreten.code.invalid), {
-        status: 400,
-      });
+    } catch (error) {
+      const isCodeInvalid = is4xxApiError(error);
+      const status = isCodeInvalid ? 400 : 500;
+      const message = isCodeInvalid
+        ? de.routes.beitreten.code.invalid
+        : de.routes.beitreten.code.internalValidationError;
+      return data(actionError(message), { status });
     }
   }
 }

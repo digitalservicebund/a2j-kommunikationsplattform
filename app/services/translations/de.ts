@@ -367,6 +367,8 @@ export const de = {
         placeholder: "z.B. K7M4-9PXQ-2WRT",
         invalid:
           "Der Code ist ungültig oder wurde bereits verwendet. Bitte prüfen Sie Ihre Eingabe und versuchen es erneut.",
+        internalValidationError:
+          "Der Code konnte wegen eines internen Fehlers nicht überprüft werden. Bitte versuchen Sie es erneut.",
       },
       validateCode: "Code prüfen",
       joinVerfahren: {
