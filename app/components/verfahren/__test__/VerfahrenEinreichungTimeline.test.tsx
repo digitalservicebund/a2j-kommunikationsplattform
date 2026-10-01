@@ -3,7 +3,7 @@
 import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it } from "vitest";
 import type { EinreichungSummary } from "~/domains/verfahren/application/loadVerfahrenEinreichungenOverview.server";
-import VerfahrenEinreichungHistoryList from "../VerfahrenEinreichungHistoryList";
+import VerfahrenEinreichungTimeline from "../VerfahrenEinreichungTimeline";
 
 const einreichungen: EinreichungSummary[] = [
   {
@@ -27,10 +27,10 @@ const einreichungen: EinreichungSummary[] = [
   },
 ];
 
-describe("VerfahrenEinreichungHistoryList", () => {
+describe("VerfahrenEinreichungTimeline", () => {
   it("renders one collapsed KERN accordion per einreichung, with name, Dokument count and status badge in the header", () => {
     const { container } = renderWithTestTranslations(
-      <VerfahrenEinreichungHistoryList einreichungen={einreichungen} />,
+      <VerfahrenEinreichungTimeline einreichungen={einreichungen} />,
     );
 
     const details = container.querySelectorAll("details.kern-accordion");
@@ -49,7 +49,7 @@ describe("VerfahrenEinreichungHistoryList", () => {
 
   it("lists the uploaded Dokumente in the body but hides the XJustiz Dokument", () => {
     const { container, getByText, queryByText } = renderWithTestTranslations(
-      <VerfahrenEinreichungHistoryList
+      <VerfahrenEinreichungTimeline
         einreichungen={[
           {
             ...einreichungen[0],
@@ -80,15 +80,44 @@ describe("VerfahrenEinreichungHistoryList", () => {
 
   it("shows the empty state in the body when an einreichung has no Dokumente", () => {
     const { getByText } = renderWithTestTranslations(
-      <VerfahrenEinreichungHistoryList einreichungen={einreichungen} />,
+      <VerfahrenEinreichungTimeline einreichungen={einreichungen} />,
     );
 
     expect(getByText("Keine Dokumente vorhanden.")).toBeInTheDocument();
   });
 
+  it("renders one timeline step per einreichung, newest first, connected except after the last", () => {
+    const aelter = einreichungen[0];
+    const neuer: EinreichungSummary = {
+      ...aelter,
+      einreichung: {
+        ...aelter.einreichung,
+        id: "e-2",
+        name: "Schriftsatz",
+        status: "ERSTELLT",
+        erstelltAm: "2026-02-01T00:00:00.000Z",
+        eingereichtAm: null,
+      },
+    };
+
+    const { container, getAllByTestId } = renderWithTestTranslations(
+      <VerfahrenEinreichungTimeline einreichungen={[aelter, neuer]} />,
+    );
+
+    const titles = [...container.querySelectorAll(".kern-title")].map(
+      (title) => title.textContent,
+    );
+    expect(titles).toEqual(["Schriftsatz", "Erste Einreichung"]);
+    expect(getAllByTestId("timeline-step-connector")).toHaveLength(1);
+    // The still-open Einreichung gets the draft (edit) icon.
+    const icons = container.querySelectorAll(".kern-icon--default");
+    expect(icons[0]).toHaveClass("kern-icon--edit");
+    expect(icons[1]).toHaveClass("kern-icon--check");
+  });
+
   it("renders the empty-state message when there are no einreichungen", () => {
     const { getByText } = renderWithTestTranslations(
-      <VerfahrenEinreichungHistoryList einreichungen={[]} />,
+      <VerfahrenEinreichungTimeline einreichungen={[]} />,
     );
 
     expect(getByText("Keine Einreichung vorhanden.")).toBeInTheDocument();

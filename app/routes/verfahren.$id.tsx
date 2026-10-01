@@ -14,10 +14,11 @@ import { resolveReadinessPresentation } from "~/components/verfahren/presentatio
 import VerfahrenAktuelleEinreichungSection, {
   type EinreichungDetails,
 } from "~/components/verfahren/VerfahrenAktuelleEinreichungSection";
-import VerfahrenEinreichungHistoryList from "~/components/verfahren/VerfahrenEinreichungHistoryList";
 import VerfahrenEinreichungOutcomeBanner from "~/components/verfahren/VerfahrenEinreichungOutcomeBanner";
+import VerfahrenEinreichungTimeline from "~/components/verfahren/VerfahrenEinreichungTimeline";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenOverviewCard from "~/components/verfahren/VerfahrenOverviewCard";
+import VerfahrenTimelineStep from "~/components/verfahren/VerfahrenTimelineStep";
 import VerfahrenWeitereEinreichungSection, {
   UPLOAD_WEITERE_DOKUMENT_FORM_TYPE,
 } from "~/components/verfahren/VerfahrenWeitereEinreichungSection";
@@ -304,6 +305,10 @@ export default function VerfahrenId() {
     createEinreichungFormRef.current?.requestSubmit();
   }
 
+  const timelineEinreichungen = einreichungen.filter(
+    ({ einreichung }) => einreichung.id !== weitereEinreichung?.einreichung.id,
+  );
+
   const beleg = initialEinreichung?.beleg ?? null;
   const isBelegReady = beleg !== null && beleg.status === "ERSTELLT";
   const isBelegPending = beleg !== null && !isBelegReady;
@@ -362,7 +367,16 @@ export default function VerfahrenId() {
                 <h3 className="kern-heading-medium">
                   {routes.verfahrenId.headline}
                 </h3>
-                <div className="kern-pb-md flex-1">
+                <VerfahrenTimelineStep
+                  timelineLabel={
+                    routes.verfahrenNeu.step3.proceduralSteps.einreichung.draft
+                  }
+                  iconClassName="kern-icon--edit"
+                  showConnector={
+                    Boolean(initialEinreichung) ||
+                    timelineEinreichungen.length > 0
+                  }
+                >
                   <article className="kern-card">
                     <div className="kern-card__container">
                       <header className="kern-card__header">
@@ -401,7 +415,7 @@ export default function VerfahrenId() {
                       </section>
                     </div>
                   </article>
-                </div>
+                </VerfahrenTimelineStep>
                 {initialEinreichung ? (
                   <VerfahrenAktuelleEinreichungSection
                     initialEinreichung={initialEinreichung}
@@ -414,11 +428,8 @@ export default function VerfahrenId() {
                     handleSubmit={handleSubmit}
                   />
                 ) : (
-                  <VerfahrenEinreichungHistoryList
-                    einreichungen={einreichungen.filter(
-                      ({ einreichung }) =>
-                        einreichung.id !== weitereEinreichung?.einreichung.id,
-                    )}
+                  <VerfahrenEinreichungTimeline
+                    einreichungen={timelineEinreichungen}
                   />
                 )}
               </section>
