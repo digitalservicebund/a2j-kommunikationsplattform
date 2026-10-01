@@ -31,7 +31,7 @@ export async function validateLiftCode(
 ): Promise<{ lift: LiftResponse; eTag: string }> {
   const { data: lift, eTag } = await apiRequest({
     authData,
-    path: "/api/v1/lift?lift-schluessel=123",
+    path: "/api/v1/lift",
     headers: { "lift-schluessel": normalizeLiftCode(code) },
     schema: LiftResponseSchema,
     includeResponseETag: true,

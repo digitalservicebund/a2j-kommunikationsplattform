@@ -33,7 +33,7 @@ describe("validateLiftCode", () => {
     expect(vi.mocked(apiRequest)).toHaveBeenCalledWith(
       expect.objectContaining({
         authData: mockAuthData,
-        path: "/api/v1/lift?lift-schluessel=123",
+        path: "/api/v1/lift",
         headers: { "lift-schluessel": "K7M49PXQ2WRT" },
         includeResponseETag: true,
       }),
