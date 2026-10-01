@@ -2,7 +2,7 @@ import { useRef, useState, type ChangeEvent } from "react";
 import { Form } from "react-router";
 import InputSelect from "~/components/InputSelect";
 import type { EinreichungDetails } from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
-import VerfahrenDraftWeitereEinreichungSection from "~/components/verfahren/VerfahrenDraftWeitereEinreichungSection";
+import VerfahrenWeitereEinreichungDokumenteStep from "~/components/verfahren/VerfahrenWeitereEinreichungDokumenteStep";
 import { EinreichungArtSchema } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import { useTranslations } from "~/services/translations/context";
 
@@ -40,7 +40,7 @@ export default function VerfahrenWeitereEinreichungSection({
         <header className="kern-card__header">
           <h2 className="kern-title">{labels.headline}</h2>
         </header>
-        <section className="kern-card__body">
+        <section className="kern-card__body space-y-2.5">
           <div className="w-full">
             <Form method="post" ref={createEinreichungFormRef}>
               <input
@@ -62,11 +62,9 @@ export default function VerfahrenWeitereEinreichungSection({
               />
             </Form>
           </div>
-          {draftWeitereEinreichung && (
-            <VerfahrenDraftWeitereEinreichungSection
-              draftWeitereEinreichung={draftWeitereEinreichung}
-            />
-          )}
+          <VerfahrenWeitereEinreichungDokumenteStep
+            draftWeitereEinreichung={draftWeitereEinreichung}
+          />
         </section>
       </div>
     </article>

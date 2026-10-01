@@ -48,7 +48,7 @@ const artLabel = "Art der Einreichung";
 const uploadButtonName = "Hochladen";
 
 describe("VerfahrenWeitereEinreichungSection", () => {
-  it("lets the Art be picked while there is no draft yet", () => {
+  it("lets the Art be picked while the Dokumente step is still disabled", () => {
     renderSection(null);
 
     expect(screen.getByLabelText(artLabel)).not.toHaveAttribute(
@@ -56,11 +56,11 @@ describe("VerfahrenWeitereEinreichungSection", () => {
       "true",
     );
     expect(
-      screen.queryByRole("button", { name: uploadButtonName }),
-    ).not.toBeInTheDocument();
+      screen.getByRole("button", { name: uploadButtonName }),
+    ).toBeDisabled();
   });
 
-  it("fixes the Art and shows the draft once it exists", () => {
+  it("fixes the Art and enables the Dokumente step once the draft exists", () => {
     renderSection(draftWeitereEinreichung);
 
     const artSelect = screen.getByLabelText(artLabel);
@@ -68,6 +68,6 @@ describe("VerfahrenWeitereEinreichungSection", () => {
     expect(artSelect).toHaveValue("Schriftsatz");
     expect(
       screen.getByRole("button", { name: uploadButtonName }),
-    ).toBeInTheDocument();
+    ).toBeEnabled();
   });
 });

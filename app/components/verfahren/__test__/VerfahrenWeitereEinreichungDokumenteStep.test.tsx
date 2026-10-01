@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import { TranslationsProvider } from "~/services/translations/context";
 import type { DokumentWithValidierungsstatus } from "../VerfahrenDokumenteList";
 import type { EinreichungDetails } from "../VerfahrenDraftKlageeinreichungSection";
-import VerfahrenDraftWeitereEinreichungSection from "../VerfahrenDraftWeitereEinreichungSection";
+import VerfahrenWeitereEinreichungDokumenteStep from "../VerfahrenWeitereEinreichungDokumenteStep";
 
 function buildDokument(
   validierungsstatus: DokumentWithValidierungsstatus["validierungsstatus"],
@@ -57,13 +57,13 @@ function buildWeitereEinreichung(
   } as EinreichungDetails;
 }
 
-function renderSection(weitereEinreichung: EinreichungDetails) {
+function renderSection(weitereEinreichung: EinreichungDetails | null) {
   const router = createMemoryRouter([
     {
       path: "/",
       element: (
         <TranslationsProvider value={getTestTranslations()}>
-          <VerfahrenDraftWeitereEinreichungSection
+          <VerfahrenWeitereEinreichungDokumenteStep
             draftWeitereEinreichung={weitereEinreichung}
           />
         </TranslationsProvider>
@@ -76,19 +76,46 @@ function renderSection(weitereEinreichung: EinreichungDetails) {
 
 const submitButtonName = "Einreichen & Abgabe ans Gericht";
 
-describe("VerfahrenDraftWeitereEinreichungSection", () => {
+describe("VerfahrenWeitereEinreichungDokumenteStep", () => {
+  it.each([
+    ["there is no draft yet", null],
+    ["nothing has been uploaded yet", buildWeitereEinreichung([])],
+  ])("shows no Dokumente list while %s", (_, draft) => {
+    renderSection(draft);
+
+    expect(
+      screen.queryByText("Keine Dokumente vorhanden."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("disables every control while there is no draft yet", () => {
+    renderSection(null);
+
+    expect(screen.getByLabelText("Datei hochladen")).toBeDisabled();
+    expect(
+      screen.getByRole("combobox", { name: "Sichtbarkeit" }),
+    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Hochladen" })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: submitButtonName }),
+    ).toBeDisabled();
+  });
+
   it("offers both Sichtbarkeit options, defaulting to Alle Parteien", () => {
     renderSection(buildWeitereEinreichung([]));
 
-    const alle = screen.getByRole("radio", { name: "Alle Parteien" });
-    const nurGericht = screen.getByRole("radio", {
-      name: "Nur Gericht und zugeordnete Partei",
-    });
+    const sichtbarkeit = screen.getByRole("combobox", { name: "Sichtbarkeit" });
 
-    expect(alle).toBeChecked();
-    expect(alle).toHaveAttribute("value", "true");
-    expect(nurGericht).not.toBeChecked();
-    expect(nurGericht).toHaveAttribute("value", "false");
+    expect(sichtbarkeit).toHaveAttribute("name", "sichtbarkeitAlle");
+    expect(sichtbarkeit).toHaveValue("true");
+    expect(
+      screen.getByRole("option", { name: "Alle Parteien" }),
+    ).toHaveAttribute("value", "true");
+    expect(
+      screen.getByRole("option", {
+        name: "Nur Gericht und zugeordnete Partei",
+      }),
+    ).toHaveAttribute("value", "false");
     expect(screen.getByLabelText("Datei hochladen")).toBeInTheDocument();
   });
 

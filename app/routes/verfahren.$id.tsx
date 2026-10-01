@@ -11,12 +11,12 @@ import { resolveReadinessPresentation } from "~/components/verfahren/presentatio
 import VerfahrenDraftKlageeinreichungSection, {
   type EinreichungDetails,
 } from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
-import { UPLOAD_WEITERE_DOKUMENT_FORM_TYPE } from "~/components/verfahren/VerfahrenDraftWeitereEinreichungSection";
 import VerfahrenEinreichungOutcomeBanner from "~/components/verfahren/VerfahrenEinreichungOutcomeBanner";
 import VerfahrenEinreichungTimeline from "~/components/verfahren/VerfahrenEinreichungTimeline";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenOverviewCard from "~/components/verfahren/VerfahrenOverviewCard";
 import VerfahrenTimelineStep from "~/components/verfahren/VerfahrenTimelineStep";
+import { UPLOAD_WEITERE_DOKUMENT_FORM_TYPE } from "~/components/verfahren/VerfahrenWeitereDokumentUploadForm";
 import VerfahrenWeitereEinreichungSection, {
   CREATE_EINREICHUNG_FORM_TYPE,
 } from "~/components/verfahren/VerfahrenWeitereEinreichungSection";
