@@ -65,7 +65,7 @@ export async function loader({ url, context }: LoaderFunctionArgs) {
  * Verfahren.
  */
 export async function action({ request, context }: Route.ActionArgs) {
-  const authData = requireAuthData(context, "loader");
+  const authData = requireAuthData(context, "action");
   const safeId = authData.authenticationTokens.idToken!;
 
   const formData = await request.formData();
