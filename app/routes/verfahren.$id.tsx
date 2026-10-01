@@ -50,6 +50,7 @@ import {
   actionResultFromInputParsingError,
   actionSuccess,
 } from "~/utils/actionResult";
+import { rethrowApiNotFoundAsRouteError } from "~/utils/apiError";
 import { dispatchFormAction } from "~/utils/dispatchFormAction";
 
 type LoaderData = {
@@ -100,7 +101,7 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   const { verfahren, einreichungen } = await loadVerfahrenEinreichungenOverview(
     authData,
     verfahrenId,
-  );
+  ).catch(rethrowApiNotFoundAsRouteError);
 
   // A draft is an Einreichung that's still open (ERSTELLT/FEHLGESCHLAGEN) —
   // the only statuses in which the API lets Dokumente be changed and the
