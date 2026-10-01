@@ -1,26 +1,24 @@
-import { useRef, useState, type ChangeEvent } from "react";
 import {
   ActionFunctionArgs,
-  Form,
   LoaderFunctionArgs,
   redirect,
   useLoaderData,
 } from "react-router";
 import z from "zod";
 import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
-import InputSelect from "~/components/InputSelect";
 import { PageMetadata } from "~/components/PageMetadata";
 import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
 import VerfahrenDraftKlageeinreichungSection, {
   type EinreichungDetails,
 } from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
+import { UPLOAD_WEITERE_DOKUMENT_FORM_TYPE } from "~/components/verfahren/VerfahrenDraftWeitereEinreichungSection";
 import VerfahrenEinreichungOutcomeBanner from "~/components/verfahren/VerfahrenEinreichungOutcomeBanner";
 import VerfahrenEinreichungTimeline from "~/components/verfahren/VerfahrenEinreichungTimeline";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenOverviewCard from "~/components/verfahren/VerfahrenOverviewCard";
 import VerfahrenTimelineStep from "~/components/verfahren/VerfahrenTimelineStep";
 import VerfahrenWeitereEinreichungSection, {
-  UPLOAD_WEITERE_DOKUMENT_FORM_TYPE,
+  CREATE_EINREICHUNG_FORM_TYPE,
 } from "~/components/verfahren/VerfahrenWeitereEinreichungSection";
 import type { Verfahren } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
 import loadVerfahrenEinreichungenOverview, {
@@ -262,7 +260,7 @@ const formActionHandlers = {
   delete: handleDelete,
   einreichen: handleEinreichen,
   "download-beleg": handleDownloadBeleg,
-  "create-einreichung": handleCreateEinreichung,
+  [CREATE_EINREICHUNG_FORM_TYPE]: handleCreateEinreichung,
   [UPLOAD_WEITERE_DOKUMENT_FORM_TYPE]: handleUploadWeitereDokument,
 } as const;
 
@@ -297,25 +295,9 @@ export default function VerfahrenId() {
     draftKlageeinreichung,
     draftWeitereEinreichung,
   } = useLoaderData<LoaderData>();
-  const { routes, shared } = useTranslations();
+  const { routes } = useTranslations();
 
   console.log("einreichungen", einreichungen);
-
-  const createEinreichungFormRef = useRef<HTMLFormElement>(null);
-  const [art, setArt] = useState(
-    draftWeitereEinreichung?.einreichung.name ?? "",
-  );
-
-  function handleArtChange(event: ChangeEvent<HTMLSelectElement>) {
-    // Once created, the Art is fixed — picking another one must not create
-    // a second Einreichung.
-    if (draftWeitereEinreichung) {
-      return;
-    }
-
-    setArt(event.target.value);
-    createEinreichungFormRef.current?.requestSubmit();
-  }
 
   const timelineEinreichungen = einreichungen.filter(
     ({ einreichung }) =>
@@ -382,55 +364,7 @@ export default function VerfahrenId() {
                 <h3 className="kern-heading-medium">
                   {routes.verfahrenId.headline}
                 </h3>
-                <VerfahrenTimelineStep
-                  timelineLabel={
-                    routes.verfahrenNeu.step3.proceduralSteps.einreichung.draft
-                  }
-                  iconClassName="kern-icon--edit"
-                  showConnector={
-                    Boolean(draftKlageeinreichung) ||
-                    timelineEinreichungen.length > 0
-                  }
-                >
-                  <article className="kern-card">
-                    <div className="kern-card__container">
-                      <header className="kern-card__header">
-                        <h2 className="kern-title">
-                          {routes.verfahrenId.weitereEinreichung.headline}
-                        </h2>
-                      </header>
-                      <section className="kern-card__body">
-                        <div className="w-full">
-                          <Form method="post" ref={createEinreichungFormRef}>
-                            <input
-                              type="hidden"
-                              name="formType"
-                              value="create-einreichung"
-                            />
-                            <InputSelect
-                              id="art"
-                              label={
-                                routes.verfahrenId.weitereEinreichung.artLabel
-                              }
-                              placeholder={shared.form.select.placeholder}
-                              options={EinreichungArtSchema.options.map(
-                                (value) => ({ value, label: value }),
-                              )}
-                              selectedValue={art}
-                              onChange={handleArtChange}
-                              disabled={Boolean(draftWeitereEinreichung)}
-                            />
-                          </Form>
-                        </div>
-                        {draftWeitereEinreichung && (
-                          <VerfahrenWeitereEinreichungSection
-                            draftWeitereEinreichung={draftWeitereEinreichung}
-                          />
-                        )}
-                      </section>
-                    </div>
-                  </article>
-                </VerfahrenTimelineStep>
+
                 {draftKlageeinreichung ? (
                   <VerfahrenDraftKlageeinreichungSection
                     draftKlageeinreichung={draftKlageeinreichung}
@@ -443,9 +377,26 @@ export default function VerfahrenId() {
                     handleSubmit={handleSubmit}
                   />
                 ) : (
-                  <VerfahrenEinreichungTimeline
-                    einreichungen={timelineEinreichungen}
-                  />
+                  <>
+                    <VerfahrenTimelineStep
+                      timelineLabel={
+                        routes.verfahrenNeu.step3.proceduralSteps.einreichung
+                          .draft
+                      }
+                      iconClassName="kern-icon--edit"
+                      showConnector={
+                        Boolean(draftKlageeinreichung) ||
+                        timelineEinreichungen.length > 0
+                      }
+                    >
+                      <VerfahrenWeitereEinreichungSection
+                        draftWeitereEinreichung={draftWeitereEinreichung}
+                      />
+                    </VerfahrenTimelineStep>
+                    <VerfahrenEinreichungTimeline
+                      einreichungen={timelineEinreichungen}
+                    />
+                  </>
                 )}
               </section>
             </div>

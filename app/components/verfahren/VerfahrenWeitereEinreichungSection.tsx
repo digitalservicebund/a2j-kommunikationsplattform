@@ -1,20 +1,15 @@
-import { Form, useActionData, useNavigation } from "react-router";
-import Alert from "~/components/Alert";
-import Button from "~/components/Button";
-import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
-import InputFile from "~/components/InputFile";
-import VerfahrenDokumenteList from "~/components/verfahren/VerfahrenDokumenteList";
+import { useRef, useState, type ChangeEvent } from "react";
+import { Form } from "react-router";
+import InputSelect from "~/components/InputSelect";
 import type { EinreichungDetails } from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
-import { isValidierungslaufRunning } from "~/domains/verfahren/services/validierungslauf";
+import VerfahrenDraftWeitereEinreichungSection from "~/components/verfahren/VerfahrenDraftWeitereEinreichungSection";
+import { EinreichungArtSchema } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import { useTranslations } from "~/services/translations/context";
-import type { ActionResult } from "~/utils/actionResult";
 
-export const UPLOAD_WEITERE_DOKUMENT_FORM_TYPE = "upload-weitere-dokument";
-
-type UploadActionData = { formType?: string };
+export const CREATE_EINREICHUNG_FORM_TYPE = "create-einreichung";
 
 type VerfahrenWeitereEinreichungSectionProps = {
-  draftWeitereEinreichung: EinreichungDetails;
+  draftWeitereEinreichung: EinreichungDetails | null;
 };
 
 export default function VerfahrenWeitereEinreichungSection({
@@ -22,127 +17,58 @@ export default function VerfahrenWeitereEinreichungSection({
 }: Readonly<VerfahrenWeitereEinreichungSectionProps>) {
   const { routes, shared } = useTranslations();
   const labels = routes.verfahrenId.weitereEinreichung;
-  const { einreichung, dokumente } = draftWeitereEinreichung;
 
-  const navigation = useNavigation();
-  const actionData = useActionData<ActionResult<UploadActionData>>();
-  const isUploadResult =
-    actionData?.data?.formType === UPLOAD_WEITERE_DOKUMENT_FORM_TYPE;
-  const uploadError =
-    isUploadResult && actionData.status === "error" ? actionData.error : null;
-  const hasFileError =
-    isUploadResult &&
-    actionData.status === "invalid" &&
-    Boolean(actionData.fieldErrors.file);
-  const isUploading =
-    navigation.state !== "idle" &&
-    navigation.formData?.get("formType") === UPLOAD_WEITERE_DOKUMENT_FORM_TYPE;
-
-  const isValidating = dokumente.some((dokument) =>
-    isValidierungslaufRunning(dokument.validierungsstatus),
-  );
-  const hasUploadedDokumente = dokumente.some(
-    (dokument) => dokument.typ !== "XJUSTIZ",
+  const createEinreichungFormRef = useRef<HTMLFormElement>(null);
+  const [art, setArt] = useState(
+    draftWeitereEinreichung?.einreichung.name ?? "",
   );
 
-  const { formRef, isSubmitting, error, handleSubmit } =
-    useEinreichenSubmission({ isValidating, isBelegPending: false });
+  function handleArtChange(event: ChangeEvent<HTMLSelectElement>) {
+    // Once created, the Art is fixed — picking another one must not create
+    // a second Einreichung.
+    if (draftWeitereEinreichung) {
+      return;
+    }
+
+    setArt(event.target.value);
+    createEinreichungFormRef.current?.requestSubmit();
+  }
 
   return (
-    <div className="kern-gap-md flex w-full flex-col">
-      <VerfahrenDokumenteList
-        dokumente={dokumente}
-        einreichungId={einreichung.id}
-      />
-
-      {/* Keyed by the Dokument count so the form (incl. the selected file)
-          resets after a successful upload, but keeps its values on failure. */}
-      <Form
-        key={dokumente.length}
-        method="post"
-        encType="multipart/form-data"
-        className="kern-gap-md flex flex-col"
-      >
-        <input
-          type="hidden"
-          name="formType"
-          value={UPLOAD_WEITERE_DOKUMENT_FORM_TYPE}
-        />
-        <input type="hidden" name="einreichungId" value={einreichung.id} />
-
-        <InputFile
-          id="file"
-          label={shared.form.uploadDokument.label}
-          hint={shared.form.uploadDokument.hint}
-          error={hasFileError ? shared.form.uploadDokument.error : undefined}
-        />
-
-        <fieldset className="kern-fieldset">
-          <legend className="kern-label">{labels.sichtbarkeit.label}</legend>
-          <div className="kern-fieldset__body">
-            <div className="kern-form-check">
+    <article className="kern-card">
+      <div className="kern-card__container">
+        <header className="kern-card__header">
+          <h2 className="kern-title">{labels.headline}</h2>
+        </header>
+        <section className="kern-card__body">
+          <div className="w-full">
+            <Form method="post" ref={createEinreichungFormRef}>
               <input
-                type="radio"
-                className="kern-form-check__radio"
-                id="sichtbarkeitAlle-true"
-                name="sichtbarkeitAlle"
-                value="true"
-                defaultChecked
+                type="hidden"
+                name="formType"
+                value={CREATE_EINREICHUNG_FORM_TYPE}
               />
-              <label className="kern-label" htmlFor="sichtbarkeitAlle-true">
-                {labels.sichtbarkeit.alleParteien}
-              </label>
-            </div>
-            <div className="kern-form-check">
-              <input
-                type="radio"
-                className="kern-form-check__radio"
-                id="sichtbarkeitAlle-false"
-                name="sichtbarkeitAlle"
-                value="false"
+              <InputSelect
+                id="art"
+                label={labels.artLabel}
+                placeholder={shared.form.select.placeholder}
+                options={EinreichungArtSchema.options.map((value) => ({
+                  value,
+                  label: value,
+                }))}
+                selectedValue={art}
+                onChange={handleArtChange}
+                disabled={Boolean(draftWeitereEinreichung)}
               />
-              <label className="kern-label" htmlFor="sichtbarkeitAlle-false">
-                {labels.sichtbarkeit.nurGerichtUndPartei}
-              </label>
-            </div>
+            </Form>
           </div>
-        </fieldset>
-
-        {uploadError && <Alert type="error" title={uploadError} />}
-
-        <div className="flex justify-end">
-          <Button
-            appearance="secondary"
-            type="submit"
-            disabled={isUploading}
-            label={isUploading ? labels.uploading : labels.upload}
-          />
-        </div>
-      </Form>
-
-      {error && (
-        <Alert type="error" title={shared.form.errors.einreichungFailed} />
-      )}
-
-      <Form
-        ref={formRef}
-        method="post"
-        onSubmit={handleSubmit}
-        className="flex justify-end"
-      >
-        <input type="hidden" name="formType" value="einreichen" />
-        <input type="hidden" name="einreichungId" value={einreichung.id} />
-        <Button
-          appearance="primary"
-          type="submit"
-          disabled={
-            isSubmitting === "submitting" ||
-            isValidating ||
-            !hasUploadedDokumente
-          }
-          label={labels.submit}
-        />
-      </Form>
-    </div>
+          {draftWeitereEinreichung && (
+            <VerfahrenDraftWeitereEinreichungSection
+              draftWeitereEinreichung={draftWeitereEinreichung}
+            />
+          )}
+        </section>
+      </div>
+    </article>
   );
 }
