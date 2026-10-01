@@ -63,7 +63,7 @@ export default function VerfahrenEinreichungTimeline({
             }
             showConnector={index < newestFirst.length - 1}
           >
-            <details className="kern-accordion">
+            <details className="kern-accordion space-y-2">
               <summary className="kern-accordion__header">
                 <span className="kern-title flex-none">{einreichung.name}</span>
                 <VerfahrenStatusBadge

@@ -9,8 +9,8 @@ import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmiss
 import { PageMetadata } from "~/components/PageMetadata";
 import Progress from "~/components/Progress";
 import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
-import VerfahrenAktuelleEinreichungSection from "~/components/verfahren/VerfahrenAktuelleEinreichungSection";
 import { DokumentWithValidierungsstatus } from "~/components/verfahren/VerfahrenDokumenteList";
+import VerfahrenDraftKlageeinreichungSection from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
 import VerfahrenEinreichungOutcomeBanner from "~/components/verfahren/VerfahrenEinreichungOutcomeBanner";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenOverviewCard from "~/components/verfahren/VerfahrenOverviewCard";
@@ -267,8 +267,12 @@ export default function VerfahrenNeuBearbeiten() {
                   <h3 className="kern-heading-medium">
                     {routes.verfahrenNeu.step3.proceduralSteps.headline}
                   </h3>
-                  <VerfahrenAktuelleEinreichungSection
-                    initialEinreichung={{ einreichung, dokumente, beleg }}
+                  <VerfahrenDraftKlageeinreichungSection
+                    draftKlageeinreichung={{
+                      einreichung,
+                      dokumente,
+                      beleg,
+                    }}
                     verfahren={verfahren}
                     readinessPresentation={readinessPresentation}
                     hasValidationIssues={hasValidationIssues}

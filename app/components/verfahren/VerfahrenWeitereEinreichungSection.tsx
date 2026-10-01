@@ -3,8 +3,8 @@ import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
 import InputFile from "~/components/InputFile";
-import type { EinreichungDetails } from "~/components/verfahren/VerfahrenAktuelleEinreichungSection";
 import VerfahrenDokumenteList from "~/components/verfahren/VerfahrenDokumenteList";
+import type { EinreichungDetails } from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
 import { isValidierungslaufRunning } from "~/domains/verfahren/services/validierungslauf";
 import { useTranslations } from "~/services/translations/context";
 import type { ActionResult } from "~/utils/actionResult";
@@ -14,15 +14,15 @@ export const UPLOAD_WEITERE_DOKUMENT_FORM_TYPE = "upload-weitere-dokument";
 type UploadActionData = { formType?: string };
 
 type VerfahrenWeitereEinreichungSectionProps = {
-  weitereEinreichung: EinreichungDetails;
+  draftWeitereEinreichung: EinreichungDetails;
 };
 
 export default function VerfahrenWeitereEinreichungSection({
-  weitereEinreichung,
+  draftWeitereEinreichung,
 }: Readonly<VerfahrenWeitereEinreichungSectionProps>) {
   const { routes, shared } = useTranslations();
   const labels = routes.verfahrenId.weitereEinreichung;
-  const { einreichung, dokumente } = weitereEinreichung;
+  const { einreichung, dokumente } = draftWeitereEinreichung;
 
   const navigation = useNavigation();
   const actionData = useActionData<ActionResult<UploadActionData>>();

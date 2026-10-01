@@ -2,7 +2,7 @@ import { RefObject, SyntheticEvent } from "react";
 import { Form, Link } from "react-router";
 import Button from "~/components/Button";
 import { buildBeteiligteSummaryItems } from "~/components/verfahren/presentation/buildBeteiligteSummaryItems";
-import { buildInitialEinreichungTimelineSteps } from "~/components/verfahren/presentation/buildInitialEinreichungTimelineSteps";
+import { buildKlageeinreichungTimelineSteps } from "~/components/verfahren/presentation/buildKlageeinreichungTimelineSteps";
 import type { ReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
 import {
   NOT_AVAILABLE_LABEL,
@@ -32,8 +32,8 @@ export type EinreichungDetails = {
   beleg: Beleg | null;
 };
 
-type VerfahrenAktuelleEinreichungSectionProps = {
-  initialEinreichung: EinreichungDetails;
+type VerfahrenDraftKlageeinreichungSectionProps = {
+  draftKlageeinreichung: EinreichungDetails;
   verfahren: Verfahren;
   readinessPresentation: ReadinessPresentation | null;
   hasValidationIssues: boolean;
@@ -43,8 +43,8 @@ type VerfahrenAktuelleEinreichungSectionProps = {
   handleSubmit: (event: SyntheticEvent<HTMLFormElement>) => void;
 };
 
-export default function VerfahrenAktuelleEinreichungSection({
-  initialEinreichung,
+export default function VerfahrenDraftKlageeinreichungSection({
+  draftKlageeinreichung,
   verfahren,
   readinessPresentation,
   hasValidationIssues,
@@ -52,10 +52,10 @@ export default function VerfahrenAktuelleEinreichungSection({
   isSubmitting,
   formRef,
   handleSubmit,
-}: Readonly<VerfahrenAktuelleEinreichungSectionProps>) {
+}: Readonly<VerfahrenDraftKlageeinreichungSectionProps>) {
   const translations = useTranslations();
 
-  const beleg = initialEinreichung.beleg;
+  const beleg = draftKlageeinreichung.beleg;
   const isBelegReady = beleg !== null && beleg.status === "ERSTELLT";
 
   const klaegerinnenSummary = buildBeteiligteSummaryItems(
@@ -67,12 +67,12 @@ export default function VerfahrenAktuelleEinreichungSection({
     ROLE_CODE_BEKLAGTE,
   );
 
-  const initialEinreichungTimelineSteps = buildInitialEinreichungTimelineSteps({
+  const klageeinreichungTimelineSteps = buildKlageeinreichungTimelineSteps({
     verfahrenId: verfahren.id,
     verfahrenStatusGeaendertAm: verfahren.statusGeaendertAm,
-    einreichungId: initialEinreichung.einreichung.id,
-    einreichungStatus: initialEinreichung.einreichung.status,
-    einreichungDokumente: initialEinreichung.dokumente,
+    einreichungId: draftKlageeinreichung.einreichung.id,
+    einreichungStatus: draftKlageeinreichung.einreichung.status,
+    einreichungDokumente: draftKlageeinreichung.dokumente,
     detailsCompleted: {
       klaeger: klaegerinnenSummary.length > 0,
       beklagter: beklagteSummary.length > 0,
@@ -94,7 +94,10 @@ export default function VerfahrenAktuelleEinreichungSection({
         }
         iconClassName={isBelegReady ? "kern-icon--check" : "kern-icon--edit"}
       >
-        <article className="kern-card" key={initialEinreichung.einreichung.id}>
+        <article
+          className="kern-card"
+          key={draftKlageeinreichung.einreichung.id}
+        >
           <div className="kern-card__container">
             {/* Einreichung Header */}
             <header className="kern-card__header">
@@ -107,7 +110,9 @@ export default function VerfahrenAktuelleEinreichungSection({
                     translations.routes.verfahrenNeu.step3.proceduralSteps
                       .einreichung.basisdaten.title
                   }{" "}
-                  - {initialEinreichung.einreichung.name ?? NOT_AVAILABLE_LABEL}
+                  -{" "}
+                  {draftKlageeinreichung.einreichung.name ??
+                    NOT_AVAILABLE_LABEL}
                 </h4>
                 <VerfahrenEinreichungStatusBadge
                   beleg={beleg}
@@ -174,9 +179,9 @@ export default function VerfahrenAktuelleEinreichungSection({
                         }
                       </dt>
                       <dd className="kern-description-list-item__value">
-                        {initialEinreichung.einreichung.erstelltAm
+                        {draftKlageeinreichung.einreichung.erstelltAm
                           ? new Date(
-                              initialEinreichung.einreichung.erstelltAm,
+                              draftKlageeinreichung.einreichung.erstelltAm,
                             ).toLocaleDateString()
                           : NOT_AVAILABLE_LABEL}
                       </dd>
@@ -226,8 +231,8 @@ export default function VerfahrenAktuelleEinreichungSection({
               <div className="w-full">
                 <h5 className="kern-preline">Dokumente</h5>
                 <VerfahrenDokumenteList
-                  dokumente={initialEinreichung.dokumente}
-                  einreichungId={initialEinreichung.einreichung.id}
+                  dokumente={draftKlageeinreichung.dokumente}
+                  einreichungId={draftKlageeinreichung.einreichung.id}
                 />
               </div>
             </section>
@@ -256,7 +261,7 @@ export default function VerfahrenAktuelleEinreichungSection({
                   <input
                     type="hidden"
                     name="einreichungId"
-                    value={initialEinreichung.einreichung.id}
+                    value={draftKlageeinreichung.einreichung.id}
                   />
                   <Button
                     appearance="primary"
@@ -276,7 +281,7 @@ export default function VerfahrenAktuelleEinreichungSection({
       </VerfahrenTimelineStep>
 
       {/* Timeline */}
-      {initialEinreichungTimelineSteps.map((step) => (
+      {klageeinreichungTimelineSteps.map((step) => (
         <VerfahrenTimelineStepCard
           {...step}
           key={`${step.title}-${step.timelineLabel}`}

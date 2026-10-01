@@ -11,9 +11,9 @@ import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmiss
 import InputSelect from "~/components/InputSelect";
 import { PageMetadata } from "~/components/PageMetadata";
 import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
-import VerfahrenAktuelleEinreichungSection, {
+import VerfahrenDraftKlageeinreichungSection, {
   type EinreichungDetails,
-} from "~/components/verfahren/VerfahrenAktuelleEinreichungSection";
+} from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
 import VerfahrenEinreichungOutcomeBanner from "~/components/verfahren/VerfahrenEinreichungOutcomeBanner";
 import VerfahrenEinreichungTimeline from "~/components/verfahren/VerfahrenEinreichungTimeline";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
@@ -56,8 +56,8 @@ import { dispatchFormAction } from "~/utils/dispatchFormAction";
 type LoaderData = {
   verfahren: Verfahren;
   einreichungen: EinreichungSummary[];
-  initialEinreichung: EinreichungDetails | null;
-  weitereEinreichung: EinreichungDetails | null;
+  draftKlageeinreichung: EinreichungDetails | null;
+  draftWeitereEinreichung: EinreichungDetails | null;
 };
 
 // this route requires users to be logged in
@@ -106,23 +106,28 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   // A draft is an Einreichung that's still open (ERSTELLT/FEHLGESCHLAGEN) —
   // the only statuses in which the API lets Dokumente be changed and the
   // Einreichung be submitted. Once submitted, it's listed in the history.
-  const klageeinreichungDraft = findOpenEinreichung(
+  const openKlageeinreichung = findOpenEinreichung(
     einreichungen.filter(({ einreichung }) => isKlageeinreichung(einreichung)),
   );
-  const weitereEinreichungDraft = findOpenEinreichung(
+  const openWeitereEinreichung = findOpenEinreichung(
     einreichungen.filter(({ einreichung }) => !isKlageeinreichung(einreichung)),
   );
 
-  const [initialEinreichung, weitereEinreichung] = await Promise.all([
-    klageeinreichungDraft
-      ? loadEinreichungDetails(authData, verfahrenId, klageeinreichungDraft)
+  const [draftKlageeinreichung, draftWeitereEinreichung] = await Promise.all([
+    openKlageeinreichung
+      ? loadEinreichungDetails(authData, verfahrenId, openKlageeinreichung)
       : null,
-    weitereEinreichungDraft
-      ? loadEinreichungDetails(authData, verfahrenId, weitereEinreichungDraft)
+    openWeitereEinreichung
+      ? loadEinreichungDetails(authData, verfahrenId, openWeitereEinreichung)
       : null,
   ]);
 
-  return { verfahren, einreichungen, initialEinreichung, weitereEinreichung };
+  return {
+    verfahren,
+    einreichungen,
+    draftKlageeinreichung,
+    draftWeitereEinreichung,
+  };
 };
 
 type FormActionContext = {
@@ -286,19 +291,25 @@ export const action = async ({
 };
 
 export default function VerfahrenId() {
-  const { verfahren, einreichungen, initialEinreichung, weitereEinreichung } =
-    useLoaderData<LoaderData>();
+  const {
+    verfahren,
+    einreichungen,
+    draftKlageeinreichung,
+    draftWeitereEinreichung,
+  } = useLoaderData<LoaderData>();
   const { routes, shared } = useTranslations();
 
   console.log("einreichungen", einreichungen);
 
   const createEinreichungFormRef = useRef<HTMLFormElement>(null);
-  const [art, setArt] = useState(weitereEinreichung?.einreichung.name ?? "");
+  const [art, setArt] = useState(
+    draftWeitereEinreichung?.einreichung.name ?? "",
+  );
 
   function handleArtChange(event: ChangeEvent<HTMLSelectElement>) {
     // Once created, the Art is fixed — picking another one must not create
     // a second Einreichung.
-    if (weitereEinreichung) {
+    if (draftWeitereEinreichung) {
       return;
     }
 
@@ -307,21 +318,22 @@ export default function VerfahrenId() {
   }
 
   const timelineEinreichungen = einreichungen.filter(
-    ({ einreichung }) => einreichung.id !== weitereEinreichung?.einreichung.id,
+    ({ einreichung }) =>
+      einreichung.id !== draftWeitereEinreichung?.einreichung.id,
   );
 
-  const beleg = initialEinreichung?.beleg ?? null;
+  const beleg = draftKlageeinreichung?.beleg ?? null;
   const isBelegReady = beleg !== null && beleg.status === "ERSTELLT";
   const isBelegPending = beleg !== null && !isBelegReady;
 
   const dokumenteValidierungsstatus =
-    initialEinreichung?.dokumente.map(
+    draftKlageeinreichung?.dokumente.map(
       (dokument) => dokument.validierungsstatus,
     ) ?? [];
 
-  const readinessPresentation = initialEinreichung
+  const readinessPresentation = draftKlageeinreichung
     ? resolveReadinessPresentation(
-        initialEinreichung.einreichung.einreichungsStatus,
+        draftKlageeinreichung.einreichung.einreichungsStatus,
         routes.verfahrenNeu.step3.summary.badgeLabels,
         dokumenteValidierungsstatus,
       )
@@ -329,7 +341,7 @@ export default function VerfahrenId() {
   const isValidating = readinessPresentation?.readinessBadgeClass === "info";
 
   const validationErgebnis =
-    initialEinreichung?.einreichung.einreichungsStatus.ergebnis;
+    draftKlageeinreichung?.einreichung.einreichungsStatus.ergebnis;
   const hasValidationIssues =
     validationErgebnis === "ROT" || validationErgebnis === "GELB";
 
@@ -338,6 +350,8 @@ export default function VerfahrenId() {
       isValidating,
       isBelegPending,
     });
+
+  console.log("draftWeitereEinreichung", draftWeitereEinreichung);
 
   return (
     <>
@@ -357,8 +371,8 @@ export default function VerfahrenId() {
                 isValidationErrorFatal={validationErgebnis === "ROT"}
                 readinessLabel={readinessPresentation?.readinessLabel ?? ""}
                 error={
-                  initialEinreichung?.einreichung.einreichungsStatus.fehler ??
-                  []
+                  draftKlageeinreichung?.einreichung.einreichungsStatus
+                    .fehler ?? []
                 }
               />
 
@@ -374,7 +388,7 @@ export default function VerfahrenId() {
                   }
                   iconClassName="kern-icon--edit"
                   showConnector={
-                    Boolean(initialEinreichung) ||
+                    Boolean(draftKlageeinreichung) ||
                     timelineEinreichungen.length > 0
                   }
                 >
@@ -404,22 +418,22 @@ export default function VerfahrenId() {
                               )}
                               selectedValue={art}
                               onChange={handleArtChange}
-                              disabled={Boolean(weitereEinreichung)}
+                              disabled={Boolean(draftWeitereEinreichung)}
                             />
                           </Form>
                         </div>
-                        {weitereEinreichung && (
+                        {draftWeitereEinreichung && (
                           <VerfahrenWeitereEinreichungSection
-                            weitereEinreichung={weitereEinreichung}
+                            draftWeitereEinreichung={draftWeitereEinreichung}
                           />
                         )}
                       </section>
                     </div>
                   </article>
                 </VerfahrenTimelineStep>
-                {initialEinreichung ? (
-                  <VerfahrenAktuelleEinreichungSection
-                    initialEinreichung={initialEinreichung}
+                {draftKlageeinreichung ? (
+                  <VerfahrenDraftKlageeinreichungSection
+                    draftKlageeinreichung={draftKlageeinreichung}
                     verfahren={verfahren}
                     readinessPresentation={readinessPresentation}
                     hasValidationIssues={hasValidationIssues}

@@ -5,8 +5,8 @@ import { createMemoryRouter, RouterProvider } from "react-router";
 import { getTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it } from "vitest";
 import { TranslationsProvider } from "~/services/translations/context";
-import type { EinreichungDetails } from "../VerfahrenAktuelleEinreichungSection";
 import type { DokumentWithValidierungsstatus } from "../VerfahrenDokumenteList";
+import type { EinreichungDetails } from "../VerfahrenDraftKlageeinreichungSection";
 import VerfahrenWeitereEinreichungSection from "../VerfahrenWeitereEinreichungSection";
 
 function buildDokument(
@@ -64,7 +64,7 @@ function renderSection(weitereEinreichung: EinreichungDetails) {
       element: (
         <TranslationsProvider value={getTestTranslations()}>
           <VerfahrenWeitereEinreichungSection
-            weitereEinreichung={weitereEinreichung}
+            draftWeitereEinreichung={weitereEinreichung}
           />
         </TranslationsProvider>
       ),

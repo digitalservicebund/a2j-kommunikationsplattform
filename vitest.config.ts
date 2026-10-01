@@ -37,7 +37,11 @@ export default defineConfig({
     },
     environment: "node",
     globals: true,
-    include: ["./app/**/__test__/*.test.{ts,tsx}", "app/routes/action.*.tsx"],
+    include: [
+      "./app/**/__test__/*.test.{ts,tsx}",
+      "./mocks/**/__test__/*.test.ts",
+      "app/routes/action.*.tsx",
+    ],
     // For in-source testing
     includeSource: ["./app/**/*.{js,ts}"],
     pool: "threads",
