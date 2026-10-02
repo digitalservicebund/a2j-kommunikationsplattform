@@ -21,7 +21,7 @@ type VerfahrenStatementOfClaimUploadFieldsProps = {
   onGerichtIdChange: (selectedValue: string) => void;
 };
 
-export default function VerfahrenStatementOfClaimUploadFields({
+export default function VerfahrenKlageschriftFormSection({
   errors,
   gerichtePromise,
   selectedGerichtId,
