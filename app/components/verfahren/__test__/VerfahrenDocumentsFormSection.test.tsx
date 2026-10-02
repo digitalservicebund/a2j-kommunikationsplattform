@@ -51,6 +51,21 @@ describe("VerfahrenDocumentsFormSection", () => {
     expect(getByRole("button", { name: "Hochladen" })).toBeInTheDocument();
   });
 
+  it("doesn't offer uploading another Schriftstück, since the Klageschrift is the only one", () => {
+    const { getByRole, queryByRole } = renderWithTestTranslations(
+      <VerfahrenDocumentsFormSection
+        {...baseProps}
+        dokumente={[]}
+        uploadedDokumente={[]}
+      />,
+    );
+
+    expect(getByRole("option", { name: "Anhang" })).toBeInTheDocument();
+    expect(
+      queryByRole("option", { name: "Schriftstück" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("renders uploaded documents and calls onDeleteDokument when deleted", async () => {
     const user = userEvent.setup();
     const onDeleteDokument = vi.fn();

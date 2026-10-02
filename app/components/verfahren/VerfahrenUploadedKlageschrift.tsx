@@ -3,19 +3,19 @@ import formatDokumentSize from "~/components/verfahren/presentation/formatDokume
 import type { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { useTranslations } from "~/services/translations/context";
 
-type VerfahrenUploadedDokumentSummaryProps = {
-  uploadedDokument: Dokument | undefined;
+type VerfahrenUploadedKlageschriftProps = {
+  klageschrift: Dokument | undefined;
   verfahrenId: string | undefined;
   einreichungId: string | undefined;
   isSubmitting: boolean;
 };
 
-export default function VerfahrenUploadedDokumentSummary({
-  uploadedDokument,
+export default function VerfahrenUploadedKlageschrift({
+  klageschrift,
   verfahrenId,
   einreichungId,
   isSubmitting,
-}: Readonly<VerfahrenUploadedDokumentSummaryProps>) {
+}: Readonly<VerfahrenUploadedKlageschriftProps>) {
   const { shared } = useTranslations();
 
   return (
@@ -23,18 +23,18 @@ export default function VerfahrenUploadedDokumentSummary({
       <div className="kern-p-md align-center kern-gap-md flex flex-wrap rounded-(--kern-metric-border-radius-default) border border-(--kern-color-decorative-border-contextual)">
         <div className="flex-1">
           <div className="kern-body kern-body--bold">
-            {uploadedDokument?.anzeigename}
+            {klageschrift?.anzeigename}
           </div>
 
           <div className="kern-body kern-body--small">
-            {formatDokumentSize(uploadedDokument?.sizeInBytes ?? 0)}
+            {formatDokumentSize(klageschrift?.sizeInBytes ?? 0)}
           </div>
         </div>
 
         <div className="flex items-center">
           <input type="hidden" name="verfahrenId" value={verfahrenId} />
           <input type="hidden" name="einreichungId" value={einreichungId} />
-          <input type="hidden" name="dokumentId" value={uploadedDokument?.id} />
+          <input type="hidden" name="dokumentId" value={klageschrift?.id} />
           <Button
             appearance="secondary"
             className="kern-btn--x-small"

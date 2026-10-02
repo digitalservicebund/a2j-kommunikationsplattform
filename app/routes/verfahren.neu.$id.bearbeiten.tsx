@@ -33,7 +33,7 @@ import { requireAuthAndVerfahrenId } from "~/domains/verfahren/application/route
 import { CodeWertSchema } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
 import {
   DokumentTypeSchema,
-  UploadDokumentTypeSchema,
+  AnlagenDokumentTypeSchema,
 } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { fetchLatestBelegForEinreichung } from "~/domains/verfahren/infrastructure/repositories/belegRepository.server";
 import {
@@ -102,7 +102,9 @@ type SubmitState = "idle" | "submit" | "upload" | "delete";
 type DokumentActionData = { formType?: SubmitState };
 
 const DokumentUploadSchema = z.object({
-  type: UploadDokumentTypeSchema,
+  // we will exclude SCHRIFTSTUECK type from here
+  // as it's being handled in the previous step /neu
+  type: AnlagenDokumentTypeSchema,
   file: z.file().min(1),
 });
 

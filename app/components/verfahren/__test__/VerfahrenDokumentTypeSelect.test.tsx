@@ -28,6 +28,23 @@ describe("VerfahrenDokumentTypeSelect", () => {
     ).toBeInTheDocument();
   });
 
+  it("offers only the given types", () => {
+    renderWithTestTranslations(
+      <VerfahrenDokumentTypeSelect
+        {...defaultProps}
+        types={["ANHANG", "SIGNATURDATEI"]}
+      />,
+    );
+
+    expect(screen.getByRole("option", { name: "Anhang" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: "Signaturdatei" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("option", { name: "Schriftstück" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("doesn't offer the system-generated XJustiz type", () => {
     renderWithTestTranslations(
       <VerfahrenDokumentTypeSelect {...defaultProps} />,

@@ -79,8 +79,7 @@ export const de = {
       selectDokumentType: {
         label: "Dateityp",
         hint: "Wählen Sie einen Dateityp zur besseren Zuordnung",
-        error:
-          "Bitte wählen Sie zwischen einem Schriftstück, einem Anhang oder einer Signaturdatei.",
+        error: "Bitte wählen Sie einen Dateityp aus.",
       },
       uploadDokument: {
         label: "Datei hochladen",

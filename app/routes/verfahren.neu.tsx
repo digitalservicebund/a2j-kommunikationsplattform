@@ -17,7 +17,7 @@ import { PageMetadata } from "~/components/PageMetadata";
 import Progress from "~/components/Progress";
 import VerfahrenKlageschriftFormSection from "~/components/verfahren/VerfahrenKlageschriftFormSection";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
-import VerfahrenUploadedDokumentSummary from "~/components/verfahren/VerfahrenUploadedDokumentSummary";
+import VerfahrenUploadedKlageschrift from "~/components/verfahren/VerfahrenUploadedKlageschrift";
 import { requireAuthData } from "~/domains/verfahren/application/routeContext.server";
 import type { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { KLAGEEINREICHUNG_NAME } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
@@ -367,8 +367,8 @@ export default function VerfahrenNeu() {
                 >
                   <div className="kern-gap-xl flex flex-col">
                     {hasUploadedDokument ? (
-                      <VerfahrenUploadedDokumentSummary
-                        uploadedDokument={uploadedDokument}
+                      <VerfahrenUploadedKlageschrift
+                        klageschrift={uploadedDokument}
                         verfahrenId={verfahrenId}
                         einreichungId={einreichungId}
                         isSubmitting={isSubmitting}

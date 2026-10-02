@@ -1,7 +1,10 @@
 import VerfahrenSelect, {
   type VerfahrenSelectProps,
 } from "~/components/verfahren/VerfahrenSelect";
-import { UploadDokumentTypeSchema } from "~/domains/verfahren/entities/dokument/dokument.entity";
+import {
+  type DokumentType,
+  UploadDokumentTypeSchema,
+} from "~/domains/verfahren/entities/dokument/dokument.entity";
 
 const dokumentTypeLabelByValue: Record<string, string> = {
   ANHANG: "Anhang",
@@ -9,12 +12,13 @@ const dokumentTypeLabelByValue: Record<string, string> = {
   SIGNATURDATEI: "Signaturdatei",
 };
 
-const dokumentTypeOptions = UploadDokumentTypeSchema.options.map((value) => ({
-  value,
-  label: dokumentTypeLabelByValue[value] ?? value,
-}));
-
-type VerfahrenDokumentTypeSelectProps = Omit<VerfahrenSelectProps, "options">;
+type VerfahrenDokumentTypeSelectProps = Omit<
+  VerfahrenSelectProps,
+  "options"
+> & {
+  // Defaults to every uploadable Dokument type.
+  types?: readonly DokumentType[];
+};
 
 export default function VerfahrenDokumentTypeSelect({
   id,
@@ -27,6 +31,7 @@ export default function VerfahrenDokumentTypeSelect({
   className,
   required,
   disabled,
+  types = UploadDokumentTypeSchema.options,
 }: Readonly<VerfahrenDokumentTypeSelectProps>) {
   return (
     <VerfahrenSelect
@@ -40,7 +45,10 @@ export default function VerfahrenDokumentTypeSelect({
       className={className}
       required={required}
       disabled={disabled}
-      options={dokumentTypeOptions}
+      options={types.map((value) => ({
+        value,
+        label: dokumentTypeLabelByValue[value] ?? value,
+      }))}
     />
   );
 }
