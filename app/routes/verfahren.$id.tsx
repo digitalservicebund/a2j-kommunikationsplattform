@@ -179,10 +179,13 @@ async function handleCreateEinreichung(
   formData: FormData,
   { authData, verfahrenId }: FormActionContext,
 ) {
+  const actionData = { formType: CREATE_EINREICHUNG_FORM_TYPE };
   const parsedArt = EinreichungArtSchema.safeParse(formData.get("art"));
 
   if (!parsedArt.success) {
-    return actionResultFromInputParsingError(parsedArt.error);
+    return actionResultFromInputParsingError(parsedArt.error, {
+      data: actionData,
+    });
   }
 
   try {
@@ -192,6 +195,7 @@ async function handleCreateEinreichung(
   } catch (error) {
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.createEinreichungFailed,
+      data: actionData,
     });
   }
 }

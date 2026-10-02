@@ -1,11 +1,15 @@
-import { useRef, useState, type ChangeEvent } from "react";
-import { Form } from "react-router";
+import { useRef, type ChangeEvent } from "react";
+import { Form, useActionData, useNavigation } from "react-router";
+import Alert from "~/components/Alert";
 import InputSelect from "~/components/InputSelect";
 import type { EinreichungDetails } from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
 import { EinreichungArtSchema } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import { useTranslations } from "~/services/translations/context";
+import type { ActionResult } from "~/utils/actionResult";
 
 export const CREATE_EINREICHUNG_FORM_TYPE = "create-einreichung";
+
+type CreateEinreichungActionData = { formType?: string };
 
 type VerfahrenWeitereEinreichungArtStepProps = {
   // null until an Art has been picked, which creates the draft — its name is
@@ -20,24 +24,39 @@ export default function VerfahrenWeitereEinreichungArtStep({
   const labels = routes.verfahrenId.weitereEinreichung;
 
   const formRef = useRef<HTMLFormElement>(null);
-  const [art, setArt] = useState(
-    draftWeitereEinreichung?.einreichung.name ?? "",
-  );
-  const isArtFixed = draftWeitereEinreichung !== null;
+  const navigation = useNavigation();
+  const actionData = useActionData<ActionResult<CreateEinreichungActionData>>();
+
+  // Stays true through the redirect's revalidation, until the created draft
+  // has been loaded.
+  const isCreatingEinreichung =
+    navigation.state !== "idle" &&
+    navigation.formData?.get("formType") === CREATE_EINREICHUNG_FORM_TYPE;
+  const createEinreichungError =
+    actionData?.status === "error" &&
+    actionData.data?.formType === CREATE_EINREICHUNG_FORM_TYPE
+      ? actionData.error
+      : null;
+
+  const artBeingCreated = isCreatingEinreichung
+    ? navigation.formData?.get("art")
+    : null;
+  const art =
+    draftWeitereEinreichung?.einreichung.name ??
+    (typeof artBeingCreated === "string" ? artBeingCreated : "");
+
+  const isLocked = draftWeitereEinreichung !== null || isCreatingEinreichung;
 
   function handleArtChange(event: ChangeEvent<HTMLSelectElement>) {
-    // Once created, the Art is fixed — picking another one must not create
-    // a second Einreichung.
-    if (isArtFixed) {
+    if (isLocked || event.target.value === "") {
       return;
     }
 
-    setArt(event.target.value);
     formRef.current?.requestSubmit();
   }
 
   return (
-    <div className="w-full">
+    <div className="kern-gap-md flex w-full flex-col">
       <Form method="post" ref={formRef}>
         <input
           type="hidden"
@@ -54,9 +73,13 @@ export default function VerfahrenWeitereEinreichungArtStep({
           }))}
           selectedValue={art}
           onChange={handleArtChange}
-          disabled={isArtFixed}
+          disabled={isLocked}
         />
       </Form>
+
+      {createEinreichungError && (
+        <Alert type="error" title={createEinreichungError} />
+      )}
     </div>
   );
 }
