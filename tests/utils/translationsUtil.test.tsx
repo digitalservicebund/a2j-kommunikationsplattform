@@ -5,11 +5,11 @@ import { useTranslations } from "~/services/translations/context";
 import { renderWithTestTranslations } from "./translationsUtil";
 
 function TestComponent() {
-  const { shared } = useTranslations();
-  return <span>{shared.LOGGED_IN_AS_LABEL}</span>;
+  const t = useTranslations();
+  return <span>{t.shared.cancel}</span>;
 }
 
 it("provides German translations context", () => {
   renderWithTestTranslations(<TestComponent />);
-  expect(screen.getByText("Angemeldet als:")).toBeInTheDocument();
+  expect(screen.getByText("Abbrechen")).toBeInTheDocument();
 });
