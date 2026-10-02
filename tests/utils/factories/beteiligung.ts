@@ -1,5 +1,8 @@
-import { NatuerlichePersonBeteiligung } from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
-import { makeKlaegerinRolle } from "./rolle";
+import {
+  NatuerlichePersonBeteiligung,
+  RAKanzleiBeteiligung,
+} from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
+import { makeKlaegerinRolle, makeProzessbevollmeachtigteRolle } from "./rolle";
 
 export function makeNatuerlichePersonBeteiligung(
   params?: Partial<NatuerlichePersonBeteiligung>,
@@ -54,6 +57,45 @@ export function makeNatuerlichePersonBeteiligung(
         verbindung: "06921994731",
       },
     ],
+    ...params,
+  };
+}
+
+export function makeRAKanzleiBeteiligung(
+  params?: Partial<RAKanzleiBeteiligung>,
+): RAKanzleiBeteiligung {
+  return {
+    id: crypto.randomUUID(),
+    beteiligtenart: "raKanzlei",
+    bezeichnung: "",
+    rechtsform: null,
+    kanzleiform: {
+      id: "d405a33e-3e11-25c4-6835-7f4f60eb4c98",
+      wert: "Einzelanwalt",
+      code: "001",
+    },
+    rollen: [makeProzessbevollmeachtigteRolle()],
+    anschriften: [
+      {
+        id: crypto.randomUUID(),
+        anschriftstyp: {
+          id: "2b5aee01-5fc9-4129-bbf9-98978683154e",
+          wert: "Privatanschrift",
+          code: "017",
+        },
+        strasse: "Bockenheimer Landstraße",
+        hausnummer: "42-44",
+        postleitzahl: "60323",
+        ort: "Frankfurt am Main",
+        postfachnummer: null,
+        staat: {
+          id: "51dd7b05-2c64-4ce9-800d-9a49d77aa062",
+          wert: "Deutschland",
+          code: "000",
+        },
+      },
+    ],
+    telekommunikation: [],
     ...params,
   };
 }

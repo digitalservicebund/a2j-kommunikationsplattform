@@ -20,6 +20,14 @@ export class ApiError extends Error {
   }
 }
 
+export function isApiError(e: unknown): e is ApiError {
+  return e instanceof ApiError;
+}
+
+export function isClientSideApiError(e: unknown): e is ApiError {
+  return isApiError(e) && e.status >= 400 && e.status < 500;
+}
+
 /**
  * Turns an API 404 into a route 404 so the ErrorBoundary renders the
  * "page not found" content instead of a generic server error. Meant to be
