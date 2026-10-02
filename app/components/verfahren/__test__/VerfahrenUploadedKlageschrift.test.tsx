@@ -3,9 +3,9 @@
 import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it } from "vitest";
 import type { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
-import VerfahrenUploadedDokumentSummary from "../VerfahrenUploadedDokumentSummary";
+import VerfahrenUploadedKlageschrift from "../VerfahrenUploadedKlageschrift";
 
-const uploadedDokument: Dokument = {
+const klageschrift: Dokument = {
   id: "dok-1",
   status: "ERSTELLT",
   validierungslaufStatus: "AUSSTEHEND",
@@ -23,11 +23,11 @@ const uploadedDokument: Dokument = {
   sichtbarkeitAlle: true,
 };
 
-describe("VerfahrenUploadedDokumentSummary", () => {
+describe("VerfahrenUploadedKlageschrift", () => {
   it("renders the uploaded document's name, size and the hidden form fields", () => {
     const { getByText, getByRole, container } = renderWithTestTranslations(
-      <VerfahrenUploadedDokumentSummary
-        uploadedDokument={uploadedDokument}
+      <VerfahrenUploadedKlageschrift
+        klageschrift={klageschrift}
         verfahrenId="verfahren-1"
         einreichungId="einreichung-1"
         isSubmitting={false}
@@ -49,8 +49,8 @@ describe("VerfahrenUploadedDokumentSummary", () => {
 
   it("disables the delete button while submitting", () => {
     const { getByRole } = renderWithTestTranslations(
-      <VerfahrenUploadedDokumentSummary
-        uploadedDokument={uploadedDokument}
+      <VerfahrenUploadedKlageschrift
+        klageschrift={klageschrift}
         verfahrenId="verfahren-1"
         einreichungId="einreichung-1"
         isSubmitting

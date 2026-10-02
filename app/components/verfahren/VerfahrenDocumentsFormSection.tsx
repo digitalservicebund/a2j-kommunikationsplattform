@@ -5,6 +5,7 @@ import InputFile from "~/components/InputFile";
 import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
 import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
 import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import { AnlagenDokumentTypeSchema } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { useTranslations } from "~/services/translations/context";
 
 type VerfahrenDocumentsFormSectionProps = {
@@ -116,6 +117,7 @@ export default function VerfahrenDocumentsFormSection({
             <VerfahrenDokumentTypeSelect
               label={shared.form.selectDokumentType.label}
               id="type"
+              types={AnlagenDokumentTypeSchema.options}
               placeholder={shared.form.select.placeholder}
               onChange={(e) => onDokumentTypeChange(e.target.value)}
               selectedValue={selectedDokumentType}

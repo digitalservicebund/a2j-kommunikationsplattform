@@ -20,7 +20,7 @@ export type EinreichungTimelineStepParams = {
   translations: Translations;
 };
 
-export type InitialEinreichungTimelineStep = VerfahrenTimelineStepCardProps;
+export type KlageeinreichungTimelineStep = VerfahrenTimelineStepCardProps;
 
 /**
  * Returns the additional steps to show in the Verfahren timeline while the
@@ -28,7 +28,7 @@ export type InitialEinreichungTimelineStep = VerfahrenTimelineStepCardProps;
  * can still be edited). The steps are returned in the order they should
  * be displayed, from latest to earliest.
  */
-export function buildInitialEinreichungTimelineSteps({
+export function buildKlageeinreichungTimelineSteps({
   verfahrenId,
   verfahrenStatusGeaendertAm,
   einreichungId,
@@ -36,8 +36,8 @@ export function buildInitialEinreichungTimelineSteps({
   einreichungDokumente: dokumente,
   detailsCompleted,
   translations,
-}: EinreichungTimelineStepParams): InitialEinreichungTimelineStep[] {
-  const timeline: InitialEinreichungTimelineStep[] = [];
+}: EinreichungTimelineStepParams): KlageeinreichungTimelineStep[] {
+  const timeline: KlageeinreichungTimelineStep[] = [];
 
   const {
     routes: {

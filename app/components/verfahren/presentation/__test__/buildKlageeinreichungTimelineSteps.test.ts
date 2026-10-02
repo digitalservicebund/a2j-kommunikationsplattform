@@ -1,8 +1,8 @@
 import { getTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, test } from "vitest";
-import { buildInitialEinreichungTimelineSteps } from "../buildInitialEinreichungTimelineSteps";
+import { buildKlageeinreichungTimelineSteps } from "../buildKlageeinreichungTimelineSteps";
 
-describe("buildInitialEinreichungTimelineSteps", () => {
+describe("buildKlageeinreichungTimelineSteps", () => {
   const translations = getTestTranslations();
   const {
     routes: {
@@ -28,7 +28,7 @@ describe("buildInitialEinreichungTimelineSteps", () => {
   ];
 
   test("returns timeline steps up to initial Einreichung, latest first", () => {
-    const timelineSteps = buildInitialEinreichungTimelineSteps({
+    const timelineSteps = buildKlageeinreichungTimelineSteps({
       verfahrenId: "123",
       verfahrenStatusGeaendertAm: "2026-07-04T12:00:00.000Z",
       einreichungId: "456",
@@ -78,7 +78,7 @@ describe("buildInitialEinreichungTimelineSteps", () => {
   });
 
   it("omits 'editTo' when the initial Einreichung has a non-draft status", () => {
-    const timelineSteps = buildInitialEinreichungTimelineSteps({
+    const timelineSteps = buildKlageeinreichungTimelineSteps({
       verfahrenId: "123",
       verfahrenStatusGeaendertAm: "2026-07-04T12:00:00.000Z",
       einreichungId: "456",
@@ -125,7 +125,7 @@ describe("buildInitialEinreichungTimelineSteps", () => {
   });
 
   it("displays only completed details", () => {
-    const timelineSteps = buildInitialEinreichungTimelineSteps({
+    const timelineSteps = buildKlageeinreichungTimelineSteps({
       verfahrenId: "123",
       verfahrenStatusGeaendertAm: "2026-07-04T12:00:00.000Z",
       einreichungId: "456",
@@ -173,7 +173,7 @@ describe("buildInitialEinreichungTimelineSteps", () => {
   });
 
   it("keeps 'additionalDokumenteAdded' step even if there are no additional Dokumente", () => {
-    const timelineSteps = buildInitialEinreichungTimelineSteps({
+    const timelineSteps = buildKlageeinreichungTimelineSteps({
       verfahrenId: "123",
       verfahrenStatusGeaendertAm: "2026-07-04T12:00:00.000Z",
       einreichungId: "456",

@@ -7,9 +7,9 @@ import { getTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
 import type { Verfahren } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
 import { TranslationsProvider } from "~/services/translations/context";
-import VerfahrenAktuelleEinreichungSection, {
-  type InitialEinreichungData,
-} from "../VerfahrenAktuelleEinreichungSection";
+import VerfahrenDraftKlageeinreichungSection, {
+  type EinreichungDetails,
+} from "../VerfahrenDraftKlageeinreichungSection";
 
 function renderWithRouter(children: ReactNode) {
   const router = createMemoryRouter([
@@ -44,7 +44,7 @@ const verfahren: Verfahren = {
   beteiligungen: [],
 };
 
-const initialEinreichung: InitialEinreichungData = {
+const draftKlageeinreichung: EinreichungDetails = {
   einreichung: {
     id: "e-1",
     name: "Klageschrift",
@@ -75,12 +75,12 @@ const baseProps = {
   handleSubmit: vi.fn(),
 };
 
-describe("VerfahrenAktuelleEinreichungSection", () => {
+describe("VerfahrenDraftKlageeinreichungSection", () => {
   it("renders the current Einreichung's basisdaten and shows the edit/submit footer when there is no Beleg yet", () => {
     const { getAllByText, getByRole } = renderWithRouter(
-      <VerfahrenAktuelleEinreichungSection
+      <VerfahrenDraftKlageeinreichungSection
         {...baseProps}
-        initialEinreichung={initialEinreichung}
+        draftKlageeinreichung={draftKlageeinreichung}
       />,
     );
 
@@ -92,10 +92,10 @@ describe("VerfahrenAktuelleEinreichungSection", () => {
 
   it("hides the edit/submit footer once a Beleg exists", () => {
     const { queryByRole } = renderWithRouter(
-      <VerfahrenAktuelleEinreichungSection
+      <VerfahrenDraftKlageeinreichungSection
         {...baseProps}
-        initialEinreichung={{
-          ...initialEinreichung,
+        draftKlageeinreichung={{
+          ...draftKlageeinreichung,
           beleg: {
             id: "beleg-1",
             erstelltAm: "2026-01-03T00:00:00.000Z",

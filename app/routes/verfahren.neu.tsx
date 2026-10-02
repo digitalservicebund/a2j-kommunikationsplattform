@@ -17,9 +17,10 @@ import { PageMetadata } from "~/components/PageMetadata";
 import Progress from "~/components/Progress";
 import VerfahrenKlageschriftFormSection from "~/components/verfahren/VerfahrenKlageschriftFormSection";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
-import VerfahrenUploadedDokumentSummary from "~/components/verfahren/VerfahrenUploadedDokumentSummary";
+import VerfahrenUploadedKlageschrift from "~/components/verfahren/VerfahrenUploadedKlageschrift";
 import { requireAuthData } from "~/domains/verfahren/application/routeContext.server";
 import type { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
+import { KLAGEEINREICHUNG_NAME } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import {
   deleteDokument,
   fetchDokument,
@@ -31,6 +32,7 @@ import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/s
 import { createVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { VerfahrenAendernInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.input.schema";
 import { VerfahrenAendernRequestDTO } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.request.schema";
+import findKlageschrift from "~/domains/verfahren/services/findKlageschrift";
 import { authMiddleware } from "~/middleware/auth.server";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
@@ -94,7 +96,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
     return {
       verfahrenId: undefined,
       einreichungId: undefined,
-      uploadedDokument: undefined,
+      klageschrift: undefined,
       gerichtePromise,
     };
   }
@@ -103,9 +105,9 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
     verfahrenId,
     einreichungId,
   });
-  const uploadedDokument = dokumente.at(0);
+  const klageschrift = findKlageschrift(dokumente);
 
-  return { verfahrenId, einreichungId, uploadedDokument, gerichtePromise };
+  return { verfahrenId, einreichungId, klageschrift, gerichtePromise };
 };
 
 type FormActionContext = {
@@ -171,7 +173,7 @@ async function handleSubmit(
   formData: FormData,
   { authData, existingVerfahrenId, existingEinreichungId }: FormActionContext,
 ) {
-  // If a draft already has uploads, continue in edit route
+  // If the draft already has its Klageschrift, continue in edit route
   if (existingVerfahrenId && existingEinreichungId) {
     try {
       const { elemente: dokumente } = await fetchDokumente(authData, {
@@ -179,7 +181,7 @@ async function handleSubmit(
         einreichungId: existingEinreichungId,
       });
 
-      if (dokumente.length > 0) {
+      if (findKlageschrift(dokumente)) {
         return redirect(`/verfahren/neu/${existingVerfahrenId}/bearbeiten`);
       }
     } catch (error) {
@@ -223,7 +225,11 @@ async function handleSubmit(
     try {
       const verfahren = await createVerfahren(authData, verfahrenPayload);
       verfahrenId = verfahren.id;
-      const einreichung = await createEinreichung(authData, verfahrenId);
+      const einreichung = await createEinreichung(
+        authData,
+        verfahrenId,
+        KLAGEEINREICHUNG_NAME,
+      );
       einreichungId = einreichung.id;
     } catch (error) {
       return actionResultFromApiError(error, {
@@ -307,12 +313,10 @@ export default function VerfahrenNeu() {
   );
 
   const isSubmitting = navigation.state !== "idle";
-  const uploadedDokument = loaderData?.uploadedDokument as Dokument | undefined;
+  const klageschrift = loaderData?.klageschrift as Dokument | undefined;
   const verfahrenId = loaderData?.verfahrenId as string | undefined;
   const einreichungId = loaderData?.einreichungId as string | undefined;
-  const hasUploadedDokument = Boolean(
-    uploadedDokument && verfahrenId && einreichungId,
-  );
+  const hasKlageschrift = Boolean(klageschrift && verfahrenId && einreichungId);
 
   return (
     <>
@@ -361,9 +365,9 @@ export default function VerfahrenNeu() {
                   className="relative"
                 >
                   <div className="kern-gap-xl flex flex-col">
-                    {hasUploadedDokument ? (
-                      <VerfahrenUploadedDokumentSummary
-                        uploadedDokument={uploadedDokument}
+                    {hasKlageschrift ? (
+                      <VerfahrenUploadedKlageschrift
+                        klageschrift={klageschrift}
                         verfahrenId={verfahrenId}
                         einreichungId={einreichungId}
                         isSubmitting={isSubmitting}
@@ -394,7 +398,7 @@ export default function VerfahrenNeu() {
                     </fieldset>
 
                     <div className="kern-gap-md flex flex-wrap">
-                      {hasUploadedDokument && (
+                      {hasKlageschrift && (
                         <>
                           <input
                             type="hidden"

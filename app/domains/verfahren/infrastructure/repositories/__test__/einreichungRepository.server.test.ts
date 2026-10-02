@@ -161,7 +161,11 @@ describe("createEinreichung", () => {
     };
     mocks.apiRequest.mockResolvedValueOnce(mockEinreichung);
 
-    const result = await createEinreichung(mockAuthData, "v-1");
+    const result = await createEinreichung(
+      mockAuthData,
+      "v-1",
+      "Klageeinreichung",
+    );
 
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -174,6 +178,16 @@ describe("createEinreichung", () => {
       }),
     );
     expect(result).toEqual(mockEinreichung);
+  });
+
+  it("sends the given name as the request body (e.g. for a weitere Einreichung)", async () => {
+    mocks.apiRequest.mockResolvedValueOnce({});
+
+    await createEinreichung(mockAuthData, "v-1", "Schriftsatz");
+
+    expect(mocks.apiRequest).toHaveBeenCalledWith(
+      expect.objectContaining({ body: { name: "Schriftsatz" } }),
+    );
   });
 });
 

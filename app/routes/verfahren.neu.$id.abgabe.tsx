@@ -9,8 +9,8 @@ import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmiss
 import { PageMetadata } from "~/components/PageMetadata";
 import Progress from "~/components/Progress";
 import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
-import VerfahrenAktuelleEinreichungSection from "~/components/verfahren/VerfahrenAktuelleEinreichungSection";
 import { DokumentWithValidierungsstatus } from "~/components/verfahren/VerfahrenDokumenteList";
+import VerfahrenDraftKlageeinreichungSection from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
 import VerfahrenEinreichungOutcomeBanner from "~/components/verfahren/VerfahrenEinreichungOutcomeBanner";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenOverviewCard from "~/components/verfahren/VerfahrenOverviewCard";
@@ -34,7 +34,11 @@ import { authMiddleware } from "~/middleware/auth.server";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
-import { actionResultFromApiError, actionSuccess } from "~/utils/actionResult";
+import {
+  actionErrorResponse,
+  actionResultFromApiError,
+  actionSuccess,
+} from "~/utils/actionResult";
 import { dispatchFormAction } from "~/utils/dispatchFormAction";
 
 type LoaderData = {
@@ -93,6 +97,11 @@ async function handleDelete(
   formData: FormData,
   { authData, verfahrenId }: FormActionContext,
 ) {
+  const actionData = {
+    formType: "delete",
+    dokumentId: String(formData.get("dokumentId")),
+  };
+
   try {
     const deleteResult = await deleteDokumentFromEinreichung({
       authData,
@@ -105,10 +114,25 @@ async function handleDelete(
       return redirect(`/verfahren/${verfahrenId}`);
     }
 
+    if (deleteResult.status === "protected-dokument") {
+      return actionErrorResponse(de.shared.form.errors.deleteFailed, {
+        data: actionData,
+        status: 403,
+      });
+    }
+
+    if (deleteResult.status === "delete-failed") {
+      return actionErrorResponse(de.shared.form.errors.deleteFailed, {
+        data: actionData,
+        status: 500,
+      });
+    }
+
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   } catch (error) {
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.deleteFailed,
+      data: actionData,
     });
   }
 }
@@ -267,8 +291,12 @@ export default function VerfahrenNeuBearbeiten() {
                   <h3 className="kern-heading-medium">
                     {routes.verfahrenNeu.step3.proceduralSteps.headline}
                   </h3>
-                  <VerfahrenAktuelleEinreichungSection
-                    initialEinreichung={{ einreichung, dokumente, beleg }}
+                  <VerfahrenDraftKlageeinreichungSection
+                    draftKlageeinreichung={{
+                      einreichung,
+                      dokumente,
+                      beleg,
+                    }}
                     verfahren={verfahren}
                     readinessPresentation={readinessPresentation}
                     hasValidationIssues={hasValidationIssues}

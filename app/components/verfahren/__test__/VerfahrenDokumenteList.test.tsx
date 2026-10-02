@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
 
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { createRoutesStub } from "react-router";
 import { describe, expect, it, vi } from "vitest";
+import { actionError } from "~/utils/actionResult";
 import VerfahrenDokumenteList, {
   DokumentWithValidierungsstatus,
 } from "../VerfahrenDokumenteList";
@@ -35,9 +37,11 @@ function buildDokument(
   } as DokumentWithValidierungsstatus;
 }
 
+const klageeinreichung = { id: "e-1", name: "Klageeinreichung" };
+
 function renderList(
   dokumente: DokumentWithValidierungsstatus[],
-  einreichungId = "e-1",
+  einreichung = klageeinreichung,
 ) {
   const Stub = createRoutesStub([
     {
@@ -45,7 +49,7 @@ function renderList(
       Component: () => (
         <VerfahrenDokumenteList
           dokumente={dokumente}
-          einreichungId={einreichungId}
+          einreichung={einreichung}
         />
       ),
       action: vi.fn(),
@@ -91,12 +95,26 @@ describe("VerfahrenDokumenteList", () => {
     );
   });
 
-  it("hides the delete action for a Schriftstück", () => {
+  it("hides the delete action for a Schriftstück of the Klageeinreichung", () => {
     renderList([buildDokument({ typ: "SCHRIFTSTUECK" })]);
 
     expect(
       screen.queryByRole("button", { name: /entfernen/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("shows a delete action for a Schriftstück of a Weitere Einreichung", () => {
+    renderList([buildDokument({ typ: "SCHRIFTSTUECK", id: "d-1" })], {
+      id: "e-2",
+      name: "Schriftsatz",
+    });
+
+    const deleteButton = screen.getByRole("button", { name: /entfernen/i });
+    expect(deleteButton.closest("form")).toHaveFormValues({
+      formType: "delete",
+      einreichungId: "e-2",
+      dokumentId: "d-1",
+    });
   });
 
   it("shows a delete action for a deletable Dokument", () => {
@@ -109,6 +127,40 @@ describe("VerfahrenDokumenteList", () => {
       einreichungId: "e-1",
       dokumentId: "d-1",
     });
+  });
+
+  it("shows a failed delete next to the Dokument it was for", async () => {
+    const Stub = createRoutesStub([
+      {
+        path: "/verfahren/:id",
+        Component: () => (
+          <VerfahrenDokumenteList
+            dokumente={[
+              buildDokument({ id: "d-1", typ: "ANHANG", anzeigename: "a.pdf" }),
+              buildDokument({ id: "d-2", typ: "ANHANG", anzeigename: "b.pdf" }),
+            ]}
+            einreichung={klageeinreichung}
+          />
+        ),
+        action: () =>
+          actionError("Löschen fehlgeschlagen.", {
+            data: { formType: "delete", dokumentId: "d-2" },
+          }),
+      },
+    ]);
+    render(<Stub initialEntries={["/verfahren/v-1"]} />);
+
+    const [, secondDeleteButton] = screen.getAllByRole("button", {
+      name: /entfernen/i,
+    });
+    await userEvent.click(secondDeleteButton);
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent("Löschen fehlgeschlagen.");
+    // Rendered in the failed Dokument's own block, not the other one's.
+    const dokumentBlock = alert.parentElement;
+    expect(dokumentBlock).toHaveTextContent("b.pdf");
+    expect(dokumentBlock).not.toHaveTextContent("a.pdf");
   });
 
   it("never shows the system-generated XJustiz Dokument", () => {

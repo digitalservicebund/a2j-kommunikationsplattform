@@ -1,13 +1,17 @@
-import { Form } from "react-router";
+import { Form, useActionData } from "react-router";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
-import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
+import VerfahrenDokumentItem from "~/components/verfahren/VerfahrenDokumentItem";
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import type { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
 import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
 import { useTranslations } from "~/services/translations/context";
+import type { ActionResult } from "~/utils/actionResult";
+
+type DeleteDokumentActionData = { formType?: string; dokumentId?: string };
 
 export type DokumentWithValidierungsstatus = Dokument & {
   validierungsstatus: Validierungsstatus;
@@ -15,14 +19,25 @@ export type DokumentWithValidierungsstatus = Dokument & {
 
 type VerfahrenDokumenteListProps = {
   dokumente: DokumentWithValidierungsstatus[];
-  einreichungId: string;
+  // Its name decides which Dokumente may be deleted.
+  einreichung: Pick<Einreichung, "id" | "name">;
 };
 
 export default function VerfahrenDokumenteList({
   dokumente,
-  einreichungId,
+  einreichung,
 }: Readonly<VerfahrenDokumenteListProps>) {
   const { routes, shared } = useTranslations();
+  const actionData = useActionData<ActionResult<DeleteDokumentActionData>>();
+
+  // Matched by Dokument id, since a page can render several lists.
+  function findDeleteDokumentError(dokumentId: string) {
+    return actionData?.status === "error" &&
+      actionData.data?.formType === "delete" &&
+      actionData.data.dokumentId === dokumentId
+      ? actionData.error
+      : null;
+  }
 
   // The XJustiz Dokument is system-generated metadata, not a file the user
   // submitted — it's never shown in this list.
@@ -39,6 +54,7 @@ export default function VerfahrenDokumenteList({
   return (
     <div className="kern-mt-md kern-gap-md flex w-full flex-col">
       {visibleDokumente.map((dokument) => {
+        const deleteDokumentError = findDeleteDokumentError(dokument.id);
         const dokumentErgebnis = dokument.validierungsstatus.ergebnis;
         const dokumentHasValidationIssues =
           dokumentErgebnis === "ROT" || dokumentErgebnis === "GELB";
@@ -52,28 +68,14 @@ export default function VerfahrenDokumenteList({
 
         return (
           <div key={dokument.id} className="kern-gap-sm flex w-full flex-col">
-            <div className="kern-p-md align-center kern-gap-md flex flex-wrap rounded-(--kern-metric-border-radius-default) border border-(--kern-color-decorative-border-contextual)">
-              <div className="flex-1">
-                <div className="kern-body kern-body--bold">
-                  {dokument.anzeigename}
-                </div>
-                <div className="kern-body kern-body--small kern-body--muted">
-                  {formatDokumentSize(dokument.sizeInBytes ?? 0)}
-                  {" · "}
-                  {
-                    routes.verfahrenNeu.step3.proceduralSteps.einreichung
-                      .dokumente.uploadedAtLabel
-                  }{" "}
-                  {new Date(dokument.erstelltAm).toLocaleDateString()}
-                </div>
-              </div>
-              {canDeleteDokument(dokument) ? (
+            <VerfahrenDokumentItem dokument={dokument}>
+              {canDeleteDokument(dokument, einreichung) ? (
                 <Form method="post" className="kern-gap-sm flex items-center">
                   <input type="hidden" name="formType" value="delete" />
                   <input
                     type="hidden"
                     name="einreichungId"
-                    value={einreichungId}
+                    value={einreichung.id}
                   />
                   <input type="hidden" name="dokumentId" value={dokument.id} />
                   <Button
@@ -102,7 +104,10 @@ export default function VerfahrenDokumenteList({
                   />
                 </div>
               )}
-            </div>
+            </VerfahrenDokumentItem>
+            {deleteDokumentError && (
+              <Alert type="error" title={deleteDokumentError} />
+            )}
             {dokumentHasValidationIssues && (
               <Alert
                 type={dokumentErgebnis === "ROT" ? "error" : "warning"}
