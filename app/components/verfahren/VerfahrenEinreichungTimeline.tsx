@@ -41,7 +41,7 @@ export default function VerfahrenEinreichungTimeline({
         );
         const status = getEinreichungStatusPresentation(
           einreichung.status,
-          shared.statusPresentation.einreichung,
+          shared.status.einreichung,
         );
 
         const dokumenteCountLabel = (

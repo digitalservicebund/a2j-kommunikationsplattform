@@ -3,15 +3,14 @@ import { Await, Link, LoaderFunctionArgs, useLoaderData } from "react-router";
 import Alert from "~/components/Alert";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { useParamsState } from "~/components/hooks/useParamsState";
+import Loader from "~/components/Loader";
 import { PageMetadata } from "~/components/PageMetadata";
 import ScrollToTopButton from "~/components/ScrollToTopButton";
 import { sortOptions } from "~/components/verfahren/presentation/sortOptions";
-import { VERFAHREN_SKELETONS } from "~/components/verfahren/presentation/verfahrenSkeletons";
 import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
 import VerfahrenFilterBar from "~/components/verfahren/VerfahrenFilterBar";
-import { VerfahrenList } from "~/components/verfahren/VerfahrenList";
 import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
-import VerfahrenTileSkeleton from "~/components/verfahren/VerfahrenTileSkeleton.static";
+import { VerfahrenTable } from "~/components/verfahren/VerfahrenTable";
 import { requireAuthData } from "~/domains/verfahren/application/routeContext.server";
 import type { CodeWert } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
@@ -82,6 +81,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 };
 
 export default function VerfahrenRoute() {
+  const t = useTranslations();
   const { data, showDebugInfo } = useLoaderData<{
     data: Promise<[VerfahrenLoaderData, CodeWert[]]>;
     showDebugInfo: boolean;
@@ -118,11 +118,7 @@ export default function VerfahrenRoute() {
       </div>
 
       <div className="flex flex-col space-y-(--kern-metric-space-large)">
-        <Suspense
-          fallback={VERFAHREN_SKELETONS.map((s) => (
-            <VerfahrenTileSkeleton key={s.id} />
-          ))}
-        >
+        <Suspense fallback={<Loader accessibilityLabel={t.shared.loading} />}>
           <Await resolve={data}>
             {([verfahrenData, gerichte]) => (
               <>
@@ -205,7 +201,7 @@ function VerfahrenContent({
         }
       />
       <VerfahrenCounter count={allItems.length || 0} hasFilters={hasFilters} />
-      <VerfahrenList verfahrenItems={allItems} isLoading={isLoading} />
+      <VerfahrenTable items={allItems} isLoading={isLoading} />
       <ScrollToTopButton refElement={ref} />
       {hasMoreItems && <VerfahrenLoadMoreButton loadMore={handleLoadMore} />}
     </>
