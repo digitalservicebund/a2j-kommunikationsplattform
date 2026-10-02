@@ -3,6 +3,7 @@ import { Await, Link, LoaderFunctionArgs, useLoaderData } from "react-router";
 import Alert from "~/components/Alert";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { useParamsState } from "~/components/hooks/useParamsState";
+import Loader from "~/components/Loader";
 import { PageMetadata } from "~/components/PageMetadata";
 import ScrollToTopButton from "~/components/ScrollToTopButton";
 import { sortOptions } from "~/components/verfahren/presentation/sortOptions";
@@ -117,13 +118,7 @@ export default function VerfahrenRoute() {
       </div>
 
       <div className="flex flex-col space-y-(--kern-metric-space-large)">
-        <Suspense
-          fallback={
-            <output className="kern-loader kern-loader--visible">
-              <span className="kern-sr-only">{t.shared.loading}</span>
-            </output>
-          }
-        >
+        <Suspense fallback={<Loader accessibilityLabel={t.shared.loading} />}>
           <Await resolve={data}>
             {([verfahrenData, gerichte]) => (
               <>
