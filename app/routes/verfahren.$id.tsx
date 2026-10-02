@@ -17,9 +17,8 @@ import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenOverviewCard from "~/components/verfahren/VerfahrenOverviewCard";
 import VerfahrenTimelineStep from "~/components/verfahren/VerfahrenTimelineStep";
 import { UPLOAD_WEITERE_DOKUMENT_FORM_TYPE } from "~/components/verfahren/VerfahrenWeitereDokumentUploadForm";
-import VerfahrenWeitereEinreichungSection, {
-  CREATE_EINREICHUNG_FORM_TYPE,
-} from "~/components/verfahren/VerfahrenWeitereEinreichungSection";
+import { CREATE_EINREICHUNG_FORM_TYPE } from "~/components/verfahren/VerfahrenWeitereEinreichungArtStep";
+import VerfahrenWeitereEinreichungSection from "~/components/verfahren/VerfahrenWeitereEinreichungSection";
 import type { Verfahren } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
 import loadVerfahrenEinreichungenOverview, {
   EinreichungSummary,

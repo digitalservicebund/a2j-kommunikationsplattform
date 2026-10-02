@@ -60,12 +60,10 @@ describe("VerfahrenWeitereEinreichungSection", () => {
     ).toBeDisabled();
   });
 
-  it("fixes the Art and enables the Dokumente step once the draft exists", () => {
+  it("passes the draft's Art down and enables the Dokumente step once the draft exists", () => {
     renderSection(draftWeitereEinreichung);
 
-    const artSelect = screen.getByLabelText(artLabel);
-    expect(artSelect).toHaveAttribute("aria-disabled", "true");
-    expect(artSelect).toHaveValue("Schriftsatz");
+    expect(screen.getByLabelText(artLabel)).toHaveValue("Schriftsatz");
     expect(
       screen.getByRole("button", { name: uploadButtonName }),
     ).toBeEnabled();
