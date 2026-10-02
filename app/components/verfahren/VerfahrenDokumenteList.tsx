@@ -1,4 +1,4 @@
-import { Form } from "react-router";
+import { Form, useActionData } from "react-router";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
@@ -8,6 +8,9 @@ import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinr
 import type { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
 import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
 import { useTranslations } from "~/services/translations/context";
+import type { ActionResult } from "~/utils/actionResult";
+
+type DeleteDokumentActionData = { formType?: string; dokumentId?: string };
 
 export type DokumentWithValidierungsstatus = Dokument & {
   validierungsstatus: Validierungsstatus;
@@ -23,6 +26,16 @@ export default function VerfahrenDokumenteList({
   einreichungId,
 }: Readonly<VerfahrenDokumenteListProps>) {
   const { routes, shared } = useTranslations();
+  const actionData = useActionData<ActionResult<DeleteDokumentActionData>>();
+
+  // Matched by Dokument id, since a page can render several lists.
+  function findDeleteDokumentError(dokumentId: string) {
+    return actionData?.status === "error" &&
+      actionData.data?.formType === "delete" &&
+      actionData.data.dokumentId === dokumentId
+      ? actionData.error
+      : null;
+  }
 
   // The XJustiz Dokument is system-generated metadata, not a file the user
   // submitted — it's never shown in this list.
@@ -39,6 +52,7 @@ export default function VerfahrenDokumenteList({
   return (
     <div className="kern-mt-md kern-gap-md flex w-full flex-col">
       {visibleDokumente.map((dokument) => {
+        const deleteDokumentError = findDeleteDokumentError(dokument.id);
         const dokumentErgebnis = dokument.validierungsstatus.ergebnis;
         const dokumentHasValidationIssues =
           dokumentErgebnis === "ROT" || dokumentErgebnis === "GELB";
@@ -89,6 +103,9 @@ export default function VerfahrenDokumenteList({
                 </div>
               )}
             </VerfahrenDokumentItem>
+            {deleteDokumentError && (
+              <Alert type="error" title={deleteDokumentError} />
+            )}
             {dokumentHasValidationIssues && (
               <Alert
                 type={dokumentErgebnis === "ROT" ? "error" : "warning"}

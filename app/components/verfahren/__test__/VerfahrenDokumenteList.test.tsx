@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
 
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { createRoutesStub } from "react-router";
 import { describe, expect, it, vi } from "vitest";
+import { actionError } from "~/utils/actionResult";
 import VerfahrenDokumenteList, {
   DokumentWithValidierungsstatus,
 } from "../VerfahrenDokumenteList";
@@ -109,6 +111,40 @@ describe("VerfahrenDokumenteList", () => {
       einreichungId: "e-1",
       dokumentId: "d-1",
     });
+  });
+
+  it("shows a failed delete next to the Dokument it was for", async () => {
+    const Stub = createRoutesStub([
+      {
+        path: "/verfahren/:id",
+        Component: () => (
+          <VerfahrenDokumenteList
+            dokumente={[
+              buildDokument({ id: "d-1", typ: "ANHANG", anzeigename: "a.pdf" }),
+              buildDokument({ id: "d-2", typ: "ANHANG", anzeigename: "b.pdf" }),
+            ]}
+            einreichungId="e-1"
+          />
+        ),
+        action: () =>
+          actionError("Löschen fehlgeschlagen.", {
+            data: { formType: "delete", dokumentId: "d-2" },
+          }),
+      },
+    ]);
+    render(<Stub initialEntries={["/verfahren/v-1"]} />);
+
+    const [, secondDeleteButton] = screen.getAllByRole("button", {
+      name: /entfernen/i,
+    });
+    await userEvent.click(secondDeleteButton);
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent("Löschen fehlgeschlagen.");
+    // Rendered in the failed Dokument's own block, not the other one's.
+    const dokumentBlock = alert.parentElement;
+    expect(dokumentBlock).toHaveTextContent("b.pdf");
+    expect(dokumentBlock).not.toHaveTextContent("a.pdf");
   });
 
   it("never shows the system-generated XJustiz Dokument", () => {

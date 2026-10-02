@@ -154,6 +154,10 @@ async function handleDelete(
   } catch (error) {
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.deleteFailed,
+      data: {
+        formType: "delete",
+        dokumentId: String(formData.get("dokumentId")),
+      },
     });
   }
 }
