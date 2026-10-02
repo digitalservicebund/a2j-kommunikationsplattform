@@ -24,7 +24,7 @@ export function VerfahrenTable({
             </th>
             <th
               scope="col"
-              className="kern-table__header kern-p-md"
+              className="kern-table__header kern-p-md max-md:hidden"
               style={{ width: "1%", textWrap: "nowrap" }}
             >
               {t.shared.status.label}
@@ -52,6 +52,14 @@ function VerfahrenTableRow({ verfahren }: Readonly<{ verfahren: Verfahren }>) {
     verfahren.status,
     t.shared.status.verfahren,
   );
+  const statusBadge = (
+    <VerfahrenStatusBadge
+      className="flex-stretch"
+      small
+      tone={statusPresentation.badgeClassModifier}
+      label={statusPresentation.label}
+    />
+  );
 
   return (
     <tr className="kern-table__row relative hover:bg-(--kern-color-action-state-indicator-tint-hover-opacity)">
@@ -66,17 +74,13 @@ function VerfahrenTableRow({ verfahren }: Readonly<{ verfahren: Verfahren }>) {
           {verfahren.aktenzeichenGericht ?? t.shared.gericht.azLabel} {" · "}
           {verfahren.gericht?.wert ?? t.shared.gericht.unknown}
         </p>
+        <div className="kern-mt-md md:hidden">{statusBadge}</div>
       </th>
 
       {/* Status */}
-      <td className="kern-table__cell kern-p-md align-middle text-nowrap">
+      <td className="kern-table__cell kern-p-md align-middle text-nowrap max-md:hidden">
         <div className="kern-gap-lg flex justify-between">
-          <VerfahrenStatusBadge
-            className="flex-stretch"
-            small
-            tone={statusPresentation.badgeClassModifier}
-            label={statusPresentation.label}
-          />
+          {statusBadge}
           <span className="kern-icon kern-icon--chevron-right"></span>
         </div>
       </td>
