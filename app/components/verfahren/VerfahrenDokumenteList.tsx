@@ -5,6 +5,7 @@ import { resolveReadinessPresentation } from "~/components/verfahren/presentatio
 import VerfahrenDokumentItem from "~/components/verfahren/VerfahrenDokumentItem";
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import type { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
 import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
 import { useTranslations } from "~/services/translations/context";
@@ -18,12 +19,13 @@ export type DokumentWithValidierungsstatus = Dokument & {
 
 type VerfahrenDokumenteListProps = {
   dokumente: DokumentWithValidierungsstatus[];
-  einreichungId: string;
+  // Its name decides which Dokumente may be deleted.
+  einreichung: Pick<Einreichung, "id" | "name">;
 };
 
 export default function VerfahrenDokumenteList({
   dokumente,
-  einreichungId,
+  einreichung,
 }: Readonly<VerfahrenDokumenteListProps>) {
   const { routes, shared } = useTranslations();
   const actionData = useActionData<ActionResult<DeleteDokumentActionData>>();
@@ -67,13 +69,13 @@ export default function VerfahrenDokumenteList({
         return (
           <div key={dokument.id} className="kern-gap-sm flex w-full flex-col">
             <VerfahrenDokumentItem dokument={dokument}>
-              {canDeleteDokument(dokument) ? (
+              {canDeleteDokument(dokument, einreichung) ? (
                 <Form method="post" className="kern-gap-sm flex items-center">
                   <input type="hidden" name="formType" value="delete" />
                   <input
                     type="hidden"
                     name="einreichungId"
-                    value={einreichungId}
+                    value={einreichung.id}
                   />
                   <input type="hidden" name="dokumentId" value={dokument.id} />
                   <Button

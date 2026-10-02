@@ -39,10 +39,10 @@ export default function VerfahrenWeitereEinreichungDokumenteStep({
       disabled={isDisabled}
       className="kern-gap-md flex w-full flex-col disabled:opacity-50"
     >
-      {hasUploadedDokumente && (
+      {draftWeitereEinreichung && hasUploadedDokumente && (
         <VerfahrenDokumenteList
           dokumente={dokumente}
-          einreichungId={einreichungId}
+          einreichung={draftWeitereEinreichung.einreichung}
         />
       )}
 

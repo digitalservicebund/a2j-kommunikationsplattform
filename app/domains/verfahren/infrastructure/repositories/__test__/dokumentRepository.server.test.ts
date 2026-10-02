@@ -158,6 +158,35 @@ describe("deleteDokument", () => {
 });
 
 describe("deleteDokumentFromEinreichung", () => {
+  const klageschrift = {
+    id: "d-1",
+    typ: "SCHRIFTSTUECK",
+    anzeigename: "Klageschrift.pdf",
+  };
+  const anlage = { id: "d-2", typ: "ANHANG", anzeigename: "Anlage.pdf" };
+  const xjustiz = { id: "d-3", typ: "XJUSTIZ", anzeigename: "xjustiz.xml" };
+
+  // The Dokumente list and the Einreichung are fetched in parallel, in this
+  // order.
+  function mockLookups(
+    elemente: object[],
+    einreichungName = "Klageeinreichung",
+  ) {
+    mocks.apiRequest.mockResolvedValueOnce({ elemente }).mockResolvedValueOnce({
+      data: { id: "e-1", name: einreichungName },
+      eTag: null,
+    });
+  }
+
+  function deleteDokumentWithId(dokumentId: string) {
+    return deleteDokumentFromEinreichung({
+      authData: mockAuthData,
+      verfahrenId: "v-1",
+      einreichungId: "e-1",
+      dokumentId,
+    });
+  }
+
   test("returns invalid-form-data when form data is missing", async () => {
     const result = await deleteDokumentFromEinreichung({
       authData: mockAuthData,
@@ -170,112 +199,75 @@ describe("deleteDokumentFromEinreichung", () => {
     expect(mocks.apiRequest).not.toHaveBeenCalled();
   });
 
-  test("protects a Schriftstück dokument from deletion", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({
-      elemente: [
-        { id: "d-1", typ: "SCHRIFTSTUECK", anzeigename: "Klageschrift.pdf" },
-        { id: "d-2", typ: "ANHANG", anzeigename: "Anlage.pdf" },
-      ],
-    });
+  test("looks up the Einreichung the Dokument belongs to", async () => {
+    mockLookups([klageschrift, anlage]);
 
-    const result = await deleteDokumentFromEinreichung({
-      authData: mockAuthData,
-      verfahrenId: "v-1",
-      einreichungId: "e-1",
-      dokumentId: "d-1",
-    });
+    await deleteDokumentWithId("d-1");
 
-    expect(result).toEqual({ status: "protected-dokument" });
-    expect(mocks.apiRequest).toHaveBeenCalledTimes(1);
+    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        path: "/api/v1/verfahren/v-1/einreichungen/e-1",
+      }),
+    );
   });
 
-  test("protects a Schriftstück dokument even when it is not the first element", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({
-      elemente: [
-        { id: "d-1", typ: "ANHANG", anzeigename: "Anlage.pdf" },
-        { id: "d-2", typ: "SCHRIFTSTUECK", anzeigename: "Klageschrift.pdf" },
-      ],
-    });
+  test("protects a Schriftstück of the Klageeinreichung from deletion", async () => {
+    mockLookups([klageschrift, anlage]);
 
-    const result = await deleteDokumentFromEinreichung({
-      authData: mockAuthData,
-      verfahrenId: "v-1",
-      einreichungId: "e-1",
-      dokumentId: "d-2",
-    });
+    const result = await deleteDokumentWithId("d-1");
 
     expect(result).toEqual({ status: "protected-dokument" });
-    expect(mocks.apiRequest).toHaveBeenCalledTimes(1);
+    expect(mocks.apiRequest).toHaveBeenCalledTimes(2);
+  });
+
+  test("protects a Schriftstück of the Klageeinreichung even when it is not the first element", async () => {
+    mockLookups([anlage, { ...klageschrift, id: "d-4" }]);
+
+    const result = await deleteDokumentWithId("d-4");
+
+    expect(result).toEqual({ status: "protected-dokument" });
+    expect(mocks.apiRequest).toHaveBeenCalledTimes(2);
   });
 
   test("protects the auto-managed XJustiz-Dokument from deletion", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({
-      elemente: [
-        { id: "d-1", typ: "SCHRIFTSTUECK", anzeigename: "Klageschrift.pdf" },
-        { id: "d-2", typ: "XJUSTIZ", anzeigename: "xjustiz.xml" },
-      ],
-    });
+    mockLookups([klageschrift, xjustiz]);
 
-    const result = await deleteDokumentFromEinreichung({
-      authData: mockAuthData,
-      verfahrenId: "v-1",
-      einreichungId: "e-1",
-      dokumentId: "d-2",
-    });
+    const result = await deleteDokumentWithId("d-3");
 
     expect(result).toEqual({ status: "protected-dokument" });
-    expect(mocks.apiRequest).toHaveBeenCalledTimes(1);
+    expect(mocks.apiRequest).toHaveBeenCalledTimes(2);
   });
 
-  test("allows deleting the first element when it is not a Schriftstück", async () => {
+  test("allows deleting a Schriftstück of a Weitere Einreichung", async () => {
+    mockLookups([klageschrift], "Schriftsatz");
     mocks.apiRequest
-      .mockResolvedValueOnce({
-        elemente: [
-          { id: "d-1", typ: "ANHANG", anzeigename: "Anlage.pdf" },
-          { id: "d-2", typ: "SCHRIFTSTUECK", anzeigename: "Klageschrift.pdf" },
-        ],
-      })
       .mockResolvedValueOnce({ data: { id: "d-1" }, eTag: 'W/"1"' })
       .mockResolvedValueOnce({ ok: true });
 
-    const result = await deleteDokumentFromEinreichung({
-      authData: mockAuthData,
-      verfahrenId: "v-1",
-      einreichungId: "e-1",
-      dokumentId: "d-1",
-    });
+    const result = await deleteDokumentWithId("d-1");
 
     expect(result).toEqual({ status: "deleted" });
   });
 
   test("returns delete-failed when downstream delete call is unsuccessful", async () => {
+    mockLookups([klageschrift, anlage]);
     mocks.apiRequest
-      .mockResolvedValueOnce({
-        elemente: [
-          { id: "d-1", typ: "SCHRIFTSTUECK", anzeigename: "Klageschrift.pdf" },
-          { id: "d-2", typ: "ANHANG", anzeigename: "Anlage.pdf" },
-        ],
-      })
       .mockResolvedValueOnce({ data: { id: "d-2" }, eTag: undefined })
       .mockResolvedValueOnce({ ok: false, status: 500 });
 
-    const result = await deleteDokumentFromEinreichung({
-      authData: mockAuthData,
-      verfahrenId: "v-1",
-      einreichungId: "e-1",
-      dokumentId: "d-2",
-    });
+    const result = await deleteDokumentWithId("d-2");
 
     expect(result).toEqual({ status: "delete-failed" });
     expect(mocks.apiRequest).toHaveBeenNthCalledWith(
-      2,
+      3,
       expect.objectContaining({
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-2",
         includeResponseETag: true,
       }),
     );
     expect(mocks.apiRequest).toHaveBeenNthCalledWith(
-      3,
+      4,
       expect.objectContaining({
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-2",
         method: "DELETE",
@@ -285,22 +277,12 @@ describe("deleteDokumentFromEinreichung", () => {
   });
 
   test("returns deleted when a deletable dokument deletion succeeds", async () => {
+    mockLookups([klageschrift, anlage]);
     mocks.apiRequest
-      .mockResolvedValueOnce({
-        elemente: [
-          { id: "d-1", typ: "SCHRIFTSTUECK", anzeigename: "Klageschrift.pdf" },
-          { id: "d-2", typ: "ANHANG", anzeigename: "Anlage.pdf" },
-        ],
-      })
       .mockResolvedValueOnce({ data: { id: "d-2" }, eTag: 'W/"1"' })
       .mockResolvedValueOnce({ ok: true });
 
-    const result = await deleteDokumentFromEinreichung({
-      authData: mockAuthData,
-      verfahrenId: "v-1",
-      einreichungId: "e-1",
-      dokumentId: "d-2",
-    });
+    const result = await deleteDokumentWithId("d-2");
 
     expect(result).toEqual({ status: "deleted" });
   });

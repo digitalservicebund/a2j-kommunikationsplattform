@@ -6,6 +6,7 @@ import { createRoutesStub, type ActionFunctionArgs } from "react-router";
 import { getTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
 import { TranslationsProvider } from "~/services/translations/context";
+import { actionError } from "~/utils/actionResult";
 import type { EinreichungDetails } from "../VerfahrenDraftKlageeinreichungSection";
 import VerfahrenWeitereEinreichungArtStep, {
   CREATE_EINREICHUNG_FORM_TYPE,
@@ -18,11 +19,16 @@ const draftWeitereEinreichung = {
   beleg: null,
 } as unknown as EinreichungDetails;
 
-function renderArtStep(draft: EinreichungDetails | null) {
+const createFailedMessage = "Die Einreichung konnte nicht erstellt werden.";
+
+function renderArtStep(
+  draft: EinreichungDetails | null,
+  respond: () => unknown = () => null,
+) {
   const submittedForms: FormData[] = [];
   const action = vi.fn(async ({ request }: ActionFunctionArgs) => {
     submittedForms.push(await request.formData());
-    return null;
+    return respond();
   });
 
   const Stub = createRoutesStub([
@@ -70,5 +76,43 @@ describe("VerfahrenWeitereEinreichungArtStep", () => {
 
     expect(artSelect).toHaveValue("Schriftsatz");
     expect(action).not.toHaveBeenCalled();
+  });
+
+  it("locks the picked Art while the Einreichung is being created", async () => {
+    // Never settles, so the submission stays in flight.
+    const { action } = renderArtStep(null, () => new Promise(() => {}));
+    const artSelect = screen.getByLabelText(artLabel);
+
+    await userEvent.selectOptions(artSelect, "Replik");
+
+    await waitFor(() =>
+      expect(artSelect).toHaveAttribute("aria-disabled", "true"),
+    );
+    expect(artSelect).toHaveValue("Replik");
+
+    await userEvent.selectOptions(artSelect, "Duplik");
+
+    expect(artSelect).toHaveValue("Replik");
+    expect(action).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows the error and lets the same Art be picked again when creating fails", async () => {
+    const { submittedForms } = renderArtStep(null, () =>
+      actionError(createFailedMessage, {
+        data: { formType: CREATE_EINREICHUNG_FORM_TYPE },
+      }),
+    );
+    const artSelect = screen.getByLabelText(artLabel);
+
+    await userEvent.selectOptions(artSelect, "Replik");
+
+    expect(await screen.findByText(createFailedMessage)).toBeInTheDocument();
+    expect(artSelect).toHaveValue("");
+    expect(artSelect).not.toHaveAttribute("aria-disabled", "true");
+
+    await userEvent.selectOptions(artSelect, "Replik");
+
+    await waitFor(() => expect(submittedForms).toHaveLength(2));
+    expect(submittedForms[1].get("art")).toBe("Replik");
   });
 });

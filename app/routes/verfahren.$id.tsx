@@ -43,6 +43,7 @@ import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
 import {
+  actionErrorResponse,
   actionResultFromApiError,
   actionResultFromInputParsingError,
   actionSuccess,
@@ -142,22 +143,38 @@ async function handleDelete(
   formData: FormData,
   { authData, verfahrenId }: FormActionContext,
 ) {
+  const actionData = {
+    formType: "delete",
+    dokumentId: String(formData.get("dokumentId")),
+  };
+
   try {
-    await deleteDokumentFromEinreichung({
+    const deleteResult = await deleteDokumentFromEinreichung({
       authData,
       verfahrenId,
       einreichungId: formData.get("einreichungId"),
       dokumentId: formData.get("dokumentId"),
     });
 
+    if (deleteResult.status === "protected-dokument") {
+      return actionErrorResponse(de.shared.form.errors.deleteFailed, {
+        data: actionData,
+        status: 403,
+      });
+    }
+
+    if (deleteResult.status === "delete-failed") {
+      return actionErrorResponse(de.shared.form.errors.deleteFailed, {
+        data: actionData,
+        status: 500,
+      });
+    }
+
     return redirect(`/verfahren/${verfahrenId}`);
   } catch (error) {
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.deleteFailed,
-      data: {
-        formType: "delete",
-        dokumentId: String(formData.get("dokumentId")),
-      },
+      data: actionData,
     });
   }
 }

@@ -27,6 +27,15 @@ export function actionError<T = undefined>(
   return { status: "error", error, ...options };
 }
 
+export function actionErrorResponse<T = undefined>(
+  error: string,
+  options: { data?: T; status: number },
+) {
+  return data(actionError(error, { data: options.data }), {
+    status: options.status,
+  });
+}
+
 export function actionFieldErrorsResponse<T = undefined>(
   error: z.ZodError,
   options?: { data?: T },

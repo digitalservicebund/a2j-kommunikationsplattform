@@ -37,9 +37,11 @@ function buildDokument(
   } as DokumentWithValidierungsstatus;
 }
 
+const klageeinreichung = { id: "e-1", name: "Klageeinreichung" };
+
 function renderList(
   dokumente: DokumentWithValidierungsstatus[],
-  einreichungId = "e-1",
+  einreichung = klageeinreichung,
 ) {
   const Stub = createRoutesStub([
     {
@@ -47,7 +49,7 @@ function renderList(
       Component: () => (
         <VerfahrenDokumenteList
           dokumente={dokumente}
-          einreichungId={einreichungId}
+          einreichung={einreichung}
         />
       ),
       action: vi.fn(),
@@ -93,12 +95,26 @@ describe("VerfahrenDokumenteList", () => {
     );
   });
 
-  it("hides the delete action for a Schriftstück", () => {
+  it("hides the delete action for a Schriftstück of the Klageeinreichung", () => {
     renderList([buildDokument({ typ: "SCHRIFTSTUECK" })]);
 
     expect(
       screen.queryByRole("button", { name: /entfernen/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("shows a delete action for a Schriftstück of a Weitere Einreichung", () => {
+    renderList([buildDokument({ typ: "SCHRIFTSTUECK", id: "d-1" })], {
+      id: "e-2",
+      name: "Schriftsatz",
+    });
+
+    const deleteButton = screen.getByRole("button", { name: /entfernen/i });
+    expect(deleteButton.closest("form")).toHaveFormValues({
+      formType: "delete",
+      einreichungId: "e-2",
+      dokumentId: "d-1",
+    });
   });
 
   it("shows a delete action for a deletable Dokument", () => {
@@ -123,7 +139,7 @@ describe("VerfahrenDokumenteList", () => {
               buildDokument({ id: "d-1", typ: "ANHANG", anzeigename: "a.pdf" }),
               buildDokument({ id: "d-2", typ: "ANHANG", anzeigename: "b.pdf" }),
             ]}
-            einreichungId="e-1"
+            einreichung={klageeinreichung}
           />
         ),
         action: () =>

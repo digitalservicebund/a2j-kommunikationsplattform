@@ -643,7 +643,7 @@ export default function VerfahrenNeuBearbeiten() {
   const [hasLawyer, setHasLawyer] = useState(hasExistingLawyer);
 
   const uploadedDokumente = dokumente.filter((dokument) =>
-    canDeleteDokument(dokument),
+    canDeleteDokument(dokument, einreichung),
   );
 
   const handleDeleteDokument = (dokument: Dokument) => {

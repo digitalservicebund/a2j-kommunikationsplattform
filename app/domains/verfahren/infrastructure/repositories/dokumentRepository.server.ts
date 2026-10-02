@@ -6,6 +6,7 @@ import {
 } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
 import { apiRequest } from "~/domains/verfahren/infrastructure/api/apiClient";
+import { fetchEinreichungById } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import {
   DokumentErstellenResponseSchema,
   DokumenteSchema,
@@ -132,16 +133,18 @@ export async function deleteDokumentFromEinreichung({
     return { status: "invalid-form-data" };
   }
 
-  const { elemente: dokumente } = await fetchDokumente(authData, {
-    verfahrenId,
-    einreichungId,
-  });
+  // Which Dokumente are protected depends on the kind of Einreichung, so it's
+  // looked up here rather than trusted from the form.
+  const [{ elemente: dokumente }, { einreichung }] = await Promise.all([
+    fetchDokumente(authData, { verfahrenId, einreichungId }),
+    fetchEinreichungById(authData, { verfahrenId, id: einreichungId }),
+  ]);
 
   const targetDokument = dokumente.find(
     (dokument) => dokument.id === dokumentId,
   );
 
-  if (targetDokument && !canDeleteDokument(targetDokument)) {
+  if (targetDokument && !canDeleteDokument(targetDokument, einreichung)) {
     return { status: "protected-dokument" };
   }
 

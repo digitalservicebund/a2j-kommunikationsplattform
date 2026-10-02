@@ -232,7 +232,7 @@ export default function VerfahrenDraftKlageeinreichungSection({
                 <h5 className="kern-preline">Dokumente</h5>
                 <VerfahrenDokumenteList
                   dokumente={draftKlageeinreichung.dokumente}
-                  einreichungId={draftKlageeinreichung.einreichung.id}
+                  einreichung={draftKlageeinreichung.einreichung}
                 />
               </div>
             </section>
