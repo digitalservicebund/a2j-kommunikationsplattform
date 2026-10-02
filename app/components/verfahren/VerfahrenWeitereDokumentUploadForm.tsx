@@ -4,6 +4,7 @@ import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import InputFile from "~/components/InputFile";
 import InputSelect from "~/components/InputSelect";
+import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
 import { useTranslations } from "~/services/translations/context";
 import type { ActionResult } from "~/utils/actionResult";
 
@@ -21,6 +22,7 @@ export default function VerfahrenWeitereDokumentUploadForm({
   const { routes, shared } = useTranslations();
   const labels = routes.verfahrenId.weitereEinreichung;
 
+  const [selectedDokumentType, setSelectedDokumentType] = useState("");
   const [sichtbarkeitAlle, setSichtbarkeitAlle] = useState("true");
 
   const navigation = useNavigation();
@@ -33,6 +35,11 @@ export default function VerfahrenWeitereDokumentUploadForm({
     isUploadResult &&
     actionData.status === "invalid" &&
     Boolean(actionData.fieldErrors.file);
+  const hasDokumentTypeError =
+    isUploadResult &&
+    actionData.status === "invalid" &&
+    Boolean(actionData.fieldErrors.type) &&
+    selectedDokumentType === "";
   const isUploading =
     navigation.state !== "idle" &&
     navigation.formData?.get("formType") === UPLOAD_WEITERE_DOKUMENT_FORM_TYPE;
@@ -55,6 +62,20 @@ export default function VerfahrenWeitereDokumentUploadForm({
         label={shared.form.uploadDokument.label}
         hint={shared.form.uploadDokument.hint}
         error={hasFileError ? shared.form.uploadDokument.error : undefined}
+      />
+
+      <VerfahrenDokumentTypeSelect
+        id="type"
+        label={shared.form.selectDokumentType.label}
+        hint={shared.form.selectDokumentType.hint}
+        placeholder={shared.form.select.placeholder}
+        selectedValue={selectedDokumentType}
+        onChange={(event) => setSelectedDokumentType(event.target.value)}
+        error={
+          hasDokumentTypeError
+            ? shared.form.selectDokumentType.error
+            : undefined
+        }
       />
 
       <InputSelect

@@ -25,6 +25,7 @@ import loadVerfahrenEinreichungenOverview, {
 } from "~/domains/verfahren/application/loadVerfahrenEinreichungenOverview.server";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/application/routeContext.server";
 import submitEinreichungIfNeeded from "~/domains/verfahren/application/submitEinreichungIfNeeded.server";
+import { UploadDokumentTypeSchema } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { EinreichungArtSchema } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import {
   fetchBelegDownloadLink,
@@ -144,6 +145,7 @@ type FormActionContext = {
 const WeitereDokumentUploadSchema = z.object({
   einreichungId: z.string().min(1),
   file: z.file().min(1),
+  type: UploadDokumentTypeSchema,
   sichtbarkeitAlle: z.enum(["true", "false"]).transform((v) => v === "true"),
 });
 
@@ -237,6 +239,7 @@ async function handleUploadWeitereDokument(
   const parsed = WeitereDokumentUploadSchema.safeParse({
     einreichungId: formData.get("einreichungId"),
     file: formData.get("file"),
+    type: formData.get("type"),
     sichtbarkeitAlle: formData.get("sichtbarkeitAlle"),
   });
 
@@ -246,7 +249,7 @@ async function handleUploadWeitereDokument(
     });
   }
 
-  const { einreichungId, file, sichtbarkeitAlle } = parsed.data;
+  const { einreichungId, file, type, sichtbarkeitAlle } = parsed.data;
 
   try {
     await uploadDokument(
@@ -254,7 +257,7 @@ async function handleUploadWeitereDokument(
       verfahrenId,
       einreichungId,
       file,
-      "SCHRIFTSTUECK",
+      type,
       sichtbarkeitAlle,
     );
 

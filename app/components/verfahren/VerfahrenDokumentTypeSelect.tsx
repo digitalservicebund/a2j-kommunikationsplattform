@@ -1,15 +1,15 @@
 import VerfahrenSelect, {
   type VerfahrenSelectProps,
 } from "~/components/verfahren/VerfahrenSelect";
-import { DokumentTypeSchema } from "~/domains/verfahren/entities/dokument/dokument.entity";
+import { UploadDokumentTypeSchema } from "~/domains/verfahren/entities/dokument/dokument.entity";
 
 const dokumentTypeLabelByValue: Record<string, string> = {
   ANHANG: "Anhang",
   SCHRIFTSTUECK: "Schriftstück",
-  XJUSTIZ: "XJustiz",
+  SIGNATURDATEI: "Signaturdatei",
 };
 
-const dokumentTypeOptions = DokumentTypeSchema.options.map((value) => ({
+const dokumentTypeOptions = UploadDokumentTypeSchema.options.map((value) => ({
   value,
   label: dokumentTypeLabelByValue[value] ?? value,
 }));

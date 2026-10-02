@@ -31,7 +31,10 @@ import loadVerfahrenEinreichungBundle, {
 import regenerateEinreichungXJustiz from "~/domains/verfahren/application/regenerateEinreichungXJustiz.server";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/application/routeContext.server";
 import { CodeWertSchema } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
-import { DokumentTypeSchema } from "~/domains/verfahren/entities/dokument/dokument.entity";
+import {
+  DokumentTypeSchema,
+  UploadDokumentTypeSchema,
+} from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { fetchLatestBelegForEinreichung } from "~/domains/verfahren/infrastructure/repositories/belegRepository.server";
 import {
   deleteDokument,
@@ -99,7 +102,7 @@ type SubmitState = "idle" | "submit" | "upload" | "delete";
 type DokumentActionData = { formType?: SubmitState };
 
 const DokumentUploadSchema = z.object({
-  type: DokumentTypeSchema,
+  type: UploadDokumentTypeSchema,
   file: z.file().min(1),
 });
 

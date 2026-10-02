@@ -80,7 +80,7 @@ export const de = {
         label: "Dateityp",
         hint: "Wählen Sie einen Dateityp zur besseren Zuordnung",
         error:
-          "Bitte wählen Sie zwischen einem Schriftstück, einem Anhang oder einer XJustiz Datei.",
+          "Bitte wählen Sie zwischen einem Schriftstück, einem Anhang oder einer Signaturdatei.",
       },
       uploadDokument: {
         label: "Datei hochladen",
