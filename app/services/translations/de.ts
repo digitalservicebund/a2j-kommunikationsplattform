@@ -59,7 +59,10 @@ export const de = {
       "Es konnten keine passenden Ergebnisse für Ihre Suche/Filtereinstellungen gefunden werden. Bitte überprüfen Sie Ihre Eingaben oder ändern Sie die Filter, um andere Ergebnisse zu sehen.",
   },
   shared: {
+    cancel: "Abbrechen",
     loading: "Wird geladen...",
+    unknown: "(Unbekannt)",
+    missing: "(Nicht gesetzt)",
     dokumentType: {
       anhang: "Anhang",
       schriftstueck: "Schriftstück",
@@ -132,6 +135,9 @@ export const de = {
       kontoinhaberLabel: "Zahlungsempfänger",
       ibanLabel: "IBAN",
     },
+    kurzrubrum: {
+      label: "Rubrum",
+    },
     statusPresentation: {
       verfahren: {
         erstellt: "Verfahren erstellt",
@@ -197,6 +203,8 @@ export const de = {
     },
     index: {
       headline: "Alle Verfahren in der Übersicht",
+      createVerfahren: "Neues Verfahren anlegen",
+      redeemBeitrittscode: "Beitrittscode einlösen",
     },
     verfahrenNeu: {
       step1: {
@@ -347,6 +355,35 @@ export const de = {
     },
     verfahrenId: {
       headline: "Verlauf der Akte",
+    },
+    beitreten: {
+      pageTitle: "Beitrittscode einlösen",
+      title: "Einem Verfahren beitreten",
+      subtitle:
+        "Als Vertretung der Gegenseite erhalten Sie per Post oder beA einen Beitrittscode, mit dem Sie an einem bereits laufenden Verfahren über diese Plattform teilnehmen können.",
+      code: {
+        label: "Beitrittscode",
+        hint: "Den Code finden Sie im Anschreiben des Gerichts.",
+        placeholder: "z.B. K7M4-9PXQ-2WRT",
+        invalid:
+          "Der Code ist ungültig oder wurde bereits verwendet. Bitte prüfen Sie Ihre Eingabe und versuchen es erneut.",
+        internalValidationError:
+          "Der Code konnte wegen eines internen Fehlers nicht überprüft werden. Bitte versuchen Sie es erneut.",
+      },
+      validateCode: "Code prüfen",
+      joinVerfahren: {
+        label: "Verfahren beitreten",
+        error: {
+          title: "Verfahren konnte nicht beigetreten werden",
+          description:
+            "Es handelt sich vermutlich um einen temporären Fehler. Bitte versuchen Sie es erneut.",
+        },
+      },
+      yourRole: {
+        title: "Ihre Rolle in diesem Verfahren",
+        description:
+          "Sie treten als <b>Beklagtenvertretung</b> bei. Nach dem Beitritt erhalten Sie Zugriff auf die vollständige Verfahrensakte und können Schriftsätze einreichen.",
+      },
     },
     PLATFORM_TITLE: "Kommunikationsplattform | Justiz-Services",
     DATENSCHUTZ_TITLE: "Datenschutzerklärung zur Webseite",

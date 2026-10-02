@@ -15,6 +15,7 @@ type Beteiligte = {
 
 export const ROLE_CODE_KLAEGERIN = "101";
 export const ROLE_CODE_BEKLAGTE = "028";
+export const ROLE_CODE_PROZESSBEVOLLMAECHTIGTE = "132";
 
 export function getBeteiligteByRoleCode<T extends Beteiligte>(
   beteiligte: T[] | null | undefined,

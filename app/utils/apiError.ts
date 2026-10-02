@@ -18,3 +18,11 @@ export class ApiError extends Error {
     this.problemDetails = options.problemDetails;
   }
 }
+
+export function isApiError(e: unknown): e is ApiError {
+  return e instanceof ApiError;
+}
+
+export function isClientSideApiError(e: unknown): e is ApiError {
+  return isApiError(e) && e.status >= 400 && e.status < 500;
+}

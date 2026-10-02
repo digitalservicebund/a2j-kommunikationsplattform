@@ -23,6 +23,7 @@ import {
 import { VERFAHREN_PAGE_LIMIT } from "~/domains/verfahren/services/verfahrenListOptions";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+import { logger } from "~/utils/logger.server";
 
 export type VerfahrenLoaderData = {
   items: Verfahren[];
@@ -58,6 +59,8 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
       search_text,
     });
 
+    logger.debug({ elemente: verfahren.elemente }, "verfahren");
+
     const hasMoreItems = verfahren.elemente.length > VERFAHREN_PAGE_LIMIT;
     const items: Verfahren[] = hasMoreItems
       ? verfahren.elemente.slice(0, VERFAHREN_PAGE_LIMIT)
@@ -83,6 +86,7 @@ export default function VerfahrenRoute() {
     data: Promise<[VerfahrenLoaderData, CodeWert[]]>;
     showDebugInfo: boolean;
   }>();
+  const { routes } = useTranslations();
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   return (
@@ -91,13 +95,26 @@ export default function VerfahrenRoute() {
 
       <div className="mb-(--kern-metric-dimension-small) flex justify-between">
         <VerfahrenHeading ref={headingRef} />
-        <Link to="/verfahren/neu" className="kern-btn kern-btn--secondary">
-          <span className="kern-label">Neues Verfahren anlegen</span>
-          <span
-            className="kern-icon kern-icon--arrow-forward"
-            aria-hidden="true"
-          ></span>
-        </Link>
+
+        <div className="kern-gap-md flex">
+          <Link to="/beitreten" className="kern-btn kern-btn--secondary">
+            <span
+              className="kern-icon kern-icon--arrow-forward"
+              aria-hidden="true"
+            ></span>
+            <span className="kern-label">
+              {routes.index.redeemBeitrittscode}
+            </span>
+          </Link>
+
+          <Link to="/verfahren/neu" className="kern-btn kern-btn--primary">
+            <span
+              className="kern-icon kern-icon--add"
+              aria-hidden="true"
+            ></span>
+            <span className="kern-label">{routes.index.createVerfahren}</span>
+          </Link>
+        </div>
       </div>
 
       <div className="flex flex-col space-y-(--kern-metric-space-large)">

@@ -4,12 +4,14 @@
 // aliases defined in `tsconfig.json`).
 
 import pino from "pino";
+import type { PrettyOptions } from "pino-pretty";
 import { config } from "../config/config.ts";
 
 const { LOG_LEVEL, ENVIRONMENT } = config();
 
 export const logger = pino({
   level: LOG_LEVEL,
+  errorKey: "error",
   serializers: {
     error: pino.stdSerializers.err,
     req: pino.stdSerializers.req,
@@ -31,6 +33,9 @@ export const logger = pino({
   // would otherwise spawn one.
   transport:
     ENVIRONMENT === "development" && !process.env.VITEST
-      ? { target: "pino-pretty", options: { colorize: true } }
+      ? {
+          target: "pino-pretty",
+          options: { colorize: true } satisfies PrettyOptions,
+        }
       : undefined,
 });

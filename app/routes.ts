@@ -35,6 +35,9 @@ export default [
     route(":id", "./routes/verfahren.$id.tsx"),
   ]),
 
+  // Beitrittscode (Lift)
+  route("beitreten", "./routes/beitreten.tsx"),
+
   // exclude route(s) from production environment
   ...(config().ENVIRONMENT === "production"
     ? []
