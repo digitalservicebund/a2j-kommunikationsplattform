@@ -296,8 +296,6 @@ export default function VerfahrenId() {
   } = useLoaderData<LoaderData>();
   const { routes } = useTranslations();
 
-  console.log("einreichungen", einreichungen);
-
   const timelineEinreichungen = einreichungen.filter(
     ({ einreichung }) =>
       einreichung.id !== draftWeitereEinreichung?.einreichung.id,
@@ -331,8 +329,6 @@ export default function VerfahrenId() {
       isValidating,
       isBelegPending,
     });
-
-  console.log("draftWeitereEinreichung", draftWeitereEinreichung);
 
   return (
     <>
