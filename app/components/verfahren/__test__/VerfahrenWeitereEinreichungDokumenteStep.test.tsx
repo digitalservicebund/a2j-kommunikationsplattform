@@ -170,4 +170,20 @@ describe("VerfahrenWeitereEinreichungDokumenteStep", () => {
       ),
     ).toBeInTheDocument();
   });
+
+  it("offers deleting an uploaded Schriftstück", () => {
+    renderSection(
+      buildWeitereEinreichung([
+        buildDokument({
+          validierungslaufStatus: "ABGESCHLOSSEN",
+          ergebnis: "GRUEN",
+          fehler: [],
+        }),
+      ]),
+    );
+
+    expect(
+      screen.getByRole("button", { name: /entfernen/i }),
+    ).toBeInTheDocument();
+  });
 });
