@@ -366,19 +366,21 @@ export default function VerfahrenNeu() {
                   className="relative"
                 >
                   <div className="kern-gap-xl flex flex-col">
-                    <VerfahrenUploadedDokumentSummary
-                      uploadedDokument={uploadedDokument}
-                      verfahrenId={verfahrenId}
-                      einreichungId={einreichungId}
-                      isSubmitting={isSubmitting}
-                    />
-
-                    <VerfahrenKlageschriftFormSection
-                      errors={fieldErrors || {}}
-                      gerichtePromise={loaderData.gerichtePromise}
-                      selectedGerichtId={selectedGerichtId}
-                      onGerichtIdChange={setSelectedGerichtId}
-                    />
+                    {hasUploadedDokument ? (
+                      <VerfahrenUploadedDokumentSummary
+                        uploadedDokument={uploadedDokument}
+                        verfahrenId={verfahrenId}
+                        einreichungId={einreichungId}
+                        isSubmitting={isSubmitting}
+                      />
+                    ) : (
+                      <VerfahrenKlageschriftFormSection
+                        errors={fieldErrors || {}}
+                        gerichtePromise={loaderData.gerichtePromise}
+                        selectedGerichtId={selectedGerichtId}
+                        onGerichtIdChange={setSelectedGerichtId}
+                      />
+                    )}
 
                     <fieldset
                       className={`${isSubmitting ? "pointer-events-none" : ""} kern-fieldset`}
