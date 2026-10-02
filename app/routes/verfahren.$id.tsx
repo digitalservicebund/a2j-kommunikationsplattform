@@ -104,19 +104,27 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   // A draft is an Einreichung that's still open (ERSTELLT/FEHLGESCHLAGEN) —
   // the only statuses in which the API lets Dokumente be changed and the
   // Einreichung be submitted. Once submitted, it's listed in the history.
-  const openKlageeinreichung = findOpenEinreichung(
+  const unfinishedKlageeinreichung = findOpenEinreichung(
     einreichungen.filter(({ einreichung }) => isKlageeinreichung(einreichung)),
   );
-  const openWeitereEinreichung = findOpenEinreichung(
+  const unfinishedWeitereEinreichung = findOpenEinreichung(
     einreichungen.filter(({ einreichung }) => !isKlageeinreichung(einreichung)),
   );
 
   const [draftKlageeinreichung, draftWeitereEinreichung] = await Promise.all([
-    openKlageeinreichung
-      ? loadEinreichungDetails(authData, verfahrenId, openKlageeinreichung)
+    unfinishedKlageeinreichung
+      ? loadEinreichungDetails(
+          authData,
+          verfahrenId,
+          unfinishedKlageeinreichung,
+        )
       : null,
-    openWeitereEinreichung
-      ? loadEinreichungDetails(authData, verfahrenId, openWeitereEinreichung)
+    unfinishedWeitereEinreichung
+      ? loadEinreichungDetails(
+          authData,
+          verfahrenId,
+          unfinishedWeitereEinreichung,
+        )
       : null,
   ]);
 
