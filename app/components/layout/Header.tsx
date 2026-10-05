@@ -1,6 +1,5 @@
 import { clsx } from "clsx";
-import { Link, useLocation } from "react-router";
-import { Form } from "react-router";
+import { Form, Link, useLocation } from "react-router";
 import Button from "~/components/Button";
 import Kopfzeile from "~/components/layout/Kopfzeile";
 import Logo from "~/components/layout/Logo.";
@@ -11,7 +10,7 @@ import { LogoutType } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import Navigation from "./Navigation";
 
-const LoginButton = () => {
+function LoginButton() {
   const t = useTranslations();
   return (
     <Link to="/login" className="kern-link">
@@ -19,9 +18,9 @@ const LoginButton = () => {
       <span>{t.layout.header.login}</span>
     </Link>
   );
-};
+}
 
-const LogoutButton = () => {
+function LogoutButton() {
   const t = useTranslations();
   return (
     <Form method="post" action="/action/logout-user">
@@ -36,7 +35,18 @@ const LogoutButton = () => {
       </Button>
     </Form>
   );
-};
+}
+
+function UserArea({ userIsLoggedIn }: Readonly<{ userIsLoggedIn: boolean }>) {
+  return userIsLoggedIn ? (
+    <>
+      <UserProfile />
+      <LogoutButton />
+    </>
+  ) : (
+    <LoginButton />
+  );
+}
 
 interface HeaderProps {
   userIsLoggedIn?: boolean;
@@ -74,14 +84,7 @@ export default function Header({
         <Logo />
 
         <div className="kern-gap-md-lg flex flex-col items-center lg:flex-row">
-          {userIsLoggedIn ? (
-            <>
-              <UserProfile />
-              <LogoutButton />
-            </>
-          ) : !isLoginPage ? (
-            <LoginButton />
-          ) : null}
+          {!isLoginPage && <UserArea userIsLoggedIn={userIsLoggedIn} />}
         </div>
       </div>
 
