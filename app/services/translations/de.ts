@@ -3,8 +3,6 @@ export const de = {
     prev: "Zurück",
     LOGIN_BUTTON_BEA: "Anwaltschaft (mit beA anmelden)",
     LOGIN_BUTTON_KOMPLA_IDP_LABEL: "KomPla-IdP-Login",
-    ABMELDEN_BUTTON: "Abmelden",
-    ANMELDEN_BUTTON: "Anmelden",
     SHOW_VERFAHREN_DETAILS: "Verfahrensdetails anzeigen",
     SHOW_URTEIL: "Urteil anzeigen",
     LOAD_MORE_VERFAHREN: "Weitere Verfahren laden",
@@ -167,15 +165,10 @@ export const de = {
       },
     },
     verfahren: "Verfahren",
-    HEADER_ARIA_LABEL: "Hauptmenü",
-    FOOTER_ARIA_LABEL: "Rechtliche und weiterführende Informationen",
-    UEBERSICHT_LABEL: "Übersicht",
     VERFAHREN_DETAILS_LABEL: "Verfahrensdetails",
     DATEIANSICHT_LABEL: "Dateiansicht",
-    KOPFZEILE_LABEL: "Offizielle Website – Bundesrepublik Deutschland",
     LOGO_LABEL: "Kommunikationsplattform",
     LOGO_ARIA_LABEL: "Kommmunikationsplattform - Zurück zur Startseite",
-    LOGGED_IN_AS_LABEL: "Angemeldet als:",
     TO_START_PAGE_LABEL: "Zur Startseite",
     CONTACT_SUPPORT_LABEL: "Kontaktieren Sie den Support",
     MORE_THAN_100_VERFAHREN_LABEL: "Mehr als 100 Verfahren",
@@ -188,10 +181,39 @@ export const de = {
     VERFAHREN_EINREICHUNGEN_OLDEST_FIRST_LABEL: "Älteste Einreichungen zuerst",
     VERFAHREN_AKTENZEICHEN_ASC_LABEL: "Aktenzeichen des Gerichts (A↓Z)",
     VERFAHREN_AKTENZEICHEN_DESC_LABEL: "Aktenzeichen des Gerichts (Z↓A)",
-    TESTZUGANG_BANNER_LABEL_PRE: "Sie befinden sich aktuell in der ",
-    TESTZUGANG_BANNER_LABEL_BOLD: "öffentlichen Testumgebung",
-    TESTZUGANG_BANNER_LABEL_POST:
-      ". Die angezeigten Daten sind zufällig generiert und entsprechen nicht realen Vorgängen.",
+  },
+  layout: {
+    header: {
+      login: "Anmelden",
+      logout: "Abmelden",
+    },
+    kopfzeile: {
+      label: "Offizielle Website – Bundesrepublik Deutschland",
+    },
+    userProfile: {
+      loggedInAs: "Angemeldet als:",
+    },
+    navigation: {
+      ariaLabel: "Hauptmenü",
+      home: "Übersicht",
+    },
+    testEnvironmentBanner: {
+      label:
+        "Sie befinden sich aktuell in der <b>öffentlichen Testumgebung</b>. Die angezeigten Daten sind zufällig generiert und entsprechen nicht realen Vorgängen.",
+    },
+    footer: {
+      ariaLabel: "Rechtliche und weiterführende Informationen",
+      links: {
+        dataProtection: "Datenschutz",
+        moreInfo: "Weitere Informationen",
+        accessibility: "Barrierefreiheit",
+        help: "Hilfe und Kontakt",
+        openSource: "Open Source Code",
+        impressum: "Impressum",
+      },
+      projectDescription:
+        "Ein Onlineprojekt der DigitalService GmbH des Bundes in Zusammenarbeit mit der BRAK, SINC und im Auftrag des BMJV.",
+    },
   },
   routes: {
     login: {
@@ -408,18 +430,8 @@ export const de = {
     IMPRESSUM_TITLE: "Impressum",
   },
   descriptions: {
-    PROJECT_DESCRIPTION:
-      "Ein Onlineprojekt der DigitalService GmbH des Bundes in Zusammenarbeit mit der BRAK, SINC und im Auftrag des BMJV.",
     PLATFORM_DESCRIPTION:
       "Willkommen auf der Pilotplattform für den digitalen Austausch zwischen Gerichten und Verfahrensbeteiligten.",
-  },
-  contentLinkLabels: {
-    DATENSCHUTZ_LINK_LABEL: "Datenschutz",
-    WEITERE_INFORMATIONEN_LINK_LABEL: "Weitere Informationen",
-    BARRIEREFREIHEIT_LINK_LABEL: "Barrierefreiheit",
-    HILFE_UND_KONTAKT_LINK_LABEL: "Hilfe und Kontakt",
-    OPEN_SOURCE_CODE_LINK_LABEL: "Open Source Code",
-    IMPRESSUM_LINK_LABEL: "Impressum",
   },
   breadcrumb: {
     start: "Start",
