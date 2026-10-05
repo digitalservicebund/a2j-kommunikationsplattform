@@ -1,5 +1,9 @@
 import { useTranslations } from "~/services/translations/context";
 
+/**
+ * KERN UX Dachmarke Kopfzeile
+ * @see https://www.kern-ux.de/komponenten/kopfzeile/
+ */
 export default function Kopfzeile() {
   const t = useTranslations();
 
