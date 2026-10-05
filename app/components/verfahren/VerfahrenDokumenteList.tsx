@@ -19,7 +19,6 @@ export type DokumentWithValidierungsstatus = Dokument & {
 
 type VerfahrenDokumenteListProps = {
   dokumente: DokumentWithValidierungsstatus[];
-  // Its name decides which Dokumente may be deleted.
   einreichung: Pick<Einreichung, "id" | "name">;
 };
 
