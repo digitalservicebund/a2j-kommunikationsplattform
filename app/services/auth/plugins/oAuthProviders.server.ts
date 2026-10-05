@@ -1,12 +1,15 @@
 import { authorizationCodeRequest } from "better-auth";
 import type { OAuth2Tokens } from "better-auth/oauth2";
-import type { GenericOAuthConfig } from "better-auth/plugins/generic-oauth";
+import {
+  genericOAuth,
+  type GenericOAuthConfig,
+} from "better-auth/plugins/generic-oauth";
 import { memoize } from "es-toolkit/compat";
 import { Agent, fetch } from "undici";
 import { serverConfig } from "~/config/config.server";
 import { logApiErrorAndThrow } from "~/utils/logApiError";
 import { logger } from "~/utils/logger.server";
-import { AuthenticationProvider } from "./auth.types";
+import { AuthenticationProvider } from "../auth.types";
 
 type IdTokenClaims = {
   sub: string;
@@ -305,4 +308,10 @@ export function komplaIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvide
     getUserInfo: makeGetUserInfo(AuthenticationProvider.KOMPLA_IDP),
     mapProfileToUser: makeMapProfileToUser(AuthenticationProvider.KOMPLA_IDP),
   };
+}
+
+export function oAuthProvidersPlugin() {
+  return genericOAuth({
+    config: [brakIdpOAuthConfig(), komplaIdpOAuthConfig()],
+  });
 }

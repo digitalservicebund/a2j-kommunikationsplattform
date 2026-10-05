@@ -1,7 +1,7 @@
 import { createAuthEndpoint } from "better-auth/api";
 import { setSessionCookie } from "better-auth/cookies";
 import { z } from "zod";
-import { AuthenticationProvider } from "./auth.types";
+import { AuthenticationProvider } from "../auth.types";
 
 const signInCustomBodySchema = z.object({
   provider: z.enum([

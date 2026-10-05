@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { describe, expect, it } from "vitest";
-import { AuthenticationProvider } from "../auth.types";
-import { customAuthPlugin } from "../customAuthPlugin.server";
+import { AuthenticationProvider } from "../../auth.types";
+import { customAuthPlugin } from "../customAuth.server";
 
 function createTestAuth() {
   return betterAuth({
