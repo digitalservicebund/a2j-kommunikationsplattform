@@ -35,7 +35,10 @@ export const logger = pino({
     ENVIRONMENT === "development" && !process.env.VITEST
       ? {
           target: "pino-pretty",
-          options: { colorize: true } satisfies PrettyOptions,
+          options: {
+            colorize: true,
+            // ignore: "req",
+          } satisfies PrettyOptions,
         }
       : undefined,
 });

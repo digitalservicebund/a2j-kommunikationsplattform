@@ -43,14 +43,20 @@ const tokenExchangeResponse = {
  * Stubs the global fetch (used for the token exchange, unlike Undici's fetch
  * used for the BRAK IdP) to respond with the given response.
  */
-function stubTokenExchange(response: () => Response) {
-  const globalFetch = vi.fn(async () => response());
+function stubTokenExchange(response: (init: RequestInit) => Response) {
+  const globalFetch = vi.fn(async (_url, init) => response(init));
   vi.stubGlobal("fetch", globalFetch);
   return vi.mocked(fetch);
 }
 
 function successfulTokenExchange() {
   return Response.json(tokenExchangeResponse);
+}
+
+function tokenRequestParams(request: RequestInit | undefined) {
+  return request?.body instanceof URLSearchParams
+    ? Object.fromEntries(request.body.entries())
+    : undefined;
 }
 
 function makeIdToken(claims: Record<string, unknown>): string {
@@ -274,13 +280,12 @@ describe("makeGetTokenFromBrakIdp", () => {
       redirectURI: "https://app.example/callback",
     });
 
-    const [, requestInit] = globalFetch.mock.calls[0] as unknown as [
-      string,
-      { body: string },
-    ];
-    expect(new URLSearchParams(requestInit.body).get("subject_token")).toBe(
-      "access-token",
-    );
+    const [, requestInit] = globalFetch.mock.calls[0];
+    expect(tokenRequestParams(requestInit!)).toMatchObject({
+      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+      assertion: "access-token",
+    });
+
     expect(result).toMatchObject({
       accessToken: "kompla-access-token",
       refreshToken: "kompla-refresh-token",
@@ -373,37 +378,26 @@ describe("exchangeForKomPlaIdpTokens", () => {
     vi.restoreAllMocks();
   });
 
-  it("exchanges the BRAK access token at the KomPla IdP (RFC 8693)", async () => {
+  it("exchanges the BRAK access token at the KomPla IdP using a Bearer JWT authorization grant (RFC 7523)", async () => {
     const globalFetch = stubTokenExchange(successfulTokenExchange);
 
     await exchangeForKomPlaIdpTokens("brak-access-token", "brak-id-token");
 
-    expect(globalFetch).toHaveBeenCalledWith(
+    expect(globalFetch).toHaveBeenCalledExactlyOnceWith(
       "https://kompla-idp.example/token",
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: expect.any(String),
+        body: expect.any(URLSearchParams),
       },
     );
 
-    const [, requestInit] = globalFetch.mock.calls[0] as unknown as [
-      string,
-      { body: string },
-    ];
-    const requestBody = new URLSearchParams(requestInit.body);
-    expect(requestBody.get("grant_type")).toBe(
-      "urn:ietf:params:oauth:grant-type:token-exchange",
-    );
-    expect(requestBody.get("requested_token_type")).toBe(
-      "urn:ietf:params:oauth:token-type:refresh_token",
-    );
-    expect(requestBody.get("client_id")).toBe("kompla-client-id");
-    expect(requestBody.get("subject_issuer")).toBe("brak-subject-issuer");
-    expect(requestBody.get("scope")).toBe("kompla-api");
-    expect(requestBody.get("subject_token")).toBe("brak-access-token");
+    const [, requestInit] = globalFetch.mock.calls[0];
+    expect(tokenRequestParams(requestInit)).toEqual({
+      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+      assertion: "brak-access-token",
+      client_id: "kompla-client-id",
+      scope: "kompla-api",
+    });
   });
 
   it("maps the response to Better Auth tokens, keeping the ID token from the login", async () => {
@@ -426,8 +420,41 @@ describe("exchangeForKomPlaIdpTokens", () => {
     });
   });
 
+  it("falls back to OAuth 2.0 Token Exchange (RFC 8693) on failure", async () => {
+    const globalFetch = stubTokenExchange((init) =>
+      tokenRequestParams(init)?.grant_type ===
+      "urn:ietf:params:oauth:grant-type:jwt-bearer"
+        ? Response.json({ error: "invalid_grant" }, { status: 400 })
+        : Response.json(tokenExchangeResponse),
+    );
+
+    await exchangeForKomPlaIdpTokens("brak-access-token", "brak-id-token");
+
+    expect(globalFetch).toHaveBeenCalledTimes(2);
+
+    const [, requestInit] = globalFetch.mock.calls[0];
+    expect(tokenRequestParams(requestInit)).toEqual({
+      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+      assertion: "brak-access-token",
+      client_id: "kompla-client-id",
+      scope: "kompla-api",
+    });
+
+    const [, requestInit2] = globalFetch.mock.calls[1];
+    expect(tokenRequestParams(requestInit2)).toEqual({
+      grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
+      requested_token_type: "urn:ietf:params:oauth:token-type:refresh_token",
+      subject_issuer: "brak-subject-issuer",
+      subject_token: "brak-access-token",
+      client_id: "kompla-client-id",
+      scope: "kompla-api",
+    });
+  });
+
   it("throws if the token exchange fails", async () => {
-    stubTokenExchange(() => new Response("Bad Request", { status: 400 }));
+    stubTokenExchange(() =>
+      Response.json({ error: "invalid_grant" }, { status: 400 }),
+    );
 
     await expect(
       exchangeForKomPlaIdpTokens("brak-access-token", undefined),

@@ -78,8 +78,8 @@ export function makeMapProfileToUser<P extends AuthProvider>(
 }
 
 /**
- * Exchanges a BRAK IdP access token for KomPla IdP tokens using OAuth 2.0
- * Token Exchange (RFC 8693).
+ * Exchanges a third-party IdP access token (e.g. BRAK / beA) for KomPla IdP
+ * tokens using a Bearer JWT authorization grant request (RFC 8693).
  *
  * Returns the tokens in the shape Better Auth stores on the account. The
  * exchange response carries no ID token, so the one from the original login
@@ -88,37 +88,52 @@ export function makeMapProfileToUser<P extends AuthProvider>(
  * @see: https://www.rfc-editor.org/rfc/rfc8693.html
  */
 export async function exchangeForKomPlaIdpTokens(
-  brakAccessToken: string,
-  brakIdToken: string | undefined,
+  originalAccessToken: string,
+  originalIdToken: string | undefined,
 ): Promise<OAuth2Tokens> {
   const config = serverConfig();
 
-  const params = new URLSearchParams();
-  params.append(
-    "grant_type",
-    "urn:ietf:params:oauth:grant-type:token-exchange",
-  );
-  params.append(
-    "requested_token_type",
-    "urn:ietf:params:oauth:token-type:refresh_token",
-  );
-  params.append("client_id", config.KOMPLA_IDP_OIDC_CLIENT_ID);
-  params.append("subject_issuer", config.KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER);
-  params.append("scope", "kompla-api");
-  params.append("subject_token", brakAccessToken);
-
-  // The global fetch, not Undici's: no mTLS is needed here, and
-  // `logApiErrorAndThrow` expects a standard `Response`.
-  const response = await globalThis.fetch(
+  let response = await globalThis.fetch(
     config.KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: params.toString(),
+      body: new URLSearchParams({
+        grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+        assertion: originalAccessToken,
+        client_id: config.KOMPLA_IDP_OIDC_CLIENT_ID,
+        scope: "kompla-api",
+      }),
     },
   );
+
+  // TODO: Remove fallback to RFC 8693 token exchange once the API was switched
+  // to JWT Bearer authorization grants.
+  if (!response.ok) {
+    logger.warn(
+      {
+        responseStatus: response.status,
+        responseBody: await response.text(),
+      },
+      "Bearer JWT authorization request (RFC 7523) failed, performing " +
+        "temporary fallback to OAuth 2.0 Token Exchange (RFC 8693)",
+    );
+
+    response = await globalThis.fetch(
+      config.KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT,
+      {
+        method: "POST",
+        body: new URLSearchParams({
+          grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
+          requested_token_type:
+            "urn:ietf:params:oauth:token-type:refresh_token",
+          subject_issuer: config.KOMPLA_IDP_OIDC_BRAK_SUBJECT_ISSUER,
+          subject_token: originalAccessToken,
+          client_id: config.KOMPLA_IDP_OIDC_CLIENT_ID,
+          scope: "kompla-api",
+        }),
+      },
+    );
+  }
 
   if (!response.ok) {
     await logApiErrorAndThrow(response, "Token exchange failed");
@@ -144,7 +159,7 @@ export async function exchangeForKomPlaIdpTokens(
     accessTokenExpiresAt: new Date(now + result.expires_in * 1000),
     refreshTokenExpiresAt: new Date(now + result.refresh_expires_in * 1000),
     scopes: result.scope.split(" "),
-    idToken: brakIdToken,
+    idToken: originalIdToken,
     raw: { ...result },
   };
 }
