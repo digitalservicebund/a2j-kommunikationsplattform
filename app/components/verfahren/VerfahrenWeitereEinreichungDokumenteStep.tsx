@@ -60,6 +60,7 @@ export default function VerfahrenWeitereEinreichungDokumenteStep({
       <Form
         ref={formRef}
         method="post"
+        preventScrollReset
         onSubmit={handleSubmit}
         className="flex justify-end"
       >

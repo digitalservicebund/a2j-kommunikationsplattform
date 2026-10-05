@@ -48,6 +48,7 @@ export default function VerfahrenWeitereDokumentUploadForm({
     <Form
       method="post"
       encType="multipart/form-data"
+      preventScrollReset
       className="kern-gap-md flex flex-col"
     >
       <input

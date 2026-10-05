@@ -57,7 +57,7 @@ export default function VerfahrenWeitereEinreichungArtStep({
 
   return (
     <div className="kern-gap-md flex w-full flex-col">
-      <Form method="post" ref={formRef}>
+      <Form method="post" preventScrollReset ref={formRef}>
         <input
           type="hidden"
           name="formType"

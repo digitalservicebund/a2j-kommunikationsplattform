@@ -255,6 +255,7 @@ export default function VerfahrenDraftKlageeinreichungSection({
                   ref={formRef}
                   method="post"
                   encType="multipart/form-data"
+                  preventScrollReset
                   onSubmit={handleSubmit}
                 >
                   <input type="hidden" name="formType" value="einreichen" />

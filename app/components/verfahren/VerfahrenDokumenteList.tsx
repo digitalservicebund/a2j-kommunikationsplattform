@@ -69,7 +69,11 @@ export default function VerfahrenDokumenteList({
           <div key={dokument.id} className="kern-gap-sm flex w-full flex-col">
             <VerfahrenDokumentItem dokument={dokument}>
               {canDeleteDokument(dokument, einreichung) ? (
-                <Form method="post" className="kern-gap-sm flex items-center">
+                <Form
+                  method="post"
+                  preventScrollReset
+                  className="kern-gap-sm flex items-center"
+                >
                   <input type="hidden" name="formType" value="delete" />
                   <input
                     type="hidden"
