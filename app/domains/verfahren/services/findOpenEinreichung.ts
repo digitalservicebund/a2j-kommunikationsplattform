@@ -7,6 +7,10 @@ const OPEN_EINREICHUNG_STATUSES: ReadonlySet<Einreichung["status"]> = new Set<
   Einreichung["status"]
 >(["ERSTELLT", "FEHLGESCHLAGEN"]);
 
+/**
+ * Returns true if the Einreichung is in one of the statuses in which it has
+ * not been submitted (eingereicht) yet.
+ */
 export function isEinreichungOpen(
   einreichung: Pick<Einreichung, "status">,
 ): boolean {
