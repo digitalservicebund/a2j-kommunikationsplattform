@@ -2,8 +2,6 @@ export const de = {
   buttons: {
     prev: "Zurück",
     LOGIN_BUTTON_BEA: "Anwaltschaft (mit beA anmelden)",
-    LOGIN_BUTTON_DEVELOPER: "Login als Entwickler*in",
-    LOGIN_BUTTON_DEMO_LABEL: "Gastzugang",
     LOGIN_BUTTON_KOMPLA_IDP_LABEL: "KomPla-IdP-Login",
     ABMELDEN_BUTTON: "Abmelden",
     ANMELDEN_BUTTON: "Anmelden",
@@ -38,9 +36,6 @@ export const de = {
     LOGIN_ERROR_BEA_TITLE: "Fehler bei der Anmeldung",
     LOGIN_ERROR_BEA_MESSAGE:
       "Die Anmeldung über beA ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
-    LOGIN_ERROR_DEMO_TITLE: "Fehler beim Testzugang",
-    LOGIN_ERROR_DEMO_MESSAGE:
-      "Die Anmeldung über den Testzugang ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
     LOGIN_ERROR_KOMPLA_IDP_TITLE: "Fehler beim KomPla-IdP-Login",
     LOGIN_ERROR_KOMPLA_IDP_MESSAGE:
       "Die Anmeldung über den KomPla-IdP-Login ist fehlgeschlagen. Bitte versuchen Sie es erneut.",

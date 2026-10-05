@@ -1,13 +1,6 @@
-import {
-  Form,
-  Link,
-  redirect,
-  useLoaderData,
-  useSearchParams,
-} from "react-router";
+import { Form, redirect, useSearchParams } from "react-router";
 import Button from "~/components/Button";
 import { PageMetadata } from "~/components/PageMetadata";
-import { config } from "~/config/config";
 import {
   LoginError,
   LoginType,
@@ -22,26 +15,19 @@ type AlertState =
   | LogoutType.Automatic
   | LogoutType.ByUser
   | LoginError.BeA
-  | LoginError.Demo
   | LoginError.KomplaIdp;
 
 export async function loader({ request }: { request: Request }) {
-  const userIsLoggedIn = await getAuthData(request);
-
+  const userIsLoggedIn = !!(await getAuthData(request));
   if (userIsLoggedIn) {
     throw redirect("/");
   }
-
-  const environment = config().ENVIRONMENT;
-  return { environment };
 }
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
-  const { environment } = useLoaderData<typeof loader>();
   const { alerts, buttons, routes } = useTranslations();
   const alertStatus = searchParams.get("status") as AlertState;
-  const isDevelopment = environment === "development";
 
   let alertMarkup = null;
   switch (alertStatus) {
@@ -90,22 +76,6 @@ export default function LoginPage() {
         </div>
       );
       break;
-    case LoginError.Demo:
-      alertMarkup = (
-        <div className="kern-alert kern-alert--danger kern-my-md" role="alert">
-          <div className="kern-alert__header">
-            <span
-              className="kern-icon kern-icon--danger kern-icon--small"
-              aria-hidden
-            ></span>
-            <span className="kern-title">{alerts.LOGIN_ERROR_DEMO_TITLE}</span>
-          </div>
-          <div className="kern-alert__body">
-            <p className="kern-body">{alerts.LOGIN_ERROR_DEMO_MESSAGE}</p>
-          </div>
-        </div>
-      );
-      break;
     case LoginError.KomplaIdp:
       alertMarkup = (
         <div className="kern-alert kern-alert--danger kern-my-md" role="alert">
@@ -144,17 +114,6 @@ export default function LoginPage() {
 
           <Form method="post" action="/action/login-user">
             <div className="kern-py-lg kern-gap-md flex flex-row flex-wrap items-start self-stretch">
-              {isDevelopment && (
-                <Button
-                  type="submit"
-                  name="loginType"
-                  value={LoginType.Developer}
-                  appearance="primary"
-                  className="kern-btn--block"
-                  label={buttons.LOGIN_BUTTON_DEVELOPER}
-                />
-              )}
-
               <Button
                 type="submit"
                 name="loginType"
@@ -163,16 +122,6 @@ export default function LoginPage() {
                 className="kern-btn--block"
                 label={buttons.LOGIN_BUTTON_BEA}
               />
-
-              <Link
-                to="/auth/start-demo-login"
-                className="kern-btn kern-btn--block kern-btn--secondary w-full"
-                data-testid="demo-button"
-              >
-                <span className="kern-label">
-                  {buttons.LOGIN_BUTTON_DEMO_LABEL}
-                </span>
-              </Link>
             </div>
           </Form>
 

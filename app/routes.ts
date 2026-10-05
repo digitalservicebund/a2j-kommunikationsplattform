@@ -10,8 +10,6 @@ export default [
   route("action/logout-user", "./routes/action.logout-user.ts"),
   route("auth/callback", "./routes/auth.callback.tsx"),
   route("auth/kompla-idp-callback", "./routes/auth.kompla-idp-callback.tsx"),
-  route("auth/magic-link-callback", "./routes/auth.magic-link-callback.tsx"),
-  route("auth/start-demo-login", "./routes/auth.start-demo-login.ts"),
   route("api/auth/*", "./routes/api.auth.$.ts"),
 
   // errors
