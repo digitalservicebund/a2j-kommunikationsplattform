@@ -26,8 +26,6 @@ export type EinreichungStatusBadgeLabels = {
   geloescht: string;
 };
 
-// Records (rather than if-chains with a fallback) so every status must be
-// mapped explicitly — a new status in the enum fails the typecheck.
 const einreichungStatusPresentation: Record<
   Einreichung["status"],
   { tone: BadgeTone; labelKey: keyof EinreichungStatusBadgeLabels }
