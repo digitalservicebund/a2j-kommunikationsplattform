@@ -3,7 +3,7 @@ import VerfahrenDokumentItem from "~/components/verfahren/VerfahrenDokumentItem"
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import VerfahrenTimelineStep from "~/components/verfahren/VerfahrenTimelineStep";
 import type { EinreichungSummary } from "~/domains/verfahren/application/loadVerfahrenEinreichungenOverview.server";
-import { isEinreichungOpen } from "~/domains/verfahren/services/findOpenEinreichung";
+import { isEinreichungDraft } from "~/domains/verfahren/services/findEinreichungDraft.ts";
 import { useTranslations } from "~/services/translations/context";
 import { formatDate } from "~/utils/dates";
 
@@ -57,7 +57,7 @@ export default function VerfahrenEinreichungTimeline({
               einreichung.eingereichtAm ?? einreichung.erstelltAm,
             )}
             iconClassName={
-              isEinreichungOpen(einreichung)
+              isEinreichungDraft(einreichung)
                 ? "kern-icon--edit"
                 : "kern-icon--check"
             }

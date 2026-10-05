@@ -11,7 +11,7 @@ const OPEN_EINREICHUNG_STATUSES: ReadonlySet<Einreichung["status"]> = new Set<
  * Returns true if the Einreichung is in one of the statuses in which it has
  * not been submitted (eingereicht) yet.
  */
-export function isEinreichungOpen(
+export function isEinreichungDraft(
   einreichung: Pick<Einreichung, "status">,
 ): boolean {
   return OPEN_EINREICHUNG_STATUSES.has(einreichung.status);
@@ -23,15 +23,14 @@ type WithEinreichung = {
 
 /**
  * Finds the Einreichung the user is currently working on: the newest one
- * that is still open. Sorted by `erstelltAm` rather than relying on the
- * API's list order.
+ * that is still open.
  */
-export default function findOpenEinreichung<T extends WithEinreichung>(
+export default function findEinreichungDraft<T extends WithEinreichung>(
   einreichungen: readonly T[],
 ): T | undefined {
   const newestFirst = [...einreichungen].sort((a, b) =>
     b.einreichung.erstelltAm.localeCompare(a.einreichung.erstelltAm),
   );
 
-  return newestFirst.find(({ einreichung }) => isEinreichungOpen(einreichung));
+  return newestFirst.find(({ einreichung }) => isEinreichungDraft(einreichung));
 }

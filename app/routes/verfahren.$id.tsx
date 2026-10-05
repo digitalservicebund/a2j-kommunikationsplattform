@@ -37,7 +37,7 @@ import {
   uploadDokument,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
-import findOpenEinreichung from "~/domains/verfahren/services/findOpenEinreichung";
+import findEinreichungDraft from "~/domains/verfahren/services/findEinreichungDraft.ts";
 import isKlageeinreichung from "~/domains/verfahren/services/isKlageeinreichung";
 import { authMiddleware } from "~/middleware/auth.server";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
@@ -105,10 +105,10 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   // A draft is an Einreichung that's still open (ERSTELLT/FEHLGESCHLAGEN) —
   // the only statuses in which the API lets Dokumente be changed and the
   // Einreichung be submitted. Once submitted, it's listed in the history.
-  const unfinishedKlageeinreichung = findOpenEinreichung(
+  const unfinishedKlageeinreichung = findEinreichungDraft(
     einreichungen.filter(({ einreichung }) => isKlageeinreichung(einreichung)),
   );
-  const unfinishedWeitereEinreichung = findOpenEinreichung(
+  const unfinishedWeitereEinreichung = findEinreichungDraft(
     einreichungen.filter(({ einreichung }) => !isKlageeinreichung(einreichung)),
   );
 
