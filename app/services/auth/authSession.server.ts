@@ -1,12 +1,6 @@
 import { logger } from "~/utils/logger.server";
 import { AuthenticationProvider, AuthenticationResponse } from "./auth.types";
 import { auth } from "./betterAuth.server";
-import { magicLinkClient } from "./magicLinkClient.server";
-
-const OAUTH2_PROVIDERS = new Set<AuthenticationProvider>([
-  AuthenticationProvider.BEA,
-  AuthenticationProvider.KOMPLA_IDP,
-]);
 
 async function getOAuth2Tokens(
   request: Request,
@@ -16,8 +10,8 @@ async function getOAuth2Tokens(
   const accounts = await auth.api.listUserAccounts({
     headers: request.headers,
   });
-  const account = accounts.find((a) => a.providerId === provider);
 
+  const account = accounts.find((a) => a.providerId === provider);
   if (!account) {
     return null;
   }
@@ -39,53 +33,6 @@ async function getOAuth2Tokens(
     };
   } catch (error) {
     logger.error({ error }, "Failed to refresh access token");
-    return null;
-  }
-}
-
-async function getCustomProviderTokens(
-  userId: string,
-  provider: AuthenticationProvider,
-) {
-  const ctx = await auth.$context;
-  const accounts = await ctx.internalAdapter.findAccountByUserId(userId);
-  const account = accounts.find((a) => a.providerId === provider);
-
-  if (!account?.accessToken || !account.refreshToken) {
-    return null;
-  }
-
-  const expiresAt = account.accessTokenExpiresAt?.getTime() ?? 0;
-  const isExpired = expiresAt <= Date.now();
-
-  if (!isExpired || provider === AuthenticationProvider.DEVELOPMENT) {
-    return {
-      accessToken: account.accessToken,
-      idToken: account.idToken ?? undefined,
-      expiresAt,
-      refreshToken: account.refreshToken,
-    };
-  }
-
-  logger.debug("Demo token expired, refreshing");
-  try {
-    const refreshed = await magicLinkClient.refreshAccessToken(
-      account.refreshToken,
-    );
-    await ctx.internalAdapter.updateAccount(account.id, {
-      accessToken: refreshed.accessToken,
-      refreshToken: refreshed.refreshToken,
-      accessTokenExpiresAt: new Date(refreshed.expiresAt),
-    });
-
-    return {
-      accessToken: refreshed.accessToken,
-      idToken: undefined,
-      expiresAt: refreshed.expiresAt,
-      refreshToken: refreshed.refreshToken,
-    };
-  } catch (error) {
-    logger.error({ error }, "Failed to refresh token");
     return null;
   }
 }
@@ -112,35 +59,17 @@ export const getAuthData = async (
   const provider = user.authProvider as AuthenticationProvider;
   const setCookieHeaders = sessionHeaders.getSetCookie();
 
-  if (OAUTH2_PROVIDERS.has(provider)) {
-    const tokens = await getOAuth2Tokens(request, user.id, provider);
-
-    if (!tokens) {
-      return null;
-    }
-
-    return {
-      authenticationTokens: {
-        accessToken: tokens.accessToken,
-        // safeId (see betterAuth.server.ts's mapProfileToUser) is required
-        // as `safe_id` when creating a Verfahren via the KomPla API.
-        idToken: (user as { safeId?: string }).safeId ?? tokens.idToken,
-        expiresAt: tokens.expiresAt,
-      },
-      sessionCookieHeader: [...setCookieHeaders, ...tokens.setCookieHeaders],
-      provider,
-    };
-  }
-
-  const tokens = await getCustomProviderTokens(user.id, provider);
-
+  const tokens = await getOAuth2Tokens(request, user.id, provider);
   if (!tokens) {
     return null;
   }
 
   return {
-    authenticationTokens: tokens,
-    sessionCookieHeader: setCookieHeaders,
+    authenticationTokens: {
+      accessToken: tokens.accessToken,
+      idToken: user?.safeId ?? tokens.idToken,
+    },
+    sessionCookieHeader: [...setCookieHeaders, ...tokens.setCookieHeaders],
     provider,
   };
 };

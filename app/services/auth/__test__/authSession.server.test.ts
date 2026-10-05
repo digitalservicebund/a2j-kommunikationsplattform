@@ -25,13 +25,8 @@ vi.mock("../betterAuth.server", () => {
   };
 });
 
-vi.mock("../magicLinkClient.server", () => ({
-  magicLinkClient: { refreshAccessToken: vi.fn() },
-}));
-
 import { getAuthData } from "../authSession.server";
 import * as betterAuthModule from "../betterAuth.server";
-import { magicLinkClient } from "../magicLinkClient.server";
 
 const mocks = (
   betterAuthModule as unknown as {
@@ -47,7 +42,6 @@ const mocks = (
 
 const emptyHeaders = { getSetCookie: () => [] };
 const futureDate = () => new Date(Date.now() + 60_000);
-const pastDate = () => new Date(Date.now() - 60_000);
 
 function mockSession(user: Record<string, unknown> | null) {
   mocks.getSession.mockResolvedValue({
@@ -132,84 +126,6 @@ describe("getAuthData", () => {
     expect(result?.authenticationTokens.idToken).toBe("DE.KOMPLA_SPT.xyz");
   });
 
-  it("returns tokens for DEMO directly from the account when not expired", async () => {
-    mockSession({ id: "user-3", authProvider: AuthenticationProvider.DEMO });
-    mocks.findAccountByUserId.mockResolvedValue([
-      {
-        id: "account-1",
-        providerId: AuthenticationProvider.DEMO,
-        accessToken: "demo-access-token",
-        refreshToken: "demo-refresh-token",
-        accessTokenExpiresAt: futureDate(),
-      },
-    ]);
-
-    const result = await getAuthData(request);
-
-    expect(mocks.findAccountByUserId).toHaveBeenCalledWith("user-3");
-    expect(magicLinkClient.refreshAccessToken).not.toHaveBeenCalled();
-    expect(result?.authenticationTokens.accessToken).toBe("demo-access-token");
-  });
-
-  it("refreshes the DEMO account when its token is expired", async () => {
-    mockSession({ id: "user-4", authProvider: AuthenticationProvider.DEMO });
-    mocks.findAccountByUserId.mockResolvedValue([
-      {
-        id: "account-2",
-        providerId: AuthenticationProvider.DEMO,
-        accessToken: "old-access-token",
-        refreshToken: "old-refresh-token",
-        accessTokenExpiresAt: pastDate(),
-      },
-    ]);
-    vi.mocked(magicLinkClient.refreshAccessToken).mockResolvedValue({
-      accessToken: "new-access-token",
-      refreshToken: "new-refresh-token",
-      expiresAt: Date.now() + 60_000,
-    });
-
-    const result = await getAuthData(request);
-
-    expect(magicLinkClient.refreshAccessToken).toHaveBeenCalledWith(
-      "old-refresh-token",
-    );
-    expect(mocks.updateAccount).toHaveBeenCalledWith(
-      "account-2",
-      expect.objectContaining({ accessToken: "new-access-token" }),
-    );
-    expect(result?.authenticationTokens.accessToken).toBe("new-access-token");
-  });
-
-  it("never refreshes DEVELOPMENT accounts, even when expired", async () => {
-    mockSession({
-      id: "user-5",
-      authProvider: AuthenticationProvider.DEVELOPMENT,
-    });
-    mocks.findAccountByUserId.mockResolvedValue([
-      {
-        id: "account-3",
-        providerId: AuthenticationProvider.DEVELOPMENT,
-        accessToken: "dev-access-token",
-        refreshToken: "dev-refresh-token",
-        accessTokenExpiresAt: pastDate(),
-      },
-    ]);
-
-    const result = await getAuthData(request);
-
-    expect(magicLinkClient.refreshAccessToken).not.toHaveBeenCalled();
-    expect(result?.authenticationTokens.accessToken).toBe("dev-access-token");
-  });
-
-  it("returns null when the custom provider account has no tokens", async () => {
-    mockSession({ id: "user-6", authProvider: AuthenticationProvider.DEMO });
-    mocks.findAccountByUserId.mockResolvedValue([]);
-
-    const result = await getAuthData(request);
-
-    expect(result).toBeNull();
-  });
-
   it("returns null instead of throwing when getAccessToken fails (e.g. expired refresh token)", async () => {
     mockSession({
       id: "user-7",
@@ -228,24 +144,5 @@ describe("getAuthData", () => {
     );
 
     await expect(getAuthData(request)).resolves.toBeNull();
-  });
-
-  it("returns null instead of throwing when refreshing an expired DEMO token fails", async () => {
-    mockSession({ id: "user-8", authProvider: AuthenticationProvider.DEMO });
-    mocks.findAccountByUserId.mockResolvedValue([
-      {
-        id: "account-4",
-        providerId: AuthenticationProvider.DEMO,
-        accessToken: "old-access-token",
-        refreshToken: "old-refresh-token",
-        accessTokenExpiresAt: pastDate(),
-      },
-    ]);
-    vi.mocked(magicLinkClient.refreshAccessToken).mockRejectedValue(
-      new Error("refresh token expired"),
-    );
-
-    await expect(getAuthData(request)).resolves.toBeNull();
-    expect(mocks.updateAccount).not.toHaveBeenCalled();
   });
 });

@@ -1,7 +1,6 @@
 import { betterAuth } from "better-auth";
 import { serverConfig } from "~/config/config.server";
 import { logger } from "~/utils/logger.server";
-import { customAuthPlugin } from "./plugins/customAuth.server";
 import { exchangedTokenRefreshPlugin } from "./plugins/exchangedTokenRefresh.server";
 import { oAuthProvidersPlugin } from "./plugins/oAuthProviders.server";
 
@@ -76,9 +75,5 @@ export const auth = betterAuth({
     },
   },
 
-  plugins: [
-    oAuthProvidersPlugin(),
-    exchangedTokenRefreshPlugin(),
-    customAuthPlugin(),
-  ],
+  plugins: [oAuthProvidersPlugin(), exchangedTokenRefreshPlugin()],
 });

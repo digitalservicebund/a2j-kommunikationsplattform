@@ -1,10 +1,6 @@
 import type { ActionFunctionArgs } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("~/services/auth/loginAsDeveloper.server", () => ({
-  loginAsDeveloper: vi.fn(),
-}));
-
 vi.mock("~/services/auth/betterAuth.server", () => ({
   auth: { api: { signInSocial: vi.fn() } },
 }));
@@ -21,7 +17,6 @@ import { config } from "~/config/config";
 import { action } from "~/routes/action.login-user";
 import { LoginType } from "~/services/auth/auth.types.ts";
 import { auth } from "~/services/auth/betterAuth.server";
-import { loginAsDeveloper } from "~/services/auth/loginAsDeveloper.server";
 
 describe("/action/login-user action", () => {
   beforeEach(() => {
@@ -31,58 +26,6 @@ describe("/action/login-user action", () => {
       LOG_LEVEL: "info",
       SENTRY_DSN: "",
     });
-  });
-
-  it('redirects to "/" on developer login', async () => {
-    const mockedLogin = vi.mocked(loginAsDeveloper);
-
-    mockedLogin.mockResolvedValue(
-      new Response(null, { status: 302, headers: { Location: "/" } }),
-    );
-
-    const formData = new FormData();
-    formData.append("loginType", LoginType.Developer);
-
-    const request = new Request("http://localhost/action/login-user", {
-      method: "POST",
-      body: formData,
-    });
-
-    const response = await action({
-      request,
-      params: {},
-      context: {},
-    } as ActionFunctionArgs);
-    const res = response as Response;
-
-    expect(res.status).toBe(302);
-    expect(res.headers.get("Location")).toBe("/");
-  });
-
-  it("returns 403 for developer login outside development", async () => {
-    vi.mocked(config).mockReturnValue({
-      ENVIRONMENT: "production",
-      LOG_LEVEL: "info",
-      SENTRY_DSN: "",
-    });
-
-    const formData = new FormData();
-    formData.append("loginType", LoginType.Developer);
-
-    const request = new Request("http://localhost/action/login-user", {
-      method: "POST",
-      body: formData,
-    });
-
-    const response = await action({
-      request,
-      params: {},
-      context: {},
-    } as ActionFunctionArgs);
-    const res = response as Response;
-
-    expect(res.status).toBe(403);
-    expect(loginAsDeveloper).not.toHaveBeenCalled();
   });
 
   it("redirects to the BeA authorization URL and forwards the state/PKCE cookie", async () => {

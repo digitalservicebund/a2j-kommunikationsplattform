@@ -1,13 +1,10 @@
 import { redirect, type ActionFunctionArgs } from "react-router";
-import { config } from "~/config/config";
 import {
   AuthenticationProvider,
   LoginError,
   LoginType,
 } from "~/services/auth/auth.types";
 import { auth } from "~/services/auth/betterAuth.server";
-import { loginAsDeveloper } from "~/services/auth/loginAsDeveloper.server";
-import { logger } from "~/utils/logger.server";
 
 const errorStatusByProvider: Record<
   AuthenticationProvider.BEA | AuthenticationProvider.KOMPLA_IDP,
@@ -43,33 +40,19 @@ async function startOAuth2Login(
 }
 
 /**
- * /action/login-user
- *
- * Initiates OAuth2 login on beA-Portal (BRAK IdP) or KomPla IdP, or
- * establishes a Better Auth session directly for the Developer bypass.
+ * Initiates the OAuth2 login flow on the KomPla IdP or one of the supported
+ * third-party identity providers (such as BRAK IdP / beA).
  */
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.clone().formData();
   const loginType = formData.get("loginType") as LoginType;
 
-  logger.debug({ loginType }, "Login action invoked");
-
-  if (loginType === LoginType.Developer) {
-    if (config().ENVIRONMENT !== "development") {
-      return new Response("Developer login is only available in development", {
-        status: 403,
-      });
-    }
-    return await loginAsDeveloper();
+  switch (loginType) {
+    case LoginType.BeA:
+      return await startOAuth2Login(request, AuthenticationProvider.BEA);
+    case LoginType.KomplaIdp:
+      return await startOAuth2Login(request, AuthenticationProvider.KOMPLA_IDP);
+    default:
+      return new Response("Invalid login type", { status: 400 });
   }
-
-  if (loginType === LoginType.BeA) {
-    return await startOAuth2Login(request, AuthenticationProvider.BEA);
-  }
-
-  if (loginType === LoginType.KomplaIdp) {
-    return await startOAuth2Login(request, AuthenticationProvider.KOMPLA_IDP);
-  }
-
-  return new Response("Invalid login type", { status: 400 });
 };
