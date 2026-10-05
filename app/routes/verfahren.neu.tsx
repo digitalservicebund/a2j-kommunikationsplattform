@@ -32,7 +32,6 @@ import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/s
 import { createVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { VerfahrenAendernInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.input.schema";
 import { VerfahrenAendernRequestDTO } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.request.schema";
-import findKlageschrift from "~/domains/verfahren/services/findKlageschrift";
 import { authMiddleware } from "~/middleware/auth.server";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
@@ -78,6 +77,12 @@ function getVerfahrenContextFromUrl(url: URL): {
 function buildRouteUrl(verfahrenId: string, einreichungId: string): string {
   const params = new URLSearchParams({ verfahrenId, einreichungId });
   return `/verfahren/neu?${params.toString()}`;
+}
+
+function findKlageschrift<T extends Pick<Dokument, "typ">>(
+  dokumente: readonly T[],
+): T | undefined {
+  return dokumente.find((dokument) => dokument.typ === "SCHRIFTSTUECK");
 }
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
