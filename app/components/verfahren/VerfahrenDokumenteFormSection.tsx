@@ -8,7 +8,7 @@ import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinr
 import { AnlagenDokumentTypeSchema } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { useTranslations } from "~/services/translations/context";
 
-type VerfahrenDocumentsFormSectionProps = {
+type VerfahrenDokumenteFormSectionProps = {
   id?: string;
   dokumente: Dokument[];
   uploadedDokumente: Dokument[];
@@ -22,7 +22,7 @@ type VerfahrenDocumentsFormSectionProps = {
   onDeleteDokument: (dokument: Dokument) => void;
 };
 
-export default function VerfahrenDocumentsFormSection({
+export default function VerfahrenDokumenteFormSection({
   id,
   dokumente,
   uploadedDokumente,
@@ -34,7 +34,7 @@ export default function VerfahrenDocumentsFormSection({
   onDokumentTypeChange,
   dokumentTypeError,
   onDeleteDokument,
-}: Readonly<VerfahrenDocumentsFormSectionProps>) {
+}: Readonly<VerfahrenDokumenteFormSectionProps>) {
   const { routes, shared } = useTranslations();
 
   return (

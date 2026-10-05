@@ -5,7 +5,7 @@ import { createRef } from "react";
 import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
 import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
-import VerfahrenDocumentsFormSection from "../VerfahrenDocumentsFormSection";
+import VerfahrenDokumenteFormSection from "../VerfahrenDokumenteFormSection.tsx";
 
 const buildDokument = (overrides: Partial<Dokument> = {}): Dokument => ({
   id: "dok-1",
@@ -37,10 +37,10 @@ const baseProps = {
   onDeleteDokument: vi.fn(),
 };
 
-describe("VerfahrenDocumentsFormSection", () => {
+describe("VerfahrenDokumenteFormSection", () => {
   it("renders the upload controls", () => {
     const { getByLabelText, getByRole } = renderWithTestTranslations(
-      <VerfahrenDocumentsFormSection
+      <VerfahrenDokumenteFormSection
         {...baseProps}
         dokumente={[]}
         uploadedDokumente={[]}
@@ -53,7 +53,7 @@ describe("VerfahrenDocumentsFormSection", () => {
 
   it("doesn't offer uploading another Schriftstück, since the Klageschrift is the only one", () => {
     const { getByRole, queryByRole } = renderWithTestTranslations(
-      <VerfahrenDocumentsFormSection
+      <VerfahrenDokumenteFormSection
         {...baseProps}
         dokumente={[]}
         uploadedDokumente={[]}
@@ -72,7 +72,7 @@ describe("VerfahrenDocumentsFormSection", () => {
     const dokument = buildDokument();
 
     const { findByRole } = renderWithTestTranslations(
-      <VerfahrenDocumentsFormSection
+      <VerfahrenDokumenteFormSection
         {...baseProps}
         dokumente={[dokument, buildDokument({ id: "dok-2" })]}
         uploadedDokumente={[dokument]}

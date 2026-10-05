@@ -19,7 +19,7 @@ import { PageMetadata } from "~/components/PageMetadata";
 import Progress from "~/components/Progress";
 import VerfahrenBeklagterSection from "~/components/verfahren/VerfahrenBeklagterSection";
 import VerfahrenDetailsFormSection from "~/components/verfahren/VerfahrenDetailsFormSection";
-import VerfahrenDocumentsFormSection from "~/components/verfahren/VerfahrenDocumentsFormSection";
+import VerfahrenDokumenteFormSection from "~/components/verfahren/VerfahrenDokumenteFormSection.tsx";
 import VerfahrenKlaegerSection from "~/components/verfahren/VerfahrenKlaegerSection";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import { config } from "~/config/config";
@@ -813,7 +813,7 @@ export default function VerfahrenNeuBearbeiten() {
                     gerichtePromise={gerichte}
                   />
 
-                  <VerfahrenDocumentsFormSection
+                  <VerfahrenDokumenteFormSection
                     id="dokumente"
                     dokumente={dokumente}
                     uploadedDokumente={uploadedDokumente}
