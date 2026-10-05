@@ -1,13 +1,17 @@
 import { describe, expect, test } from "vitest";
 import {
-  getDokumentStatusPresentation,
+  getEinreichungStatusPresentation,
   getVerfahrenStatusPresentation,
 } from "../statusPresentation";
 
-const dokumentStatusBadgeLabels = {
+const einreichungStatusBadgeLabels = {
   erstellt: "erstellt",
+  beantragt: "beantragt",
+  versendet: "versendet",
   eingereicht: "eingereicht",
-  wirdValidiert: "wirdValidiert",
+  veraktet: "veraktet",
+  fehlgeschlagen: "fehlgeschlagen",
+  geloescht: "geloescht",
 };
 
 const verfahrenStatusBadgeLabels = {
@@ -19,63 +23,29 @@ const verfahrenStatusBadgeLabels = {
 };
 
 describe("statusPresentation", () => {
-  test("maps dokument status", () => {
+  test.each([
+    ["ERSTELLT", "info", "erstellt"],
+    ["BEANTRAGT", "info", "beantragt"],
+    ["VERSENDET", "info", "versendet"],
+    ["EINGEREICHT", "success", "eingereicht"],
+    ["VERAKTET", "success", "veraktet"],
+    ["FEHLGESCHLAGEN", "danger", "fehlgeschlagen"],
+    ["GELOESCHT", "danger", "geloescht"],
+  ] as const)("maps einreichung status %s", (status, tone, label) => {
     expect(
-      getDokumentStatusPresentation("ERSTELLT", dokumentStatusBadgeLabels),
-    ).toEqual({
-      badgeClassModifier: "info",
-      label: "erstellt",
-    });
-    expect(
-      getDokumentStatusPresentation("EINGEREICHT", dokumentStatusBadgeLabels),
-    ).toEqual({
-      badgeClassModifier: "success",
-      label: "eingereicht",
-    });
-    expect(
-      getDokumentStatusPresentation("OTHER", dokumentStatusBadgeLabels),
-    ).toEqual({
-      badgeClassModifier: "warning",
-      label: "wirdValidiert",
-    });
+      getEinreichungStatusPresentation(status, einreichungStatusBadgeLabels),
+    ).toEqual({ badgeClassModifier: tone, label });
   });
 
-  test("maps verfahren status", () => {
+  test.each([
+    ["ERSTELLT", "info", "erstellt"],
+    ["EINGEREICHT", "success", "eingereicht"],
+    ["GERICHTSVERFAHRENANGELEGT", "success", "gerichtsverfahrenAngelegt"],
+    ["ABGESCHLOSSEN", "success", "abgeschlossen"],
+    ["GELOESCHT", "danger", "geloescht"],
+  ] as const)("maps verfahren status %s", (status, tone, label) => {
     expect(
-      getVerfahrenStatusPresentation("ERSTELLT", verfahrenStatusBadgeLabels),
-    ).toEqual({
-      badgeClassModifier: "info",
-      label: "erstellt",
-    });
-    expect(
-      getVerfahrenStatusPresentation("EINGEREICHT", verfahrenStatusBadgeLabels),
-    ).toEqual({
-      badgeClassModifier: "success",
-      label: "eingereicht",
-    });
-    expect(
-      getVerfahrenStatusPresentation(
-        "GERICHTSVERFAHRENANGELEGT",
-        verfahrenStatusBadgeLabels,
-      ),
-    ).toEqual({
-      badgeClassModifier: "success",
-      label: "gerichtsverfahrenAngelegt",
-    });
-    expect(
-      getVerfahrenStatusPresentation(
-        "ABGESCHLOSSEN",
-        verfahrenStatusBadgeLabels,
-      ),
-    ).toEqual({
-      badgeClassModifier: "success",
-      label: "abgeschlossen",
-    });
-    expect(
-      getVerfahrenStatusPresentation("GELOESCHT", verfahrenStatusBadgeLabels),
-    ).toEqual({
-      badgeClassModifier: "danger",
-      label: "geloescht",
-    });
+      getVerfahrenStatusPresentation(status, verfahrenStatusBadgeLabels),
+    ).toEqual({ badgeClassModifier: tone, label });
   });
 });

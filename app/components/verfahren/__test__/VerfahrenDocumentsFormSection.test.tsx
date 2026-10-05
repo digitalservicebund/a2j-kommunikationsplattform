@@ -5,7 +5,7 @@ import { createRef } from "react";
 import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
 import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
-import VerfahrenDocumentsFormSection from "../VerfahrenDocumentsFormSection";
+import VerfahrenDokumenteFormSection from "../VerfahrenDokumenteFormSection.tsx";
 
 const buildDokument = (overrides: Partial<Dokument> = {}): Dokument => ({
   id: "dok-1",
@@ -37,10 +37,10 @@ const baseProps = {
   onDeleteDokument: vi.fn(),
 };
 
-describe("VerfahrenDocumentsFormSection", () => {
+describe("VerfahrenDokumenteFormSection", () => {
   it("renders the upload controls", () => {
     const { getByLabelText, getByRole } = renderWithTestTranslations(
-      <VerfahrenDocumentsFormSection
+      <VerfahrenDokumenteFormSection
         {...baseProps}
         dokumente={[]}
         uploadedDokumente={[]}
@@ -51,13 +51,28 @@ describe("VerfahrenDocumentsFormSection", () => {
     expect(getByRole("button", { name: "Hochladen" })).toBeInTheDocument();
   });
 
+  it("doesn't offer uploading another Schriftstück, since the Klageschrift is the only one", () => {
+    const { getByRole, queryByRole } = renderWithTestTranslations(
+      <VerfahrenDokumenteFormSection
+        {...baseProps}
+        dokumente={[]}
+        uploadedDokumente={[]}
+      />,
+    );
+
+    expect(getByRole("option", { name: "Anhang" })).toBeInTheDocument();
+    expect(
+      queryByRole("option", { name: "Schriftstück" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("renders uploaded documents and calls onDeleteDokument when deleted", async () => {
     const user = userEvent.setup();
     const onDeleteDokument = vi.fn();
     const dokument = buildDokument();
 
     const { findByRole } = renderWithTestTranslations(
-      <VerfahrenDocumentsFormSection
+      <VerfahrenDokumenteFormSection
         {...baseProps}
         dokumente={[dokument, buildDokument({ id: "dok-2" })]}
         uploadedDokumente={[dokument]}

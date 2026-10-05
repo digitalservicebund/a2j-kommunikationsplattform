@@ -2,6 +2,7 @@ import type { Dokument } from "~/domains/verfahren/entities/dokument/dokument.en
 import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import type { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
+import isKlageeinreichung from "~/domains/verfahren/services/isKlageeinreichung";
 import { AuthenticationResponse } from "~/services/auth/auth.types";
 import loadVerfahrenEinreichungenOverview from "./loadVerfahrenEinreichungenOverview.server";
 
@@ -26,16 +27,20 @@ export default async function loadVerfahrenEinreichungBundle(
     authData,
     verfahrenId,
   );
-  const initialEinreichungData = einreichungen[0];
+  // A Verfahren can also hold Weitere Einreichungen, and the API's list order
+  // isn't guaranteed — so pick the Klageeinreichung by name, not by position.
+  const klageeinreichungData = einreichungen.find(({ einreichung }) =>
+    isKlageeinreichung(einreichung),
+  );
 
-  if (!initialEinreichungData) {
+  if (!klageeinreichungData) {
     throw new Error("No Einreichung could be fetched");
   }
 
   return {
     verfahren,
-    einreichung: initialEinreichungData.einreichung,
-    dokumente: initialEinreichungData.dokumente,
-    einreichungId: initialEinreichungData.einreichung.id,
+    einreichung: klageeinreichungData.einreichung,
+    dokumente: klageeinreichungData.dokumente,
+    einreichungId: klageeinreichungData.einreichung.id,
   };
 }

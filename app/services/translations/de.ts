@@ -72,8 +72,7 @@ export const de = {
       selectDokumentType: {
         label: "Dateityp",
         hint: "Wählen Sie einen Dateityp zur besseren Zuordnung",
-        error:
-          "Bitte wählen Sie zwischen einem Schriftstück, einem Anhang oder einer XJustiz Datei.",
+        error: "Bitte wählen Sie einen Dateityp aus.",
       },
       uploadDokument: {
         label: "Datei hochladen",
@@ -95,6 +94,8 @@ export const de = {
         uploadFailed: "Das Dokument konnte nicht hochgeladen werden.",
         submissionFailed: "Die Klage konnte nicht gespeichert werden.",
         einreichungFailed: "Die Einreichung konnte nicht übermittelt werden.",
+        createEinreichungFailed:
+          "Die weitere Einreichung konnte nicht erstellt werden.",
         belegDownloadFailed: "Der Beleg konnte nicht heruntergeladen werden.",
         unknown: "Ein unbekannter Fehler ist aufgetreten.",
       },
@@ -142,15 +143,14 @@ export const de = {
         abgeschlossen: "Abgeschlossen",
         geloescht: "Gelöscht",
       },
-      dokument: {
-        erstellt: "Erstellt",
-        eingereicht: "Eingereicht",
-        wirdValidiert: "Wird validiert",
-      },
       einreichung: {
-        gruen: "Grün",
-        rot: "Rot",
-        gelb: "Gelb",
+        erstellt: "Erstellt",
+        beantragt: "Beantragt",
+        versendet: "Versendet",
+        eingereicht: "Eingereicht",
+        veraktet: "Veraktet",
+        fehlgeschlagen: "Fehlgeschlagen",
+        geloescht: "Gelöscht",
       },
       virenScan: {
         sauber: "Geprüft und virenfrei",
@@ -375,6 +375,22 @@ export const de = {
     },
     verfahrenId: {
       headline: "Verlauf der Akte",
+      einreichungHistory: {
+        dokumenteCountSingular: "{{count}} Dokument",
+        dokumenteCount: "{{count}} Dokumente",
+      },
+      weitereEinreichung: {
+        headline: "Neue Einreichung erstellen",
+        artLabel: "Art der Einreichung",
+        sichtbarkeit: {
+          label: "Sichtbarkeit",
+          alleParteien: "Alle Parteien",
+          nurGerichtUndPartei: "Nur Gericht und zugeordnete Partei",
+        },
+        upload: "Hochladen",
+        uploading: "Wird hochgeladen...",
+        submit: "Einreichen & Abgabe ans Gericht",
+      },
     },
     beitreten: {
       pageTitle: "Beitrittscode einlösen",

@@ -5,9 +5,10 @@ import InputFile from "~/components/InputFile";
 import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
 import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
 import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import { AnlagenDokumentTypeSchema } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { useTranslations } from "~/services/translations/context";
 
-type VerfahrenDocumentsFormSectionProps = {
+type VerfahrenDokumenteFormSectionProps = {
   id?: string;
   dokumente: Dokument[];
   uploadedDokumente: Dokument[];
@@ -21,7 +22,7 @@ type VerfahrenDocumentsFormSectionProps = {
   onDeleteDokument: (dokument: Dokument) => void;
 };
 
-export default function VerfahrenDocumentsFormSection({
+export default function VerfahrenDokumenteFormSection({
   id,
   dokumente,
   uploadedDokumente,
@@ -33,7 +34,7 @@ export default function VerfahrenDocumentsFormSection({
   onDokumentTypeChange,
   dokumentTypeError,
   onDeleteDokument,
-}: Readonly<VerfahrenDocumentsFormSectionProps>) {
+}: Readonly<VerfahrenDokumenteFormSectionProps>) {
   const { routes, shared } = useTranslations();
 
   return (
@@ -116,6 +117,7 @@ export default function VerfahrenDocumentsFormSection({
             <VerfahrenDokumentTypeSelect
               label={shared.form.selectDokumentType.label}
               id="type"
+              types={AnlagenDokumentTypeSchema.options}
               placeholder={shared.form.select.placeholder}
               onChange={(e) => onDokumentTypeChange(e.target.value)}
               selectedValue={selectedDokumentType}

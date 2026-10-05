@@ -19,7 +19,7 @@ import { PageMetadata } from "~/components/PageMetadata";
 import Progress from "~/components/Progress";
 import VerfahrenBeklagterSection from "~/components/verfahren/VerfahrenBeklagterSection";
 import VerfahrenDetailsFormSection from "~/components/verfahren/VerfahrenDetailsFormSection";
-import VerfahrenDocumentsFormSection from "~/components/verfahren/VerfahrenDocumentsFormSection";
+import VerfahrenDokumenteFormSection from "~/components/verfahren/VerfahrenDokumenteFormSection.tsx";
 import VerfahrenKlaegerSection from "~/components/verfahren/VerfahrenKlaegerSection";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import { config } from "~/config/config";
@@ -31,7 +31,10 @@ import loadVerfahrenEinreichungBundle, {
 import regenerateEinreichungXJustiz from "~/domains/verfahren/application/regenerateEinreichungXJustiz.server";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/application/routeContext.server";
 import { CodeWertSchema } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
-import { DokumentTypeSchema } from "~/domains/verfahren/entities/dokument/dokument.entity";
+import {
+  DokumentTypeSchema,
+  AnlagenDokumentTypeSchema,
+} from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { fetchLatestBelegForEinreichung } from "~/domains/verfahren/infrastructure/repositories/belegRepository.server";
 import {
   deleteDokument,
@@ -99,7 +102,9 @@ type SubmitState = "idle" | "submit" | "upload" | "delete";
 type DokumentActionData = { formType?: SubmitState };
 
 const DokumentUploadSchema = z.object({
-  type: DokumentTypeSchema,
+  // we will exclude SCHRIFTSTUECK type from here
+  // as it's being handled in the previous step /neu
+  type: AnlagenDokumentTypeSchema,
   file: z.file().min(1),
 });
 
@@ -643,7 +648,7 @@ export default function VerfahrenNeuBearbeiten() {
   const [hasLawyer, setHasLawyer] = useState(hasExistingLawyer);
 
   const uploadedDokumente = dokumente.filter((dokument) =>
-    canDeleteDokument(dokument),
+    canDeleteDokument(dokument, einreichung),
   );
 
   const handleDeleteDokument = (dokument: Dokument) => {
@@ -808,7 +813,7 @@ export default function VerfahrenNeuBearbeiten() {
                     gerichtePromise={gerichte}
                   />
 
-                  <VerfahrenDocumentsFormSection
+                  <VerfahrenDokumenteFormSection
                     id="dokumente"
                     dokumente={dokumente}
                     uploadedDokumente={uploadedDokumente}

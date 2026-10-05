@@ -43,7 +43,7 @@ describe("loadVerfahrenEinreichungBundle", () => {
 
     mocks.fetchVerfahrenById.mockResolvedValueOnce(verfahren);
     mocks.fetchEinreichungenById.mockResolvedValueOnce({
-      elemente: [{ id: "e-1" }],
+      elemente: [{ id: "e-1", name: "Klageeinreichung" }],
     });
     mocks.fetchEinreichungStatus.mockResolvedValueOnce(einreichungsStatus);
     mocks.fetchDokumente.mockResolvedValueOnce({ elemente: dokumente });
@@ -69,11 +69,42 @@ describe("loadVerfahrenEinreichungBundle", () => {
       verfahren,
       einreichung: {
         id: "e-1",
+        name: "Klageeinreichung",
         einreichungsStatus,
       },
       dokumente,
       einreichungId: "e-1",
     });
+  });
+
+  test("picks the Klageeinreichung even when a Weitere Einreichung is listed first", async () => {
+    mocks.fetchVerfahrenById.mockResolvedValueOnce({ id: "v-1" });
+    mocks.fetchEinreichungenById.mockResolvedValueOnce({
+      elemente: [
+        { id: "e-2", name: "Schriftsatz" },
+        { id: "e-1", name: "Klageeinreichung" },
+      ],
+    });
+    mocks.fetchEinreichungStatus.mockResolvedValue({ status: "GRUEN" });
+    mocks.fetchDokumente.mockResolvedValue({ elemente: [] });
+
+    const result = await loadVerfahrenEinreichungBundle(mockAuthData, "v-1");
+
+    expect(result.einreichungId).toBe("e-1");
+    expect(result.einreichung.name).toBe("Klageeinreichung");
+  });
+
+  test("throws when no Klageeinreichung exists", async () => {
+    mocks.fetchVerfahrenById.mockResolvedValueOnce({ id: "v-1" });
+    mocks.fetchEinreichungenById.mockResolvedValueOnce({
+      elemente: [{ id: "e-2", name: "Schriftsatz" }],
+    });
+    mocks.fetchEinreichungStatus.mockResolvedValue({ status: "GRUEN" });
+    mocks.fetchDokumente.mockResolvedValue({ elemente: [] });
+
+    await expect(
+      loadVerfahrenEinreichungBundle(mockAuthData, "v-1"),
+    ).rejects.toThrow("No Einreichung could be fetched");
   });
 
   test("throws when no einreichung exists", async () => {

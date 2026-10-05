@@ -14,7 +14,7 @@ describe("VerfahrenDokumentTypeSelect", () => {
     onChange: vi.fn(),
   };
 
-  it("renders all dokument type options", () => {
+  it("renders the uploadable dokument type options", () => {
     renderWithTestTranslations(
       <VerfahrenDokumentTypeSelect {...defaultProps} />,
     );
@@ -23,7 +23,36 @@ describe("VerfahrenDokumentTypeSelect", () => {
     expect(
       screen.getByRole("option", { name: "Schriftstück" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "XJustiz" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: "Signaturdatei" }),
+    ).toBeInTheDocument();
+  });
+
+  it("offers only the given types", () => {
+    renderWithTestTranslations(
+      <VerfahrenDokumentTypeSelect
+        {...defaultProps}
+        types={["ANHANG", "SIGNATURDATEI"]}
+      />,
+    );
+
+    expect(screen.getByRole("option", { name: "Anhang" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: "Signaturdatei" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("option", { name: "Schriftstück" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("doesn't offer the system-generated XJustiz type", () => {
+    renderWithTestTranslations(
+      <VerfahrenDokumentTypeSelect {...defaultProps} />,
+    );
+
+    expect(
+      screen.queryByRole("option", { name: "XJustiz" }),
+    ).not.toBeInTheDocument();
   });
 
   it("calls onChange handler when selection changes", async () => {
@@ -39,7 +68,7 @@ describe("VerfahrenDokumentTypeSelect", () => {
     );
 
     const select = screen.getByRole("combobox");
-    await user.selectOptions(select, "XJUSTIZ");
+    await user.selectOptions(select, "ANHANG");
 
     expect(handleChange).toHaveBeenCalledTimes(1);
     expect(handleChange).toHaveBeenCalledWith(expect.any(Object));

@@ -25,6 +25,12 @@ export default defineConfig((config) => {
       ),
       tailwindcss(),
     ],
-    server: { port: 3000 },
+    server: {
+      port: 3000,
+      watch: {
+        usePolling: true,
+        interval: 120,
+      },
+    },
   };
 });

@@ -1,3 +1,4 @@
+import { data } from "react-router";
 import { ValidationProblemDetails } from "~/utils/problemDetails.schema";
 
 export class ApiError extends Error {
@@ -25,4 +26,17 @@ export function isApiError(e: unknown): e is ApiError {
 
 export function isClientSideApiError(e: unknown): e is ApiError {
   return isApiError(e) && e.status >= 400 && e.status < 500;
+}
+
+/**
+ * Turns an API 404 into a route 404 so the ErrorBoundary renders the
+ * "page not found" content instead of a generic server error. Meant to be
+ * used as a `.catch` handler in loaders; any other error is rethrown as is.
+ */
+export function rethrowApiNotFoundAsRouteError(error: unknown): never {
+  if (error instanceof ApiError && error.status === 404) {
+    throw data(null, { status: 404 });
+  }
+
+  throw error;
 }
