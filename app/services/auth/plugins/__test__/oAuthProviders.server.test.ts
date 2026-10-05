@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { AuthenticationProvider } from "../auth.types";
+import { AuthenticationProvider } from "../../auth.types";
 import {
   exchangeForKomPlaIdpTokens,
   makeGetTokenFromBrakIdp,
   makeGetUserInfo,
-} from "../oAuth.server";
+} from "../oAuthProviders.server";
 
 const mocks = vi.hoisted(() => ({
   fetch: vi.fn(),

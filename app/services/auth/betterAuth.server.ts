@@ -1,10 +1,9 @@
 import { betterAuth } from "better-auth";
-import { genericOAuth } from "better-auth/plugins/generic-oauth";
 import { serverConfig } from "~/config/config.server";
 import { logger } from "~/utils/logger.server";
-import { brakTokenExchangePlugin } from "./brakTokenExchangePlugin.server";
-import { customAuthPlugin } from "./customAuthPlugin.server";
-import { brakIdpOAuthConfig, komplaIdpOAuthConfig } from "./oAuth.server";
+import { customAuthPlugin } from "./plugins/customAuth.server";
+import { exchangedTokenRefreshPlugin } from "./plugins/exchangedTokenRefresh.server";
+import { oAuthProvidersPlugin } from "./plugins/oAuthProviders.server";
 
 const pinoLevelByBetterAuthLevel = {
   debug: "debug",
@@ -78,8 +77,8 @@ export const auth = betterAuth({
   },
 
   plugins: [
-    genericOAuth({ config: [brakIdpOAuthConfig(), komplaIdpOAuthConfig()] }),
-    brakTokenExchangePlugin(),
+    oAuthProvidersPlugin(),
+    exchangedTokenRefreshPlugin(),
     customAuthPlugin(),
   ],
 });
