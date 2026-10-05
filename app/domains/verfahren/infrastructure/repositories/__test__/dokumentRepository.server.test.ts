@@ -1,5 +1,5 @@
+import { makeAuthSession } from "tests/utils/factories/authSession";
 import { beforeEach, describe, expect, it, test, vi } from "vitest";
-import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
 import {
   createDokument,
   deleteDokument,
@@ -41,7 +41,7 @@ describe("fetchDokument", () => {
       eTag: 'W/"1"',
     });
 
-    const result = await fetchDokument(mockAuthData, {
+    const result = await fetchDokument(makeAuthSession(), {
       verfahrenId: "v-1",
       einreichungId: "e-1",
       id: "d-1",
@@ -49,7 +49,7 @@ describe("fetchDokument", () => {
 
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1",
         includeResponseETag: true,
       }),
@@ -63,14 +63,14 @@ describe("fetchDokumente", () => {
     const dokumente = { elemente: [] };
     mocks.apiRequest.mockResolvedValueOnce(dokumente);
 
-    const result = await fetchDokumente(mockAuthData, {
+    const result = await fetchDokumente(makeAuthSession(), {
       verfahrenId: "v-1",
       einreichungId: "e-1",
     });
 
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente",
         errorMessage:
           "Dokumente for Einreichung with id e-1 could not be fetched.",
@@ -89,7 +89,7 @@ describe("fetchDokumentValidierungsstatus", () => {
     };
     mocks.apiRequest.mockResolvedValueOnce(status);
 
-    const result = await fetchDokumentValidierungsstatus(mockAuthData, {
+    const result = await fetchDokumentValidierungsstatus(makeAuthSession(), {
       verfahrenId: "v-1",
       einreichungId: "e-1",
       id: "d-1",
@@ -97,7 +97,7 @@ describe("fetchDokumentValidierungsstatus", () => {
 
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1/validierungsstatus",
         errorMessage:
           "Validierungsstatus for Dokument with id d-1 could not be fetched.",
@@ -111,7 +111,7 @@ describe("deleteDokument", () => {
   it("calls DELETE endpoint and returns success result", async () => {
     mocks.apiRequest.mockResolvedValueOnce({ ok: true });
 
-    const result = await deleteDokument(mockAuthData, {
+    const result = await deleteDokument(makeAuthSession(), {
       id: "d-1",
       verfahrenId: "v-1",
       einreichungId: "e-1",
@@ -121,7 +121,7 @@ describe("deleteDokument", () => {
     expect(result).toEqual({ success: true });
 
     expect(mocks.apiRequest).toHaveBeenCalledWith({
-      authData: mockAuthData,
+      authSession: makeAuthSession(),
       path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1",
       method: "DELETE",
       eTag: 'W/"0"',
@@ -133,7 +133,7 @@ describe("deleteDokument", () => {
   it("returns error on 412", async () => {
     mocks.apiRequest.mockResolvedValueOnce({ ok: false, status: 412 });
 
-    const result = await deleteDokument(mockAuthData, {
+    const result = await deleteDokument(makeAuthSession(), {
       id: "d-1",
       verfahrenId: "v-1",
       einreichungId: "e-1",
@@ -146,7 +146,7 @@ describe("deleteDokument", () => {
   it("returns error for other non-success responses", async () => {
     mocks.apiRequest.mockResolvedValueOnce({ ok: false, status: 500 });
 
-    const result = await deleteDokument(mockAuthData, {
+    const result = await deleteDokument(makeAuthSession(), {
       id: "d-1",
       verfahrenId: "v-1",
       einreichungId: "e-1",
@@ -180,7 +180,7 @@ describe("deleteDokumentFromEinreichung", () => {
 
   function deleteDokumentWithId(dokumentId: string) {
     return deleteDokumentFromEinreichung({
-      authData: mockAuthData,
+      authSession: makeAuthSession(),
       verfahrenId: "v-1",
       einreichungId: "e-1",
       dokumentId,
@@ -189,7 +189,7 @@ describe("deleteDokumentFromEinreichung", () => {
 
   test("returns invalid-form-data when form data is missing", async () => {
     const result = await deleteDokumentFromEinreichung({
-      authData: mockAuthData,
+      authSession: makeAuthSession(),
       verfahrenId: "v-1",
       einreichungId: null,
       dokumentId: "d-2",
@@ -304,7 +304,7 @@ describe("createDokument", () => {
       eTag: 'W/"0"',
     });
 
-    const result = await createDokument(mockAuthData, {
+    const result = await createDokument(makeAuthSession(), {
       verfahrenId: "v-1",
       einreichungId: "e-1",
       typ: "ANHANG",
@@ -314,7 +314,7 @@ describe("createDokument", () => {
 
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente",
         method: "POST",
         body: {
@@ -353,7 +353,7 @@ describe("uploadDokumentDatei", () => {
     mocks.apiRequest.mockResolvedValueOnce(dokument);
     const file = new File(["abc"], "test.txt", { type: "text/plain" });
 
-    const result = await uploadDokumentDatei(mockAuthData, {
+    const result = await uploadDokumentDatei(makeAuthSession(), {
       verfahrenId: "v-1",
       einreichungId: "e-1",
       id: "d-1",
@@ -410,7 +410,7 @@ describe("uploadDokument", () => {
     const file = new File(["abc"], "test.txt", { type: "text/plain" });
 
     const result = await uploadDokument(
-      mockAuthData,
+      makeAuthSession(),
       "v-1",
       "e-1",
       file,
@@ -450,7 +450,7 @@ describe("uploadDokument", () => {
     const file = new File(["abc"], "test.txt", { type: "text/plain" });
 
     await uploadDokument(
-      mockAuthData,
+      makeAuthSession(),
       "v-1",
       "e-1",
       file,
@@ -489,7 +489,7 @@ describe("uploadDokument", () => {
     const file = new File(["abc"], "test.txt", { type: "text/plain" });
 
     await expect(
-      uploadDokument(mockAuthData, "v-1", "e-1", file, "ANHANG"),
+      uploadDokument(makeAuthSession(), "v-1", "e-1", file, "ANHANG"),
     ).rejects.toBe(uploadError);
 
     expect(mocks.loggerError).not.toHaveBeenCalled();
@@ -524,7 +524,7 @@ describe("uploadDokument", () => {
     const file = new File(["abc"], "test.txt", { type: "text/plain" });
 
     await expect(
-      uploadDokument(mockAuthData, "v-1", "e-1", file, "ANHANG"),
+      uploadDokument(makeAuthSession(), "v-1", "e-1", file, "ANHANG"),
     ).rejects.toBe(uploadError);
     expect(mocks.loggerError).toHaveBeenCalledWith(
       { verfahrenId: "v-1", einreichungId: "e-1", dokumentId: "d-1" },
@@ -551,7 +551,7 @@ describe("uploadDokument", () => {
     const file = new File(["abc"], "test.txt", { type: "text/plain" });
 
     await expect(
-      uploadDokument(mockAuthData, "v-1", "e-1", file, "ANHANG"),
+      uploadDokument(makeAuthSession(), "v-1", "e-1", file, "ANHANG"),
     ).rejects.toBe(uploadError);
     expect(mocks.loggerError).toHaveBeenCalledWith(
       { verfahrenId: "v-1", einreichungId: "e-1", dokumentId: "d-1" },

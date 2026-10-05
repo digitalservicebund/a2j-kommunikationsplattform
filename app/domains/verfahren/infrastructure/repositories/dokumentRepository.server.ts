@@ -14,7 +14,7 @@ import {
 } from "~/domains/verfahren/infrastructure/schemas/dokument.schema";
 import { ValidierungsstatusSchema } from "~/domains/verfahren/infrastructure/schemas/validierungsstatus.schema";
 import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { AuthSession } from "~/services/auth/auth.types";
 import { logger } from "~/utils/logger.server";
 
 type FetchDokumentOptions = {
@@ -29,11 +29,11 @@ export type FetchDokumentResult = {
 };
 
 export async function fetchDokument(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: FetchDokumentOptions,
 ): Promise<FetchDokumentResult> {
   const { data, eTag } = await apiRequest<Dokument>({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.einreichungId}/dokumente/${options.id}`,
     schema: DokumentSchema,
     includeResponseETag: true,
@@ -52,11 +52,11 @@ type FetchDokumenteOptions = {
 };
 
 export async function fetchDokumente(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: FetchDokumenteOptions,
 ): Promise<z.infer<typeof DokumenteSchema>> {
   return apiRequest({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.einreichungId}/dokumente`,
     schema: DokumenteSchema,
     errorMessage: `Dokumente for Einreichung with id ${options.einreichungId} could not be fetched.`,
@@ -70,11 +70,11 @@ type FetchDokumentValidierungsstatusOptions = {
 };
 
 export async function fetchDokumentValidierungsstatus(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: FetchDokumentValidierungsstatusOptions,
 ): Promise<Validierungsstatus> {
   return apiRequest({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.einreichungId}/dokumente/${options.id}/validierungsstatus`,
     schema: ValidierungsstatusSchema,
     errorMessage: `Validierungsstatus for Dokument with id ${options.id} could not be fetched.`,
@@ -91,11 +91,11 @@ type DeleteDokumentOptions = {
 export type DeleteDokumentResult = { success: true } | { success: false };
 
 export async function deleteDokument(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: DeleteDokumentOptions,
 ): Promise<DeleteDokumentResult> {
   const deleteResult = await apiRequest({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.einreichungId}/dokumente/${options.id}`,
     method: "DELETE",
     eTag: options.eTag,
@@ -111,7 +111,7 @@ export async function deleteDokument(
 }
 
 type DeleteDokumentFromEinreichungOptions = {
-  authData: AuthenticationResponse;
+  authSession: AuthSession;
   verfahrenId: string;
   einreichungId: FormDataEntryValue | null;
   dokumentId: FormDataEntryValue | null;
@@ -124,7 +124,7 @@ export type DeleteDokumentFromEinreichungResult =
   | { status: "delete-failed" };
 
 export async function deleteDokumentFromEinreichung({
-  authData,
+  authSession,
   verfahrenId,
   einreichungId,
   dokumentId,
@@ -136,8 +136,8 @@ export async function deleteDokumentFromEinreichung({
   // Which Dokumente are protected depends on the kind of Einreichung, so it's
   // looked up here rather than trusted from the form.
   const [{ elemente: dokumente }, { einreichung }] = await Promise.all([
-    fetchDokumente(authData, { verfahrenId, einreichungId }),
-    fetchEinreichungById(authData, { verfahrenId, id: einreichungId }),
+    fetchDokumente(authSession, { verfahrenId, einreichungId }),
+    fetchEinreichungById(authSession, { verfahrenId, id: einreichungId }),
   ]);
 
   const targetDokument = dokumente.find(
@@ -148,13 +148,13 @@ export async function deleteDokumentFromEinreichung({
     return { status: "protected-dokument" };
   }
 
-  const { eTag } = await fetchDokument(authData, {
+  const { eTag } = await fetchDokument(authSession, {
     verfahrenId,
     einreichungId,
     id: dokumentId,
   });
 
-  const deleteResult = await deleteDokument(authData, {
+  const deleteResult = await deleteDokument(authSession, {
     verfahrenId,
     einreichungId,
     id: dokumentId,
@@ -186,11 +186,11 @@ export type CreateDokumentResult = {
  * uploaded separately afterwards via `uploadDokumentDatei`.
  */
 export async function createDokument(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: CreateDokumentOptions,
 ): Promise<CreateDokumentResult> {
   const { data, eTag } = await apiRequest<DokumentErstellenResponse>({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.einreichungId}/dokumente`,
     method: "POST",
     body: {
@@ -218,14 +218,14 @@ type UploadDokumentDateiOptions = {
 // createDokument. Requires the eTag from that creation (or a subsequent
 // fetch) for optimistic concurrency control.
 export async function uploadDokumentDatei(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: UploadDokumentDateiOptions,
 ): Promise<Dokument> {
   const formData = new FormData();
   formData.append("datei", options.file);
 
   return apiRequest({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.einreichungId}/dokumente/${options.id}/datei`,
     method: "PUT",
     body: formData,
@@ -238,14 +238,14 @@ export async function uploadDokumentDatei(
 // Convenience wrapper composing createDokument + uploadDokumentDatei, since
 // today every caller wants "create a Dokument from this file" as one step.
 export async function uploadDokument(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   verfahrenId: string,
   einreichungId: string,
   file: File,
   type: DokumentType,
   sichtbarkeitAlle = true,
 ): Promise<Dokument> {
-  const { dokument, eTag } = await createDokument(authData, {
+  const { dokument, eTag } = await createDokument(authSession, {
     verfahrenId,
     einreichungId,
     typ: type,
@@ -254,7 +254,7 @@ export async function uploadDokument(
   });
 
   try {
-    return await uploadDokumentDatei(authData, {
+    return await uploadDokumentDatei(authSession, {
       verfahrenId,
       einreichungId,
       id: dokument.id,
@@ -266,7 +266,7 @@ export async function uploadDokument(
     // (status ANGELEGT) behind if the actual file upload failed. A cleanup
     // failure is only logged — the original upload error is what the caller
     // needs to see.
-    const cleanupSucceeded = await deleteDokument(authData, {
+    const cleanupSucceeded = await deleteDokument(authSession, {
       verfahrenId,
       einreichungId,
       id: dokument.id,

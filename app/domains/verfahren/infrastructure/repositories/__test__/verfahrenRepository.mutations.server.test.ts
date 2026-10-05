@@ -1,5 +1,5 @@
+import { makeAuthSession } from "tests/utils/factories/authSession";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
 import {
   createVerfahren,
   updateVerfahren,
@@ -26,13 +26,10 @@ describe("createVerfahren", () => {
   });
 
   it("throws when safeId is missing", async () => {
-    const authWithoutSafeId = {
-      ...mockAuthData,
-      authenticationTokens: {
-        ...mockAuthData.authenticationTokens,
-        idToken: undefined,
-      },
-    };
+    const authWithoutSafeId = makeAuthSession({
+      safeId: null,
+      authorizedForSafeIds: [],
+    });
 
     await expect(
       createVerfahren(authWithoutSafeId, verfahrenPayload),
@@ -60,14 +57,14 @@ describe("createVerfahren", () => {
     };
     mocks.apiRequest.mockResolvedValueOnce(verfahren);
 
-    const result = await createVerfahren(mockAuthData, verfahrenPayload);
+    const result = await createVerfahren(makeAuthSession(), verfahrenPayload);
 
     expect(mocks.apiRequest).toHaveBeenCalledWith({
-      authData: mockAuthData,
+      authSession: makeAuthSession(),
       path: "/api/v1/verfahren",
       method: "POST",
       body: {
-        safe_id: mockAuthData.authenticationTokens.idToken,
+        safe_id: makeAuthSession().safeId,
         verfahren: verfahrenPayload,
       },
       schema: expect.anything(),
@@ -79,14 +76,14 @@ describe("createVerfahren", () => {
   it("omits verfahren from the request body when not provided", async () => {
     mocks.apiRequest.mockResolvedValueOnce({});
 
-    await createVerfahren(mockAuthData);
+    await createVerfahren(makeAuthSession());
 
     expect(mocks.apiRequest).toHaveBeenCalledWith({
-      authData: mockAuthData,
+      authSession: makeAuthSession(),
       path: "/api/v1/verfahren",
       method: "POST",
       body: {
-        safe_id: mockAuthData.authenticationTokens.idToken,
+        safe_id: makeAuthSession().safeId,
         verfahren: undefined,
       },
       schema: expect.anything(),
@@ -106,17 +103,21 @@ describe("updateVerfahren", () => {
       .mockResolvedValueOnce({ data: updatedVerfahren, eTag: 'W/"1"' })
       .mockResolvedValueOnce(updatedVerfahren);
 
-    const result = await updateVerfahren(mockAuthData, "v-1", verfahrenPayload);
+    const result = await updateVerfahren(
+      makeAuthSession(),
+      "v-1",
+      verfahrenPayload,
+    );
 
     expect(mocks.apiRequest).toHaveBeenNthCalledWith(1, {
-      authData: mockAuthData,
+      authSession: makeAuthSession(),
       path: "/api/v1/verfahren/v-1",
       schema: expect.anything(),
       includeResponseETag: true,
       errorMessage: "Fehler beim Bearbeiten des Verfahrens.",
     });
     expect(mocks.apiRequest).toHaveBeenNthCalledWith(2, {
-      authData: mockAuthData,
+      authSession: makeAuthSession(),
       path: "/api/v1/verfahren/v-1",
       method: "PUT",
       body: verfahrenPayload,
@@ -133,7 +134,7 @@ describe("updateVerfahren", () => {
       .mockResolvedValueOnce({ data: updatedVerfahren, eTag: null })
       .mockResolvedValueOnce(updatedVerfahren);
 
-    await updateVerfahren(mockAuthData, "v-1", verfahrenPayload);
+    await updateVerfahren(makeAuthSession(), "v-1", verfahrenPayload);
 
     expect(mocks.apiRequest).toHaveBeenNthCalledWith(
       2,

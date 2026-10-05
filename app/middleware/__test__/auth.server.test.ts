@@ -1,26 +1,20 @@
+import { makeAuthSession } from "tests/utils/factories/authSession";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { AuthSession } from "~/services/auth/auth.types";
 
 const MODULE_PATH = "../auth.server";
 
 async function withMocks({
-  authData = null,
+  authSession = null,
 }: {
-  authData?: {
-    authenticationTokens: {
-      accessToken: string;
-      idToken: string;
-      expiresAt: number;
-      refreshToken: string;
-    };
-    sessionCookieHeader: string[];
-  } | null;
+  authSession?: AuthSession | null;
 } = {}) {
   vi.resetModules();
 
-  const getAuthDataMock = vi.fn(async () => authData);
+  const getAuthSessionMock = vi.fn(async () => authSession);
 
   vi.doMock("~/services/auth/authSession.server", () => ({
-    getAuthData: getAuthDataMock,
+    getAuthSession: getAuthSessionMock,
   }));
 
   const redirectMock = vi.fn((url: string) => {
@@ -45,7 +39,7 @@ async function withMocks({
 
   return {
     module,
-    mocks: { getAuthDataMock, redirectMock, hrefMock },
+    mocks: { getAuthSessionMock, redirectMock, hrefMock },
     restore: () => {
       vi.clearAllMocks();
     },
@@ -58,7 +52,7 @@ beforeEach(() => {
 
 describe("authMiddleware", () => {
   it("redirects to /login when not authenticated", async () => {
-    const { module, restore } = await withMocks({ authData: null });
+    const { module, restore } = await withMocks({ authSession: null });
 
     const request = new Request("http://localhost/protected");
     const contextSetMock = vi.fn();
@@ -77,16 +71,8 @@ describe("authMiddleware", () => {
   });
 
   it("sets auth context and calls next when authenticated", async () => {
-    const authData = {
-      authenticationTokens: {
-        accessToken: "token",
-        idToken: "id-token",
-        expiresAt: Date.now() + 60000, // 1 minute in the future
-        refreshToken: "refresh",
-      },
-      sessionCookieHeader: [],
-    };
-    const { module, restore } = await withMocks({ authData });
+    const authSession = makeAuthSession();
+    const { module, restore } = await withMocks({ authSession });
 
     const request = new Request("http://localhost/protected");
     const contextSetMock = vi.fn();
@@ -98,23 +84,20 @@ describe("authMiddleware", () => {
       nextMock,
     );
 
-    expect(contextSetMock).toHaveBeenCalledWith(module.authContext, authData);
+    expect(contextSetMock).toHaveBeenCalledWith(
+      module.authContext,
+      authSession,
+    );
     expect(nextMock).toHaveBeenCalled();
     expect(result).toBe(mockResponse);
     restore();
   });
 
   it("appends Set-Cookie header when sessionCookieHeader is present", async () => {
-    const authData = {
-      authenticationTokens: {
-        accessToken: "token",
-        idToken: "id-token",
-        expiresAt: Date.now() + 60000,
-        refreshToken: "refresh",
-      },
-      sessionCookieHeader: ["__session=abc123; Path=/; HttpOnly"],
-    };
-    const { module, restore } = await withMocks({ authData });
+    const authSession = makeAuthSession({
+      sessionCookieHeaders: ["__session=abc123; Path=/; HttpOnly"],
+    });
+    const { module, restore } = await withMocks({ authSession });
 
     const request = new Request("http://localhost/protected");
     const contextSetMock = vi.fn();
@@ -139,16 +122,11 @@ describe("authMiddleware", () => {
   });
 
   it("preserves response body when creating new response with cookie", async () => {
-    const authData = {
-      authenticationTokens: {
-        accessToken: "token",
-        idToken: "id-token",
-        expiresAt: Date.now() + 60000,
-        refreshToken: "refresh",
-      },
-      sessionCookieHeader: ["__session=xyz"],
-    };
-    const { module, restore } = await withMocks({ authData });
+    const authSession = makeAuthSession({
+      accessToken: "token",
+      sessionCookieHeaders: ["__session=xyz"],
+    });
+    const { module, restore } = await withMocks({ authSession });
 
     const request = new Request("http://localhost/protected");
     const contextSetMock = vi.fn();

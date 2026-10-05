@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { AuthenticationProvider } from "../../auth.types";
+import { AuthProvider } from "../../auth.types";
 import {
   exchangeForKomPlaIdpTokens,
   makeGetTokenFromBrakIdp,
@@ -70,7 +70,7 @@ describe("makeGetUserInfo", () => {
       "safe-id": "DE.BRAK_SPT.abc-123",
     });
 
-    const getUserInfo = makeGetUserInfo(AuthenticationProvider.BEA);
+    const getUserInfo = makeGetUserInfo(AuthProvider.BEA);
     const userInfo = await getUserInfo({ idToken });
 
     expect(userInfo).toEqual({
@@ -88,7 +88,7 @@ describe("makeGetUserInfo", () => {
       "safe-id": "DE.BRAK_SPT.abc-123",
     });
 
-    const getUserInfo = makeGetUserInfo(AuthenticationProvider.BEA);
+    const getUserInfo = makeGetUserInfo(AuthProvider.BEA);
     const userInfo = await getUserInfo({ idToken });
 
     expect(userInfo).toMatchObject({
@@ -99,7 +99,7 @@ describe("makeGetUserInfo", () => {
   it("falls back to the sub claim when safe-id is absent", async () => {
     const idToken = makeIdToken({ sub: "user-sub-456" });
 
-    const getUserInfo = makeGetUserInfo(AuthenticationProvider.KOMPLA_IDP);
+    const getUserInfo = makeGetUserInfo(AuthProvider.KOMPLA_IDP);
     const userInfo = await getUserInfo({ idToken });
 
     expect(userInfo).toBeDefined();
@@ -110,7 +110,7 @@ describe("makeGetUserInfo", () => {
   });
 
   it("returns null if there is no ID token", async () => {
-    const getUserInfo = makeGetUserInfo(AuthenticationProvider.BEA);
+    const getUserInfo = makeGetUserInfo(AuthProvider.BEA);
     const userInfo = await getUserInfo({});
 
     expect(userInfo).toBeNull();

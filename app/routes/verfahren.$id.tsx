@@ -40,7 +40,7 @@ import { createEinreichung } from "~/domains/verfahren/infrastructure/repositori
 import findEinreichungDraft from "~/domains/verfahren/services/findEinreichungDraft.ts";
 import isKlageeinreichung from "~/domains/verfahren/services/isKlageeinreichung";
 import { authMiddleware } from "~/middleware/auth.server";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { AuthSession } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
 import {
@@ -63,14 +63,14 @@ type LoaderData = {
 export const middleware = [authMiddleware];
 
 async function loadEinreichungDetails(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   verfahrenId: string,
   { einreichung, dokumente }: EinreichungSummary,
 ): Promise<EinreichungDetails> {
   const dokumenteWithValidierungsstatus = await Promise.all(
     dokumente.map(async (dokument) => {
       const validierungsstatus = await fetchDokumentValidierungsstatus(
-        authData,
+        authSession,
         {
           verfahrenId,
           einreichungId: einreichung.id,
@@ -82,7 +82,7 @@ async function loadEinreichungDetails(
     }),
   );
 
-  const beleg = await fetchLatestBelegForEinreichung(authData, {
+  const beleg = await fetchLatestBelegForEinreichung(authSession, {
     verfahrenId,
     einreichungId: einreichung.id,
   });
@@ -91,14 +91,14 @@ async function loadEinreichungDetails(
 }
 
 export const loader = async ({ context, params }: LoaderFunctionArgs) => {
-  const { authData, verfahrenId } = requireAuthAndVerfahrenId(
+  const { authSession, verfahrenId } = requireAuthAndVerfahrenId(
     context,
     params,
     "loader",
   );
 
   const { verfahren, einreichungen } = await loadVerfahrenEinreichungenOverview(
-    authData,
+    authSession,
     verfahrenId,
   ).catch(rethrowApiNotFoundAsRouteError);
 
@@ -115,14 +115,14 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   const [draftKlageeinreichung, draftWeitereEinreichung] = await Promise.all([
     unfinishedKlageeinreichung
       ? loadEinreichungDetails(
-          authData,
+          authSession,
           verfahrenId,
           unfinishedKlageeinreichung,
         )
       : null,
     unfinishedWeitereEinreichung
       ? loadEinreichungDetails(
-          authData,
+          authSession,
           verfahrenId,
           unfinishedWeitereEinreichung,
         )
@@ -138,7 +138,7 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
 };
 
 type FormActionContext = {
-  authData: AuthenticationResponse;
+  authSession: AuthSession;
   verfahrenId: string;
 };
 
@@ -151,7 +151,7 @@ const WeitereDokumentUploadSchema = z.object({
 
 async function handleDelete(
   formData: FormData,
-  { authData, verfahrenId }: FormActionContext,
+  { authSession, verfahrenId }: FormActionContext,
 ) {
   const actionData = {
     formType: "delete",
@@ -160,7 +160,7 @@ async function handleDelete(
 
   try {
     const deleteResult = await deleteDokumentFromEinreichung({
-      authData,
+      authSession,
       verfahrenId,
       einreichungId: formData.get("einreichungId"),
       dokumentId: formData.get("dokumentId"),
@@ -191,12 +191,15 @@ async function handleDelete(
 
 async function handleEinreichen(
   formData: FormData,
-  { authData, verfahrenId }: FormActionContext,
+  { authSession, verfahrenId }: FormActionContext,
 ) {
   const einreichungId = formData.get("einreichungId") as string;
 
   try {
-    await submitEinreichungIfNeeded(authData, { verfahrenId, einreichungId });
+    await submitEinreichungIfNeeded(authSession, {
+      verfahrenId,
+      einreichungId,
+    });
 
     return redirect(`/verfahren/${verfahrenId}`);
   } catch (error) {
@@ -208,7 +211,7 @@ async function handleEinreichen(
 
 async function handleCreateEinreichung(
   formData: FormData,
-  { authData, verfahrenId }: FormActionContext,
+  { authSession, verfahrenId }: FormActionContext,
 ) {
   const actionData = { formType: CREATE_EINREICHUNG_FORM_TYPE };
   const parsedArt = EinreichungArtSchema.safeParse(formData.get("art"));
@@ -220,7 +223,7 @@ async function handleCreateEinreichung(
   }
 
   try {
-    await createEinreichung(authData, verfahrenId, parsedArt.data);
+    await createEinreichung(authSession, verfahrenId, parsedArt.data);
 
     return redirect(`/verfahren/${verfahrenId}`);
   } catch (error) {
@@ -233,7 +236,7 @@ async function handleCreateEinreichung(
 
 async function handleUploadWeitereDokument(
   formData: FormData,
-  { authData, verfahrenId }: FormActionContext,
+  { authSession, verfahrenId }: FormActionContext,
 ) {
   const actionData = { formType: UPLOAD_WEITERE_DOKUMENT_FORM_TYPE };
   const parsed = WeitereDokumentUploadSchema.safeParse({
@@ -253,7 +256,7 @@ async function handleUploadWeitereDokument(
 
   try {
     await uploadDokument(
-      authData,
+      authSession,
       verfahrenId,
       einreichungId,
       file,
@@ -272,12 +275,12 @@ async function handleUploadWeitereDokument(
 
 async function handleDownloadBeleg(
   formData: FormData,
-  { authData, verfahrenId }: FormActionContext,
+  { authSession, verfahrenId }: FormActionContext,
 ) {
   const belegId = formData.get("belegId") as string;
 
   try {
-    const downloadUrl = await fetchBelegDownloadLink(authData, {
+    const downloadUrl = await fetchBelegDownloadLink(authSession, {
       verfahrenId,
       id: belegId,
       dispositionType: "ATTACHMENT",
@@ -307,7 +310,7 @@ export const action = async ({
   context,
   params,
 }: ActionFunctionArgs) => {
-  const { authData, verfahrenId } = requireAuthAndVerfahrenId(
+  const { authSession, verfahrenId } = requireAuthAndVerfahrenId(
     context,
     params,
     "action",
@@ -318,7 +321,7 @@ export const action = async ({
   return dispatchFormAction(
     formData,
     formActionHandlers,
-    { authData, verfahrenId },
+    { authSession, verfahrenId },
     () => redirect(`/verfahren/${verfahrenId}`),
   );
 };

@@ -1,22 +1,22 @@
 import { redirect, type ActionFunctionArgs } from "react-router";
 import {
-  AuthenticationProvider,
+  AuthProvider,
   LoginError,
   LoginType,
 } from "~/services/auth/auth.types";
 import { auth } from "~/services/auth/betterAuth.server";
 
 const errorStatusByProvider: Record<
-  AuthenticationProvider.BEA | AuthenticationProvider.KOMPLA_IDP,
+  AuthProvider.BEA | AuthProvider.KOMPLA_IDP,
   LoginError
 > = {
-  [AuthenticationProvider.BEA]: LoginError.BeA,
-  [AuthenticationProvider.KOMPLA_IDP]: LoginError.KomplaIdp,
+  [AuthProvider.BEA]: LoginError.BeA,
+  [AuthProvider.KOMPLA_IDP]: LoginError.KomplaIdp,
 };
 
 async function startOAuth2Login(
   request: Request,
-  providerId: AuthenticationProvider.BEA | AuthenticationProvider.KOMPLA_IDP,
+  providerId: AuthProvider.BEA | AuthProvider.KOMPLA_IDP,
 ) {
   // The oauth state/PKCE verifier is persisted via Set-Cookie (no database)
   // and must reach the browser or the callback's state check will fail.
@@ -49,9 +49,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   switch (loginType) {
     case LoginType.BeA:
-      return await startOAuth2Login(request, AuthenticationProvider.BEA);
+      return await startOAuth2Login(request, AuthProvider.BEA);
     case LoginType.KomplaIdp:
-      return await startOAuth2Login(request, AuthenticationProvider.KOMPLA_IDP);
+      return await startOAuth2Login(request, AuthProvider.KOMPLA_IDP);
     default:
       return new Response("Invalid login type", { status: 400 });
   }

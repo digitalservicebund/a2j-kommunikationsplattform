@@ -1,6 +1,6 @@
+import { makeAuthSession } from "tests/utils/factories/authSession";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import z from "zod";
-import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
 import { apiRequest } from "~/domains/verfahren/infrastructure/api/apiClient";
 
 const mocks = vi.hoisted(() => {
@@ -36,7 +36,7 @@ describe("apiClient", () => {
       });
 
       await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
       });
 
@@ -53,7 +53,7 @@ describe("apiClient", () => {
       });
 
       await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         fullUrl: "http://custom.api/endpoint",
       });
 
@@ -70,7 +70,7 @@ describe("apiClient", () => {
       });
 
       await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
       });
 
@@ -78,7 +78,7 @@ describe("apiClient", () => {
         expect.any(String),
         expect.objectContaining({
           headers: expect.objectContaining({
-            Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
+            Authorization: `Bearer ${makeAuthSession().accessToken}`,
           }),
         }),
       );
@@ -91,7 +91,7 @@ describe("apiClient", () => {
       });
 
       await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
       });
 
@@ -110,7 +110,7 @@ describe("apiClient", () => {
       });
 
       await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         method: "POST",
       });
@@ -132,7 +132,7 @@ describe("apiClient", () => {
       const body = { name: "test", value: 42 };
 
       await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         method: "POST",
         body,
@@ -159,7 +159,7 @@ describe("apiClient", () => {
       formData.append("file", new File(["content"], "test.txt"));
 
       await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         method: "POST",
         body: formData,
@@ -180,7 +180,7 @@ describe("apiClient", () => {
       formData.append("file", new File(["content"], "test.txt"));
 
       await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         method: "POST",
         body: formData,
@@ -189,7 +189,7 @@ describe("apiClient", () => {
 
       const [, config] = mocks.fetch.mock.calls[0];
       expect(config?.headers).toEqual({
-        Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
+        Authorization: `Bearer ${makeAuthSession().accessToken}`,
         Accept: "application/json",
         "Dokument-Typ": "ANHANG",
       });
@@ -207,7 +207,7 @@ describe("apiClient", () => {
 
       await expect(
         apiRequest({
-          authData: mockAuthData,
+          authSession: makeAuthSession(),
           path: "/api/v1/test",
           errorMessage: "Custom error message",
         }),
@@ -229,7 +229,7 @@ describe("apiClient", () => {
       mocks.logApiErrorAndThrow.mockResolvedValueOnce(undefined);
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         errorMessage: "Custom error message",
       });
@@ -252,7 +252,7 @@ describe("apiClient", () => {
 
       await expect(
         apiRequest({
-          authData: mockAuthData,
+          authSession: makeAuthSession(),
           path: "/api/v1/test",
         }),
       ).rejects.toThrow();
@@ -272,7 +272,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         throwOnError: false,
       });
@@ -298,7 +298,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         throwOnError: false,
       });
@@ -327,7 +327,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         throwOnError: false,
       });
@@ -358,7 +358,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         throwOnError: false,
       });
@@ -379,7 +379,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
       });
 
@@ -393,7 +393,7 @@ describe("apiClient", () => {
       });
 
       await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
       });
 
@@ -413,7 +413,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         responseType: "text",
       });
@@ -428,7 +428,7 @@ describe("apiClient", () => {
       });
 
       await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         responseType: "text",
       });
@@ -452,7 +452,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
       });
 
@@ -471,7 +471,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
       });
 
@@ -495,7 +495,7 @@ describe("apiClient", () => {
 
       await expect(
         apiRequest({
-          authData: mockAuthData,
+          authSession: makeAuthSession(),
           path: "/api/v1/test",
           errorMessage: "Failed to parse response",
         }),
@@ -519,7 +519,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         schema,
       });
@@ -536,7 +536,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         throwOnError: false,
       });
@@ -560,7 +560,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         includeResponseMeta: true,
       });
@@ -582,7 +582,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         includeResponseETag: true,
       });
@@ -610,7 +610,7 @@ describe("apiClient", () => {
 
       await expect(
         apiRequest({
-          authData: mockAuthData,
+          authSession: makeAuthSession(),
           path: "/api/v1/test",
           schema,
           errorMessage: "Invalid data",
@@ -631,7 +631,7 @@ describe("apiClient", () => {
       });
 
       await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         eTag: 'W/"7"',
       });
@@ -659,7 +659,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/test",
         schema,
       });
@@ -676,7 +676,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/items",
       });
 
@@ -696,7 +696,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiRequest({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/items",
         schema,
       });

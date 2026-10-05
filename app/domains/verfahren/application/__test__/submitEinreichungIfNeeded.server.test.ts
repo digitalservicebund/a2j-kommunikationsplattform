@@ -1,5 +1,5 @@
+import { makeAuthSession } from "tests/utils/factories/authSession";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
 import submitEinreichungIfNeeded from "../submitEinreichungIfNeeded.server";
 
 const mocks = vi.hoisted(() => ({
@@ -31,12 +31,12 @@ describe("submitEinreichungIfNeeded", () => {
     mocks.fetchBelege.mockResolvedValueOnce({ elemente: [] });
     mocks.fetchEinreichungById.mockResolvedValueOnce({ eTag: 'W/"1"' });
 
-    await submitEinreichungIfNeeded(mockAuthData, {
+    await submitEinreichungIfNeeded(makeAuthSession(), {
       verfahrenId: "v-1",
       einreichungId: "e-1",
     });
 
-    expect(mocks.submitEinreichungen).toHaveBeenCalledWith(mockAuthData, {
+    expect(mocks.submitEinreichungen).toHaveBeenCalledWith(makeAuthSession(), {
       verfahrenId: "v-1",
       id: "e-1",
       eTag: 'W/"1"',
@@ -46,7 +46,7 @@ describe("submitEinreichungIfNeeded", () => {
   it("skips submitting when a Beleg already exists", async () => {
     mocks.fetchBelege.mockResolvedValueOnce({ elemente: [{ id: "b-1" }] });
 
-    await submitEinreichungIfNeeded(mockAuthData, {
+    await submitEinreichungIfNeeded(makeAuthSession(), {
       verfahrenId: "v-1",
       einreichungId: "e-1",
     });

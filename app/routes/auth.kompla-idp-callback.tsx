@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs } from "react-router";
-import { AuthenticationProvider } from "~/services/auth/auth.types";
+import { AuthProvider } from "~/services/auth/auth.types";
 import { auth } from "~/services/auth/betterAuth.server";
 
 /**
@@ -9,7 +9,7 @@ import { auth } from "~/services/auth/betterAuth.server";
 export const loader = ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const target = new URL(
-    `/api/auth/callback/${AuthenticationProvider.KOMPLA_IDP}${url.search}`,
+    `/api/auth/callback/${AuthProvider.KOMPLA_IDP}${url.search}`,
     url.origin,
   );
   return auth.handler(new Request(target, { headers: request.headers }));

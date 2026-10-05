@@ -9,7 +9,7 @@ import {
   BelegeSchema,
   BelegSchema,
 } from "~/domains/verfahren/infrastructure/schemas/beleg.schema";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { AuthSession } from "~/services/auth/auth.types";
 import { buildSearchParams } from "~/utils/buildSearchParams";
 
 type FetchBelegByIdOptions = {
@@ -18,11 +18,11 @@ type FetchBelegByIdOptions = {
 };
 
 export async function fetchBelegById(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: FetchBelegByIdOptions,
 ): Promise<Beleg> {
   return apiRequest({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${options.verfahrenId}/belege/${options.id}`,
     schema: BelegSchema,
     errorMessage: `Beleg with id ${options.id} of Verfahren with id ${options.verfahrenId} could not be fetched.`,
@@ -35,7 +35,7 @@ type FetchBelegeOptions = {
 };
 
 export async function fetchBelege(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: FetchBelegeOptions,
 ): Promise<z.infer<typeof BelegeSchema>> {
   const url = new URL(
@@ -50,7 +50,7 @@ export async function fetchBelege(
   });
 
   return apiRequest({
-    authData,
+    authSession,
     fullUrl: url.toString(),
     schema: BelegeSchema,
     errorMessage: `Belege for Verfahren with id ${options.verfahrenId} could not be fetched.`,
@@ -65,7 +65,7 @@ type FetchBelegDownloadLinkOptions = {
 };
 
 export async function fetchBelegDownloadLink(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: FetchBelegDownloadLinkOptions,
 ): Promise<string> {
   const url = new URL(
@@ -81,7 +81,7 @@ export async function fetchBelegDownloadLink(
   });
 
   return apiRequest({
-    authData,
+    authSession,
     fullUrl: url.toString(),
     schema: z.string(),
     errorMessage: `Download link for Beleg with id ${options.id} could not be fetched.`,
@@ -96,17 +96,17 @@ type FetchLatestBelegForEinreichungOptions = {
 // The Beleg belongs to the Einreichung, so it's looked up via that
 // relationship instead of threading its id through the URL/session.
 export async function fetchLatestBelegForEinreichung(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: FetchLatestBelegForEinreichungOptions,
 ): Promise<Beleg | null> {
-  const { elemente: belege } = await fetchBelege(authData, options);
+  const { elemente: belege } = await fetchBelege(authSession, options);
   const latestBeleg = belege.at(-1);
 
   if (!latestBeleg) {
     return null;
   }
 
-  return fetchBelegById(authData, {
+  return fetchBelegById(authSession, {
     verfahrenId: options.verfahrenId,
     id: latestBeleg.id,
   });

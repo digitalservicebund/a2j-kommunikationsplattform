@@ -1,5 +1,5 @@
 import { createEinreichungXJustiz } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { AuthSession } from "~/services/auth/auth.types";
 
 type RegenerateEinreichungXJustizOptions = {
   verfahrenId: string;
@@ -7,10 +7,10 @@ type RegenerateEinreichungXJustizOptions = {
 };
 
 export default async function regenerateEinreichungXJustiz(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: RegenerateEinreichungXJustizOptions,
 ): Promise<void> {
-  await createEinreichungXJustiz(authData, {
+  await createEinreichungXJustiz(authSession, {
     verfahrenId: options.verfahrenId,
     id: options.einreichungId,
     ersetzen: true,

@@ -18,7 +18,7 @@ import Progress from "~/components/Progress";
 import VerfahrenKlageschriftFormSection from "~/components/verfahren/VerfahrenKlageschriftFormSection";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenUploadedKlageschrift from "~/components/verfahren/VerfahrenUploadedKlageschrift";
-import { requireAuthData } from "~/domains/verfahren/application/routeContext.server";
+import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
 import type { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { KLAGEEINREICHUNG_NAME } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import {
@@ -33,7 +33,7 @@ import { createVerfahren } from "~/domains/verfahren/infrastructure/repositories
 import { VerfahrenAendernInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.input.schema";
 import { VerfahrenAendernRequestDTO } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.request.schema";
 import { authMiddleware } from "~/middleware/auth.server";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { AuthSession } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
 import {
@@ -86,13 +86,13 @@ function findKlageschrift<T extends Pick<Dokument, "typ">>(
 }
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
-  const authData = requireAuthData(context, "loader");
+  const authSession = requireAuthSession(context, "loader");
 
   const url = new URL(request.url);
   const { verfahrenId, einreichungId } = getVerfahrenContextFromUrl(url);
 
   const gerichtePromise = (async () => {
-    const { elemente } = await fetchGerichte(authData);
+    const { elemente } = await fetchGerichte(authSession);
 
     return elemente;
   })();
@@ -106,7 +106,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
     };
   }
 
-  const { elemente: dokumente } = await fetchDokumente(authData, {
+  const { elemente: dokumente } = await fetchDokumente(authSession, {
     verfahrenId,
     einreichungId,
   });
@@ -116,7 +116,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 };
 
 type FormActionContext = {
-  authData: AuthenticationResponse;
+  authSession: AuthSession;
   existingVerfahrenId: string | undefined;
   existingEinreichungId: string | undefined;
 };
@@ -124,7 +124,7 @@ type FormActionContext = {
 // Handles delete for an already uploaded document
 async function handleDelete(
   formData: FormData,
-  { authData }: FormActionContext,
+  { authSession }: FormActionContext,
 ) {
   const verfahrenId = formData.get("verfahrenId");
   const einreichungId = formData.get("einreichungId");
@@ -141,13 +141,13 @@ async function handleDelete(
   }
 
   try {
-    const { eTag } = await fetchDokument(authData, {
+    const { eTag } = await fetchDokument(authSession, {
       verfahrenId,
       einreichungId,
       id: dokumentId,
     });
 
-    const deleteResult = await deleteDokument(authData, {
+    const deleteResult = await deleteDokument(authSession, {
       verfahrenId,
       einreichungId,
       id: dokumentId,
@@ -176,12 +176,16 @@ async function handleDelete(
 // submit, then continues to the bearbeiten step
 async function handleSubmit(
   formData: FormData,
-  { authData, existingVerfahrenId, existingEinreichungId }: FormActionContext,
+  {
+    authSession,
+    existingVerfahrenId,
+    existingEinreichungId,
+  }: FormActionContext,
 ) {
   // If the draft already has its Klageschrift, continue in edit route
   if (existingVerfahrenId && existingEinreichungId) {
     try {
-      const { elemente: dokumente } = await fetchDokumente(authData, {
+      const { elemente: dokumente } = await fetchDokumente(authSession, {
         verfahrenId: existingVerfahrenId,
         einreichungId: existingEinreichungId,
       });
@@ -228,10 +232,10 @@ async function handleSubmit(
     }
 
     try {
-      const verfahren = await createVerfahren(authData, verfahrenPayload);
+      const verfahren = await createVerfahren(authSession, verfahrenPayload);
       verfahrenId = verfahren.id;
       const einreichung = await createEinreichung(
-        authData,
+        authSession,
         verfahrenId,
         KLAGEEINREICHUNG_NAME,
       );
@@ -246,7 +250,7 @@ async function handleSubmit(
 
   try {
     await uploadDokument(
-      authData,
+      authSession,
       verfahrenId,
       einreichungId,
       file,
@@ -268,7 +272,7 @@ const formActionHandlers = {
 } as const;
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
-  const authData = requireAuthData(context, "action");
+  const authSession = requireAuthSession(context, "action");
 
   const formData = await request.formData();
   const url = new URL(request.url);
@@ -289,7 +293,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
   return dispatchFormAction(
     formData,
     formActionHandlers,
-    { authData, existingVerfahrenId, existingEinreichungId },
+    { authSession, existingVerfahrenId, existingEinreichungId },
     // Guards unsupported form submissions (only "delete" and "submit" exist)
     () =>
       data(actionError(de.shared.form.errors.invalidSubmission), {

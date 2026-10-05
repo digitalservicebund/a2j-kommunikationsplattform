@@ -1,5 +1,5 @@
+import { makeAuthSession } from "tests/utils/factories/authSession";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
 import loadVerfahrenEinreichungBundle from "../loadVerfahrenEinreichungBundle.server";
 
 const mocks = vi.hoisted(() => ({
@@ -48,19 +48,28 @@ describe("loadVerfahrenEinreichungBundle", () => {
     mocks.fetchEinreichungStatus.mockResolvedValueOnce(einreichungsStatus);
     mocks.fetchDokumente.mockResolvedValueOnce({ elemente: dokumente });
 
-    const result = await loadVerfahrenEinreichungBundle(mockAuthData, "v-1");
+    const result = await loadVerfahrenEinreichungBundle(
+      makeAuthSession(),
+      "v-1",
+    );
 
-    expect(mocks.fetchVerfahrenById).toHaveBeenCalledWith(mockAuthData, {
+    expect(mocks.fetchVerfahrenById).toHaveBeenCalledWith(makeAuthSession(), {
       id: "v-1",
     });
-    expect(mocks.fetchEinreichungenById).toHaveBeenCalledWith(mockAuthData, {
-      id: "v-1",
-    });
-    expect(mocks.fetchEinreichungStatus).toHaveBeenCalledWith(mockAuthData, {
-      id: "e-1",
-      verfahrenId: "v-1",
-    });
-    expect(mocks.fetchDokumente).toHaveBeenCalledWith(mockAuthData, {
+    expect(mocks.fetchEinreichungenById).toHaveBeenCalledWith(
+      makeAuthSession(),
+      {
+        id: "v-1",
+      },
+    );
+    expect(mocks.fetchEinreichungStatus).toHaveBeenCalledWith(
+      makeAuthSession(),
+      {
+        id: "e-1",
+        verfahrenId: "v-1",
+      },
+    );
+    expect(mocks.fetchDokumente).toHaveBeenCalledWith(makeAuthSession(), {
       einreichungId: "e-1",
       verfahrenId: "v-1",
     });
@@ -88,7 +97,10 @@ describe("loadVerfahrenEinreichungBundle", () => {
     mocks.fetchEinreichungStatus.mockResolvedValue({ status: "GRUEN" });
     mocks.fetchDokumente.mockResolvedValue({ elemente: [] });
 
-    const result = await loadVerfahrenEinreichungBundle(mockAuthData, "v-1");
+    const result = await loadVerfahrenEinreichungBundle(
+      makeAuthSession(),
+      "v-1",
+    );
 
     expect(result.einreichungId).toBe("e-1");
     expect(result.einreichung.name).toBe("Klageeinreichung");
@@ -103,7 +115,7 @@ describe("loadVerfahrenEinreichungBundle", () => {
     mocks.fetchDokumente.mockResolvedValue({ elemente: [] });
 
     await expect(
-      loadVerfahrenEinreichungBundle(mockAuthData, "v-1"),
+      loadVerfahrenEinreichungBundle(makeAuthSession(), "v-1"),
     ).rejects.toThrow("No Einreichung could be fetched");
   });
 
@@ -112,7 +124,7 @@ describe("loadVerfahrenEinreichungBundle", () => {
     mocks.fetchEinreichungenById.mockResolvedValueOnce({ elemente: [] });
 
     await expect(
-      loadVerfahrenEinreichungBundle(mockAuthData, "v-1"),
+      loadVerfahrenEinreichungBundle(makeAuthSession(), "v-1"),
     ).rejects.toThrow("No Einreichung could be fetched");
   });
 });

@@ -6,7 +6,7 @@ import {
   LoginType,
   LogoutType,
 } from "~/services/auth/auth.types.ts";
-import { getAuthData } from "~/services/auth/authSession.server";
+import { getAuthSession } from "~/services/auth/authSession.server";
 import { useTranslations } from "~/services/translations/context";
 
 // Alert state type
@@ -18,7 +18,7 @@ type AlertState =
   | LoginError.KomplaIdp;
 
 export async function loader({ request }: { request: Request }) {
-  const userIsLoggedIn = !!(await getAuthData(request));
+  const userIsLoggedIn = !!(await getAuthSession(request));
   if (userIsLoggedIn) {
     throw redirect("/");
   }

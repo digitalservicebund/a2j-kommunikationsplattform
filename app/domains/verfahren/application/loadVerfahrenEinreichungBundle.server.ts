@@ -3,7 +3,7 @@ import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einre
 import type { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import isKlageeinreichung from "~/domains/verfahren/services/isKlageeinreichung";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { AuthSession } from "~/services/auth/auth.types";
 import loadVerfahrenEinreichungenOverview from "./loadVerfahrenEinreichungenOverview.server";
 
 export type { Dokument, Einreichung, Verfahren };
@@ -20,11 +20,11 @@ export type VerfahrenEinreichungBundle = {
 };
 
 export default async function loadVerfahrenEinreichungBundle(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   verfahrenId: string,
 ): Promise<VerfahrenEinreichungBundle> {
   const { verfahren, einreichungen } = await loadVerfahrenEinreichungenOverview(
-    authData,
+    authSession,
     verfahrenId,
   );
   // A Verfahren can also hold Weitere Einreichungen, and the API's list order

@@ -1,8 +1,8 @@
+import { makeAuthSession } from "tests/utils/factories/authSession";
 import { describe, expect, test } from "vitest";
-import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
 import {
   requireAuthAndVerfahrenId,
-  requireAuthData,
+  requireAuthSession,
   requireVerfahrenId,
 } from "../routeContext.server";
 
@@ -14,22 +14,22 @@ vi.mock("better-auth", () => ({
 }));
 
 describe("routeContext helpers", () => {
-  test("requireAuthData returns auth data", () => {
+  test("requireAuthSession returns auth data", () => {
     const context = {
-      get: () => mockAuthData,
+      get: () => makeAuthSession(),
     };
 
-    const result = requireAuthData(context, "loader");
+    const result = requireAuthSession(context, "loader");
 
-    expect(result).toEqual(mockAuthData);
+    expect(result).toEqual(makeAuthSession());
   });
 
-  test("requireAuthData throws when auth data is missing", () => {
+  test("requireAuthSession throws when auth data is missing", () => {
     const context = {
       get: () => undefined,
     };
 
-    expect(() => requireAuthData(context, "action")).toThrow(
+    expect(() => requireAuthSession(context, "action")).toThrow(
       "No auth data available in action",
     );
   });
@@ -46,13 +46,13 @@ describe("routeContext helpers", () => {
 
   test("requireAuthAndVerfahrenId returns both values", () => {
     const context = {
-      get: () => mockAuthData,
+      get: () => makeAuthSession(),
     };
 
     const result = requireAuthAndVerfahrenId(context, { id: "v-2" }, "action");
 
     expect(result).toEqual({
-      authData: mockAuthData,
+      authSession: makeAuthSession(),
       verfahrenId: "v-2",
     });
   });

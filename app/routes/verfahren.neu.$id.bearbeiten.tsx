@@ -77,7 +77,7 @@ import {
   TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
 } from "~/domains/verfahren/services/verfahrenCodeConstants";
 import { authMiddleware } from "~/middleware/auth.server";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { AuthSession } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
 import {
@@ -203,18 +203,18 @@ function getAnwaltFormValues(formData: FormData): AnwaltFormValues {
 export const middleware = [authMiddleware];
 
 export const loader = async ({ context, params }: LoaderFunctionArgs) => {
-  const { authData, verfahrenId } = requireAuthAndVerfahrenId(
+  const { authSession, verfahrenId } = requireAuthAndVerfahrenId(
     context,
     params,
     "loader",
   );
   const { verfahren, einreichung, dokumente } =
-    await loadVerfahrenEinreichungBundle(authData, verfahrenId);
+    await loadVerfahrenEinreichungBundle(authSession, verfahrenId);
 
   // Once the Einreichung has been submitted (a Beleg exists), the API no
   // longer accepts changes to the Verfahren — bounce back instead of
   // letting the user edit a form that will fail with a 409 on submit.
-  const beleg = await fetchLatestBelegForEinreichung(authData, {
+  const beleg = await fetchLatestBelegForEinreichung(authSession, {
     verfahrenId,
     einreichungId: einreichung.id,
   });
@@ -224,13 +224,13 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   }
 
   const gerichtePromise = (async () => {
-    const { elemente } = await fetchGerichte(authData);
+    const { elemente } = await fetchGerichte(authSession);
 
     return elemente;
   })();
 
   const kanzleiformenPromise = (async () => {
-    const { elemente } = await fetchKanzleiformen(authData);
+    const { elemente } = await fetchKanzleiformen(authSession);
 
     return elemente;
   })();
@@ -245,13 +245,13 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
 };
 
 type FormActionContext = {
-  authData: AuthenticationResponse;
+  authSession: AuthSession;
   verfahrenId: string;
 };
 
 async function handleUploadAction(
   formData: FormData,
-  { authData, verfahrenId }: FormActionContext,
+  { authSession, verfahrenId }: FormActionContext,
 ) {
   const formValues = {
     type: formData.get("type"),
@@ -270,7 +270,7 @@ async function handleUploadAction(
   const type = formValues.type as DokumentType;
 
   try {
-    await uploadDokument(authData, verfahrenId, einreichungId, file, type);
+    await uploadDokument(authSession, verfahrenId, einreichungId, file, type);
   } catch (error) {
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.uploadFailed,
@@ -283,19 +283,19 @@ async function handleUploadAction(
 
 async function handleDeleteAction(
   formData: FormData,
-  { authData, verfahrenId }: FormActionContext,
+  { authSession, verfahrenId }: FormActionContext,
 ) {
   const einreichungId = formData.get("einreichungId") as string;
   const dokumentId = formData.get("dokumentId") as string;
 
   try {
-    const { eTag } = await fetchDokument(authData, {
+    const { eTag } = await fetchDokument(authSession, {
       verfahrenId,
       einreichungId: einreichungId,
       id: dokumentId,
     });
 
-    const deleteResult = await deleteDokument(authData, {
+    const deleteResult = await deleteDokument(authSession, {
       verfahrenId,
       einreichungId,
       id: dokumentId,
@@ -320,7 +320,7 @@ async function handleDeleteAction(
 // resulting XJustiz document.
 async function handleSubmitAction(
   formData: FormData,
-  { authData, verfahrenId }: FormActionContext,
+  { authSession, verfahrenId }: FormActionContext,
 ) {
   // buildBeteiligungFromFormValues() silently omits a Partei from the
   // submission when their Nachname is blank instead of failing — validate
@@ -363,10 +363,10 @@ async function handleSubmitAction(
       { elemente: telekommunikationsarten },
       { elemente: rollenbezeichnungen },
     ] = await Promise.all([
-      fetchStaaten(authData),
-      fetchAnschriftstypen(authData),
-      fetchTelekommunikationsarten(authData),
-      fetchRollenbezeichnungen(authData),
+      fetchStaaten(authSession),
+      fetchAnschriftstypen(authSession),
+      fetchTelekommunikationsarten(authSession),
+      fetchRollenbezeichnungen(authSession),
     ]);
   } catch (error) {
     return actionResultFromApiError(error, {
@@ -454,10 +454,10 @@ async function handleSubmitAction(
 
   // Persist the Verfahren and regenerate the resulting XJustiz document
   try {
-    await updateVerfahren(authData, verfahrenId, validatedForm.data);
+    await updateVerfahren(authSession, verfahrenId, validatedForm.data);
 
     const einreichungId = formData.get("einreichungId") as string;
-    await regenerateEinreichungXJustiz(authData, {
+    await regenerateEinreichungXJustiz(authSession, {
       verfahrenId,
       einreichungId,
     });
@@ -482,7 +482,7 @@ export const action = async ({
   context,
   params,
 }: ActionFunctionArgs) => {
-  const { authData, verfahrenId } = requireAuthAndVerfahrenId(
+  const { authSession, verfahrenId } = requireAuthAndVerfahrenId(
     context,
     params,
     "action",
@@ -493,7 +493,7 @@ export const action = async ({
   return dispatchFormAction(
     formData,
     formActionHandlers,
-    { authData, verfahrenId },
+    { authSession, verfahrenId },
     () => undefined,
   );
 };

@@ -14,7 +14,7 @@ import Alert from "~/components/Alert";
 import Callout from "~/components/Callout";
 import InputField from "~/components/InputField";
 import { PageMetadata } from "~/components/PageMetadata";
-import { requireAuthData } from "~/domains/verfahren/application/routeContext.server";
+import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
 import { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import {
   LiftResponse,
@@ -45,12 +45,12 @@ export const middleware = [authMiddleware];
  * be joined with the code.
  */
 export async function loader({ url, context }: LoaderFunctionArgs) {
-  const authData = requireAuthData(context, "loader");
+  const authSession = requireAuthSession(context, "loader");
   const code = url.searchParams.get("code");
 
   if (code !== null) {
     try {
-      const { lift, eTag } = await validateLiftCode(authData, code);
+      const { lift, eTag } = await validateLiftCode(authSession, code);
       logger.debug({ lift, eTag }, "Lift code validated successully");
       return data(actionSuccess({ lift, eTag }));
     } catch (error) {
@@ -69,8 +69,8 @@ export async function loader({ url, context }: LoaderFunctionArgs) {
  * Verfahren.
  */
 export async function action({ request, context }: Route.ActionArgs) {
-  const authData = requireAuthData(context, "action");
-  const safeId = authData.authenticationTokens.idToken!;
+  const authSession = requireAuthSession(context, "action");
+  const safeId = authSession.safeId!;
 
   const formData = await request.formData();
   const code = formData.get("code") as string | null;
@@ -82,7 +82,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   }
 
   try {
-    const { verfahrenId } = await performLift(authData, {
+    const { verfahrenId } = await performLift(authSession, {
       code,
       liftId,
       liftETag,

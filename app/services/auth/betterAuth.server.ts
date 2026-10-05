@@ -27,7 +27,7 @@ export function logBetterAuthMessage(
  * Server-only by design: no `createAuthClient` is used anywhere in this app.
  * BRAK/KomPla's registered redirect_uris are pinned to the proxy callback
  * routes rather than Better Auth's own callback path, and SSR loaders/actions
- * already read sessions server-side via `getAuthData`/`authMiddleware`.
+ * already read sessions server-side via `getAuthSession`/`authMiddleware`.
  */
 export const auth = betterAuth({
   secret: serverConfig().BETTER_AUTH_SECRET,
