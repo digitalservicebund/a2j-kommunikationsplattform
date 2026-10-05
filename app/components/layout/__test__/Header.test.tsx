@@ -1,12 +1,13 @@
 // @vitest-environment jsdom
 
+import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import {
   getTestTranslations,
   renderWithTestTranslations,
 } from "tests/utils/translationsUtil";
-import { beforeEach, it, vi } from "vitest";
-import Header from "~/components/Header";
+import { beforeEach, it, vi, expect, describe } from "vitest";
+import Header from "~/components/layout/Header";
 
 const mockNavigate = vi.fn();
 vi.mock("react-router", async () => {
@@ -27,14 +28,13 @@ function expectHeaderToBePresent(container: HTMLElement) {
 
 describe("Header", () => {
   let container: HTMLElement;
-  const { shared } = getTestTranslations();
-  const { buttons } = getTestTranslations();
+  const t = getTestTranslations();
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe("Header when user is NOT logged in", () => {
+  describe("when user is NOT logged in", () => {
     describe("and is NOT on content page", () => {
       beforeEach(() => {
         ({ container } = renderWithTestTranslations(
@@ -43,14 +43,19 @@ describe("Header", () => {
           </MemoryRouter>,
         ));
       });
+
       it("should render <header>", () => {
         expectHeaderToBePresent(container);
       });
+
       it("should render Kopfzeile", () => {
         expect(container.querySelector(".kern-kopfzeile")).toBeInTheDocument();
       });
+
       it("should not render header's Logo, UserProfile or Navigation ", () => {
-        expect(container).not.toHaveTextContent(shared.LOGGED_IN_AS_LABEL);
+        expect(container).not.toHaveTextContent(
+          t.layout.userProfile.loggedInAs,
+        );
       });
     });
 
@@ -69,21 +74,19 @@ describe("Header", () => {
         expect(
           container.querySelector(".kern-icon--network_node"),
         ).toBeInTheDocument();
-        expect(container).toHaveTextContent(buttons.ANMELDEN_BUTTON);
-        expect(container).not.toHaveTextContent(shared.LOGGED_IN_AS_LABEL);
+        expect(container).toHaveTextContent(t.layout.header.login);
+        expect(container).not.toHaveTextContent(
+          t.layout.userProfile.loggedInAs,
+        );
       });
       it('should render Anmelden button and, when clicked, navigate to "/login" ', () => {
-        const button = container.querySelector("button") as HTMLButtonElement;
-        expect(container.querySelector("button")).toHaveTextContent(
-          buttons.ANMELDEN_BUTTON,
-        );
-        button.click();
-        expect(mockNavigate).toHaveBeenCalledWith("/login");
+        const link = screen.getByRole("link", { name: t.layout.header.login });
+        expect(link).toHaveAttribute("href", "/login");
       });
     });
   });
 
-  describe("Header when user IS logged in", () => {
+  describe("when user IS logged in", () => {
     describe("and is NOT on content page", () => {
       beforeEach(() => {
         ({ container } = renderWithTestTranslations(
@@ -99,7 +102,7 @@ describe("Header", () => {
         expect(container.querySelector(".kern-kopfzeile")).toBeInTheDocument();
       });
       it("should render header's Logo, UserProfile or Navigation ", () => {
-        expect(container).toHaveTextContent(shared.LOGGED_IN_AS_LABEL);
+        expect(container).toHaveTextContent(t.layout.userProfile.loggedInAs);
       });
     });
 
@@ -115,23 +118,12 @@ describe("Header", () => {
       it("should render <header>", () => {
         expectHeaderToBePresent(container);
       });
-      it("should render Logo and back button, but not Navigation or UserProfile", () => {
-        expect(
-          container.querySelector(".kern-icon--arrow-back"),
-        ).toBeInTheDocument();
-        expect(container).toHaveTextContent(buttons.prev);
+
+      it("should render Logo and UserProfile", () => {
         expect(
           container.querySelector(".kern-icon--network_node"),
         ).toBeInTheDocument();
-        expect(container).not.toHaveTextContent(shared.LOGGED_IN_AS_LABEL);
-      });
-      it("should render Zurück button and, when clicked, navigate back one step in history", () => {
-        const button = container.querySelector("button") as HTMLButtonElement;
-        expect(container.querySelector("button")).toHaveTextContent(
-          buttons.prev,
-        );
-        button.click();
-        expect(mockNavigate).toHaveBeenCalledWith(-1);
+        expect(container).toHaveTextContent(t.layout.userProfile.loggedInAs);
       });
     });
   });

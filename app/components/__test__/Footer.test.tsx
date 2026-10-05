@@ -7,10 +7,11 @@ import {
   renderWithTestTranslations,
 } from "tests/utils/translationsUtil";
 import { it } from "vitest";
-import Footer from "../Footer";
+import Footer from "../layout/Footer";
 
 describe("Footer", () => {
-  const { shared, descriptions, contentLinkLabels } = getTestTranslations();
+  const t = getTestTranslations();
+
   it("should render a <nav/> with links and a project info", () => {
     const { getByLabelText, getByRole } = renderWithTestTranslations(
       <MemoryRouter>
@@ -18,14 +19,14 @@ describe("Footer", () => {
       </MemoryRouter>,
     );
     // check if nav is being rendered
-    expect(getByLabelText(shared.FOOTER_ARIA_LABEL)).toBeInTheDocument();
+    expect(getByLabelText(t.layout.footer.ariaLabel)).toBeInTheDocument();
     // check if a link is being rendered
     expect(
-      getByRole("link", { name: contentLinkLabels.DATENSCHUTZ_LINK_LABEL }),
+      getByRole("link", { name: t.layout.footer.links.dataProtection }),
     ).toBeInTheDocument();
     // check if proejct info is present
     expect(
-      screen.getByText(descriptions.PROJECT_DESCRIPTION),
+      screen.getByText(t.layout.footer.projectDescription),
     ).toBeInTheDocument();
   });
 });

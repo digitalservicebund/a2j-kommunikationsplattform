@@ -1,38 +1,38 @@
 import { expect, test } from "@playwright/test";
 import { getTestTranslations } from "tests/utils/translationsUtil";
 
-const { contentLinkLabels, routes } = getTestTranslations();
+const t = getTestTranslations();
 
 const links = [
   {
-    label: contentLinkLabels.DATENSCHUTZ_LINK_LABEL,
+    label: t.layout.footer.links.dataProtection,
     url: "/datenschutz",
-    h1: routes.DATENSCHUTZ_TITLE,
+    pageHeading: t.routes.DATENSCHUTZ_TITLE,
   },
   {
-    label: contentLinkLabels.WEITERE_INFORMATIONEN_LINK_LABEL,
+    label: t.layout.footer.links.moreInfo,
     url: "/weitere-informationen",
-    h1: routes.WEITERE_INFORMATIONEN_TITLE,
+    pageHeading: t.routes.WEITERE_INFORMATIONEN_TITLE,
   },
   {
-    label: contentLinkLabels.BARRIEREFREIHEIT_LINK_LABEL,
+    label: t.layout.footer.links.accessibility,
     url: "/barrierefreiheit",
-    h1: routes.BARRIEREFREIHEIT_TITLE,
+    pageHeading: t.routes.BARRIEREFREIHEIT_TITLE,
   },
   {
-    label: contentLinkLabels.HILFE_UND_KONTAKT_LINK_LABEL,
+    label: t.layout.footer.links.help,
     url: "/hilfe-und-kontakt",
-    h1: routes.HILFE_UND_KONTAKT_TITLE,
+    pageHeading: t.routes.HILFE_UND_KONTAKT_TITLE,
   },
   {
-    label: contentLinkLabels.OPEN_SOURCE_CODE_LINK_LABEL,
+    label: t.layout.footer.links.openSource,
     url: "/open-source",
-    h1: routes.OPEN_SOURCE_CODE_TITLE,
+    pageHeading: t.routes.OPEN_SOURCE_CODE_TITLE,
   },
   {
-    label: contentLinkLabels.IMPRESSUM_LINK_LABEL,
+    label: t.layout.footer.links.impressum,
     url: "/impressum",
-    h1: routes.IMPRESSUM_TITLE,
+    pageHeading: t.routes.IMPRESSUM_TITLE,
   },
 ];
 
@@ -45,10 +45,12 @@ test.describe("Footer (rendered for alle pages)", () => {
     page,
   }) => {
     await page.goto("/");
-    for (const { label, url, h1 } of links) {
+    for (const { label, url, pageHeading } of links) {
       await page.getByRole("link", { name: label }).click();
       await expect(page).toHaveURL(url);
-      await expect(page.getByRole("heading", { name: h1 })).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: pageHeading }),
+      ).toBeVisible();
     }
   });
 });
