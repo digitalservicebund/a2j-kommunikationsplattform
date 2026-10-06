@@ -63,8 +63,34 @@ if (viteDevServer) {
   }
 }
 
+// Static file serving
 app.use(express.static("build/client", { maxAge: "1h" }));
-app.use(pinoHttp({ logger }));
+
+// Request logging
+app.use(
+  pinoHttp({
+    logger,
+    autoLogging: {
+      // Do not log react-router lazy route disocvery requests
+      // (https://reactrouter.com/explanation/lazy-route-discovery)
+      ignore: (req) => req.url.startsWith("/__manifest"),
+    },
+    //
+    serializers: {
+      // Minimize the request and response attributes being logged to improve
+      // privacy and avoid logging message bloat.
+      req: (req) => ({
+        method: req.method,
+        url: req.url,
+      }),
+      res: (res) => ({
+        statusCode: res.statusCode,
+      }),
+    },
+  }),
+);
+
+// React Router
 app.all(/(.*)/, reactRouterHandler);
 
 app.listen(port, () => {
