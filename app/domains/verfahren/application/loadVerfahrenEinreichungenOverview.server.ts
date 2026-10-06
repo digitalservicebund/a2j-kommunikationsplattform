@@ -4,7 +4,7 @@ import {
   fetchEinreichungStatus,
 } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { fetchVerfahrenById } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { AuthSession } from "~/services/auth/auth.types";
 import { logger } from "~/utils/logger.server";
 import type {
   Dokument,
@@ -24,15 +24,15 @@ export type VerfahrenEinreichungenOverview = {
 };
 
 export default async function loadVerfahrenEinreichungenOverview(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   verfahrenId: string,
 ): Promise<VerfahrenEinreichungenOverview> {
-  const verfahren = await fetchVerfahrenById(authData, {
+  const verfahren = await fetchVerfahrenById(authSession, {
     id: verfahrenId,
   });
 
   const { elemente: einreichungenList } = await fetchEinreichungenById(
-    authData,
+    authSession,
     {
       id: verfahrenId,
     },
@@ -43,12 +43,12 @@ export default async function loadVerfahrenEinreichungenOverview(
   const einreichungen = await Promise.all(
     einreichungenList.map(async (einreichung) => {
       const einreichungsStatus: EinreichungStatus =
-        await fetchEinreichungStatus(authData, {
+        await fetchEinreichungStatus(authSession, {
           id: einreichung.id,
           verfahrenId,
         });
 
-      const { elemente: dokumente } = await fetchDokumente(authData, {
+      const { elemente: dokumente } = await fetchDokumente(authSession, {
         verfahrenId,
         einreichungId: einreichung.id,
       });

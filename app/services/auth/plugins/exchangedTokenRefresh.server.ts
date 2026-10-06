@@ -1,5 +1,5 @@
 import type { BetterAuthPlugin } from "better-auth";
-import { AuthenticationProvider } from "../auth.types";
+import { AuthProvider } from "../auth.types";
 
 /**
  * Fixes token refresh for non-KomPla-IDP OAuth logins, such as BRAK IdP (beA).
@@ -23,19 +23,19 @@ export function exchangedTokenRefreshPlugin() {
     id: "exchanged-token-refresh-plugin",
     init: (ctx) => {
       const komplaIdp = ctx.socialProviders.find(
-        (provider) => provider.id === AuthenticationProvider.KOMPLA_IDP,
+        (provider) => provider.id === AuthProvider.KOMPLA_IDP,
       );
 
       if (!komplaIdp?.refreshAccessToken) {
         throw new Error(
-          `exchangedTokenRefreshPlugin requires the "${AuthenticationProvider.KOMPLA_IDP}" provider to be registered first`,
+          `exchangedTokenRefreshPlugin requires the "${AuthProvider.KOMPLA_IDP}" provider to be registered first`,
         );
       }
 
       return {
         context: {
           socialProviders: ctx.socialProviders.map((provider) =>
-            provider.id !== AuthenticationProvider.KOMPLA_IDP
+            provider.id !== AuthProvider.KOMPLA_IDP
               ? {
                   ...provider,
                   refreshAccessToken: komplaIdp.refreshAccessToken,

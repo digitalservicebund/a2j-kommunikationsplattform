@@ -13,7 +13,7 @@ import {
   EinreichungSchema,
 } from "~/domains/verfahren/infrastructure/schemas/einreichung.schema";
 import { ValidierungsstatusSchema } from "~/domains/verfahren/infrastructure/schemas/validierungsstatus.schema";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { AuthSession } from "~/services/auth/auth.types";
 
 type FetchEinreichungByIdOptions = {
   id: string;
@@ -26,11 +26,11 @@ export type FetchEinreichungByIdResult = {
 };
 
 export async function fetchEinreichungById(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: FetchEinreichungByIdOptions,
 ): Promise<FetchEinreichungByIdResult> {
   const { data, eTag } = await apiRequest<Einreichung>({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.id}`,
     schema: EinreichungSchema,
     includeResponseETag: true,
@@ -48,11 +48,11 @@ type FetchEinreichungenByIdOptions = {
 };
 
 export async function fetchEinreichungenById(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: FetchEinreichungenByIdOptions,
 ): Promise<z.infer<typeof EinreichungenSchema>> {
   return apiRequest({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${options.id}/einreichungen`,
     schema: EinreichungenSchema,
     errorMessage: `Einreichungen of Verfahren with id ${options.id} could not be fetched.`,
@@ -65,11 +65,11 @@ type FetchEinreichungStatusOptions = {
 };
 
 export async function fetchEinreichungStatus(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: FetchEinreichungStatusOptions,
 ): Promise<Validierungsstatus> {
   return apiRequest({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.id}/validierungsstatus`,
     schema: ValidierungsstatusSchema,
     errorMessage: `Validierungsstatus for Einreichung with id ${options.id} of Verfahren with id ${options.verfahrenId} could not be fetched.`,
@@ -82,11 +82,11 @@ type FetchEinreichungXJustizOptions = {
 };
 
 export async function fetchEinreichungXJustiz(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: FetchEinreichungXJustizOptions,
 ): Promise<string> {
   return apiRequest<string>({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.id}/xjustiz`,
     responseType: "text",
     errorMessage: `XJustiz-Nachricht for Einreichung with id ${options.id} of Verfahren with id ${options.verfahrenId} could not be fetched.`,
@@ -100,11 +100,11 @@ type CreateEinreichungXJustizOptions = {
 };
 
 export async function createEinreichungXJustiz(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: CreateEinreichungXJustizOptions,
 ): Promise<void> {
   await apiRequest({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.id}/xjustiz`,
     method: "POST",
     body: { ersetzen: options.ersetzen },
@@ -113,12 +113,12 @@ export async function createEinreichungXJustiz(
 }
 
 export async function createEinreichung(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   verfahrenId: string,
   name: string,
 ): Promise<EinreichungErstellenResponse> {
   return apiRequest({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${verfahrenId}/einreichungen`,
     method: "POST",
     body: { name },
@@ -134,11 +134,11 @@ type SubmitEinreichungenOptions = {
 };
 
 export async function submitEinreichungen(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: SubmitEinreichungenOptions,
 ): Promise<EinreichenResponse> {
   return apiRequest({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.id}/einreichen`,
     method: "POST",
     eTag: options.eTag,

@@ -1,5 +1,5 @@
+import { makeAuthSession } from "tests/utils/factories/authSession";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
 import {
   createEinreichung,
   createEinreichungXJustiz,
@@ -41,14 +41,14 @@ describe("fetchEinreichungById", () => {
       eTag: 'W/"1"',
     });
 
-    const result = await fetchEinreichungById(mockAuthData, {
+    const result = await fetchEinreichungById(makeAuthSession(), {
       id: "e-1",
       verfahrenId: "v-1",
     });
 
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen/e-1",
         includeResponseETag: true,
         errorMessage:
@@ -64,11 +64,13 @@ describe("fetchEinreichungenById", () => {
     const einreichungen = { elemente: [] };
     mocks.apiRequest.mockResolvedValueOnce(einreichungen);
 
-    const result = await fetchEinreichungenById(mockAuthData, { id: "v-1" });
+    const result = await fetchEinreichungenById(makeAuthSession(), {
+      id: "v-1",
+    });
 
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen",
         errorMessage:
           "Einreichungen of Verfahren with id v-1 could not be fetched.",
@@ -87,14 +89,14 @@ describe("fetchEinreichungStatus", () => {
     };
     mocks.apiRequest.mockResolvedValueOnce(status);
 
-    const result = await fetchEinreichungStatus(mockAuthData, {
+    const result = await fetchEinreichungStatus(makeAuthSession(), {
       id: "e-1",
       verfahrenId: "v-1",
     });
 
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/validierungsstatus",
         errorMessage:
           "Validierungsstatus for Einreichung with id e-1 of Verfahren with id v-1 could not be fetched.",
@@ -109,7 +111,7 @@ describe("fetchEinreichungXJustiz", () => {
     const xml = "<xjustiz>...</xjustiz>";
     mocks.apiRequest.mockResolvedValueOnce(xml);
 
-    const result = await fetchEinreichungXJustiz(mockAuthData, {
+    const result = await fetchEinreichungXJustiz(makeAuthSession(), {
       verfahrenId: "v-1",
       id: "e-1",
     });
@@ -117,7 +119,7 @@ describe("fetchEinreichungXJustiz", () => {
     expect(result).toBe(xml);
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/xjustiz",
         responseType: "text",
         errorMessage:
@@ -131,7 +133,7 @@ describe("createEinreichungXJustiz", () => {
   it("posts ersetzen to the xjustiz endpoint", async () => {
     mocks.apiRequest.mockResolvedValueOnce(undefined);
 
-    await createEinreichungXJustiz(mockAuthData, {
+    await createEinreichungXJustiz(makeAuthSession(), {
       verfahrenId: "v-1",
       id: "e-1",
       ersetzen: true,
@@ -139,7 +141,7 @@ describe("createEinreichungXJustiz", () => {
 
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/xjustiz",
         method: "POST",
         body: { ersetzen: true },
@@ -162,14 +164,14 @@ describe("createEinreichung", () => {
     mocks.apiRequest.mockResolvedValueOnce(mockEinreichung);
 
     const result = await createEinreichung(
-      mockAuthData,
+      makeAuthSession(),
       "v-1",
       "Klageeinreichung",
     );
 
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen",
         method: "POST",
         body: { name: "Klageeinreichung" },
@@ -183,7 +185,7 @@ describe("createEinreichung", () => {
   it("sends the given name as the request body (e.g. for a weitere Einreichung)", async () => {
     mocks.apiRequest.mockResolvedValueOnce({});
 
-    await createEinreichung(mockAuthData, "v-1", "Schriftsatz");
+    await createEinreichung(makeAuthSession(), "v-1", "Schriftsatz");
 
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({ body: { name: "Schriftsatz" } }),
@@ -195,7 +197,7 @@ describe("submitEinreichungen", () => {
   it("calls the einreichen endpoint with the given eTag and returns the camelCase result", async () => {
     mocks.apiRequest.mockResolvedValueOnce({ belegId: "b-1" });
 
-    const result = await submitEinreichungen(mockAuthData, {
+    const result = await submitEinreichungen(makeAuthSession(), {
       verfahrenId: "v-1",
       id: "e-1",
       eTag: 'W/"0"',
@@ -204,7 +206,7 @@ describe("submitEinreichungen", () => {
     expect(result).toEqual({ belegId: "b-1" });
 
     expect(mocks.apiRequest).toHaveBeenCalledWith({
-      authData: mockAuthData,
+      authSession: makeAuthSession(),
       path: "/api/v1/verfahren/v-1/einreichungen/e-1/einreichen",
       method: "POST",
       eTag: 'W/"0"',

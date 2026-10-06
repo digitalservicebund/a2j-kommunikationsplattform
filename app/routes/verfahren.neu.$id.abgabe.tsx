@@ -31,7 +31,7 @@ import {
   fetchDokumentValidierungsstatus,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { authMiddleware } from "~/middleware/auth.server";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { AuthSession } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
 import {
@@ -52,18 +52,18 @@ type LoaderData = {
 export const middleware = [authMiddleware];
 
 export const loader = async ({ context, params }: LoaderFunctionArgs) => {
-  const { authData, verfahrenId } = requireAuthAndVerfahrenId(
+  const { authSession, verfahrenId } = requireAuthAndVerfahrenId(
     context,
     params,
     "loader",
   );
   const { verfahren, einreichung, dokumente } =
-    await loadVerfahrenEinreichungBundle(authData, verfahrenId);
+    await loadVerfahrenEinreichungBundle(authSession, verfahrenId);
 
   const dokumenteWithValidierungsstatus = await Promise.all(
     dokumente.map(async (dokument) => {
       const validierungsstatus = await fetchDokumentValidierungsstatus(
-        authData,
+        authSession,
         {
           verfahrenId,
           einreichungId: einreichung.id,
@@ -75,7 +75,7 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
     }),
   );
 
-  const beleg = await fetchLatestBelegForEinreichung(authData, {
+  const beleg = await fetchLatestBelegForEinreichung(authSession, {
     verfahrenId,
     einreichungId: einreichung.id,
   });
@@ -89,13 +89,13 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
 };
 
 type FormActionContext = {
-  authData: AuthenticationResponse;
+  authSession: AuthSession;
   verfahrenId: string;
 };
 
 async function handleDelete(
   formData: FormData,
-  { authData, verfahrenId }: FormActionContext,
+  { authSession, verfahrenId }: FormActionContext,
 ) {
   const actionData = {
     formType: "delete",
@@ -104,7 +104,7 @@ async function handleDelete(
 
   try {
     const deleteResult = await deleteDokumentFromEinreichung({
-      authData,
+      authSession,
       verfahrenId,
       einreichungId: formData.get("einreichungId"),
       dokumentId: formData.get("dokumentId"),
@@ -139,12 +139,15 @@ async function handleDelete(
 
 async function handleEinreichen(
   formData: FormData,
-  { authData, verfahrenId }: FormActionContext,
+  { authSession, verfahrenId }: FormActionContext,
 ) {
   const einreichungId = formData.get("einreichungId") as string;
 
   try {
-    await submitEinreichungIfNeeded(authData, { verfahrenId, einreichungId });
+    await submitEinreichungIfNeeded(authSession, {
+      verfahrenId,
+      einreichungId,
+    });
 
     return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
   } catch (error) {
@@ -156,12 +159,12 @@ async function handleEinreichen(
 
 async function handleDownloadBeleg(
   formData: FormData,
-  { authData, verfahrenId }: FormActionContext,
+  { authSession, verfahrenId }: FormActionContext,
 ) {
   const belegId = formData.get("belegId") as string;
 
   try {
-    const downloadUrl = await fetchBelegDownloadLink(authData, {
+    const downloadUrl = await fetchBelegDownloadLink(authSession, {
       verfahrenId,
       id: belegId,
       dispositionType: "ATTACHMENT",
@@ -186,7 +189,7 @@ export const action = async ({
   context,
   params,
 }: ActionFunctionArgs) => {
-  const { authData, verfahrenId } = requireAuthAndVerfahrenId(
+  const { authSession, verfahrenId } = requireAuthAndVerfahrenId(
     context,
     params,
     "action",
@@ -197,7 +200,7 @@ export const action = async ({
   return dispatchFormAction(
     formData,
     formActionHandlers,
-    { authData, verfahrenId },
+    { authSession, verfahrenId },
     () => redirect(`/verfahren/${verfahrenId}`),
   );
 };

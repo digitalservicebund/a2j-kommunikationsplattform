@@ -1,27 +1,25 @@
 import { authContext } from "~/middleware/auth.server";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { AuthSession } from "~/services/auth/auth.types";
 
 type ParamsWithId = {
   id?: string;
 };
 
 type ContextWithGet = {
-  get: (
-    context: typeof authContext,
-  ) => AuthenticationResponse | null | undefined;
+  get: (context: typeof authContext) => AuthSession | null | undefined;
 };
 
-export function requireAuthData(
+export function requireAuthSession(
   context: ContextWithGet,
   source: "loader" | "action",
-): AuthenticationResponse {
-  const authData = context.get(authContext);
+): AuthSession {
+  const authSession = context.get(authContext);
 
-  if (!authData) {
+  if (!authSession) {
     throw new Error(`No auth data available in ${source}`);
   }
 
-  return authData;
+  return authSession;
 }
 
 export function requireVerfahrenId(
@@ -42,11 +40,11 @@ export function requireAuthAndVerfahrenId(
   params: ParamsWithId,
   source: "loader" | "action",
 ): {
-  authData: AuthenticationResponse;
+  authSession: AuthSession;
   verfahrenId: string;
 } {
   return {
-    authData: requireAuthData(context, source),
+    authSession: requireAuthSession(context, source),
     verfahrenId: requireVerfahrenId(params, source),
   };
 }

@@ -1,6 +1,6 @@
 import z from "zod";
 import { serverConfig } from "~/config/config.server";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { AuthSession } from "~/services/auth/auth.types";
 import {
   logApiErrorAndThrow,
   logParsingErrorAndThrow,
@@ -22,7 +22,7 @@ type ApiRequestUrlOptions =
     };
 
 type ApiRequestOptions<T = unknown> = ApiRequestUrlOptions & {
-  authData: AuthenticationResponse;
+  authSession: AuthSession;
   method?: string;
   body?: unknown;
   eTag?: string;
@@ -213,7 +213,7 @@ export async function apiRequest<T = unknown>(
   | ApiRequestHandledResult<T>
 > {
   const {
-    authData,
+    authSession,
     path,
     fullUrl,
     method = "GET",
@@ -231,7 +231,7 @@ export async function apiRequest<T = unknown>(
   const url = fullUrl ?? `${serverConfig().KOMPLA_API_URL}${path}`;
 
   const headers: Record<string, string> = {
-    Authorization: `Bearer ${authData.authenticationTokens.accessToken}`,
+    Authorization: `Bearer ${authSession.accessToken}`,
     Accept: responseType === "text" ? "*/*" : "application/json",
     ...customHeaders,
   };

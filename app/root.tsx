@@ -23,7 +23,7 @@ import Header from "./components/layout/Header";
 import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
 import { config } from "./config/config";
 import { META_PAGES } from "./config/metaPages";
-import { getAuthData } from "./services/auth/authSession.server";
+import { getAuthSession } from "./services/auth/authSession.server";
 import de from "./services/translations/de";
 import styles from "./styles.css?url";
 
@@ -31,8 +31,8 @@ export { headers } from "./rootHeaders";
 export type RootLoader = typeof loader;
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const authData = await getAuthData(request);
-  const userIsLoggedIn = Boolean(authData);
+  const authSession = await getAuthSession(request);
+  const userIsLoggedIn = Boolean(authSession);
   const pathname = new URL(request.url).pathname;
   const isContentPage = META_PAGES.some((page) => `/${page.path}` === pathname);
   return data({ userIsLoggedIn, isContentPage });

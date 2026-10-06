@@ -1,6 +1,6 @@
+import { makeAuthSession } from "tests/utils/factories/authSession";
 import { makeVerfahren } from "tests/utils/factories/verfahren";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
 import {
   performLift,
   validateLiftCode,
@@ -28,11 +28,11 @@ describe("validateLiftCode", () => {
       eTag: 'W/"1"',
     });
 
-    const result = await validateLiftCode(mockAuthData, "K7M49PXQ2WRT");
+    const result = await validateLiftCode(makeAuthSession(), "K7M49PXQ2WRT");
 
     expect(vi.mocked(apiRequest)).toHaveBeenCalledWith(
       expect.objectContaining({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         path: "/api/v1/lift",
         headers: { "lift-schluessel": "K7M49PXQ2WRT" },
         includeResponseETag: true,
@@ -52,7 +52,7 @@ describe("validateLiftCode", () => {
         eTag: 'W/"1"',
       });
 
-      await validateLiftCode(mockAuthData, code);
+      await validateLiftCode(makeAuthSession(), code);
 
       expect(vi.mocked(apiRequest)).toHaveBeenCalled();
       const { headers } = vi.mocked(apiRequest).mock.lastCall![0];
@@ -65,7 +65,7 @@ describe("performLift", () => {
   it("posts the redemption request with the given E-Tag and payload", async () => {
     vi.mocked(apiRequest).mockResolvedValueOnce({ verfahrenId: "v-1" });
 
-    const result = await performLift(mockAuthData, {
+    const result = await performLift(makeAuthSession(), {
       code: "K7M49PXQ2WRT",
       liftId: "l-1",
       liftETag: 'W/"1"',
@@ -76,7 +76,7 @@ describe("performLift", () => {
 
     expect(vi.mocked(apiRequest)).toHaveBeenCalledWith(
       expect.objectContaining({
-        authData: mockAuthData,
+        authSession: makeAuthSession(),
         method: "POST",
         path: "/api/v1/lift/l-1",
         headers: { "If-Match": 'W/"1"' },

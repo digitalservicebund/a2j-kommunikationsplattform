@@ -8,7 +8,7 @@ import {
   SORT_VALUES,
   toSortQueryValue,
 } from "~/domains/verfahren/services/verfahrenListOptions";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { AuthSession } from "~/services/auth/auth.types";
 import { buildSearchParams } from "~/utils/buildSearchParams";
 
 const fetchVerfahrenOptionsSchema = z.object({
@@ -26,7 +26,7 @@ export const fetchVerfahrenSchema = z.object({
 });
 
 export async function fetchVerfahren(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options?: FetchVerfahrenOptions,
 ): Promise<z.infer<typeof fetchVerfahrenSchema>> {
   const errorMessage = "Verfahren could not be fetched.";
@@ -49,7 +49,7 @@ export async function fetchVerfahren(
   });
 
   return apiRequest({
-    authData,
+    authSession,
     fullUrl: url.toString(),
     schema: fetchVerfahrenSchema,
     errorMessage,
@@ -61,11 +61,11 @@ type FetchVerfahrenByIdOptions = {
 };
 
 export async function fetchVerfahrenById(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: FetchVerfahrenByIdOptions,
 ): Promise<Verfahren> {
   return apiRequest({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${options.id}`,
     schema: VerfahrenSchema,
     errorMessage: `Verfahren with ${options.id} could not be fetched.`,
@@ -73,18 +73,18 @@ export async function fetchVerfahrenById(
 }
 
 export async function createVerfahren(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   verfahren?: VerfahrenAendernRequestDTO,
 ): Promise<Verfahren> {
   const errorMessage = "Verfahren could not be created.";
-  const safeId = authData.authenticationTokens.idToken;
+  const safeId = authSession.safeId;
 
   if (!safeId) {
     throw new Error("No safeId is available");
   }
 
   return apiRequest({
-    authData,
+    authSession,
     path: "/api/v1/verfahren",
     method: "POST",
     body: { safe_id: safeId, verfahren },
@@ -94,7 +94,7 @@ export async function createVerfahren(
 }
 
 export async function updateVerfahren(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   id: string,
   verfahren: VerfahrenAendernRequestDTO,
 ): Promise<Verfahren> {
@@ -103,7 +103,7 @@ export async function updateVerfahren(
   // The API enforces optimistic concurrency via If-Match, so the current
   // eTag must be read immediately before the PUT.
   const { eTag } = await apiRequest<Verfahren>({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${id}`,
     schema: VerfahrenSchema,
     includeResponseETag: true,
@@ -111,7 +111,7 @@ export async function updateVerfahren(
   });
 
   return apiRequest({
-    authData,
+    authSession,
     path: `/api/v1/verfahren/${id}`,
     method: "PUT",
     body: { ...verfahren },

@@ -3,7 +3,7 @@ import {
   fetchEinreichungById,
   submitEinreichungen,
 } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { AuthSession } from "~/services/auth/auth.types";
 
 type SubmitEinreichungIfNeededOptions = {
   verfahrenId: string;
@@ -15,21 +15,21 @@ type SubmitEinreichungIfNeededOptions = {
 // is ERSTELLT/FEHLGESCHLAGEN, and rejects it with 409 once a Beleg already
 // exists.
 export default async function submitEinreichungIfNeeded(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   options: SubmitEinreichungIfNeededOptions,
 ): Promise<void> {
-  const { elemente: existingBelege } = await fetchBelege(authData, options);
+  const { elemente: existingBelege } = await fetchBelege(authSession, options);
 
   if (existingBelege.length > 0) {
     return;
   }
 
-  const { eTag } = await fetchEinreichungById(authData, {
+  const { eTag } = await fetchEinreichungById(authSession, {
     verfahrenId: options.verfahrenId,
     id: options.einreichungId,
   });
 
-  await submitEinreichungen(authData, {
+  await submitEinreichungen(authSession, {
     verfahrenId: options.verfahrenId,
     id: options.einreichungId,
     eTag: eTag ?? "",

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AuthenticationProvider } from "../auth.types";
+import { AuthProvider } from "../auth.types";
 
 vi.mock("../betterAuth.server", () => {
   const getSession = vi.fn();
@@ -25,7 +25,7 @@ vi.mock("../betterAuth.server", () => {
   };
 });
 
-import { getAuthData } from "../authSession.server";
+import { getAuthSession } from "../authSession.server";
 import * as betterAuthModule from "../betterAuth.server";
 
 const mocks = (
@@ -50,7 +50,7 @@ function mockSession(user: Record<string, unknown> | null) {
   });
 }
 
-describe("getAuthData", () => {
+describe("getAuthSession", () => {
   const request = new Request("http://localhost/protected");
 
   beforeEach(() => {
@@ -59,20 +59,20 @@ describe("getAuthData", () => {
 
   it("returns null when there is no session", async () => {
     mockSession(null);
-    const result = await getAuthData(request);
+    const result = await getAuthSession(request);
     expect(result).toBeNull();
   });
 
   it("returns tokens for BEA via getAccessToken, using the user's safeId as idToken", async () => {
     mockSession({
       id: "user-1",
-      authProvider: AuthenticationProvider.BEA,
+      authProvider: AuthProvider.BEA,
       safeId: "DE.BRAK_SPT.abc",
     });
     mocks.listUserAccounts.mockResolvedValue([
       {
         id: "bea-row-id-1",
-        providerId: AuthenticationProvider.BEA,
+        providerId: AuthProvider.BEA,
         accountId: "bea-provider-account-1",
       },
     ]);
@@ -84,28 +84,28 @@ describe("getAuthData", () => {
       headers: emptyHeaders,
     });
 
-    const result = await getAuthData(request);
+    const result = await getAuthSession(request);
 
     expect(mocks.getAccessToken).toHaveBeenCalledWith(
       expect.objectContaining({
         body: { accountId: "bea-row-id-1", userId: "user-1" },
       }),
     );
-    expect(result?.provider).toBe(AuthenticationProvider.BEA);
-    expect(result?.authenticationTokens.accessToken).toBe("bea-access-token");
-    expect(result?.authenticationTokens.idToken).toBe("DE.BRAK_SPT.abc");
+    expect(result?.provider).toBe(AuthProvider.BEA);
+    expect(result?.accessToken).toBe("bea-access-token");
+    expect(result?.safeId).toBe("DE.BRAK_SPT.abc");
   });
 
   it("returns tokens for KOMPLA_IDP via getAccessToken, using the user's safeId as idToken", async () => {
     mockSession({
       id: "user-2",
-      authProvider: AuthenticationProvider.KOMPLA_IDP,
+      authProvider: AuthProvider.KOMPLA_IDP,
       safeId: "DE.KOMPLA_SPT.xyz",
     });
     mocks.listUserAccounts.mockResolvedValue([
       {
         id: "kompla-row-id-1",
-        providerId: AuthenticationProvider.KOMPLA_IDP,
+        providerId: AuthProvider.KOMPLA_IDP,
         accountId: "kompla-provider-account-1",
       },
     ]);
@@ -117,25 +117,23 @@ describe("getAuthData", () => {
       headers: emptyHeaders,
     });
 
-    const result = await getAuthData(request);
+    const result = await getAuthSession(request);
 
-    expect(result?.provider).toBe(AuthenticationProvider.KOMPLA_IDP);
-    expect(result?.authenticationTokens.accessToken).toBe(
-      "kompla-access-token",
-    );
-    expect(result?.authenticationTokens.idToken).toBe("DE.KOMPLA_SPT.xyz");
+    expect(result?.provider).toBe(AuthProvider.KOMPLA_IDP);
+    expect(result?.accessToken).toBe("kompla-access-token");
+    expect(result?.safeId).toBe("DE.KOMPLA_SPT.xyz");
   });
 
   it("returns null instead of throwing when getAccessToken fails (e.g. expired refresh token)", async () => {
     mockSession({
       id: "user-7",
-      authProvider: AuthenticationProvider.BEA,
+      authProvider: AuthProvider.BEA,
       safeId: "DE.BRAK_SPT.abc",
     });
     mocks.listUserAccounts.mockResolvedValue([
       {
         id: "bea-row-id-2",
-        providerId: AuthenticationProvider.BEA,
+        providerId: AuthProvider.BEA,
         accountId: "bea-provider-account-2",
       },
     ]);
@@ -143,6 +141,6 @@ describe("getAuthData", () => {
       new Error("Failed to get a valid access token"),
     );
 
-    await expect(getAuthData(request)).resolves.toBeNull();
+    await expect(getAuthSession(request)).resolves.toBeNull();
   });
 });

@@ -9,7 +9,7 @@ import { Agent, fetch } from "undici";
 import { serverConfig } from "~/config/config.server";
 import { logApiErrorAndThrow } from "~/utils/logApiError";
 import { logger } from "~/utils/logger.server";
-import { AuthenticationProvider } from "../auth.types";
+import { AuthProvider } from "../auth.types";
 
 type IdTokenClaims = {
   sub: string;
@@ -30,7 +30,7 @@ function decodeIdTokenClaims(idToken: string): IdTokenClaims {
  * information from the ID token, synthesizing missing data required by
  * Better Auth if needed.
  */
-export function makeGetUserInfo<P extends AuthenticationProvider>(
+export function makeGetUserInfo<P extends AuthProvider>(
   provider: P,
 ): NonNullable<GenericOAuthConfig<P>["getUserInfo"]> {
   return async (tokens) => {
@@ -68,7 +68,7 @@ export function makeGetUserInfo<P extends AuthenticationProvider>(
  * Creates an OAuth `mapProfileToUser` implementation which derives extra
  * user fields  from the user info (ID token claims) returned by `getUserInfo`.
  */
-export function makeMapProfileToUser<P extends AuthenticationProvider>(
+export function makeMapProfileToUser<P extends AuthProvider>(
   provider: P,
 ): NonNullable<GenericOAuthConfig<P>["mapProfileToUser"]> {
   return (profile) => ({
@@ -165,7 +165,7 @@ export function makeGetTokenFromBrakIdp(options: {
   clientSecret: string;
   scopes: string[];
   redirectURI: string;
-}): NonNullable<GenericOAuthConfig<AuthenticationProvider.BEA>["getToken"]> {
+}): NonNullable<GenericOAuthConfig<AuthProvider.BEA>["getToken"]> {
   const config = serverConfig();
   const discoveryUrl = `${config.BRAK_IDP_OIDC_ISSUER}/.well-known/openid-configuration`;
 
@@ -265,7 +265,7 @@ export function makeGetTokenFromBrakIdp(options: {
 /**
  * OAuth configuration for the BRAK Identiy Provier (beA Login).
  */
-export function brakIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvider.BEA> {
+export function brakIdpOAuthConfig(): GenericOAuthConfig<AuthProvider.BEA> {
   const config = serverConfig();
   const clientId = config.BRAK_IDP_OIDC_CLIENT_ID;
   const clientSecret = config.BRAK_IDP_OIDC_CLIENT_SECRET;
@@ -274,7 +274,7 @@ export function brakIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvider.
   const scopes = ["openid"];
 
   return {
-    providerId: AuthenticationProvider.BEA,
+    providerId: AuthProvider.BEA,
     clientId,
     clientSecret,
     discoveryUrl,
@@ -283,8 +283,8 @@ export function brakIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvider.
     redirectURI: config.BRAK_IDP_OIDC_REDIRECT_URI,
     scopes,
     pkce: true,
-    getUserInfo: makeGetUserInfo(AuthenticationProvider.BEA),
-    mapProfileToUser: makeMapProfileToUser(AuthenticationProvider.BEA),
+    getUserInfo: makeGetUserInfo(AuthProvider.BEA),
+    mapProfileToUser: makeMapProfileToUser(AuthProvider.BEA),
     getToken: makeGetTokenFromBrakIdp({
       clientId,
       clientSecret,
@@ -294,9 +294,9 @@ export function brakIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvider.
   };
 }
 
-export function komplaIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvider.KOMPLA_IDP> {
+export function komplaIdpOAuthConfig(): GenericOAuthConfig<AuthProvider.KOMPLA_IDP> {
   return {
-    providerId: AuthenticationProvider.KOMPLA_IDP,
+    providerId: AuthProvider.KOMPLA_IDP,
     clientId: serverConfig().KOMPLA_IDP_OIDC_CLIENT_ID,
     clientSecret: serverConfig().KOMPLA_IDP_OIDC_CLIENT_SECRET,
     discoveryUrl: `${serverConfig().KOMPLA_IDP_OIDC_ISSUER}/.well-known/openid-configuration`,
@@ -305,8 +305,8 @@ export function komplaIdpOAuthConfig(): GenericOAuthConfig<AuthenticationProvide
     redirectURI: serverConfig().KOMPLA_IDP_OIDC_REDIRECT_URI,
     scopes: ["openid"],
     pkce: true,
-    getUserInfo: makeGetUserInfo(AuthenticationProvider.KOMPLA_IDP),
-    mapProfileToUser: makeMapProfileToUser(AuthenticationProvider.KOMPLA_IDP),
+    getUserInfo: makeGetUserInfo(AuthProvider.KOMPLA_IDP),
+    mapProfileToUser: makeMapProfileToUser(AuthProvider.KOMPLA_IDP),
   };
 }
 

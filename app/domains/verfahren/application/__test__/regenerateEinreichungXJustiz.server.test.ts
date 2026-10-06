@@ -1,5 +1,5 @@
+import { makeAuthSession } from "tests/utils/factories/authSession";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
 import regenerateEinreichungXJustiz from "../regenerateEinreichungXJustiz.server";
 
 const mocks = vi.hoisted(() => ({
@@ -19,15 +19,18 @@ describe("regenerateEinreichungXJustiz", () => {
   });
 
   it("creates the XJustiz-Dokument with ersetzen: true", async () => {
-    await regenerateEinreichungXJustiz(mockAuthData, {
+    await regenerateEinreichungXJustiz(makeAuthSession(), {
       verfahrenId: "v-1",
       einreichungId: "e-1",
     });
 
-    expect(mocks.createEinreichungXJustiz).toHaveBeenCalledWith(mockAuthData, {
-      verfahrenId: "v-1",
-      id: "e-1",
-      ersetzen: true,
-    });
+    expect(mocks.createEinreichungXJustiz).toHaveBeenCalledWith(
+      makeAuthSession(),
+      {
+        verfahrenId: "v-1",
+        id: "e-1",
+        ersetzen: true,
+      },
+    );
   });
 });

@@ -1,5 +1,5 @@
+import { makeAuthSession } from "tests/utils/factories/authSession";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
 import loadVerfahrenEinreichungenOverview from "../loadVerfahrenEinreichungenOverview.server";
 
 const mocks = vi.hoisted(() => ({
@@ -63,13 +63,13 @@ describe("loadVerfahrenEinreichungenOverview", () => {
       .mockResolvedValueOnce({ elemente: dokumenteB });
 
     const result = await loadVerfahrenEinreichungenOverview(
-      mockAuthData,
+      makeAuthSession(),
       "v-1",
     );
 
     expect(mocks.fetchEinreichungStatus).toHaveBeenNthCalledWith(
       1,
-      mockAuthData,
+      makeAuthSession(),
       {
         id: "e-1",
         verfahrenId: "v-1",
@@ -77,7 +77,7 @@ describe("loadVerfahrenEinreichungenOverview", () => {
     );
     expect(mocks.fetchEinreichungStatus).toHaveBeenNthCalledWith(
       2,
-      mockAuthData,
+      makeAuthSession(),
       {
         id: "e-2",
         verfahrenId: "v-1",
@@ -110,7 +110,7 @@ describe("loadVerfahrenEinreichungenOverview", () => {
     mocks.fetchEinreichungenById.mockResolvedValueOnce({ elemente: [] });
 
     await expect(
-      loadVerfahrenEinreichungenOverview(mockAuthData, "v-1"),
+      loadVerfahrenEinreichungenOverview(makeAuthSession(), "v-1"),
     ).resolves.toEqual({
       verfahren: { id: "v-1" },
       einreichungen: [],

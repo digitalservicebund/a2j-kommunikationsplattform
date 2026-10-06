@@ -1,11 +1,11 @@
 import { logger } from "~/utils/logger.server";
-import { AuthenticationProvider, AuthenticationResponse } from "./auth.types";
+import { AuthProvider, AuthSession } from "./auth.types";
 import { auth } from "./betterAuth.server";
 
 async function getOAuth2Tokens(
   request: Request,
   userId: string,
-  provider: AuthenticationProvider,
+  provider: AuthProvider,
 ) {
   const accounts = await auth.api.listUserAccounts({
     headers: request.headers,
@@ -22,13 +22,8 @@ async function getOAuth2Tokens(
       headers: request.headers,
       returnHeaders: true,
     });
-
     return {
       accessToken: response.accessToken,
-      idToken: response.idToken,
-      expiresAt: response.accessTokenExpiresAt
-        ? new Date(response.accessTokenExpiresAt).getTime()
-        : Date.now(),
       setCookieHeaders: headers.getSetCookie(),
     };
   } catch (error) {
@@ -38,25 +33,25 @@ async function getOAuth2Tokens(
 }
 
 /**
- * Retrieves authentication data for the current request from the Better
- * Auth session, resolving/refreshing the underlying provider access token.
- * Returns null if no valid session exists, allowing middleware to redirect.
+ * Retrieves the authentication session details for the user who made the
+ * given request. Returns null if the user has no valid authentication session,
+ * for instance because they are not logged in or the session expired.
  */
-export const getAuthData = async (
+export const getAuthSession = async (
   request: Request,
-): Promise<AuthenticationResponse | null> => {
-  const { response: sessionData, headers: sessionHeaders } =
+): Promise<AuthSession | null> => {
+  const { response: sessionResponse, headers: sessionHeaders } =
     await auth.api.getSession({
       headers: request.headers,
       returnHeaders: true,
     });
 
-  if (!sessionData) {
+  if (!sessionResponse) {
     return null;
   }
 
-  const { user } = sessionData;
-  const provider = user.authProvider as AuthenticationProvider;
+  const { user } = sessionResponse;
+  const provider = user.authProvider as AuthProvider;
   const setCookieHeaders = sessionHeaders.getSetCookie();
 
   const tokens = await getOAuth2Tokens(request, user.id, provider);
@@ -65,11 +60,12 @@ export const getAuthData = async (
   }
 
   return {
-    authenticationTokens: {
-      accessToken: tokens.accessToken,
-      idToken: user?.safeId ?? tokens.idToken,
-    },
-    sessionCookieHeader: [...setCookieHeaders, ...tokens.setCookieHeaders],
     provider,
+    accessToken: tokens.accessToken,
+    safeId: user?.safeId ?? null,
+    // TODO: Derive `authorizedForSafeIds` from the `granted_privileges` of
+    // the access token once it becomes available.
+    authorizedForSafeIds: user?.safeId ? [user.safeId] : [],
+    sessionCookieHeaders: [...setCookieHeaders, ...tokens.setCookieHeaders],
   };
 };

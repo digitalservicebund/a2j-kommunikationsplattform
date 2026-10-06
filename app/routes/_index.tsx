@@ -11,7 +11,7 @@ import { VerfahrenCounter } from "~/components/verfahren/VerfahrenCounter";
 import VerfahrenFilterBar from "~/components/verfahren/VerfahrenFilterBar";
 import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
 import { VerfahrenTable } from "~/components/verfahren/VerfahrenTable";
-import { requireAuthData } from "~/domains/verfahren/application/routeContext.server";
+import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
 import type { CodeWert } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
@@ -38,7 +38,7 @@ export type LoaderData = {
 export const middleware = [authMiddleware];
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
-  const authData = requireAuthData(context, "loader");
+  const authSession = requireAuthSession(context, "loader");
 
   const url = new URL(request.url);
   const offset = Number(url.searchParams.get("offset") || "0");
@@ -50,7 +50,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   // TODO: refactor the handling of below promises
   // Fetch verfahren with one extra item to determine if there are more items
   const verfahrenPromise = (async () => {
-    const verfahren = await fetchVerfahren(authData, {
+    const verfahren = await fetchVerfahren(authSession, {
       limit: VERFAHREN_PAGE_LIMIT + 1,
       offset,
       gericht,
@@ -69,7 +69,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   })();
 
   const gerichtePromise = (async () => {
-    const { elemente } = await fetchGerichte(authData);
+    const { elemente } = await fetchGerichte(authSession);
 
     return elemente;
   })();

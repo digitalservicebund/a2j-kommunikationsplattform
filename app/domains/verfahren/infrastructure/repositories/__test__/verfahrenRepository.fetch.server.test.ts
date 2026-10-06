@@ -1,5 +1,5 @@
+import { makeAuthSession } from "tests/utils/factories/authSession";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
 import {
   SORT_VALUES,
   toSortQueryValue,
@@ -72,7 +72,7 @@ describe("fetchVerfahren", () => {
       json: async () => ({ elemente: [apiVerfahren] }),
     });
 
-    const result = await fetchVerfahren(mockAuthData, {
+    const result = await fetchVerfahren(makeAuthSession(), {
       limit: 99,
       offset: 123,
       search_text: "test-search",
@@ -86,7 +86,7 @@ describe("fetchVerfahren", () => {
       expect.any(String),
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
+          Authorization: `Bearer ${makeAuthSession().accessToken}`,
         }),
       }),
     );
@@ -100,7 +100,7 @@ describe("fetchVerfahren", () => {
       json: async () => [{ invalid: true }],
     });
 
-    const result = fetchVerfahren(mockAuthData, { sort: SORT_VALUES[0] });
+    const result = fetchVerfahren(makeAuthSession(), { sort: SORT_VALUES[0] });
 
     await expect(result).rejects.toThrow("Verfahren could not be fetched.");
   });
@@ -117,7 +117,7 @@ describe("fetchVerfahren", () => {
       }),
     });
 
-    const result = fetchVerfahren(mockAuthData);
+    const result = fetchVerfahren(makeAuthSession());
 
     await expect(result).rejects.toThrow("Verfahren could not be fetched.");
   });
@@ -129,7 +129,7 @@ describe("fetchVerfahren", () => {
         json: async () => ({ elemente: [] }),
       });
 
-      await fetchVerfahren(mockAuthData, {
+      await fetchVerfahren(makeAuthSession(), {
         gericht: "b727131c-0c32-91ba-3eaa-f44405967b6d",
         limit: 99,
         offset: 123,
@@ -148,7 +148,7 @@ describe("fetchVerfahren", () => {
         ok: true,
         json: async () => ({ elemente: [] }),
       });
-      await fetchVerfahren(mockAuthData, { gericht: null });
+      await fetchVerfahren(makeAuthSession(), { gericht: null });
       expect(mocks.fetch).toHaveBeenCalledWith(
         expect.not.stringContaining("gericht="),
         expect.any(Object),
@@ -156,7 +156,7 @@ describe("fetchVerfahren", () => {
     });
 
     it("rejects invalid UUID in gericht parameter", async () => {
-      const result = fetchVerfahren(mockAuthData, {
+      const result = fetchVerfahren(makeAuthSession(), {
         gericht: "invalid-uuid",
       });
 
@@ -169,7 +169,7 @@ describe("fetchVerfahren", () => {
         json: async () => ({ elemente: [] }),
       });
 
-      await fetchVerfahren(mockAuthData, {
+      await fetchVerfahren(makeAuthSession(), {
         sort: SORT_VALUES[1],
       });
 
@@ -186,7 +186,7 @@ describe("fetchVerfahren", () => {
         ok: true,
         json: async () => ({ elemente: [] }),
       });
-      await fetchVerfahren(mockAuthData, { sort: "" });
+      await fetchVerfahren(makeAuthSession(), { sort: "" });
       expect(mocks.fetch).toHaveBeenCalledWith(
         expect.not.stringContaining("sort="),
         expect.any(Object),
@@ -194,7 +194,7 @@ describe("fetchVerfahren", () => {
     });
 
     it("rejects invalid sort parameter", async () => {
-      const result = fetchVerfahren(mockAuthData, {
+      const result = fetchVerfahren(makeAuthSession(), {
         sort: "invalid-sort-value" as FetchVerfahrenOptions["sort"],
       });
 
@@ -207,7 +207,7 @@ describe("fetchVerfahren", () => {
         json: async () => ({ elemente: [] }),
       });
 
-      await fetchVerfahren(mockAuthData, {
+      await fetchVerfahren(makeAuthSession(), {
         search_text: "legal case",
       });
 
@@ -222,7 +222,7 @@ describe("fetchVerfahren", () => {
         ok: true,
         json: async () => ({ elemente: [] }),
       });
-      await fetchVerfahren(mockAuthData, { search_text: null });
+      await fetchVerfahren(makeAuthSession(), { search_text: null });
       expect(mocks.fetch).toHaveBeenCalledWith(
         expect.not.stringContaining("suchbegriff="),
         expect.any(Object),
@@ -235,7 +235,7 @@ describe("fetchVerfahren", () => {
         json: async () => ({ elemente: [] }),
       });
 
-      await fetchVerfahren(mockAuthData, {
+      await fetchVerfahren(makeAuthSession(), {
         search_text: "   trimmed search   ",
       });
 
@@ -258,7 +258,7 @@ describe("fetchVerfahrenById", () => {
       json: async () => apiVerfahren,
     });
 
-    const result = await fetchVerfahrenById(mockAuthData, {
+    const result = await fetchVerfahrenById(makeAuthSession(), {
       id: apiVerfahren.id,
     });
 
@@ -266,7 +266,7 @@ describe("fetchVerfahrenById", () => {
       expect.stringContaining(`/verfahren/${apiVerfahren.id}`),
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
+          Authorization: `Bearer ${makeAuthSession().accessToken}`,
         }),
       }),
     );
@@ -281,7 +281,7 @@ describe("fetchVerfahrenById", () => {
     });
 
     await expect(
-      fetchVerfahrenById(mockAuthData, { id: apiVerfahren.id }),
+      fetchVerfahrenById(makeAuthSession(), { id: apiVerfahren.id }),
     ).rejects.toThrow();
   });
 });

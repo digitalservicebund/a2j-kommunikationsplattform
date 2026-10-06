@@ -1,5 +1,5 @@
+import { makeAuthSession } from "tests/utils/factories/authSession";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { mockAuthData } from "~/domains/verfahren/__test__/helpers";
 import {
   fetchAnschriftstypen,
   fetchGerichte,
@@ -33,13 +33,13 @@ describe("fetchAnschriftstypen", () => {
       json: async () => mockAnschriftstypen,
     });
 
-    const result = await fetchAnschriftstypen(mockAuthData);
+    const result = await fetchAnschriftstypen(makeAuthSession());
 
     expect(mocks.fetch).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/codelisten/anschriftstypen",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
+          Authorization: `Bearer ${makeAuthSession().accessToken}`,
         }),
       }),
     );
@@ -52,7 +52,7 @@ describe("fetchAnschriftstypen", () => {
       json: async () => [{ invalid: true }],
     });
 
-    await expect(fetchAnschriftstypen(mockAuthData)).rejects.toThrow(
+    await expect(fetchAnschriftstypen(makeAuthSession())).rejects.toThrow(
       "Anschriftstyp data could not be fetched.",
     );
   });
@@ -87,13 +87,13 @@ describe("fetchGerichte", () => {
       json: async () => mockGerichte,
     });
 
-    const result = await fetchGerichte(mockAuthData);
+    const result = await fetchGerichte(makeAuthSession());
 
     expect(mocks.fetch).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/codelisten/gerichte",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
+          Authorization: `Bearer ${makeAuthSession().accessToken}`,
         }),
       }),
     );
@@ -113,7 +113,7 @@ describe("fetchGerichte", () => {
       }),
     });
 
-    await expect(fetchGerichte(mockAuthData)).rejects.toThrow(
+    await expect(fetchGerichte(makeAuthSession())).rejects.toThrow(
       "Gericht data could not be fetched.",
     );
   });
@@ -124,7 +124,7 @@ describe("fetchGerichte", () => {
       json: async () => [{ invalid: true }],
     });
 
-    await expect(fetchGerichte(mockAuthData)).rejects.toThrow(
+    await expect(fetchGerichte(makeAuthSession())).rejects.toThrow(
       "Gericht data could not be fetched.",
     );
   });
@@ -135,7 +135,7 @@ describe("fetchGerichte", () => {
       json: async () => ({ list_version: "1", elemente: [] }),
     });
 
-    const result = await fetchGerichte(mockAuthData);
+    const result = await fetchGerichte(makeAuthSession());
 
     expect(result).toEqual({ list_version: "1", elemente: [] });
   });
@@ -158,13 +158,13 @@ describe("fetchKanzleiformen", () => {
       json: async () => mockKanzleiformen,
     });
 
-    const result = await fetchKanzleiformen(mockAuthData);
+    const result = await fetchKanzleiformen(makeAuthSession());
 
     expect(mocks.fetch).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/codelisten/kanzleiformen",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
+          Authorization: `Bearer ${makeAuthSession().accessToken}`,
         }),
       }),
     );
@@ -177,7 +177,7 @@ describe("fetchKanzleiformen", () => {
       json: async () => [{ invalid: true }],
     });
 
-    await expect(fetchKanzleiformen(mockAuthData)).rejects.toThrow(
+    await expect(fetchKanzleiformen(makeAuthSession())).rejects.toThrow(
       "Kanzleiform data could not be fetched.",
     );
   });
@@ -200,13 +200,13 @@ describe("fetchRechtsformen", () => {
       json: async () => mockRechtsformen,
     });
 
-    const result = await fetchRechtsformen(mockAuthData);
+    const result = await fetchRechtsformen(makeAuthSession());
 
     expect(mocks.fetch).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/codelisten/rechtsformen",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
+          Authorization: `Bearer ${makeAuthSession().accessToken}`,
         }),
       }),
     );
@@ -219,7 +219,7 @@ describe("fetchRechtsformen", () => {
       json: async () => [{ invalid: true }],
     });
 
-    await expect(fetchRechtsformen(mockAuthData)).rejects.toThrow(
+    await expect(fetchRechtsformen(makeAuthSession())).rejects.toThrow(
       "Rechtsform data could not be fetched.",
     );
   });
@@ -242,13 +242,13 @@ describe("fetchRollenbezeichnungen", () => {
       json: async () => mockRollenbezeichnungen,
     });
 
-    const result = await fetchRollenbezeichnungen(mockAuthData);
+    const result = await fetchRollenbezeichnungen(makeAuthSession());
 
     expect(mocks.fetch).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/codelisten/rollenbezeichnungen",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
+          Authorization: `Bearer ${makeAuthSession().accessToken}`,
         }),
       }),
     );
@@ -261,7 +261,7 @@ describe("fetchRollenbezeichnungen", () => {
       json: async () => [{ invalid: true }],
     });
 
-    await expect(fetchRollenbezeichnungen(mockAuthData)).rejects.toThrow(
+    await expect(fetchRollenbezeichnungen(makeAuthSession())).rejects.toThrow(
       "Rollenbezeichnung data could not be fetched.",
     );
   });
@@ -281,13 +281,13 @@ describe("fetchStaaten", () => {
 
     mocks.fetch.mockResolvedValue({ ok: true, json: async () => mockStaaten });
 
-    const result = await fetchStaaten(mockAuthData);
+    const result = await fetchStaaten(makeAuthSession());
 
     expect(mocks.fetch).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/codelisten/staaten",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
+          Authorization: `Bearer ${makeAuthSession().accessToken}`,
         }),
       }),
     );
@@ -300,7 +300,7 @@ describe("fetchStaaten", () => {
       json: async () => [{ invalid: true }],
     });
 
-    await expect(fetchStaaten(mockAuthData)).rejects.toThrow(
+    await expect(fetchStaaten(makeAuthSession())).rejects.toThrow(
       "Staat data could not be fetched.",
     );
   });
@@ -325,13 +325,13 @@ describe("fetchTelekommunikationsarten", () => {
       json: async () => mockTelekommunikationsarten,
     });
 
-    const result = await fetchTelekommunikationsarten(mockAuthData);
+    const result = await fetchTelekommunikationsarten(makeAuthSession());
 
     expect(mocks.fetch).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/codelisten/telekommunikationsarten",
       expect.objectContaining({
         headers: expect.objectContaining({
-          Authorization: `Bearer ${mockAuthData.authenticationTokens.accessToken}`,
+          Authorization: `Bearer ${makeAuthSession().accessToken}`,
         }),
       }),
     );
@@ -344,8 +344,8 @@ describe("fetchTelekommunikationsarten", () => {
       json: async () => [{ invalid: true }],
     });
 
-    await expect(fetchTelekommunikationsarten(mockAuthData)).rejects.toThrow(
-      "Telekommunikationsart data could not be fetched.",
-    );
+    await expect(
+      fetchTelekommunikationsarten(makeAuthSession()),
+    ).rejects.toThrow("Telekommunikationsart data could not be fetched.");
   });
 });

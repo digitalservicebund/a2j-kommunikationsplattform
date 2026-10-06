@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { AuthenticationProvider } from "../../auth.types";
+import { AuthProvider } from "../../auth.types";
 import { exchangedTokenRefreshPlugin } from "../exchangedTokenRefresh.server";
 
 type Provider = { id: string; refreshAccessToken?: unknown };
@@ -18,11 +18,11 @@ describe("exchangedTokenRefreshPlugin", () => {
     const komplaRefresh = vi.fn();
 
     const kompla = {
-      id: AuthenticationProvider.KOMPLA_IDP,
+      id: AuthProvider.KOMPLA_IDP,
       refreshAccessToken: komplaRefresh,
     };
     const bea = {
-      id: AuthenticationProvider.BEA,
+      id: AuthProvider.BEA,
       refreshAccessToken: vi.fn(),
     };
     const other = {
@@ -41,9 +41,7 @@ describe("exchangedTokenRefreshPlugin", () => {
 
   it("throws if the KomPla IdP provider is not registered", () => {
     expect(() =>
-      runInit([
-        { id: AuthenticationProvider.BEA, refreshAccessToken: vi.fn() },
-      ]),
+      runInit([{ id: AuthProvider.BEA, refreshAccessToken: vi.fn() }]),
     ).toThrow(/kompla-idp/);
   });
 });

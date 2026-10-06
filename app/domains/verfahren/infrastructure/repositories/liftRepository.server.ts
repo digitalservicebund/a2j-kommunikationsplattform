@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
+import { AuthSession } from "~/services/auth/auth.types";
 import { apiRequest } from "../api/apiClient";
 import { VerfahrenSchema } from "../schemas/verfahren.schema";
 
@@ -26,11 +26,11 @@ function normalizeLiftCode(code: string) {
  * error is thrown.
  */
 export async function validateLiftCode(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   code: string,
 ): Promise<{ lift: LiftResponse; eTag: string }> {
   const { data: lift, eTag } = await apiRequest({
-    authData,
+    authSession,
     path: "/api/v1/lift",
     headers: { "lift-schluessel": normalizeLiftCode(code) },
     schema: LiftResponseSchema,
@@ -58,11 +58,11 @@ export type PerformLiftResponse = z.infer<typeof PerformLiftResponseSchema>;
  * joining and gaining access to the Verfahren.
  */
 export async function performLift(
-  authData: AuthenticationResponse,
+  authSession: AuthSession,
   { code, liftId, liftETag, safeId }: PerformLiftOptions,
 ): Promise<{ verfahrenId: string }> {
   return apiRequest({
-    authData,
+    authSession,
     method: "POST",
     path: `/api/v1/lift/${liftId}`,
     headers: { "If-Match": liftETag },

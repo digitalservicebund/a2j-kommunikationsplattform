@@ -1,9 +1,9 @@
 import { createContext, href, redirect } from "react-router";
-import { AuthenticationResponse } from "~/services/auth/auth.types";
-import { getAuthData } from "~/services/auth/authSession.server";
+import { AuthSession } from "~/services/auth/auth.types";
+import { getAuthSession } from "~/services/auth/authSession.server";
 import { logger } from "~/utils/logger.server";
 
-export const authContext = createContext<AuthenticationResponse | null>();
+export const authContext = createContext<AuthSession | null>();
 
 type MiddlewareArgs = {
   request: Request;
@@ -18,27 +18,23 @@ export async function authMiddleware(
   { request, context }: MiddlewareArgs,
   next: () => Promise<Response>,
 ) {
-  const authData = await getAuthData(request);
+  const authSession = await getAuthSession(request);
 
-  if (!authData) {
+  if (!authSession) {
     localLogger.info("No auth data found, redirecting to login");
     throw redirect(href("/login"));
   }
 
-  context.set(authContext, authData);
+  context.set(authContext, authSession);
 
   const response = await next();
 
-  if (authData.sessionCookieHeader.length > 0) {
+  if (authSession.sessionCookieHeaders.length > 0) {
     localLogger.debug(
       "Session cookie found in auth data, appending to response headers",
     );
-    const newResponse = new Response(response.body, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: new Headers(response.headers),
-    });
-    for (const cookieHeader of authData.sessionCookieHeader) {
+    const newResponse = response.clone();
+    for (const cookieHeader of authSession.sessionCookieHeaders) {
       newResponse.headers.append("Set-Cookie", cookieHeader);
     }
     return newResponse;
