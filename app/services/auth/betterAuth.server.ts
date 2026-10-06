@@ -75,5 +75,12 @@ export const auth = betterAuth({
     },
   },
 
+  advanced: {
+    database: {
+      // Avoid mesage 'Schema validation is not available for adapter "memory"'
+      validateSchema: false,
+    },
+  },
+
   plugins: [oAuthProvidersPlugin(), exchangedTokenRefreshPlugin()],
 });

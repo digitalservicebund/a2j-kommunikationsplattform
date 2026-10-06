@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "fs";
 import { memoize } from "es-toolkit";
 import { Config, config } from "./config.ts";
 
-interface ServerConfig extends Config {
+export interface ServerConfig extends Config {
   BETTER_AUTH_SECRET: string;
   BETTER_AUTH_URL: string;
   BRAK_IDP_OIDC_CLIENT_ID: string;
