@@ -1,3 +1,4 @@
+import { orderBy } from "es-toolkit";
 import { getEinreichungStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
 import VerfahrenDokumentItem from "~/components/verfahren/VerfahrenDokumentItem";
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
@@ -27,8 +28,10 @@ export default function VerfahrenEinreichungTimeline({
     );
   }
 
-  const newestFirst = [...einreichungen].sort((a, b) =>
-    b.einreichung.erstelltAm.localeCompare(a.einreichung.erstelltAm),
+  const newestFirst = orderBy(
+    einreichungen,
+    [(summary) => summary.einreichung.erstelltAm],
+    ["desc"],
   );
 
   return (
