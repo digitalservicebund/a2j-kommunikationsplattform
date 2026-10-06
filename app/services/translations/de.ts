@@ -306,9 +306,6 @@ export const de = {
         dokumenteCount: "{{count}} Dokumente",
       },
       draftKlageeinreichung: {
-        headline: "Neue Klage einreichen",
-        progress: "Schritt 3 von 2",
-        subline: "Überprüfung & Abgabe",
         navigation: {
           next: "Klage einreichen & Abgabe ans Gericht",
         },
@@ -342,7 +339,6 @@ export const de = {
           },
         },
         proceduralSteps: {
-          headline: "Verfahrensschritte",
           einreichung: {
             draft: "Entwurf",
             fallbackTitle: "Einreichung {{number}}",

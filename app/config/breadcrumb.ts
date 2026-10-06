@@ -17,10 +17,6 @@ export const breadcrumbConfig: BreadcrumbConfig = {
     label: dictionaries.de.breadcrumb.verfahrenNeu,
     parent: "/",
   },
-  "/verfahren/neu/:id/abgabe": {
-    label: dictionaries.de.breadcrumb.verfahrenNeu,
-    parent: "/",
-  },
   "/verfahren/:id": {
     label: dictionaries.de.breadcrumb.verfahrenId,
     parent: "/",
