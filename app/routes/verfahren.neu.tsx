@@ -343,7 +343,7 @@ export default function VerfahrenNeu() {
               id="progress-1"
               label={routes.verfahrenNeu.step1.progress}
               value={1}
-              max={3}
+              max={2}
             />
             <div className="kern-pt-xl">
               <div className="kern-p-lg kern-gap-lg flex flex-col rounded-(--kern-metric-border-radius-default) border border-(--kern-color-layout-border)">

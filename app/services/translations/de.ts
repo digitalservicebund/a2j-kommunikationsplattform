@@ -229,7 +229,7 @@ export const de = {
     verfahrenNeu: {
       step1: {
         headline: "Neue Klage einreichen",
-        progress: "Schritt 1 von 3",
+        progress: "Schritt 1 von 2",
         subline: "Klageschrift hochladen",
         intro:
           "Laden Sie Ihre Klageschrift als PDF- oder Word-Datei hoch. Wir extrahieren die wichtigsten Daten automatisch für Sie.",
@@ -251,7 +251,7 @@ export const de = {
       },
       step2: {
         headline: "Neue Klage einreichen",
-        progress: "Schritt 2 von 3",
+        progress: "Schritt 2 von 2",
         subline: "Verfahrensbeteiligte & Details",
         intro: "Bitte prüfen und ergänzen Sie die Angaben zu den Beteiligten.",
         navigation: {
@@ -299,7 +299,7 @@ export const de = {
       },
       step3: {
         headline: "Neue Klage einreichen",
-        progress: "Schritt 3 von 3",
+        progress: "Schritt 3 von 2",
         subline: "Überprüfung & Abgabe",
         navigation: {
           next: "Klage einreichen & Abgabe ans Gericht",

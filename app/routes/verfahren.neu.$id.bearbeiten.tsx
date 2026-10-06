@@ -468,7 +468,7 @@ async function handleSubmitAction(
     });
   }
 
-  return redirect(`/verfahren/neu/${verfahrenId}/abgabe`);
+  return redirect(`/verfahren/${verfahrenId}`);
 }
 
 const formActionHandlers = {
@@ -706,7 +706,7 @@ export default function VerfahrenNeuBearbeiten() {
               id="progress-2"
               label={routes.verfahrenNeu.step2.progress}
               value={2}
-              max={3}
+              max={2}
             />
             <div className="kern-pt-xl">
               <Form
