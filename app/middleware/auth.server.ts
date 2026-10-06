@@ -1,4 +1,4 @@
-import { createContext, href, redirect } from "react-router";
+import { createContext, redirect } from "react-router";
 import { AuthSession } from "~/services/auth/auth.types";
 import { getAuthSession } from "~/services/auth/authSession.server";
 import { logger } from "~/utils/logger.server";
@@ -21,8 +21,10 @@ export async function authMiddleware(
   const authSession = await getAuthSession(request);
 
   if (!authSession) {
-    localLogger.info("No auth data found, redirecting to login");
-    throw redirect(href("/login"));
+    localLogger.debug("No auth session found, redirecting to login");
+    const { pathname, search, hash } = new URL(request.url);
+    const loginParams = new URLSearchParams({ next: pathname + search + hash });
+    throw redirect("/login?" + loginParams.toString());
   }
 
   context.set(authContext, authSession);
@@ -31,7 +33,7 @@ export async function authMiddleware(
 
   if (authSession.sessionCookieHeaders.length > 0) {
     localLogger.debug(
-      "Session cookie found in auth data, appending to response headers",
+      "Session cookie found in auth session, appending to response headers",
     );
     const newResponse = response.clone();
     for (const cookieHeader of authSession.sessionCookieHeaders) {

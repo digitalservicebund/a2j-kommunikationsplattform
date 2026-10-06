@@ -109,6 +109,39 @@ describe("/action/login-user action", () => {
     );
   });
 
+  it("forwards the next URL after login to Better Auth", async () => {
+    vi.mocked(auth.api.signInSocial).mockResolvedValue({
+      response: {
+        url: "https://idp.example/kompla-idp/authorize",
+        redirect: true,
+      },
+      headers: new Headers({ "Set-Cookie": "better-auth.oauth_state=xyz" }),
+    } as never);
+
+    const formData = new FormData();
+    formData.append("loginType", LoginType.KomplaIdp);
+    formData.append("next", "/foo");
+
+    const request = new Request("http://localhost/action/login-user", {
+      method: "POST",
+      body: formData,
+    });
+
+    await action({
+      request,
+      params: {},
+      context: {},
+    } as ActionFunctionArgs);
+
+    expect(auth.api.signInSocial).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.objectContaining({
+          callbackURL: "/foo",
+        }),
+      }),
+    );
+  });
+
   it("returns 400 for invalid login type", async () => {
     const formData = new FormData();
     formData.append("loginType", "invalid");

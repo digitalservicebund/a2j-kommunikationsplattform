@@ -17,13 +17,12 @@ const errorStatusByProvider: Record<
 async function startOAuth2Login(
   request: Request,
   providerId: AuthProvider.BEA | AuthProvider.KOMPLA_IDP,
+  nextURL: string,
 ) {
-  // The oauth state/PKCE verifier is persisted via Set-Cookie (no database)
-  // and must reach the browser or the callback's state check will fail.
   const { response, headers } = await auth.api.signInSocial({
     body: {
       provider: providerId,
-      callbackURL: "/",
+      callbackURL: nextURL,
       errorCallbackURL: `/login?status=${errorStatusByProvider[providerId]}`,
     },
     headers: request.headers,
@@ -45,13 +44,22 @@ async function startOAuth2Login(
  */
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.clone().formData();
+
   const loginType = formData.get("loginType") as LoginType;
+  if (!Object.values(LoginType).includes(loginType)) {
+    return new Response("Invalid login type", { status: 400 });
+  }
+
+  let nextURL = formData.get("next");
+  if (typeof nextURL !== "string") {
+    nextURL = "/";
+  }
 
   switch (loginType) {
     case LoginType.BeA:
-      return await startOAuth2Login(request, AuthProvider.BEA);
+      return await startOAuth2Login(request, AuthProvider.BEA, nextURL);
     case LoginType.KomplaIdp:
-      return await startOAuth2Login(request, AuthProvider.KOMPLA_IDP);
+      return await startOAuth2Login(request, AuthProvider.KOMPLA_IDP, nextURL);
     default:
       return new Response("Invalid login type", { status: 400 });
   }
