@@ -41,8 +41,8 @@ export function buildKlageeinreichungTimelineSteps({
 
   const {
     routes: {
-      verfahrenNeu: {
-        step3: { proceduralSteps: stepTranslations },
+      verfahrenId: {
+        draftKlageeinreichung: { proceduralSteps: stepTranslations },
       },
     },
   } = translations;

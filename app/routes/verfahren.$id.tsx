@@ -352,7 +352,7 @@ export default function VerfahrenId() {
   const readinessPresentation = draftKlageeinreichung
     ? resolveReadinessPresentation(
         draftKlageeinreichung.einreichung.einreichungsStatus,
-        routes.verfahrenNeu.step3.summary.badgeLabels,
+        routes.verfahrenId.draftKlageeinreichung.summary.badgeLabels,
         dokumenteValidierungsstatus,
       )
     : null;
@@ -414,8 +414,8 @@ export default function VerfahrenId() {
                   <>
                     <VerfahrenTimelineStep
                       timelineLabel={
-                        routes.verfahrenNeu.step3.proceduralSteps.einreichung
-                          .draft
+                        routes.verfahrenId.draftKlageeinreichung.proceduralSteps
+                          .einreichung.draft
                       }
                       iconClassName="kern-icon--edit"
                       showConnector={

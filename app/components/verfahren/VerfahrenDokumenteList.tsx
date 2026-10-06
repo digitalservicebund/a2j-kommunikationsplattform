@@ -61,8 +61,10 @@ export default function VerfahrenDokumenteList({
           readinessLabel: dokumentStatusLabel,
           readinessBadgeClass: dokumentStatusBadgeClass,
         } = resolveReadinessPresentation(dokument.validierungsstatus, {
-          ...routes.verfahrenNeu.step3.summary.badgeLabels,
-          ready: routes.verfahrenNeu.step3.summary.badgeLabels.checkedClean,
+          ...routes.verfahrenId.draftKlageeinreichung.summary.badgeLabels,
+          ready:
+            routes.verfahrenId.draftKlageeinreichung.summary.badgeLabels
+              .checkedClean,
         });
 
         return (

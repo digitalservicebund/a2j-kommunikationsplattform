@@ -297,7 +297,15 @@ export const de = {
           },
         },
       },
-      step3: {
+    },
+
+    verfahrenId: {
+      headline: "Verlauf der Akte",
+      einreichungHistory: {
+        dokumenteCountSingular: "{{count}} Dokument",
+        dokumenteCount: "{{count}} Dokumente",
+      },
+      draftKlageeinreichung: {
         headline: "Neue Klage einreichen",
         progress: "Schritt 3 von 2",
         subline: "Überprüfung & Abgabe",
@@ -371,13 +379,6 @@ export const de = {
             title: "Klageschrift hochgeladen",
           },
         },
-      },
-    },
-    verfahrenId: {
-      headline: "Verlauf der Akte",
-      einreichungHistory: {
-        dokumenteCountSingular: "{{count}} Dokument",
-        dokumenteCount: "{{count}} Dokumente",
       },
       weitereEinreichung: {
         headline: "Neue Einreichung erstellen",

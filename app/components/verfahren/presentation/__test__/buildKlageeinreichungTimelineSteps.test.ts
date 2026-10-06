@@ -6,8 +6,8 @@ describe("buildKlageeinreichungTimelineSteps", () => {
   const translations = getTestTranslations();
   const {
     routes: {
-      verfahrenNeu: {
-        step3: { proceduralSteps: stepTranslations },
+      verfahrenId: {
+        draftKlageeinreichung: { proceduralSteps: stepTranslations },
       },
     },
   } = translations;
