@@ -171,7 +171,7 @@ jobs:
     needs: [build-and-push-image, vulnerability-scan]
     steps:
       - name: Deploy latest container image to StackIT
-        uses: digitalservicebund/argocd-deploy@6033da861398e0d7fcffe1b195f8d58f10b62c4e # auth-token branch
+        uses: digitalservicebund/argocd-deploy@355b2c4b9d9191a5048c8307f13e1cfc05150387 # v1.3.0
         with:
           environment: staging-stackit
           version: ${{ env.CONTAINER_IMAGE_VERSION }}
