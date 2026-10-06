@@ -306,9 +306,6 @@ export const de = {
         dokumenteCount: "{{count}} Dokumente",
       },
       draftKlageeinreichung: {
-        navigation: {
-          next: "Klage einreichen & Abgabe ans Gericht",
-        },
         summary: {
           aktenzeichen: "Az. wird vergeben",
           gericht: "Gericht ist unbekannt",
@@ -341,7 +338,6 @@ export const de = {
         proceduralSteps: {
           einreichung: {
             draft: "Entwurf",
-            fallbackTitle: "Einreichung {{number}}",
             basisdaten: {
               label: "Basisdaten",
               title: "Aktuelle Einreichung",
