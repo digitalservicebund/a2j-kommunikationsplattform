@@ -29,7 +29,7 @@ export default function Footer() {
           {t.layout.footer.links.openSource}
         </Link>
         <Link to="/impressum" className="kern-link">
-          {t.layout.footer.links.openSource}
+          {t.layout.footer.links.impressum}
         </Link>
       </nav>
       <div className="kern-mt-md kern-mb-xl text-center">
