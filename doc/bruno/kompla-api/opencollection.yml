@@ -20,7 +20,7 @@ request:
     flow: authorization_code
     authorizationUrl: https://auth.kompla-justiz.sinc.de/realms/kompla-dev/protocol/openid-connect/auth
     accessTokenUrl: https://auth.kompla-justiz.sinc.de/realms/kompla-dev/protocol/openid-connect/token
-    callbackUrl: http://localhost
+    callbackUrl: http://localhost:3000/auth/kompla-idp-callback
     credentials:
       clientId: "{{OAUTH_CLIENT_ID}}"
       clientSecret: "{{OAUTH_CLIENT_SECRET}}"
