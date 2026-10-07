@@ -89,8 +89,8 @@ export default function VerfahrenDraftKlageeinreichungSection({
         timelineLabel={
           isBelegReady && beleg
             ? new Date(beleg.erstelltAm).toLocaleDateString()
-            : translations.routes.verfahrenNeu.step3.proceduralSteps.einreichung
-                .draft
+            : translations.routes.verfahrenId.draftKlageeinreichung
+                .proceduralSteps.einreichung.draft
         }
         iconClassName={isBelegReady ? "kern-icon--check" : "kern-icon--edit"}
       >
@@ -107,8 +107,8 @@ export default function VerfahrenDraftKlageeinreichungSection({
                   id="card-current-einreichung-heading"
                 >
                   {
-                    translations.routes.verfahrenNeu.step3.proceduralSteps
-                      .einreichung.basisdaten.title
+                    translations.routes.verfahrenId.draftKlageeinreichung
+                      .proceduralSteps.einreichung.basisdaten.title
                   }{" "}
                   -{" "}
                   {draftKlageeinreichung.einreichung.name ??
@@ -119,8 +119,8 @@ export default function VerfahrenDraftKlageeinreichungSection({
                   readinessPresentation={readinessPresentation}
                   hasValidationIssues={hasValidationIssues}
                   belegBadgeLabels={
-                    translations.routes.verfahrenNeu.step3.belegStatus
-                      .badgeLabels
+                    translations.routes.verfahrenId.draftKlageeinreichung
+                      .belegStatus.badgeLabels
                   }
                 />
               </hgroup>
@@ -131,8 +131,8 @@ export default function VerfahrenDraftKlageeinreichungSection({
               <div className="w-full">
                 <h5 className="kern-preline">
                   {
-                    translations.routes.verfahrenNeu.step3.proceduralSteps
-                      .einreichung.basisdaten.label
+                    translations.routes.verfahrenId.draftKlageeinreichung
+                      .proceduralSteps.einreichung.basisdaten.label
                   }
                 </h5>
 
@@ -141,8 +141,8 @@ export default function VerfahrenDraftKlageeinreichungSection({
                     <div className="kern-description-list-item">
                       <dt className="kern-description-list-item__key">
                         {
-                          translations.routes.verfahrenNeu.step3.proceduralSteps
-                            .einreichung.basisdaten.art
+                          translations.routes.verfahrenId.draftKlageeinreichung
+                            .proceduralSteps.einreichung.basisdaten.art
                         }
                       </dt>
                       <dd className="kern-description-list-item__value bg-(--kern-color-feedback-info-background)">
@@ -152,8 +152,8 @@ export default function VerfahrenDraftKlageeinreichungSection({
                     <div className="kern-description-list-item">
                       <dt className="kern-description-list-item__key">
                         {
-                          translations.routes.verfahrenNeu.step3.proceduralSteps
-                            .einreichung.basisdaten.gz
+                          translations.routes.verfahrenId.draftKlageeinreichung
+                            .proceduralSteps.einreichung.basisdaten.gz
                         }
                       </dt>
                       <dd className="kern-description-list-item__value bg-(--kern-color-feedback-info-background)">
@@ -174,8 +174,8 @@ export default function VerfahrenDraftKlageeinreichungSection({
                     <div className="kern-description-list-item">
                       <dt className="kern-description-list-item__key">
                         {
-                          translations.routes.verfahrenNeu.step3.proceduralSteps
-                            .einreichung.basisdaten.erstelltAm
+                          translations.routes.verfahrenId.draftKlageeinreichung
+                            .proceduralSteps.einreichung.basisdaten.erstelltAm
                         }
                       </dt>
                       <dd className="kern-description-list-item__value">
@@ -194,8 +194,8 @@ export default function VerfahrenDraftKlageeinreichungSection({
               <div className="w-full">
                 <h5 className="kern-preline">
                   {
-                    translations.routes.verfahrenNeu.step3.proceduralSteps
-                      .einreichung.additionalData.label
+                    translations.routes.verfahrenId.draftKlageeinreichung
+                      .proceduralSteps.einreichung.additionalData.label
                   }
                 </h5>
                 <div className="kern-mt-md kern-gap-md grid grid-cols-1 rounded-(--kern-metric-border-radius-default) border border-(--kern-color-decorative-border-contextual)">
@@ -203,8 +203,9 @@ export default function VerfahrenDraftKlageeinreichungSection({
                     <div className="kern-description-list-item">
                       <dt className="kern-description-list-item__key">
                         {
-                          translations.routes.verfahrenNeu.step3.proceduralSteps
-                            .einreichung.additionalData.rubrumLabel
+                          translations.routes.verfahrenId.draftKlageeinreichung
+                            .proceduralSteps.einreichung.additionalData
+                            .rubrumLabel
                         }
                       </dt>
                       <dd className="kern-description-list-item__value">
@@ -214,8 +215,8 @@ export default function VerfahrenDraftKlageeinreichungSection({
                     <div className="kern-description-list-item">
                       <dt className="kern-description-list-item__key">
                         {
-                          translations.routes.verfahrenNeu.step3.proceduralSteps
-                            .einreichung.additionalData
+                          translations.routes.verfahrenId.draftKlageeinreichung
+                            .proceduralSteps.einreichung.additionalData
                             .verfahrensgegenstandLabel
                         }
                       </dt>
@@ -270,8 +271,8 @@ export default function VerfahrenDraftKlageeinreichungSection({
                     aria-describedby="card-current-einreichung-heading"
                     disabled={isSubmitting === "submitting" || isValidating}
                     label={
-                      translations.routes.verfahrenNeu.step3.proceduralSteps
-                        .einreichung.submit
+                      translations.routes.verfahrenId.draftKlageeinreichung
+                        .proceduralSteps.einreichung.submit
                     }
                   />
                 </Form>

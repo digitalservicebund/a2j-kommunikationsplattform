@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from "vitest";
 import de from "~/services/translations/de";
 import VerfahrenEinreichungOutcomeBanner from "../VerfahrenEinreichungOutcomeBanner";
 
-const { belegStatus } = de.routes.verfahrenNeu.step3;
+const { belegStatus } = de.routes.verfahrenId.draftKlageeinreichung;
 const { form } = de.shared;
 
 function renderOutcomeAlert(

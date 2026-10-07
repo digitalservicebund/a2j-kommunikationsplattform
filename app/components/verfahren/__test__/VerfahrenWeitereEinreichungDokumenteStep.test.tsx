@@ -143,8 +143,8 @@ describe("VerfahrenWeitereEinreichungDokumenteStep", () => {
     ).toBeDisabled();
     expect(
       screen.getByText(
-        getTestTranslations().routes.verfahrenNeu.step3.summary.badgeLabels
-          .checking,
+        getTestTranslations().routes.verfahrenId.draftKlageeinreichung.summary
+          .badgeLabels.checking,
       ),
     ).toBeInTheDocument();
   });
@@ -165,8 +165,8 @@ describe("VerfahrenWeitereEinreichungDokumenteStep", () => {
     ).toBeEnabled();
     expect(
       screen.getByText(
-        getTestTranslations().routes.verfahrenNeu.step3.summary.badgeLabels
-          .checkedClean,
+        getTestTranslations().routes.verfahrenId.draftKlageeinreichung.summary
+          .badgeLabels.checkedClean,
       ),
     ).toBeInTheDocument();
   });

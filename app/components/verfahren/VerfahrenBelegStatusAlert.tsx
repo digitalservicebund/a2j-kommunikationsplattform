@@ -51,13 +51,17 @@ export default function VerfahrenBelegStatusAlert({
   const timeMessage = `Eingang: ${timeStamp}`;
   const belegPendingMessage = (
     <div className="flex flex-col space-y-(--kern-metric-space-default)">
-      <span>{routes.verfahrenNeu.step3.belegStatus.pending.copy}</span>
+      <span>
+        {routes.verfahrenId.draftKlageeinreichung.belegStatus.pending.copy}
+      </span>
       <span>{`${timeMessage} · Aktenzeichen folgt mit der Bestätigung`}</span>
     </div>
   );
   const belegReadyMessage = (
     <div className="flex flex-col space-y-(--kern-metric-space-default)">
-      <span>{routes.verfahrenNeu.step3.belegStatus.ready.copy}</span>
+      <span>
+        {routes.verfahrenId.draftKlageeinreichung.belegStatus.ready.copy}
+      </span>
       <span>{timeMessage}</span>
       <div className="flex items-center justify-start space-x-(--kern-metric-space-default)">
         <Button
@@ -68,7 +72,7 @@ export default function VerfahrenBelegStatusAlert({
           label={
             isDownloading
               ? shared.loading
-              : routes.verfahrenNeu.step3.belegStatus.ready
+              : routes.verfahrenId.draftKlageeinreichung.belegStatus.ready
                   .buttonLabelDownloadConfirmation
           }
         />
@@ -77,7 +81,7 @@ export default function VerfahrenBelegStatusAlert({
           appearance="secondary"
           onClick={handleToVerfahrenOverview}
           label={
-            routes.verfahrenNeu.step3.belegStatus.ready
+            routes.verfahrenId.draftKlageeinreichung.belegStatus.ready
               .buttonLabelToVerfahrenOverview
           }
         />
@@ -87,8 +91,8 @@ export default function VerfahrenBelegStatusAlert({
 
   const isBelegReady = beleg.status === "ERSTELLT";
   const belegTitle = isBelegReady
-    ? routes.verfahrenNeu.step3.belegStatus.ready.headline
-    : routes.verfahrenNeu.step3.belegStatus.pending.headline;
+    ? routes.verfahrenId.draftKlageeinreichung.belegStatus.ready.headline
+    : routes.verfahrenId.draftKlageeinreichung.belegStatus.pending.headline;
   const belegMessage = isBelegReady ? belegReadyMessage : belegPendingMessage;
 
   return (

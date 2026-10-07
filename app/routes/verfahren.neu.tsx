@@ -44,7 +44,7 @@ import {
 } from "~/utils/actionResult";
 import { dispatchFormAction } from "~/utils/dispatchFormAction";
 
-const StatementOfClaimUploadSchema = z.object({
+const NeueKlageEinreichenSchema = z.object({
   file: z.file().min(1, {
     error: de.routes.verfahrenNeu.step1.form.validation.file,
   }),
@@ -201,7 +201,7 @@ async function handleSubmit(
   }
 
   const formValues = Object.fromEntries(formData);
-  const validatedForm = StatementOfClaimUploadSchema.safeParse(formValues);
+  const validatedForm = NeueKlageEinreichenSchema.safeParse(formValues);
   if (!validatedForm.success) {
     return actionFieldErrorsResponse(validatedForm.error, {
       data: { formValues },
@@ -343,7 +343,7 @@ export default function VerfahrenNeu() {
               id="progress-1"
               label={routes.verfahrenNeu.step1.progress}
               value={1}
-              max={3}
+              max={2}
             />
             <div className="kern-pt-xl">
               <div className="kern-p-lg kern-gap-lg flex flex-col rounded-(--kern-metric-border-radius-default) border border-(--kern-color-layout-border)">

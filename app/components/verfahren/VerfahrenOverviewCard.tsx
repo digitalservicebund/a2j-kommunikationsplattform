@@ -46,12 +46,12 @@ export default function VerfahrenOverviewCard({
             <div className="align-center kern-body kern-body--muted kern-gap-sm flex flex-wrap">
               <span>
                 {verfahren.aktenzeichenGericht ??
-                  routes.verfahrenNeu.step3.summary.aktenzeichen}
+                  routes.verfahrenId.draftKlageeinreichung.summary.aktenzeichen}
               </span>
               <span>·</span>
               <span>
                 {verfahren.gericht?.wert ??
-                  routes.verfahrenNeu.step3.summary.gericht}
+                  routes.verfahrenId.draftKlageeinreichung.summary.gericht}
               </span>
               <span>·</span>
               <span>

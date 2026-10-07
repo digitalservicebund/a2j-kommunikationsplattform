@@ -7,7 +7,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import de from "~/services/translations/de";
 import VerfahrenBelegStatusAlert from "../VerfahrenBelegStatusAlert";
 
-const { pending, ready } = de.routes.verfahrenNeu.step3.belegStatus;
+const { pending, ready } =
+  de.routes.verfahrenId.draftKlageeinreichung.belegStatus;
 
 function renderAlert(
   beleg: Parameters<typeof VerfahrenBelegStatusAlert>[0]["beleg"],

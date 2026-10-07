@@ -23,8 +23,8 @@ export default function VerfahrenDokumentItem({
           {formatDokumentSize(dokument.sizeInBytes ?? 0)}
           {" · "}
           {
-            routes.verfahrenNeu.step3.proceduralSteps.einreichung.dokumente
-              .uploadedAtLabel
+            routes.verfahrenId.draftKlageeinreichung.proceduralSteps.einreichung
+              .dokumente.uploadedAtLabel
           }{" "}
           {new Date(dokument.erstelltAm).toLocaleDateString()}
         </div>
