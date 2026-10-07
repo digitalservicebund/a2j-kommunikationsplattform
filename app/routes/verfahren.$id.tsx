@@ -37,6 +37,8 @@ import {
   uploadDokument,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
+import { fetchGerichtInformation } from "~/domains/verfahren/infrastructure/repositories/gerichtInformationRepository.server";
+import { GerichtInformation } from "~/domains/verfahren/infrastructure/schemas/gerichtInformation.schema";
 import findEinreichungDraft from "~/domains/verfahren/services/findEinreichungDraft.ts";
 import isKlageeinreichung from "~/domains/verfahren/services/isKlageeinreichung";
 import { authMiddleware } from "~/middleware/auth.server";
@@ -54,6 +56,7 @@ import { dispatchFormAction } from "~/utils/dispatchFormAction";
 
 type LoaderData = {
   verfahren: Verfahren;
+  gerichtInformation: GerichtInformation | null;
   einreichungen: EinreichungSummary[];
   draftKlageeinreichung: EinreichungDetails | null;
   draftWeitereEinreichung: EinreichungDetails | null;
@@ -102,6 +105,10 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
     verfahrenId,
   ).catch(rethrowApiNotFoundAsRouteError);
 
+  const gerichtInformation = verfahren.gericht
+    ? await fetchGerichtInformation(authSession, verfahren.gericht.id)
+    : null;
+
   // A draft is an Einreichung that's still open (ERSTELLT/FEHLGESCHLAGEN) —
   // the only statuses in which the API lets Dokumente be changed and the
   // Einreichung be submitted. Once submitted, it's listed in the history.
@@ -131,6 +138,7 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
 
   return {
     verfahren,
+    gerichtInformation,
     einreichungen,
     draftKlageeinreichung,
     draftWeitereEinreichung,
@@ -338,11 +346,12 @@ export const action = async ({
 export default function VerfahrenId() {
   const {
     verfahren,
+    gerichtInformation,
     einreichungen,
     draftKlageeinreichung,
     draftWeitereEinreichung,
   } = useLoaderData<LoaderData>();
-  const { routes } = useTranslations();
+  const t = useTranslations();
 
   const timelineEinreichungen = einreichungen.filter(
     ({ einreichung }) =>
@@ -361,7 +370,7 @@ export default function VerfahrenId() {
   const readinessPresentation = draftKlageeinreichung
     ? resolveReadinessPresentation(
         draftKlageeinreichung.einreichung.einreichungsStatus,
-        routes.verfahrenId.draftKlageeinreichung.summary.badgeLabels,
+        t.routes.verfahrenId.draftKlageeinreichung.summary.badgeLabels,
         dokumenteValidierungsstatus,
       )
     : null;
@@ -401,11 +410,14 @@ export default function VerfahrenId() {
                 }
               />
 
-              <VerfahrenOverviewCard verfahren={verfahren} />
+              <VerfahrenOverviewCard
+                verfahren={verfahren}
+                gerichtInformation={gerichtInformation}
+              />
 
               <section className="space-y-(--kern-metric-space-default)">
                 <h3 className="kern-heading-medium">
-                  {routes.verfahrenId.headline}
+                  {t.routes.verfahrenId.headline}
                 </h3>
 
                 {draftKlageeinreichung ? (
@@ -423,8 +435,8 @@ export default function VerfahrenId() {
                   <>
                     <VerfahrenTimelineStep
                       timelineLabel={
-                        routes.verfahrenId.draftKlageeinreichung.proceduralSteps
-                          .einreichung.draft
+                        t.routes.verfahrenId.draftKlageeinreichung
+                          .proceduralSteps.einreichung.draft
                       }
                       iconClassName="kern-icon--edit"
                       showConnector={
