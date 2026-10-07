@@ -1,15 +1,18 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["react", "jsx-a11y"],
-  "categories": {
-    "correctness": "error",
-    "suspicious": "error"
+  "ignorePatterns": ["**/*", "!app/**", "!tests/**"],
+
+  "options": {
+    "maxWarnings": 0
   },
+
   "env": {
     "builtin": true,
     "es2024": true,
     "browser": true
   },
+
   "settings": {
     "react": {
       // Consider react-router <Form> a form element for the purpose of
@@ -17,10 +20,32 @@
       "formComponents": ["Form"]
     }
   },
-  "ignorePatterns": ["**/*", "!app/**", "!tests/**"],
+
+  "categories": {
+    "correctness": "warn",
+    "suspicious": "warn"
+  },
+
   "rules": {
-    "react/react-in-jsx-scope": "off", // obsolete in React 17+
-    "react/set-state-in-effect": "off", // TODO: Fix errors reported by this rule
-    "no-underscore-dangle": ["error", { "allow": ["__mocks__"] }]
+    // React 17+ does not require importing `React` for JSX
+    "react/react-in-jsx-scope": "off",
+
+    // TODO: Fix errors reported by this rule
+    "react/set-state-in-effect": "off",
+
+    "no-underscore-dangle": [
+      "warn",
+      {
+        "allow": ["__mocks__"]
+      }
+    ],
+
+    "no-unused-vars": [
+      "warn",
+      {
+        "fix": { "imports": "safe-fix" },
+        "argsIgnorePattern": "^_"
+      }
+    ]
   }
 }
