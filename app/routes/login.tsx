@@ -1,10 +1,4 @@
-import {
-  data,
-  Form,
-  redirect,
-  useLoaderData,
-  useSearchParams,
-} from "react-router";
+import { data, Form, redirect, useSearchParams } from "react-router";
 import Button from "~/components/Button";
 import { PageMetadata } from "~/components/PageMetadata";
 import {
@@ -14,26 +8,25 @@ import {
 } from "~/services/auth/auth.types.ts";
 import { getAuthSession } from "~/services/auth/authSession.server";
 import { useTranslations } from "~/services/translations/context";
+import { toRootRelativeURLString } from "~/utils/urls";
+import { Route } from "./+types/login";
 
 /**
  * Returns the URL that the app should redirect to after login, as passed
  * to the login page through the `next` query parameter. Cross-origin URLs
  * are ignored.
  */
-function getNextURLAfterLogin(params: URLSearchParams, baseURL: string) {
-  const url = params.get("next")?.trim() || "/";
-  const absoluteURL = new URL(url, baseURL);
-  return absoluteURL.origin == new URL(baseURL).origin
-    ? absoluteURL.pathname + absoluteURL.search
-    : "/";
+function getNextURLAfterLogin(params: URLSearchParams, baseURL: URL) {
+  const url = params.get("next") ?? "/";
+  return toRootRelativeURLString(url, baseURL) ?? "/";
 }
 
 /**
  * Redirects away from the login page if the user is already logged in.
  */
-export async function loader({ request }: { request: Request }) {
-  const { searchParams, origin } = new URL(request.url);
-  const nextURL = getNextURLAfterLogin(searchParams, origin);
+export async function loader({ request, url }: Route.LoaderArgs) {
+  const { searchParams } = url;
+  const nextURL = getNextURLAfterLogin(searchParams, url);
 
   const userIsLoggedIn = !!(await getAuthSession(request));
   if (userIsLoggedIn) {
@@ -123,10 +116,11 @@ function LoginStatusAlert({ status }: Readonly<{ status: string }>) {
   }
 }
 
-export default function LoginPage() {
+export default function LoginPage({
+  loaderData: { nextURL },
+}: Route.ComponentProps) {
   const t = useTranslations();
   const [searchParams] = useSearchParams();
-  const { nextURL } = useLoaderData();
 
   const loginStatus = searchParams.get("status");
 

@@ -5,6 +5,7 @@ import {
   LoginType,
 } from "~/services/auth/auth.types";
 import { auth } from "~/services/auth/betterAuth.server";
+import { isSameOriginURL } from "~/utils/urls";
 
 const errorStatusByProvider: Record<
   AuthProvider.BEA | AuthProvider.KOMPLA_IDP,
@@ -42,7 +43,7 @@ async function startOAuth2Login(
  * Initiates the OAuth2 login flow on the KomPla IdP or one of the supported
  * third-party identity providers (such as BRAK IdP / beA).
  */
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request, url }: ActionFunctionArgs) => {
   const formData = await request.clone().formData();
 
   const loginType = formData.get("loginType") as LoginType;
@@ -51,7 +52,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   let nextURL = formData.get("next");
-  if (typeof nextURL !== "string") {
+  if (typeof nextURL !== "string" || !isSameOriginURL(nextURL, url)) {
     nextURL = "/";
   }
 
