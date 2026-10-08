@@ -88,7 +88,7 @@ The following tools have been tested:
   - Great [documentation](https://mswjs.io/docs) and examples to get up and running. No need to install a CLI tool, after the [installation](https://mswjs.io/docs/getting-started) of the npm package responses [can be mocked](https://mswjs.io/docs/basics/mocking-responses/).
 - [OpenAPI Backend](https://openapistack.co/docs/openapi-backend/intro/)
   - Takes some time to get a mock server up and running. See the [boilerplate examples](https://openapistack.co/docs/examples/boilerplate/) for a good first impression, e. g. the [express-ts-mock](https://github.com/openapistack/openapi-backend/tree/main/examples/express-ts-mock) example or use the [openapi-generator-cli](https://openapi-generator.tech/docs/installation/): `openapi-generator-cli generate -i openapi.yaml -g nodejs-express-server -o mock-server
-`
+    `
 - [MockServer](https://www.mock-server.com/)
   - Has a Java dependency. The mock server can be set up and operated with a Docker image, see [jamesdbloom/mockserver](https://hub.docker.com/r/jamesdbloom/mockserver). As this degrades the development experience, it is not appropriate here.
 - [Mockoon CLI](https://mockoon.com/)
