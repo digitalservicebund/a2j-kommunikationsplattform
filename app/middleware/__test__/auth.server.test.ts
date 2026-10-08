@@ -63,7 +63,7 @@ describe("authMiddleware", () => {
         { request, context: { set: contextSetMock } },
         nextMock,
       ),
-    ).rejects.toThrow("redirect to /login");
+    ).rejects.toThrow("redirect to /login?next=%2Fprotected");
 
     expect(nextMock).not.toHaveBeenCalled();
     expect(contextSetMock).not.toHaveBeenCalled();

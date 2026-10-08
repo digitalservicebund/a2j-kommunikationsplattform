@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useFetcher } from "react-router";
+import { useFetcher, useLocation } from "react-router";
 import { LogoutType } from "~/services/auth/auth.types";
 
 /**
@@ -12,6 +12,7 @@ export const useLogoutInactiveUser = (
   handleInactivity = false,
   timeout = 1000 * 60 * 60,
 ): void => {
+  const location = useLocation();
   const fetcher = useFetcher();
   const [lastActivity, setLastActivity] = useState(() => Date.now());
 
@@ -51,7 +52,10 @@ export const useLogoutInactiveUser = (
 
       if (timeSinceLastActivity > timeout) {
         fetcher.submit(
-          { logoutType: LogoutType.Automatic },
+          {
+            logoutType: LogoutType.Automatic,
+            returnTo: location.pathname + location.search + location.hash,
+          },
           {
             method: "post",
             action: "/action/logout-user",
@@ -62,5 +66,5 @@ export const useLogoutInactiveUser = (
 
     // cleanup function for the timer timeout
     return () => clearTimeout(timer);
-  }, [handleInactivity, lastActivity, fetcher, timeout]);
+  }, [handleInactivity, lastActivity, fetcher, timeout, location]);
 };

@@ -100,6 +100,7 @@ describe("useLogoutInactiveUser", () => {
     expect(mockSubmit).toHaveBeenCalledWith(
       {
         logoutType: LogoutType.Automatic,
+        returnTo: "/",
       },
       {
         method: "post",
