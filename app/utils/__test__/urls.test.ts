@@ -38,11 +38,11 @@ describe("toRootRelativeURLString", () => {
 
   it("returns null if the URL has a different origin", () => {
     const url = new URL("https://malicious-website.com/foo?a=b#c");
-    expect(toRootRelativeURLString(url, baseURL)).toBe(null);
+    expect(toRootRelativeURLString(url, baseURL)).toBeNull();
   });
 
   it("returns false for scheme-less cross-origin URL string", () => {
     const url = "//malicous-website.com/foo";
-    expect(toRootRelativeURLString(url, baseURL)).toBe(null);
+    expect(toRootRelativeURLString(url, baseURL)).toBeNull();
   });
 });
