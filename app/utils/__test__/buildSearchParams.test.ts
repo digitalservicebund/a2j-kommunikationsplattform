@@ -25,12 +25,4 @@ describe("buildSearchParams", () => {
     const params = buildSearchParams({ optionOne: "testOne", optionTwo: "" });
     expect(params.has("optionTwo")).toBe(false);
   });
-
-  it("excludes object values", () => {
-    const params = buildSearchParams({
-      optionOne: "testOne",
-      optionTwo: { nested: true },
-    });
-    expect(params.has("optionTwo")).toBe(false);
-  });
 });

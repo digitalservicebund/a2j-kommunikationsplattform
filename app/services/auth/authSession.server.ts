@@ -11,7 +11,7 @@ async function getOAuth2Tokens(
     headers: request.headers,
   });
 
-  const account = accounts.find((a) => a.providerId === provider);
+  const account = accounts.find((a) => a.providerId === (provider as string));
   if (!account) {
     return null;
   }

@@ -281,7 +281,7 @@ describe("makeGetTokenFromBrakIdp", () => {
     });
 
     const [, requestInit] = globalFetch.mock.calls[0];
-    expect(tokenRequestParams(requestInit!)).toMatchObject({
+    expect(tokenRequestParams(requestInit)).toMatchObject({
       grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
       assertion: "access-token",
     });

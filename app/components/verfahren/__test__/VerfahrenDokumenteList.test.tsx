@@ -34,7 +34,7 @@ function buildDokument(
       fehler: [],
     },
     ...overrides,
-  } as DokumentWithValidierungsstatus;
+  };
 }
 
 const klageeinreichung = { id: "e-1", name: "Klageeinreichung" };

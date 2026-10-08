@@ -7,7 +7,6 @@ import {
   LoaderFunctionArgs,
   redirect,
   useActionData,
-  useLoaderData,
   useSearchParams,
 } from "react-router";
 import Alert from "~/components/Alert";
@@ -62,6 +61,8 @@ export async function loader({ url, context }: LoaderFunctionArgs) {
       return data(actionError(message), { status });
     }
   }
+
+  return null;
 }
 
 /**
@@ -98,8 +99,7 @@ export async function action({ request, context }: Route.ActionArgs) {
   }
 }
 
-export default function Beitreten() {
-  const loaderData = useLoaderData<typeof loader>();
+export default function Beitreten({ loaderData }: Route.ComponentProps) {
   const [searchParams] = useSearchParams();
   const t = useTranslations();
 

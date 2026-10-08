@@ -22,7 +22,7 @@ describe("useScrolledPastThreshold", () => {
     global.IntersectionObserver = vi.fn(function (callback) {
       observerCallback = callback;
       return mockObserver as unknown as IntersectionObserver;
-    }) as unknown as typeof IntersectionObserver;
+    });
   });
 
   it("should return false initially", () => {

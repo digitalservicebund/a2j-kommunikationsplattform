@@ -528,7 +528,7 @@ export default function VerfahrenNeuBearbeiten() {
 
   useEffect(() => {
     if (actionData?.status === "success" && navigation.state === "idle") {
-      revalidator.revalidate();
+      void revalidator.revalidate();
     }
   }, [actionData?.status, navigation.state, revalidator]);
 
@@ -544,7 +544,7 @@ export default function VerfahrenNeuBearbeiten() {
       deleteFetcher.state === "idle" &&
       deleteFetcher.data?.status === "success"
     ) {
-      revalidator.revalidate();
+      void revalidator.revalidate();
       setSubmitState("idle");
     }
 
@@ -653,7 +653,7 @@ export default function VerfahrenNeuBearbeiten() {
 
   const handleDeleteDokument = (dokument: Dokument) => {
     setSubmitState("delete");
-    deleteFetcher.submit(
+    void deleteFetcher.submit(
       {
         formType: "delete",
         einreichungId: einreichung.id,

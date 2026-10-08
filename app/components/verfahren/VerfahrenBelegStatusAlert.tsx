@@ -26,7 +26,7 @@ export default function VerfahrenBelegStatusAlert({
   }, [downloadFetcher.data]);
 
   const handleDownload = () => {
-    downloadFetcher.submit(
+    void downloadFetcher.submit(
       { formType: "download-beleg", belegId: beleg.id },
       { method: "post" },
     );

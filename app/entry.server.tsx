@@ -132,6 +132,10 @@ function handleRequest(
         },
       },
     );
+
+    // CUSTOM: Add explicit return to make Oxlint happy
+    // (typescript/consistent-return)
+    return undefined;
   });
 }
 

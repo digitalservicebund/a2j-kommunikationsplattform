@@ -142,28 +142,33 @@ type FormActionContext = {
   verfahrenId: string;
 };
 
-const WeitereDokumentUploadSchema = z.object({
+const DokumentDeletionInputSchema = z.object({
   einreichungId: z.string().min(1),
-  file: z.file().min(1),
-  type: UploadDokumentTypeSchema,
-  sichtbarkeitAlle: z.enum(["true", "false"]).transform((v) => v === "true"),
+  dokumentId: z.string().min(1),
 });
 
 async function handleDelete(
   formData: FormData,
   { authSession, verfahrenId }: FormActionContext,
 ) {
-  const actionData = {
-    formType: "delete",
-    dokumentId: String(formData.get("dokumentId")),
-  };
+  const input = DokumentDeletionInputSchema.safeParse({
+    einreichungId: formData.get("einreichungId"),
+    dokumentId: formData.get("dokumentId"),
+  });
+
+  if (!input.success) {
+    return actionResultFromInputParsingError(input.error);
+  }
+
+  const { einreichungId, dokumentId } = input.data;
+  const actionData = { formType: "delete", dokumentId };
 
   try {
     const deleteResult = await deleteDokumentFromEinreichung({
       authSession,
       verfahrenId,
-      einreichungId: formData.get("einreichungId"),
-      dokumentId: formData.get("dokumentId"),
+      einreichungId,
+      dokumentId,
     });
 
     if (deleteResult.status === "protected-dokument") {
@@ -234,25 +239,32 @@ async function handleCreateEinreichung(
   }
 }
 
+const WeitereDokumentUploadInputSchema = z.object({
+  einreichungId: z.string().min(1),
+  file: z.file().min(1),
+  type: UploadDokumentTypeSchema,
+  sichtbarkeitAlle: z.enum(["true", "false"]).transform((v) => v === "true"),
+});
+
 async function handleUploadWeitereDokument(
   formData: FormData,
   { authSession, verfahrenId }: FormActionContext,
 ) {
   const actionData = { formType: UPLOAD_WEITERE_DOKUMENT_FORM_TYPE };
-  const parsed = WeitereDokumentUploadSchema.safeParse({
+  const input = WeitereDokumentUploadInputSchema.safeParse({
     einreichungId: formData.get("einreichungId"),
     file: formData.get("file"),
     type: formData.get("type"),
     sichtbarkeitAlle: formData.get("sichtbarkeitAlle"),
   });
 
-  if (!parsed.success) {
-    return actionResultFromInputParsingError(parsed.error, {
+  if (!input.success) {
+    return actionResultFromInputParsingError(input.error, {
       data: actionData,
     });
   }
 
-  const { einreichungId, file, type, sichtbarkeitAlle } = parsed.data;
+  const { einreichungId, file, type, sichtbarkeitAlle } = input.data;
 
   try {
     await uploadDokument(

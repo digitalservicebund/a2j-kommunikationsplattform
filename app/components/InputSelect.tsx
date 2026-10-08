@@ -24,7 +24,7 @@ export default function InputSelect({
   label,
   hint,
   error,
-  options = [],
+  options,
   placeholder,
   disabled,
   selectedValue,

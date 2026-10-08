@@ -36,7 +36,9 @@ export const useLoadMore = (initialData: VerfahrenLoaderData) => {
 
   // Append fetched items
   useEffect(() => {
-    if (fetcher.state !== "idle" || !fetcher.data?.verfahren) return;
+    if (fetcher.state !== "idle" || !fetcher.data?.verfahren) {
+      return undefined;
+    }
 
     let cancelled = false;
 
@@ -48,7 +50,8 @@ export const useLoadMore = (initialData: VerfahrenLoaderData) => {
       setHasMoreItems(page.hasMoreItems);
     };
 
-    appendItems();
+    // TODO: Consider what happens when fetching fails
+    void appendItems();
 
     return () => {
       cancelled = true;
@@ -59,7 +62,7 @@ export const useLoadMore = (initialData: VerfahrenLoaderData) => {
     if (!hasMoreItems || fetcher.state !== "idle") return;
 
     const formData = getFormData(allItems.length, searchParams);
-    fetcher.submit(formData, { method: "get" });
+    void fetcher.submit(formData, { method: "get" });
   }, [allItems.length, fetcher, hasMoreItems, searchParams]);
 
   return {

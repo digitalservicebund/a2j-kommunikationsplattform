@@ -1,9 +1,10 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "jsx-a11y"],
+  "plugins": ["react", "jsx-a11y", "typescript"],
   "ignorePatterns": ["**/*", "!app/**", "!tests/**"],
 
   "options": {
+    "typeAware": true,
     "maxWarnings": 0
   },
 
@@ -27,6 +28,19 @@
   },
 
   "rules": {
+    // TODO: Fix typescript/no-unsafe-type-assertion issues
+    "typescript/no-unsafe-type-assertion": "off",
+
+    "typescript/no-floating-promises": [
+      "warn",
+      {
+        "allowForKnownSafeCalls": [
+          // Ignore calls to navigate() (from react-router useNavigate())
+          { "from": "file", "name": "navigate" }
+        ]
+      }
+    ],
+
     // React 17+ does not require importing `React` for JSX
     "react/react-in-jsx-scope": "off",
 

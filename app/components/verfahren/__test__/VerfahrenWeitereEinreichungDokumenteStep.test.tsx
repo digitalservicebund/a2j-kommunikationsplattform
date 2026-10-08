@@ -29,7 +29,7 @@ function buildDokument(
     erstelltAm: "2026-09-01T00:00:00.000Z",
     sichtbarkeitAlle: true,
     validierungsstatus,
-  } as DokumentWithValidierungsstatus;
+  };
 }
 
 function buildWeitereEinreichung(
@@ -54,7 +54,7 @@ function buildWeitereEinreichung(
     },
     dokumente,
     beleg: null,
-  } as EinreichungDetails;
+  };
 }
 
 function renderSection(weitereEinreichung: EinreichungDetails | null) {

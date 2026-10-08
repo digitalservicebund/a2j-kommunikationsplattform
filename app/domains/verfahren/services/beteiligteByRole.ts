@@ -49,8 +49,8 @@ export function getBeteiligteDisplayName(
   return beteiligung?.bezeichnung;
 }
 
-export function getGeschaeftszeichenByRoleCode<T extends Beteiligte>(
-  beteiligung: T | null | undefined,
+export function getGeschaeftszeichenByRoleCode(
+  beteiligung: Beteiligte | null | undefined,
   roleCode: string,
 ): string | null | undefined {
   return beteiligung?.rollen?.find(
@@ -58,8 +58,8 @@ export function getGeschaeftszeichenByRoleCode<T extends Beteiligte>(
   )?.geschaeftszeichen;
 }
 
-export function getBeteiligteNamesByRoleCode<T extends Beteiligte>(
-  beteiligte: T[] | null | undefined,
+export function getBeteiligteNamesByRoleCode(
+  beteiligte: Beteiligte[] | null | undefined,
   roleCode: string,
   notAvailableLabel: string,
 ): string {

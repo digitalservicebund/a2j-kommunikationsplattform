@@ -70,17 +70,13 @@ export type ApiRequestHandledResult<T> =
 
 function parseSchemaOrThrow<T>(
   data: unknown,
-  schema: z.ZodTypeAny | undefined,
+  schema: z.ZodType<T>,
   errorMessage: string,
 ): T {
-  if (!schema) {
-    return data as T;
-  }
-
   try {
-    return schema.parse(data) as T;
+    return schema.parse(data);
   } catch (err) {
-    logParsingErrorAndThrow(err, errorMessage, JSON.stringify(data));
+    return logParsingErrorAndThrow(err, errorMessage, JSON.stringify(data));
   }
 }
 
@@ -146,7 +142,7 @@ async function readResponseBody(
       responseType === "text"
         ? "[unparsable text response]"
         : "[unparsable JSON response]";
-    logParsingErrorAndThrow(error, errorMessage, unparsableBodyMessage);
+    return logParsingErrorAndThrow(error, errorMessage, unparsableBodyMessage);
   }
 }
 
@@ -205,7 +201,7 @@ export function apiRequest<T = unknown>(
 export function apiRequest<T = unknown>(opts: ApiRequestOptions<T>): Promise<T>;
 
 export async function apiRequest<T = unknown>(
-  opts: ApiRequestOptions,
+  opts: ApiRequestOptions<T>,
 ): Promise<
   | T
   | ApiRequestWithETagResult<T>
@@ -296,11 +292,13 @@ export async function apiRequest<T = unknown>(
     responseType,
     errorMessage ?? "Failed to read/parse the response as JSON.",
   );
-  const parsedData = parseSchemaOrThrow<T>(
-    responseBody,
-    schema,
-    errorMessage ?? "Failed to parse Zod schema.",
-  );
+  const parsedData = schema
+    ? parseSchemaOrThrow(
+        responseBody,
+        schema,
+        errorMessage ?? "Failed to parse Zod schema.",
+      )
+    : (responseBody as T);
 
   return buildSuccessReturn(parsedData, response, responseETag, {
     throwOnError,

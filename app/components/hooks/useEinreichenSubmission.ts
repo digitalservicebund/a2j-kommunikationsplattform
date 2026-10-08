@@ -34,12 +34,12 @@ export function useEinreichenSubmission({
 
   useEffect(() => {
     if (!isValidating && !isBelegPending) {
-      return;
+      return undefined;
     }
 
     const intervalId = setInterval(() => {
       if (revalidator.state === "idle") {
-        revalidator.revalidate();
+        void revalidator.revalidate();
       }
     }, VALIDIERUNGSSTATUS_POLL_INTERVAL_MS);
 

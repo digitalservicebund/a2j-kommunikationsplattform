@@ -7,7 +7,7 @@ export function useScrolledPastThreshold(
 
   useEffect(() => {
     const element = refElement?.current;
-    if (!element) return;
+    if (!element) return undefined;
 
     const obsercer = new IntersectionObserver(
       ([entry]) => {

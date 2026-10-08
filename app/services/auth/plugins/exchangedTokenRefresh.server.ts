@@ -23,7 +23,7 @@ export function exchangedTokenRefreshPlugin() {
     id: "exchanged-token-refresh-plugin",
     init: (ctx) => {
       const komplaIdp = ctx.socialProviders.find(
-        (provider) => provider.id === AuthProvider.KOMPLA_IDP,
+        (provider) => provider.id === (AuthProvider.KOMPLA_IDP as string),
       );
 
       if (!komplaIdp?.refreshAccessToken) {
@@ -35,7 +35,7 @@ export function exchangedTokenRefreshPlugin() {
       return {
         context: {
           socialProviders: ctx.socialProviders.map((provider) =>
-            provider.id !== AuthProvider.KOMPLA_IDP
+            provider.id !== (AuthProvider.KOMPLA_IDP as string)
               ? {
                   ...provider,
                   refreshAccessToken: komplaIdp.refreshAccessToken,

@@ -25,7 +25,7 @@ export const useLogoutInactiveUser = (
 
   // effect to set up/clean up event listeners on user activity
   useEffect(() => {
-    if (!handleInactivity) return;
+    if (!handleInactivity) return undefined;
 
     window.addEventListener("mousemove", handleActivity);
     window.addEventListener("keydown", handleActivity);
@@ -44,14 +44,16 @@ export const useLogoutInactiveUser = (
   // this effect manages the countdown timer and triggers a form submit
   // to a logout-user action route when the timeout has expired
   useEffect(() => {
-    if (!handleInactivity) return;
+    if (!handleInactivity) {
+      return undefined;
+    }
 
     const timer = setTimeout(() => {
       const now = Date.now();
       const timeSinceLastActivity = now - lastActivity;
 
       if (timeSinceLastActivity > timeout) {
-        fetcher.submit(
+        void fetcher.submit(
           {
             logoutType: LogoutType.Automatic,
             returnTo: location.pathname + location.search + location.hash,

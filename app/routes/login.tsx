@@ -46,7 +46,7 @@ export enum LoginStatus {
 function LoginStatusAlert({ status }: Readonly<{ status: string }>) {
   const t = useTranslations();
   switch (status) {
-    case LoginStatus.LoggedOutAutomatically:
+    case LoginStatus.LoggedOutAutomatically as string:
       return (
         <div className="kern-alert kern-alert--warning kern-my-md" role="alert">
           <div className="kern-alert__header">
@@ -63,7 +63,7 @@ function LoginStatusAlert({ status }: Readonly<{ status: string }>) {
           </div>
         </div>
       );
-    case LoginStatus.LoggedOutManually:
+    case LoginStatus.LoggedOutManually as string:
       return (
         <div className="kern-alert kern-alert--success kern-my-md" role="alert">
           <div className="kern-alert__header">
@@ -77,7 +77,7 @@ function LoginStatusAlert({ status }: Readonly<{ status: string }>) {
           </div>
         </div>
       );
-    case LoginStatus.BeALoginFailed:
+    case LoginStatus.BeALoginFailed as string:
       return (
         <div className="kern-alert kern-alert--danger kern-my-md" role="alert">
           <div className="kern-alert__header">
@@ -92,7 +92,7 @@ function LoginStatusAlert({ status }: Readonly<{ status: string }>) {
           </div>
         </div>
       );
-    case LoginStatus.KomPlaIdpLoginFailed:
+    case LoginStatus.KomPlaIdpLoginFailed as string:
       return (
         <div className="kern-alert kern-alert--danger kern-my-md" role="alert">
           <div className="kern-alert__header">

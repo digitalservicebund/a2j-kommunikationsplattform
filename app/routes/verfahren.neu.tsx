@@ -1,15 +1,5 @@
 import { useState } from "react";
-import {
-  ActionFunctionArgs,
-  data,
-  Form,
-  Link,
-  LoaderFunctionArgs,
-  redirect,
-  useActionData,
-  useLoaderData,
-  useNavigation,
-} from "react-router";
+import { data, Form, Link, redirect, useNavigation } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
 import InputCheckbox from "~/components/InputCheckbox";
@@ -43,6 +33,7 @@ import {
   actionResultFromSchemaParsingError,
 } from "~/utils/actionResult";
 import { dispatchFormAction } from "~/utils/dispatchFormAction";
+import { Route } from "./+types/verfahren.neu";
 
 const NeueKlageEinreichenSchema = z.object({
   file: z.file().min(1, {
@@ -85,7 +76,7 @@ function findKlageschrift<T extends Pick<Dokument, "typ">>(
   return dokumente.find((dokument) => dokument.typ === "SCHRIFTSTUECK");
 }
 
-export const loader = async ({ request, context }: LoaderFunctionArgs) => {
+export const loader = async ({ request, context }: Route.LoaderArgs) => {
   const authSession = requireAuthSession(context, "loader");
 
   const url = new URL(request.url);
@@ -271,7 +262,7 @@ const formActionHandlers = {
   submit: handleSubmit,
 } as const;
 
-export const action = async ({ request, context }: ActionFunctionArgs) => {
+export const action = async ({ request, context }: Route.ActionArgs) => {
   const authSession = requireAuthSession(context, "action");
 
   const formData = await request.formData();
@@ -302,11 +293,12 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
   );
 };
 
-export default function VerfahrenNeu() {
+export default function VerfahrenNeu({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
   const { shared, routes, buttons } = useTranslations();
   const navigation = useNavigation();
-  const actionData = useActionData<typeof action>();
-  const loaderData = useLoaderData<typeof loader>();
   const isActionError = actionData?.status === "error";
   const isInvalid = actionData?.status === "invalid";
   const fieldErrors = isInvalid ? actionData.fieldErrors : undefined;
@@ -322,9 +314,7 @@ export default function VerfahrenNeu() {
   );
 
   const isSubmitting = navigation.state !== "idle";
-  const klageschrift = loaderData?.klageschrift as Dokument | undefined;
-  const verfahrenId = loaderData?.verfahrenId as string | undefined;
-  const einreichungId = loaderData?.einreichungId as string | undefined;
+  const { klageschrift, verfahrenId, einreichungId } = loaderData;
   const hasKlageschrift = Boolean(klageschrift && verfahrenId && einreichungId);
 
   return (
