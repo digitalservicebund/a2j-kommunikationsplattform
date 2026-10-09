@@ -1,7 +1,6 @@
 import { Link } from "react-router";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import { useTranslations } from "~/services/translations/context";
-import { getVerfahrenStatusPresentation } from "./presentation/statusPresentation";
 import { getVerfahrenDisplayName } from "./presentation/verfahrenDisplayName";
 import VerfahrenStatusBadge from "./VerfahrenStatusBadge.static";
 
@@ -48,16 +47,11 @@ export function VerfahrenTable({
 function VerfahrenTableRow({ verfahren }: Readonly<{ verfahren: Verfahren }>) {
   const t = useTranslations();
 
-  const statusPresentation = getVerfahrenStatusPresentation(
-    verfahren.status,
-    t.shared.status.verfahren,
-  );
   const statusBadge = (
     <VerfahrenStatusBadge
       className="flex-stretch"
       small
-      tone={statusPresentation.badgeClassModifier}
-      label={statusPresentation.label}
+      status={verfahren.status}
     />
   );
 

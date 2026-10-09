@@ -1,7 +1,6 @@
+import type { BadgeTone } from "~/components/Badge";
 import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
-
-type BadgeTone = "success" | "warning" | "danger" | "info";
 
 type Presentation = {
   badgeClassModifier: BadgeTone;

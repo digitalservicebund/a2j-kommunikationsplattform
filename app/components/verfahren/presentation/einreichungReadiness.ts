@@ -1,3 +1,4 @@
+import type { BadgeTone } from "~/components/Badge";
 import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import type { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
 import { isValidierungslaufRunning } from "~/domains/verfahren/services/validierungslauf";
@@ -12,7 +13,7 @@ export type ReadinessBadgeLabels = {
 
 export type ReadinessPresentation = {
   readinessLabel: string;
-  readinessBadgeClass: "success" | "warning" | "danger" | "info";
+  readinessBadgeClass: BadgeTone;
 };
 
 export function resolveReadinessPresentation(
@@ -55,6 +56,18 @@ export function resolveReadinessPresentation(
   }
 
   return { readinessLabel: badgeLabels.soon, readinessBadgeClass: "warning" };
+}
+
+// A single Dokument that passed its check reads as "checked clean" rather than
+// "ready to submit", since readiness only applies to the Einreichung as a whole.
+export function resolveDokumentPresentation(
+  validierungsstatus: Validierungsstatus,
+  badgeLabels: ReadinessBadgeLabels & { checkedClean: string },
+): ReadinessPresentation {
+  return resolveReadinessPresentation(validierungsstatus, {
+    ...badgeLabels,
+    ready: badgeLabels.checkedClean,
+  });
 }
 
 export type BelegBadgeLabels = {

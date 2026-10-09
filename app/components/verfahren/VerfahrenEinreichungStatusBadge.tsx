@@ -1,8 +1,8 @@
+import Badge from "~/components/Badge";
 import {
   ReadinessPresentation,
   resolveBelegPresentation,
 } from "~/components/verfahren/presentation/einreichungReadiness";
-import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 
 type VerfahrenEinreichungStatusBadgeProps = {
@@ -36,10 +36,13 @@ export default function VerfahrenEinreichungStatusBadge({
 
   return (
     <p className="kern-preline">
-      <VerfahrenStatusBadge
+      <Badge
         small
         tone={presentation.readinessBadgeClass}
         label={presentation.readinessLabel}
+        // "info" is only used for in-progress states: a running
+        // Validierungslauf or a Beleg that is still pending.
+        loading={presentation.readinessBadgeClass === "info"}
       />
     </p>
   );

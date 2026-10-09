@@ -1,6 +1,5 @@
 import { buildBeteiligteSummaryItems } from "~/components/verfahren/presentation/buildBeteiligteSummaryItems";
 import { NOT_AVAILABLE_LABEL } from "~/components/verfahren/presentation/placeholders";
-import { getVerfahrenStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
 import VerfahrenBriefSummaryOfBeteiligte from "~/components/verfahren/VerfahrenBriefSummaryOfBeteiligte";
 import VerfahrenBriefSummaryOfGericht from "~/components/verfahren/VerfahrenBriefSummaryOfGericht.static";
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
@@ -33,11 +32,6 @@ export default function VerfahrenOverviewCard({
     ROLE_CODE_BEKLAGTE,
   );
 
-  const overviewBadge = getVerfahrenStatusPresentation(
-    verfahren.status,
-    t.shared.status.verfahren,
-  );
-
   const gerichtBankverbindung = gerichtInformation?.bankverbindungen[0];
 
   return (
@@ -65,11 +59,7 @@ export default function VerfahrenOverviewCard({
               </span>
             </div>
           </div>
-          <VerfahrenStatusBadge
-            small
-            tone={overviewBadge.badgeClassModifier}
-            label={overviewBadge.label}
-          />
+          <VerfahrenStatusBadge small status={verfahren.status} />
         </div>
         <div className="kern-gap-md grid w-full grid-cols-1 md:grid-cols-3">
           <VerfahrenBriefSummaryOfBeteiligte
