@@ -5,9 +5,26 @@ import { ApiError } from "~/utils/apiError";
 import { logger } from "~/utils/logger.server";
 
 export type ActionResult<T = undefined> =
-  | { status: "success"; data: T }
-  | { status: "invalid"; fieldErrors: Record<string, string[]>; data?: T }
-  | { status: "error"; error: string; data?: T };
+  | ActionSuccessResult<T>
+  | ActionInvalidResult<T>
+  | ActionErrorResult<T>;
+
+export type ActionSuccessResult<T = undefined> = {
+  status: "success";
+  data: T;
+};
+
+export type ActionInvalidResult<T = undefined> = {
+  status: "invalid";
+  fieldErrors: Record<string, string[]>;
+  data?: T;
+};
+
+export type ActionErrorResult<T = undefined> = {
+  status: "error";
+  error: string;
+  data?: T;
+};
 
 export function actionSuccess<T>(resultData: T): ActionResult<T> {
   return { status: "success", data: resultData };

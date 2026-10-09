@@ -129,9 +129,9 @@ describe("/action/login-user action", () => {
       const formData = new FormData();
       formData.append("loginType", loginType);
 
-      const response = await callLoginAction(formData);
-
-      expect(response.status).toBe(400);
+      await expect(() => callLoginAction(formData)).rejects.toMatchObject({
+        init: { status: 400 },
+      });
     });
   });
 
