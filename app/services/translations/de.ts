@@ -55,7 +55,7 @@ export const de = {
     cancel: "Abbrechen",
     loading: "Wird geladen...",
     unknown: "(Unbekannt)",
-    missing: "(Nicht gesetzt)",
+    missing: "(Nicht verfügbar)",
     dokumentType: {
       anhang: "Anhang",
       schriftstueck: "Schriftstück",
@@ -129,6 +129,8 @@ export const de = {
       azUnknown: "(Aktenzeichen unbekannt)",
       kontoinhaberLabel: "Zahlungsempfänger",
       ibanLabel: "IBAN",
+      bankLabel: "Bank",
+      bicLabel: "BIC",
       unknown: "(Gericht unbekannt)",
     },
     kurzrubrum: {

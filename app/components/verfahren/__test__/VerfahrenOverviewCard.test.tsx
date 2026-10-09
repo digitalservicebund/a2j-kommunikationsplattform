@@ -1,11 +1,12 @@
 // @vitest-environment jsdom
 
+import { makeGerichtInformation } from "tests/utils/factories/gerichtInformation";
+import { makeVerfahren } from "tests/utils/factories/verfahren";
 import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it } from "vitest";
-import type { Verfahren } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
 import VerfahrenOverviewCard from "../VerfahrenOverviewCard";
 
-const verfahren: Verfahren = {
+const verfahren = makeVerfahren({
   id: "123",
   aktenzeichenGericht: "AZ-123",
   verfahrensgegenstand: "Zahlungsklage",
@@ -60,26 +61,43 @@ const verfahren: Verfahren = {
       telekommunikation: null,
     },
   ],
-};
+});
+
+const gerichtInformation = makeGerichtInformation({
+  bankverbindungen: [
+    {
+      iban: "DE16 2500 0000 0025 0015 30",
+      bank: "Deutsche Bundesbank",
+      bic: "MARKDEF1250",
+      kontoinhaber: "Amtsgericht Bremen",
+    },
+  ],
+});
 
 describe("VerfahrenOverviewCard", () => {
-  it("renders the klaeger/beklagte names, aktenzeichen, gericht and verfahrensgegenstand", () => {
+  it("renders the Kläger / Beklagte names, Aktenzeichen, Gericht and Verfahrensgegenstand", () => {
     const { getByText, getAllByText } = renderWithTestTranslations(
-      <VerfahrenOverviewCard verfahren={verfahren} />,
+      <VerfahrenOverviewCard
+        verfahren={verfahren}
+        gerichtInformation={gerichtInformation}
+      />,
     );
 
     expect(getByText("Klaus Müller ./. Maria Weber")).toBeInTheDocument();
+    expect(getByText("Zahlungsklage")).toBeInTheDocument();
+    expect(getByText("DE16 2500 0000 0025 0015 30")).toBeInTheDocument();
+
     // "Landgericht Frankfurt" and "AZ-123" each appear both in the header
     // line and again in the VerfahrenBriefSummaryOfGericht summary column.
     expect(getAllByText("Landgericht Frankfurt").length).toBeGreaterThan(0);
     expect(getAllByText("AZ-123").length).toBeGreaterThan(0);
-    expect(getByText("Zahlungsklage")).toBeInTheDocument();
   });
 
   it("prefers verfahren.kurzrubrum over the klaeger/beklagte names when set", () => {
     const { getByText, queryByText } = renderWithTestTranslations(
       <VerfahrenOverviewCard
         verfahren={{ ...verfahren, kurzrubrum: "Müller ./. Weber u.a." }}
+        gerichtInformation={null}
       />,
     );
 

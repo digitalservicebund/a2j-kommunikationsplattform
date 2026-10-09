@@ -5,6 +5,7 @@ import VerfahrenBriefSummaryOfBeteiligte from "~/components/verfahren/VerfahrenB
 import VerfahrenBriefSummaryOfGericht from "~/components/verfahren/VerfahrenBriefSummaryOfGericht.static";
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import type { Verfahren } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import { GerichtInformation } from "~/domains/verfahren/infrastructure/schemas/gerichtInformation.schema";
 import {
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
@@ -14,12 +15,14 @@ import { getVerfahrenDisplayName } from "./presentation/verfahrenDisplayName";
 
 type VerfahrenOverviewCardProps = {
   verfahren: Verfahren;
+  gerichtInformation: GerichtInformation | null;
 };
 
 export default function VerfahrenOverviewCard({
   verfahren,
+  gerichtInformation,
 }: Readonly<VerfahrenOverviewCardProps>) {
-  const { routes, shared } = useTranslations();
+  const t = useTranslations();
 
   const klaegerinnenSummary = buildBeteiligteSummaryItems(
     verfahren.beteiligungen,
@@ -32,8 +35,10 @@ export default function VerfahrenOverviewCard({
 
   const overviewBadge = getVerfahrenStatusPresentation(
     verfahren.status,
-    shared.status.verfahren,
+    t.shared.status.verfahren,
   );
+
+  const gerichtBankverbindung = gerichtInformation?.bankverbindungen[0];
 
   return (
     <article className="kern-card">
@@ -46,12 +51,13 @@ export default function VerfahrenOverviewCard({
             <div className="align-center kern-body kern-body--muted kern-gap-sm flex flex-wrap">
               <span>
                 {verfahren.aktenzeichenGericht ??
-                  routes.verfahrenId.draftKlageeinreichung.summary.aktenzeichen}
+                  t.routes.verfahrenId.draftKlageeinreichung.summary
+                    .aktenzeichen}
               </span>
               <span>·</span>
               <span>
                 {verfahren.gericht?.wert ??
-                  routes.verfahrenId.draftKlageeinreichung.summary.gericht}
+                  t.routes.verfahrenId.draftKlageeinreichung.summary.gericht}
               </span>
               <span>·</span>
               <span>
@@ -68,26 +74,22 @@ export default function VerfahrenOverviewCard({
         <div className="kern-gap-md grid w-full grid-cols-1 md:grid-cols-3">
           <VerfahrenBriefSummaryOfBeteiligte
             notAvailableLabel={NOT_AVAILABLE_LABEL}
-            title={shared.beteiligte.klaegerLabel}
+            title={t.shared.beteiligte.klaegerLabel}
             beteiligte={klaegerinnenSummary}
-            fallbackLabel={shared.beteiligte.fallbackLabel}
+            fallbackLabel={t.shared.beteiligte.fallbackLabel}
           />
           <VerfahrenBriefSummaryOfBeteiligte
             notAvailableLabel={NOT_AVAILABLE_LABEL}
-            title={shared.beteiligte.beklagteLabel}
+            title={t.shared.beteiligte.beklagteLabel}
             beteiligte={beklagteSummary}
-            fallbackLabel={shared.beteiligte.fallbackLabel}
+            fallbackLabel={t.shared.beteiligte.fallbackLabel}
           />
           <VerfahrenBriefSummaryOfGericht
-            title={shared.gericht.briefSummaryTitle}
-            gerichtLabel={shared.gericht.label}
-            gericht={verfahren.gericht?.wert ?? NOT_AVAILABLE_LABEL}
-            azLabel={shared.gericht.azLabel}
-            az={verfahren.aktenzeichenGericht ?? NOT_AVAILABLE_LABEL}
-            kontoinhaberLabel={shared.gericht.kontoinhaberLabel}
-            kontoinhaber={NOT_AVAILABLE_LABEL}
-            ibanLabel={shared.gericht.ibanLabel}
-            iban={NOT_AVAILABLE_LABEL}
+            title={t.shared.gericht.briefSummaryTitle}
+            gericht={verfahren.gericht?.wert ?? null}
+            aktenzeichen={verfahren.aktenzeichenGericht}
+            kontoinhaber={gerichtBankverbindung?.kontoinhaber ?? null}
+            iban={gerichtBankverbindung?.iban ?? null}
           />
         </div>
       </div>
