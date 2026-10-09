@@ -26,21 +26,21 @@ export type ActionErrorResult<T = undefined> = {
   data?: T;
 };
 
-export function actionSuccess<T>(resultData: T): ActionResult<T> {
+export function actionSuccess<T>(resultData: T): ActionSuccessResult<T> {
   return { status: "success", data: resultData };
 }
 
 export function actionInvalid<T = undefined>(
   fieldErrors: Record<string, string[]>,
   options?: { data?: T },
-): ActionResult<T> {
+): ActionInvalidResult<T> {
   return { status: "invalid", fieldErrors, ...options };
 }
 
 export function actionError<T = undefined>(
   error: string,
   options?: { data?: T },
-): ActionResult<T> {
+): ActionErrorResult<T> {
   return { status: "error", error, ...options };
 }
 

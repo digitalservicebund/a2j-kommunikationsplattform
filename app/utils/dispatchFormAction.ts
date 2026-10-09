@@ -28,6 +28,10 @@ export function dispatchFormAction<
     return onUnmatchedHandlerKey();
   }
 
+  // The TypeScript compiler infers the type of `handlers[handlerKey]` as
+  // `unknown` while it clearly confirms to `ReturnType<THandlers[keyof THandlers]>`.
+  // Hence the "unsafe" cast.
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return handlers[handlerKey](formData, context) as ReturnType<
     THandlers[keyof THandlers]
   >;

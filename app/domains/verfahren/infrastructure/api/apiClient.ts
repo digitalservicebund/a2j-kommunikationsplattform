@@ -236,7 +236,7 @@ export async function apiRequest<T = unknown>(
 
   // If body is FormData, let fetch set the content-type boundary
   if (body instanceof FormData) {
-    fetchBody = body as unknown as BodyInit;
+    fetchBody = body;
   } else if (body !== undefined) {
     headers["Content-Type"] = "application/json";
     fetchBody = JSON.stringify(body) as BodyInit;
@@ -298,7 +298,9 @@ export async function apiRequest<T = unknown>(
         schema,
         errorMessage ?? "Failed to parse Zod schema.",
       )
-    : (responseBody as T);
+    : // If no validation schema was passed, we need to just trust the caller.
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+      (responseBody as T);
 
   return buildSuccessReturn(parsedData, response, responseETag, {
     throwOnError,

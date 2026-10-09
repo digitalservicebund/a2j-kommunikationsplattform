@@ -1,23 +1,17 @@
 import { ZodType } from "zod";
 import { actionResultFromInputParsingError } from "./actionResult";
 
-type ActionInputSafeParseResult<T, I> =
-  | {
-      success: true;
-      data: T;
-      input: I;
-    }
-  | {
-      success: false;
-      error: ReturnType<typeof actionResultFromInputParsingError<{ input: I }>>;
-      input: I;
-    };
+export type ActionInputParseOptions<ED extends object = {}> = {
+  errorResultData?: ED;
+};
 
 /**
  * Parses input passed to an action using the given schema. If the input is
  * invalid, `actionResultFromInputParsingError(error)` is thrown to return
- * a 400 error to the client. The original input is attached to the error
- * as `input` for convenience.
+ * a 400 response to the client.
+ *
+ * For convenience, the original input is attached to the error action data
+ * as `input`. You can attach additional data using the `errorData` option.
  *
  * @example
  * ```ts
@@ -28,15 +22,38 @@ type ActionInputSafeParseResult<T, I> =
  * }
  * ```
  */
-export function parseActionInput<T>(input: unknown, schema: ZodType<T>): T {
+export function parseActionInput<T>(
+  input: unknown,
+  schema: ZodType<T>,
+  options?: ActionInputParseOptions,
+): T {
   try {
     return schema.parse(input);
   } catch (error) {
     throw actionResultFromInputParsingError(error, {
-      data: { input },
+      data: { ...options?.errorResultData, input },
     });
   }
 }
+
+type ActionInputSafeParseResult<T, I, ED extends object = {}> =
+  | {
+      success: true;
+      data: T;
+      input: I;
+    }
+  | {
+      success: false;
+      error: ReturnType<
+        typeof actionResultFromInputParsingError<{
+          [K in keyof (Omit<ED, "input"> & { input: I })]: (Omit<
+            ED,
+            "input"
+          > & { input: I })[K];
+        }>
+      >;
+      input: I;
+    };
 
 /**
  * Like `parseActionInput()`, but instead of throwing on invalid input,
@@ -60,10 +77,25 @@ export function parseActionInput<T>(input: unknown, schema: ZodType<T>): T {
  * }
  * ```
  */
-export function safeParseActionInput<I, T>(
+export function safeParseActionInput<T, I>(
   input: I,
   schema: ZodType<T>,
-): ActionInputSafeParseResult<T, I> {
+): ActionInputSafeParseResult<T, I>;
+export function safeParseActionInput<T, I, ED extends object>(
+  input: I,
+  schema: ZodType<T>,
+  options: ActionInputParseOptions<ED>,
+): ActionInputSafeParseResult<T, I, ED>;
+export function safeParseActionInput<T, I, ED extends object>(
+  input: I,
+  schema: ZodType<T>,
+  options?: ActionInputParseOptions<ED>,
+): ActionInputSafeParseResult<T, I, ED | {}>;
+export function safeParseActionInput<T, I, ED extends object = {}>(
+  input: I,
+  schema: ZodType<T>,
+  options?: ActionInputParseOptions<ED>,
+): ActionInputSafeParseResult<T, I, ED | {}> {
   const result = schema.safeParse(input);
   return result.success
     ? {
@@ -74,11 +106,13 @@ export function safeParseActionInput<I, T>(
     : {
         success: false,
         error: actionResultFromInputParsingError(result.error, {
-          data: { input },
+          data: { ...options?.errorResultData, input },
         }),
         input,
       };
 }
+
+export type FormEntriesObject = Record<string, FormDataEntryValue>;
 
 /**
  * A convenience wrapper for {@link parseActionInput} that automatically
@@ -96,9 +130,10 @@ export function safeParseActionInput<I, T>(
 export function parseActionFormData<T>(
   formData: FormData,
   schema: ZodType<T>,
+  options?: ActionInputParseOptions,
 ): T {
   const input = Object.fromEntries(formData.entries());
-  return parseActionInput(input, schema);
+  return parseActionInput(input, schema, options);
 }
 
 /**
@@ -138,20 +173,22 @@ export function parseActionFormData<T>(
 export function safeParseActionFormData<T>(
   formData: FormData,
   schema: ZodType<T>,
-): ActionInputSafeParseResult<T, Record<string, FormDataEntryValue>> {
+): ActionInputSafeParseResult<T, FormEntriesObject>;
+export function safeParseActionFormData<T, ED extends object>(
+  formData: FormData,
+  schema: ZodType<T>,
+  options: ActionInputParseOptions<ED>,
+): ActionInputSafeParseResult<T, FormEntriesObject, ED>;
+export function safeParseActionFormData<T, ED extends object>(
+  formData: FormData,
+  schema: ZodType<T>,
+  options?: ActionInputParseOptions<ED>,
+): ActionInputSafeParseResult<T, FormEntriesObject, ED | {}>;
+export function safeParseActionFormData<T, ED extends object = {}>(
+  formData: FormData,
+  schema: ZodType<T>,
+  options?: ActionInputParseOptions<ED>,
+): ActionInputSafeParseResult<T, FormEntriesObject, ED | {}> {
   const input = Object.fromEntries(formData.entries());
-  const result = schema.safeParse(input);
-  return result.success
-    ? {
-        success: true,
-        data: result.data,
-        input,
-      }
-    : {
-        success: false,
-        error: actionResultFromInputParsingError(result.error, {
-          data: { input },
-        }),
-        input,
-      };
+  return safeParseActionInput(input, schema, options);
 }

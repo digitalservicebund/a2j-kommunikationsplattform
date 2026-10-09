@@ -27,9 +27,18 @@
     "suspicious": "warn"
   },
 
+  "overrides": [
+    {
+      "files": ["app/**/*.test.{ts,tsx}"],
+      "rules": {
+        "typescript/no-unsafe-type-assertion": "off"
+      }
+    }
+  ],
+
   "rules": {
     // TODO: Fix typescript/no-unsafe-type-assertion issues
-    "typescript/no-unsafe-type-assertion": "off",
+    "typescript/no-unsafe-type-assertion": "warn",
 
     "typescript/no-floating-promises": [
       "warn",

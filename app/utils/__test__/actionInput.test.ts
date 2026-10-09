@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { z } from "zod";
 import {
+  FormEntriesObject,
   parseActionFormData,
   parseActionInput,
   safeParseActionFormData,
@@ -47,6 +48,29 @@ describe(parseActionInput, () => {
       }),
     );
   });
+
+  it("allows attaching extra data to the action-invalid result", () => {
+    const input = {
+      foo: "",
+      bar: "not a number",
+    };
+    const errorResultData = {
+      extra: "stuff",
+    };
+
+    const { error: expectedZodError } = ExampleInputSchema.safeParse(input);
+
+    expect(() =>
+      parseActionInput(input, ExampleInputSchema, { errorResultData }),
+    ).toThrow(
+      actionResultFromInputParsingError(expectedZodError, {
+        data: {
+          input,
+          extra: "stuff",
+        },
+      }),
+    );
+  });
 });
 
 describe(safeParseActionInput, () => {
@@ -81,6 +105,42 @@ describe(safeParseActionInput, () => {
       }),
       input: { foo: "", bar: "not a number" },
     });
+
+    if (!result.success) {
+      expectTypeOf(result.error.data.data!).toExtend<{
+        input: { foo: string; bar: string };
+      }>();
+    }
+  });
+
+  it("allows attaching extra data to the action-invalid result", () => {
+    const input = {
+      foo: "",
+      bar: "not a number",
+    };
+    const errorResultData = {
+      extra: "stuff",
+    };
+
+    const { error: expectedZodError } = ExampleInputSchema.safeParse(input);
+    const result = safeParseActionInput(input, ExampleInputSchema, {
+      errorResultData,
+    });
+
+    expect(result).toEqual({
+      success: false,
+      error: actionResultFromInputParsingError(expectedZodError, {
+        data: { input, extra: "stuff" },
+      }),
+      input,
+    });
+
+    if (!result.success) {
+      expectTypeOf(result.error.data.data!).toExtend<{
+        input: { foo: string; bar: string };
+        extra: string;
+      }>();
+    }
   });
 });
 
@@ -103,18 +163,47 @@ describe(parseActionFormData, () => {
     formData.append("foo", "");
     formData.append("bar", "not a number");
 
-    const { error: zodError } = ExampleInputSchema.safeParse({
+    const { error: expectedZodError } = ExampleInputSchema.safeParse({
       foo: formData.get("foo"),
       bar: formData.get("bar"),
     });
 
     expect(() => parseActionFormData(formData, ExampleInputSchema)).toThrow(
-      actionResultFromInputParsingError(zodError, {
+      actionResultFromInputParsingError(expectedZodError, {
         data: {
           input: {
             foo: "",
             bar: "not a number",
           },
+        },
+      }),
+    );
+  });
+
+  it("allows attaching extra data to the action-invalid result", () => {
+    const formData = new FormData();
+    formData.append("foo", "");
+    formData.append("bar", "not a number");
+
+    const errorResultData = {
+      extra: "stuff",
+    };
+
+    const { error: expectedZodError } = ExampleInputSchema.safeParse({
+      foo: formData.get("foo"),
+      bar: formData.get("bar"),
+    });
+
+    expect(() =>
+      parseActionFormData(formData, ExampleInputSchema, { errorResultData }),
+    ).toThrow(
+      actionResultFromInputParsingError(expectedZodError, {
+        data: {
+          input: {
+            foo: "",
+            bar: "not a number",
+          },
+          extra: "stuff",
         },
       }),
     );
@@ -141,7 +230,7 @@ describe(safeParseActionFormData, () => {
     formData.append("foo", "");
     formData.append("bar", "not a number");
 
-    const { error: zodError } = ExampleInputSchema.safeParse({
+    const { error: expectedZodError } = ExampleInputSchema.safeParse({
       foo: formData.get("foo"),
       bar: formData.get("bar"),
     });
@@ -150,10 +239,53 @@ describe(safeParseActionFormData, () => {
 
     expect(result).toEqual({
       success: false,
-      error: actionResultFromInputParsingError(zodError, {
+      error: actionResultFromInputParsingError(expectedZodError, {
         data: { input: { foo: "", bar: "not a number" } },
       }),
       input: { foo: "", bar: "not a number" },
     });
+  });
+
+  it("allows attaching extra data to the action-invalid result", () => {
+    const formData = new FormData();
+    formData.append("foo", "");
+    formData.append("bar", "not a number");
+
+    const errorResultData = {
+      extra: "stuff",
+    };
+
+    const { error: expectedZodError } = ExampleInputSchema.safeParse({
+      foo: formData.get("foo"),
+      bar: formData.get("bar"),
+    });
+
+    const result = safeParseActionFormData(formData, ExampleInputSchema, {
+      errorResultData,
+    });
+
+    expect(result).toEqual({
+      success: false,
+      error: actionResultFromInputParsingError(expectedZodError, {
+        data: {
+          input: {
+            foo: "",
+            bar: "not a number",
+          },
+          extra: "stuff",
+        },
+      }),
+      input: {
+        foo: "",
+        bar: "not a number",
+      },
+    });
+
+    if (!result.success) {
+      expectTypeOf(result.error.data.data!).toExtend<{
+        input: FormEntriesObject;
+        extra: string;
+      }>();
+    }
   });
 });

@@ -11,7 +11,7 @@ import {
 import { AuthSession } from "~/services/auth/auth.types";
 import { buildSearchParams } from "~/utils/buildSearchParams";
 
-const fetchVerfahrenOptionsSchema = z.object({
+export const FetchVerfahrenOptionsSchema = z.object({
   offset: z.number().int().nonnegative().optional(),
   limit: z.number().int().positive().optional(),
   gericht: z.nullish(z.guid()),
@@ -19,7 +19,7 @@ const fetchVerfahrenOptionsSchema = z.object({
   search_text: z.nullish(z.string().trim()),
 });
 
-export type FetchVerfahrenOptions = z.infer<typeof fetchVerfahrenOptionsSchema>;
+export type FetchVerfahrenOptions = z.infer<typeof FetchVerfahrenOptionsSchema>;
 
 export const fetchVerfahrenSchema = z.object({
   elemente: z.array(VerfahrenSchema),
@@ -30,7 +30,7 @@ export async function fetchVerfahren(
   options?: FetchVerfahrenOptions,
 ): Promise<z.infer<typeof fetchVerfahrenSchema>> {
   const errorMessage = "Verfahren could not be fetched.";
-  const { search_text, sort, ...parsed } = fetchVerfahrenOptionsSchema.parse(
+  const { search_text, sort, ...parsed } = FetchVerfahrenOptionsSchema.parse(
     options ?? {},
   );
 

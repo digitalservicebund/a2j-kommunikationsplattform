@@ -38,10 +38,14 @@ async function prettyStream() {
     colorize: true,
     customPrettifiers: {
       req: (x) => {
+        // The shape of `req` is guaranteed by pino-http.
+        // oxlint-disable-next-line typescript/no-unsafe-type-assertion
         const req = x as { method: string; url: string };
         return `${req.method} ${req.url}`;
       },
       res: (x) => {
+        // The shape of `res` is guaranteed by pino-http.
+        // oxlint-disable-next-line typescript/no-unsafe-type-assertion
         const res = x as { statusCode: number };
         return `${res.statusCode}`;
       },

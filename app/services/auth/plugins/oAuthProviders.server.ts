@@ -6,23 +6,26 @@ import {
 } from "better-auth/plugins/generic-oauth";
 import { memoize } from "es-toolkit/compat";
 import { Agent, fetch } from "undici";
+import { z } from "zod";
 import { serverConfig } from "~/config/config.server";
 import { logApiErrorAndThrow } from "~/utils/logApiError";
 import { logger } from "~/utils/logger.server";
 import { AuthProvider } from "../auth.types";
 
-type IdTokenClaims = {
-  sub: string;
-  "safe-id"?: string;
-  name?: string;
-  email?: string;
-  email_verified?: boolean;
-};
+const IdTokenClaimsSchema = z.object({
+  sub: z.string(),
+  "safe-id": z.optional(z.string()),
+  name: z.optional(z.string()),
+  email: z.optional(z.string()),
+  email_verified: z.optional(z.boolean()),
+});
+
+type IdTokenClaims = z.infer<typeof IdTokenClaimsSchema>;
 
 function decodeIdTokenClaims(idToken: string): IdTokenClaims {
   const base64Url = idToken.split(".")[1];
   const base64 = base64Url.replaceAll("-", "+").replaceAll("_", "/");
-  return JSON.parse(atob(base64)) as IdTokenClaims;
+  return IdTokenClaimsSchema.parse(JSON.parse(atob(base64)));
 }
 
 /**
@@ -139,6 +142,8 @@ export async function exchangeForKomPlaIdpTokens(
     await logApiErrorAndThrow(response, "Token exchange failed");
   }
 
+  // We trust the discovery response to conform to the OpenID Connect spec.
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   const result = (await response.json()) as {
     access_token: string;
     expires_in: number;
@@ -214,6 +219,8 @@ export function makeGetTokenFromBrakIdp(options: {
         );
       }
 
+      // We trust the discovery response to conform to the OpenID Connect spec.
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
       const doc = (await response.json()) as { token_endpoint?: string };
       if (!doc.token_endpoint) {
         throw new Error("Discovery document has no 'token_endpoint'");
@@ -268,6 +275,8 @@ export function makeGetTokenFromBrakIdp(options: {
       );
     }
 
+    // We trust the token response to conform to the OpenID Connect spec.
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     const data = (await response.json()) as {
       access_token: string;
       id_token: string;
