@@ -1,7 +1,7 @@
 import { Form, useActionData } from "react-router";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
-import { resolveDokumentPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
+import { resolveDokumentPresentation } from "~/components/verfahren/presentation/validierungPresentation";
 import VerfahrenDokumentItem from "~/components/verfahren/VerfahrenDokumentItem";
 import VerfahrenDokumentStatusBadge from "~/components/verfahren/VerfahrenDokumentStatusBadge";
 import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";

@@ -1,5 +1,5 @@
 import StatusBadge from "~/components/StatusBadge";
-import { resolveDokumentPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
+import { resolveDokumentPresentation } from "~/components/verfahren/presentation/validierungPresentation";
 import type { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
 import { isValidierungslaufRunning } from "~/domains/verfahren/services/validierungslauf";
 import { useTranslations } from "~/services/translations/context";

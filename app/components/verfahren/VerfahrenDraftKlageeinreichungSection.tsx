@@ -3,12 +3,12 @@ import { Form, Link } from "react-router";
 import Button from "~/components/Button";
 import { buildBeteiligteSummaryItems } from "~/components/verfahren/presentation/buildBeteiligteSummaryItems";
 import { buildKlageeinreichungTimelineSteps } from "~/components/verfahren/presentation/buildKlageeinreichungTimelineSteps";
-import type { ReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
 import {
   NOT_AVAILABLE_LABEL,
   PROTOTYPE_EINREICHUNG_ART,
   PROTOTYPE_EINREICHUNG_GZ,
 } from "~/components/verfahren/presentation/placeholders";
+import type { ReadinessPresentation } from "~/components/verfahren/presentation/validierungPresentation";
 import VerfahrenDokumenteList, {
   DokumentWithValidierungsstatus,
 } from "~/components/verfahren/VerfahrenDokumenteList";

@@ -7,7 +7,7 @@ import {
 import z from "zod";
 import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
 import { PageMetadata } from "~/components/PageMetadata";
-import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
+import { resolveReadinessPresentation } from "~/components/verfahren/presentation/validierungPresentation";
 import VerfahrenDraftKlageeinreichungSection, {
   type EinreichungDetails,
 } from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
