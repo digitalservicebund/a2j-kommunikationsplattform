@@ -1,6 +1,6 @@
-import { makeAuthSession } from "tests/utils/factories/authSession";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthSession } from "~/services/auth/auth.types";
+import { makeAuthSession } from "~tests/utils/factories/authSession";
 
 const MODULE_PATH = "../auth.server";
 

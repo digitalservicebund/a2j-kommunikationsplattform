@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 
-import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it } from "vitest";
 import type { EinreichungSummary } from "~/domains/verfahren/application/loadVerfahrenEinreichungenOverview.server";
+import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
 import VerfahrenEinreichungTimeline from "../VerfahrenEinreichungTimeline";
 
 const einreichungen: EinreichungSummary[] = [

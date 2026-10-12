@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 
-import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it } from "vitest";
 import type { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
+import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
 import VerfahrenUploadedKlageschrift from "../VerfahrenUploadedKlageschrift";
 
 const klageschrift: Dokument = {

@@ -2,13 +2,13 @@
 
 import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { makeGericht } from "tests/utils/factories/gericht";
-import { makeVerfahren } from "tests/utils/factories/verfahren";
+import { describe, it, expect } from "vitest";
+import { makeGericht } from "~tests/utils/factories/gericht";
+import { makeVerfahren } from "~tests/utils/factories/verfahren";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "tests/utils/translationsUtil";
-import { describe, it, expect } from "vitest";
+} from "~tests/utils/translationsUtil";
 import { VerfahrenTable } from "../VerfahrenTable";
 
 describe("VerfahrenTable", () => {

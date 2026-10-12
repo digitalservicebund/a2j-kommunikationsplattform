@@ -1,9 +1,9 @@
+import { describe, expect, it } from "vitest";
 // @vitest-environment jsdom
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "tests/utils/translationsUtil";
-import { describe, expect, it } from "vitest";
+} from "~tests/utils/translationsUtil";
 import { VerfahrenCounter } from "../VerfahrenCounter";
 
 describe("VerfahrenCounter", () => {

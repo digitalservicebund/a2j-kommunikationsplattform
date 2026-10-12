@@ -18,7 +18,7 @@
     "noEmit": true,
     "paths": {
       "~/*": ["./app/*"],
-      "tests/*": ["./tests/*"]
+      "~tests/*": ["./tests/*"]
     },
     "resolveJsonModule": true,
     "rootDirs": [".", "./.react-router/types"],

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
-import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it } from "vitest";
+import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
 import VerfahrenBeklagterSection from "../VerfahrenBeklagterSection";
 
 describe("VerfahrenBeklagterSection", () => {

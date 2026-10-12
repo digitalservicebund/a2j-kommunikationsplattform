@@ -1,10 +1,10 @@
-import { makeAuthSession } from "tests/utils/factories/authSession";
-import { makeVerfahren } from "tests/utils/factories/verfahren";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   performLift,
   validateLiftCode,
 } from "~/domains/verfahren/infrastructure/repositories/liftRepository.server";
+import { makeAuthSession } from "~tests/utils/factories/authSession";
+import { makeVerfahren } from "~tests/utils/factories/verfahren";
 import { apiRequest } from "../../api/apiClient";
 
 vi.mock("~/domains/verfahren/infrastructure/api/apiClient", () => ({

@@ -1,5 +1,5 @@
-import { makeAuthSession } from "tests/utils/factories/authSession";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { makeAuthSession } from "~tests/utils/factories/authSession";
 import regenerateEinreichungXJustiz from "../regenerateEinreichungXJustiz.server";
 
 const mocks = vi.hoisted(() => ({

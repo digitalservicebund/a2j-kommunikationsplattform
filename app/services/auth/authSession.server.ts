@@ -37,9 +37,9 @@ async function getOAuth2Tokens(
  * given request. Returns null if the user has no valid authentication session,
  * for instance because they are not logged in or the session expired.
  */
-export const getAuthSession = async (
+export async function getAuthSession(
   request: Request,
-): Promise<AuthSession | null> => {
+): Promise<AuthSession | null> {
   const { response: sessionResponse, headers: sessionHeaders } =
     await auth.api.getSession({
       headers: request.headers,
@@ -66,10 +66,11 @@ export const getAuthSession = async (
   return {
     provider,
     accessToken: tokens.accessToken,
+    userName: user.name,
     safeId: user?.safeId ?? null,
     // TODO: Derive `authorizedForSafeIds` from the `granted_privileges` of
     // the access token once it becomes available.
     authorizedForSafeIds: user?.safeId ? [user.safeId] : [],
     sessionCookieHeaders: [...setCookieHeaders, ...tokens.setCookieHeaders],
   };
-};
+}

@@ -2,11 +2,11 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { RefObject } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "tests/utils/translationsUtil";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+} from "~tests/utils/translationsUtil";
 import ScrollToTopButton from "../ScrollToTopButton";
 
 vi.mock("~/components/hooks/useScrolledPastThreshold", () => ({

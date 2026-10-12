@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
-import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it } from "vitest";
+import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
 import VerfahrenAdresseKontaktFields from "../VerfahrenAdresseKontaktFields";
 
 describe("VerfahrenAdresseKontaktFields", () => {

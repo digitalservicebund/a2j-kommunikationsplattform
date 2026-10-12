@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
 import { MemoryRouter } from "react-router";
+import { beforeEach, it, vi } from "vitest";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "tests/utils/translationsUtil";
-import { beforeEach, it, vi } from "vitest";
+} from "~tests/utils/translationsUtil";
 import { VerfahrenLoadMoreButton } from "../VerfahrenLoadMoreButton";
 
 describe("VerfahrenLoadMoreButton", () => {

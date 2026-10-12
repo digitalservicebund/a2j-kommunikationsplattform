@@ -72,7 +72,7 @@ describe("makeGetUserInfo", () => {
     const idToken = makeIdToken({
       sub: "user-123",
       email: "user-123@example.com",
-      name: "Voller Name",
+      name: "Beispiel-Anwältin",
       "safe-id": "DE.BRAK_SPT.abc-123",
     });
 
@@ -83,7 +83,7 @@ describe("makeGetUserInfo", () => {
       sub: "user-123",
       email: "user-123@example.com",
       emailVerified: false,
-      name: "Voller Name",
+      name: "Beispiel-Anwältin",
       "safe-id": "DE.BRAK_SPT.abc-123",
     });
   });

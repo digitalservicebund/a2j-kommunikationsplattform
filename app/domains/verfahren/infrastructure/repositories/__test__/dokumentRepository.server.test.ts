@@ -1,4 +1,3 @@
-import { makeAuthSession } from "tests/utils/factories/authSession";
 import { beforeEach, describe, expect, it, test, vi } from "vitest";
 import {
   createDokument,
@@ -10,6 +9,7 @@ import {
   uploadDokument,
   uploadDokumentDatei,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
+import { makeAuthSession } from "~tests/utils/factories/authSession";
 
 const mocks = vi.hoisted(() => ({
   apiRequest: vi.fn(),

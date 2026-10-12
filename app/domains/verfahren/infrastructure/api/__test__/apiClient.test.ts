@@ -1,7 +1,7 @@
-import { makeAuthSession } from "tests/utils/factories/authSession";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import z from "zod";
 import { apiRequest } from "~/domains/verfahren/infrastructure/api/apiClient";
+import { makeAuthSession } from "~tests/utils/factories/authSession";
 
 const mocks = vi.hoisted(() => {
   return {

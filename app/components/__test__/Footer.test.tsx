@@ -2,11 +2,11 @@
 
 import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
+import { it } from "vitest";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "tests/utils/translationsUtil";
-import { it } from "vitest";
+} from "~tests/utils/translationsUtil";
 import Footer from "../layout/Footer";
 
 describe("Footer", () => {

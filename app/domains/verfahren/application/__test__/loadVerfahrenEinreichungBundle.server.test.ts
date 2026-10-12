@@ -1,5 +1,5 @@
-import { makeAuthSession } from "tests/utils/factories/authSession";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import { makeAuthSession } from "~tests/utils/factories/authSession";
 import loadVerfahrenEinreichungBundle from "../loadVerfahrenEinreichungBundle.server";
 
 const mocks = vi.hoisted(() => ({
