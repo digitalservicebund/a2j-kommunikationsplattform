@@ -227,6 +227,7 @@ export const de = {
       headline: "Alle Verfahren in der Übersicht",
       createVerfahren: "Neues Verfahren anlegen",
       redeemBeitrittscode: "Beitrittscode einlösen",
+      verfahrenTableLabel: "Liste der Verfahren",
     },
     verfahrenNeu: {
       step1: {

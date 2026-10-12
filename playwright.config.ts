@@ -1,14 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
-process.loadEnvFile(".env.defaults");
-
 const useDefaultBaseUrl = ["", undefined].includes(process.env.E2E_BASE_URL);
 
 const baseURL = useDefaultBaseUrl
   ? "http://localhost:3000"
-  : process.env.E2E_BASE_URL;
-
-console.log("playwright test baseURL is:", baseURL);
+  : process.env.E2E_TEST_BASE_URL;
 
 const basicAuthUser = process.env.HTTP_CREDENTIALS_USERNAME ?? "";
 const basicAuthPassword = process.env.HTTP_CREDENTIALS_PASSWORD ?? "";
@@ -51,6 +47,8 @@ export default defineConfig({
     },
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
+    /* Emulate German locale, which is the most likely user setting */
+    locale: "de-DE",
   },
 
   /* Configure projects for major browsers */

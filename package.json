@@ -11,7 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:generate-coverage": "vitest run --coverage",
-    "test:e2e": "playwright test",
+    "test:e2e": "op run --no-masking --env-file=.env.defaults --env-file=.env.op -- npx playwright test",
     "lint:check": "oxlint",
     "lint:fix": "npm run lint:check -- --fix",
     "format:check": "oxfmt --check",

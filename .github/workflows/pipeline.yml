@@ -240,9 +240,11 @@ jobs:
 
       - name: Run E2E tests against staging
         env:
-          E2E_BASE_URL: "https://kompla.dev.tech.digitalservice.dev"
+          E2E_TEST_BASE_URL: "https://kompla.dev.tech.digitalservice.dev"
           HTTP_CREDENTIALS_USERNAME: ${{ secrets.HTTP_CREDENTIALS_USERNAME }}
           HTTP_CREDENTIALS_PASSWORD: ${{ secrets.HTTP_CREDENTIALS_PASSWORD }}
+          E2E_TEST_USER_KOMPLA_IDP_USERNAME: ${{ secrets.E2E_TEST_USER_KOMPLA_IDP_USERNAME }}
+          E2E_TEST_USER_KOMPLA_IDP_PASSWORD: ${{ secrets.E2E_TEST_USER_KOMPLA_IDP_PASSWORD }}
         run: npm run test:e2e
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
