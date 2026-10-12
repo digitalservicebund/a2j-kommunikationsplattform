@@ -34,6 +34,10 @@ export interface AuthSession {
    */
   accessToken: string;
   /**
+   * The full name of the logged-in user.
+   */
+  userName: string;
+  /**
    * The SAFE-ID of the user, if they have an own beA inbox (as is the case if
    * they are a lawyer, for instance).
    */

@@ -37,10 +37,16 @@ function LogoutButton() {
   );
 }
 
-function UserArea({ userIsLoggedIn }: Readonly<{ userIsLoggedIn: boolean }>) {
+function UserArea({
+  userIsLoggedIn,
+  userName,
+}: Readonly<{
+  userIsLoggedIn: boolean;
+  userName: string | undefined;
+}>) {
   return userIsLoggedIn ? (
     <>
-      <UserProfile />
+      <UserProfile userName={userName} />
       <LogoutButton />
     </>
   ) : (
@@ -48,13 +54,14 @@ function UserArea({ userIsLoggedIn }: Readonly<{ userIsLoggedIn: boolean }>) {
   );
 }
 
-interface HeaderProps {
-  userIsLoggedIn?: boolean;
-  isContentPage?: boolean;
+export interface HeaderProps {
+  userIsLoggedIn: boolean;
+  userName: string | undefined;
 }
 
 export default function Header({
-  userIsLoggedIn = false,
+  userIsLoggedIn,
+  userName,
 }: Readonly<HeaderProps>) {
   const location = useLocation();
   const isLoginPage = location.pathname === "/login";
@@ -84,7 +91,9 @@ export default function Header({
         <Logo />
 
         <div className="kern-gap-md-lg flex flex-col items-center lg:flex-row">
-          {!isLoginPage && <UserArea userIsLoggedIn={userIsLoggedIn} />}
+          {!isLoginPage && (
+            <UserArea userIsLoggedIn={userIsLoggedIn} userName={userName} />
+          )}
         </div>
       </div>
 

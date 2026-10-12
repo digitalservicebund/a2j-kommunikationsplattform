@@ -9,22 +9,20 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
 } from "react-router";
 import ErrorBox from "~/components/ErrorBox";
+import Footer from "~/components/layout/Footer";
+import Header from "~/components/layout/Header";
+import { LogoutInactiveUserWrapper } from "~/components/LogoutInactiveUserWrapper";
+import { config } from "~/config/config";
+import { getAuthSession } from "~/services/auth/authSession.server";
 import { buildErrorContent } from "~/services/error/buildErrorContent";
 import { useNonce } from "~/services/security/nonce";
 import { dictionaries } from "~/services/translations";
 import { TranslationsContext } from "~/services/translations/context";
+import de from "~/services/translations/de";
 import type { Route } from "./+types/root";
 import { Breadcrumb } from "./components/breadcrumb/Breadcrumb";
-import Footer from "./components/layout/Footer";
-import Header from "./components/layout/Header";
-import { LogoutInactiveUserWrapper } from "./components/LogoutInactiveUserWrapper";
-import { config } from "./config/config";
-import { META_PAGES } from "./config/metaPages";
-import { getAuthSession } from "./services/auth/authSession.server";
-import de from "./services/translations/de";
 import styles from "./styles.css?url";
 
 export { headers } from "./rootHeaders";
@@ -33,9 +31,8 @@ export type RootLoader = typeof loader;
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const authSession = await getAuthSession(request);
   const userIsLoggedIn = Boolean(authSession);
-  const pathname = new URL(request.url).pathname;
-  const isContentPage = META_PAGES.some((page) => `/${page.path}` === pathname);
-  return data({ userIsLoggedIn, isContentPage });
+  const userName = authSession?.userName;
+  return data({ userIsLoggedIn, userName });
 };
 
 export const links: LinksFunction = () => [
@@ -88,8 +85,8 @@ export const links: LinksFunction = () => [
   },
 ];
 
-export default function App() {
-  const { userIsLoggedIn, isContentPage } = useLoaderData<RootLoader>();
+export default function App({ loaderData }: Route.ComponentProps) {
+  const { userIsLoggedIn, userName } = loaderData;
   const nonce = useNonce();
 
   return (
@@ -120,10 +117,7 @@ export default function App() {
         in the future we can do this dynamically via language detection, for example */}
         <TranslationsContext.Provider value={dictionaries.de}>
           <LogoutInactiveUserWrapper handleInactivity={userIsLoggedIn}>
-            <Header
-              userIsLoggedIn={userIsLoggedIn}
-              isContentPage={isContentPage}
-            />
+            <Header userIsLoggedIn={userIsLoggedIn} userName={userName} />
             <Breadcrumb />
             <main className="kern-container">
               <Outlet />
@@ -159,7 +153,7 @@ export function ErrorBoundary({ error }: Readonly<Route.ErrorBoundaryProps>) {
         <Links nonce="" />
       </head>
       <body>
-        <Header />
+        <Header userIsLoggedIn={false} userName={undefined} />
         <main className="kern-container">
           <div className="kern-py-lg space-y-(--kern-metric-space-large)">
             <ErrorBox {...errorContent} />
