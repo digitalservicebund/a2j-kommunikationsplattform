@@ -15,7 +15,7 @@ export default function VerfahrenStatusBadge({
   className,
 }: Readonly<VerfahrenStatusBadgeProps>) {
   const { shared } = useTranslations();
-  const { state, label } = getVerfahrenStatusPresentation(
+  const { state, label, icon } = getVerfahrenStatusPresentation(
     status,
     shared.status.verfahren,
   );
@@ -23,6 +23,7 @@ export default function VerfahrenStatusBadge({
   return (
     <StatusBadge
       state={state}
+      icon={icon}
       label={label}
       small={small}
       className={className}

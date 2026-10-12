@@ -12,7 +12,7 @@ export default function VerfahrenTimelineStatusBadge({
   status,
 }: Readonly<VerfahrenTimelineStatusBadgeProps>) {
   const { shared } = useTranslations();
-  const { state, label } = getEinreichungStatusPresentation(
+  const { state, label, icon } = getEinreichungStatusPresentation(
     status,
     shared.status.einreichung,
   );
@@ -20,6 +20,7 @@ export default function VerfahrenTimelineStatusBadge({
   return (
     <StatusBadge
       state={state}
+      icon={icon}
       label={label}
       loading={isEinreichungInProgress(status)}
     />

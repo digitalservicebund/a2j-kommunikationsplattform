@@ -30,7 +30,6 @@ describe("statusPresentation", () => {
     ["EINGEREICHT", "pending", "eingereicht"],
     ["VERAKTET", "done", "veraktet"],
     ["FEHLGESCHLAGEN", "failed", "fehlgeschlagen"],
-    ["GELOESCHT", "closed", "geloescht"],
   ] as const)("maps einreichung status %s", (status, state, label) => {
     expect(
       getEinreichungStatusPresentation(status, einreichungStatusBadgeLabels),
@@ -42,10 +41,21 @@ describe("statusPresentation", () => {
     ["EINGEREICHT", "pending", "eingereicht"],
     ["GERICHTSVERFAHRENANGELEGT", "done", "gerichtsverfahrenAngelegt"],
     ["ABGESCHLOSSEN", "closed", "abgeschlossen"],
-    ["GELOESCHT", "closed", "geloescht"],
   ] as const)("maps verfahren status %s", (status, state, label) => {
     expect(
       getVerfahrenStatusPresentation(status, verfahrenStatusBadgeLabels),
     ).toEqual({ state, label });
+  });
+
+  test("shows GELOESCHT as closed with the delete icon", () => {
+    expect(
+      getEinreichungStatusPresentation(
+        "GELOESCHT",
+        einreichungStatusBadgeLabels,
+      ),
+    ).toEqual({ state: "closed", label: "geloescht", icon: "delete" });
+    expect(
+      getVerfahrenStatusPresentation("GELOESCHT", verfahrenStatusBadgeLabels),
+    ).toEqual({ state: "closed", label: "geloescht", icon: "delete" });
   });
 });

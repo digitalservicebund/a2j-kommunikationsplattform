@@ -10,6 +10,8 @@ describe("StatusBadge", () => {
     ["done", "kern-icon--success"],
     ["attention", "kern-icon--warning"],
     ["failed", "kern-icon--danger"],
+    ["draft", "kern-icon--draft"],
+    ["closed", "kern-icon--lock"],
   ] as const)("renders the label with the %s state's icon", (state, icon) => {
     const { container } = render(
       <StatusBadge label="Eingegangen" state={state} />,
@@ -23,17 +25,33 @@ describe("StatusBadge", () => {
     expect(container.querySelector(".kern-loader")).not.toBeInTheDocument();
   });
 
-  it.each(["draft", "closed"] as const)(
-    "renders the neutral %s state without an icon",
-    (state) => {
-      const { container } = render(
-        <StatusBadge label="Erstellt" state={state} />,
-      );
+  it("draws the lock smaller than other icons in small badges", () => {
+    const { container } = render(
+      <>
+        <StatusBadge label="Abgeschlossen" state="closed" small />
+        <StatusBadge label="Erstellt" state="draft" small />
+      </>,
+    );
 
-      expect(screen.getByText("Erstellt")).toBeInTheDocument();
-      expect(container.querySelector(".kern-icon")).not.toBeInTheDocument();
-    },
-  );
+    expect(container.querySelector(".kern-icon--lock")).toHaveClass(
+      "size-(--kern-metric-dimension-x-small)",
+    );
+    expect(container.querySelector(".kern-icon--draft")).toHaveClass(
+      "size-(--kern-metric-dimension-small)",
+    );
+  });
+
+  it("shows an icon passed explicitly instead of the state's default", () => {
+    const { container } = render(
+      <StatusBadge label="Gelöscht" state="closed" icon="delete" />,
+    );
+
+    expect(container.querySelector(".kern-icon--delete")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
+    expect(container.querySelector(".kern-icon--lock")).not.toBeInTheDocument();
+  });
 
   it("applies custom class names", () => {
     render(

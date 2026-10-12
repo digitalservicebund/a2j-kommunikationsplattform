@@ -12,9 +12,22 @@ export type StatusBadgeState =
   | "failed"
   | "closed";
 
+// KERN icon names (kern-icon--<name>) a badge can show. Extend as needed.
+export type StatusBadgeIcon =
+  | "info"
+  | "success"
+  | "warning"
+  | "danger"
+  | "delete"
+  | "draft"
+  | "lock";
+
 type StatusBadgeProps = {
   label: string;
   state: StatusBadgeState;
+  // Overrides the state's default icon, for a status that deliberately looks
+  // different from others in the same state.
+  icon?: StatusBadgeIcon;
   small?: boolean;
   loading?: boolean;
   className?: string;
@@ -37,17 +50,35 @@ const stateClasses: Record<StatusBadgeState, string> = {
   closed: neutralClasses,
 };
 
-// KERN icons are masks over their background color, so bg-* sets the icon
-// color. KERN has no icon for its "default" feedback color, so the neutral
-// states (draft, closed) have none.
-const stateIcons: Record<StatusBadgeState, string | null> = {
-  draft: null,
-  pending: "kern-icon--info bg-feedback-info",
-  done: "kern-icon--success bg-feedback-success",
-  attention: "kern-icon--warning bg-feedback-warning",
-  failed: "kern-icon--danger bg-feedback-danger",
-  closed: null,
+// kern-icon--lock is a custom icon (see styles.css); the others ship with KERN.
+const stateIcons: Record<StatusBadgeState, StatusBadgeIcon> = {
+  draft: "draft",
+  pending: "info",
+  done: "success",
+  attention: "warning",
+  failed: "danger",
+  closed: "lock",
 };
+
+// KERN icons are masks over their background color, so bg-* sets the icon
+// color — always the state's, whichever icon is shown.
+const iconColorClasses: Record<StatusBadgeState, string> = {
+  draft: "bg-feedback-default",
+  pending: "bg-feedback-info",
+  done: "bg-feedback-success",
+  attention: "bg-feedback-warning",
+  failed: "bg-feedback-danger",
+  closed: "bg-feedback-default",
+};
+
+// The lock's glyph fills more of its box than KERN's icons, so in small badges
+// it's drawn smaller; the margin keeps the icon slot (and the label) in place,
+// like the loader.
+function smallIconClasses(icon: StatusBadgeIcon) {
+  return icon === "lock"
+    ? "m-(--kern-metric-space-2x-small) size-(--kern-metric-dimension-x-small) min-h-(--kern-metric-dimension-x-small) min-w-(--kern-metric-dimension-x-small)"
+    : "size-(--kern-metric-dimension-small) min-h-(--kern-metric-dimension-small) min-w-(--kern-metric-dimension-small)";
+}
 
 // Small badges draw their outline as an inset ring instead of a border, like
 // KERN's kern-badge--small, so the outline doesn't add to the badge's size.
@@ -61,12 +92,11 @@ const sizeClasses = {
 export default function StatusBadge({
   label,
   state,
+  icon = stateIcons[state],
   small = false,
   loading = false,
   className,
 }: Readonly<StatusBadgeProps>) {
-  const icon = stateIcons[state];
-
   return (
     <span
       className={clsx(
@@ -92,20 +122,17 @@ export default function StatusBadge({
           aria-hidden="true"
         ></span>
       ) : (
-        icon && (
-          <span
-            className={clsx(
-              "kern-icon",
-              icon,
-              small &&
-                "size-(--kern-metric-dimension-small) min-h-(--kern-metric-dimension-small) min-w-(--kern-metric-dimension-small)",
-              // Like KERN's badge: keep the icon visible in Windows High Contrast,
-              // which would otherwise replace its background (= icon) color.
-              "forced-colors:bg-kern-white forced-colors:forced-color-adjust-none",
-            )}
-            aria-hidden="true"
-          ></span>
-        )
+        <span
+          className={clsx(
+            `kern-icon kern-icon--${icon}`,
+            iconColorClasses[state],
+            small && smallIconClasses(icon),
+            // Like KERN's badge: keep the icon visible in Windows High Contrast,
+            // which would otherwise replace its background (= icon) color.
+            "forced-colors:bg-kern-white forced-colors:forced-color-adjust-none",
+          )}
+          aria-hidden="true"
+        ></span>
       )}
       {/* Same label styles for both sizes, like KERN's kern-badge .kern-label. */}
       <span className="pl-(--kern-metric-space-x-small) font-(family-name:--kern-typography-font-family-default) text-(length:--kern-typography-font-size-small-static) leading-(--kern-typography-line-height-medium-static) font-(weight:--kern-typography-font-weight-label-default) tracking-(--kern-metric-space-none) text-layout-text-default not-italic slashed-zero tabular-nums">

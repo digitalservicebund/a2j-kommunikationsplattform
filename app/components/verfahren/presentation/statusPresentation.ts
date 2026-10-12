@@ -1,10 +1,22 @@
-import type { StatusBadgeState } from "~/components/StatusBadge";
+import type {
+  StatusBadgeIcon,
+  StatusBadgeState,
+} from "~/components/StatusBadge";
 import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 
 type Presentation = {
   state: StatusBadgeState;
   label: string;
+  icon?: StatusBadgeIcon;
+};
+
+// `icon` is only set for a status that deliberately looks different from the
+// others in its state; otherwise the badge shows the state's default icon.
+type StatusPresentation<LabelKey> = {
+  state: StatusBadgeState;
+  labelKey: LabelKey;
+  icon?: StatusBadgeIcon;
 };
 
 export type VerfahrenStatusBadgeLabels = {
@@ -27,7 +39,7 @@ export type EinreichungStatusBadgeLabels = {
 
 const einreichungStatusPresentation: Record<
   Einreichung["status"],
-  { state: StatusBadgeState; labelKey: keyof EinreichungStatusBadgeLabels }
+  StatusPresentation<keyof EinreichungStatusBadgeLabels>
 > = {
   ERSTELLT: { state: "draft", labelKey: "erstellt" },
   // Submitted, but not yet confirmed as eingereicht.
@@ -37,21 +49,21 @@ const einreichungStatusPresentation: Record<
   EINGEREICHT: { state: "pending", labelKey: "eingereicht" },
   VERAKTET: { state: "done", labelKey: "veraktet" },
   FEHLGESCHLAGEN: { state: "failed", labelKey: "fehlgeschlagen" },
-  GELOESCHT: { state: "closed", labelKey: "geloescht" },
+  GELOESCHT: { state: "closed", labelKey: "geloescht", icon: "delete" },
 };
 
 export function getEinreichungStatusPresentation(
   status: Einreichung["status"],
   badgeLabels: EinreichungStatusBadgeLabels,
 ): Presentation {
-  const { state, labelKey } = einreichungStatusPresentation[status];
+  const { state, labelKey, icon } = einreichungStatusPresentation[status];
 
-  return { state, label: badgeLabels[labelKey] };
+  return { state, label: badgeLabels[labelKey], icon };
 }
 
 const verfahrenStatusPresentation: Record<
   Verfahren["status"],
-  { state: StatusBadgeState; labelKey: keyof VerfahrenStatusBadgeLabels }
+  StatusPresentation<keyof VerfahrenStatusBadgeLabels>
 > = {
   ERSTELLT: { state: "draft", labelKey: "erstellt" },
   // Filed, but the Gericht hasn't opened a Gerichtsverfahren yet.
@@ -61,14 +73,14 @@ const verfahrenStatusPresentation: Record<
     labelKey: "gerichtsverfahrenAngelegt",
   },
   ABGESCHLOSSEN: { state: "closed", labelKey: "abgeschlossen" },
-  GELOESCHT: { state: "closed", labelKey: "geloescht" },
+  GELOESCHT: { state: "closed", labelKey: "geloescht", icon: "delete" },
 };
 
 export function getVerfahrenStatusPresentation(
   status: Verfahren["status"],
   badgeLabels: VerfahrenStatusBadgeLabels,
 ): Presentation {
-  const { state, labelKey } = verfahrenStatusPresentation[status];
+  const { state, labelKey, icon } = verfahrenStatusPresentation[status];
 
-  return { state, label: badgeLabels[labelKey] };
+  return { state, label: badgeLabels[labelKey], icon };
 }
