@@ -1,23 +1,12 @@
-import type {
-  StatusBadgeIcon,
-  StatusBadgeState,
-} from "~/components/StatusBadge";
+import type { StatusBadgePresentation } from "~/components/StatusBadge";
 import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 
-type Presentation = {
-  state: StatusBadgeState;
-  label: string;
-  icon?: StatusBadgeIcon;
-};
-
 // `icon` is only set for a status that deliberately looks different from the
 // others in its state; otherwise the badge shows the state's default icon.
-type StatusPresentation<LabelKey> = {
-  state: StatusBadgeState;
+type StatusPresentation<LabelKey> = Omit<StatusBadgePresentation, "label"> & {
   labelKey: LabelKey;
-  icon?: StatusBadgeIcon;
 };
 
 export type VerfahrenStatusBadgeLabels = {
@@ -56,7 +45,7 @@ const einreichungStatusPresentation: Record<
 export function getEinreichungStatusPresentation(
   status: Einreichung["status"],
   badgeLabels: EinreichungStatusBadgeLabels,
-): Presentation {
+): StatusBadgePresentation {
   const { state, labelKey, icon } = einreichungStatusPresentation[status];
 
   return { state, label: badgeLabels[labelKey], icon };
@@ -80,7 +69,7 @@ const verfahrenStatusPresentation: Record<
 export function getVerfahrenStatusPresentation(
   status: Verfahren["status"],
   badgeLabels: VerfahrenStatusBadgeLabels,
-): Presentation {
+): StatusBadgePresentation {
   const { state, labelKey, icon } = verfahrenStatusPresentation[status];
 
   return { state, label: badgeLabels[labelKey], icon };
@@ -95,7 +84,7 @@ export type BelegBadgeLabels = {
 // more happens to it, so it's done.
 const belegStatusPresentation: Record<
   Beleg["status"],
-  StatusPresentation<keyof BelegBadgeLabels> & { loading: boolean }
+  StatusPresentation<keyof BelegBadgeLabels>
 > = {
   IN_BEARBEITUNG: { state: "pending", labelKey: "pending", loading: true },
   ERSTELLT: { state: "done", labelKey: "ready", loading: false },
@@ -104,7 +93,7 @@ const belegStatusPresentation: Record<
 export function getBelegStatusPresentation(
   status: Beleg["status"],
   badgeLabels: BelegBadgeLabels,
-): Presentation & { loading: boolean } {
+): StatusBadgePresentation {
   const { state, labelKey, icon, loading } = belegStatusPresentation[status];
 
   return { state, label: badgeLabels[labelKey], icon, loading };

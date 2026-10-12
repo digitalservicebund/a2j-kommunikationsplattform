@@ -11,7 +11,7 @@ describe("VerfahrenEinreichungStatusBadge", () => {
     const { container } = render(
       <VerfahrenEinreichungStatusBadge
         beleg={null}
-        readinessPresentation={{
+        validierungPresentation={{
           label: "Es liegt ein Problem vor",
           state: "failed",
           loading: false,
@@ -28,7 +28,7 @@ describe("VerfahrenEinreichungStatusBadge", () => {
     render(
       <VerfahrenEinreichungStatusBadge
         beleg={null}
-        readinessPresentation={{
+        validierungPresentation={{
           label: "Bereit zur Abgabe",
           state: "done",
           loading: false,
@@ -45,7 +45,7 @@ describe("VerfahrenEinreichungStatusBadge", () => {
     render(
       <VerfahrenEinreichungStatusBadge
         beleg={{ id: "b-1", status: "ERSTELLT" } as never}
-        readinessPresentation={{
+        validierungPresentation={{
           label: "Es liegt ein Problem vor",
           state: "failed",
           loading: false,
@@ -65,7 +65,7 @@ describe("VerfahrenEinreichungStatusBadge", () => {
     const { container } = render(
       <VerfahrenEinreichungStatusBadge
         beleg={null}
-        readinessPresentation={{
+        validierungPresentation={{
           label: "Wird geprüft",
           state: "pending",
           loading: true,
@@ -82,7 +82,7 @@ describe("VerfahrenEinreichungStatusBadge", () => {
     const { container } = render(
       <VerfahrenEinreichungStatusBadge
         beleg={null}
-        readinessPresentation={{
+        validierungPresentation={{
           label: "Noch wenige Schritte zur Abgabe",
           state: "attention",
           loading: false,
@@ -99,7 +99,7 @@ describe("VerfahrenEinreichungStatusBadge", () => {
     const { container, rerender } = render(
       <VerfahrenEinreichungStatusBadge
         beleg={{ id: "b-1", status: "IN_BEARBEITUNG" } as never}
-        readinessPresentation={null}
+        validierungPresentation={null}
         hasValidationIssues={false}
         belegBadgeLabels={belegBadgeLabels}
       />,
@@ -111,7 +111,7 @@ describe("VerfahrenEinreichungStatusBadge", () => {
     rerender(
       <VerfahrenEinreichungStatusBadge
         beleg={{ id: "b-1", status: "ERSTELLT" } as never}
-        readinessPresentation={null}
+        validierungPresentation={null}
         hasValidationIssues={false}
         belegBadgeLabels={belegBadgeLabels}
       />,
@@ -124,7 +124,7 @@ describe("VerfahrenEinreichungStatusBadge", () => {
     const { container } = render(
       <VerfahrenEinreichungStatusBadge
         beleg={null}
-        readinessPresentation={null}
+        validierungPresentation={null}
         hasValidationIssues={false}
         belegBadgeLabels={belegBadgeLabels}
       />,

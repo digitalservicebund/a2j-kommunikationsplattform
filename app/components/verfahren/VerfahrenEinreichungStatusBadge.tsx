@@ -1,11 +1,11 @@
 import StatusBadge from "~/components/StatusBadge";
+import type { StatusBadgePresentation } from "~/components/StatusBadge";
 import { getBelegStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
-import { ReadinessPresentation } from "~/components/verfahren/presentation/validierungPresentation";
 import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 
 type VerfahrenEinreichungStatusBadgeProps = {
   beleg: Beleg | null;
-  readinessPresentation: ReadinessPresentation | null;
+  validierungPresentation: StatusBadgePresentation | null;
   hasValidationIssues: boolean;
   belegBadgeLabels: { pending: string; ready: string };
 };
@@ -16,7 +16,7 @@ type VerfahrenEinreichungStatusBadgeProps = {
 // avoid showing the same information twice.
 export default function VerfahrenEinreichungStatusBadge({
   beleg,
-  readinessPresentation,
+  validierungPresentation,
   hasValidationIssues,
   belegBadgeLabels,
 }: Readonly<VerfahrenEinreichungStatusBadgeProps>) {
@@ -26,7 +26,7 @@ export default function VerfahrenEinreichungStatusBadge({
 
   const presentation = beleg
     ? getBelegStatusPresentation(beleg.status, belegBadgeLabels)
-    : readinessPresentation;
+    : validierungPresentation;
 
   if (!presentation) {
     return null;

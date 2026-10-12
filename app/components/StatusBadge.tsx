@@ -22,13 +22,18 @@ export type StatusBadgeIcon =
   | "draft"
   | "lock";
 
-type StatusBadgeProps = {
-  label: string;
+// What a badge shows. Every presentation helper (statusPresentation,
+// validierungPresentation) returns this shape.
+export type StatusBadgePresentation = {
   state: StatusBadgeState;
+  label: string;
   // Overrides the state's default icon, for a status that deliberately looks
   // different from others in the same state.
   icon?: StatusBadgeIcon;
   loading?: boolean;
+};
+
+type StatusBadgeProps = StatusBadgePresentation & {
   className?: string;
 };
 

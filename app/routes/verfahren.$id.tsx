@@ -7,7 +7,7 @@ import {
 import z from "zod";
 import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
 import { PageMetadata } from "~/components/PageMetadata";
-import { resolveReadinessPresentation } from "~/components/verfahren/presentation/validierungPresentation";
+import { resolveEinreichungPresentation } from "~/components/verfahren/presentation/validierungPresentation";
 import VerfahrenDraftKlageeinreichungSection, {
   type EinreichungDetails,
 } from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
@@ -424,14 +424,14 @@ export default function VerfahrenId() {
       (dokument) => dokument.validierungsstatus,
     ) ?? [];
 
-  const readinessPresentation = draftKlageeinreichung
-    ? resolveReadinessPresentation(
+  const validierungPresentation = draftKlageeinreichung
+    ? resolveEinreichungPresentation(
         draftKlageeinreichung.einreichung.einreichungsStatus,
         t.routes.verfahrenId.draftKlageeinreichung.summary.badgeLabels,
         dokumenteValidierungsstatus,
       )
     : null;
-  const isValidating = readinessPresentation?.loading === true;
+  const isValidating = validierungPresentation?.loading === true;
 
   const validationErgebnis =
     draftKlageeinreichung?.einreichung.einreichungsStatus.ergebnis;
@@ -465,7 +465,7 @@ export default function VerfahrenId() {
                 isValidating={isValidating}
                 hasValidationIssues={hasValidationIssues}
                 isValidationErrorFatal={validationErgebnis === "ROT"}
-                label={readinessPresentation?.label ?? ""}
+                label={validierungPresentation?.label ?? ""}
                 error={
                   draftKlageeinreichung?.einreichung.einreichungsStatus
                     .fehler ?? []
@@ -486,7 +486,7 @@ export default function VerfahrenId() {
                   <VerfahrenDraftKlageeinreichungSection
                     draftKlageeinreichung={draftKlageeinreichung}
                     verfahren={verfahren}
-                    readinessPresentation={readinessPresentation}
+                    validierungPresentation={validierungPresentation}
                     hasValidationIssues={hasValidationIssues}
                     isValidating={isValidating}
                     isSubmitting={isSubmitting}

@@ -67,7 +67,7 @@ const draftKlageeinreichung: EinreichungDetails = {
 
 const baseProps = {
   verfahren,
-  readinessPresentation: null,
+  validierungPresentation: null,
   hasValidationIssues: false,
   isValidating: false,
   isSubmitting: "idle" as const,
