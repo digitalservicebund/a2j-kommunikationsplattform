@@ -45,10 +45,10 @@ import { authMiddleware } from "~/middleware/auth.server";
 import { AuthSession } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
+import { parseActionFormData } from "~/utils/actionInput";
 import {
   actionErrorResponse,
   actionResultFromApiError,
-  actionResultFromInputParsingError,
   actionSuccess,
 } from "~/utils/actionResult";
 import { rethrowApiNotFoundAsRouteError } from "~/utils/apiError";
@@ -159,17 +159,16 @@ async function handleDelete(
   formData: FormData,
   { authSession, verfahrenId }: FormActionContext,
 ) {
-  const input = DokumentDeletionInputSchema.safeParse({
-    einreichungId: formData.get("einreichungId"),
-    dokumentId: formData.get("dokumentId"),
-  });
+  const { einreichungId, dokumentId } = parseActionFormData(
+    formData,
+    DokumentDeletionInputSchema,
+    { errorResultData: { formType: "delete" } },
+  );
 
-  if (!input.success) {
-    return actionResultFromInputParsingError(input.error);
-  }
-
-  const { einreichungId, dokumentId } = input.data;
-  const actionData = { formType: "delete", dokumentId };
+  const errorResultData = {
+    formType: "delete",
+    dokumentId,
+  };
 
   try {
     const deleteResult = await deleteDokumentFromEinreichung({
@@ -181,14 +180,14 @@ async function handleDelete(
 
     if (deleteResult.status === "protected-dokument") {
       return actionErrorResponse(de.shared.form.errors.deleteFailed, {
-        data: actionData,
+        data: errorResultData,
         status: 403,
       });
     }
 
     if (deleteResult.status === "delete-failed") {
       return actionErrorResponse(de.shared.form.errors.deleteFailed, {
-        data: actionData,
+        data: errorResultData,
         status: 500,
       });
     }
@@ -197,16 +196,29 @@ async function handleDelete(
   } catch (error) {
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.deleteFailed,
-      data: actionData,
+      data: errorResultData,
     });
   }
 }
+
+const EinreichenInputSchema = z.object({
+  einreichungId: z.string().min(1),
+});
 
 async function handleEinreichen(
   formData: FormData,
   { authSession, verfahrenId }: FormActionContext,
 ) {
-  const einreichungId = formData.get("einreichungId") as string;
+  const { einreichungId } = parseActionFormData(
+    formData,
+    EinreichenInputSchema,
+    { errorResultData: { formType: "einreichen" } },
+  );
+
+  const actionErrorResultData = {
+    formType: "einreichen",
+    einreichungId,
+  };
 
   try {
     await submitEinreichungIfNeeded(authSession, {
@@ -218,31 +230,34 @@ async function handleEinreichen(
   } catch (error) {
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.einreichungFailed,
+      data: actionErrorResultData,
     });
   }
 }
+
+const CreateEinreichungInputSchema = z.object({
+  art: EinreichungArtSchema,
+});
 
 async function handleCreateEinreichung(
   formData: FormData,
   { authSession, verfahrenId }: FormActionContext,
 ) {
-  const actionData = { formType: CREATE_EINREICHUNG_FORM_TYPE };
-  const parsedArt = EinreichungArtSchema.safeParse(formData.get("art"));
+  const errorResultData = {
+    formType: CREATE_EINREICHUNG_FORM_TYPE,
+  };
 
-  if (!parsedArt.success) {
-    return actionResultFromInputParsingError(parsedArt.error, {
-      data: actionData,
-    });
-  }
+  const { art } = parseActionFormData(formData, CreateEinreichungInputSchema, {
+    errorResultData,
+  });
 
   try {
-    await createEinreichung(authSession, verfahrenId, parsedArt.data);
-
+    await createEinreichung(authSession, verfahrenId, art);
     return redirect(`/verfahren/${verfahrenId}`);
   } catch (error) {
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.createEinreichungFailed,
-      data: actionData,
+      data: errorResultData,
     });
   }
 }
@@ -258,21 +273,15 @@ async function handleUploadWeitereDokument(
   formData: FormData,
   { authSession, verfahrenId }: FormActionContext,
 ) {
-  const actionData = { formType: UPLOAD_WEITERE_DOKUMENT_FORM_TYPE };
-  const input = WeitereDokumentUploadInputSchema.safeParse({
-    einreichungId: formData.get("einreichungId"),
-    file: formData.get("file"),
-    type: formData.get("type"),
-    sichtbarkeitAlle: formData.get("sichtbarkeitAlle"),
-  });
+  const errorResultData = {
+    formType: UPLOAD_WEITERE_DOKUMENT_FORM_TYPE,
+  };
 
-  if (!input.success) {
-    return actionResultFromInputParsingError(input.error, {
-      data: actionData,
-    });
-  }
-
-  const { einreichungId, file, type, sichtbarkeitAlle } = input.data;
+  const { einreichungId, file, type, sichtbarkeitAlle } = parseActionFormData(
+    formData,
+    WeitereDokumentUploadInputSchema,
+    { errorResultData },
+  );
 
   try {
     await uploadDokument(
@@ -288,16 +297,27 @@ async function handleUploadWeitereDokument(
   } catch (error) {
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.uploadFailed,
-      data: actionData,
+      data: errorResultData,
     });
   }
 }
+
+const BelegDownloadInputSchema = z.object({
+  belegId: z.string().min(1),
+});
 
 async function handleDownloadBeleg(
   formData: FormData,
   { authSession, verfahrenId }: FormActionContext,
 ) {
-  const belegId = formData.get("belegId") as string;
+  const { belegId } = parseActionFormData(formData, BelegDownloadInputSchema, {
+    errorResultData: { formType: "downloadBeleg" },
+  });
+
+  const errorResultData = {
+    formType: "downloadBeleg",
+    belegId,
+  };
 
   try {
     const downloadUrl = await fetchBelegDownloadLink(authSession, {
@@ -305,11 +325,11 @@ async function handleDownloadBeleg(
       id: belegId,
       dispositionType: "ATTACHMENT",
     });
-
     return actionSuccess({ downloadUrl });
   } catch (error) {
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.belegDownloadFailed,
+      data: errorResultData,
     });
   }
 }

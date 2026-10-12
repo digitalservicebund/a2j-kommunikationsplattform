@@ -148,7 +148,11 @@ async function handleDelete(
     if (!deleteResult.success) {
       return data(
         actionError(de.shared.form.errors.deleteFailed, {
-          data: { verfahrenId, einreichungId },
+          data: {
+            actionType: "delete" as const,
+            verfahrenId,
+            einreichungId,
+          },
         }),
         { status: 500 },
       );
@@ -158,7 +162,11 @@ async function handleDelete(
   } catch (error) {
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.deleteFailed,
-      data: { verfahrenId, einreichungId },
+      data: {
+        actionType: "delete" as const,
+        verfahrenId,
+        einreichungId,
+      },
     });
   }
 }
@@ -195,7 +203,10 @@ async function handleSubmit(
   const validatedForm = NeueKlageEinreichenSchema.safeParse(formValues);
   if (!validatedForm.success) {
     return actionFieldErrorsResponse(validatedForm.error, {
-      data: { formValues },
+      data: {
+        actionType: "submit" as const,
+        formValues,
+      },
     });
   }
 
@@ -218,7 +229,10 @@ async function handleSubmit(
     } catch (error) {
       return actionResultFromSchemaParsingError(error, {
         message: de.shared.form.errors.submissionFailed,
-        data: { formValues },
+        data: {
+          actionType: "submit" as const,
+          formValues,
+        },
       });
     }
 
@@ -234,7 +248,10 @@ async function handleSubmit(
     } catch (error) {
       return actionResultFromApiError(error, {
         message: de.shared.form.errors.submissionFailed,
-        data: { formValues },
+        data: {
+          actionType: "submit" as const,
+          formValues,
+        },
       });
     }
   }
@@ -250,7 +267,10 @@ async function handleSubmit(
   } catch (error) {
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.submissionFailed,
-      data: { formValues },
+      data: {
+        actionType: "submit" as const,
+        formValues,
+      },
     });
   }
 
@@ -299,18 +319,17 @@ export default function VerfahrenNeu({
 }: Route.ComponentProps) {
   const { shared, routes, buttons } = useTranslations();
   const navigation = useNavigation();
+
   const isActionError = actionData?.status === "error";
   const isInvalid = actionData?.status === "invalid";
   const fieldErrors = isInvalid ? actionData.fieldErrors : undefined;
-  const formValues = isInvalid
-    ? (
-        actionData.data as
-          | { formValues?: Record<string, FormDataEntryValue> }
-          | undefined
-      )?.formValues
-    : undefined;
+  const formValues =
+    isInvalid && actionData.data?.actionType === "submit"
+      ? actionData.data.formValues
+      : undefined;
+
   const [selectedGerichtId, setSelectedGerichtId] = useState<string>(
-    (formValues?.gerichtId as string) || "",
+    typeof formValues?.gerichtId === "string" ? formValues.gerichtId : "",
   );
 
   const isSubmitting = navigation.state !== "idle";

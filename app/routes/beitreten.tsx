@@ -9,6 +9,7 @@ import {
   useActionData,
   useSearchParams,
 } from "react-router";
+import z from "zod";
 import Alert from "~/components/Alert";
 import Callout from "~/components/Callout";
 import InputField from "~/components/InputField";
@@ -29,6 +30,7 @@ import {
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 import { de } from "~/services/translations/de";
+import { parseActionFormData } from "~/utils/actionInput";
 import { actionError, actionSuccess } from "~/utils/actionResult";
 import { isClientSideApiError as is4xxApiError } from "~/utils/apiError";
 import { logger } from "~/utils/logger.server";
@@ -65,6 +67,12 @@ export async function loader({ url, context }: LoaderFunctionArgs) {
   return null;
 }
 
+const ActionInputSchema = z.object({
+  code: z.string().min(1),
+  liftId: z.string().min(1),
+  liftETag: z.string().min(1),
+});
+
 /**
  * Redeems the submitted lift code so that the user joins the associated
  * Verfahren.
@@ -74,13 +82,10 @@ export async function action({ request, context }: Route.ActionArgs) {
   const safeId = authSession.safeId!;
 
   const formData = await request.formData();
-  const code = formData.get("code") as string | null;
-  const liftId = formData.get("liftId") as string | null;
-  const liftETag = formData.get("liftEtag") as string | null;
-
-  if (!code || !liftId || !liftETag) {
-    return data(actionError("Missing parameters"), { status: 400 });
-  }
+  const { code, liftId, liftETag } = parseActionFormData(
+    formData,
+    ActionInputSchema,
+  );
 
   try {
     const { verfahrenId } = await performLift(authSession, {
@@ -105,7 +110,7 @@ export default function Beitreten({ loaderData }: Route.ComponentProps) {
 
   const code = searchParams.get("code") ?? undefined;
   const { lift, eTag } =
-    loaderData?.status === "success" ? loaderData.data! : {};
+    loaderData?.status === "success" ? loaderData.data : {};
   const error = loaderData?.status === "error" ? loaderData.error : undefined;
 
   return (

@@ -1,5 +1,6 @@
 import React, { Ref, RefObject, Suspense, useRef } from "react";
-import { Await, Link, LoaderFunctionArgs, useLoaderData } from "react-router";
+import { Await, Link, useLoaderData } from "react-router";
+import z from "zod";
 import Alert from "~/components/Alert";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { useParamsState } from "~/components/hooks/useParamsState";
@@ -17,11 +18,12 @@ import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren
 import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
 import {
   fetchVerfahren,
-  FetchVerfahrenOptions,
+  FetchVerfahrenOptionsSchema,
 } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { VERFAHREN_PAGE_LIMIT } from "~/domains/verfahren/services/verfahrenListOptions";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
+import { Route } from "./+types/_index";
 
 export type VerfahrenLoaderData = {
   items: Verfahren[];
@@ -36,18 +38,33 @@ export type LoaderData = {
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
 
-export const loader = async ({ request, context }: LoaderFunctionArgs) => {
+const SearchParamsSchema = FetchVerfahrenOptionsSchema.pick({
+  offset: true,
+  gericht: true,
+  sort: true,
+  search_text: true,
+}).extend({
+  showDebugInfo: z.boolean().default(false),
+});
+
+export const loader = async ({ context, url }: Route.LoaderArgs) => {
   const authSession = requireAuthSession(context, "loader");
 
-  const url = new URL(request.url);
-  const offset = Number(url.searchParams.get("offset") || "0");
-  const gericht = url.searchParams.get("gericht");
-  const sort = (url.searchParams.get("sort") ||
-    sortOptions[0].value) as FetchVerfahrenOptions["sort"];
-  const search_text = url.searchParams.get("search_text");
+  let { data: searchParams } = SearchParamsSchema.safeParse({
+    offset: url.searchParams.get("offset"),
+    gericht: url.searchParams.get("gericht"),
+    sort: url.searchParams.get("sort"),
+  });
 
-  // TODO: refactor the handling of below promises
-  // Fetch verfahren with one extra item to determine if there are more items
+  if (!searchParams) {
+    searchParams = {
+      offset: 0,
+      showDebugInfo: false,
+    };
+  }
+
+  const { offset, gericht, sort, search_text, showDebugInfo } = searchParams;
+
   const verfahrenPromise = (async () => {
     const verfahren = await fetchVerfahren(authSession, {
       limit: VERFAHREN_PAGE_LIMIT + 1,
@@ -73,7 +90,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 
   return {
     data: Promise.all([verfahrenPromise, gerichtePromise]),
-    showDebugInfo: url.searchParams.get("showDebug") === "true",
+    showDebugInfo,
   };
 };
 
@@ -178,9 +195,9 @@ function VerfahrenContent({
   const handleSearch = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const value = formData.get("search_text");
-
-    updateParam("search_text", (value as string) || null);
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+    const value = formData.get("search_text") as string | null;
+    updateParam("search_text", value || null);
   };
 
   return (

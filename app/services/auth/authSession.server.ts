@@ -51,7 +51,11 @@ export const getAuthSession = async (
   }
 
   const { user } = sessionResponse;
+
+  // We know that `user.authProvider` is one of the known auth providers.
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   const provider = user.authProvider as AuthProvider;
+
   const setCookieHeaders = sessionHeaders.getSetCookie();
 
   const tokens = await getOAuth2Tokens(request, user.id, provider);

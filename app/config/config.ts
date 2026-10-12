@@ -4,15 +4,26 @@ export interface Config {
   SENTRY_DSN: string;
 }
 
-function envFromBrowser() {
-  return typeof window === "object" && "ENV" in window
-    ? (window?.ENV as Record<string, string | undefined>)
-    : undefined;
+interface EnvironmentVariables {
+  [key: string]: string | undefined;
 }
 
-function envFromNode() {
+// The server passes relevant environment variables to the client by
+// rendering an inline <script> that stores the variables in `window.ENV`.
+// See `app/root.tsx`.
+declare global {
+  interface Window {
+    ENV?: EnvironmentVariables;
+  }
+}
+
+function envFromBrowser(): EnvironmentVariables | undefined {
+  return typeof window === "object" && "ENV" in window ? window.ENV : undefined;
+}
+
+function envFromNode(): EnvironmentVariables | undefined {
   return typeof process === "object" && "env" in process
-    ? process?.env
+    ? process.env
     : undefined;
 }
 
