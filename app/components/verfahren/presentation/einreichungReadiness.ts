@@ -1,5 +1,4 @@
 import type { StatusBadgeState } from "~/components/StatusBadge";
-import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import type { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
 import { isValidierungslaufRunning } from "~/domains/verfahren/services/validierungslauf";
 
@@ -77,28 +76,4 @@ export function resolveDokumentPresentation(
     ...badgeLabels,
     ready: badgeLabels.checkedClean,
   });
-}
-
-export type BelegBadgeLabels = {
-  pending: string;
-  ready: string;
-};
-
-export function resolveBelegPresentation(
-  beleg: Beleg,
-  badgeLabels: BelegBadgeLabels,
-): ReadinessPresentation {
-  if (beleg.status === "ERSTELLT") {
-    return {
-      label: badgeLabels.ready,
-      state: "done",
-      loading: false,
-    };
-  }
-
-  return {
-    label: badgeLabels.pending,
-    state: "pending",
-    loading: true,
-  };
 }

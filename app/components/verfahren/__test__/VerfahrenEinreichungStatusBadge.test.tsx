@@ -98,7 +98,7 @@ describe("VerfahrenEinreichungStatusBadge", () => {
   it("shows a loader while the Beleg is pending, and none once it's ready", () => {
     const { container, rerender } = render(
       <VerfahrenEinreichungStatusBadge
-        beleg={{ id: "b-1", status: "AUSSTEHEND" } as never}
+        beleg={{ id: "b-1", status: "IN_BEARBEITUNG" } as never}
         readinessPresentation={null}
         hasValidationIssues={false}
         belegBadgeLabels={belegBadgeLabels}

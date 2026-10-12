@@ -2,6 +2,7 @@ import type {
   StatusBadgeIcon,
   StatusBadgeState,
 } from "~/components/StatusBadge";
+import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 
@@ -83,4 +84,28 @@ export function getVerfahrenStatusPresentation(
   const { state, labelKey, icon } = verfahrenStatusPresentation[status];
 
   return { state, label: badgeLabels[labelKey], icon };
+}
+
+export type BelegBadgeLabels = {
+  pending: string;
+  ready: string;
+};
+
+// A Beleg is created asynchronously after einreichen; once ERSTELLT nothing
+// more happens to it, so it's done.
+const belegStatusPresentation: Record<
+  Beleg["status"],
+  StatusPresentation<keyof BelegBadgeLabels> & { loading: boolean }
+> = {
+  IN_BEARBEITUNG: { state: "pending", labelKey: "pending", loading: true },
+  ERSTELLT: { state: "done", labelKey: "ready", loading: false },
+};
+
+export function getBelegStatusPresentation(
+  status: Beleg["status"],
+  badgeLabels: BelegBadgeLabels,
+): Presentation & { loading: boolean } {
+  const { state, labelKey, icon, loading } = belegStatusPresentation[status];
+
+  return { state, label: badgeLabels[labelKey], icon, loading };
 }

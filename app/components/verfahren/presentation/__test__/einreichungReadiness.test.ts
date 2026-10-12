@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  resolveBelegPresentation,
-  resolveReadinessPresentation,
-} from "../einreichungReadiness";
+import { resolveReadinessPresentation } from "../einreichungReadiness";
 
 const badgeLabels = {
   ready: "ready",
@@ -81,36 +78,6 @@ describe("resolveReadinessPresentation", () => {
       label: "soon",
       state: "attention",
       loading: false,
-    });
-  });
-});
-
-describe("resolveBelegPresentation", () => {
-  const belegBadgeLabels = { pending: "pending", ready: "ready" };
-
-  it("is done once ERSTELLT", () => {
-    expect(
-      resolveBelegPresentation(
-        { status: "ERSTELLT" } as never,
-        belegBadgeLabels,
-      ),
-    ).toEqual({
-      label: "ready",
-      state: "done",
-      loading: false,
-    });
-  });
-
-  it("is pending and loading while IN_BEARBEITUNG", () => {
-    expect(
-      resolveBelegPresentation(
-        { status: "IN_BEARBEITUNG" } as never,
-        belegBadgeLabels,
-      ),
-    ).toEqual({
-      label: "pending",
-      state: "pending",
-      loading: true,
     });
   });
 });

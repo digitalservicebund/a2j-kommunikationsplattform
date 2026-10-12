@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+  getBelegStatusPresentation,
   getEinreichungStatusPresentation,
   getVerfahrenStatusPresentation,
 } from "../statusPresentation";
@@ -57,5 +58,23 @@ describe("statusPresentation", () => {
     expect(
       getVerfahrenStatusPresentation("GELOESCHT", verfahrenStatusBadgeLabels),
     ).toEqual({ state: "closed", label: "geloescht", icon: "delete" });
+  });
+});
+
+describe("getBelegStatusPresentation", () => {
+  const belegBadgeLabels = { pending: "pending", ready: "ready" };
+
+  test("is pending and loading while IN_BEARBEITUNG", () => {
+    expect(
+      getBelegStatusPresentation("IN_BEARBEITUNG", belegBadgeLabels),
+    ).toEqual({ state: "pending", label: "pending", loading: true });
+  });
+
+  test("is done once ERSTELLT", () => {
+    expect(getBelegStatusPresentation("ERSTELLT", belegBadgeLabels)).toEqual({
+      state: "done",
+      label: "ready",
+      loading: false,
+    });
   });
 });
