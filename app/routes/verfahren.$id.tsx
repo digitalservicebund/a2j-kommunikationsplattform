@@ -98,6 +98,27 @@ async function loadEinreichungDetails(
   return { einreichung, dokumente: dokumenteWithValidierungsstatus, beleg };
 }
 
+// Once submitted, the Klageeinreichung is no longer a draft, but its Beleg
+// (first pending, then ready to download) is still shown in the outcome banner.
+async function fetchNewestKlageeinreichungBeleg(
+  authSession: AuthSession,
+  verfahrenId: string,
+  einreichungen: EinreichungSummary[],
+): Promise<Beleg | null> {
+  const [newestKlageeinreichung] = getEinreichungenNewestFirst(
+    einreichungen.filter(({ einreichung }) => isKlageeinreichung(einreichung)),
+  );
+
+  if (!newestKlageeinreichung) {
+    return null;
+  }
+
+  return fetchLatestBelegForEinreichung(authSession, {
+    verfahrenId,
+    einreichungId: newestKlageeinreichung.einreichung.id,
+  });
+}
+
 export const loader = async ({ context, params }: LoaderFunctionArgs) => {
   const { authSession, verfahrenId } = requireAuthAndVerfahrenId(
     context,
@@ -124,22 +145,7 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
     einreichungen.filter(({ einreichung }) => !isKlageeinreichung(einreichung)),
   );
 
-  // Once submitted, the Klageeinreichung is no longer a draft, but its Beleg
-  // (first pending, then ready to download) is still shown in the outcome
-  // banner, so it's loaded for the newest submitted Klageeinreichung too.
-  const submittedKlageeinreichung = unfinishedKlageeinreichung
-    ? undefined
-    : getEinreichungenNewestFirst(
-        einreichungen.filter(({ einreichung }) =>
-          isKlageeinreichung(einreichung),
-        ),
-      )[0];
-
-  const [
-    draftKlageeinreichung,
-    draftWeitereEinreichung,
-    submittedKlageeinreichungBeleg,
-  ] = await Promise.all([
+  const [draftKlageeinreichung, draftWeitereEinreichung] = await Promise.all([
     unfinishedKlageeinreichung
       ? loadEinreichungDetails(
           authSession,
@@ -154,13 +160,17 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
           unfinishedWeitereEinreichung,
         )
       : null,
-    submittedKlageeinreichung
-      ? fetchLatestBelegForEinreichung(authSession, {
-          verfahrenId,
-          einreichungId: submittedKlageeinreichung.einreichung.id,
-        })
-      : null,
   ]);
+
+  // The Klageeinreichung's Beleg is shown in the outcome banner — the draft's
+  // if there is one, otherwise the one of the submitted Klageeinreichung.
+  const klageeinreichungBeleg = draftKlageeinreichung
+    ? draftKlageeinreichung.beleg
+    : await fetchNewestKlageeinreichungBeleg(
+        authSession,
+        verfahrenId,
+        einreichungen,
+      );
 
   return {
     verfahren,
@@ -168,8 +178,7 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
     einreichungen,
     draftKlageeinreichung,
     draftWeitereEinreichung,
-    klageeinreichungBeleg:
-      draftKlageeinreichung?.beleg ?? submittedKlageeinreichungBeleg,
+    klageeinreichungBeleg,
   };
 };
 
