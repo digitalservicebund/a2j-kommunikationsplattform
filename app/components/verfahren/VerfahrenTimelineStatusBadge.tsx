@@ -1,12 +1,8 @@
 import StatusBadge from "~/components/StatusBadge";
 import { getEinreichungStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
 import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
+import { isEinreichungInProgress } from "~/domains/verfahren/services/einreichungStatus";
 import { useTranslations } from "~/services/translations/context";
-
-// Submitted, but the Gericht hasn't confirmed receipt yet.
-const IN_PROGRESS_STATUSES: ReadonlySet<Einreichung["status"]> = new Set<
-  Einreichung["status"]
->(["BEANTRAGT", "VERSENDET"]);
 
 type VerfahrenTimelineStatusBadgeProps = {
   status: Einreichung["status"];
@@ -25,7 +21,7 @@ export default function VerfahrenTimelineStatusBadge({
     <StatusBadge
       state={state}
       label={label}
-      loading={IN_PROGRESS_STATUSES.has(status)}
+      loading={isEinreichungInProgress(status)}
     />
   );
 }

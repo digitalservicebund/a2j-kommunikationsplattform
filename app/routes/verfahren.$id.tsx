@@ -25,6 +25,7 @@ import loadVerfahrenEinreichungenOverview, {
 } from "~/domains/verfahren/application/loadVerfahrenEinreichungenOverview.server";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/application/routeContext.server";
 import submitEinreichungIfNeeded from "~/domains/verfahren/application/submitEinreichungIfNeeded.server";
+import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import { UploadDokumentTypeSchema } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { EinreichungArtSchema } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import {
@@ -39,7 +40,10 @@ import {
 import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { fetchGerichtInformation } from "~/domains/verfahren/infrastructure/repositories/gerichtInformationRepository.server";
 import { GerichtInformation } from "~/domains/verfahren/infrastructure/schemas/gerichtInformation.schema";
-import findEinreichungDraft from "~/domains/verfahren/services/findEinreichungDraft.ts";
+import { isEinreichungInProgress } from "~/domains/verfahren/services/einreichungStatus";
+import findEinreichungDraft, {
+  getEinreichungenNewestFirst,
+} from "~/domains/verfahren/services/findEinreichungDraft.ts";
 import isKlageeinreichung from "~/domains/verfahren/services/isKlageeinreichung";
 import { authMiddleware } from "~/middleware/auth.server";
 import { AuthSession } from "~/services/auth/auth.types";
@@ -60,6 +64,7 @@ type LoaderData = {
   einreichungen: EinreichungSummary[];
   draftKlageeinreichung: EinreichungDetails | null;
   draftWeitereEinreichung: EinreichungDetails | null;
+  klageeinreichungBeleg: Beleg | null;
 };
 
 // this route requires users to be logged in
@@ -119,7 +124,22 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
     einreichungen.filter(({ einreichung }) => !isKlageeinreichung(einreichung)),
   );
 
-  const [draftKlageeinreichung, draftWeitereEinreichung] = await Promise.all([
+  // Once submitted, the Klageeinreichung is no longer a draft, but its Beleg
+  // (first pending, then ready to download) is still shown in the outcome
+  // banner, so it's loaded for the newest submitted Klageeinreichung too.
+  const submittedKlageeinreichung = unfinishedKlageeinreichung
+    ? undefined
+    : getEinreichungenNewestFirst(
+        einreichungen.filter(({ einreichung }) =>
+          isKlageeinreichung(einreichung),
+        ),
+      )[0];
+
+  const [
+    draftKlageeinreichung,
+    draftWeitereEinreichung,
+    submittedKlageeinreichungBeleg,
+  ] = await Promise.all([
     unfinishedKlageeinreichung
       ? loadEinreichungDetails(
           authSession,
@@ -134,6 +154,12 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
           unfinishedWeitereEinreichung,
         )
       : null,
+    submittedKlageeinreichung
+      ? fetchLatestBelegForEinreichung(authSession, {
+          verfahrenId,
+          einreichungId: submittedKlageeinreichung.einreichung.id,
+        })
+      : null,
   ]);
 
   return {
@@ -142,6 +168,8 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
     einreichungen,
     draftKlageeinreichung,
     draftWeitereEinreichung,
+    klageeinreichungBeleg:
+      draftKlageeinreichung?.beleg ?? submittedKlageeinreichungBeleg,
   };
 };
 
@@ -370,6 +398,7 @@ export default function VerfahrenId() {
     einreichungen,
     draftKlageeinreichung,
     draftWeitereEinreichung,
+    klageeinreichungBeleg: beleg,
   } = useLoaderData<LoaderData>();
   const t = useTranslations();
 
@@ -378,7 +407,6 @@ export default function VerfahrenId() {
       einreichung.id !== draftWeitereEinreichung?.einreichung.id,
   );
 
-  const beleg = draftKlageeinreichung?.beleg ?? null;
   const isBelegReady = beleg !== null && beleg.status === "ERSTELLT";
   const isBelegPending = beleg !== null && !isBelegReady;
 
@@ -401,10 +429,15 @@ export default function VerfahrenId() {
   const hasValidationIssues =
     validationErgebnis === "ROT" || validationErgebnis === "GELB";
 
+  const hasEinreichungInProgress = einreichungen.some(({ einreichung }) =>
+    isEinreichungInProgress(einreichung.status),
+  );
+
   const { formRef, isSubmitting, error, handleSubmit } =
     useEinreichenSubmission({
       isValidating,
       isBelegPending,
+      hasEinreichungInProgress,
     });
 
   return (

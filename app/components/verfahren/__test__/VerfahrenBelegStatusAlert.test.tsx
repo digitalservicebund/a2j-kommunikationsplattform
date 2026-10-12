@@ -20,10 +20,6 @@ function renderAlert(
       Component: () => <VerfahrenBelegStatusAlert beleg={beleg} />,
       action,
     },
-    {
-      path: "/verfahren/:id",
-      Component: () => <div>Verfahrensübersicht-Seite</div>,
-    },
   ]);
 
   return render(<Stub initialEntries={["/verfahren/v-1/details"]} />);
@@ -45,7 +41,7 @@ describe("VerfahrenBelegStatusAlert", () => {
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
-  it("shows the ready state with download and overview buttons", () => {
+  it("shows the ready state with only the download button", () => {
     renderAlert({
       id: "b-1",
       status: "ERSTELLT",
@@ -57,14 +53,10 @@ describe("VerfahrenBelegStatusAlert", () => {
 
     expect(screen.getByText(ready.headline)).toBeInTheDocument();
     expect(screen.getByText(ready.copy)).toBeInTheDocument();
+    expect(screen.getAllByRole("button")).toHaveLength(1);
     expect(
       screen.getByRole("button", {
         name: ready.buttonLabelDownloadConfirmation,
-      }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", {
-        name: ready.buttonLabelToVerfahrenOverview,
       }),
     ).toBeInTheDocument();
   });
@@ -111,26 +103,5 @@ describe("VerfahrenBelegStatusAlert", () => {
       });
       expect(action).toHaveBeenCalledTimes(1);
     });
-  });
-
-  it("navigates to the Verfahren overview page when clicking the second button", async () => {
-    renderAlert({
-      id: "b-1",
-      status: "ERSTELLT",
-      erstelltAm: "2026-08-24T15:18:20.000Z",
-      typ: "NACHWEIS",
-      dateiname: "beleg.pdf",
-      contentType: "application/pdf",
-    });
-
-    await userEvent.click(
-      screen.getByRole("button", {
-        name: ready.buttonLabelToVerfahrenOverview,
-      }),
-    );
-
-    expect(
-      await screen.findByText("Verfahrensübersicht-Seite"),
-    ).toBeInTheDocument();
   });
 });

@@ -26,7 +26,11 @@ describe("useEinreichenSubmission", () => {
 
   it("polls revalidate every 5s while isValidating", () => {
     renderHook(() =>
-      useEinreichenSubmission({ isValidating: true, isBelegPending: false }),
+      useEinreichenSubmission({
+        isValidating: true,
+        isBelegPending: false,
+        hasEinreichungInProgress: false,
+      }),
     );
 
     act(() => {
@@ -38,7 +42,11 @@ describe("useEinreichenSubmission", () => {
 
   it("polls revalidate while isBelegPending", () => {
     renderHook(() =>
-      useEinreichenSubmission({ isValidating: false, isBelegPending: true }),
+      useEinreichenSubmission({
+        isValidating: false,
+        isBelegPending: true,
+        hasEinreichungInProgress: false,
+      }),
     );
 
     act(() => {
@@ -48,9 +56,29 @@ describe("useEinreichenSubmission", () => {
     expect(revalidate).toHaveBeenCalledTimes(2);
   });
 
+  it("polls revalidate while a submitted Einreichung is in progress", () => {
+    renderHook(() =>
+      useEinreichenSubmission({
+        isValidating: false,
+        isBelegPending: false,
+        hasEinreichungInProgress: true,
+      }),
+    );
+
+    act(() => {
+      vi.advanceTimersByTime(5_000);
+    });
+
+    expect(revalidate).toHaveBeenCalledTimes(1);
+  });
+
   it("does not poll when neither condition holds", () => {
     renderHook(() =>
-      useEinreichenSubmission({ isValidating: false, isBelegPending: false }),
+      useEinreichenSubmission({
+        isValidating: false,
+        isBelegPending: false,
+        hasEinreichungInProgress: false,
+      }),
     );
 
     act(() => {
@@ -64,7 +92,11 @@ describe("useEinreichenSubmission", () => {
     mockUseRevalidator.mockReturnValue({ state: "loading", revalidate });
 
     renderHook(() =>
-      useEinreichenSubmission({ isValidating: true, isBelegPending: false }),
+      useEinreichenSubmission({
+        isValidating: true,
+        isBelegPending: false,
+        hasEinreichungInProgress: false,
+      }),
     );
 
     act(() => {
@@ -102,6 +134,7 @@ describe("useEinreichenSubmission", () => {
         useEinreichenSubmission({
           isValidating: false,
           isBelegPending: false,
+          hasEinreichungInProgress: false,
         }),
       );
       const { submitSpy } = setUpForm(result.current);
@@ -121,6 +154,7 @@ describe("useEinreichenSubmission", () => {
         useEinreichenSubmission({
           isValidating: false,
           isBelegPending: false,
+          hasEinreichungInProgress: false,
         }),
       );
       const { submitSpy } = setUpForm(result.current);
@@ -142,6 +176,7 @@ describe("useEinreichenSubmission", () => {
         useEinreichenSubmission({
           isValidating: false,
           isBelegPending: false,
+          hasEinreichungInProgress: false,
         }),
       );
       const { submitSpy } = setUpForm(result.current);

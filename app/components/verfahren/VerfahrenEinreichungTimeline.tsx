@@ -1,9 +1,11 @@
-import { orderBy } from "es-toolkit";
 import VerfahrenDokumentItem from "~/components/verfahren/VerfahrenDokumentItem";
 import VerfahrenTimelineStatusBadge from "~/components/verfahren/VerfahrenTimelineStatusBadge";
 import VerfahrenTimelineStep from "~/components/verfahren/VerfahrenTimelineStep";
 import type { EinreichungSummary } from "~/domains/verfahren/application/loadVerfahrenEinreichungenOverview.server";
-import { isEinreichungDraft } from "~/domains/verfahren/services/findEinreichungDraft.ts";
+import {
+  getEinreichungenNewestFirst,
+  isEinreichungDraft,
+} from "~/domains/verfahren/services/findEinreichungDraft.ts";
 import { useTranslations } from "~/services/translations/context";
 import { formatDate } from "~/utils/dates";
 
@@ -27,11 +29,7 @@ export default function VerfahrenEinreichungTimeline({
     );
   }
 
-  const newestFirst = orderBy(
-    einreichungen,
-    [(summary) => summary.einreichung.erstelltAm],
-    ["desc"],
-  );
+  const newestFirst = getEinreichungenNewestFirst(einreichungen);
 
   return (
     <div>

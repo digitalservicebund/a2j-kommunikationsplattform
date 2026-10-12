@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import findEinreichungDraft, {
+  getEinreichungenNewestFirst,
   isEinreichungDraft,
 } from "../findEinreichungDraft.ts";
 
@@ -59,5 +60,37 @@ describe("findEinreichungDraft", () => {
     );
 
     expect(findEinreichungDraft([older, submitted, newer])).toBe(newer);
+  });
+});
+
+describe("getEinreichungenNewestFirst", () => {
+  it("returns an empty list for no Einreichungen", () => {
+    expect(getEinreichungenNewestFirst([])).toEqual([]);
+  });
+
+  it("orders the Einreichungen newest first, whatever their status", () => {
+    const oldest = entry("oldest", "VERAKTET", "2026-09-01T00:00:00.000Z");
+    const draft = entry("draft", "ERSTELLT", "2026-09-02T00:00:00.000Z");
+    const submitted = entry(
+      "submitted",
+      "BEANTRAGT",
+      "2026-09-03T00:00:00.000Z",
+    );
+
+    expect(getEinreichungenNewestFirst([draft, oldest, submitted])).toEqual([
+      submitted,
+      draft,
+      oldest,
+    ]);
+  });
+
+  it("doesn't change the passed list", () => {
+    const older = entry("older", "ERSTELLT", "2026-09-01T00:00:00.000Z");
+    const newer = entry("newer", "ERSTELLT", "2026-09-02T00:00:00.000Z");
+    const einreichungen = [older, newer];
+
+    getEinreichungenNewestFirst(einreichungen);
+
+    expect(einreichungen).toEqual([older, newer]);
   });
 });

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useFetcher, useNavigate, useParams } from "react-router";
+import { useFetcher } from "react-router";
 import Button from "~/components/Button";
 import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import { useTranslations } from "~/services/translations/context";
@@ -15,9 +15,6 @@ export default function VerfahrenBelegStatusAlert({
   const { routes, shared } = useTranslations();
   const downloadFetcher = useFetcher<ActionResult<DownloadBelegActionResult>>();
   const isDownloading = downloadFetcher.state !== "idle";
-  const navigate = useNavigate();
-  const params = useParams();
-  const verfahrenID = params.id;
 
   useEffect(() => {
     if (downloadFetcher.data?.status === "success") {
@@ -30,11 +27,6 @@ export default function VerfahrenBelegStatusAlert({
       { formType: "download-beleg", belegId: beleg.id },
       { method: "post" },
     );
-  };
-
-  const handleToVerfahrenOverview = () => {
-    if (!verfahrenID) return;
-    navigate(`/verfahren/${verfahrenID}`);
   };
 
   const typeClass = {
@@ -74,15 +66,6 @@ export default function VerfahrenBelegStatusAlert({
               ? shared.loading
               : routes.verfahrenId.draftKlageeinreichung.belegStatus.ready
                   .buttonLabelDownloadConfirmation
-          }
-        />
-        <Button
-          type="button"
-          appearance="secondary"
-          onClick={handleToVerfahrenOverview}
-          label={
-            routes.verfahrenId.draftKlageeinreichung.belegStatus.ready
-              .buttonLabelToVerfahrenOverview
           }
         />
       </div>
