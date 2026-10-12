@@ -24,8 +24,9 @@ describe("resolveReadinessPresentation", () => {
     );
 
     expect(result).toEqual({
-      readinessLabel: "checking",
-      readinessBadgeClass: "info",
+      label: "checking",
+      state: "pending",
+      loading: true,
     });
   });
 
@@ -46,10 +47,13 @@ describe("resolveReadinessPresentation", () => {
       ],
     );
 
-    expect(result.readinessBadgeClass).toBe("info");
+    expect(result).toMatchObject({
+      state: "pending",
+      loading: true,
+    });
   });
 
-  it("maps GRUEN/ROT/GELB/other to the right tone once finished", () => {
+  it("maps GRUEN/ROT/GELB/other to the right state once finished", () => {
     const finished = (
       ergebnis: "GRUEN" | "ROT" | "GELB" | "NICHT_VERFUEGBAR",
     ) =>
@@ -59,20 +63,24 @@ describe("resolveReadinessPresentation", () => {
       );
 
     expect(finished("GRUEN")).toEqual({
-      readinessLabel: "ready",
-      readinessBadgeClass: "success",
+      label: "ready",
+      state: "done",
+      loading: false,
     });
     expect(finished("ROT")).toEqual({
-      readinessLabel: "problem",
-      readinessBadgeClass: "danger",
+      label: "problem",
+      state: "failed",
+      loading: false,
     });
     expect(finished("GELB")).toEqual({
-      readinessLabel: "warning",
-      readinessBadgeClass: "warning",
+      label: "warning",
+      state: "attention",
+      loading: false,
     });
     expect(finished("NICHT_VERFUEGBAR")).toEqual({
-      readinessLabel: "soon",
-      readinessBadgeClass: "warning",
+      label: "soon",
+      state: "attention",
+      loading: false,
     });
   });
 });
@@ -80,24 +88,29 @@ describe("resolveReadinessPresentation", () => {
 describe("resolveBelegPresentation", () => {
   const belegBadgeLabels = { pending: "pending", ready: "ready" };
 
-  it("is success once ERSTELLT", () => {
+  it("is done once ERSTELLT", () => {
     expect(
       resolveBelegPresentation(
         { status: "ERSTELLT" } as never,
         belegBadgeLabels,
       ),
     ).toEqual({
-      readinessLabel: "ready",
-      readinessBadgeClass: "success",
+      label: "ready",
+      state: "done",
+      loading: false,
     });
   });
 
-  it("is info while IN_BEARBEITUNG", () => {
+  it("is pending and loading while IN_BEARBEITUNG", () => {
     expect(
       resolveBelegPresentation(
         { status: "IN_BEARBEITUNG" } as never,
         belegBadgeLabels,
       ),
-    ).toEqual({ readinessLabel: "pending", readinessBadgeClass: "info" });
+    ).toEqual({
+      label: "pending",
+      state: "pending",
+      loading: true,
+    });
   });
 });

@@ -1,4 +1,4 @@
-import Badge from "~/components/Badge";
+import StatusBadge from "~/components/StatusBadge";
 import {
   ReadinessPresentation,
   resolveBelegPresentation,
@@ -36,13 +36,11 @@ export default function VerfahrenEinreichungStatusBadge({
 
   return (
     <p className="kern-preline">
-      <Badge
+      <StatusBadge
         small
-        tone={presentation.readinessBadgeClass}
-        label={presentation.readinessLabel}
-        // "info" is only used for in-progress states: a running
-        // Validierungslauf or a Beleg that is still pending.
-        loading={presentation.readinessBadgeClass === "info"}
+        state={presentation.state}
+        label={presentation.label}
+        loading={presentation.loading}
       />
     </p>
   );

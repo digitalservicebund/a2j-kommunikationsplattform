@@ -1,4 +1,4 @@
-import type { BadgeTone } from "~/components/Badge";
+import type { StatusBadgeState } from "~/components/StatusBadge";
 import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import type { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
 import { isValidierungslaufRunning } from "~/domains/verfahren/services/validierungslauf";
@@ -12,8 +12,9 @@ export type ReadinessBadgeLabels = {
 };
 
 export type ReadinessPresentation = {
-  readinessLabel: string;
-  readinessBadgeClass: BadgeTone;
+  label: string;
+  state: StatusBadgeState;
+  loading: boolean;
 };
 
 export function resolveReadinessPresentation(
@@ -29,33 +30,41 @@ export function resolveReadinessPresentation(
     relatedValidierungsstatus.some(isValidierungslaufRunning)
   ) {
     return {
-      readinessLabel: badgeLabels.checking,
-      readinessBadgeClass: "info",
+      label: badgeLabels.checking,
+      state: "pending",
+      loading: true,
     };
   }
 
   if (validierungsstatus.ergebnis === "GRUEN") {
     return {
-      readinessLabel: badgeLabels.ready,
-      readinessBadgeClass: "success",
+      label: badgeLabels.ready,
+      state: "done",
+      loading: false,
     };
   }
 
   if (validierungsstatus.ergebnis === "ROT") {
     return {
-      readinessLabel: badgeLabels.problem,
-      readinessBadgeClass: "danger",
+      label: badgeLabels.problem,
+      state: "failed",
+      loading: false,
     };
   }
 
   if (validierungsstatus.ergebnis === "GELB") {
     return {
-      readinessLabel: badgeLabels.warning,
-      readinessBadgeClass: "warning",
+      label: badgeLabels.warning,
+      state: "attention",
+      loading: false,
     };
   }
 
-  return { readinessLabel: badgeLabels.soon, readinessBadgeClass: "warning" };
+  return {
+    label: badgeLabels.soon,
+    state: "attention",
+    loading: false,
+  };
 }
 
 // A single Dokument that passed its check reads as "checked clean" rather than
@@ -81,10 +90,15 @@ export function resolveBelegPresentation(
 ): ReadinessPresentation {
   if (beleg.status === "ERSTELLT") {
     return {
-      readinessLabel: badgeLabels.ready,
-      readinessBadgeClass: "success",
+      label: badgeLabels.ready,
+      state: "done",
+      loading: false,
     };
   }
 
-  return { readinessLabel: badgeLabels.pending, readinessBadgeClass: "info" };
+  return {
+    label: badgeLabels.pending,
+    state: "pending",
+    loading: true,
+  };
 }

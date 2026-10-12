@@ -8,4 +8,37 @@
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
   --breakpoint-2xl: 1600px;
+
+  /*
+   * Expose KERN UX feedback colors as Tailwind colors (e.g. bg-feedback-success-bg):
+   * https://www.kern-ux.de/design-system/foundations/farbe/semantisch
+   */
+  --color-feedback-default: var(--kern-color-feedback-default-contextual);
+  --color-feedback-default-bg: var(
+    --kern-color-feedback-default-background-contextual
+  );
+  --color-feedback-info: var(--kern-color-feedback-info-contextual);
+  --color-feedback-info-bg: var(
+    --kern-color-feedback-info-background-contextual
+  );
+  --color-feedback-success: var(--kern-color-feedback-success-contextual);
+  --color-feedback-success-bg: var(
+    --kern-color-feedback-success-background-contextual
+  );
+  --color-feedback-warning: var(--kern-color-feedback-warning-contextual);
+  --color-feedback-warning-bg: var(
+    --kern-color-feedback-warning-background-contextual
+  );
+  --color-feedback-danger: var(--kern-color-feedback-danger-contextual);
+  --color-feedback-danger-bg: var(
+    --kern-color-feedback-danger-background-contextual
+  );
+
+  /*
+   * Use these instead of bg-(--kern-color-…) style classes: KERN's grid rule
+   * `.kern-row [class*=kern-col]` adds 1rem padding to any element whose class
+   * attribute contains "kern-col", which includes "--kern-color-".
+   */
+  --color-layout-text-default: var(--kern-color-layout-text-default-contextual);
+  --color-kern-white: var(--kern-color-white);
 }

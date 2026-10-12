@@ -1,4 +1,4 @@
-import Badge from "~/components/Badge";
+import StatusBadge from "~/components/StatusBadge";
 import { resolveDokumentPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
 import type { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
 import { isValidierungslaufRunning } from "~/domains/verfahren/services/validierungslauf";
@@ -12,15 +12,15 @@ export default function VerfahrenDokumentStatusBadge({
   validierungsstatus,
 }: Readonly<VerfahrenDokumentStatusBadgeProps>) {
   const { routes } = useTranslations();
-  const { readinessBadgeClass, readinessLabel } = resolveDokumentPresentation(
+  const { state, label } = resolveDokumentPresentation(
     validierungsstatus,
     routes.verfahrenId.draftKlageeinreichung.summary.badgeLabels,
   );
 
   return (
-    <Badge
-      tone={readinessBadgeClass}
-      label={readinessLabel}
+    <StatusBadge
+      state={state}
+      label={label}
       loading={isValidierungslaufRunning(validierungsstatus)}
     />
   );

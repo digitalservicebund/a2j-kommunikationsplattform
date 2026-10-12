@@ -11,14 +11,12 @@ import VerfahrenStatusBadge from "../VerfahrenStatusBadge.static";
 const labels = getTestTranslations().shared.status.verfahren;
 
 describe("VerfahrenStatusBadge", () => {
-  it("renders the Verfahren status label with its tone", () => {
-    renderWithTestTranslations(
+  it("renders the Verfahren status label with its state's icon", () => {
+    const { container } = renderWithTestTranslations(
       <VerfahrenStatusBadge status="EINGEREICHT" small />,
     );
 
-    expect(screen.getByText(labels.eingereicht).parentElement).toHaveClass(
-      "kern-badge--success",
-      "kern-badge--small",
-    );
+    expect(screen.getByText(labels.eingereicht)).toBeInTheDocument();
+    expect(container.querySelector(".kern-icon--info")).toBeInTheDocument();
   });
 });

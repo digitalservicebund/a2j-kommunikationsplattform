@@ -394,7 +394,7 @@ export default function VerfahrenId() {
         dokumenteValidierungsstatus,
       )
     : null;
-  const isValidating = readinessPresentation?.readinessBadgeClass === "info";
+  const isValidating = readinessPresentation?.loading === true;
 
   const validationErgebnis =
     draftKlageeinreichung?.einreichung.einreichungsStatus.ergebnis;
@@ -423,7 +423,7 @@ export default function VerfahrenId() {
                 isValidating={isValidating}
                 hasValidationIssues={hasValidationIssues}
                 isValidationErrorFatal={validationErgebnis === "ROT"}
-                readinessLabel={readinessPresentation?.readinessLabel ?? ""}
+                label={readinessPresentation?.label ?? ""}
                 error={
                   draftKlageeinreichung?.einreichung.einreichungsStatus
                     .fehler ?? []

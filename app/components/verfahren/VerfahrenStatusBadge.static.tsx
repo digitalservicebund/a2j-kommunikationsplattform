@@ -1,4 +1,4 @@
-import Badge from "~/components/Badge";
+import StatusBadge from "~/components/StatusBadge";
 import { getVerfahrenStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import { useTranslations } from "~/services/translations/context";
@@ -15,14 +15,14 @@ export default function VerfahrenStatusBadge({
   className,
 }: Readonly<VerfahrenStatusBadgeProps>) {
   const { shared } = useTranslations();
-  const { badgeClassModifier, label } = getVerfahrenStatusPresentation(
+  const { state, label } = getVerfahrenStatusPresentation(
     status,
     shared.status.verfahren,
   );
 
   return (
-    <Badge
-      tone={badgeClassModifier}
+    <StatusBadge
+      state={state}
       label={label}
       small={small}
       className={className}

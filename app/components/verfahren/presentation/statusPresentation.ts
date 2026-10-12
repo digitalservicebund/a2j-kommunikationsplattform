@@ -1,9 +1,9 @@
-import type { BadgeTone } from "~/components/Badge";
+import type { StatusBadgeState } from "~/components/StatusBadge";
 import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 
 type Presentation = {
-  badgeClassModifier: BadgeTone;
+  state: StatusBadgeState;
   label: string;
 };
 
@@ -27,46 +27,48 @@ export type EinreichungStatusBadgeLabels = {
 
 const einreichungStatusPresentation: Record<
   Einreichung["status"],
-  { tone: BadgeTone; labelKey: keyof EinreichungStatusBadgeLabels }
+  { state: StatusBadgeState; labelKey: keyof EinreichungStatusBadgeLabels }
 > = {
-  ERSTELLT: { tone: "info", labelKey: "erstellt" },
+  ERSTELLT: { state: "draft", labelKey: "erstellt" },
   // Submitted, but not yet confirmed as eingereicht.
-  BEANTRAGT: { tone: "info", labelKey: "beantragt" },
-  VERSENDET: { tone: "info", labelKey: "versendet" },
-  EINGEREICHT: { tone: "success", labelKey: "eingereicht" },
-  VERAKTET: { tone: "success", labelKey: "veraktet" },
-  FEHLGESCHLAGEN: { tone: "danger", labelKey: "fehlgeschlagen" },
-  GELOESCHT: { tone: "danger", labelKey: "geloescht" },
+  BEANTRAGT: { state: "pending", labelKey: "beantragt" },
+  VERSENDET: { state: "pending", labelKey: "versendet" },
+  // Received by the Gericht, but not yet veraktet.
+  EINGEREICHT: { state: "pending", labelKey: "eingereicht" },
+  VERAKTET: { state: "done", labelKey: "veraktet" },
+  FEHLGESCHLAGEN: { state: "failed", labelKey: "fehlgeschlagen" },
+  GELOESCHT: { state: "closed", labelKey: "geloescht" },
 };
 
 export function getEinreichungStatusPresentation(
   status: Einreichung["status"],
   badgeLabels: EinreichungStatusBadgeLabels,
 ): Presentation {
-  const { tone, labelKey } = einreichungStatusPresentation[status];
+  const { state, labelKey } = einreichungStatusPresentation[status];
 
-  return { badgeClassModifier: tone, label: badgeLabels[labelKey] };
+  return { state, label: badgeLabels[labelKey] };
 }
 
 const verfahrenStatusPresentation: Record<
   Verfahren["status"],
-  { tone: BadgeTone; labelKey: keyof VerfahrenStatusBadgeLabels }
+  { state: StatusBadgeState; labelKey: keyof VerfahrenStatusBadgeLabels }
 > = {
-  ERSTELLT: { tone: "info", labelKey: "erstellt" },
-  EINGEREICHT: { tone: "success", labelKey: "eingereicht" },
+  ERSTELLT: { state: "draft", labelKey: "erstellt" },
+  // Filed, but the Gericht hasn't opened a Gerichtsverfahren yet.
+  EINGEREICHT: { state: "pending", labelKey: "eingereicht" },
   GERICHTSVERFAHRENANGELEGT: {
-    tone: "success",
+    state: "done",
     labelKey: "gerichtsverfahrenAngelegt",
   },
-  ABGESCHLOSSEN: { tone: "success", labelKey: "abgeschlossen" },
-  GELOESCHT: { tone: "danger", labelKey: "geloescht" },
+  ABGESCHLOSSEN: { state: "closed", labelKey: "abgeschlossen" },
+  GELOESCHT: { state: "closed", labelKey: "geloescht" },
 };
 
 export function getVerfahrenStatusPresentation(
   status: Verfahren["status"],
   badgeLabels: VerfahrenStatusBadgeLabels,
 ): Presentation {
-  const { tone, labelKey } = verfahrenStatusPresentation[status];
+  const { state, labelKey } = verfahrenStatusPresentation[status];
 
-  return { badgeClassModifier: tone, label: badgeLabels[labelKey] };
+  return { state, label: badgeLabels[labelKey] };
 }

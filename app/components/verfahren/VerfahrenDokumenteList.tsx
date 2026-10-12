@@ -109,7 +109,7 @@ export default function VerfahrenDokumenteList({
                     dokument.validierungsstatus,
                     routes.verfahrenId.draftKlageeinreichung.summary
                       .badgeLabels,
-                  ).readinessLabel
+                  ).label
                 }
                 message={dokument.validierungsstatus.fehler.join("\n")}
               />

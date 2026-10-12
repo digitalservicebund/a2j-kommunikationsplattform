@@ -24,28 +24,28 @@ const verfahrenStatusBadgeLabels = {
 
 describe("statusPresentation", () => {
   test.each([
-    ["ERSTELLT", "info", "erstellt"],
-    ["BEANTRAGT", "info", "beantragt"],
-    ["VERSENDET", "info", "versendet"],
-    ["EINGEREICHT", "success", "eingereicht"],
-    ["VERAKTET", "success", "veraktet"],
-    ["FEHLGESCHLAGEN", "danger", "fehlgeschlagen"],
-    ["GELOESCHT", "danger", "geloescht"],
-  ] as const)("maps einreichung status %s", (status, tone, label) => {
+    ["ERSTELLT", "draft", "erstellt"],
+    ["BEANTRAGT", "pending", "beantragt"],
+    ["VERSENDET", "pending", "versendet"],
+    ["EINGEREICHT", "pending", "eingereicht"],
+    ["VERAKTET", "done", "veraktet"],
+    ["FEHLGESCHLAGEN", "failed", "fehlgeschlagen"],
+    ["GELOESCHT", "closed", "geloescht"],
+  ] as const)("maps einreichung status %s", (status, state, label) => {
     expect(
       getEinreichungStatusPresentation(status, einreichungStatusBadgeLabels),
-    ).toEqual({ badgeClassModifier: tone, label });
+    ).toEqual({ state, label });
   });
 
   test.each([
-    ["ERSTELLT", "info", "erstellt"],
-    ["EINGEREICHT", "success", "eingereicht"],
-    ["GERICHTSVERFAHRENANGELEGT", "success", "gerichtsverfahrenAngelegt"],
-    ["ABGESCHLOSSEN", "success", "abgeschlossen"],
-    ["GELOESCHT", "danger", "geloescht"],
-  ] as const)("maps verfahren status %s", (status, tone, label) => {
+    ["ERSTELLT", "draft", "erstellt"],
+    ["EINGEREICHT", "pending", "eingereicht"],
+    ["GERICHTSVERFAHRENANGELEGT", "done", "gerichtsverfahrenAngelegt"],
+    ["ABGESCHLOSSEN", "closed", "abgeschlossen"],
+    ["GELOESCHT", "closed", "geloescht"],
+  ] as const)("maps verfahren status %s", (status, state, label) => {
     expect(
       getVerfahrenStatusPresentation(status, verfahrenStatusBadgeLabels),
-    ).toEqual({ badgeClassModifier: tone, label });
+    ).toEqual({ state, label });
   });
 });
