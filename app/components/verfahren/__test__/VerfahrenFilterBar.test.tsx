@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 
-import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
 import type { CodeWert } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
+import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
 import VerfahrenFilterBar from "../VerfahrenFilterBar";
 
 const gerichte: CodeWert[] = [

@@ -2,9 +2,9 @@
 
 import { render, screen } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
-import { getTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it } from "vitest";
 import { TranslationsProvider } from "~/services/translations/context";
+import { getTestTranslations } from "~tests/utils/translationsUtil";
 import type { DokumentWithValidierungsstatus } from "../VerfahrenDokumenteList";
 import type { EinreichungDetails } from "../VerfahrenDraftKlageeinreichungSection";
 import VerfahrenWeitereEinreichungDokumenteStep from "../VerfahrenWeitereEinreichungDokumenteStep";

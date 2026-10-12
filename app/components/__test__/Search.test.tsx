@@ -2,11 +2,11 @@
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SyntheticEvent } from "react";
+import { describe, expect, it, vi } from "vitest";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "tests/utils/translationsUtil";
-import { describe, expect, it, vi } from "vitest";
+} from "~tests/utils/translationsUtil";
 import Search from "../Search";
 
 describe("Search", () => {

@@ -2,8 +2,8 @@
 
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
+import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
 import VerfahrenDokumentTypeSelect from "../VerfahrenDokumentTypeSelect";
 
 describe("VerfahrenDokumentTypeSelect", () => {

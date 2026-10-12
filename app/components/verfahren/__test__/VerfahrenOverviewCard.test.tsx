@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 
-import { makeGerichtInformation } from "tests/utils/factories/gerichtInformation";
-import { makeVerfahren } from "tests/utils/factories/verfahren";
-import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it } from "vitest";
+import { makeGerichtInformation } from "~tests/utils/factories/gerichtInformation";
+import { makeVerfahren } from "~tests/utils/factories/verfahren";
+import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
 import VerfahrenOverviewCard from "../VerfahrenOverviewCard";
 
 const verfahren = makeVerfahren({

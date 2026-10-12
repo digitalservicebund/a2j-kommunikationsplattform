@@ -1,5 +1,5 @@
-import { makeAuthSession } from "tests/utils/factories/authSession";
 import { describe, expect, test } from "vitest";
+import { makeAuthSession } from "~tests/utils/factories/authSession";
 import {
   requireAuthAndVerfahrenId,
   requireAuthSession,

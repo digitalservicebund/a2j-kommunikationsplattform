@@ -3,10 +3,10 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRoutesStub } from "react-router";
-import { getTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
 import { TranslationsProvider } from "~/services/translations/context";
 import { actionInvalid } from "~/utils/actionResult";
+import { getTestTranslations } from "~tests/utils/translationsUtil";
 import VerfahrenWeitereDokumentUploadForm, {
   UPLOAD_WEITERE_DOKUMENT_FORM_TYPE,
 } from "../VerfahrenWeitereDokumentUploadForm";

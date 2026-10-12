@@ -1,9 +1,9 @@
-import { makeAuthSession } from "tests/utils/factories/authSession";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   SORT_VALUES,
   toSortQueryValue,
 } from "~/domains/verfahren/services/verfahrenListOptions";
+import { makeAuthSession } from "~tests/utils/factories/authSession";
 import {
   fetchVerfahren,
   fetchVerfahrenById,

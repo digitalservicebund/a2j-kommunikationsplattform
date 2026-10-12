@@ -1,10 +1,10 @@
-import { makeNatuerlichePersonBeteiligung } from "tests/utils/factories/beteiligung";
+import { describe, expect, it } from "vitest";
+import { Beteiligung } from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
+import { makeNatuerlichePersonBeteiligung } from "~tests/utils/factories/beteiligung";
 import {
   makeBeklagteRolle,
   makeKlaegerinRolle,
-} from "tests/utils/factories/rolle";
-import { describe, expect, it } from "vitest";
-import { Beteiligung } from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
+} from "~tests/utils/factories/rolle";
 import { getVerfahrenDisplayName } from "../verfahrenDisplayName";
 
 describe("getVerfahrenDisplayName", () => {

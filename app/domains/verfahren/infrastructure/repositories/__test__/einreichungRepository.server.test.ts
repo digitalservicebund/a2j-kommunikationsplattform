@@ -1,4 +1,3 @@
-import { makeAuthSession } from "tests/utils/factories/authSession";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createEinreichung,
@@ -9,6 +8,7 @@ import {
   fetchEinreichungXJustiz,
   submitEinreichungen,
 } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
+import { makeAuthSession } from "~tests/utils/factories/authSession";
 
 const mocks = vi.hoisted(() => ({
   apiRequest: vi.fn(),

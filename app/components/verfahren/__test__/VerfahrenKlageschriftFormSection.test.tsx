@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
-import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
+import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
 import VerfahrenKlageschriftFormSection from "../VerfahrenKlageschriftFormSection";
 
 const baseProps = {

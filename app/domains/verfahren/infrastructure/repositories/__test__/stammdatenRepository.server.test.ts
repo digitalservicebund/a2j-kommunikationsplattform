@@ -1,4 +1,3 @@
-import { makeAuthSession } from "tests/utils/factories/authSession";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   fetchAnschriftstypen,
@@ -9,6 +8,7 @@ import {
   fetchStaaten,
   fetchTelekommunikationsarten,
 } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
+import { makeAuthSession } from "~tests/utils/factories/authSession";
 
 const mocks = vi.hoisted(() => ({
   fetch: vi.fn(),

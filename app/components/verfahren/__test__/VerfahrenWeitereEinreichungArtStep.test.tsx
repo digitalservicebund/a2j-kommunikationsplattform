@@ -3,10 +3,10 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRoutesStub, type ActionFunctionArgs } from "react-router";
-import { getTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
 import { TranslationsProvider } from "~/services/translations/context";
 import { actionError } from "~/utils/actionResult";
+import { getTestTranslations } from "~tests/utils/translationsUtil";
 import type { EinreichungDetails } from "../VerfahrenDraftKlageeinreichungSection";
 import VerfahrenWeitereEinreichungArtStep, {
   CREATE_EINREICHUNG_FORM_TYPE,

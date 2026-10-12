@@ -2,12 +2,12 @@
 
 import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
+import { beforeEach, it, vi, expect, describe } from "vitest";
+import Header from "~/components/layout/Header";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "tests/utils/translationsUtil";
-import { beforeEach, it, vi, expect, describe } from "vitest";
-import Header from "~/components/layout/Header";
+} from "~tests/utils/translationsUtil";
 
 const mockNavigate = vi.fn();
 vi.mock("react-router", async () => {

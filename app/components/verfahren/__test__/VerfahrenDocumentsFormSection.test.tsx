@@ -2,9 +2,9 @@
 
 import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
-import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
 import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
 import VerfahrenDokumenteFormSection from "../VerfahrenDokumenteFormSection.tsx";
 
 const buildDokument = (overrides: Partial<Dokument> = {}): Dokument => ({

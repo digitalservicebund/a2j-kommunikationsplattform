@@ -3,10 +3,10 @@
 import { render } from "@testing-library/react";
 import { createRef, type ReactNode } from "react";
 import { createMemoryRouter, RouterProvider } from "react-router";
-import { getTestTranslations } from "tests/utils/translationsUtil";
 import { describe, expect, it, vi } from "vitest";
 import type { Verfahren } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
 import { TranslationsProvider } from "~/services/translations/context";
+import { getTestTranslations } from "~tests/utils/translationsUtil";
 import VerfahrenDraftKlageeinreichungSection, {
   type EinreichungDetails,
 } from "../VerfahrenDraftKlageeinreichungSection";

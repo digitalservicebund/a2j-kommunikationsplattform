@@ -2,8 +2,8 @@
 
 import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { renderWithTestTranslations } from "tests/utils/translationsUtil";
 import { vi } from "vitest";
+import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
 import { Breadcrumb } from "../Breadcrumb";
 
 // Mock react-router hooks
