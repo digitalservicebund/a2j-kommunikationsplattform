@@ -26,7 +26,7 @@ type WithEinreichung = {
  * Returns the Einreichungen ordered newest first, whatever their status.
  */
 
-export function getEinreichungenNewestFirst<T extends WithEinreichung>(
+export function sortEinreichungenNewestFirst<T extends WithEinreichung>(
   einreichungen: readonly T[],
 ) {
   return orderBy(
@@ -43,6 +43,6 @@ export function getEinreichungenNewestFirst<T extends WithEinreichung>(
 export default function findEinreichungDraft<T extends WithEinreichung>(
   einreichungen: readonly T[],
 ): T | undefined {
-  const newestFirst = getEinreichungenNewestFirst(einreichungen);
+  const newestFirst = sortEinreichungenNewestFirst(einreichungen);
   return newestFirst.find(({ einreichung }) => isEinreichungDraft(einreichung));
 }

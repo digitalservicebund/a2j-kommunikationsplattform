@@ -41,7 +41,7 @@ import { createEinreichung } from "~/domains/verfahren/infrastructure/repositori
 import { fetchGerichtInformation } from "~/domains/verfahren/infrastructure/repositories/gerichtInformationRepository.server";
 import { GerichtInformation } from "~/domains/verfahren/infrastructure/schemas/gerichtInformation.schema";
 import findEinreichungDraft, {
-  getEinreichungenNewestFirst,
+  sortEinreichungenNewestFirst,
 } from "~/domains/verfahren/services/findEinreichungDraft.ts";
 import isKlageeinreichung from "~/domains/verfahren/services/isKlageeinreichung";
 import { authMiddleware } from "~/middleware/auth.server";
@@ -104,7 +104,7 @@ async function fetchNewestKlageeinreichungBeleg(
   verfahrenId: string,
   einreichungen: EinreichungSummary[],
 ): Promise<Beleg | null> {
-  const [newestKlageeinreichung] = getEinreichungenNewestFirst(
+  const [newestKlageeinreichung] = sortEinreichungenNewestFirst(
     einreichungen.filter(({ einreichung }) => isKlageeinreichung(einreichung)),
   );
 

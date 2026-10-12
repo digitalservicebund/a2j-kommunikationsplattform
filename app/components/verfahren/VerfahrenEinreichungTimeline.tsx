@@ -3,7 +3,7 @@ import VerfahrenTimelineStatusBadge from "~/components/verfahren/VerfahrenTimeli
 import VerfahrenTimelineStep from "~/components/verfahren/VerfahrenTimelineStep";
 import type { EinreichungSummary } from "~/domains/verfahren/application/loadVerfahrenEinreichungenOverview.server";
 import {
-  getEinreichungenNewestFirst,
+  sortEinreichungenNewestFirst,
   isEinreichungDraft,
 } from "~/domains/verfahren/services/findEinreichungDraft.ts";
 import { useTranslations } from "~/services/translations/context";
@@ -29,7 +29,7 @@ export default function VerfahrenEinreichungTimeline({
     );
   }
 
-  const newestFirst = getEinreichungenNewestFirst(einreichungen);
+  const newestFirst = sortEinreichungenNewestFirst(einreichungen);
 
   return (
     <div>

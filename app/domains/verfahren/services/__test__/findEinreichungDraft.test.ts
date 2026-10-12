@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import findEinreichungDraft, {
-  getEinreichungenNewestFirst,
+  sortEinreichungenNewestFirst,
   isEinreichungDraft,
 } from "../findEinreichungDraft.ts";
 
@@ -63,9 +63,9 @@ describe("findEinreichungDraft", () => {
   });
 });
 
-describe("getEinreichungenNewestFirst", () => {
+describe("sortEinreichungenNewestFirst", () => {
   it("returns an empty list for no Einreichungen", () => {
-    expect(getEinreichungenNewestFirst([])).toEqual([]);
+    expect(sortEinreichungenNewestFirst([])).toEqual([]);
   });
 
   it("orders the Einreichungen newest first, whatever their status", () => {
@@ -77,7 +77,7 @@ describe("getEinreichungenNewestFirst", () => {
       "2026-09-03T00:00:00.000Z",
     );
 
-    expect(getEinreichungenNewestFirst([draft, oldest, submitted])).toEqual([
+    expect(sortEinreichungenNewestFirst([draft, oldest, submitted])).toEqual([
       submitted,
       draft,
       oldest,
@@ -89,7 +89,7 @@ describe("getEinreichungenNewestFirst", () => {
     const newer = entry("newer", "ERSTELLT", "2026-09-02T00:00:00.000Z");
     const einreichungen = [older, newer];
 
-    getEinreichungenNewestFirst(einreichungen);
+    sortEinreichungenNewestFirst(einreichungen);
 
     expect(einreichungen).toEqual([older, newer]);
   });

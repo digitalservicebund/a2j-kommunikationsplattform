@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 
 import { screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import {
   getTestTranslations,
   renderWithTestTranslations,
-} from "tests/utils/translationsUtil";
-import { describe, expect, it } from "vitest";
+} from "~tests/utils/translationsUtil.tsx";
 import VerfahrenStatusBadge from "../VerfahrenStatusBadge.static";
 
 const labels = getTestTranslations().shared.status.verfahren;
