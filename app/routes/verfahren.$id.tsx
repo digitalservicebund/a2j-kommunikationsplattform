@@ -40,7 +40,6 @@ import {
 import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { fetchGerichtInformation } from "~/domains/verfahren/infrastructure/repositories/gerichtInformationRepository.server";
 import { GerichtInformation } from "~/domains/verfahren/infrastructure/schemas/gerichtInformation.schema";
-import { isEinreichungInProgress } from "~/domains/verfahren/services/einreichungStatus";
 import findEinreichungDraft, {
   getEinreichungenNewestFirst,
 } from "~/domains/verfahren/services/findEinreichungDraft.ts";
@@ -438,15 +437,10 @@ export default function VerfahrenId() {
   const hasValidationIssues =
     validationErgebnis === "ROT" || validationErgebnis === "GELB";
 
-  const hasEinreichungInProgress = einreichungen.some(({ einreichung }) =>
-    isEinreichungInProgress(einreichung.status),
-  );
-
   const { formRef, isSubmitting, error, handleSubmit } =
     useEinreichenSubmission({
       isValidating,
       isBelegPending,
-      hasEinreichungInProgress,
     });
 
   return (

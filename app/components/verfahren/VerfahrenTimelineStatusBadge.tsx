@@ -1,7 +1,6 @@
 import StatusBadge from "~/components/StatusBadge";
 import { getEinreichungStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
 import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
-import { isEinreichungInProgress } from "~/domains/verfahren/services/einreichungStatus";
 import { useTranslations } from "~/services/translations/context";
 
 type VerfahrenTimelineStatusBadgeProps = {
@@ -17,12 +16,5 @@ export default function VerfahrenTimelineStatusBadge({
     shared.status.einreichung,
   );
 
-  return (
-    <StatusBadge
-      state={state}
-      icon={icon}
-      label={label}
-      loading={isEinreichungInProgress(status)}
-    />
-  );
+  return <StatusBadge state={state} icon={icon} label={label} />;
 }

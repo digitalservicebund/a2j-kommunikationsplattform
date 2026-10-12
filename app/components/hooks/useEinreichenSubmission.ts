@@ -3,16 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import { useRevalidator } from "react-router";
 import { logger } from "~/utils/logger.client";
 
-// Poll interval while the Einreichung's Validierungslauf is still running,
-// the Beleg hasn't been finalized yet, or a submitted Einreichung is still
-// waiting for the Gericht, so badges/alerts pick up the result without the
-// user having to reload the page manually.
+// Poll interval while the Einreichung's Validierungslauf is still running or
+// the Beleg hasn't been finalized yet, so badges/alerts pick up the result
+// without the user having to reload the page manually.
 const VALIDIERUNGSSTATUS_POLL_INTERVAL_MS = 5_000;
 
 type UseEinreichenSubmissionOptions = {
   isValidating: boolean;
   isBelegPending: boolean;
-  hasEinreichungInProgress: boolean;
 };
 
 /**
@@ -21,13 +19,11 @@ type UseEinreichenSubmissionOptions = {
  * Bundles the client-side submit flow for the "Klage einreichen" Form
  * (fetch-then-real-submit, so failures surface without a full navigation)
  * together with the background polling that keeps the page's readiness/Beleg
- * data fresh while a Validierungslauf, Beleg or submitted Einreichung is
- * still in progress.
+ * data fresh while a Validierungslauf or Beleg is still in progress.
  */
 export function useEinreichenSubmission({
   isValidating,
   isBelegPending,
-  hasEinreichungInProgress,
 }: UseEinreichenSubmissionOptions) {
   const [isSubmitting, setIsSubmitting] = useState<"idle" | "submitting">(
     "idle",
@@ -37,7 +33,7 @@ export function useEinreichenSubmission({
   const revalidator = useRevalidator();
 
   useEffect(() => {
-    if (!isValidating && !isBelegPending && !hasEinreichungInProgress) {
+    if (!isValidating && !isBelegPending) {
       return undefined;
     }
 
@@ -48,7 +44,7 @@ export function useEinreichenSubmission({
     }, VALIDIERUNGSSTATUS_POLL_INTERVAL_MS);
 
     return () => clearInterval(intervalId);
-  }, [isValidating, isBelegPending, hasEinreichungInProgress, revalidator]);
+  }, [isValidating, isBelegPending, revalidator]);
 
   const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();

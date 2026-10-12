@@ -29,7 +29,6 @@ describe("useEinreichenSubmission", () => {
       useEinreichenSubmission({
         isValidating: true,
         isBelegPending: false,
-        hasEinreichungInProgress: false,
       }),
     );
 
@@ -45,7 +44,6 @@ describe("useEinreichenSubmission", () => {
       useEinreichenSubmission({
         isValidating: false,
         isBelegPending: true,
-        hasEinreichungInProgress: false,
       }),
     );
 
@@ -56,28 +54,11 @@ describe("useEinreichenSubmission", () => {
     expect(revalidate).toHaveBeenCalledTimes(2);
   });
 
-  it("polls revalidate while a submitted Einreichung is in progress", () => {
-    renderHook(() =>
-      useEinreichenSubmission({
-        isValidating: false,
-        isBelegPending: false,
-        hasEinreichungInProgress: true,
-      }),
-    );
-
-    act(() => {
-      vi.advanceTimersByTime(5_000);
-    });
-
-    expect(revalidate).toHaveBeenCalledTimes(1);
-  });
-
   it("does not poll when neither condition holds", () => {
     renderHook(() =>
       useEinreichenSubmission({
         isValidating: false,
         isBelegPending: false,
-        hasEinreichungInProgress: false,
       }),
     );
 
@@ -95,7 +76,6 @@ describe("useEinreichenSubmission", () => {
       useEinreichenSubmission({
         isValidating: true,
         isBelegPending: false,
-        hasEinreichungInProgress: false,
       }),
     );
 
@@ -134,7 +114,6 @@ describe("useEinreichenSubmission", () => {
         useEinreichenSubmission({
           isValidating: false,
           isBelegPending: false,
-          hasEinreichungInProgress: false,
         }),
       );
       const { submitSpy } = setUpForm(result.current);
@@ -154,7 +133,6 @@ describe("useEinreichenSubmission", () => {
         useEinreichenSubmission({
           isValidating: false,
           isBelegPending: false,
-          hasEinreichungInProgress: false,
         }),
       );
       const { submitSpy } = setUpForm(result.current);
@@ -176,7 +154,6 @@ describe("useEinreichenSubmission", () => {
         useEinreichenSubmission({
           isValidating: false,
           isBelegPending: false,
-          hasEinreichungInProgress: false,
         }),
       );
       const { submitSpy } = setUpForm(result.current);

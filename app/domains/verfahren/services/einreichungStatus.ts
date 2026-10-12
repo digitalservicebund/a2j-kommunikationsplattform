@@ -10,13 +10,3 @@ export function isDraftEinreichungStatus(
 ): boolean {
   return status === "ERSTELLT" || status === "FEHLGESCHLAGEN";
 }
-
-/**
- * Returns true if the Einreichung has been submitted but the Gericht hasn't
- * confirmed receipt yet, i.e. its status is still expected to change soon.
- */
-export function isEinreichungInProgress(
-  status: Einreichung["status"],
-): boolean {
-  return status === "BEANTRAGT" || status === "VERSENDET";
-}
