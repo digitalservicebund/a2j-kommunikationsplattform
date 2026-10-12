@@ -59,7 +59,7 @@ export default function VerfahrenOverviewCard({
               </span>
             </div>
           </div>
-          <VerfahrenStatusBadge small status={verfahren.status} />
+          <VerfahrenStatusBadge status={verfahren.status} />
         </div>
         <div className="kern-gap-md grid w-full grid-cols-1 md:grid-cols-3">
           <VerfahrenBriefSummaryOfBeteiligte

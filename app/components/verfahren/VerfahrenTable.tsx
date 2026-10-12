@@ -48,11 +48,7 @@ function VerfahrenTableRow({ verfahren }: Readonly<{ verfahren: Verfahren }>) {
   const t = useTranslations();
   console.log("verfahren", verfahren);
   const statusBadge = (
-    <VerfahrenStatusBadge
-      className="flex-stretch"
-      small
-      status={verfahren.status}
-    />
+    <VerfahrenStatusBadge className="flex-stretch" status={verfahren.status} />
   );
 
   return (

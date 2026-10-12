@@ -25,22 +25,6 @@ describe("StatusBadge", () => {
     expect(container.querySelector(".kern-loader")).not.toBeInTheDocument();
   });
 
-  it("draws the lock smaller than other icons in small badges", () => {
-    const { container } = render(
-      <>
-        <StatusBadge label="Abgeschlossen" state="closed" small />
-        <StatusBadge label="Erstellt" state="draft" small />
-      </>,
-    );
-
-    expect(container.querySelector(".kern-icon--lock")).toHaveClass(
-      "size-(--kern-metric-dimension-x-small)",
-    );
-    expect(container.querySelector(".kern-icon--draft")).toHaveClass(
-      "size-(--kern-metric-dimension-small)",
-    );
-  });
-
   it("shows an icon passed explicitly instead of the state's default", () => {
     const { container } = render(
       <StatusBadge label="Gelöscht" state="closed" icon="delete" />,
@@ -58,7 +42,6 @@ describe("StatusBadge", () => {
       <StatusBadge
         label="Wird geprüft"
         state="pending"
-        small
         className="extra-class"
       />,
     );

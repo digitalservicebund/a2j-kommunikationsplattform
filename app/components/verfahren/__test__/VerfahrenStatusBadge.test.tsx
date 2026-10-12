@@ -13,7 +13,7 @@ const labels = getTestTranslations().shared.status.verfahren;
 describe("VerfahrenStatusBadge", () => {
   it("renders the Verfahren status label with its state's icon", () => {
     const { container } = renderWithTestTranslations(
-      <VerfahrenStatusBadge status="EINGEREICHT" small />,
+      <VerfahrenStatusBadge status="EINGEREICHT" />,
     );
 
     expect(screen.getByText(labels.eingereicht)).toBeInTheDocument();

@@ -5,13 +5,11 @@ import { useTranslations } from "~/services/translations/context";
 
 type VerfahrenStatusBadgeProps = {
   status: Verfahren["status"];
-  small?: boolean;
   className?: string;
 };
 
 export default function VerfahrenStatusBadge({
   status,
-  small,
   className,
 }: Readonly<VerfahrenStatusBadgeProps>) {
   const { shared } = useTranslations();
@@ -25,7 +23,6 @@ export default function VerfahrenStatusBadge({
       state={state}
       icon={icon}
       label={label}
-      small={small}
       className={className}
     />
   );

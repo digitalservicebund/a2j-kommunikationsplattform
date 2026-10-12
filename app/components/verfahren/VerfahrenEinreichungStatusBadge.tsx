@@ -37,7 +37,6 @@ export default function VerfahrenEinreichungStatusBadge({
   return (
     <p className="kern-preline">
       <StatusBadge
-        small
         state={presentation.state}
         label={presentation.label}
         loading={presentation.loading}
