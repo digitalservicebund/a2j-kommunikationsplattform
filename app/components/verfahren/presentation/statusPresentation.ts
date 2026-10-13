@@ -31,7 +31,7 @@ const einreichungStatusPresentation: Record<
   Einreichung["status"],
   StatusPresentation<keyof EinreichungStatusBadgeLabels>
 > = {
-  ERSTELLT: { state: "draft", labelKey: "erstellt" },
+  ERSTELLT: { state: "pending", labelKey: "erstellt" },
   // Submitted, but not yet confirmed as eingereicht.
   BEANTRAGT: { state: "pending", labelKey: "beantragt" },
   VERSENDET: { state: "pending", labelKey: "versendet" },
@@ -55,14 +55,14 @@ const verfahrenStatusPresentation: Record<
   Verfahren["status"],
   StatusPresentation<keyof VerfahrenStatusBadgeLabels>
 > = {
-  ERSTELLT: { state: "draft", labelKey: "erstellt" },
+  ERSTELLT: { state: "pending", labelKey: "erstellt" },
   // Filed, but the Gericht hasn't opened a Gerichtsverfahren yet.
   EINGEREICHT: { state: "pending", labelKey: "eingereicht" },
   GERICHTSVERFAHRENANGELEGT: {
     state: "done",
     labelKey: "gerichtsverfahrenAngelegt",
   },
-  ABGESCHLOSSEN: { state: "closed", labelKey: "abgeschlossen" },
+  ABGESCHLOSSEN: { state: "done", labelKey: "abgeschlossen" },
   GELOESCHT: { state: "closed", labelKey: "geloescht", icon: "delete" },
 };
 

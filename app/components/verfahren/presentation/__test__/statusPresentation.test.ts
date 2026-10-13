@@ -25,7 +25,7 @@ const verfahrenStatusBadgeLabels = {
 
 describe("statusPresentation", () => {
   test.each([
-    ["ERSTELLT", "draft", "erstellt"],
+    ["ERSTELLT", "pending", "erstellt"],
     ["BEANTRAGT", "pending", "beantragt"],
     ["VERSENDET", "pending", "versendet"],
     ["EINGEREICHT", "pending", "eingereicht"],
@@ -38,10 +38,10 @@ describe("statusPresentation", () => {
   });
 
   test.each([
-    ["ERSTELLT", "draft", "erstellt"],
+    ["ERSTELLT", "pending", "erstellt"],
     ["EINGEREICHT", "pending", "eingereicht"],
     ["GERICHTSVERFAHRENANGELEGT", "done", "gerichtsverfahrenAngelegt"],
-    ["ABGESCHLOSSEN", "closed", "abgeschlossen"],
+    ["ABGESCHLOSSEN", "done", "abgeschlossen"],
   ] as const)("maps verfahren status %s", (status, state, label) => {
     expect(
       getVerfahrenStatusPresentation(status, verfahrenStatusBadgeLabels),
