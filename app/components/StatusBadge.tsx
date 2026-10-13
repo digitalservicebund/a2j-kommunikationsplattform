@@ -14,7 +14,6 @@ export type StatusBadgeState =
 
 // KERN icon names (kern-icon--<name>) a badge can show. Extend as needed.
 export type StatusBadgeIcon =
-  | "info"
   | "success"
   | "warning"
   | "danger"
