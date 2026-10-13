@@ -105,7 +105,10 @@ async function fetchNewestKlageeinreichungBeleg(
   einreichungen: EinreichungSummary[],
 ): Promise<Beleg | null> {
   const [newestKlageeinreichung] = sortEinreichungenNewestFirst(
-    einreichungen.filter(({ einreichung }) => isKlageeinreichung(einreichung)),
+    einreichungen.filter(
+      ({ einreichung }) =>
+        isKlageeinreichung(einreichung) && einreichung.status !== "GELOESCHT",
+    ),
   );
 
   if (!newestKlageeinreichung) {
