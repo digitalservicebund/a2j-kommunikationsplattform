@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { render } from "@testing-library/react";
-import { it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { NonceContext, useNonce } from "../nonce";
 
 function TestComponent() {

@@ -1,4 +1,4 @@
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { isSameOriginURL, toRootRelativeURLString } from "../urls";
 
 const baseURL = new URL("http://example.com/");

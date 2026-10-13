@@ -1,4 +1,4 @@
-import { it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { originFromUrlString } from "../originFromUrlString";
 
 describe("originFromUrlString", () => {

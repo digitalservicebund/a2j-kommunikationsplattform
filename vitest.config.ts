@@ -36,7 +36,6 @@ export default defineConfig({
       reporter: ["text", "lcov"],
     },
     environment: "node",
-    globals: true,
     include: [
       "./app/**/__test__/*.test.{ts,tsx}",
       "./mocks/**/__test__/*.test.ts",

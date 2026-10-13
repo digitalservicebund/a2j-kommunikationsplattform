@@ -1,4 +1,4 @@
-import { it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { getCspHeader } from "../cspHeader.server";
 
 describe("getCspHeader", () => {

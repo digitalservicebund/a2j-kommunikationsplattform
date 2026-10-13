@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { render, screen } from "@testing-library/react";
-import { it } from "vitest";
+import { describe, expect, it } from "vitest";
 import ContentPage from "../ContentPage";
 
 describe("ContentPage", () => {

@@ -24,6 +24,6 @@
     "rootDirs": [".", "./.react-router/types"],
     "skipLibCheck": true,
     "target": "ES2022",
-    "types": ["node", "vite/client", "vitest/globals", "vitest/importMeta"]
+    "types": ["node", "vite/client", "vitest/importMeta"]
   }
 }

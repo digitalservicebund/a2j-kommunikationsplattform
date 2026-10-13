@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/react-router";
-import { describe, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { initializeSentryOnClient, initializeSentryOnServer } from "~/sentry";
 
 vi.mock("@sentry/react-router", () => ({

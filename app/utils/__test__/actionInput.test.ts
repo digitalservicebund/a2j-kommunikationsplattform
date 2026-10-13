@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 import {
   FormEntriesObject,
