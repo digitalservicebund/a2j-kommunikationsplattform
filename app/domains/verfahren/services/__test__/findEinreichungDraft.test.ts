@@ -63,7 +63,7 @@ describe("findEinreichungDraft", () => {
   });
 });
 
-describe("sortEinreichungenNewestFirst", () => {
+describe(sortEinreichungenNewestFirst, () => {
   it("returns an empty list for no Einreichungen", () => {
     expect(sortEinreichungenNewestFirst([])).toEqual([]);
   });
