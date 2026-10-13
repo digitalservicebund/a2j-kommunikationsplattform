@@ -17,6 +17,6 @@ describe("VerfahrenStatusBadge", () => {
     );
 
     expect(screen.getByText(labels.eingereicht)).toBeInTheDocument();
-    expect(container.querySelector(".kern-icon--info")).toBeInTheDocument();
+    expect(container.querySelector(".kern-icon--schedule")).toBeInTheDocument();
   });
 });

@@ -43,7 +43,7 @@ describe("VerfahrenEinreichungTimeline", () => {
     );
     expect(summary).toHaveTextContent("0 Dokumente");
     expect(
-      summary?.querySelector(".kern-icon--info")?.parentElement,
+      summary?.querySelector(".kern-icon--schedule")?.parentElement,
     ).toHaveTextContent("Eingereicht");
   });
 

@@ -20,7 +20,8 @@ export type StatusBadgeIcon =
   | "danger"
   | "delete"
   | "draft"
-  | "lock";
+  | "lock"
+  | "schedule";
 
 // What a badge shows. Every presentation helper (statusPresentation,
 // validierungPresentation) returns this shape.
@@ -52,7 +53,7 @@ const stateClasses: Record<StatusBadgeState, string> = {
 // kern-icon--lock is a custom icon (see styles.css); the others ship with KERN.
 const stateIcons: Record<StatusBadgeState, StatusBadgeIcon> = {
   draft: "draft",
-  pending: "info",
+  pending: "schedule",
   done: "success",
   attention: "warning",
   failed: "danger",

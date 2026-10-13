@@ -6,7 +6,7 @@ import StatusBadge from "../StatusBadge";
 
 describe("StatusBadge", () => {
   it.each([
-    ["pending", "kern-icon--info"],
+    ["pending", "kern-icon--schedule"],
     ["done", "kern-icon--success"],
     ["attention", "kern-icon--warning"],
     ["failed", "kern-icon--danger"],
