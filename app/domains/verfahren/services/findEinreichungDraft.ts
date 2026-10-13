@@ -22,10 +22,6 @@ type WithEinreichung = {
   einreichung: Pick<Einreichung, "status" | "erstelltAm">;
 };
 
-/**
- * Returns the Einreichungen ordered newest first, whatever their status.
- */
-
 export function sortEinreichungenNewestFirst<T extends WithEinreichung>(
   einreichungen: readonly T[],
 ) {
