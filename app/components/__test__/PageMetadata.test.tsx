@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { render } from "@testing-library/react";
-import { it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { PageMetadata } from "../PageMetadata";
 
 describe("PageMetadata", () => {

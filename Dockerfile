@@ -3,7 +3,7 @@
 # (See: https://stackoverflow.com/a/76440791/1239760)
 # ==============================================================================
 
-FROM node:26.10.0-alpine3.23 AS alpine-upgraded
+FROM node:26.11.1-alpine3.23 AS alpine-upgraded
 
 RUN apk upgrade --no-cache
 

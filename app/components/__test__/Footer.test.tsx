@@ -2,7 +2,7 @@
 
 import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { it } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   getTestTranslations,
   renderWithTestTranslations,

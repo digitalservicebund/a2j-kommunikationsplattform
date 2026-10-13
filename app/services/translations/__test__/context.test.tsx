@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { act, renderHook } from "@testing-library/react";
 import React, { useState } from "react";
+import { describe, expect, it } from "vitest";
 import { dictionaries } from "~/services/translations";
 import { TranslationsProvider, useTranslations } from "../context";
 

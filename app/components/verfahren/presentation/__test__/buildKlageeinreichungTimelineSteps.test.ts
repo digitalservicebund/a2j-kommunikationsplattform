@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it, test } from "vitest";
 import { getTestTranslations } from "~tests/utils/translationsUtil";
 import { buildKlageeinreichungTimelineSteps } from "../buildKlageeinreichungTimelineSteps";
 

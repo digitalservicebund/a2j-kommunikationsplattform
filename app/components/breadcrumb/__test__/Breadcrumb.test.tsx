@@ -2,7 +2,7 @@
 
 import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import { vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
 import { Breadcrumb } from "../Breadcrumb";
 
