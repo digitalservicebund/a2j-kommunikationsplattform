@@ -245,7 +245,7 @@ jobs:
           HTTP_CREDENTIALS_PASSWORD: ${{ secrets.HTTP_CREDENTIALS_PASSWORD }}
           E2E_TEST_USER_KOMPLA_IDP_USERNAME: ${{ secrets.E2E_TEST_USER_KOMPLA_IDP_USERNAME }}
           E2E_TEST_USER_KOMPLA_IDP_PASSWORD: ${{ secrets.E2E_TEST_USER_KOMPLA_IDP_PASSWORD }}
-        run: npm run test:e2e
+        run: npm run test:e2e:ci
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: ${{ failure() }}
