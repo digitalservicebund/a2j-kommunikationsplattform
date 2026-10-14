@@ -1,9 +1,9 @@
 import { RefObject, SyntheticEvent } from "react";
 import { Form, Link } from "react-router";
 import Button from "~/components/Button";
+import type { StatusBadgePresentation } from "~/components/StatusBadge";
 import { buildBeteiligteSummaryItems } from "~/components/verfahren/presentation/buildBeteiligteSummaryItems";
 import { buildKlageeinreichungTimelineSteps } from "~/components/verfahren/presentation/buildKlageeinreichungTimelineSteps";
-import type { ReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
 import {
   NOT_AVAILABLE_LABEL,
   PROTOTYPE_EINREICHUNG_ART,
@@ -35,7 +35,7 @@ export type EinreichungDetails = {
 type VerfahrenDraftKlageeinreichungSectionProps = {
   draftKlageeinreichung: EinreichungDetails;
   verfahren: Verfahren;
-  readinessPresentation: ReadinessPresentation | null;
+  validierungPresentation: StatusBadgePresentation | null;
   hasValidationIssues: boolean;
   isValidating: boolean;
   isSubmitting: "idle" | "submitting";
@@ -46,7 +46,7 @@ type VerfahrenDraftKlageeinreichungSectionProps = {
 export default function VerfahrenDraftKlageeinreichungSection({
   draftKlageeinreichung,
   verfahren,
-  readinessPresentation,
+  validierungPresentation,
   hasValidationIssues,
   isValidating,
   isSubmitting,
@@ -116,7 +116,7 @@ export default function VerfahrenDraftKlageeinreichungSection({
                 </h4>
                 <VerfahrenEinreichungStatusBadge
                   beleg={beleg}
-                  readinessPresentation={readinessPresentation}
+                  validierungPresentation={validierungPresentation}
                   hasValidationIssues={hasValidationIssues}
                   belegBadgeLabels={
                     translations.routes.verfahrenId.draftKlageeinreichung

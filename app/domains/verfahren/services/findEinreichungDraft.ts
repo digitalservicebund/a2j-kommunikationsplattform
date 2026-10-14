@@ -1,3 +1,4 @@
+import { orderBy } from "es-toolkit";
 import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 
 // The statuses the API still accepts `einreichen` for (see
@@ -21,6 +22,16 @@ type WithEinreichung = {
   einreichung: Pick<Einreichung, "status" | "erstelltAm">;
 };
 
+export function sortEinreichungenNewestFirst<T extends WithEinreichung>(
+  einreichungen: readonly T[],
+) {
+  return orderBy(
+    einreichungen,
+    [(summary) => summary.einreichung.erstelltAm],
+    ["desc"],
+  );
+}
+
 /**
  * Finds the Einreichung the user is currently working on: the newest one
  * that is still open.
@@ -28,9 +39,6 @@ type WithEinreichung = {
 export default function findEinreichungDraft<T extends WithEinreichung>(
   einreichungen: readonly T[],
 ): T | undefined {
-  const newestFirst = [...einreichungen].sort((a, b) =>
-    b.einreichung.erstelltAm.localeCompare(a.einreichung.erstelltAm),
-  );
-
+  const newestFirst = sortEinreichungenNewestFirst(einreichungen);
   return newestFirst.find(({ einreichung }) => isEinreichungDraft(einreichung));
 }

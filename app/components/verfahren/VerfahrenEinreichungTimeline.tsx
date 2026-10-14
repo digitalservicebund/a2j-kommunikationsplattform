@@ -1,10 +1,11 @@
-import { orderBy } from "es-toolkit";
-import { getEinreichungStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
 import VerfahrenDokumentItem from "~/components/verfahren/VerfahrenDokumentItem";
-import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
+import VerfahrenTimelineStatusBadge from "~/components/verfahren/VerfahrenTimelineStatusBadge";
 import VerfahrenTimelineStep from "~/components/verfahren/VerfahrenTimelineStep";
 import type { EinreichungSummary } from "~/domains/verfahren/application/loadVerfahrenEinreichungenOverview.server";
-import { isEinreichungDraft } from "~/domains/verfahren/services/findEinreichungDraft.ts";
+import {
+  sortEinreichungenNewestFirst,
+  isEinreichungDraft,
+} from "~/domains/verfahren/services/findEinreichungDraft.ts";
 import { useTranslations } from "~/services/translations/context";
 import { formatDate } from "~/utils/dates";
 
@@ -19,7 +20,7 @@ type VerfahrenEinreichungTimelineProps = {
 export default function VerfahrenEinreichungTimeline({
   einreichungen,
 }: Readonly<VerfahrenEinreichungTimelineProps>) {
-  const { shared, routes } = useTranslations();
+  const { routes } = useTranslations();
   const labels = routes.verfahrenId.einreichungHistory;
 
   if (einreichungen.length === 0) {
@@ -28,11 +29,7 @@ export default function VerfahrenEinreichungTimeline({
     );
   }
 
-  const newestFirst = orderBy(
-    einreichungen,
-    [(summary) => summary.einreichung.erstelltAm],
-    ["desc"],
-  );
+  const newestFirst = sortEinreichungenNewestFirst(einreichungen);
 
   return (
     <div>
@@ -42,11 +39,6 @@ export default function VerfahrenEinreichungTimeline({
         const visibleDokumente = dokumente.filter(
           (dokument) => dokument.typ !== "XJUSTIZ",
         );
-        const status = getEinreichungStatusPresentation(
-          einreichung.status,
-          shared.status.einreichung,
-        );
-
         const dokumenteCountLabel = (
           visibleDokumente.length === 1
             ? labels.dokumenteCountSingular
@@ -69,10 +61,7 @@ export default function VerfahrenEinreichungTimeline({
             <details className="kern-accordion space-y-2.5">
               <summary className="kern-accordion__header">
                 <span className="kern-title flex-none">{einreichung.name}</span>
-                <VerfahrenStatusBadge
-                  tone={status.badgeClassModifier}
-                  label={status.label}
-                />
+                <VerfahrenTimelineStatusBadge status={einreichung.status} />
                 <span className="kern-body kern-body--muted ml-auto">
                   {dokumenteCountLabel}
                 </span>

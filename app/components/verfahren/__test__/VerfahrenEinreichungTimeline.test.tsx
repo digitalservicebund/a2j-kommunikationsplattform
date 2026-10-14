@@ -42,9 +42,9 @@ describe("VerfahrenEinreichungTimeline", () => {
       "Erste Einreichung",
     );
     expect(summary).toHaveTextContent("0 Dokumente");
-    expect(summary?.querySelector(".kern-badge--success")).toHaveTextContent(
-      "Eingereicht",
-    );
+    expect(
+      summary?.querySelector(".kern-icon--schedule")?.parentElement,
+    ).toHaveTextContent("Eingereicht");
   });
 
   it("lists the uploaded Dokumente in the body but hides the XJustiz Dokument", () => {

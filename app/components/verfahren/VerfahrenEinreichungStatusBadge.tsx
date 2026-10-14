@@ -1,13 +1,11 @@
-import {
-  ReadinessPresentation,
-  resolveBelegPresentation,
-} from "~/components/verfahren/presentation/einreichungReadiness";
-import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
+import StatusBadge from "~/components/StatusBadge";
+import type { StatusBadgePresentation } from "~/components/StatusBadge";
+import { getBelegStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
 import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 
 type VerfahrenEinreichungStatusBadgeProps = {
   beleg: Beleg | null;
-  readinessPresentation: ReadinessPresentation | null;
+  validierungPresentation: StatusBadgePresentation | null;
   hasValidationIssues: boolean;
   belegBadgeLabels: { pending: string; ready: string };
 };
@@ -18,7 +16,7 @@ type VerfahrenEinreichungStatusBadgeProps = {
 // avoid showing the same information twice.
 export default function VerfahrenEinreichungStatusBadge({
   beleg,
-  readinessPresentation,
+  validierungPresentation,
   hasValidationIssues,
   belegBadgeLabels,
 }: Readonly<VerfahrenEinreichungStatusBadgeProps>) {
@@ -27,8 +25,8 @@ export default function VerfahrenEinreichungStatusBadge({
   }
 
   const presentation = beleg
-    ? resolveBelegPresentation(beleg, belegBadgeLabels)
-    : readinessPresentation;
+    ? getBelegStatusPresentation(beleg.status, belegBadgeLabels)
+    : validierungPresentation;
 
   if (!presentation) {
     return null;
@@ -36,10 +34,10 @@ export default function VerfahrenEinreichungStatusBadge({
 
   return (
     <p className="kern-preline">
-      <VerfahrenStatusBadge
-        small
-        tone={presentation.readinessBadgeClass}
-        label={presentation.readinessLabel}
+      <StatusBadge
+        state={presentation.state}
+        label={presentation.label}
+        loading={presentation.loading}
       />
     </p>
   );

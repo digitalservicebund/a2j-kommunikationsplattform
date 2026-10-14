@@ -9,7 +9,7 @@ type VerfahrenEinreichungOutcomeBannerProps = {
   isValidating: boolean;
   hasValidationIssues: boolean;
   isValidationErrorFatal: boolean;
-  readinessLabel: string;
+  label: string;
   error: string[];
 };
 
@@ -23,7 +23,7 @@ export default function VerfahrenEinreichungOutcomeBanner({
   isValidating,
   hasValidationIssues,
   isValidationErrorFatal,
-  readinessLabel,
+  label,
   error,
 }: Readonly<VerfahrenEinreichungOutcomeBannerProps>) {
   const { shared } = useTranslations();
@@ -53,7 +53,7 @@ export default function VerfahrenEinreichungOutcomeBanner({
   return (
     <Alert
       type={isValidationErrorFatal ? "error" : "warning"}
-      title={readinessLabel}
+      title={label}
       message={error.join("\n")}
     />
   );

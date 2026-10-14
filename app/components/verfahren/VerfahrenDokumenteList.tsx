@@ -1,9 +1,9 @@
 import { Form, useActionData } from "react-router";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
-import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
+import { resolveDokumentPresentation } from "~/components/verfahren/presentation/validierungPresentation";
 import VerfahrenDokumentItem from "~/components/verfahren/VerfahrenDokumentItem";
-import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
+import VerfahrenDokumentStatusBadge from "~/components/verfahren/VerfahrenDokumentStatusBadge";
 import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
 import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import type { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
@@ -57,15 +57,11 @@ export default function VerfahrenDokumenteList({
         const dokumentErgebnis = dokument.validierungsstatus.ergebnis;
         const dokumentHasValidationIssues =
           dokumentErgebnis === "ROT" || dokumentErgebnis === "GELB";
-        const {
-          readinessLabel: dokumentStatusLabel,
-          readinessBadgeClass: dokumentStatusBadgeClass,
-        } = resolveReadinessPresentation(dokument.validierungsstatus, {
-          ...routes.verfahrenId.draftKlageeinreichung.summary.badgeLabels,
-          ready:
-            routes.verfahrenId.draftKlageeinreichung.summary.badgeLabels
-              .checkedClean,
-        });
+        const statusBadge = (
+          <VerfahrenDokumentStatusBadge
+            validierungsstatus={dokument.validierungsstatus}
+          />
+        );
 
         return (
           <div key={dokument.id} className="kern-gap-sm flex w-full flex-col">
@@ -96,18 +92,10 @@ export default function VerfahrenDokumenteList({
                       {shared.form.deleteDokument.label}
                     </span>
                   </Button>
-                  <VerfahrenStatusBadge
-                    tone={dokumentStatusBadgeClass}
-                    label={dokumentStatusLabel}
-                  />
+                  {statusBadge}
                 </Form>
               ) : (
-                <div className="flex items-center">
-                  <VerfahrenStatusBadge
-                    tone={dokumentStatusBadgeClass}
-                    label={dokumentStatusLabel}
-                  />
-                </div>
+                <div className="flex items-center">{statusBadge}</div>
               )}
             </VerfahrenDokumentItem>
             {deleteDokumentError && (
@@ -116,7 +104,13 @@ export default function VerfahrenDokumenteList({
             {dokumentHasValidationIssues && (
               <Alert
                 type={dokumentErgebnis === "ROT" ? "error" : "warning"}
-                title={dokumentStatusLabel}
+                title={
+                  resolveDokumentPresentation(
+                    dokument.validierungsstatus,
+                    routes.verfahrenId.draftKlageeinreichung.summary
+                      .badgeLabels,
+                  ).label
+                }
                 message={dokument.validierungsstatus.fehler.join("\n")}
               />
             )}

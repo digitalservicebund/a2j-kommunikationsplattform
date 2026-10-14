@@ -22,7 +22,7 @@ function renderOutcomeAlert(
           isValidating={false}
           hasValidationIssues={false}
           isValidationErrorFatal={false}
-          readinessLabel="Bereit zur Abgabe"
+          label="Bereit zur Abgabe"
           error={[]}
           {...props}
         />
@@ -73,7 +73,7 @@ describe("VerfahrenEinreichungOutcomeBanner", () => {
     renderOutcomeAlert({
       hasValidationIssues: true,
       isValidationErrorFatal: true,
-      readinessLabel: "Es liegt ein Problem vor",
+      label: "Es liegt ein Problem vor",
       error: ["Datei ist beschädigt"],
     });
 
@@ -85,7 +85,7 @@ describe("VerfahrenEinreichungOutcomeBanner", () => {
     renderOutcomeAlert({
       hasValidationIssues: true,
       isValidationErrorFatal: false,
-      readinessLabel: "Es liegen Hinweise vor",
+      label: "Es liegen Hinweise vor",
       error: ["Hinweis zur Signatur"],
     });
 

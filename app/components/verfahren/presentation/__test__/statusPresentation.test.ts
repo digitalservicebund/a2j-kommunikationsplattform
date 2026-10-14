@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+  getBelegStatusPresentation,
   getEinreichungStatusPresentation,
   getVerfahrenStatusPresentation,
 } from "../statusPresentation";
@@ -24,28 +25,56 @@ const verfahrenStatusBadgeLabels = {
 
 describe("statusPresentation", () => {
   test.each([
-    ["ERSTELLT", "info", "erstellt"],
-    ["BEANTRAGT", "info", "beantragt"],
-    ["VERSENDET", "info", "versendet"],
-    ["EINGEREICHT", "success", "eingereicht"],
-    ["VERAKTET", "success", "veraktet"],
-    ["FEHLGESCHLAGEN", "danger", "fehlgeschlagen"],
-    ["GELOESCHT", "danger", "geloescht"],
-  ] as const)("maps einreichung status %s", (status, tone, label) => {
+    ["ERSTELLT", "pending", "erstellt"],
+    ["BEANTRAGT", "pending", "beantragt"],
+    ["VERSENDET", "pending", "versendet"],
+    ["EINGEREICHT", "pending", "eingereicht"],
+    ["VERAKTET", "done", "veraktet"],
+    ["FEHLGESCHLAGEN", "failed", "fehlgeschlagen"],
+  ] as const)("maps einreichung status %s", (status, state, label) => {
     expect(
       getEinreichungStatusPresentation(status, einreichungStatusBadgeLabels),
-    ).toEqual({ badgeClassModifier: tone, label });
+    ).toEqual({ state, label });
   });
 
   test.each([
-    ["ERSTELLT", "info", "erstellt"],
-    ["EINGEREICHT", "success", "eingereicht"],
-    ["GERICHTSVERFAHRENANGELEGT", "success", "gerichtsverfahrenAngelegt"],
-    ["ABGESCHLOSSEN", "success", "abgeschlossen"],
-    ["GELOESCHT", "danger", "geloescht"],
-  ] as const)("maps verfahren status %s", (status, tone, label) => {
+    ["ERSTELLT", "pending", "erstellt"],
+    ["EINGEREICHT", "pending", "eingereicht"],
+    ["GERICHTSVERFAHRENANGELEGT", "done", "gerichtsverfahrenAngelegt"],
+    ["ABGESCHLOSSEN", "done", "abgeschlossen"],
+  ] as const)("maps verfahren status %s", (status, state, label) => {
     expect(
       getVerfahrenStatusPresentation(status, verfahrenStatusBadgeLabels),
-    ).toEqual({ badgeClassModifier: tone, label });
+    ).toEqual({ state, label });
+  });
+
+  test("shows GELOESCHT as closed with the delete icon", () => {
+    expect(
+      getEinreichungStatusPresentation(
+        "GELOESCHT",
+        einreichungStatusBadgeLabels,
+      ),
+    ).toEqual({ state: "closed", label: "geloescht", icon: "delete" });
+    expect(
+      getVerfahrenStatusPresentation("GELOESCHT", verfahrenStatusBadgeLabels),
+    ).toEqual({ state: "closed", label: "geloescht", icon: "delete" });
+  });
+});
+
+describe("getBelegStatusPresentation", () => {
+  const belegBadgeLabels = { pending: "pending", ready: "ready" };
+
+  test("is pending and loading while IN_BEARBEITUNG", () => {
+    expect(
+      getBelegStatusPresentation("IN_BEARBEITUNG", belegBadgeLabels),
+    ).toEqual({ state: "pending", label: "pending", loading: true });
+  });
+
+  test("is done once ERSTELLT", () => {
+    expect(getBelegStatusPresentation("ERSTELLT", belegBadgeLabels)).toEqual({
+      state: "done",
+      label: "ready",
+      loading: false,
+    });
   });
 });

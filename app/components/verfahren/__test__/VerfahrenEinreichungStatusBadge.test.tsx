@@ -11,9 +11,10 @@ describe("VerfahrenEinreichungStatusBadge", () => {
     const { container } = render(
       <VerfahrenEinreichungStatusBadge
         beleg={null}
-        readinessPresentation={{
-          readinessLabel: "Es liegt ein Problem vor",
-          readinessBadgeClass: "danger",
+        validierungPresentation={{
+          label: "Es liegt ein Problem vor",
+          state: "failed",
+          loading: false,
         }}
         hasValidationIssues
         belegBadgeLabels={belegBadgeLabels}
@@ -27,9 +28,10 @@ describe("VerfahrenEinreichungStatusBadge", () => {
     render(
       <VerfahrenEinreichungStatusBadge
         beleg={null}
-        readinessPresentation={{
-          readinessLabel: "Bereit zur Abgabe",
-          readinessBadgeClass: "success",
+        validierungPresentation={{
+          label: "Bereit zur Abgabe",
+          state: "done",
+          loading: false,
         }}
         hasValidationIssues={false}
         belegBadgeLabels={belegBadgeLabels}
@@ -43,9 +45,10 @@ describe("VerfahrenEinreichungStatusBadge", () => {
     render(
       <VerfahrenEinreichungStatusBadge
         beleg={{ id: "b-1", status: "ERSTELLT" } as never}
-        readinessPresentation={{
-          readinessLabel: "Es liegt ein Problem vor",
-          readinessBadgeClass: "danger",
+        validierungPresentation={{
+          label: "Es liegt ein Problem vor",
+          state: "failed",
+          loading: false,
         }}
         hasValidationIssues
         belegBadgeLabels={belegBadgeLabels}
@@ -58,11 +61,70 @@ describe("VerfahrenEinreichungStatusBadge", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("shows a loader while the Validierungslauf is still running", () => {
+    const { container } = render(
+      <VerfahrenEinreichungStatusBadge
+        beleg={null}
+        validierungPresentation={{
+          label: "Wird geprüft",
+          state: "pending",
+          loading: true,
+        }}
+        hasValidationIssues={false}
+        belegBadgeLabels={belegBadgeLabels}
+      />,
+    );
+
+    expect(container.querySelector(".kern-loader")).toBeInTheDocument();
+  });
+
+  it("shows no loader for a state that isn't in progress", () => {
+    const { container } = render(
+      <VerfahrenEinreichungStatusBadge
+        beleg={null}
+        validierungPresentation={{
+          label: "Noch wenige Schritte zur Abgabe",
+          state: "attention",
+          loading: false,
+        }}
+        hasValidationIssues={false}
+        belegBadgeLabels={belegBadgeLabels}
+      />,
+    );
+
+    expect(container.querySelector(".kern-loader")).not.toBeInTheDocument();
+  });
+
+  it("shows a loader while the Beleg is pending, and none once it's ready", () => {
+    const { container, rerender } = render(
+      <VerfahrenEinreichungStatusBadge
+        beleg={{ id: "b-1", status: "IN_BEARBEITUNG" } as never}
+        validierungPresentation={null}
+        hasValidationIssues={false}
+        belegBadgeLabels={belegBadgeLabels}
+      />,
+    );
+
+    expect(screen.getByText(belegBadgeLabels.pending)).toBeInTheDocument();
+    expect(container.querySelector(".kern-loader")).toBeInTheDocument();
+
+    rerender(
+      <VerfahrenEinreichungStatusBadge
+        beleg={{ id: "b-1", status: "ERSTELLT" } as never}
+        validierungPresentation={null}
+        hasValidationIssues={false}
+        belegBadgeLabels={belegBadgeLabels}
+      />,
+    );
+
+    expect(container.querySelector(".kern-loader")).not.toBeInTheDocument();
+  });
+
   it("renders nothing when neither a Beleg nor a readiness presentation is available", () => {
     const { container } = render(
       <VerfahrenEinreichungStatusBadge
         beleg={null}
-        readinessPresentation={null}
+        validierungPresentation={null}
         hasValidationIssues={false}
         belegBadgeLabels={belegBadgeLabels}
       />,

@@ -7,7 +7,7 @@ import {
 import z from "zod";
 import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
 import { PageMetadata } from "~/components/PageMetadata";
-import { resolveReadinessPresentation } from "~/components/verfahren/presentation/einreichungReadiness";
+import { resolveEinreichungPresentation } from "~/components/verfahren/presentation/validierungPresentation";
 import VerfahrenDraftKlageeinreichungSection, {
   type EinreichungDetails,
 } from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
@@ -25,6 +25,7 @@ import loadVerfahrenEinreichungenOverview, {
 } from "~/domains/verfahren/application/loadVerfahrenEinreichungenOverview.server";
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/application/routeContext.server";
 import submitEinreichungIfNeeded from "~/domains/verfahren/application/submitEinreichungIfNeeded.server";
+import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import { UploadDokumentTypeSchema } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { EinreichungArtSchema } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import {
@@ -39,7 +40,9 @@ import {
 import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { fetchGerichtInformation } from "~/domains/verfahren/infrastructure/repositories/gerichtInformationRepository.server";
 import { GerichtInformation } from "~/domains/verfahren/infrastructure/schemas/gerichtInformation.schema";
-import findEinreichungDraft from "~/domains/verfahren/services/findEinreichungDraft.ts";
+import findEinreichungDraft, {
+  sortEinreichungenNewestFirst,
+} from "~/domains/verfahren/services/findEinreichungDraft.ts";
 import isKlageeinreichung from "~/domains/verfahren/services/isKlageeinreichung";
 import { authMiddleware } from "~/middleware/auth.server";
 import { AuthSession } from "~/services/auth/auth.types";
@@ -60,6 +63,7 @@ type LoaderData = {
   einreichungen: EinreichungSummary[];
   draftKlageeinreichung: EinreichungDetails | null;
   draftWeitereEinreichung: EinreichungDetails | null;
+  klageeinreichungBeleg: Beleg | null;
 };
 
 // this route requires users to be logged in
@@ -91,6 +95,30 @@ async function loadEinreichungDetails(
   });
 
   return { einreichung, dokumente: dokumenteWithValidierungsstatus, beleg };
+}
+
+// Once submitted, the Klageeinreichung is no longer a draft, but its Beleg
+// (first pending, then ready to download) is still shown in the outcome banner.
+async function fetchNewestKlageeinreichungBeleg(
+  authSession: AuthSession,
+  verfahrenId: string,
+  einreichungen: EinreichungSummary[],
+): Promise<Beleg | null> {
+  const [newestKlageeinreichung] = sortEinreichungenNewestFirst(
+    einreichungen.filter(
+      ({ einreichung }) =>
+        isKlageeinreichung(einreichung) && einreichung.status !== "GELOESCHT",
+    ),
+  );
+
+  if (!newestKlageeinreichung) {
+    return null;
+  }
+
+  return fetchLatestBelegForEinreichung(authSession, {
+    verfahrenId,
+    einreichungId: newestKlageeinreichung.einreichung.id,
+  });
 }
 
 export const loader = async ({ context, params }: LoaderFunctionArgs) => {
@@ -136,12 +164,23 @@ export const loader = async ({ context, params }: LoaderFunctionArgs) => {
       : null,
   ]);
 
+  // The Klageeinreichung's Beleg is shown in the outcome banner — the draft's
+  // if there is one, otherwise the one of the submitted Klageeinreichung.
+  const klageeinreichungBeleg = draftKlageeinreichung
+    ? draftKlageeinreichung.beleg
+    : await fetchNewestKlageeinreichungBeleg(
+        authSession,
+        verfahrenId,
+        einreichungen,
+      );
+
   return {
     verfahren,
     gerichtInformation,
     einreichungen,
     draftKlageeinreichung,
     draftWeitereEinreichung,
+    klageeinreichungBeleg,
   };
 };
 
@@ -370,6 +409,7 @@ export default function VerfahrenId() {
     einreichungen,
     draftKlageeinreichung,
     draftWeitereEinreichung,
+    klageeinreichungBeleg: beleg,
   } = useLoaderData<LoaderData>();
   const t = useTranslations();
 
@@ -378,7 +418,6 @@ export default function VerfahrenId() {
       einreichung.id !== draftWeitereEinreichung?.einreichung.id,
   );
 
-  const beleg = draftKlageeinreichung?.beleg ?? null;
   const isBelegReady = beleg !== null && beleg.status === "ERSTELLT";
   const isBelegPending = beleg !== null && !isBelegReady;
 
@@ -387,14 +426,14 @@ export default function VerfahrenId() {
       (dokument) => dokument.validierungsstatus,
     ) ?? [];
 
-  const readinessPresentation = draftKlageeinreichung
-    ? resolveReadinessPresentation(
+  const validierungPresentation = draftKlageeinreichung
+    ? resolveEinreichungPresentation(
         draftKlageeinreichung.einreichung.einreichungsStatus,
         t.routes.verfahrenId.draftKlageeinreichung.summary.badgeLabels,
         dokumenteValidierungsstatus,
       )
     : null;
-  const isValidating = readinessPresentation?.readinessBadgeClass === "info";
+  const isValidating = validierungPresentation?.loading === true;
 
   const validationErgebnis =
     draftKlageeinreichung?.einreichung.einreichungsStatus.ergebnis;
@@ -423,7 +462,7 @@ export default function VerfahrenId() {
                 isValidating={isValidating}
                 hasValidationIssues={hasValidationIssues}
                 isValidationErrorFatal={validationErgebnis === "ROT"}
-                readinessLabel={readinessPresentation?.readinessLabel ?? ""}
+                label={validierungPresentation?.label ?? ""}
                 error={
                   draftKlageeinreichung?.einreichung.einreichungsStatus
                     .fehler ?? []
@@ -444,7 +483,7 @@ export default function VerfahrenId() {
                   <VerfahrenDraftKlageeinreichungSection
                     draftKlageeinreichung={draftKlageeinreichung}
                     verfahren={verfahren}
-                    readinessPresentation={readinessPresentation}
+                    validierungPresentation={validierungPresentation}
                     hasValidationIssues={hasValidationIssues}
                     isValidating={isValidating}
                     isSubmitting={isSubmitting}

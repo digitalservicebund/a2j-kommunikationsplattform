@@ -26,7 +26,10 @@ describe("useEinreichenSubmission", () => {
 
   it("polls revalidate every 5s while isValidating", () => {
     renderHook(() =>
-      useEinreichenSubmission({ isValidating: true, isBelegPending: false }),
+      useEinreichenSubmission({
+        isValidating: true,
+        isBelegPending: false,
+      }),
     );
 
     act(() => {
@@ -38,7 +41,10 @@ describe("useEinreichenSubmission", () => {
 
   it("polls revalidate while isBelegPending", () => {
     renderHook(() =>
-      useEinreichenSubmission({ isValidating: false, isBelegPending: true }),
+      useEinreichenSubmission({
+        isValidating: false,
+        isBelegPending: true,
+      }),
     );
 
     act(() => {
@@ -50,7 +56,10 @@ describe("useEinreichenSubmission", () => {
 
   it("does not poll when neither condition holds", () => {
     renderHook(() =>
-      useEinreichenSubmission({ isValidating: false, isBelegPending: false }),
+      useEinreichenSubmission({
+        isValidating: false,
+        isBelegPending: false,
+      }),
     );
 
     act(() => {
@@ -64,7 +73,10 @@ describe("useEinreichenSubmission", () => {
     mockUseRevalidator.mockReturnValue({ state: "loading", revalidate });
 
     renderHook(() =>
-      useEinreichenSubmission({ isValidating: true, isBelegPending: false }),
+      useEinreichenSubmission({
+        isValidating: true,
+        isBelegPending: false,
+      }),
     );
 
     act(() => {

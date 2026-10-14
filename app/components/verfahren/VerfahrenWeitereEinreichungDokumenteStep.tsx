@@ -31,7 +31,10 @@ export default function VerfahrenWeitereEinreichungDokumenteStep({
   );
 
   const { formRef, isSubmitting, error, handleSubmit } =
-    useEinreichenSubmission({ isValidating, isBelegPending: false });
+    useEinreichenSubmission({
+      isValidating,
+      isBelegPending: false,
+    });
 
   return (
     // A disabled fieldset disables every control inside, incl. both forms.

@@ -1,11 +1,12 @@
+import type { StatusBadgePresentation } from "~/components/StatusBadge";
+import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 
-type BadgeTone = "success" | "warning" | "danger" | "info";
-
-type Presentation = {
-  badgeClassModifier: BadgeTone;
-  label: string;
+// `icon` is only set for a status that deliberately looks different from the
+// others in its state; otherwise the badge shows the state's default icon.
+type StatusPresentation<LabelKey> = Omit<StatusBadgePresentation, "label"> & {
+  labelKey: LabelKey;
 };
 
 export type VerfahrenStatusBadgeLabels = {
@@ -28,46 +29,72 @@ export type EinreichungStatusBadgeLabels = {
 
 const einreichungStatusPresentation: Record<
   Einreichung["status"],
-  { tone: BadgeTone; labelKey: keyof EinreichungStatusBadgeLabels }
+  StatusPresentation<keyof EinreichungStatusBadgeLabels>
 > = {
-  ERSTELLT: { tone: "info", labelKey: "erstellt" },
+  ERSTELLT: { state: "pending", labelKey: "erstellt" },
   // Submitted, but not yet confirmed as eingereicht.
-  BEANTRAGT: { tone: "info", labelKey: "beantragt" },
-  VERSENDET: { tone: "info", labelKey: "versendet" },
-  EINGEREICHT: { tone: "success", labelKey: "eingereicht" },
-  VERAKTET: { tone: "success", labelKey: "veraktet" },
-  FEHLGESCHLAGEN: { tone: "danger", labelKey: "fehlgeschlagen" },
-  GELOESCHT: { tone: "danger", labelKey: "geloescht" },
+  BEANTRAGT: { state: "pending", labelKey: "beantragt" },
+  VERSENDET: { state: "pending", labelKey: "versendet" },
+  // Received by the Gericht, but not yet veraktet.
+  EINGEREICHT: { state: "pending", labelKey: "eingereicht" },
+  VERAKTET: { state: "done", labelKey: "veraktet" },
+  FEHLGESCHLAGEN: { state: "failed", labelKey: "fehlgeschlagen" },
+  GELOESCHT: { state: "closed", labelKey: "geloescht", icon: "delete" },
 };
 
 export function getEinreichungStatusPresentation(
   status: Einreichung["status"],
   badgeLabels: EinreichungStatusBadgeLabels,
-): Presentation {
-  const { tone, labelKey } = einreichungStatusPresentation[status];
+): StatusBadgePresentation {
+  const { state, labelKey, icon } = einreichungStatusPresentation[status];
 
-  return { badgeClassModifier: tone, label: badgeLabels[labelKey] };
+  return { state, label: badgeLabels[labelKey], icon };
 }
 
 const verfahrenStatusPresentation: Record<
   Verfahren["status"],
-  { tone: BadgeTone; labelKey: keyof VerfahrenStatusBadgeLabels }
+  StatusPresentation<keyof VerfahrenStatusBadgeLabels>
 > = {
-  ERSTELLT: { tone: "info", labelKey: "erstellt" },
-  EINGEREICHT: { tone: "success", labelKey: "eingereicht" },
+  ERSTELLT: { state: "pending", labelKey: "erstellt" },
+  // Filed, but the Gericht hasn't opened a Gerichtsverfahren yet.
+  EINGEREICHT: { state: "pending", labelKey: "eingereicht" },
   GERICHTSVERFAHRENANGELEGT: {
-    tone: "success",
+    state: "done",
     labelKey: "gerichtsverfahrenAngelegt",
   },
-  ABGESCHLOSSEN: { tone: "success", labelKey: "abgeschlossen" },
-  GELOESCHT: { tone: "danger", labelKey: "geloescht" },
+  ABGESCHLOSSEN: { state: "done", labelKey: "abgeschlossen" },
+  GELOESCHT: { state: "closed", labelKey: "geloescht", icon: "delete" },
 };
 
 export function getVerfahrenStatusPresentation(
   status: Verfahren["status"],
   badgeLabels: VerfahrenStatusBadgeLabels,
-): Presentation {
-  const { tone, labelKey } = verfahrenStatusPresentation[status];
+): StatusBadgePresentation {
+  const { state, labelKey, icon } = verfahrenStatusPresentation[status];
 
-  return { badgeClassModifier: tone, label: badgeLabels[labelKey] };
+  return { state, label: badgeLabels[labelKey], icon };
+}
+
+export type BelegBadgeLabels = {
+  pending: string;
+  ready: string;
+};
+
+// A Beleg is created asynchronously after einreichen; once ERSTELLT nothing
+// more happens to it, so it's done.
+const belegStatusPresentation: Record<
+  Beleg["status"],
+  StatusPresentation<keyof BelegBadgeLabels>
+> = {
+  IN_BEARBEITUNG: { state: "pending", labelKey: "pending", loading: true },
+  ERSTELLT: { state: "done", labelKey: "ready", loading: false },
+};
+
+export function getBelegStatusPresentation(
+  status: Beleg["status"],
+  badgeLabels: BelegBadgeLabels,
+): StatusBadgePresentation {
+  const { state, labelKey, icon, loading } = belegStatusPresentation[status];
+
+  return { state, label: badgeLabels[labelKey], icon, loading };
 }

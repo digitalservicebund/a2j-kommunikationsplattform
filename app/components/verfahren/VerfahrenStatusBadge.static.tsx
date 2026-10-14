@@ -1,35 +1,29 @@
-import { clsx } from "clsx";
-
-type BadgeTone = "success" | "warning" | "danger" | "info";
+import StatusBadge from "~/components/StatusBadge";
+import { getVerfahrenStatusPresentation } from "~/components/verfahren/presentation/statusPresentation";
+import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
+import { useTranslations } from "~/services/translations/context";
 
 type VerfahrenStatusBadgeProps = {
-  label: string;
-  tone: BadgeTone;
-  small?: boolean;
+  status: Verfahren["status"];
   className?: string;
 };
 
 export default function VerfahrenStatusBadge({
-  label,
-  tone,
-  small = false,
+  status,
   className,
 }: Readonly<VerfahrenStatusBadgeProps>) {
-  const badgeSizeClass = small ? " kern-badge--small" : "";
+  const { shared } = useTranslations();
+  const { state, label, icon } = getVerfahrenStatusPresentation(
+    status,
+    shared.status.verfahren,
+  );
 
   return (
-    <span
-      className={clsx(
-        `kern-badge${badgeSizeClass}`,
-        `kern-badge--${tone}`,
-        className,
-      )}
-    >
-      <span
-        className={`kern-icon kern-icon--${tone}`}
-        aria-hidden="true"
-      ></span>
-      <span className="kern-label">{label}</span>
-    </span>
+    <StatusBadge
+      state={state}
+      icon={icon}
+      label={label}
+      className={className}
+    />
   );
 }
