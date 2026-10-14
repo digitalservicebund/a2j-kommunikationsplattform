@@ -1,6 +1,7 @@
 import FiraSansMedium from "@kern-ux/native/dist/fonts/fira-sans/FiraSans-Medium.woff2?url";
 import FiraSansRegular from "@kern-ux/native/dist/fonts/fira-sans/FiraSans-Regular.woff2?url";
 import FiraSansSemiBold from "@kern-ux/native/dist/fonts/fira-sans/FiraSans-SemiBold.woff2?url";
+import { useRef } from "react";
 import {
   data,
   Links,
@@ -11,6 +12,7 @@ import {
   ScrollRestoration,
 } from "react-router";
 import ErrorBox from "~/components/ErrorBox";
+import { useFocusHeadingOnNavigation } from "~/components/hooks/useFocusHeadingOnNavigation";
 import Footer from "~/components/layout/Footer";
 import Header from "~/components/layout/Header";
 import { LogoutInactiveUserWrapper } from "~/components/LogoutInactiveUserWrapper";
@@ -88,6 +90,8 @@ export const links: LinksFunction = () => [
 export default function App({ loaderData }: Route.ComponentProps) {
   const { userIsLoggedIn, userName } = loaderData;
   const nonce = useNonce();
+  const mainRef = useRef<HTMLElement>(null);
+  useFocusHeadingOnNavigation(mainRef);
 
   return (
     <html lang="de">
@@ -119,7 +123,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
           <LogoutInactiveUserWrapper handleInactivity={userIsLoggedIn}>
             <Header userIsLoggedIn={userIsLoggedIn} userName={userName} />
             <Breadcrumb />
-            <main className="kern-container">
+            <main ref={mainRef} className="kern-container">
               <Outlet />
             </main>
             <Footer />
