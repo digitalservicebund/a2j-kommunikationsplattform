@@ -100,18 +100,18 @@ export const de = {
         unknown: "Ein unbekannter Fehler ist aufgetreten.",
       },
       labels: {
-        forename: "Vorname",
-        lastname: "Nachname",
-        street: "Straße",
-        houseNumber: "Hausnummer",
-        postcode: "Postleitzahl",
-        place: "Ort",
-        eMail: "E-Mail (optional)",
-        phone: "Telefon (optional)",
+        vorname: "Vorname",
+        nachname: "Nachname",
+        strasse: "Straße",
+        hausnummer: "Hausnummer",
+        postleitzahl: "Postleitzahl",
+        ort: "Ort",
+        email: "E-Mail (optional)",
+        telefon: "Telefon (optional)",
         rubrum: "Rubrum",
         legalRepresentativesReferenceNumber:
           "Geschäftszeichen des Prozessbevollmächtigten",
-        recipientCourt: "Empfängergericht",
+        empfaengergericht: "Empfängergericht",
         subjectMatterOfTheProceedings: "Verfahrensgegenstand",
         edit: "Bearbeiten",
         verfahrensgegenstand: "Verfahrensgegenstand",
@@ -265,7 +265,7 @@ export const de = {
           copy: "Wir haben die Angaben aus Ihrer Klageschrift vorausgefüllt. Bitte prüfen Sie alle Felder sorgfältig.",
         },
         form: {
-          plaintiff: {
+          klagendePartei: {
             title: "Klagende Partei",
             description:
               "Alle Angaben zur klagenden Partei, dem Kläger oder der Klägerin. Hier können Sie auch angeben, ob eine anwaltliche Vertretung vorhanden ist.",
@@ -277,7 +277,7 @@ export const de = {
               kanzleiform: "Art der anwaltlichen Vertretung",
             },
           },
-          defendant: {
+          beklagtePartei: {
             title: "Beklagte Partei",
             description:
               "Alle Angaben zur beklagten Partei, dem Beklagten oder der Beklagten.",

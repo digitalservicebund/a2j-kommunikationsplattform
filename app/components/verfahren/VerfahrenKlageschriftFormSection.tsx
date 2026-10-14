@@ -50,7 +50,7 @@ export default function VerfahrenKlageschriftFormSection({
       <div className="kern-gap-md flex w-full">
         <VerfahrenGerichteSelect
           id="gerichtId"
-          label={shared.form.labels.recipientCourt}
+          label={shared.form.labels.empfaengergericht}
           className="bg-kern-feedback-info-background flex-1 self-end"
           placeholder={shared.form.select.placeholder}
           gerichtePromise={gerichtePromise}

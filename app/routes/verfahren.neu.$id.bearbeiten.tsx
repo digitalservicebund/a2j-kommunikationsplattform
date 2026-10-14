@@ -715,12 +715,14 @@ export default function VerfahrenNeuBearbeiten({
             <h1 className="kern-heading-large">
               {routes.verfahrenNeu.step2.headline}
             </h1>
+
             <Progress
               id="progress-2"
               label={routes.verfahrenNeu.step2.progress}
               value={2}
               max={2}
             />
+
             <div className="kern-pt-xl">
               <Form
                 ref={mainFormRef}
@@ -734,7 +736,9 @@ export default function VerfahrenNeuBearbeiten({
                   name="einreichungId"
                   value={einreichung.id}
                 />
+
                 <div className="kern-gap-md flex flex-wrap items-start justify-between">
+                  {/* Intro */}
                   <div>
                     <h2 className="kern-heading-medium">
                       {routes.verfahrenNeu.step2.subline}
@@ -752,6 +756,8 @@ export default function VerfahrenNeuBearbeiten({
                       />
                     )}
                   </div>
+
+                  {/* Navigtion Buttons (Top) */}
                   <div className="kern-gap-md flex">
                     <Link
                       to={`/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichung.id}`}
@@ -777,6 +783,7 @@ export default function VerfahrenNeuBearbeiten({
                   </div>
                 </div>
 
+                {/* Success / Error Alert */}
                 <Alert
                   type="success"
                   title={routes.verfahrenNeu.step2.notification.headline}
@@ -792,6 +799,7 @@ export default function VerfahrenNeuBearbeiten({
                 )}
 
                 <div className="kern-gap-lg flex flex-col">
+                  {/* Form Section: Klagende Partei */}
                   <VerfahrenKlaegerSection
                     firstName={klagendeParteiFirstName}
                     lastName={klagendeParteiLastName}
@@ -809,6 +817,7 @@ export default function VerfahrenNeuBearbeiten({
                     errors={fieldErrors || {}}
                   />
 
+                  {/* Form Section: Beklagte Partei */}
                   <VerfahrenBeklagterSection
                     firstName={beklagteParteiFirstName}
                     lastName={beklagteParteiLastName}
@@ -818,6 +827,7 @@ export default function VerfahrenNeuBearbeiten({
                     errors={fieldErrors || {}}
                   />
 
+                  {/* Form Section: Verfahrendetails */}
                   <VerfahrenDetailsFormSection
                     kurzrubrum={verfahren?.kurzrubrum ?? ""}
                     claimReference={claimReference}
@@ -826,6 +836,7 @@ export default function VerfahrenNeuBearbeiten({
                     gerichtePromise={gerichte}
                   />
 
+                  {/* Form Section: Anlagen & Beweismittel */}
                   <VerfahrenDokumenteFormSection
                     id="dokumente"
                     dokumente={dokumente}
@@ -840,6 +851,7 @@ export default function VerfahrenNeuBearbeiten({
                     onDeleteDokument={handleDeleteDokument}
                   />
 
+                  {/* Navigation Buttons (Bottom) */}
                   <div className="kern-gap-md flex flex-wrap justify-end">
                     <div className="kern-gap-md flex">
                       <Link
