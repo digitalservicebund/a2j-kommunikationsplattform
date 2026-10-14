@@ -239,13 +239,14 @@ jobs:
         run: npx --yes playwright install --with-deps
 
       - name: Run E2E tests against staging
+        run: npm run test:e2e:ci
         env:
           E2E_TEST_BASE_URL: "https://kompla.dev.tech.digitalservice.dev"
           HTTP_CREDENTIALS_USERNAME: ${{ secrets.HTTP_CREDENTIALS_USERNAME }}
           HTTP_CREDENTIALS_PASSWORD: ${{ secrets.HTTP_CREDENTIALS_PASSWORD }}
+          E2E_TEST_USER_NAME: ${{ vars.E2E_TEST_USER_NAME }}
           E2E_TEST_USER_KOMPLA_IDP_USERNAME: ${{ secrets.E2E_TEST_USER_KOMPLA_IDP_USERNAME }}
           E2E_TEST_USER_KOMPLA_IDP_PASSWORD: ${{ secrets.E2E_TEST_USER_KOMPLA_IDP_PASSWORD }}
-        run: npm run test:e2e:ci
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: ${{ failure() }}
