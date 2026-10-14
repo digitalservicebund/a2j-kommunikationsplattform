@@ -15,7 +15,10 @@ export function VerfahrenTable({
 
   return (
     <>
-      <table className="kern-table border-(--kern-color-layout-border)">
+      <table
+        className="kern-table border-(--kern-color-layout-border)"
+        aria-label={t.routes.index.verfahrenTableLabel}
+      >
         <thead className="kern-table__head">
           <tr className="kern-table__row bg-(--kern-color-layout-background-hued)">
             <th scope="col" className="kern-table__header kern-p-md">

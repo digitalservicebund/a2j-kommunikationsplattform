@@ -13,7 +13,8 @@ export default function UserProfile({ userName }: UserProfileProps) {
         aria-hidden="true"
       ></span>
       <span>
-        {t.layout.userProfile.loggedInAs} <b>{userName}</b>
+        {t.layout.userProfile.loggedInAs}{" "}
+        <b data-testid="current-user-name">{userName}</b>
       </span>
     </p>
   );

@@ -1,17 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
+import e2eTestConfig from "./tests/e2e/utils/e2eTestConfig.ts";
 
-process.loadEnvFile(".env.defaults");
-
-const useDefaultBaseUrl = ["", undefined].includes(process.env.E2E_BASE_URL);
-
-const baseURL = useDefaultBaseUrl
-  ? "http://localhost:3000"
-  : process.env.E2E_BASE_URL;
-
-console.log("playwright test baseURL is:", baseURL);
-
-const basicAuthUser = process.env.HTTP_CREDENTIALS_USERNAME ?? "";
-const basicAuthPassword = process.env.HTTP_CREDENTIALS_PASSWORD ?? "";
+const { baseURL, basicAuth } = e2eTestConfig();
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -46,11 +36,13 @@ export default defineConfig({
     bypassCSP: true,
     /* Credentials for HTTP authentication. See https://playwright.dev/docs/api/class-testoptions#test-options-http-credentials */
     httpCredentials: {
-      username: basicAuthUser,
-      password: basicAuthPassword,
+      username: basicAuth.username,
+      password: basicAuth.password,
     },
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
+    /* Emulate German locale, which is the most likely user setting */
+    locale: "de-DE",
   },
 
   /* Configure projects for major browsers */
