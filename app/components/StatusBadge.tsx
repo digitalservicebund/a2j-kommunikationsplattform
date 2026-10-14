@@ -50,7 +50,7 @@ const stateClasses: Record<StatusBadgeState, string> = {
 };
 
 // kern-icon--lock is a custom icon (see styles.css); the others ship with KERN.
-const stateIcons: Record<StatusBadgeState, StatusBadgeIcon> = {
+const defaultStateIcons: Record<StatusBadgeState, StatusBadgeIcon> = {
   draft: "draft",
   pending: "schedule",
   done: "success",
@@ -73,7 +73,7 @@ const iconColorClasses: Record<StatusBadgeState, string> = {
 export default function StatusBadge({
   label,
   state,
-  icon = stateIcons[state],
+  icon = defaultStateIcons[state],
   loading = false,
   className,
 }: Readonly<StatusBadgeProps>) {
