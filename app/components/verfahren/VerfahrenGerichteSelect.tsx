@@ -1,5 +1,4 @@
-import { Suspense, useState } from "react";
-import { Await } from "react-router";
+import { useState } from "react";
 import { InputSelectOption } from "~/components/InputSelect";
 import VerfahrenSelect, {
   type VerfahrenSelectProps,
@@ -23,7 +22,7 @@ type VerfahrenGerichteSelectProps = Omit<
   VerfahrenSelectProps,
   "options" | "selectedValue" | "onChange"
 > & {
-  gerichtePromise: Promise<GerichtSelectItem[]>;
+  gerichte: GerichtSelectItem[];
   initialSelectedValue?: string;
   onValueChange?: (selectedValue: string) => void;
 };
@@ -37,7 +36,7 @@ export default function VerfahrenGerichteSelect({
   className,
   required,
   disabled,
-  gerichtePromise,
+  gerichte,
   initialSelectedValue = "",
   onValueChange,
 }: Readonly<VerfahrenGerichteSelectProps>) {
@@ -49,40 +48,18 @@ export default function VerfahrenGerichteSelect({
   };
 
   return (
-    <Suspense
-      fallback={
-        <VerfahrenSelect
-          id={id}
-          label={label}
-          hint={hint}
-          error={error}
-          placeholder={placeholder}
-          className={className}
-          required={required}
-          disabled
-          options={[]}
-          selectedValue={selectedValue}
-          onChange={() => {}}
-        />
-      }
-    >
-      <Await resolve={gerichtePromise}>
-        {(gerichte: GerichtSelectItem[]) => (
-          <VerfahrenSelect
-            id={id}
-            label={label}
-            hint={hint}
-            error={error}
-            placeholder={placeholder}
-            className={className}
-            required={required}
-            disabled={disabled}
-            options={buildGerichteOptions(gerichte)}
-            selectedValue={selectedValue}
-            onChange={(event) => handleValueChange(event.target.value)}
-          />
-        )}
-      </Await>
-    </Suspense>
+    <VerfahrenSelect
+      id={id}
+      label={label}
+      hint={hint}
+      error={error}
+      placeholder={placeholder}
+      className={className}
+      required={required}
+      disabled={disabled}
+      options={buildGerichteOptions(gerichte)}
+      selectedValue={selectedValue}
+      onChange={(event) => handleValueChange(event.target.value)}
+    />
   );
 }

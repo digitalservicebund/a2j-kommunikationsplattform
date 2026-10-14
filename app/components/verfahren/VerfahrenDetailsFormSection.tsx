@@ -10,7 +10,7 @@ type VerfahrenDetailsFormSectionProps = {
   claimReference: string;
   verfahrensgegenstand: string;
   courtId: string;
-  gerichtePromise: Promise<GerichtSelectItem[]>;
+  gerichte: GerichtSelectItem[];
 };
 
 export default function VerfahrenDetailsFormSection({
@@ -18,7 +18,7 @@ export default function VerfahrenDetailsFormSection({
   claimReference,
   verfahrensgegenstand,
   courtId,
-  gerichtePromise,
+  gerichte,
 }: Readonly<VerfahrenDetailsFormSectionProps>) {
   const { routes, shared } = useTranslations();
 
@@ -48,7 +48,7 @@ export default function VerfahrenDetailsFormSection({
           label={shared.form.labels.empfaengergericht}
           className="flex-1 self-end"
           placeholder={shared.form.select.placeholder}
-          gerichtePromise={gerichtePromise}
+          gerichte={gerichte}
           initialSelectedValue={courtId}
         />
       </div>

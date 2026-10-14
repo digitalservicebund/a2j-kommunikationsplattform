@@ -8,7 +8,7 @@ import type { Anschrift } from "~/domains/verfahren/services/beteiligteContactIn
 import { useTranslations } from "~/services/translations/context";
 import FieldsetCard from "../FieldsetCard";
 
-type VerfahrenKlaegerSectionProps = {
+export type VerfahrenKlaegerSectionProps = {
   firstName: string;
   lastName: string;
   anschrift: Anschrift | undefined;
@@ -21,7 +21,7 @@ type VerfahrenKlaegerSectionProps = {
   lawyerEmail: string;
   lawyerTelefon: string;
   lawyerKanzleiformId: string;
-  kanzleiformenPromise: Promise<KanzleiformSelectItem[]>;
+  kanzleiformen: KanzleiformSelectItem[];
   errors: Record<string, string[]>;
 };
 
@@ -38,7 +38,7 @@ export default function VerfahrenKlaegerSection({
   lawyerEmail,
   lawyerTelefon,
   lawyerKanzleiformId,
-  kanzleiformenPromise,
+  kanzleiformen,
   errors,
 }: Readonly<VerfahrenKlaegerSectionProps>) {
   const { routes, shared } = useTranslations();
@@ -110,7 +110,7 @@ export default function VerfahrenKlaegerSection({
                 .kanzleiform
             }
             placeholder={shared.form.select.placeholder}
-            kanzleiformenPromise={kanzleiformenPromise}
+            kanzleiformen={kanzleiformen}
             initialSelectedValue={lawyerKanzleiformId}
             error={errors.lawyerKanzleiformId?.join(" ")}
           />

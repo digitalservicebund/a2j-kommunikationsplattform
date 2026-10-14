@@ -76,24 +76,19 @@ function findKlageschrift<T extends Pick<Dokument, "typ">>(
   return dokumente.find((dokument) => dokument.typ === "SCHRIFTSTUECK");
 }
 
-export const loader = async ({ request, context }: Route.LoaderArgs) => {
+export async function loader({ request, context }: Route.LoaderArgs) {
   const authSession = requireAuthSession(context, "loader");
 
   const url = new URL(request.url);
   const { verfahrenId, einreichungId } = getVerfahrenContextFromUrl(url);
-
-  const gerichtePromise = (async () => {
-    const { elemente } = await fetchGerichte(authSession);
-
-    return elemente;
-  })();
+  const { elemente: gerichte } = await fetchGerichte(authSession);
 
   if (!verfahrenId || !einreichungId) {
     return {
       verfahrenId: undefined,
       einreichungId: undefined,
       klageschrift: undefined,
-      gerichtePromise,
+      gerichte,
     };
   }
 
@@ -103,8 +98,8 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
   });
   const klageschrift = findKlageschrift(dokumente);
 
-  return { verfahrenId, einreichungId, klageschrift, gerichtePromise };
-};
+  return { verfahrenId, einreichungId, klageschrift, gerichte };
+}
 
 type FormActionContext = {
   authSession: AuthSession;
@@ -393,7 +388,7 @@ export default function VerfahrenNeu({
                     ) : (
                       <VerfahrenKlageschriftFormSection
                         errors={fieldErrors || {}}
-                        gerichtePromise={loaderData.gerichtePromise}
+                        gerichte={loaderData.gerichte}
                         selectedGerichtId={selectedGerichtId}
                         onGerichtIdChange={setSelectedGerichtId}
                       />
