@@ -504,10 +504,12 @@ export default function VerfahrenId() {
                       }
                     >
                       <VerfahrenWeitereEinreichungSection
+                        verfahrenId={verfahren.id}
                         draftWeitereEinreichung={draftWeitereEinreichung}
                       />
                     </VerfahrenTimelineStep>
                     <VerfahrenEinreichungTimeline
+                      verfahrenId={verfahren.id}
                       einreichungen={timelineEinreichungen}
                     />
                   </>

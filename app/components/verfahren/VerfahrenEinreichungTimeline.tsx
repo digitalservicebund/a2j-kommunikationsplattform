@@ -10,6 +10,7 @@ import { useTranslations } from "~/services/translations/context";
 import { formatDate } from "~/utils/dates";
 
 type VerfahrenEinreichungTimelineProps = {
+  verfahrenId: string;
   einreichungen: EinreichungSummary[];
 };
 
@@ -18,6 +19,7 @@ type VerfahrenEinreichungTimelineProps = {
  * accordion listing its uploaded Dokumente.
  */
 export default function VerfahrenEinreichungTimeline({
+  verfahrenId,
   einreichungen,
 }: Readonly<VerfahrenEinreichungTimelineProps>) {
   const { routes } = useTranslations();
@@ -73,6 +75,8 @@ export default function VerfahrenEinreichungTimeline({
                       <VerfahrenDokumentItem
                         key={dokument.id}
                         dokument={dokument}
+                        verfahrenId={verfahrenId}
+                        einreichungId={einreichung.id}
                       />
                     ))}
                   </div>

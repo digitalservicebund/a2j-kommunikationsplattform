@@ -354,6 +354,8 @@ export const de = {
             },
             dokumente: {
               uploadedAtLabel: "hochgeladen am",
+              opensInNewTabLabel: "(öffnet in neuem Tab)",
+              downloadLabel: "{{name}} herunterladen",
             },
             submit: "Klage einreichen & Abgabe ans Gericht",
           },

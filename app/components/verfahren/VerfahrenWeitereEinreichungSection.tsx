@@ -4,10 +4,12 @@ import VerfahrenWeitereEinreichungDokumenteStep from "~/components/verfahren/Ver
 import { useTranslations } from "~/services/translations/context";
 
 type VerfahrenWeitereEinreichungSectionProps = {
+  verfahrenId: string;
   draftWeitereEinreichung: EinreichungDetails | null;
 };
 
 export default function VerfahrenWeitereEinreichungSection({
+  verfahrenId,
   draftWeitereEinreichung,
 }: Readonly<VerfahrenWeitereEinreichungSectionProps>) {
   const { routes } = useTranslations();
@@ -24,6 +26,7 @@ export default function VerfahrenWeitereEinreichungSection({
             draftWeitereEinreichung={draftWeitereEinreichung}
           />
           <VerfahrenWeitereEinreichungDokumenteStep
+            verfahrenId={verfahrenId}
             draftWeitereEinreichung={draftWeitereEinreichung}
           />
         </section>

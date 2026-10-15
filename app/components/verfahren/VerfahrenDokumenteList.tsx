@@ -18,11 +18,13 @@ export type DokumentWithValidierungsstatus = Dokument & {
 };
 
 type VerfahrenDokumenteListProps = {
+  verfahrenId: string;
   dokumente: DokumentWithValidierungsstatus[];
   einreichung: Pick<Einreichung, "id" | "name">;
 };
 
 export default function VerfahrenDokumenteList({
+  verfahrenId,
   dokumente,
   einreichung,
 }: Readonly<VerfahrenDokumenteListProps>) {
@@ -65,7 +67,11 @@ export default function VerfahrenDokumenteList({
 
         return (
           <div key={dokument.id} className="kern-gap-sm flex w-full flex-col">
-            <VerfahrenDokumentItem dokument={dokument}>
+            <VerfahrenDokumentItem
+              dokument={dokument}
+              verfahrenId={verfahrenId}
+              einreichungId={einreichung.id}
+            >
               {canDeleteDokument(dokument, einreichung) ? (
                 <Form
                   method="post"
