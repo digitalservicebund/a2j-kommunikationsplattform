@@ -1,4 +1,6 @@
 import z from "zod";
+import { serverConfig } from "~/config/config.server";
+import type { ContentDispositionType } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import {
   Dokument,
   DokumentErstellenResponse,
@@ -15,6 +17,7 @@ import {
 import { ValidierungsstatusSchema } from "~/domains/verfahren/infrastructure/schemas/validierungsstatus.schema";
 import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
 import { AuthSession } from "~/services/auth/auth.types";
+import { buildSearchParams } from "~/utils/buildSearchParams";
 import { logger } from "~/utils/logger.server";
 
 type FetchDokumentOptions = {
@@ -78,6 +81,37 @@ export async function fetchDokumentValidierungsstatus(
     path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.einreichungId}/dokumente/${options.id}/validierungsstatus`,
     schema: ValidierungsstatusSchema,
     errorMessage: `Validierungsstatus for Dokument with id ${options.id} could not be fetched.`,
+  });
+}
+
+type FetchDokumentDownloadLinkOptions = {
+  verfahrenId: string;
+  einreichungId: string;
+  id: string;
+  dispositionType?: ContentDispositionType;
+};
+
+export async function fetchDokumentDownloadLink(
+  authSession: AuthSession,
+  options: FetchDokumentDownloadLinkOptions,
+): Promise<string> {
+  const url = new URL(
+    `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.einreichungId}/dokumente/${options.id}/downloadlink`,
+  );
+  const searchParams = buildSearchParams({
+    disposition_type: options.dispositionType,
+  });
+
+  searchParams.forEach((value, key) => {
+    url.searchParams.set(key, value);
+  });
+
+  return apiRequest({
+    authSession,
+    fullUrl: url.toString(),
+    // The link is used as a redirect target, so only http(s) URLs are accepted.
+    schema: z.url({ protocol: /^https?$/ }),
+    errorMessage: `Download link for Dokument with id ${options.id} could not be fetched.`,
   });
 }
 
