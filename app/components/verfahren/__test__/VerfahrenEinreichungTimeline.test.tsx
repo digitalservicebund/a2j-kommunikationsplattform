@@ -30,7 +30,10 @@ const einreichungen: EinreichungSummary[] = [
 describe("VerfahrenEinreichungTimeline", () => {
   it("renders one collapsed KERN accordion per einreichung, with name, Dokument count and status badge in the header", () => {
     const { container } = renderWithTestTranslations(
-      <VerfahrenEinreichungTimeline einreichungen={einreichungen} />,
+      <VerfahrenEinreichungTimeline
+        verfahrenId="v-1"
+        einreichungen={einreichungen}
+      />,
     );
 
     const details = container.querySelectorAll("details.kern-accordion");
@@ -50,6 +53,7 @@ describe("VerfahrenEinreichungTimeline", () => {
   it("lists the uploaded Dokumente in the body but hides the XJustiz Dokument", () => {
     const { container, getByText, queryByText } = renderWithTestTranslations(
       <VerfahrenEinreichungTimeline
+        verfahrenId="v-1"
         einreichungen={[
           {
             ...einreichungen[0],
@@ -80,7 +84,10 @@ describe("VerfahrenEinreichungTimeline", () => {
 
   it("shows the empty state in the body when an einreichung has no Dokumente", () => {
     const { getByText } = renderWithTestTranslations(
-      <VerfahrenEinreichungTimeline einreichungen={einreichungen} />,
+      <VerfahrenEinreichungTimeline
+        verfahrenId="v-1"
+        einreichungen={einreichungen}
+      />,
     );
 
     expect(getByText("Keine Dokumente vorhanden.")).toBeInTheDocument();
@@ -101,7 +108,10 @@ describe("VerfahrenEinreichungTimeline", () => {
     };
 
     const { container, getAllByTestId } = renderWithTestTranslations(
-      <VerfahrenEinreichungTimeline einreichungen={[aelter, neuer]} />,
+      <VerfahrenEinreichungTimeline
+        verfahrenId="v-1"
+        einreichungen={[aelter, neuer]}
+      />,
     );
 
     const titles = [...container.querySelectorAll(".kern-title")].map(
@@ -117,7 +127,7 @@ describe("VerfahrenEinreichungTimeline", () => {
 
   it("renders the empty-state message when there are no einreichungen", () => {
     const { getByText } = renderWithTestTranslations(
-      <VerfahrenEinreichungTimeline einreichungen={[]} />,
+      <VerfahrenEinreichungTimeline verfahrenId="v-1" einreichungen={[]} />,
     );
 
     expect(getByText("Keine Einreichung vorhanden.")).toBeInTheDocument();
