@@ -1,7 +1,8 @@
-import { data, LoaderFunctionArgs, redirect } from "react-router";
+import { data, LoaderFunctionArgs } from "react-router";
 import z from "zod";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
-import { fetchDokumentDownloadLink } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
+import { fetchDokumentDatei } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
+import buildDokumentDateiHeaders from "~/domains/verfahren/services/buildDokumentDateiHeaders";
 import { authMiddleware } from "~/middleware/auth.server";
 import { rethrowApiNotFoundAsRouteError } from "~/utils/apiError";
 
@@ -23,8 +24,9 @@ const DispositionSchema = z
   );
 
 /**
- * Resource route redirecting to a short-lived signed link of the Dokument's
- * file. The link is only fetched on request, since it expires within seconds.
+ * Resource route streaming the Dokument's file through the app server, so
+ * the URL stays on the app's origin: reloading the tab keeps working and
+ * still requires a login, unlike the storage's short-lived signed links.
  */
 export const loader = async ({
   context,
@@ -42,12 +44,16 @@ export const loader = async ({
     new URL(request.url).searchParams.get("disposition"),
   );
 
-  const downloadLink = await fetchDokumentDownloadLink(authSession, {
+  const datei = await fetchDokumentDatei(authSession, {
     verfahrenId: parsedParams.data.id,
     einreichungId: parsedParams.data.einreichungId,
     id: parsedParams.data.dokumentId,
     dispositionType,
+    // Stops downloading from the storage when the user cancels the request.
+    signal: request.signal,
   }).catch(rethrowApiNotFoundAsRouteError);
 
-  return redirect(downloadLink);
+  return new Response(datei.body, {
+    headers: buildDokumentDateiHeaders(datei.headers),
+  });
 };

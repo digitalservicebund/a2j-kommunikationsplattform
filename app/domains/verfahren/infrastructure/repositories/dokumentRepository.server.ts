@@ -115,6 +115,33 @@ export async function fetchDokumentDownloadLink(
   });
 }
 
+type FetchDokumentDateiOptions = FetchDokumentDownloadLinkOptions & {
+  signal?: AbortSignal;
+};
+
+// Fetches the Dokument's binary content from the object storage via a fresh
+// download link. The response body is left unread so callers can stream it.
+export async function fetchDokumentDatei(
+  authSession: AuthSession,
+  { signal, ...options }: FetchDokumentDateiOptions,
+): Promise<Response> {
+  const downloadLink = await fetchDokumentDownloadLink(authSession, options);
+  const response = await fetch(downloadLink, { signal });
+
+  if (!response.ok) {
+    // The download link is not logged, since it's a signed URL.
+    logger.error(
+      { status: response.status, dokumentId: options.id },
+      "Datei for Dokument could not be fetched from the object storage.",
+    );
+    throw new Error(
+      `Datei for Dokument with id ${options.id} could not be fetched.`,
+    );
+  }
+
+  return response;
+}
+
 type DeleteDokumentOptions = {
   verfahrenId: string;
   einreichungId: string;
