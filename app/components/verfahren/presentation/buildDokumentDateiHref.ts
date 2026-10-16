@@ -8,7 +8,7 @@ type BuildDokumentDateiHrefOptions = {
 };
 
 /**
- * Href of the resource route that redirects to the Dokument's file — either
+ * Href of the resource route that streams the Dokument's file — either
  * shown in the browser ("inline") or downloaded ("attachment").
  */
 export default function buildDokumentDateiHref({

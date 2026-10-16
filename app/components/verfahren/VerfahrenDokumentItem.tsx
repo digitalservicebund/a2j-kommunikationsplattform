@@ -32,8 +32,8 @@ export default function VerfahrenDokumentItem({
     <div className="kern-p-md align-center kern-gap-md flex flex-wrap rounded-(--kern-metric-border-radius-default) border border-(--kern-color-decorative-border-contextual)">
       <div className="flex-1">
         <div className="kern-gap-sm flex items-center">
-          {/* Plain anchors instead of <Link>: the resource route redirects
-              to the file outside the app. */}
+          {/* Plain anchors instead of <Link>: the resource route responds
+              with the file itself, not a page of the app. */}
           <a
             className="kern-link kern-body kern-body--bold"
             href={buildDokumentDateiHref({
