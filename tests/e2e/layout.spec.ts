@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { getTestTranslations } from "~tests/utils/translationsUtil";
+import { SiteHeader } from "./pageObjects/base";
 
 const t = getTestTranslations();
 
-const links = [
+const expectedFooterLinks = [
   {
     label: t.layout.footer.links.dataProtection,
     url: "/datenschutz",
@@ -36,21 +37,26 @@ const links = [
   },
 ];
 
-test.describe("Footer (rendered for alle pages)", () => {
+test.describe("Site layout (all pages)", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
   });
 
-  test("should redirect users to the correct page when they click on a link", async ({
-    page,
-  }) => {
-    await page.goto("/");
-    for (const { label, url, pageHeading } of links) {
-      await page.getByRole("link", { name: label }).click();
-      await expect(page).toHaveURL(url);
-      await expect(
-        page.getByRole("heading", { name: pageHeading }),
-      ).toBeVisible();
-    }
+  test("I can see the Kopfzeile (Dachmarke)", async ({ page }) => {
+    const header = new SiteHeader(page);
+    await expect(header.dachmarkeKopfzeile).toBeVisible();
   });
+
+  for (const { label, url, pageHeading } of expectedFooterLinks) {
+    test(`I can see and follow footer link "${label}"`, async ({ page }) => {
+      const link = page.getByRole("link", { name: label });
+      await expect(link).toBeVisible();
+
+      await link.click();
+      await expect(page).toHaveURL(url);
+
+      const heading = page.getByRole("heading", { name: pageHeading });
+      await expect(heading).toBeVisible();
+    });
+  }
 });

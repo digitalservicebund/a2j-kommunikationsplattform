@@ -29,14 +29,14 @@ export default function VerfahrenAdresseKontaktFields({
       <div className="kern-gap-md flex w-full">
         <InputField
           className="flex-2"
-          label={shared.form.labels.street}
+          label={shared.form.labels.strasse}
           id={`${idPrefix}-strasse`}
           name={`${namePrefix}Strasse`}
           defaultValue={strasse}
         />
         <InputField
           className="flex-1"
-          label={shared.form.labels.houseNumber}
+          label={shared.form.labels.hausnummer}
           id={`${idPrefix}-hausnummer`}
           name={`${namePrefix}Hausnummer`}
           defaultValue={hausnummer}
@@ -46,7 +46,7 @@ export default function VerfahrenAdresseKontaktFields({
       <div className="kern-gap-md flex w-full">
         <InputField
           className="flex-1"
-          label={shared.form.labels.postcode}
+          label={shared.form.labels.postleitzahl}
           id={`${idPrefix}-plz`}
           name={`${namePrefix}Plz`}
           inputMode="numeric"
@@ -54,7 +54,7 @@ export default function VerfahrenAdresseKontaktFields({
         />
         <InputField
           className="flex-2"
-          label={shared.form.labels.place}
+          label={shared.form.labels.ort}
           id={`${idPrefix}-ort`}
           name={`${namePrefix}Ort`}
           defaultValue={ort}
@@ -64,7 +64,7 @@ export default function VerfahrenAdresseKontaktFields({
       <div className="kern-gap-md flex w-full">
         <InputField
           className="flex-1"
-          label={shared.form.labels.eMail}
+          label={shared.form.labels.email}
           id={`${idPrefix}-email`}
           name={`${namePrefix}Email`}
           type="email"
@@ -72,7 +72,7 @@ export default function VerfahrenAdresseKontaktFields({
         />
         <InputField
           className="flex-1"
-          label={shared.form.labels.phone}
+          label={shared.form.labels.telefon}
           id={`${idPrefix}-telefon`}
           name={`${namePrefix}Telefon`}
           type="tel"

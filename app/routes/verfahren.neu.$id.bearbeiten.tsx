@@ -1,4 +1,5 @@
 import { SubmitEventHandler, useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import {
   ActionFunctionArgs,
   data,
@@ -92,7 +93,7 @@ const SubmitState = z.enum(["idle", "submit", "upload", "delete"]);
 type SubmitState = z.infer<typeof SubmitState>;
 
 // Dev-only convenience data for the "Fill details with dummy data" button below.
-const DUMMY_FORM_VALUES: Record<string, string> = {
+const DUMMY_FORM_VALUES = {
   klagendeParteiVorname: "Test-Klaeger-Vorname",
   klagendeParteiNachname: "Test-Klaeger-Nachname",
   klagendeParteiStrasse: "Teststraße",
@@ -102,6 +103,7 @@ const DUMMY_FORM_VALUES: Record<string, string> = {
   klagendeParteiEmail: "test-klaeger@test.de",
   klagendeParteiTelefon: "0123456789",
   lawyerName: "Test-Kanzlei",
+  lawyerKanzleiformId: "Einzelanwalt",
   lawyerStrasse: "Teststraße",
   lawyerHausnummer: "2",
   lawyerPlz: "12345",
@@ -127,6 +129,13 @@ function fillFormFields(form: HTMLFormElement, values: Record<string, string>) {
 
     if (field instanceof HTMLInputElement) {
       field.value = value;
+    } else if (field instanceof HTMLSelectElement) {
+      for (const option of field.options) {
+        if (option.value === value || option.textContent === value) {
+          field.value = option.value;
+          break;
+        }
+      }
     }
   });
 }
@@ -173,6 +182,7 @@ export async function loader({ context, params }: LoaderFunctionArgs) {
     params,
     "loader",
   );
+
   const { verfahren, einreichung, dokumente } =
     await loadVerfahrenEinreichungBundle(authSession, verfahrenId);
 
@@ -188,24 +198,18 @@ export async function loader({ context, params }: LoaderFunctionArgs) {
     return redirect(`/verfahren/${verfahrenId}`);
   }
 
-  const gerichtePromise = (async () => {
-    const { elemente } = await fetchGerichte(authSession);
-
-    return elemente;
-  })();
-
-  const kanzleiformenPromise = (async () => {
-    const { elemente } = await fetchKanzleiformen(authSession);
-
-    return elemente;
-  })();
+  const [{ elemente: gerichte }, { elemente: kanzleiformen }] =
+    await Promise.all([
+      fetchGerichte(authSession),
+      fetchKanzleiformen(authSession),
+    ]);
 
   return {
     verfahren,
     einreichung,
     dokumente,
-    gerichte: gerichtePromise,
-    kanzleiformen: kanzleiformenPromise,
+    gerichte,
+    kanzleiformen,
   };
 }
 
@@ -693,14 +697,13 @@ export default function VerfahrenNeuBearbeiten({
       return;
     }
 
-    fillFormFields(form, DUMMY_FORM_VALUES);
-    setHasLawyer(true);
-
-    // the lawyer fields only mount once hasLawyer becomes true, so fill them
-    // once React has rendered the newly-revealed inputs.
-    requestAnimationFrame(() => {
-      fillFormFields(form, DUMMY_FORM_VALUES);
+    // The lawyer fields only mount once hasLawyer becomes true, so force
+    // a synchronous re-render before filling the other form fields.
+    flushSync(() => {
+      setHasLawyer(true);
     });
+
+    fillFormFields(form, DUMMY_FORM_VALUES);
   };
 
   return (
@@ -715,12 +718,14 @@ export default function VerfahrenNeuBearbeiten({
             <h1 className="kern-heading-large">
               {routes.verfahrenNeu.step2.headline}
             </h1>
+
             <Progress
               id="progress-2"
               label={routes.verfahrenNeu.step2.progress}
               value={2}
               max={2}
             />
+
             <div className="kern-pt-xl">
               <Form
                 ref={mainFormRef}
@@ -734,7 +739,9 @@ export default function VerfahrenNeuBearbeiten({
                   name="einreichungId"
                   value={einreichung.id}
                 />
+
                 <div className="kern-gap-md flex flex-wrap items-start justify-between">
+                  {/* Intro */}
                   <div>
                     <h2 className="kern-heading-medium">
                       {routes.verfahrenNeu.step2.subline}
@@ -752,6 +759,8 @@ export default function VerfahrenNeuBearbeiten({
                       />
                     )}
                   </div>
+
+                  {/* Navigtion Buttons (Top) */}
                   <div className="kern-gap-md flex">
                     <Link
                       to={`/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichung.id}`}
@@ -777,6 +786,7 @@ export default function VerfahrenNeuBearbeiten({
                   </div>
                 </div>
 
+                {/* Success / Error Alert */}
                 <Alert
                   type="success"
                   title={routes.verfahrenNeu.step2.notification.headline}
@@ -792,6 +802,7 @@ export default function VerfahrenNeuBearbeiten({
                 )}
 
                 <div className="kern-gap-lg flex flex-col">
+                  {/* Form Section: Klagende Partei */}
                   <VerfahrenKlaegerSection
                     firstName={klagendeParteiFirstName}
                     lastName={klagendeParteiLastName}
@@ -805,10 +816,11 @@ export default function VerfahrenNeuBearbeiten({
                     lawyerEmail={klagendeParteiAnwaltEmail}
                     lawyerTelefon={klagendeParteiAnwaltTelefon}
                     lawyerKanzleiformId={klagendeParteiAnwaltKanzleiformId}
-                    kanzleiformenPromise={kanzleiformen}
+                    kanzleiformen={kanzleiformen}
                     errors={fieldErrors || {}}
                   />
 
+                  {/* Form Section: Beklagte Partei */}
                   <VerfahrenBeklagterSection
                     firstName={beklagteParteiFirstName}
                     lastName={beklagteParteiLastName}
@@ -818,14 +830,16 @@ export default function VerfahrenNeuBearbeiten({
                     errors={fieldErrors || {}}
                   />
 
+                  {/* Form Section: Verfahrendetails */}
                   <VerfahrenDetailsFormSection
                     kurzrubrum={verfahren?.kurzrubrum ?? ""}
                     claimReference={claimReference}
                     verfahrensgegenstand={verfahren?.verfahrensgegenstand ?? ""}
                     courtId={courtId}
-                    gerichtePromise={gerichte}
+                    gerichte={gerichte}
                   />
 
+                  {/* Form Section: Anlagen & Beweismittel */}
                   <VerfahrenDokumenteFormSection
                     id="dokumente"
                     dokumente={dokumente}
@@ -840,6 +854,7 @@ export default function VerfahrenNeuBearbeiten({
                     onDeleteDokument={handleDeleteDokument}
                   />
 
+                  {/* Navigation Buttons (Bottom) */}
                   <div className="kern-gap-md flex flex-wrap justify-end">
                     <div className="kern-gap-md flex">
                       <Link

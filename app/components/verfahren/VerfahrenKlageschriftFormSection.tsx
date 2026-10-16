@@ -14,19 +14,19 @@ const ACCEPTED_KLAGESCHRIFT_FILE_TYPES = [
   "application/pdf",
 ].join(",");
 
-type VerfahrenStatementOfClaimUploadFieldsProps = {
+export type VerfahrenKlageschriftFormSectionProps = {
   errors: Record<string, string[]>;
-  gerichtePromise: Promise<GerichtSelectItem[]>;
+  gerichte: GerichtSelectItem[];
   selectedGerichtId: string;
   onGerichtIdChange: (selectedValue: string) => void;
 };
 
 export default function VerfahrenKlageschriftFormSection({
   errors,
-  gerichtePromise,
+  gerichte,
   selectedGerichtId,
   onGerichtIdChange,
-}: Readonly<VerfahrenStatementOfClaimUploadFieldsProps>) {
+}: Readonly<VerfahrenKlageschriftFormSectionProps>) {
   const { shared } = useTranslations();
 
   return (
@@ -50,10 +50,10 @@ export default function VerfahrenKlageschriftFormSection({
       <div className="kern-gap-md flex w-full">
         <VerfahrenGerichteSelect
           id="gerichtId"
-          label={shared.form.labels.recipientCourt}
+          label={shared.form.labels.empfaengergericht}
           className="bg-kern-feedback-info-background flex-1 self-end"
           placeholder={shared.form.select.placeholder}
-          gerichtePromise={gerichtePromise}
+          gerichte={gerichte}
           initialSelectedValue={selectedGerichtId}
           onValueChange={onGerichtIdChange}
           error={errors.gerichtId?.join(" ")}

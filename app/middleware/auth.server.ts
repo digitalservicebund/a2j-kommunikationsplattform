@@ -1,34 +1,25 @@
-import { createContext, redirect } from "react-router";
+import { createContext, redirect, MiddlewareFunction } from "react-router";
 import { AuthSession } from "~/services/auth/auth.types";
 import { getAuthSession } from "~/services/auth/authSession.server";
 import { logger } from "~/utils/logger.server";
 
-export const authContext = createContext<AuthSession | null>();
-
-type MiddlewareArgs = {
-  request: Request;
-  context: {
-    set: <T>(ctx: ReturnType<typeof createContext<T>>, value: T) => void;
-  };
-};
-
+export const authContext = createContext<AuthSession | null>(null);
 const localLogger = logger.child({ name: "authMiddleware" });
 
-export async function authMiddleware(
-  { request, context }: MiddlewareArgs,
-  next: () => Promise<Response>,
-) {
+export const authMiddleware: MiddlewareFunction<Response> = async (
+  { request, context, url },
+  next,
+) => {
   const authSession = await getAuthSession(request);
 
   if (!authSession) {
     localLogger.debug("No auth session found, redirecting to login");
-    const { pathname, search, hash } = new URL(request.url);
+    const { pathname, search, hash } = url;
     const loginParams = new URLSearchParams({ next: pathname + search + hash });
     throw redirect("/login?" + loginParams.toString());
   }
 
   context.set(authContext, authSession);
-
   const response = await next();
 
   if (authSession.sessionCookieHeaders.length > 0) {
@@ -43,4 +34,4 @@ export async function authMiddleware(
   }
 
   return response;
-}
+};

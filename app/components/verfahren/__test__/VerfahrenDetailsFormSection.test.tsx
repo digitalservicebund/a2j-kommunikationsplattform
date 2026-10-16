@@ -12,7 +12,7 @@ describe("VerfahrenDetailsFormSection", () => {
         claimReference="AZ-TEST-001"
         verfahrensgegenstand="Zahlungsklage"
         courtId=""
-        gerichtePromise={Promise.resolve([])}
+        gerichte={[]}
       />,
     );
 

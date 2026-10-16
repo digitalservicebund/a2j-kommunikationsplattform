@@ -2,11 +2,13 @@
 
 import { describe, expect, it, vi } from "vitest";
 import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
-import VerfahrenKlageschriftFormSection from "../VerfahrenKlageschriftFormSection";
+import VerfahrenKlageschriftFormSection, {
+  VerfahrenKlageschriftFormSectionProps,
+} from "../VerfahrenKlageschriftFormSection";
 
-const baseProps = {
+const baseProps: VerfahrenKlageschriftFormSectionProps = {
   errors: {},
-  gerichtePromise: Promise.resolve([]),
+  gerichte: [],
   selectedGerichtId: "",
   onGerichtIdChange: vi.fn(),
 };

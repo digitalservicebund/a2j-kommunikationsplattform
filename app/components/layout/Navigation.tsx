@@ -1,3 +1,4 @@
+import { NavLink } from "react-router";
 import { useTranslations } from "~/services/translations/context";
 
 export default function Navigation() {
@@ -20,8 +21,8 @@ export default function Navigation() {
         <ul className="kern-gap-sm kern-gap-lg-md my-0 flex list-none flex-col items-center justify-between pl-0 text-center md:flex-row md:text-left xl:flex-wrap">
           {navigationLinks.map((link) => (
             <li key={link.name}>
-              <a
-                href={link.url}
+              <NavLink
+                to={link.url}
                 className="kern-link kern-py-md visited:text-(--kern-color-action-default)"
               >
                 <span
@@ -29,7 +30,7 @@ export default function Navigation() {
                   aria-hidden="true"
                 ></span>
                 {link.name}
-              </a>
+              </NavLink>
             </li>
           ))}
         </ul>

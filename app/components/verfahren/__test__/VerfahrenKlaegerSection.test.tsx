@@ -3,10 +3,12 @@
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
-import VerfahrenKlaegerSection from "../VerfahrenKlaegerSection";
+import VerfahrenKlaegerSection, {
+  VerfahrenKlaegerSectionProps,
+} from "../VerfahrenKlaegerSection";
 
 describe("VerfahrenKlaegerSection", () => {
-  const baseProps = {
+  const baseProps: VerfahrenKlaegerSectionProps = {
     firstName: "Emilia",
     lastName: "Kühn",
     anschrift: undefined,
@@ -19,7 +21,7 @@ describe("VerfahrenKlaegerSection", () => {
     lawyerEmail: "",
     lawyerTelefon: "",
     lawyerKanzleiformId: "",
-    kanzleiformenPromise: Promise.resolve([]),
+    kanzleiformen: [],
     errors: {},
   };
 
