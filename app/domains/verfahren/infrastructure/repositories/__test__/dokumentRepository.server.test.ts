@@ -176,6 +176,18 @@ describe("fetchDokumentDatei", () => {
       "X-Amz-Signature",
     );
   });
+
+  it("throws an ApiError with the storage's status", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(new Response(null, { status: 404 })),
+    );
+    mocks.apiRequest.mockResolvedValueOnce("https://s3.example.com/dokument");
+
+    await expect(
+      fetchDokumentDatei(makeAuthSession(), options),
+    ).rejects.toMatchObject({ name: "ApiError", status: 404 });
+  });
 });
 
 describe("fetchDokumentValidierungsstatus", () => {

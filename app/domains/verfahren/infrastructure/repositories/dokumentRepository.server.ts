@@ -17,6 +17,7 @@ import {
 import { ValidierungsstatusSchema } from "~/domains/verfahren/infrastructure/schemas/validierungsstatus.schema";
 import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
 import { AuthSession } from "~/services/auth/auth.types";
+import { ApiError } from "~/utils/apiError";
 import { buildSearchParams } from "~/utils/buildSearchParams";
 import { logger } from "~/utils/logger.server";
 
@@ -109,7 +110,7 @@ export async function fetchDokumentDownloadLink(
   return apiRequest({
     authSession,
     fullUrl: url.toString(),
-    // The link is used as a redirect target, so only http(s) URLs are accepted.
+    // The server fetches the link itself, so only http(s) URLs are accepted.
     schema: z.url({ protocol: /^https?$/ }),
     errorMessage: `Download link for Dokument with id ${options.id} could not be fetched.`,
   });
@@ -134,8 +135,9 @@ export async function fetchDokumentDatei(
       { status: response.status, dokumentId: options.id },
       "Datei for Dokument could not be fetched from the object storage.",
     );
-    throw new Error(
+    throw new ApiError(
       `Datei for Dokument with id ${options.id} could not be fetched.`,
+      { status: response.status },
     );
   }
 
