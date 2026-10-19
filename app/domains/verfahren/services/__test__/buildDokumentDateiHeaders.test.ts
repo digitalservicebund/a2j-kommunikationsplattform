@@ -40,6 +40,19 @@ describe("buildDokumentDateiHeaders", () => {
     },
   );
 
+  it("drops Content-Length of an encoded body, which fetch decodes", () => {
+    const headers = buildDokumentDateiHeaders(
+      new Headers({
+        "Content-Type": "application/pdf",
+        "Content-Encoding": "gzip",
+        "Content-Length": "1234",
+      }),
+    );
+
+    expect(headers.has("Content-Length")).toBe(false);
+    expect(headers.has("Content-Encoding")).toBe(false);
+  });
+
   it("falls back to a download of octet-stream without storage headers", () => {
     const headers = buildDokumentDateiHeaders(new Headers());
 
