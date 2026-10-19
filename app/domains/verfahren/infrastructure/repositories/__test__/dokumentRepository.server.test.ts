@@ -82,7 +82,7 @@ describe("fetchDokumente", () => {
   });
 });
 
-describe("fetchDokumentDownloadLink", () => {
+describe(fetchDokumentDownloadLink, () => {
   const originalEnv = process.env.KOMPLA_API_URL;
 
   beforeEach(() => {
