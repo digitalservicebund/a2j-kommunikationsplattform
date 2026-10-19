@@ -51,7 +51,15 @@ export const loader = async ({
     dispositionType,
     // Stops downloading from the storage when the user cancels the request.
     signal: request.signal,
-  }).catch(rethrowApiNotFoundAsRouteError);
+  }).catch((error: unknown) => {
+    // A cancelled download isn't a server failure, so it's answered with
+    // 499 ("client closed request") instead of an Error reported to Sentry.
+    if (request.signal.aborted) {
+      throw data(null, { status: 499 });
+    }
+
+    return rethrowApiNotFoundAsRouteError(error);
+  });
 
   return new Response(datei.body, {
     headers: buildDokumentDateiHeaders(datei.headers),

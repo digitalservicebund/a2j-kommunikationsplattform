@@ -30,9 +30,10 @@ const authSession = makeAuthSession();
 function callLoader(
   search: string,
   routeParams: Record<string, string> = params,
+  signal?: AbortSignal,
 ) {
   return loader({
-    request: new Request(`http://localhost:3000/datei${search}`),
+    request: new Request(`http://localhost:3000/datei${search}`, { signal }),
     params: routeParams,
     context: { get: () => authSession, set: () => {} },
   } as unknown as LoaderFunctionArgs);
@@ -107,5 +108,16 @@ describe("Dokument Datei resource route", () => {
     const error = await catchThrown(callLoader(""));
 
     expect(error).toMatchObject({ init: { status: 404 } });
+  });
+
+  it("responds with 499 instead of an Error when the user cancels the download", async () => {
+    const abortError = new DOMException("aborted", "AbortError");
+    mocks.fetchDokumentDatei.mockRejectedValue(abortError);
+
+    const error = await catchThrown(
+      callLoader("", params, AbortSignal.abort(abortError)),
+    );
+
+    expect(error).toMatchObject({ init: { status: 499 } });
   });
 });
