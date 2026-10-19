@@ -154,8 +154,8 @@ export const handleError: HandleErrorFunction = (error, args) => {
     (!isRouteErrorResponse(error) || error.status >= 500)
   ) {
     logger.error({ error }, "Request handler failed");
+    return sentryErrorHandler(error, args);
   }
-  return sentryErrorHandler(error, args);
 };
 
 // CUSTOM: Integrate Sentry into react-router's Instrumentation API.
