@@ -37,7 +37,8 @@ export default function buildDokumentDateiHeaders(
   }
 
   const contentLength = storageHeaders.get("Content-Length");
-  if (contentLength) {
+  const isEncoded = storageHeaders.has("Content-Encoding");
+  if (contentLength && !isEncoded) {
     headers.set("Content-Length", contentLength);
   }
 
