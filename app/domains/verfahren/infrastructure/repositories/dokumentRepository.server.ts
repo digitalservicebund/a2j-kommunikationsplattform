@@ -120,8 +120,10 @@ type FetchDokumentDateiOptions = FetchDokumentDownloadLinkOptions & {
   signal?: AbortSignal;
 };
 
-// Fetches the Dokument's binary content from the object storage via a fresh
-// download link. The response body is left unread so callers can stream it.
+/**
+ * Fetches the Dokument's binary content from the object storage via a fresh
+ * download link. The response body is left unread so callers can stream it.
+ */
 export async function fetchDokumentDatei(
   authSession: AuthSession,
   { signal, ...options }: FetchDokumentDateiOptions,
