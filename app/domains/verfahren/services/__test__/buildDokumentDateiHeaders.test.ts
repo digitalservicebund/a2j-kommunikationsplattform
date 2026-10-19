@@ -20,6 +20,23 @@ describe("buildDokumentDateiHeaders", () => {
     });
   });
 
+  it.each(["image/png", "image/jpeg", "video/mp4", "video/webm"])(
+    "keeps an inline disposition for %s",
+    (contentType) => {
+      const headers = buildDokumentDateiHeaders(
+        new Headers({
+          "Content-Type": contentType,
+          "Content-Disposition": 'inline; filename="foto"',
+        }),
+      );
+
+      expect(headers.get("Content-Disposition")).toBe(
+        'inline; filename="foto"',
+      );
+      expect(headers.has("Content-Security-Policy")).toBe(false);
+    },
+  );
+
   it.each(["application/xml", "text/html; charset=utf-8", "image/svg+xml"])(
     "forces %s to be downloaded and sandboxes it",
     (contentType) => {

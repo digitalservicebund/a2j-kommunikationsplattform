@@ -1,4 +1,12 @@
-const INLINE_CONTENT_TYPES = new Set(["application/pdf"]);
+// Types the browser can render but that can't run scripts. SVG is deliberately
+// missing: it's XML and may contain <script>, so it's always downloaded.
+const INLINE_CONTENT_TYPES = new Set([
+  "application/pdf",
+  "image/png",
+  "image/jpeg",
+  "video/mp4",
+  "video/webm",
+]);
 
 function isInlineContentType(contentType: string): boolean {
   const mimeType = contentType.split(";")[0].trim().toLowerCase();
@@ -8,9 +16,9 @@ function isInlineContentType(contentType: string): boolean {
 /**
  * Response headers for serving a Dokument's file from the app's own origin.
  *
- * Uploaded files are user content, so anything but a PDF is forced to be
- * downloaded — an XML file rendered inline could otherwise run scripts with
- * the user's session. Resource routes don't get the root route's security
+ * Uploaded files are user content, so anything but a PDF or a PNG/JPEG image
+ * is forced to be downloaded — an XML file rendered inline could otherwise run
+ * scripts with the user's session. Resource routes don't get the root route's security
  * headers, hence `nosniff` and the sandboxing CSP are set here.
  */
 export default function buildDokumentDateiHeaders(
