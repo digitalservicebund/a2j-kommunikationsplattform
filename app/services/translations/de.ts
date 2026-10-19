@@ -169,8 +169,6 @@ export const de = {
     verfahren: "Verfahren",
     VERFAHREN_DETAILS_LABEL: "Verfahrensdetails",
     DATEIANSICHT_LABEL: "Dateiansicht",
-    LOGO_LABEL: "Kommunikationsplattform",
-    LOGO_ARIA_LABEL: "Kommmunikationsplattform - Zurück zur Startseite",
     TO_START_PAGE_LABEL: "Zur Startseite",
     CONTACT_SUPPORT_LABEL: "Kontaktieren Sie den Support",
     MORE_THAN_100_VERFAHREN_LABEL: "Mehr als 100 Verfahren",
@@ -188,6 +186,9 @@ export const de = {
     header: {
       login: "Anmelden",
       logout: "Abmelden",
+      logo: {
+        label: "Kommunikationsplattform",
+      },
     },
     kopfzeile: {
       label: "Offizielle Website – Bundesrepublik Deutschland",
