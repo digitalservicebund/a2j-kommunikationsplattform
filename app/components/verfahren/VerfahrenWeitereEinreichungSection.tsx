@@ -16,10 +16,10 @@ export default function VerfahrenWeitereEinreichungSection({
   const labels = routes.verfahrenId.weitereEinreichung;
 
   return (
-    <article className="kern-card">
+    <div className="kern-card">
       <div className="kern-card__container">
         <header className="kern-card__header">
-          <h2 className="kern-title">{labels.headline}</h2>
+          <h3 className="kern-title">{labels.headline}</h3>
         </header>
         <section className="kern-card__body space-y-2.5">
           <VerfahrenWeitereEinreichungArtStep
@@ -31,6 +31,6 @@ export default function VerfahrenWeitereEinreichungSection({
           />
         </section>
       </div>
-    </article>
+    </div>
   );
 }

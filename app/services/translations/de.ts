@@ -79,6 +79,8 @@ export const de = {
         hint: "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
         error:
           "Keine Datei ausgewählt? Ist ihre Datei zu groß? Oder der Dateityp wird nicht unterstützt. Bitte laden Sie eine Datei mit maximal 104 MB hoch. Unterstützte Dateitypen sind: *.pdf, *.doc, *.docx und *.xml (XJustiz).",
+        submit: "Hochladen",
+        submitting: "Wird hochgeladen...",
       },
       deleteDokument: {
         label: "Entfernen",
@@ -109,7 +111,7 @@ export const de = {
         email: "E-Mail (optional)",
         telefon: "Telefon (optional)",
         rubrum: "Rubrum",
-        legalRepresentativesReferenceNumber:
+        geschaeftszeichenProzessbevollmaechtigte:
           "Geschäftszeichen des Prozessbevollmächtigten",
         empfaengergericht: "Empfängergericht",
         subjectMatterOfTheProceedings: "Verfahrensgegenstand",
@@ -270,10 +272,10 @@ export const de = {
             title: "Klagende Partei",
             description:
               "Alle Angaben zur klagenden Partei, dem Kläger oder der Klägerin. Hier können Sie auch angeben, ob eine anwaltliche Vertretung vorhanden ist.",
-            hasLawyer: {
+            vertretung: {
               checkbox: "Anwaltliche Vertretung ist vorhanden",
               title: "Angaben zum Anwalt",
-              nameOfLawFirm:
+              bezeichnung:
                 "Name der Kanzlei / Sozietät / Berufsausübungsgesellschaft",
               kanzleiform: "Art der anwaltlichen Vertretung",
             },
@@ -290,6 +292,7 @@ export const de = {
             title: "Anlagen & Beweismittel",
             description:
               "Fügen Sie Beweismittel und weitere Dokumente hinzu (optional).",
+            listLabel: "Hochgeladene Dateien",
           },
           validation: {
             klagendeParteiNachname:
@@ -304,7 +307,7 @@ export const de = {
     },
 
     verfahrenId: {
-      headline: "Verlauf der Akte",
+      timelineHeading: "Verlauf der Akte",
       einreichungHistory: {
         dokumenteCountSingular: "{{count}} Dokument",
         dokumenteCount: "{{count}} Dokumente",

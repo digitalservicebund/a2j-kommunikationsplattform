@@ -4,6 +4,7 @@ export type VerfahrenTimelineStepProps = {
   timelineLabel: string;
   iconClassName?: string;
   showConnector?: boolean;
+  "data-testid"?: string;
   // The step's content, e.g. a card or an accordion.
   children: ReactNode;
 };
@@ -16,15 +17,19 @@ export default function VerfahrenTimelineStep({
   timelineLabel,
   iconClassName = "kern-icon--check",
   showConnector = true,
+  "data-testid": testId,
   children,
 }: Readonly<VerfahrenTimelineStepProps>) {
   return (
-    <div className="kern-gap-md flex items-stretch">
+    <article data-testid={testId} className="kern-gap-md flex items-stretch">
+      {/* Timeline Label (e.g., timestamp) */}
       <div className="w-20 flex-[0_0_auto]">
         <span className="kern-body kern-body--small kern-body--muted">
           {timelineLabel}
         </span>
       </div>
+
+      {/* Icon & Connector */}
       <div className="flex flex-[0_0_auto] flex-col items-center">
         <span
           className={`kern-icon ${iconClassName} kern-icon--default`}
@@ -37,7 +42,9 @@ export default function VerfahrenTimelineStep({
           ></div>
         ) : null}
       </div>
+
+      {/* Content */}
       <div className="kern-pb-md min-w-0 flex-1">{children}</div>
-    </div>
+    </article>
   );
 }

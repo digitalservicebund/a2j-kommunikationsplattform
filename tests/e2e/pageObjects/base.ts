@@ -1,4 +1,4 @@
-import { expect, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 import { getTestTranslations } from "~tests/utils/translationsUtil";
 
 const t = getTestTranslations();
@@ -35,6 +35,7 @@ export class PageObject {
   protected readonly urlPattern: URLPattern;
 
   readonly siteHeader: SiteHeader;
+  readonly siteFooter: SiteFooter;
 
   constructor(page: Page, pathOrURLPattern: URLPattern | string) {
     this.page = page;
@@ -44,6 +45,7 @@ export class PageObject {
         : pathOrURLPattern;
 
     this.siteHeader = new SiteHeader(this.page);
+    this.siteFooter = new SiteHeader(this.page);
   }
 
   async waitUntilHere() {
@@ -56,29 +58,56 @@ export class PageObject {
 }
 
 /**
+ * Base class for representing specific page sections in a `PageObject`.
+ * Each instance is associated with a specific element through a Playwright
+ * `Locator`.
+ */
+export class PageSectionObject {
+  readonly page: Page;
+  readonly locator: Locator;
+
+  constructor(page: Page, locator: Locator) {
+    this.page = page;
+    this.locator = locator;
+  }
+
+  async expectToBeVisible() {
+    await expect(this.locator).toBeVisible();
+  }
+}
+
+/**
  * Page object representation of the current page's site header (if any).
  * Can be accessed from any page object through the `siteHeader` property.
  */
-export class SiteHeader {
-  #page: Page;
-
+export class SiteHeader extends PageSectionObject {
   constructor(page: Page) {
-    this.#page = page;
+    super(page, page.getByRole("banner"));
   }
 
   get dachmarkeKopfzeile() {
-    return this.#page.locator(".kern-kopfzeile");
+    return this.locator.locator(".kern-kopfzeile");
   }
 
   async expectDisplayedUserName(name: string) {
-    const element = this.#page.getByTestId("current-user-name");
+    const element = this.locator.getByTestId("current-user-name");
     await expect(element).toHaveText(name);
   }
 
   async logOut() {
-    const button = this.#page.getByRole("button", {
+    const button = this.locator.getByRole("button", {
       name: t.layout.header.logout,
     });
     await button.click();
+  }
+}
+
+/**
+ * Page object representation of the current page's site footer (if any).
+ * Can be accessed from any page object through the `siteHeader` property.
+ */
+export class SiteFooter extends PageSectionObject {
+  constructor(page: Page) {
+    super(page, page.getByRole("contentinfo"));
   }
 }

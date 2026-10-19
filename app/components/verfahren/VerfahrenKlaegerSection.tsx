@@ -80,7 +80,9 @@ export default function VerfahrenKlaegerSection({
 
       <InputCheckbox
         className={hasLawyer ? "kern-my-md" : "kern-mt-md"}
-        label={routes.verfahrenNeu.step2.form.klagendePartei.hasLawyer.checkbox}
+        label={
+          routes.verfahrenNeu.step2.form.klagendePartei.vertretung.checkbox
+        }
         id="has-lawyer"
         name="hasLawyer"
         checked={hasLawyer}
@@ -88,16 +90,19 @@ export default function VerfahrenKlaegerSection({
       />
 
       {hasLawyer && (
-        <>
-          <h3 className="kern-title kern-title--small">
-            {routes.verfahrenNeu.step2.form.klagendePartei.hasLawyer.title}
-          </h3>
+        // TODO: Turn into <fieldset>
+        <fieldset>
+          <legend>
+            <h3 className="kern-title kern-title--small">
+              {routes.verfahrenNeu.step2.form.klagendePartei.vertretung.title}
+            </h3>
+          </legend>
           <InputField
             id="lawyer-name"
             name="lawyerName"
             label={
-              routes.verfahrenNeu.step2.form.klagendePartei.hasLawyer
-                .nameOfLawFirm
+              routes.verfahrenNeu.step2.form.klagendePartei.vertretung
+                .bezeichnung
             }
             defaultValue={lawyerName}
             errors={errors}
@@ -106,7 +111,7 @@ export default function VerfahrenKlaegerSection({
           <VerfahrenKanzleiformSelect
             id="lawyerKanzleiformId"
             label={
-              routes.verfahrenNeu.step2.form.klagendePartei.hasLawyer
+              routes.verfahrenNeu.step2.form.klagendePartei.vertretung
                 .kanzleiform
             }
             placeholder={shared.form.select.placeholder}
@@ -125,7 +130,7 @@ export default function VerfahrenKlaegerSection({
             email={lawyerEmail}
             telefon={lawyerTelefon}
           />
-        </>
+        </fieldset>
       )}
     </FieldsetCard>
   );

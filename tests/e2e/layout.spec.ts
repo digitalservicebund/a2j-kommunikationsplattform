@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { getTestTranslations } from "~tests/utils/translationsUtil";
-import { SiteHeader } from "./pageObjects/base";
+import { SiteFooter, SiteHeader } from "./pageObjects/base";
 
 const t = getTestTranslations();
 
@@ -49,7 +49,8 @@ test.describe("Site layout (all pages)", () => {
 
   for (const { label, url, pageHeading } of expectedFooterLinks) {
     test(`I can see and follow footer link "${label}"`, async ({ page }) => {
-      const link = page.getByRole("link", { name: label });
+      const footer = new SiteFooter(page);
+      const link = footer.locator.getByRole("link", { name: label });
       await expect(link).toBeVisible();
 
       await link.click();

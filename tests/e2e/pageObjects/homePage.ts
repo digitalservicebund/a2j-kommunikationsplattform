@@ -18,4 +18,10 @@ export class HomePage extends PageObject {
   async visit() {
     await this.page.goto("/");
   }
+
+  async startVerfahrenCreationFlow() {
+    await this.page
+      .getByRole("link", { name: t.routes.index.createVerfahren })
+      .click();
+  }
 }

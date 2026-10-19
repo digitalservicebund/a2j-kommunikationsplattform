@@ -35,13 +35,13 @@ export default function VerfahrenOverviewCard({
   const gerichtBankverbindung = gerichtInformation?.bankverbindungen[0];
 
   return (
-    <article className="kern-card">
+    <div className="kern-card" data-testid="verfahren-overview-card">
       <div className="kern-card__container">
         <div className="algin-start kern-gap-md flex w-full flex-wrap items-start">
           <div className="flex-1">
-            <h2 className="kern-heading-medium">
+            <h1 className="kern-heading-medium">
               {getVerfahrenDisplayName(verfahren)}
-            </h2>
+            </h1>
             <div className="align-center kern-body kern-body--muted kern-gap-sm flex flex-wrap">
               <span>
                 {verfahren.aktenzeichenGericht ??
@@ -83,6 +83,6 @@ export default function VerfahrenOverviewCard({
           />
         </div>
       </div>
-    </article>
+    </div>
   );
 }

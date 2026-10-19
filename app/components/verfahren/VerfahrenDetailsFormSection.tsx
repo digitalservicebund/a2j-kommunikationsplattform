@@ -37,7 +37,7 @@ export default function VerfahrenDetailsFormSection({
       <div className="kern-gap-md flex w-full">
         <InputField
           className="flex-1 self-end"
-          label={shared.form.labels.legalRepresentativesReferenceNumber}
+          label={shared.form.labels.geschaeftszeichenProzessbevollmaechtigte}
           id="claim-reference"
           name="claimReference"
           defaultValue={claimReference}
