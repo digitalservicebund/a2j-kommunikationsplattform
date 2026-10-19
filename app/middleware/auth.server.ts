@@ -26,8 +26,6 @@ export const authMiddleware: MiddlewareFunction<Response> = async (
     localLogger.debug(
       "Session cookie found in auth session, appending to response headers",
     );
-    // It's not recommended to use `clone()` for reading large bodies as it can lead to high memory usage
-    // See: https://developer.mozilla.org/en-US/docs/Web/API/Response/clone
     const newResponse = new Response(response.body, response);
     for (const cookieHeader of authSession.sessionCookieHeaders) {
       newResponse.headers.append("Set-Cookie", cookieHeader);
