@@ -74,6 +74,16 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
 
+  dependabot-auto-merge:
+    name: Dependabot auto-merge
+    if: ${{ github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' }}
+    needs: [check]
+    uses: ./.github/workflows/dependabot-auto-merge.yml
+    secrets: inherit
+    permissions:
+      contents: write
+      pull-requests: write
+
   build-and-push-image:
     name: Build & push Docker image
     runs-on: ubuntu-latest
