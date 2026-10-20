@@ -4,17 +4,17 @@ import { RollenInputSchema } from "../rollen.input.schema";
 describe("RollenInputSchema", () => {
   it("maps the camelCase domain shape to the snake_case wire shape", () => {
     const input = {
-      rollennummer: "klaegerin",
+      rollennummer: "anwalt",
       rollenbezeichnungId: "rolle-1",
       geschaeftszeichen: null,
-      referenz: null,
+      referenz: ["klaegerin"],
     };
 
     expect(RollenInputSchema.parse(input)).toEqual({
-      rollennummer: "klaegerin",
+      rollennummer: "anwalt",
       rollenbezeichnung_id: "rolle-1",
       geschaeftszeichen: null,
-      referenz: null,
+      referenz: ["klaegerin"],
     });
   });
 

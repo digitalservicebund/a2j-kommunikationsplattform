@@ -65,7 +65,7 @@ describe("getProzessbevollmaechtigteByReferenz", () => {
       rollen: [
         {
           rollenbezeichnung: { code: ROLE_CODE_KLAEGERIN },
-          referenz: null,
+          referenz: [],
         },
       ],
     },
@@ -76,7 +76,7 @@ describe("getProzessbevollmaechtigteByReferenz", () => {
       rollen: [
         {
           rollenbezeichnung: { code: "132" },
-          referenz: ROLE_CODE_KLAEGERIN,
+          referenz: [ROLE_CODE_KLAEGERIN],
         },
       ],
     },
@@ -90,6 +90,30 @@ describe("getProzessbevollmaechtigteByReferenz", () => {
     );
 
     expect(result?.id).toBe("b-2");
+  });
+
+  test("finds the raKanzlei when the rollennummer is one of several referenzen", () => {
+    const beteiligteMitMehrfachReferenz = [
+      {
+        id: "b-4",
+        beteiligtenart: "raKanzlei",
+        bezeichnung: "Kanzlei Böhm",
+        rollen: [
+          {
+            rollenbezeichnung: { code: "132" },
+            referenz: [ROLE_CODE_BEKLAGTE, ROLE_CODE_KLAEGERIN],
+          },
+        ],
+      },
+    ];
+
+    const result = getProzessbevollmaechtigteByReferenz(
+      beteiligteMitMehrfachReferenz,
+      "132",
+      ROLE_CODE_KLAEGERIN,
+    );
+
+    expect(result?.id).toBe("b-4");
   });
 
   test("returns undefined when no matching raKanzlei exists", () => {
@@ -109,7 +133,10 @@ describe("getProzessbevollmaechtigteByReferenz", () => {
         beteiligtenart: "natuerlichePerson",
         bezeichnung: null,
         rollen: [
-          { rollenbezeichnung: { code: "132" }, referenz: ROLE_CODE_KLAEGERIN },
+          {
+            rollenbezeichnung: { code: "132" },
+            referenz: [ROLE_CODE_KLAEGERIN],
+          },
         ],
       },
     ];

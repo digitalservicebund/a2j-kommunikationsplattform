@@ -1,9 +1,9 @@
 {
-  "openapi": "3.0.4",
+  "openapi": "3.1.1",
   "info": {
     "title": "Justiz KomPla API",
     "description": "Justiz KomPla API - Kommunikationsplattform zur Klageeinreichung und Verwaltung von Verfahrensdaten bei Gericht.",
-    "version": "0.6.0"
+    "version": "0.7.0"
   },
   "servers": [
     {
@@ -13,7 +13,9 @@
   "paths": {
     "/api/v1/verfahren/{verfahren-id}/belege": {
       "get": {
-        "tags": ["Belege"],
+        "tags": [
+          "Belege"
+        ],
         "summary": "Ruft die Belege eines Verfahrens ab, optional gefiltert nach Einreichung.",
         "description": "Gibt die Belege des Verfahrens zurück, inklusive der noch in Bearbeitung befindlichen Belege.",
         "operationId": "VerfahrenEinreichungenBelegeController_GetAllAsync",
@@ -44,6 +46,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert die Antwort mit einer Liste von Belegen.",
                   "$ref": "#/components/schemas/BelegListeResponse"
                 }
               }
@@ -130,14 +133,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.read"]
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
           }
         ]
       }
     },
     "/api/v1/verfahren/{verfahren-id}/belege/{id}": {
       "get": {
-        "tags": ["Belege"],
+        "tags": [
+          "Belege"
+        ],
         "summary": "Ruft einen Beleg eines Verfahrens ab.",
         "description": "Ruft einen Beleg eines Verfahrens ab, unabhängig von seinem Status.",
         "operationId": "VerfahrenEinreichungenBelegeController_GetAsync",
@@ -169,6 +176,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Beleg der Einreichung.",
                   "$ref": "#/components/schemas/BelegResponse"
                 }
               }
@@ -255,14 +263,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.read"]
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
           }
         ]
       }
     },
     "/api/v1/verfahren/{verfahren-id}/belege/{id}/downloadlink": {
       "get": {
-        "tags": ["Belege"],
+        "tags": [
+          "Belege"
+        ],
         "summary": "Generiert einen temporären Download-Link für einen Beleg.",
         "description": "Generiert einen signierten Download-Link für einen Beleg im Objektspeicher mit einer konfigurierbaren Gültigkeitsdauer.",
         "operationId": "VerfahrenEinreichungenBelegeController_GetDownloadLinkAsync",
@@ -401,14 +413,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.read"]
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
           }
         ]
       }
     },
     "/api/v1/codelisten/gerichte": {
       "get": {
-        "tags": ["Codelisten"],
+        "tags": [
+          "Codelisten"
+        ],
         "summary": "Ruft die verfügbaren Gerichte ab.",
         "description": "Gibt die Einträge der Codeliste `GDS.Gerichte` zurück.\nDie zurückgegebenen Werte können verwendet werden, um das zuständige Gericht\ninnerhalb eines Verfahrens zu klassifizieren.",
         "operationId": "CodelistenController_GetGerichteAsync",
@@ -418,6 +434,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert Gerichte mit spezifischen Attributen wie Wert und Code.",
                   "$ref": "#/components/schemas/GerichtListeResponse"
                 },
                 "example": {
@@ -496,14 +513,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.codelisten.read"]
+            "oauth2": [
+              "kompla.codelisten.read"
+            ]
           }
         ]
       }
     },
     "/api/v1/codelisten/anschriftstypen": {
       "get": {
-        "tags": ["Codelisten"],
+        "tags": [
+          "Codelisten"
+        ],
         "summary": "Ruft die verfügbaren Anschriftstypen ab.",
         "description": "Gibt die Einträge der Codeliste `GDS.Anschriftstyp` zurück.\nDie zurückgegebenen Werte können verwendet werden, um Anschriften\nvon Beteiligten innerhalb eines Verfahrens zu klassifizieren.",
         "operationId": "CodelistenController_GetAnschriftstypAsync",
@@ -513,6 +534,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert Anschriftstypen mit spezifischen Attributen wie Wert und Code.",
                   "$ref": "#/components/schemas/AnschriftstypListeResponse"
                 },
                 "example": {
@@ -581,14 +603,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.codelisten.read"]
+            "oauth2": [
+              "kompla.codelisten.read"
+            ]
           }
         ]
       }
     },
     "/api/v1/codelisten/telekommunikationsarten": {
       "get": {
-        "tags": ["Codelisten"],
+        "tags": [
+          "Codelisten"
+        ],
         "summary": "Ruft die verfügbaren Telekommunikationsarten ab.",
         "description": "Gibt die Einträge der Codeliste `GDS.Telekommunikationsart` zurück.\nDie zurückgegebenen Werte können verwendet werden, um Kommunikationsanschlüsse\nvon Beteiligten innerhalb eines Verfahrens zu klassifizieren.",
         "operationId": "CodelistenController_GetTelekommunikationsartAsync",
@@ -598,6 +624,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert Telekommunikationsarten mit spezifischen Attributen wie Wert und Code.",
                   "$ref": "#/components/schemas/TelekommunikationsartListeResponse"
                 },
                 "example": {
@@ -674,14 +701,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.codelisten.read"]
+            "oauth2": [
+              "kompla.codelisten.read"
+            ]
           }
         ]
       }
     },
     "/api/v1/codelisten/staaten": {
       "get": {
-        "tags": ["Codelisten"],
+        "tags": [
+          "Codelisten"
+        ],
         "summary": "Ruft die verfügbaren Staaten ab.",
         "description": "Gibt die Einträge der Codeliste `GDS.Staat` zurück.\nDie zurückgegebenen Werte können verwendet werden, um den Staat einer Anschrift\ninnerhalb eines Verfahrens zu klassifizieren.",
         "operationId": "CodelistenController_GetStaatenAsync",
@@ -691,6 +722,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert Staaten mit spezifischen Attributen wie Wert und Code.",
                   "$ref": "#/components/schemas/StaatListeResponse"
                 },
                 "example": {
@@ -764,14 +796,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.codelisten.read"]
+            "oauth2": [
+              "kompla.codelisten.read"
+            ]
           }
         ]
       }
     },
     "/api/v1/codelisten/kanzleiformen": {
       "get": {
-        "tags": ["Codelisten"],
+        "tags": [
+          "Codelisten"
+        ],
         "summary": "Ruft die verfügbaren Kanzleiformen ab.",
         "description": "Gibt die Einträge der Codeliste `GDS.Kanzleiform` zurück.\nDie zurückgegebenen Werte können verwendet werden, um die Kanzleiform einer Rechtsanwaltskanzlei\ninnerhalb eines Verfahrens zu klassifizieren.",
         "operationId": "CodelistenController_GetKanzleiformenAsync",
@@ -781,6 +817,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert Kanzleiformen mit spezifischen Attributen wie Wert und Code.",
                   "$ref": "#/components/schemas/KanzleiformListeResponse"
                 },
                 "example": {
@@ -849,14 +886,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.codelisten.read"]
+            "oauth2": [
+              "kompla.codelisten.read"
+            ]
           }
         ]
       }
     },
     "/api/v1/codelisten/rollenbezeichnungen": {
       "get": {
-        "tags": ["Codelisten"],
+        "tags": [
+          "Codelisten"
+        ],
         "summary": "Ruft die verfügbaren Rollenbezeichnungen ab.",
         "description": "Gibt die Einträge der Codeliste `GDS.Rollenbezeichnung` zurück.\nDie zurückgegebenen Werte können verwendet werden, um Rollen von Beteiligten\ninnerhalb eines Verfahrens zu klassifizieren.",
         "operationId": "CodelistenController_GetRollenbezeichnungenAsync",
@@ -866,6 +907,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert Rollenbezeichnungen mit spezifischen Attributen wie Wert und Code.",
                   "$ref": "#/components/schemas/RollenbezeichnungListeResponse"
                 },
                 "example": {
@@ -939,14 +981,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.codelisten.read"]
+            "oauth2": [
+              "kompla.codelisten.read"
+            ]
           }
         ]
       }
     },
     "/api/v1/codelisten/rechtsformen": {
       "get": {
-        "tags": ["Codelisten"],
+        "tags": [
+          "Codelisten"
+        ],
         "summary": "Ruft die verfügbaren Rechtsformen ab.",
         "description": "Gibt die Einträge der Codeliste `GDS.Rechtsform` zurück.\nDie zurückgegebenen Werte können verwendet werden, um die Rechtsform einer Rechtsanwaltskanzlei\ninnerhalb eines Verfahrens zu klassifizieren.",
         "operationId": "CodelistenController_GetRechtsformenAsync",
@@ -956,6 +1002,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert Rechtsformen mit spezifischen Attributen wie Wert und Code.",
                   "$ref": "#/components/schemas/RechtsformListeResponse"
                 },
                 "example": {
@@ -1029,14 +1076,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.codelisten.read"]
+            "oauth2": [
+              "kompla.codelisten.read"
+            ]
           }
         ]
       }
     },
     "/api/v1/codelisten/dokumentklassen": {
       "get": {
-        "tags": ["Codelisten"],
+        "tags": [
+          "Codelisten"
+        ],
         "summary": "Ruft die verfügbaren Dokumentklassen ab.",
         "description": "Gibt die Einträge der Codeliste `GDS.Dokumentklasse` zurück.\nDie zurückgegebenen Werte können verwendet werden, um Dokumente\ninnerhalb eines Verfahrens zu klassifizieren.",
         "operationId": "CodelistenController_GetDokumentklassenAsync",
@@ -1046,6 +1097,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert Dokumentklassen mit spezifischen Attributen wie Wert und Code.",
                   "$ref": "#/components/schemas/DokumentklasseListeResponse"
                 },
                 "example": {
@@ -1124,14 +1176,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.codelisten.read"]
+            "oauth2": [
+              "kompla.codelisten.read"
+            ]
           }
         ]
       }
     },
     "/api/v1/verfahren/{verfahren-id}/einreichungen/{einreichung-id}/dokumente/{id}": {
       "get": {
-        "tags": ["Dokumente"],
+        "tags": [
+          "Dokumente"
+        ],
         "summary": "Ruft die Details eines spezifischen Dokuments ab.",
         "description": "Ruft ein Dokument basierend auf der Verfahrens-, Einreichungs- und Dokument-ID ab und validiert, dass das Dokument zur Einreichung und das Verfahren\nübereinstimmt.",
         "operationId": "VerfahrenEinreichungenDokumenteController_GetAsync",
@@ -1173,6 +1229,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert ein Dokument im System.",
                   "$ref": "#/components/schemas/DokumentResponse"
                 },
                 "example": {
@@ -1276,12 +1333,16 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.read"]
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
           }
         ]
       },
       "patch": {
-        "tags": ["Dokumente"],
+        "tags": [
+          "Dokumente"
+        ],
         "summary": "Aktualisiert die Metadaten eines spezifischen Dokuments.",
         "description": "Ändert die übermittelten Metadaten eines bestehenden Dokuments; nicht übermittelte Felder bleiben unverändert und der Binärinhalt bleibt unangetastet. Eine\nAktualisierung ist nur möglich, solange sich das Dokument im Status ANGELEGT oder ERSTELLT befindet; sobald das Dokument eingereicht wurde (Status\nEINGEREICHT), sind keine Änderungen mehr möglich. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
         "operationId": "VerfahrenEinreichungenDokumenteController_UpdateAsync",
@@ -1331,6 +1392,7 @@
           "content": {
             "application/json": {
               "schema": {
+                "description": "Anfrage-DTO für das Ändern der Metadaten eines Dokuments. Es wird nur geändert, was übermittelt wird; nicht übermittelte Felder bleiben unverändert. Mindestens\nein Feld muss angegeben werden.",
                 "$ref": "#/components/schemas/DokumentAendernRequest"
               },
               "example": {
@@ -1347,6 +1409,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert ein Dokument im System.",
                   "$ref": "#/components/schemas/DokumentResponse"
                 },
                 "example": {
@@ -1501,12 +1564,16 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.write"]
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
           }
         ]
       },
       "delete": {
-        "tags": ["Dokumente"],
+        "tags": [
+          "Dokumente"
+        ],
         "summary": "Löscht ein spezifisches Dokument.",
         "description": "Löscht ein Dokument basierend auf der Verfahrens-, Einreichungs- und Dokument-ID. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
         "operationId": "VerfahrenEinreichungenDokumenteController_DeleteAsync",
@@ -1684,14 +1751,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.write"]
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
           }
         ]
       }
     },
     "/api/v1/verfahren/{verfahren-id}/einreichungen/{einreichung-id}/dokumente": {
       "get": {
-        "tags": ["Dokumente"],
+        "tags": [
+          "Dokumente"
+        ],
         "summary": "Ruft alle Dokumente für eine spezifische Einreichung ab.",
         "description": "Gibt eine Liste aller Dokumente für die angegebene Einreichung zurück.",
         "operationId": "VerfahrenEinreichungenDokumenteController_GetAllAsync",
@@ -1723,6 +1794,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert die Antwort mit einer Liste von Dokumenten.",
                   "$ref": "#/components/schemas/DokumentListeResponse"
                 }
               }
@@ -1809,12 +1881,16 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.read"]
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
           }
         ]
       },
       "post": {
-        "tags": ["Dokumente"],
+        "tags": [
+          "Dokumente"
+        ],
         "summary": "Erstellt ein neues Dokument zu einer bestimmten Einreichung eines Verfahrens.",
         "description": "Legt ein neues Dokument ausschließlich mit seinen Metadaten (Typ, Anzeigename, Sichtbarkeit) im Status ANGELEGT an. Der Binärinhalt wird anschließend über\nPUT .../dokumente/{id}/datei hochgeladen.",
         "operationId": "VerfahrenEinreichungenDokumenteController_CreateAsync",
@@ -1845,6 +1921,7 @@
           "content": {
             "application/json": {
               "schema": {
+                "description": "Anfrage-DTO für das Anlegen eines Dokuments mit seinen Metadaten. Der Binärinhalt wird separat über `PUT .../dokumente/{id}/datei` hochgeladen.",
                 "$ref": "#/components/schemas/DokumentErstellenRequest"
               },
               "example": {
@@ -1861,6 +1938,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert das Datenübertragungsobjekt (DTO) für die Erstellung eines Dokuments.",
                   "$ref": "#/components/schemas/DokumentErstellenResponse"
                 },
                 "example": {
@@ -1974,14 +2052,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.write"]
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
           }
         ]
       }
     },
     "/api/v1/verfahren/{verfahren-id}/einreichungen/{einreichung-id}/dokumente/{id}/datei": {
       "put": {
-        "tags": ["Dokumente"],
+        "tags": [
+          "Dokumente"
+        ],
         "summary": "Setzt oder ersetzt den Binärinhalt eines Dokuments.",
         "description": "Lädt den Binärinhalt zu einem zuvor über `POST .../dokumente` angelegten Dokument hoch und speichert ihn im Objektspeicher. Die Übertragung erfolgt über\nMIME-Multipart-Formdaten im Feld `datei`; Dateiname und MIME-Type werden aus dem Multipart-Abschnitt übernommen. Die Operation ist idempotent: Besitzt das\nDokument bereits einen Inhalt, wird dieser vollständig ersetzt und der bisherige Inhalt im Objektspeicher gelöscht. Mit dem erfolgreichen Upload wechselt das\nDokument in den Status ERSTELLT und der Virenscan sowie die Dokumentvalidierung werden angestoßen. Ein Upload ist nur möglich, solange sich das Dokument im\nStatus ANGELEGT oder ERSTELLT befindet. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
         "operationId": "VerfahrenEinreichungenDokumenteController_UploadInhaltAsync",
@@ -2031,7 +2113,9 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "required": ["datei"],
+                "required": [
+                  "datei"
+                ],
                 "type": "object",
                 "properties": {
                   "datei": {
@@ -2051,6 +2135,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert ein Dokument im System.",
                   "$ref": "#/components/schemas/DokumentResponse"
                 },
                 "example": {
@@ -2242,14 +2327,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.write"]
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
           }
         ]
       }
     },
     "/api/v1/verfahren/{verfahren-id}/einreichungen/{einreichung-id}/dokumente/{id}/downloadlink": {
       "get": {
-        "tags": ["Dokumente"],
+        "tags": [
+          "Dokumente"
+        ],
         "summary": "Generiert einen temporären Download-Link für ein Dokument.",
         "description": "Generiert einen signierten Download-Link für ein Dokument im Objektspeicher mit einer konfigurierbaren Gültigkeitsdauer.",
         "operationId": "VerfahrenEinreichungenDokumenteController_GetDownloadLinkAsync",
@@ -2413,14 +2502,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.read"]
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
           }
         ]
       }
     },
     "/api/v1/verfahren/{verfahren-id}/einreichungen/{einreichung-id}/dokumente/{id}/validierungsstatus": {
       "get": {
-        "tags": ["Dokumente"],
+        "tags": [
+          "Dokumente"
+        ],
         "summary": "Ruft den Status eines spezifischen Dokuments ab.",
         "description": "Ruft den Validierungsstatus eines Dokuments ab, basierend auf den Validierungsnachrichten.\nGibt Gruen zurück, wenn keine Nachrichten vorhanden sind, Gelb bei Warnungen, Rot bei Fehlern, die eine Einreichung verhindern.",
         "operationId": "VerfahrenEinreichungenDokumenteController_GetStatusAsync",
@@ -2462,6 +2555,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert den Status und das Ergebnis eines Validierungslaufs sowie zugehörige Fehler.",
                   "$ref": "#/components/schemas/ValidierungsstatusResponse"
                 }
               }
@@ -2548,14 +2642,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.read"]
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
           }
         ]
       }
     },
     "/api/v1/verfahren/{verfahren-id}/einreichungen/{id}": {
       "get": {
-        "tags": ["Einreichungen"],
+        "tags": [
+          "Einreichungen"
+        ],
         "summary": "Ruft die Details einer spezifischen Einreichung anhand der angegebenen IDs ab.",
         "description": "Ruft eine Einreichung basierend auf der Verfahrens- und Einreichungs-ID ab und validiert, dass die Einreichung zum Verfahren gehört.",
         "operationId": "VerfahrenEinreichungenController_GetAsync",
@@ -2587,6 +2685,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert das Datenübertragungsobjekt (DTO) für eine Einreichung.",
                   "$ref": "#/components/schemas/EinreichungResponse"
                 }
               }
@@ -2673,12 +2772,16 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.read"]
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
           }
         ]
       },
       "patch": {
-        "tags": ["Einreichungen"],
+        "tags": [
+          "Einreichungen"
+        ],
         "summary": "Aktualisiert den Namen einer spezifischen Einreichung.",
         "description": "Aktualisiert den Namen einer bestehenden Einreichung. Eine Aktualisierung ist nur möglich, solange sich die Einreichung im Status ERSTELLT oder FEHLGESCHLAGEN\nbefindet. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
         "operationId": "VerfahrenEinreichungenController_UpdateAsync",
@@ -2718,6 +2821,7 @@
           "content": {
             "application/json": {
               "schema": {
+                "description": "Anfrage-DTO für das Aktualisieren des Namens einer Einreichung.",
                 "$ref": "#/components/schemas/EinreichungNameAendernRequest"
               }
             }
@@ -2729,6 +2833,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert das Datenübertragungsobjekt (DTO) für eine Einreichung.",
                   "$ref": "#/components/schemas/EinreichungResponse"
                 }
               }
@@ -2860,12 +2965,16 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.write"]
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
           }
         ]
       },
       "delete": {
-        "tags": ["Einreichungen"],
+        "tags": [
+          "Einreichungen"
+        ],
         "summary": "Löscht eine spezifische Einreichung basierend auf den angegebenen IDs.",
         "description": "Löscht eine Einreichung basierend auf der Verfahrens- und Einreichungs-ID. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
         "operationId": "VerfahrenEinreichungenController_DeleteAsync",
@@ -3030,14 +3139,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.write"]
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
           }
         ]
       }
     },
     "/api/v1/verfahren/{verfahren-id}/einreichungen": {
       "get": {
-        "tags": ["Einreichungen"],
+        "tags": [
+          "Einreichungen"
+        ],
         "summary": "Ruft alle Einreichungen für ein spezifisches Verfahren ab.",
         "description": "Gibt eine Liste aller Einreichungen für das angegebene Verfahren zurück.",
         "operationId": "VerfahrenEinreichungenController_GetAllAsync",
@@ -3059,6 +3172,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert die Antwort mit einer Liste von Einreichungen.",
                   "$ref": "#/components/schemas/EinreichungListeResponse"
                 }
               }
@@ -3145,12 +3259,16 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.read"]
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
           }
         ]
       },
       "post": {
-        "tags": ["Einreichungen"],
+        "tags": [
+          "Einreichungen"
+        ],
         "summary": "Erstellt eine neue Einreichung für das angegebene Verfahren.",
         "description": "Erstellt eine neue Einreichung basierend auf der Rolle des aktuellen Benutzers für das angegebene Verfahren.\nDer Name der Einreichung ist ein Pflichtfeld und wird unverändert übernommen.",
         "operationId": "VerfahrenEinreichungenController_CreateAsync",
@@ -3171,6 +3289,7 @@
           "content": {
             "application/json": {
               "schema": {
+                "description": "Anfrage-DTO für das Erstellen einer neuen Einreichung.",
                 "$ref": "#/components/schemas/EinreichungErstellenRequest"
               }
             }
@@ -3182,6 +3301,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert das Datenübertragungsobjekt (DTO) für die Erstellung einer Einreichung.",
                   "$ref": "#/components/schemas/EinreichungErstellenResponse"
                 }
               }
@@ -3268,14 +3388,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.write"]
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
           }
         ]
       }
     },
     "/api/v1/verfahren/{verfahren-id}/einreichungen/{id}/validierungsstatus": {
       "get": {
-        "tags": ["Einreichungen"],
+        "tags": [
+          "Einreichungen"
+        ],
         "summary": "Ruft den Status einer spezifischen Einreichung ab.",
         "description": "Ruft den Validierungsstatus einer Einreichung ab, basierend auf den Validierungsnachrichten der zugehörigen Dokumente. Gibt Gruen zurück, wenn keine\nNachrichten vorhanden sind, Gelb bei Warnungen, Rot bei Fehlern, die eine Einreichung verhindern.",
         "operationId": "VerfahrenEinreichungenController_GetStatusAsync",
@@ -3307,6 +3431,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert den Status und das Ergebnis eines Validierungslaufs sowie zugehörige Fehler.",
                   "$ref": "#/components/schemas/ValidierungsstatusResponse"
                 }
               }
@@ -3393,14 +3518,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.read"]
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
           }
         ]
       }
     },
     "/api/v1/verfahren/{verfahren-id}/einreichungen/{id}/einreichen": {
       "post": {
-        "tags": ["Einreichungen"],
+        "tags": [
+          "Einreichungen"
+        ],
         "summary": "Abschließen der Einreichung.",
         "description": "Einreichung wird vom Benutzer abgeschlossen. Über die Id kann im späteren Verlauf der Beleg zu der Einreichung abgerufen werden. Das Einreichen ist nur\nmöglich, solange sich die Einreichung im Status ERSTELLT oder FEHLGESCHLAGEN befindet.",
         "operationId": "VerfahrenEinreichungenController_EinreichenAsync",
@@ -3441,6 +3570,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Antwort auf die Aktion Einreichen.",
                   "$ref": "#/components/schemas/EinreichenResponse"
                 }
               }
@@ -3578,14 +3708,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.write"]
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
           }
         ]
       }
     },
     "/api/v1/verfahren/{verfahren-id}/einreichungen/{id}/xjustiz": {
       "get": {
-        "tags": ["Einreichungen"],
+        "tags": [
+          "Einreichungen"
+        ],
         "summary": "Ruft eine XJustiz Nachricht mit den aktuellen Grunddaten des Verfahrens ab.",
         "description": "Ruft eine XJustiz Nachricht basierend auf der angegebenen ID ab und lädt alle zugehörigen Entitäten (Gericht, Beteiligungen, Rollen und\nProzessbevollmächtigte).",
         "operationId": "VerfahrenEinreichungenController_GetXJustizAsync",
@@ -3704,12 +3838,16 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.read"]
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
           }
         ]
       },
       "post": {
-        "tags": ["Einreichungen"],
+        "tags": [
+          "Einreichungen"
+        ],
         "summary": "Erstellt ein XJustiz-Dokument für eine spezifische Einreichung.",
         "description": "Validiert die Einreichung anhand der angegebenen IDs und löst die Erstellung eines XJustiz-Dokuments aus.",
         "operationId": "VerfahrenEinreichungenController_CreateXJustizAsync",
@@ -3740,6 +3878,7 @@
           "content": {
             "application/json": {
               "schema": {
+                "description": "Anfrage-DTO für das Erzeugen der XJustiz-Nachricht einer Einreichung und deren Ablage als Dokument der Einreichung.",
                 "$ref": "#/components/schemas/XJustizErstellenRequest"
               }
             }
@@ -3863,14 +4002,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.write"]
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
           }
         ]
       }
     },
     "/api/v1/informationen/gerichte/{gericht-id}": {
       "get": {
-        "tags": ["Informationen"],
+        "tags": [
+          "Informationen"
+        ],
         "summary": "Ruft Informationen zu einem Gericht ab.",
         "description": "Ruft Informationen wie z.B. IBAN zu einem Gericht ab.",
         "operationId": "InformationenController_GetGerichtsinformationenAsync",
@@ -3892,6 +4035,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert Informationen zu einem Gericht.",
                   "$ref": "#/components/schemas/GerichtInformationResponse"
                 },
                 "example": {
@@ -3970,14 +4114,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.gericht.read"]
+            "oauth2": [
+              "kompla.gericht.read"
+            ]
           }
         ]
       }
     },
     "/api/v1/lift": {
       "get": {
-        "tags": ["Lift"],
+        "tags": [
+          "Lift"
+        ],
         "summary": "Führt eine Prüfung des Schluessels durch.",
         "description": "Führt eine Prüfung des Schluessels durch und liefert als Ergebnis Informationen zu dem Verfahren und den Lift.",
         "operationId": "LiftController_GetLiftAsync",
@@ -3986,6 +4134,7 @@
             "name": "lift-schluessel",
             "in": "header",
             "description": "Der Lift Schlüssel aus dem Header.",
+            "required": true,
             "schema": {
               "type": "string"
             }
@@ -3997,6 +4146,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert die Antwort auf die Lift-Schlüssel Überprüfung.",
                   "$ref": "#/components/schemas/LiftResponse"
                 }
               }
@@ -4095,22 +4245,26 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.lift"]
+            "oauth2": [
+              "kompla.verfahren.lift"
+            ]
           }
         ]
       }
     },
     "/api/v1/lift/{id}": {
       "post": {
-        "tags": ["Lift"],
+        "tags": [
+          "Lift"
+        ],
         "summary": "Hebt einen Benutzer für ein Verfahren an.",
-        "description": "Hebt einen Benutzer für ein Verfahren an. Der Benutzer erhält durch das Anheben zugriff auf Dokumente innerhalb des Verfahrens und kann selbst Einreichungen mit Dokumenten anlegen und einreichen.",
+        "description": "Hebt einen Benutzer für ein Verfahren an. Der Benutzer erhält durch das Anheben zugriff auf Dokumente innerhalb des Verfahrens und kann selbst Einreichungen\nmit Dokumenten anlegen und einreichen.",
         "operationId": "LiftController_PostLiftAsync",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "Eindeutige ID des Verfahrens.",
+            "description": "Eindeutige ID des Lifts.",
             "required": true,
             "schema": {
               "type": "string",
@@ -4132,6 +4286,7 @@
           "content": {
             "application/json": {
               "schema": {
+                "description": "Stellt eine Anfrage zum Akzeptieren eines Lifts dar.",
                 "$ref": "#/components/schemas/LiftRequest"
               }
             }
@@ -4143,6 +4298,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Ergebnis des Benutzer Lift.",
                   "$ref": "#/components/schemas/LiftDurchfuehrenResponse"
                 }
               }
@@ -4271,14 +4427,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.lift"]
+            "oauth2": [
+              "kompla.verfahren.lift"
+            ]
           }
         ]
       }
     },
     "/api/v1/verfahren/{id}": {
       "get": {
-        "tags": ["Verfahren"],
+        "tags": [
+          "Verfahren"
+        ],
         "summary": "Ruft ein Verfahren basierend auf der angegebenen ID ab.",
         "description": "Ruft ein Verfahren basierend auf der angegebenen ID ab und lädt alle zugehörigen Entitäten (Gericht, Beteiligungen, Rollen und Prozessbevollmächtigte).",
         "operationId": "VerfahrenController_GetAsync",
@@ -4300,6 +4460,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Stellt die Datenübertragungsobjektrepräsentation eines Verfahrens dar.",
                   "$ref": "#/components/schemas/VerfahrenResponse"
                 }
               }
@@ -4383,12 +4544,16 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.read"]
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
           }
         ]
       },
       "put": {
-        "tags": ["Verfahren"],
+        "tags": [
+          "Verfahren"
+        ],
         "summary": "Aktualisiert das Verfahren.",
         "description": "Aktualisiert das Verfahren. Eine Aktualisierung ist nur möglich, solange sich das Verfahren im Status 'ERSTELLT' befindet; sobald das Verfahren eingereicht\nwurde, sind keine Änderungen mehr möglich. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
         "operationId": "VerfahrenController_UpdateAsync",
@@ -4418,6 +4583,7 @@
           "content": {
             "application/json": {
               "schema": {
+                "description": "Repräsentiert ein Verfahren für die Übermittlung.",
                 "$ref": "#/components/schemas/VerfahrenAendernRequest"
               }
             }
@@ -4429,6 +4595,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Stellt die Datenübertragungsobjektrepräsentation eines Verfahrens dar.",
                   "$ref": "#/components/schemas/VerfahrenResponse"
                 }
               }
@@ -4557,12 +4724,16 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.write"]
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
           }
         ]
       },
       "delete": {
-        "tags": ["Verfahren"],
+        "tags": [
+          "Verfahren"
+        ],
         "summary": "Löscht ein Verfahren basierend auf der angegebenen ID.",
         "description": "Löscht ein Verfahren basierend auf der angegebenen ID. Überprüft den If-Match-Header für Optimistic Concurrency Control.",
         "operationId": "VerfahrenController_DeleteAsync",
@@ -4717,14 +4888,18 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.write"]
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
           }
         ]
       }
     },
     "/api/v1/verfahren": {
       "get": {
-        "tags": ["Verfahren"],
+        "tags": [
+          "Verfahren"
+        ],
         "summary": "Ruft eine Liste aller Verfahren basierend auf den angegebenen Parametern ab.",
         "description": "Ruft eine gefilterte Liste von Verfahren ab, basierend auf den angegebenen Abfrageparametern wie Suchbegriffen, Filtern und Sortierung.",
         "operationId": "VerfahrenController_GetAllAsync",
@@ -4779,6 +4954,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Repräsentiert die Antwort mit einer Liste von Verfahren.",
                   "$ref": "#/components/schemas/VerfahrenListeResponse"
                 }
               }
@@ -4847,12 +5023,16 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.read"]
+            "oauth2": [
+              "kompla.verfahren.read"
+            ]
           }
         ]
       },
       "post": {
-        "tags": ["Verfahren"],
+        "tags": [
+          "Verfahren"
+        ],
         "summary": "Erstellt ein neues Verfahren für einen Anwalt.",
         "description": "Erstellt ein neues Verfahren für den Benutzer mit der angegebenen Safe-ID. Die Safe-ID wird überprüft und bei Bedarf einem neuen Benutzer zugeordnet.",
         "operationId": "VerfahrenController_CreateAsync",
@@ -4861,6 +5041,7 @@
           "content": {
             "application/json": {
               "schema": {
+                "description": "Anfrage-DTO für das Erstellen eines neuen Verfahrens.",
                 "$ref": "#/components/schemas/VerfahrenErstellenRequest"
               }
             }
@@ -4872,6 +5053,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Stellt die Datenübertragungsobjektrepräsentation eines Verfahrens dar.",
                   "$ref": "#/components/schemas/VerfahrenResponse"
                 }
               }
@@ -4943,7 +5125,9 @@
         },
         "security": [
           {
-            "oauth2": ["kompla.verfahren.write"]
+            "oauth2": [
+              "kompla.verfahren.write"
+            ]
           }
         ]
       }
@@ -4955,48 +5139,64 @@
         "type": "object",
         "properties": {
           "anschriftstyp_id": {
-            "type": "string",
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Eindeutige ID des Anschriftstyps.",
-            "format": "uuid",
-            "nullable": true
+            "format": "uuid"
           },
           "strasse": {
-            "type": "string",
-            "description": "Straße der Anschrift.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Straße der Anschrift."
           },
           "hausnummer": {
-            "type": "string",
-            "description": "Hausnummer der Anschrift.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Hausnummer der Anschrift."
           },
           "postleitzahl": {
-            "type": "string",
-            "description": "Postleitzahl der Anschrift.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Postleitzahl der Anschrift."
           },
           "ort": {
-            "type": "string",
-            "description": "Ort der Anschrift.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Ort der Anschrift."
           },
           "postfachnummer": {
-            "type": "string",
-            "description": "Postfachnummer der Anschrift.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Postfachnummer der Anschrift."
           },
           "staat_id": {
-            "type": "string",
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Eindeutige ID des Staates.",
-            "format": "uuid",
-            "nullable": true
+            "format": "uuid"
           }
         },
         "additionalProperties": false,
         "description": "Repräsentiert eine Anschrift mit spezifischen Eigenschaften wie Straße, Postleitzahl und Ort."
       },
       "AnschriftResponse": {
-        "required": ["id"],
+        "required": [
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -5005,42 +5205,73 @@
             "format": "uuid"
           },
           "anschriftstyp": {
-            "$ref": "#/components/schemas/AnschriftstypResponse"
+            "oneOf": [
+              {
+                "description": "Typ der Anschrift.",
+                "$ref": "#/components/schemas/AnschriftstypResponse"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Typ der Anschrift."
           },
           "strasse": {
-            "type": "string",
-            "description": "Straße der Anschrift.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Straße der Anschrift."
           },
           "hausnummer": {
-            "type": "string",
-            "description": "Hausnummer der Anschrift.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Hausnummer der Anschrift."
           },
           "postleitzahl": {
-            "type": "string",
-            "description": "Postleitzahl der Anschrift.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Postleitzahl der Anschrift."
           },
           "ort": {
-            "type": "string",
-            "description": "Ort der Anschrift.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Ort der Anschrift."
           },
           "postfachnummer": {
-            "type": "string",
-            "description": "Postfachnummer der Anschrift.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Postfachnummer der Anschrift."
           },
           "staat": {
-            "$ref": "#/components/schemas/StaatResponse"
+            "oneOf": [
+              {
+                "description": "Staat der Anschrift.",
+                "$ref": "#/components/schemas/StaatResponse"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Staat der Anschrift."
           }
         },
         "additionalProperties": false,
         "description": "Repräsentiert eine Anschrift mit spezifischen Eigenschaften wie Straße, Postleitzahl und Ort."
       },
       "AnschriftstypListeResponse": {
-        "required": ["elemente", "list_version"],
+        "required": [
+          "elemente",
+          "list_version"
+        ],
         "type": "object",
         "properties": {
           "list_version": {
@@ -5050,6 +5281,7 @@
           "elemente": {
             "type": "array",
             "items": {
+              "description": "Repräsentiert ein Anschriftstyp mit spezifischen Attributen wie Wert und Code.",
               "$ref": "#/components/schemas/AnschriftstypResponse"
             },
             "description": "Die Liste der enthaltenen Codelistenelemente."
@@ -5059,7 +5291,10 @@
         "description": "Repräsentiert Anschriftstypen mit spezifischen Attributen wie Wert und Code."
       },
       "AnschriftstypResponse": {
-        "required": ["code", "wert"],
+        "required": [
+          "code",
+          "wert"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -5080,7 +5315,12 @@
         "description": "Repräsentiert ein Anschriftstyp mit spezifischen Attributen wie Wert und Code."
       },
       "BankverbindungResponse": {
-        "required": ["bank", "bic", "iban", "kontoinhaber"],
+        "required": [
+          "bank",
+          "bic",
+          "iban",
+          "kontoinhaber"
+        ],
         "type": "object",
         "properties": {
           "bank": {
@@ -5104,12 +5344,15 @@
         "description": "Repräsentiert eine Bankverbindung des Gerichts."
       },
       "BelegListeResponse": {
-        "required": ["elemente"],
+        "required": [
+          "elemente"
+        ],
         "type": "object",
         "properties": {
           "elemente": {
             "type": "array",
             "items": {
+              "description": "Beleg der Einreichung.",
               "$ref": "#/components/schemas/BelegResponse"
             },
             "description": "Die Belege des Verfahrens."
@@ -5139,9 +5382,19 @@
             "format": "date-time"
           },
           "typ": {
-            "$ref": "#/components/schemas/BelegTyp"
+            "oneOf": [
+              {
+                "description": "Typ des Beleges zur Klassifizierung.",
+                "$ref": "#/components/schemas/BelegTyp"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Typ des Beleges zur Klassifizierung."
           },
           "status": {
+            "description": "Status eines Beleges der Einreichung.",
             "$ref": "#/components/schemas/BelegStatus"
           },
           "einreichung_id": {
@@ -5150,42 +5403,59 @@
             "format": "uuid"
           },
           "anzeigename": {
-            "type": "string",
-            "description": "Sprechender Anzeigename des Beleges, z.B. \"Eingangsbestätigung\".",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Sprechender Anzeigename des Beleges, z.B. \"Eingangsbestätigung\"."
           },
           "dateiname": {
-            "type": "string",
-            "description": "Dateiname des Beleges inkl. Endung, z.B. \"eingangsbestaetigung.pdf\".",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Dateiname des Beleges inkl. Endung, z.B. \"eingangsbestaetigung.pdf\"."
           },
           "content_type": {
-            "type": "string",
-            "description": "MIME-Type des Beleges, z.B. \"application/pdf\".",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "MIME-Type des Beleges, z.B. \"application/pdf\"."
           },
           "size_in_bytes": {
-            "type": "integer",
+            "type": [
+              "null",
+              "integer"
+            ],
             "description": "Größe des Beleges in Bytes.",
-            "format": "int64",
-            "nullable": true
+            "format": "int64"
           }
         },
         "additionalProperties": false,
         "description": "Beleg der Einreichung."
       },
       "BelegStatus": {
-        "enum": ["IN_BEARBEITUNG", "ERSTELLT"],
+        "enum": [
+          "IN_BEARBEITUNG",
+          "ERSTELLT"
+        ],
         "type": "string",
         "description": "Status eines Beleges der Einreichung."
       },
       "BelegTyp": {
-        "enum": ["PROTOKOLL", "NACHWEIS"],
+        "enum": [
+          "PROTOKOLL",
+          "NACHWEIS"
+        ],
         "type": "string",
         "description": "Typ eines Beleges der Einreichung."
       },
       "BeteiligteRequest": {
-        "required": ["beteiligtenart", "rollen"],
+        "required": [
+          "beteiligtenart",
+          "rollen"
+        ],
         "type": "object",
         "properties": {
           "beteiligtenart": {
@@ -5194,25 +5464,32 @@
           "rollen": {
             "type": "array",
             "items": {
+              "description": "Bezeichnung und Kennzeichnung der Rolle im Verfahren.",
               "$ref": "#/components/schemas/RollenRequest"
             },
             "description": "Enthält die Rollen, die einer beteiligten Person oder Organisation zugewiesen sind."
           },
           "anschriften": {
-            "type": "array",
+            "type": [
+              "null",
+              "array"
+            ],
             "items": {
+              "description": "Repräsentiert eine Anschrift mit spezifischen Eigenschaften wie Straße, Postleitzahl und Ort.",
               "$ref": "#/components/schemas/AnschriftRequest"
             },
-            "description": "Gibt die Anschriften der beteiligten Person im Verfahren an.",
-            "nullable": true
+            "description": "Gibt die Anschriften der beteiligten Person im Verfahren an."
           },
           "kommunikationsanschluesse": {
-            "type": "array",
+            "type": [
+              "null",
+              "array"
+            ],
             "items": {
+              "description": "Repräsentiert eine Kommunikationsanschluss.",
               "$ref": "#/components/schemas/KommunikationsanschlussRequest"
             },
-            "description": "Gibt die Kommunikationsanschlüsse der beteiligten Person im Verfahren an.",
-            "nullable": true
+            "description": "Gibt die Kommunikationsanschlüsse der beteiligten Person im Verfahren an."
           }
         },
         "additionalProperties": false,
@@ -5227,7 +5504,10 @@
         }
       },
       "BeteiligteResponse": {
-        "required": ["beteiligtenart", "rollen"],
+        "required": [
+          "beteiligtenart",
+          "rollen"
+        ],
         "type": "object",
         "properties": {
           "beteiligtenart": {
@@ -5241,25 +5521,32 @@
           "rollen": {
             "type": "array",
             "items": {
+              "description": "Bezeichnung und Kennzeichnung der Rolle im Verfahren.",
               "$ref": "#/components/schemas/RollenResponse"
             },
             "description": "Enthält die Rollen, die einer beteiligten Person oder Organisation zugewiesen sind."
           },
           "anschriften": {
-            "type": "array",
+            "type": [
+              "null",
+              "array"
+            ],
             "items": {
+              "description": "Repräsentiert eine Anschrift mit spezifischen Eigenschaften wie Straße, Postleitzahl und Ort.",
               "$ref": "#/components/schemas/AnschriftResponse"
             },
-            "description": "Gibt die Anschriften der beteiligten Person im Verfahren an.",
-            "nullable": true
+            "description": "Gibt die Anschriften der beteiligten Person im Verfahren an."
           },
           "telekommunikation": {
-            "type": "array",
+            "type": [
+              "null",
+              "array"
+            ],
             "items": {
+              "description": "Repräsentiert einen Kommunikationsanschluss.",
               "$ref": "#/components/schemas/KommunikationsanschlussResponse"
             },
-            "description": "Gibt die Kommunikationsanschlüsse der beteiligten Person im Verfahren an.",
-            "nullable": true
+            "description": "Gibt die Kommunikationsanschlüsse der beteiligten Person im Verfahren an."
           }
         },
         "additionalProperties": false,
@@ -5274,7 +5561,10 @@
         }
       },
       "ContentDispositionType": {
-        "enum": ["INLINE", "ATTACHMENT"],
+        "enum": [
+          "INLINE",
+          "ATTACHMENT"
+        ],
         "type": "string",
         "description": "Bestimmt das Verhalten des Browsers beim Abrufen der Datei über den generierten Download-Link."
       },
@@ -5282,37 +5572,56 @@
         "type": "object",
         "properties": {
           "typ": {
-            "$ref": "#/components/schemas/DokumentType"
+            "oneOf": [
+              {
+                "description": "Der neue Typ des Dokuments.",
+                "$ref": "#/components/schemas/DokumentType"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Der neue Typ des Dokuments."
           },
           "anzeigename": {
             "maxLength": 256,
             "minLength": 1,
-            "type": "string",
-            "description": "Der neue Anzeigename des Dokuments.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Der neue Anzeigename des Dokuments."
           },
           "sichtbarkeit_alle": {
-            "type": "boolean",
-            "description": "Legt die Sichtbarkeit des Dokuments fest. true: Das Dokument ist für alle Beteiligten der Akte sichtbar. false: Das Dokument ist zunächst nur für die\nzugeordnete Partei und das Gericht sichtbar. Das Gericht kann die Sichtbarkeit nachträglich ändern.",
-            "nullable": true
+            "type": [
+              "null",
+              "boolean"
+            ],
+            "description": "Legt die Sichtbarkeit des Dokuments fest. true: Das Dokument ist für alle Beteiligten der Akte sichtbar. false: Das Dokument ist zunächst nur für die\nzugeordnete Partei und das Gericht sichtbar. Das Gericht kann die Sichtbarkeit nachträglich ändern."
           }
         },
         "additionalProperties": false,
         "description": "Anfrage-DTO für das Ändern der Metadaten eines Dokuments. Es wird nur geändert, was übermittelt wird; nicht übermittelte Felder bleiben unverändert. Mindestens\nein Feld muss angegeben werden."
       },
       "DokumentErstellenRequest": {
-        "required": ["sichtbarkeit_alle", "typ"],
+        "required": [
+          "sichtbarkeit_alle",
+          "typ"
+        ],
         "type": "object",
         "properties": {
           "typ": {
+            "description": "Typ des Dokuments.",
             "$ref": "#/components/schemas/DokumentType"
           },
           "anzeigename": {
             "maxLength": 256,
             "minLength": 1,
-            "type": "string",
-            "description": "Anzeigename des Dokuments. Wird kein Anzeigename angegeben, wird beim Upload des Binärinhalts der Dateiname übernommen.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Anzeigename des Dokuments. Wird kein Anzeigename angegeben, wird beim Upload des Binärinhalts der Dateiname übernommen."
           },
           "sichtbarkeit_alle": {
             "type": "boolean",
@@ -5339,6 +5648,7 @@
             "format": "uuid"
           },
           "status": {
+            "description": "Definiert den Status eines Dokuments.",
             "$ref": "#/components/schemas/DokumentStatus"
           },
           "anzeigename": {
@@ -5346,6 +5656,7 @@
             "description": "Anzeigename des Dokuments."
           },
           "typ": {
+            "description": "Typ des Dokuments.",
             "$ref": "#/components/schemas/DokumentType"
           },
           "erstellt_von": {
@@ -5367,12 +5678,15 @@
         "description": "Repräsentiert das Datenübertragungsobjekt (DTO) für die Erstellung eines Dokuments."
       },
       "DokumentListeResponse": {
-        "required": ["elemente"],
+        "required": [
+          "elemente"
+        ],
         "type": "object",
         "properties": {
           "elemente": {
             "type": "array",
             "items": {
+              "description": "Repräsentiert ein Dokument im System.",
               "$ref": "#/components/schemas/DokumentResponse"
             },
             "description": "Gibt die Liste der enthaltenen Dokumente zurück."
@@ -5399,58 +5713,75 @@
             "format": "uuid"
           },
           "status": {
+            "description": "Definiert den Status eines Dokuments.",
             "$ref": "#/components/schemas/DokumentStatus"
           },
           "validierungslauf_status": {
+            "description": "Definiert den Status eines Validierungslaufs.",
             "$ref": "#/components/schemas/ValidierungslaufStatus"
           },
           "dateiname": {
-            "type": "string",
-            "description": "Dateiname des Dokuments inkl. Endung, z.B. \"klageschrift.pdf\".\nSteht erst zur Verfügung, wenn der Binärinhalt hochgeladen wurde; andernfalls null.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Dateiname des Dokuments inkl. Endung, z.B. \"klageschrift.pdf\".\nSteht erst zur Verfügung, wenn der Binärinhalt hochgeladen wurde; andernfalls null."
           },
           "anzeigename": {
             "type": "string",
             "description": "Anzeigename des Dokuments."
           },
           "size_in_bytes": {
-            "type": "integer",
+            "type": [
+              "null",
+              "integer"
+            ],
             "description": "Größe des Dokuments in Bytes.\nSteht erst zur Verfügung, wenn der Binärinhalt hochgeladen wurde; andernfalls null.",
-            "format": "int64",
-            "nullable": true
+            "format": "int64"
           },
           "content_type": {
-            "type": "string",
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "MIME-Type des Dokuments, z.B. \"application/pdf\".\nSteht erst zur Verfügung, wenn der Binärinhalt hochgeladen wurde; andernfalls null.",
-            "nullable": true,
             "example": "application/pdf"
           },
           "hash": {
-            "type": "string",
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Hashwert des Dokuments in hexadezimaler Notation. Dient dem Integritätsnachweis.\nSteht erst zur Verfügung, wenn das Dokument vollständig hochgeladen wurde; andernfalls null.",
-            "nullable": true,
             "example": "46d9edbb427e5275a6845cd982fab0b5d2381878d6d66b3f4c1500eecfa96a27bf3118da755bf56af3505b9606ec8135"
           },
           "hash_algorithmus": {
-            "type": "string",
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Verfahren, mit dem der Hashwert berechnet wurde. Plattformweit wird SHA3-384 verwendet.\nSteht erst zur Verfügung, wenn das Dokument vollständig hochgeladen wurde; andernfalls null.",
-            "nullable": true,
             "example": "SHA3-384"
           },
           "typ": {
+            "description": "Typ des Dokuments.",
             "$ref": "#/components/schemas/DokumentType"
           },
           "gesendet_am": {
-            "type": "string",
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Das Datum, an dem die Einreichung gesendet wurde.",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           },
           "eingereicht_am": {
-            "type": "string",
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Datum der Einreichung im Verfahren.",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           },
           "erstellt_von": {
             "type": "string",
@@ -5484,12 +5815,20 @@
         "description": "Definiert den Status eines Dokuments."
       },
       "DokumentType": {
-        "enum": ["ANHANG", "SCHRIFTSTUECK", "SIGNATURDATEI", "XJUSTIZ"],
+        "enum": [
+          "ANHANG",
+          "SCHRIFTSTUECK",
+          "SIGNATURDATEI",
+          "XJUSTIZ"
+        ],
         "type": "string",
         "description": "Typ des Dokuments."
       },
       "DokumentklasseListeResponse": {
-        "required": ["elemente", "list_version"],
+        "required": [
+          "elemente",
+          "list_version"
+        ],
         "type": "object",
         "properties": {
           "list_version": {
@@ -5499,6 +5838,7 @@
           "elemente": {
             "type": "array",
             "items": {
+              "description": "Repräsentiert eine Dokumentklasse mit spezifischen Attributen wie Wert und Code.",
               "$ref": "#/components/schemas/DokumentklasseResponse"
             },
             "description": "Die Liste der enthaltenen Codelistenelemente."
@@ -5508,7 +5848,10 @@
         "description": "Repräsentiert Dokumentklassen mit spezifischen Attributen wie Wert und Code."
       },
       "DokumentklasseResponse": {
-        "required": ["code", "wert"],
+        "required": [
+          "code",
+          "wert"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -5529,7 +5872,9 @@
         "description": "Repräsentiert eine Dokumentklasse mit spezifischen Attributen wie Wert und Code."
       },
       "EinreichenResponse": {
-        "required": ["beleg_id"],
+        "required": [
+          "beleg_id"
+        ],
         "type": "object",
         "properties": {
           "beleg_id": {
@@ -5542,7 +5887,9 @@
         "description": "Antwort auf die Aktion Einreichen."
       },
       "EinreichungErstellenRequest": {
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "type": "object",
         "properties": {
           "name": {
@@ -5555,7 +5902,12 @@
         "description": "Anfrage-DTO für das Erstellen einer neuen Einreichung."
       },
       "EinreichungErstellenResponse": {
-        "required": ["erstellt_am", "erstellt_von", "name", "status"],
+        "required": [
+          "erstellt_am",
+          "erstellt_von",
+          "name",
+          "status"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -5578,6 +5930,7 @@
             "format": "date-time"
           },
           "status": {
+            "description": "Repräsentiert den Status einer Einreichung.",
             "$ref": "#/components/schemas/EinreichungStatus"
           }
         },
@@ -5585,12 +5938,15 @@
         "description": "Repräsentiert das Datenübertragungsobjekt (DTO) für die Erstellung einer Einreichung."
       },
       "EinreichungListeResponse": {
-        "required": ["elemente"],
+        "required": [
+          "elemente"
+        ],
         "type": "object",
         "properties": {
           "elemente": {
             "type": "array",
             "items": {
+              "description": "Repräsentiert das Datenübertragungsobjekt (DTO) für eine Einreichung.",
               "$ref": "#/components/schemas/EinreichungResponse"
             },
             "description": "Die Liste der enthaltenen Einreichungen."
@@ -5600,7 +5956,9 @@
         "description": "Repräsentiert die Antwort mit einer Liste von Einreichungen."
       },
       "EinreichungNameAendernRequest": {
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "type": "object",
         "properties": {
           "name": {
@@ -5642,27 +6000,35 @@
             "format": "date-time"
           },
           "status": {
+            "description": "Repräsentiert den Status einer Einreichung.",
             "$ref": "#/components/schemas/EinreichungStatus"
           },
           "beantragt_am": {
-            "type": "string",
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Datum, an dem die Einreichung beantragt wurde.",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           },
           "gesendet_am": {
-            "type": "string",
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Das Datum, an dem die Einreichung gesendet wurde.",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           },
           "eingereicht_am": {
-            "type": "string",
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Datum der Einreichung im Verfahren.",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           },
           "validierungs_status": {
+            "description": "Status der Einreichungsvalidierung.",
             "$ref": "#/components/schemas/ValidierungslaufStatus"
           }
         },
@@ -5683,12 +6049,15 @@
         "description": "Repräsentiert den Status einer Einreichung."
       },
       "GerichtInformationResponse": {
-        "required": ["bankverbindungen"],
+        "required": [
+          "bankverbindungen"
+        ],
         "type": "object",
         "properties": {
           "bankverbindungen": {
             "type": "array",
             "items": {
+              "description": "Repräsentiert eine Bankverbindung des Gerichts.",
               "$ref": "#/components/schemas/BankverbindungResponse"
             },
             "description": "Bankverbindungen des Gerichts."
@@ -5698,7 +6067,10 @@
         "description": "Repräsentiert Informationen zu einem Gericht."
       },
       "GerichtListeResponse": {
-        "required": ["elemente", "list_version"],
+        "required": [
+          "elemente",
+          "list_version"
+        ],
         "type": "object",
         "properties": {
           "list_version": {
@@ -5708,6 +6080,7 @@
           "elemente": {
             "type": "array",
             "items": {
+              "description": "Repräsentiert ein Gericht mit spezifischen Attributen wie Wert und Code.",
               "$ref": "#/components/schemas/GerichtResponse"
             },
             "description": "Die Liste der enthaltenen Codelistenelemente."
@@ -5717,7 +6090,10 @@
         "description": "Repräsentiert Gerichte mit spezifischen Attributen wie Wert und Code."
       },
       "GerichtResponse": {
-        "required": ["code", "wert"],
+        "required": [
+          "code",
+          "wert"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -5738,7 +6114,10 @@
         "description": "Repräsentiert ein Gericht mit spezifischen Attributen wie Wert und Code."
       },
       "KanzleiformListeResponse": {
-        "required": ["elemente", "list_version"],
+        "required": [
+          "elemente",
+          "list_version"
+        ],
         "type": "object",
         "properties": {
           "list_version": {
@@ -5748,6 +6127,7 @@
           "elemente": {
             "type": "array",
             "items": {
+              "description": "Repräsentiert eine Kanzleiform mit spezifischen Attributen wie Wert und Code.",
               "$ref": "#/components/schemas/KanzleiformResponse"
             },
             "description": "Die Liste der enthaltenen Codelistenelemente."
@@ -5757,7 +6137,10 @@
         "description": "Repräsentiert Kanzleiformen mit spezifischen Attributen wie Wert und Code."
       },
       "KanzleiformResponse": {
-        "required": ["code", "wert"],
+        "required": [
+          "code",
+          "wert"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -5778,7 +6161,10 @@
         "description": "Repräsentiert eine Kanzleiform mit spezifischen Attributen wie Wert und Code."
       },
       "KommunikationsanschlussRequest": {
-        "required": ["telekommunikationsart_id", "verbindung"],
+        "required": [
+          "telekommunikationsart_id",
+          "verbindung"
+        ],
         "type": "object",
         "properties": {
           "telekommunikationsart_id": {
@@ -5796,7 +6182,11 @@
         "description": "Repräsentiert eine Kommunikationsanschluss."
       },
       "KommunikationsanschlussResponse": {
-        "required": ["id", "telekommunikationsart", "verbindung"],
+        "required": [
+          "id",
+          "telekommunikationsart",
+          "verbindung"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -5805,6 +6195,7 @@
             "format": "uuid"
           },
           "telekommunikationsart": {
+            "description": "Art des Kommunikationskanals der Verbindung.",
             "$ref": "#/components/schemas/TelekommunikationsartResponse"
           },
           "verbindung": {
@@ -5816,7 +6207,9 @@
         "description": "Repräsentiert einen Kommunikationsanschluss."
       },
       "LiftDurchfuehrenResponse": {
-        "required": ["verfahren_id"],
+        "required": [
+          "verfahren_id"
+        ],
         "type": "object",
         "properties": {
           "verfahren_id": {
@@ -5829,7 +6222,10 @@
         "description": "Ergebnis des Benutzer Lift."
       },
       "LiftRequest": {
-        "required": ["lift_schluessel", "safe_id"],
+        "required": [
+          "lift_schluessel",
+          "safe_id"
+        ],
         "type": "object",
         "properties": {
           "lift_schluessel": {
@@ -5847,7 +6243,11 @@
         "description": "Stellt eine Anfrage zum Akzeptieren eines Lifts dar."
       },
       "LiftResponse": {
-        "required": ["beteiligung_id", "id", "verfahren"],
+        "required": [
+          "beteiligung_id",
+          "id",
+          "verfahren"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -5861,6 +6261,7 @@
             "format": "uuid"
           },
           "verfahren": {
+            "description": "Verfahren für den der Lift durchgeführt wird.",
             "$ref": "#/components/schemas/VerfahrenResponse"
           }
         },
@@ -5870,26 +6271,35 @@
       "NatuerlichePersonRequest": {
         "allOf": [
           {
+            "description": "Repräsentiert eine beteiligte Person oder Organisation im Verfahren.",
             "$ref": "#/components/schemas/BeteiligteRequest"
           },
           {
-            "required": ["nachname"],
+            "required": [
+              "nachname"
+            ],
             "type": "object",
             "properties": {
               "vorname": {
-                "type": "string",
-                "description": "Vorname/n der Person.",
-                "nullable": true
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "description": "Vorname/n der Person."
               },
               "titel": {
-                "type": "string",
-                "description": "Titel der Person.",
-                "nullable": true
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "description": "Titel der Person."
               },
               "namensvorsatz": {
-                "type": "string",
-                "description": "Namensvorsatz der Person.",
-                "nullable": true
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "description": "Namensvorsatz der Person."
               },
               "nachname": {
                 "minLength": 1,
@@ -5905,26 +6315,35 @@
       "NatuerlichePersonResponse": {
         "allOf": [
           {
+            "description": "Repräsentiert eine beteiligte Person oder Organisation im Verfahren.",
             "$ref": "#/components/schemas/BeteiligteResponse"
           },
           {
-            "required": ["nachname"],
+            "required": [
+              "nachname"
+            ],
             "type": "object",
             "properties": {
               "vorname": {
-                "type": "string",
-                "description": "Vorname/n der Person.",
-                "nullable": true
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "description": "Vorname/n der Person."
               },
               "titel": {
-                "type": "string",
-                "description": "Titel der Person.",
-                "nullable": true
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "description": "Titel der Person."
               },
               "namensvorsatz": {
-                "type": "string",
-                "description": "Namensvorsatz der Person.",
-                "nullable": true
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "description": "Namensvorsatz der Person."
               },
               "nachname": {
                 "type": "string",
@@ -5942,7 +6361,9 @@
             "$ref": "#/components/schemas/BeteiligteRequest"
           },
           {
-            "required": ["bezeichnung"],
+            "required": [
+              "bezeichnung"
+            ],
             "type": "object",
             "properties": {
               "bezeichnung": {
@@ -5962,7 +6383,9 @@
             "$ref": "#/components/schemas/BeteiligteResponse"
           },
           {
-            "required": ["bezeichnung"],
+            "required": [
+              "bezeichnung"
+            ],
             "type": "object",
             "properties": {
               "bezeichnung": {
@@ -5979,25 +6402,35 @@
         "type": "object",
         "properties": {
           "type": {
-            "type": "string",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "title": {
-            "type": "string",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
           },
           "detail": {
-            "type": "string",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "instance": {
-            "type": "string",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ]
           }
         },
         "additionalProperties": {}
@@ -6008,7 +6441,10 @@
             "$ref": "#/components/schemas/BeteiligteRequest"
           },
           {
-            "required": ["bezeichnung", "kanzleiform_id"],
+            "required": [
+              "bezeichnung",
+              "kanzleiform_id"
+            ],
             "type": "object",
             "properties": {
               "bezeichnung": {
@@ -6017,10 +6453,12 @@
                 "description": "Offizieller Name der Rechtsanwaltskanzlei."
               },
               "rechtsform_id": {
-                "type": "string",
+                "type": [
+                  "null",
+                  "string"
+                ],
                 "description": "Eindeutige ID der Rechtsform.",
-                "format": "uuid",
-                "nullable": true
+                "format": "uuid"
               },
               "kanzleiform_id": {
                 "type": "string",
@@ -6039,7 +6477,10 @@
             "$ref": "#/components/schemas/BeteiligteResponse"
           },
           {
-            "required": ["bezeichnung", "kanzleiform"],
+            "required": [
+              "bezeichnung",
+              "kanzleiform"
+            ],
             "type": "object",
             "properties": {
               "bezeichnung": {
@@ -6047,9 +6488,11 @@
                 "description": "Offizieller Name der Rechtsanwaltskanzlei."
               },
               "rechtsform": {
+                "description": "Rechtsform der Rechtsanwaltskanzlei.",
                 "$ref": "#/components/schemas/RechtsformResponse"
               },
               "kanzleiform": {
+                "description": "Kanzleiform der Rechtsanwaltskanzlei.",
                 "$ref": "#/components/schemas/KanzleiformResponse"
               }
             },
@@ -6059,7 +6502,10 @@
         "description": "Angaben zu einer Rechtsanwaltskanzlei."
       },
       "RechtsformListeResponse": {
-        "required": ["elemente", "list_version"],
+        "required": [
+          "elemente",
+          "list_version"
+        ],
         "type": "object",
         "properties": {
           "list_version": {
@@ -6069,6 +6515,7 @@
           "elemente": {
             "type": "array",
             "items": {
+              "description": "Repräsentiert eine Rechtsform mit spezifischen Attributen wie Wert und Code.",
               "$ref": "#/components/schemas/RechtsformResponse"
             },
             "description": "Die Liste der enthaltenen Codelistenelemente."
@@ -6078,7 +6525,10 @@
         "description": "Repräsentiert Rechtsformen mit spezifischen Attributen wie Wert und Code."
       },
       "RechtsformResponse": {
-        "required": ["code", "wert"],
+        "required": [
+          "code",
+          "wert"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -6099,13 +6549,18 @@
         "description": "Repräsentiert eine Rechtsform mit spezifischen Attributen wie Wert und Code."
       },
       "RollenRequest": {
-        "required": ["rollenbezeichnung_id"],
+        "required": [
+          "referenz",
+          "rollenbezeichnung_id"
+        ],
         "type": "object",
         "properties": {
           "rollennummer": {
-            "type": "string",
-            "description": "Eindeutige Kennziffer der Rolle innerhalb des Verfahrens.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Eindeutige Kennziffer der Rolle innerhalb des Verfahrens."
           },
           "rollenbezeichnung_id": {
             "type": "string",
@@ -6113,21 +6568,28 @@
             "format": "uuid"
           },
           "geschaeftszeichen": {
-            "type": "string",
-            "description": "Eigenes Geschäftszeichen des Beteiligten in dieser Rolle.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Eigenes Geschäftszeichen des Beteiligten in dieser Rolle."
           },
           "referenz": {
-            "type": "string",
-            "description": "Verknüpfung dieser Rolle mit einer anderen Rolle im Verfahren.",
-            "nullable": true
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Verknüpfungen dieser Rolle mit anderen Rollen im Verfahren, jeweils über deren Rollennummer."
           }
         },
         "additionalProperties": false,
         "description": "Bezeichnung und Kennzeichnung der Rolle im Verfahren."
       },
       "RollenResponse": {
-        "required": ["rollenbezeichnung"],
+        "required": [
+          "referenz",
+          "rollenbezeichnung"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -6136,29 +6598,39 @@
             "format": "uuid"
           },
           "rollennummer": {
-            "type": "string",
-            "description": "Eindeutige Kennziffer der Rolle innerhalb des Verfahrens.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Eindeutige Kennziffer der Rolle innerhalb des Verfahrens."
           },
           "rollenbezeichnung": {
+            "description": "Fachliche Bezeichnung der Rolle.",
             "$ref": "#/components/schemas/RollenbezeichnungResponse"
           },
           "geschaeftszeichen": {
-            "type": "string",
-            "description": "Eigenes Geschäftszeichen des Beteiligten in dieser Rolle.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Eigenes Geschäftszeichen des Beteiligten in dieser Rolle."
           },
           "referenz": {
-            "type": "string",
-            "description": "Verknüpfung dieser Rolle mit einer anderen Rolle im Verfahren.",
-            "nullable": true
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Verknüpfungen dieser Rolle mit anderen Rollen im Verfahren, jeweils über deren Rollennummer."
           }
         },
         "additionalProperties": false,
         "description": "Bezeichnung und Kennzeichnung der Rolle im Verfahren."
       },
       "RollenbezeichnungListeResponse": {
-        "required": ["elemente", "list_version"],
+        "required": [
+          "elemente",
+          "list_version"
+        ],
         "type": "object",
         "properties": {
           "list_version": {
@@ -6168,6 +6640,7 @@
           "elemente": {
             "type": "array",
             "items": {
+              "description": "Repräsentiert eine Rolle mit spezifischen Attributen wie Wert und Code.",
               "$ref": "#/components/schemas/RollenbezeichnungResponse"
             },
             "description": "Die Liste der enthaltenen Codelistenelemente."
@@ -6177,7 +6650,10 @@
         "description": "Repräsentiert Rollenbezeichnungen mit spezifischen Attributen wie Wert und Code."
       },
       "RollenbezeichnungResponse": {
-        "required": ["code", "wert"],
+        "required": [
+          "code",
+          "wert"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -6198,7 +6674,10 @@
         "description": "Repräsentiert eine Rolle mit spezifischen Attributen wie Wert und Code."
       },
       "StaatListeResponse": {
-        "required": ["elemente", "list_version"],
+        "required": [
+          "elemente",
+          "list_version"
+        ],
         "type": "object",
         "properties": {
           "list_version": {
@@ -6208,6 +6687,7 @@
           "elemente": {
             "type": "array",
             "items": {
+              "description": "Repräsentiert einen Staat mit spezifischen Attributen wie Wert und Code.",
               "$ref": "#/components/schemas/StaatResponse"
             },
             "description": "Die Liste der enthaltenen Codelistenelemente."
@@ -6217,7 +6697,10 @@
         "description": "Repräsentiert Staaten mit spezifischen Attributen wie Wert und Code."
       },
       "StaatResponse": {
-        "required": ["code", "wert"],
+        "required": [
+          "code",
+          "wert"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -6238,7 +6721,10 @@
         "description": "Repräsentiert einen Staat mit spezifischen Attributen wie Wert und Code."
       },
       "TelekommunikationsartListeResponse": {
-        "required": ["elemente", "list_version"],
+        "required": [
+          "elemente",
+          "list_version"
+        ],
         "type": "object",
         "properties": {
           "list_version": {
@@ -6248,6 +6734,7 @@
           "elemente": {
             "type": "array",
             "items": {
+              "description": "Repräsentiert eine Telekommunikationsart mit spezifischen Attributen wie Wert und Code.",
               "$ref": "#/components/schemas/TelekommunikationsartResponse"
             },
             "description": "Die Liste der enthaltenen Codelistenelemente."
@@ -6257,7 +6744,10 @@
         "description": "Repräsentiert Telekommunikationsarten mit spezifischen Attributen wie Wert und Code."
       },
       "TelekommunikationsartResponse": {
-        "required": ["code", "wert"],
+        "required": [
+          "code",
+          "wert"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -6274,9 +6764,11 @@
             "description": "Der eindeutige Code der Telekommunikationsart."
           },
           "beschreibung": {
-            "type": "string",
-            "description": "Die Beschreibung der Telekommunikationsart.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Die Beschreibung der Telekommunikationsart."
           }
         },
         "additionalProperties": false,
@@ -6286,25 +6778,35 @@
         "type": "object",
         "properties": {
           "type": {
-            "type": "string",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "title": {
-            "type": "string",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
           },
           "detail": {
-            "type": "string",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "instance": {
-            "type": "string",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ]
           },
           "errors": {
             "type": "object",
@@ -6319,23 +6821,38 @@
         "additionalProperties": {}
       },
       "ValidierungslaufStatus": {
-        "enum": ["AUSSTEHEND", "LAEUFT", "ABGESCHLOSSEN"],
+        "enum": [
+          "AUSSTEHEND",
+          "LAEUFT",
+          "ABGESCHLOSSEN"
+        ],
         "type": "string",
         "description": "Definiert den Status eines Validierungslaufs."
       },
       "ValidierungsstatusErgebnis": {
-        "enum": ["NICHT_VERFUEGBAR", "GRUEN", "GELB", "ROT"],
+        "enum": [
+          "NICHT_VERFUEGBAR",
+          "GRUEN",
+          "GELB",
+          "ROT"
+        ],
         "type": "string",
         "description": "Definiert das Ergebnis des Validierungsstatus."
       },
       "ValidierungsstatusResponse": {
-        "required": ["ergebnis", "fehler", "validierungslauf_status"],
+        "required": [
+          "ergebnis",
+          "fehler",
+          "validierungslauf_status"
+        ],
         "type": "object",
         "properties": {
           "validierungslauf_status": {
+            "description": "Definiert den Status eines Validierungslaufs.",
             "$ref": "#/components/schemas/ValidierungslaufStatus"
           },
           "ergebnis": {
+            "description": "Definiert das Ergebnis des Validierungsstatus.",
             "$ref": "#/components/schemas/ValidierungsstatusErgebnis"
           },
           "fehler": {
@@ -6350,7 +6867,10 @@
         "description": "Repräsentiert den Status und das Ergebnis eines Validierungslaufs sowie zugehörige Fehler."
       },
       "VerfahrenAendernRequest": {
-        "required": ["gericht_id", "verfahrensgegenstand"],
+        "required": [
+          "gericht_id",
+          "verfahrensgegenstand"
+        ],
         "type": "object",
         "properties": {
           "verfahrensgegenstand": {
@@ -6359,9 +6879,11 @@
             "description": "Verfahrensgegenstand des Verfahrens."
           },
           "kurzrubrum": {
-            "type": "string",
-            "description": "Kurzrubrum des Verfahrens.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Kurzrubrum des Verfahrens."
           },
           "gericht_id": {
             "type": "string",
@@ -6369,10 +6891,14 @@
             "format": "uuid"
           },
           "beteiligungen": {
-            "type": "array",
+            "type": [
+              "null",
+              "array"
+            ],
             "items": {
               "oneOf": [
                 {
+                  "description": "Angaben zu einer natürlichen Person.",
                   "$ref": "#/components/schemas/NatuerlichePersonRequest"
                 },
                 {
@@ -6384,15 +6910,16 @@
               ],
               "description": "Repräsentiert eine beteiligte Person oder Organisation im Verfahren."
             },
-            "description": "Liste der an einem Verfahren beteiligten Parteien.",
-            "nullable": true
+            "description": "Liste der an einem Verfahren beteiligten Parteien."
           }
         },
         "additionalProperties": false,
         "description": "Repräsentiert ein Verfahren für die Übermittlung."
       },
       "VerfahrenErstellenRequest": {
-        "required": ["safe_id"],
+        "required": [
+          "safe_id"
+        ],
         "type": "object",
         "properties": {
           "safe_id": {
@@ -6401,19 +6928,31 @@
             "description": "Die Safe-ID des Anwalts, für den das Verfahren erstellt werden soll."
           },
           "verfahren": {
-            "$ref": "#/components/schemas/VerfahrenAendernRequest"
+            "oneOf": [
+              {
+                "description": "Die Inhalte des zu erstellenden Verfahrens.",
+                "$ref": "#/components/schemas/VerfahrenAendernRequest"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Die Inhalte des zu erstellenden Verfahrens."
           }
         },
         "additionalProperties": false,
         "description": "Anfrage-DTO für das Erstellen eines neuen Verfahrens."
       },
       "VerfahrenListeResponse": {
-        "required": ["elemente"],
+        "required": [
+          "elemente"
+        ],
         "type": "object",
         "properties": {
           "elemente": {
             "type": "array",
             "items": {
+              "description": "Stellt die Datenübertragungsobjektrepräsentation eines Verfahrens dar.",
               "$ref": "#/components/schemas/VerfahrenResponse"
             },
             "description": "Die Liste der enthaltenen Verfahren."
@@ -6423,7 +6962,11 @@
         "description": "Repräsentiert die Antwort mit einer Liste von Verfahren."
       },
       "VerfahrenResponse": {
-        "required": ["erstellt_am", "erstellt_von", "status"],
+        "required": [
+          "erstellt_am",
+          "erstellt_von",
+          "status"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -6432,21 +6975,28 @@
             "format": "uuid"
           },
           "aktenzeichen_gericht": {
-            "type": "string",
-            "description": "Aktenzeichen des Verfahrens.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Aktenzeichen des Verfahrens."
           },
           "verfahrensgegenstand": {
-            "type": "string",
-            "description": "Verfahrensgegenstand des Verfahrens.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Verfahrensgegenstand des Verfahrens."
           },
           "kurzrubrum": {
-            "type": "string",
-            "description": "Kurzrubrum des Verfahrens.",
-            "nullable": true
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Kurzrubrum des Verfahrens."
           },
           "status": {
+            "description": "Status des Verfahrens.",
             "$ref": "#/components/schemas/VerfahrenStatus"
           },
           "status_geaendert_am": {
@@ -6465,19 +7015,34 @@
             "format": "date-time"
           },
           "eingereicht_am": {
-            "type": "string",
+            "type": [
+              "null",
+              "string"
+            ],
             "description": "Datum der Einreichung des Verfahrens.",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           },
           "gericht": {
-            "$ref": "#/components/schemas/GerichtResponse"
+            "oneOf": [
+              {
+                "description": "Zuweisung des Gerichts zum Verfahren.",
+                "$ref": "#/components/schemas/GerichtResponse"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Zuweisung des Gerichts zum Verfahren."
           },
           "beteiligungen": {
-            "type": "array",
+            "type": [
+              "null",
+              "array"
+            ],
             "items": {
               "oneOf": [
                 {
+                  "description": "Angaben zu einer natürlichen Person.",
                   "$ref": "#/components/schemas/NatuerlichePersonResponse"
                 },
                 {
@@ -6489,8 +7054,7 @@
               ],
               "description": "Repräsentiert eine beteiligte Person oder Organisation im Verfahren."
             },
-            "description": "Liste der an einem Verfahren beteiligten Parteien.",
-            "nullable": true
+            "description": "Liste der an einem Verfahren beteiligten Parteien."
           }
         },
         "additionalProperties": false,
@@ -6508,7 +7072,9 @@
         "description": "Status des Verfahrens."
       },
       "XJustizErstellenRequest": {
-        "required": ["ersetzen"],
+        "required": [
+          "ersetzen"
+        ],
         "type": "object",
         "properties": {
           "ersetzen": {
@@ -6541,8 +7107,12 @@
           "status": 400,
           "detail": "Die Anfrage enthält ein oder mehrere Validierungsfehler. Weitere Einzelheiten finden Sie in der 'errors' Eigenschaft.",
           "errors": {
-            "field1": ["Der Wert für das Feld 'field1' ist erforderlich."],
-            "field2": ["Der Wert für das Feld 'field2' ist ungültig."]
+            "field1": [
+              "Der Wert für das Feld 'field1' ist erforderlich."
+            ],
+            "field2": [
+              "Der Wert für das Feld 'field2' ist ungültig."
+            ]
           }
         },
         "x-schema": "ValidationProblemDetails"

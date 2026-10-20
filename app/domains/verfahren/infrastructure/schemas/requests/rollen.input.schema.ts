@@ -14,7 +14,7 @@ export const RollenInputSchema = z
     rollennummer: z.nullable(z.string()),
     rollenbezeichnungId: z.string(),
     geschaeftszeichen: z.nullable(z.string()),
-    referenz: z.nullable(z.string()),
+    referenz: z.array(z.string()),
   })
   .transform((input): RollenRequestDTO => ({
     rollennummer: input.rollennummer,

@@ -9,7 +9,7 @@ const baseFields = {
       rollennummer: null,
       rollenbezeichnung: { id: "rb-1", wert: "Kläger(in)", code: "101" },
       geschaeftszeichen: null,
-      referenz: null,
+      referenz: [],
     },
   ],
   anschriften: null,
@@ -54,6 +54,28 @@ describe("BeteiligungenSchema", () => {
       rechtsform: { id: "rf-1", wert: "GbR", code: "GBR" },
       kanzleiform: { id: "kf-1", wert: "Einzelanwalt", code: "001" },
     });
+  });
+
+  it("parses an anschrift with a null anschriftstyp and staat", () => {
+    const anschrift = {
+      id: "an-1",
+      anschriftstyp: null,
+      strasse: "Hauptstraße",
+      hausnummer: "1",
+      postleitzahl: "10115",
+      ort: "Berlin",
+      postfachnummer: null,
+      staat: null,
+    };
+
+    const result = BeteiligungSchema.parse({
+      ...baseFields,
+      anschriften: [anschrift],
+      beteiligtenart: "organisation",
+      bezeichnung: "Lufthansa",
+    });
+
+    expect(result).toMatchObject({ anschriften: [anschrift] });
   });
 
   it("parses a raKanzlei entry with a null rechtsform", () => {
