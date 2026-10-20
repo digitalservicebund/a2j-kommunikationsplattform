@@ -14,17 +14,23 @@ describe("beteiligteByRole", () => {
     {
       id: "b-1",
       bezeichnung: "Klaegerin GmbH",
-      rollen: [{ rollenbezeichnung: { code: ROLE_CODE_KLAEGERIN } }],
+      rollen: [
+        { rollenbezeichnung: { code: ROLE_CODE_KLAEGERIN }, referenz: [] },
+      ],
     },
     {
       id: "b-2",
       bezeichnung: "Beklagte AG",
-      rollen: [{ rollenbezeichnung: { code: ROLE_CODE_BEKLAGTE } }],
+      rollen: [
+        { rollenbezeichnung: { code: ROLE_CODE_BEKLAGTE }, referenz: [] },
+      ],
     },
     {
       id: "b-3",
       bezeichnung: null,
-      rollen: [{ rollenbezeichnung: { code: ROLE_CODE_KLAEGERIN } }],
+      rollen: [
+        { rollenbezeichnung: { code: ROLE_CODE_KLAEGERIN }, referenz: [] },
+      ],
     },
   ];
 
