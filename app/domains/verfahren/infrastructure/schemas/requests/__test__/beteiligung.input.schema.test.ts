@@ -5,7 +5,7 @@ const rolle = {
   rollennummer: null,
   rollenbezeichnungId: "rolle-1",
   geschaeftszeichen: null,
-  referenz: null,
+  referenz: [],
 };
 
 describe("BeteiligungenInputSchema", () => {
@@ -39,7 +39,7 @@ describe("BeteiligungenInputSchema", () => {
             rollennummer: null,
             rollenbezeichnung_id: "rolle-1",
             geschaeftszeichen: null,
-            referenz: null,
+            referenz: [],
           },
         ],
         anschriften: null,
@@ -72,7 +72,7 @@ describe("BeteiligungenInputSchema", () => {
             rollennummer: null,
             rollenbezeichnung_id: "rolle-1",
             geschaeftszeichen: null,
-            referenz: null,
+            referenz: [],
           },
         ],
         anschriften: null,

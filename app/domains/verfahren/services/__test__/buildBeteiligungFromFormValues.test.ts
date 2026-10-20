@@ -53,7 +53,7 @@ describe("buildBeteiligungFromFormValues", () => {
           rollennummer: null,
           rollenbezeichnungId: "rolle-1",
           geschaeftszeichen: null,
-          referenz: null,
+          referenz: [],
         },
       ],
       anschriften: [
@@ -205,7 +205,7 @@ describe("buildRaKanzleiFromFormValues", () => {
           rollennummer: null,
           rollenbezeichnungId: "rolle-1",
           geschaeftszeichen: null,
-          referenz: "klaegerin",
+          referenz: ["klaegerin"],
         },
       ],
       anschriften: [
