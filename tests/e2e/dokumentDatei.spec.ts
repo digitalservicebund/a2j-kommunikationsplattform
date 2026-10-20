@@ -9,7 +9,11 @@ test.describe("Dokument Datei resource route", () => {
     const dateiPath =
       "/verfahren/11111111-1111-1111-1111-111111111111/einreichungen/22222222-2222-2222-2222-222222222222/dokumente/33333333-3333-3333-3333-333333333333/datei?disposition=attachment";
 
-    await new DokumentDateiPage(page, dateiPath).visit();
+    await new DokumentDateiPage(page, {
+      verfahrenId: "11111111-1111-1111-1111-111111111111",
+      einreichungId: "22222222-2222-2222-2222-222222222222",
+      dokumentId: "33333333-3333-3333-3333-333333333333",
+    }).visit();
     const loginPage = new LoginPage(page);
     await loginPage.expectToBeHere();
     await loginPage.expectWillRedirectTo(dateiPath);
