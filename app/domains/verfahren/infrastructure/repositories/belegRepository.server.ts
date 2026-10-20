@@ -1,5 +1,4 @@
 import z from "zod";
-import { serverConfig } from "~/config/config.server";
 import {
   Beleg,
   ContentDispositionType,
@@ -10,7 +9,6 @@ import {
   BelegSchema,
 } from "~/domains/verfahren/infrastructure/schemas/beleg.schema";
 import { AuthSession } from "~/services/auth/auth.types";
-import { buildSearchParams } from "~/utils/buildSearchParams";
 
 type FetchBelegByIdOptions = {
   verfahrenId: string;
@@ -38,20 +36,10 @@ export async function fetchBelege(
   authSession: AuthSession,
   options: FetchBelegeOptions,
 ): Promise<z.infer<typeof BelegeSchema>> {
-  const url = new URL(
-    `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren/${options.verfahrenId}/belege`,
-  );
-  const searchParams = buildSearchParams({
-    einreichung_id: options.einreichungId,
-  });
-
-  searchParams.forEach((value, key) => {
-    url.searchParams.set(key, value);
-  });
-
   return apiRequest({
     authSession,
-    fullUrl: url.toString(),
+    path: `/api/v1/verfahren/${options.verfahrenId}/belege`,
+    searchParams: { einreichung_id: options.einreichungId },
     schema: BelegeSchema,
     errorMessage: `Belege for Verfahren with id ${options.verfahrenId} could not be fetched.`,
   });
@@ -68,21 +56,13 @@ export async function fetchBelegDownloadLink(
   authSession: AuthSession,
   options: FetchBelegDownloadLinkOptions,
 ): Promise<string> {
-  const url = new URL(
-    `${serverConfig().KOMPLA_API_URL}/api/v1/verfahren/${options.verfahrenId}/belege/${options.id}/downloadlink`,
-  );
-  const searchParams = buildSearchParams({
-    ttl: options.ttl,
-    disposition_type: options.dispositionType,
-  });
-
-  searchParams.forEach((value, key) => {
-    url.searchParams.set(key, value);
-  });
-
   return apiRequest({
     authSession,
-    fullUrl: url.toString(),
+    path: `/api/v1/verfahren/${options.verfahrenId}/belege/${options.id}/downloadlink`,
+    searchParams: {
+      ttl: options.ttl,
+      disposition_type: options.dispositionType,
+    },
     schema: z.string(),
     errorMessage: `Download link for Beleg with id ${options.id} could not be fetched.`,
   });

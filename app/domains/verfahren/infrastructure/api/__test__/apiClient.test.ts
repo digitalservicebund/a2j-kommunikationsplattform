@@ -29,7 +29,7 @@ describe("apiClient", () => {
   });
 
   describe("apiRequest", () => {
-    it("constructs URL with path when only path is provided", async () => {
+    it("constructs URL from the API base URL and path", async () => {
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({ id: "123" }),
@@ -46,19 +46,38 @@ describe("apiClient", () => {
       );
     });
 
-    it("uses fullUrl when provided instead of path", async () => {
+    it("appends searchParams to the URL, leaving out empty values", async () => {
       mocks.fetch.mockResolvedValue({
         ok: true,
-        json: async () => ({ id: "123" }),
+        json: async () => ({}),
       });
 
       await apiRequest({
         authSession: makeAuthSession(),
-        fullUrl: "http://custom.api/endpoint",
+        path: "/api/v1/test",
+        searchParams: { limit: 10, sort: "neueste", gericht: undefined, q: "" },
       });
 
       expect(mocks.fetch).toHaveBeenCalledWith(
-        "http://custom.api/endpoint",
+        "http://localhost:8080/api/v1/test?limit=10&sort=neueste",
+        expect.any(Object),
+      );
+    });
+
+    it("leaves the URL unchanged when all searchParams are empty", async () => {
+      mocks.fetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({}),
+      });
+
+      await apiRequest({
+        authSession: makeAuthSession(),
+        path: "/api/v1/test",
+        searchParams: { gericht: null },
+      });
+
+      expect(mocks.fetch).toHaveBeenCalledWith(
+        "http://localhost:8080/api/v1/test",
         expect.any(Object),
       );
     });

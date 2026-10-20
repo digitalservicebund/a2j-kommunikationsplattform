@@ -106,8 +106,8 @@ describe(fetchDokumentDownloadLink, () => {
     expect(result).toBe("https://s3.example.com/dokument");
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
-        fullUrl:
-          "http://localhost:8080/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1/downloadlink?disposition_type=INLINE",
+        path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1/downloadlink",
+        searchParams: { disposition_type: "INLINE" },
       }),
     );
   });

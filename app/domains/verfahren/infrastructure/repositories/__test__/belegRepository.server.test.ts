@@ -67,7 +67,8 @@ describe("fetchBelege", () => {
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         authSession: makeAuthSession(),
-        fullUrl: "http://localhost:8080/api/v1/verfahren/v-1/belege",
+        path: "/api/v1/verfahren/v-1/belege",
+        searchParams: { einreichung_id: undefined },
       }),
     );
   });
@@ -82,8 +83,8 @@ describe("fetchBelege", () => {
 
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
-        fullUrl:
-          "http://localhost:8080/api/v1/verfahren/v-1/belege?einreichung_id=e-1",
+        path: "/api/v1/verfahren/v-1/belege",
+        searchParams: { einreichung_id: "e-1" },
       }),
     );
   });
@@ -112,8 +113,8 @@ describe("fetchBelegDownloadLink", () => {
     expect(result).toBe("https://s3.example.com/beleg");
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
-        fullUrl:
-          "http://localhost:8080/api/v1/verfahren/v-1/belege/b-1/downloadlink",
+        path: "/api/v1/verfahren/v-1/belege/b-1/downloadlink",
+        searchParams: { ttl: undefined, disposition_type: undefined },
       }),
     );
   });
@@ -130,8 +131,8 @@ describe("fetchBelegDownloadLink", () => {
 
     expect(mocks.apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
-        fullUrl:
-          "http://localhost:8080/api/v1/verfahren/v-1/belege/b-1/downloadlink?ttl=300&disposition_type=ATTACHMENT",
+        path: "/api/v1/verfahren/v-1/belege/b-1/downloadlink",
+        searchParams: { ttl: 300, disposition_type: "ATTACHMENT" },
       }),
     );
   });
@@ -176,8 +177,8 @@ describe("fetchLatestBelegForEinreichung", () => {
     expect(mocks.apiRequest).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
-        fullUrl:
-          "http://localhost:8080/api/v1/verfahren/v-1/belege?einreichung_id=e-1",
+        path: "/api/v1/verfahren/v-1/belege",
+        searchParams: { einreichung_id: "e-1" },
       }),
     );
     expect(mocks.apiRequest).toHaveBeenNthCalledWith(

@@ -3,8 +3,13 @@
  * with undefined or empty values and auto-stringifies other non-string
  * values.
  */
+export type SearchParamsOptions = Record<
+  string,
+  string | number | null | undefined
+>;
+
 export function buildSearchParams(
-  options: Record<string, string | number | null | undefined>,
+  options: SearchParamsOptions,
 ): URLSearchParams {
   const params = new URLSearchParams();
 
