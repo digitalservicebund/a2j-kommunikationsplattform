@@ -1,12 +1,22 @@
 import { Page } from "@playwright/test";
 import { PageObject } from "./base";
 
+type DokumentDateiPageParams = {
+  verfahrenId: string;
+  einreichungId: string;
+  dokumentId: string;
+};
+
 export class DokumentDateiPage extends PageObject {
   readonly path: string;
 
-  constructor(page: Page, path: string) {
-    super(page, new URL(path, "http://localhost").pathname);
-    this.path = path;
+  constructor(
+    page: Page,
+    { verfahrenId, einreichungId, dokumentId }: DokumentDateiPageParams,
+  ) {
+    const pathname = `/verfahren/${verfahrenId}/einreichungen/${einreichungId}/dokumente/${dokumentId}/datei`;
+    super(page, pathname);
+    this.path = `${pathname}?disposition=attachment`;
   }
 
   async visit() {
