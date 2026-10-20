@@ -64,6 +64,7 @@ function renderSection(weitereEinreichung: EinreichungDetails | null) {
       element: (
         <TranslationsProvider value={getTestTranslations()}>
           <VerfahrenWeitereEinreichungDokumenteStep
+            verfahrenId="v-1"
             draftWeitereEinreichung={weitereEinreichung}
           />
         </TranslationsProvider>

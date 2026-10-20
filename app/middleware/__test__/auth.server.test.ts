@@ -4,8 +4,8 @@ import { getAuthSession } from "~/services/auth/authSession.server";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 import { authContext, authMiddleware } from "../auth.server";
 
-vi.mock(import("react-router"), async (importOriginal) => {
-  const original = await importOriginal();
+vi.mock("react-router", async (importOriginal) => {
+  const original = await importOriginal<typeof import("react-router")>();
   return {
     ...original,
     // Let redirect() return a plain object instead of a `Response` so that
@@ -112,6 +112,34 @@ describe(authMiddleware, () => {
     expect(response.headers.get("Set-Cookie")).toBe(
       "__session=abc123; Path=/; HttpOnly",
     );
+  });
+
+  it("passes the response body through without cloning it when appending cookies", async () => {
+    vi.mocked(getAuthSession).mockResolvedValue(
+      makeAuthSession({ sessionCookieHeaders: ["__session=xyz"] }),
+    );
+    const cloneSpy = vi.spyOn(Response.prototype, "clone");
+
+    const mockResponse = new Response(
+      new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode("%PDF-1.7"));
+          controller.close();
+        },
+      }),
+      { headers: { "Content-Type": "application/pdf" } },
+    );
+
+    const { response } = await callAuthMiddleware({
+      url: "http://localhost/protected",
+      next: vi.fn(() => Promise.resolve(mockResponse)),
+    });
+
+    expect(cloneSpy).not.toHaveBeenCalled();
+    expect(response.headers.get("Set-Cookie")).toBe("__session=xyz");
+    expect(response.headers.get("Content-Type")).toBe("application/pdf");
+    await expect(response.text()).resolves.toBe("%PDF-1.7");
+    cloneSpy.mockRestore();
   });
 
   it("preserves response body when creating new response with cookie", async () => {

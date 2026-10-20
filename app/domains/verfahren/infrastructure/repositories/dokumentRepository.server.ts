@@ -1,4 +1,5 @@
 import z from "zod";
+import type { ContentDispositionType } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import {
   Dokument,
   DokumentErstellenResponse,
@@ -15,6 +16,7 @@ import {
 import { ValidierungsstatusSchema } from "~/domains/verfahren/infrastructure/schemas/validierungsstatus.schema";
 import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
 import { AuthSession } from "~/services/auth/auth.types";
+import { ApiError } from "~/utils/apiError";
 import { logger } from "~/utils/logger.server";
 
 type FetchDokumentOptions = {
@@ -79,6 +81,57 @@ export async function fetchDokumentValidierungsstatus(
     schema: ValidierungsstatusSchema,
     errorMessage: `Validierungsstatus for Dokument with id ${options.id} could not be fetched.`,
   });
+}
+
+type FetchDokumentDownloadLinkOptions = {
+  verfahrenId: string;
+  einreichungId: string;
+  id: string;
+  dispositionType?: ContentDispositionType;
+};
+
+export async function fetchDokumentDownloadLink(
+  authSession: AuthSession,
+  options: FetchDokumentDownloadLinkOptions,
+): Promise<string> {
+  return apiRequest({
+    authSession,
+    path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.einreichungId}/dokumente/${options.id}/downloadlink`,
+    searchParams: { disposition_type: options.dispositionType },
+    // The server fetches the link itself, so only http(s) URLs are accepted.
+    schema: z.url({ protocol: /^https?$/ }),
+    errorMessage: `Download link for Dokument with id ${options.id} could not be fetched.`,
+  });
+}
+
+type FetchDokumentDateiOptions = FetchDokumentDownloadLinkOptions & {
+  signal?: AbortSignal;
+};
+
+/**
+ * Fetches the Dokument's binary content from the object storage via a fresh
+ * download link. The response body is left unread so callers can stream it.
+ */
+export async function fetchDokumentDatei(
+  authSession: AuthSession,
+  { signal, ...options }: FetchDokumentDateiOptions,
+): Promise<Response> {
+  const downloadLink = await fetchDokumentDownloadLink(authSession, options);
+  const response = await fetch(downloadLink, { signal });
+
+  if (!response.ok) {
+    // The download link is not logged, since it's a signed URL.
+    logger.error(
+      { status: response.status, dokumentId: options.id },
+      "Datei for Dokument could not be fetched from the object storage.",
+    );
+    throw new ApiError(
+      `Datei for Dokument with id ${options.id} could not be fetched.`,
+      { status: response.status },
+    );
+  }
+
+  return response;
 }
 
 type DeleteDokumentOptions = {

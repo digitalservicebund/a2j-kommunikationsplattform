@@ -1,5 +1,4 @@
 import z from "zod";
-import { serverConfig } from "~/config/config.server";
 import { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import { apiRequest } from "~/domains/verfahren/infrastructure/api/apiClient";
 import { VerfahrenAendernRequestDTO } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.request.schema";
@@ -9,7 +8,6 @@ import {
   toSortQueryValue,
 } from "~/domains/verfahren/services/verfahrenListOptions";
 import { AuthSession } from "~/services/auth/auth.types";
-import { buildSearchParams } from "~/utils/buildSearchParams";
 
 export const FetchVerfahrenOptionsSchema = z.object({
   offset: z.number().int().nonnegative().optional(),
@@ -34,23 +32,16 @@ export async function fetchVerfahren(
     options ?? {},
   );
 
-  const url = new URL(`${serverConfig().KOMPLA_API_URL}/api/v1/verfahren`);
-  // buildSearchParams returns a URLSearchParams-like map of strings
-  // The API expects `suchbegriff` as the query parameter name and sort
-  // values in snake_case (e.g. "eingereicht_am").
-  const searchParams = buildSearchParams({
-    ...parsed,
-    sort: sort ? toSortQueryValue(sort) : sort,
-    suchbegriff: search_text,
-  });
-
-  searchParams.forEach((value, key) => {
-    url.searchParams.set(key, value);
-  });
-
   return apiRequest({
     authSession,
-    fullUrl: url.toString(),
+    path: "/api/v1/verfahren",
+    // The API expects `suchbegriff` as the query parameter name and sort
+    // values in snake_case (e.g. "eingereicht_am").
+    searchParams: {
+      ...parsed,
+      sort: sort ? toSortQueryValue(sort) : sort,
+      suchbegriff: search_text,
+    },
     schema: fetchVerfahrenSchema,
     errorMessage,
   });

@@ -48,6 +48,7 @@ function renderList(
       path: "/verfahren/:id",
       Component: () => (
         <VerfahrenDokumenteList
+          verfahrenId="v-1"
           dokumente={dokumente}
           einreichung={einreichung}
         />
@@ -135,6 +136,7 @@ describe("VerfahrenDokumenteList", () => {
         path: "/verfahren/:id",
         Component: () => (
           <VerfahrenDokumenteList
+            verfahrenId="v-1"
             dokumente={[
               buildDokument({ id: "d-1", typ: "ANHANG", anzeigename: "a.pdf" }),
               buildDokument({ id: "d-2", typ: "ANHANG", anzeigename: "b.pdf" }),

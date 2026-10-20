@@ -26,7 +26,7 @@ export const authMiddleware: MiddlewareFunction<Response> = async (
     localLogger.debug(
       "Session cookie found in auth session, appending to response headers",
     );
-    const newResponse = response.clone();
+    const newResponse = new Response(response.body, response);
     for (const cookieHeader of authSession.sessionCookieHeaders) {
       newResponse.headers.append("Set-Cookie", cookieHeader);
     }

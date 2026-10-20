@@ -37,6 +37,10 @@ export default [
     route("neu", "./routes/verfahren.neu.tsx"),
     route("neu/:id/bearbeiten", "./routes/verfahren.neu.$id.bearbeiten.tsx"),
     route(":id", "./routes/verfahren.$id.tsx"),
+    route(
+      ":id/einreichungen/:einreichungId/dokumente/:dokumentId/datei",
+      "./routes/verfahren.$id.einreichungen.$einreichungId.dokumente.$dokumentId.datei.ts",
+    ),
   ]),
 
   // Beitrittscode (Lift)

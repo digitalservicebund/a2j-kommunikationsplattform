@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { expect, Page } from "@playwright/test";
 import { getTestTranslations } from "~tests/utils/translationsUtil";
 import { PageObject } from "./base";
 
@@ -11,6 +11,13 @@ export class LoginPage extends PageObject {
 
   async visit() {
     await this.page.goto("/login");
+  }
+
+  // The page the user is sent back to after logging in.
+  async expectWillRedirectTo(path: string) {
+    await expect(this.page).toHaveURL(
+      (url) => url.searchParams.get("next") === path,
+    );
   }
 
   get alert() {

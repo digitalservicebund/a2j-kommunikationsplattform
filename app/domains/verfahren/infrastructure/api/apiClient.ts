@@ -2,6 +2,10 @@ import z from "zod";
 import { serverConfig } from "~/config/config.server";
 import { AuthSession } from "~/services/auth/auth.types";
 import {
+  buildSearchParams,
+  type SearchParamsOptions,
+} from "~/utils/buildSearchParams";
+import {
   logApiErrorAndThrow,
   logParsingErrorAndThrow,
 } from "~/utils/logApiError";
@@ -11,18 +15,10 @@ import {
   ValidationProblemDetails,
 } from "~/utils/problemDetails.schema";
 
-type ApiRequestUrlOptions =
-  | {
-      path: string;
-      fullUrl?: never;
-    }
-  | {
-      path?: never;
-      fullUrl: string;
-    };
-
-type ApiRequestOptions<T = unknown> = ApiRequestUrlOptions & {
+type ApiRequestOptions<T = unknown> = {
   authSession: AuthSession;
+  path: string;
+  searchParams?: SearchParamsOptions;
   method?: string;
   body?: unknown;
   eTag?: string;
@@ -67,6 +63,22 @@ export type ApiRequestSuccessResult<T> = {
 export type ApiRequestHandledResult<T> =
   | ApiRequestSuccessResult<T>
   | ApiRequestErrorResult;
+
+function buildUrl(
+  baseUrl: string,
+  searchParams: SearchParamsOptions | undefined,
+): string {
+  if (!searchParams) {
+    return baseUrl;
+  }
+
+  const url = new URL(baseUrl);
+  buildSearchParams(searchParams).forEach((value, key) => {
+    url.searchParams.set(key, value);
+  });
+
+  return url.toString();
+}
 
 function parseSchemaOrThrow<T>(
   data: unknown,
@@ -211,7 +223,7 @@ export async function apiRequest<T = unknown>(
   const {
     authSession,
     path,
-    fullUrl,
+    searchParams,
     method = "GET",
     body,
     eTag,
@@ -224,7 +236,7 @@ export async function apiRequest<T = unknown>(
     responseType = "json",
   } = opts;
 
-  const url = fullUrl ?? `${serverConfig().KOMPLA_API_URL}${path}`;
+  const url = buildUrl(`${serverConfig().KOMPLA_API_URL}${path}`, searchParams);
 
   const headers: Record<string, string> = {
     Authorization: `Bearer ${authSession.accessToken}`,

@@ -35,7 +35,10 @@ function renderSection(draft: EinreichungDetails | null) {
       path: "/",
       element: (
         <TranslationsProvider value={getTestTranslations()}>
-          <VerfahrenWeitereEinreichungSection draftWeitereEinreichung={draft} />
+          <VerfahrenWeitereEinreichungSection
+            verfahrenId="v-1"
+            draftWeitereEinreichung={draft}
+          />
         </TranslationsProvider>
       ),
     },

@@ -232,6 +232,7 @@ export default function VerfahrenDraftKlageeinreichungSection({
               <div className="w-full">
                 <h5 className="kern-preline">Dokumente</h5>
                 <VerfahrenDokumenteList
+                  verfahrenId={verfahren.id}
                   dokumente={draftKlageeinreichung.dokumente}
                   einreichung={draftKlageeinreichung.einreichung}
                 />

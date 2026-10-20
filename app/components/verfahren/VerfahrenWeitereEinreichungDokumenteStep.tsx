@@ -9,12 +9,14 @@ import { isValidierungslaufRunning } from "~/domains/verfahren/services/validier
 import { useTranslations } from "~/services/translations/context";
 
 type VerfahrenWeitereEinreichungDokumenteStepProps = {
+  verfahrenId: string;
   // null until an Art has been picked, which creates the draft — the step is
   // shown disabled until then.
   draftWeitereEinreichung: EinreichungDetails | null;
 };
 
 export default function VerfahrenWeitereEinreichungDokumenteStep({
+  verfahrenId,
   draftWeitereEinreichung,
 }: Readonly<VerfahrenWeitereEinreichungDokumenteStepProps>) {
   const { routes, shared } = useTranslations();
@@ -44,6 +46,7 @@ export default function VerfahrenWeitereEinreichungDokumenteStep({
     >
       {draftWeitereEinreichung && hasUploadedDokumente && (
         <VerfahrenDokumenteList
+          verfahrenId={verfahrenId}
           dokumente={dokumente}
           einreichung={draftWeitereEinreichung.einreichung}
         />

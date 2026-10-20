@@ -1,9 +1,11 @@
-import { beforeEach, describe, expect, it, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, test, vi } from "vitest";
 import {
   createDokument,
   deleteDokument,
   deleteDokumentFromEinreichung,
   fetchDokument,
+  fetchDokumentDatei,
+  fetchDokumentDownloadLink,
   fetchDokumente,
   fetchDokumentValidierungsstatus,
   uploadDokument,
@@ -77,6 +79,114 @@ describe("fetchDokumente", () => {
       }),
     );
     expect(result).toEqual(dokumente);
+  });
+});
+
+describe(fetchDokumentDownloadLink, () => {
+  const originalEnv = process.env.KOMPLA_API_URL;
+
+  beforeEach(() => {
+    process.env.KOMPLA_API_URL = "http://localhost:8080";
+  });
+
+  afterEach(() => {
+    process.env.KOMPLA_API_URL = originalEnv;
+  });
+
+  it("fetches the download link with the given disposition_type", async () => {
+    mocks.apiRequest.mockResolvedValueOnce("https://s3.example.com/dokument");
+
+    const result = await fetchDokumentDownloadLink(makeAuthSession(), {
+      verfahrenId: "v-1",
+      einreichungId: "e-1",
+      id: "d-1",
+      dispositionType: "INLINE",
+    });
+
+    expect(result).toBe("https://s3.example.com/dokument");
+    expect(mocks.apiRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1/downloadlink",
+        searchParams: { disposition_type: "INLINE" },
+      }),
+    );
+  });
+
+  it("only accepts http(s) URLs as download link", async () => {
+    mocks.apiRequest.mockResolvedValueOnce("https://s3.example.com/dokument");
+
+    await fetchDokumentDownloadLink(makeAuthSession(), {
+      verfahrenId: "v-1",
+      einreichungId: "e-1",
+      id: "d-1",
+    });
+
+    const { schema } = mocks.apiRequest.mock.calls[0][0];
+    expect(schema.safeParse("https://s3.example.com/dokument").success).toBe(
+      true,
+    );
+    expect(schema.safeParse("javascript:alert(1)").success).toBe(false);
+  });
+});
+
+describe("fetchDokumentDatei", () => {
+  const options = {
+    verfahrenId: "v-1",
+    einreichungId: "e-1",
+    id: "d-1",
+    dispositionType: "INLINE" as const,
+  };
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("fetches the file from a fresh download link without reading its body", async () => {
+    const storageResponse = new Response("%PDF-1.7");
+    const fetchMock = vi.fn().mockResolvedValue(storageResponse);
+    vi.stubGlobal("fetch", fetchMock);
+    mocks.apiRequest.mockResolvedValueOnce("https://s3.example.com/dokument");
+    const signal = new AbortController().signal;
+
+    const result = await fetchDokumentDatei(makeAuthSession(), {
+      ...options,
+      signal,
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith("https://s3.example.com/dokument", {
+      signal,
+    });
+    expect(result).toBe(storageResponse);
+    expect(result.bodyUsed).toBe(false);
+  });
+
+  it("throws and logs without the signed link when the storage fails", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(new Response(null, { status: 403 })),
+    );
+    mocks.apiRequest.mockResolvedValueOnce(
+      "https://s3.example.com/dokument?X-Amz-Signature=secret",
+    );
+
+    await expect(
+      fetchDokumentDatei(makeAuthSession(), options),
+    ).rejects.toThrow("Datei for Dokument with id d-1 could not be fetched.");
+    expect(JSON.stringify(mocks.loggerError.mock.calls)).not.toContain(
+      "X-Amz-Signature",
+    );
+  });
+
+  it("throws an ApiError with the storage's status", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(new Response(null, { status: 404 })),
+    );
+    mocks.apiRequest.mockResolvedValueOnce("https://s3.example.com/dokument");
+
+    await expect(
+      fetchDokumentDatei(makeAuthSession(), options),
+    ).rejects.toMatchObject({ name: "ApiError", status: 404 });
   });
 });
 
