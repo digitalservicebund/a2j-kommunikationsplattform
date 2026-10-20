@@ -1,7 +1,7 @@
 type Rolle = {
   rollenbezeichnung?: { code?: string | null } | null;
   geschaeftszeichen?: string | null;
-  referenz?: string | null;
+  referenz?: string[] | null;
 };
 
 type Beteiligte = {
@@ -85,7 +85,7 @@ export function getProzessbevollmaechtigteByReferenz<T extends Beteiligte>(
       beteiligung.rollen?.some(
         (rolle) =>
           rolle.rollenbezeichnung?.code === rollenbezeichnungCode &&
-          rolle.referenz === referenz,
+          rolle.referenz?.includes(referenz),
       ),
   );
 }

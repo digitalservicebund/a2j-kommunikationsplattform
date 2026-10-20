@@ -6,7 +6,7 @@ export const RolleSchema = z.object({
   rollennummer: z.nullable(z.string()),
   rollenbezeichnung: CodeWertSchema,
   geschaeftszeichen: z.nullable(z.string()),
-  referenz: z.nullable(z.string()),
+  referenz: z.array(z.string()),
 });
 
 export type Rolle = z.infer<typeof RolleSchema>;

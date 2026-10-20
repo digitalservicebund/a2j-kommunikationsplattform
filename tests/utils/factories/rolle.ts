@@ -16,7 +16,7 @@ export function makeRolle(params?: Partial<Rolle>): Rolle {
       code: ROLE_CODE_KLAEGERIN,
     },
     geschaeftszeichen: null,
-    referenz: null,
+    referenz: [],
     ...params,
   };
 }

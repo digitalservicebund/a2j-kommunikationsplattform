@@ -22,10 +22,8 @@ export type ContentDispositionType = z.infer<
 export const BelegSchema = z.object({
   id: z.string(),
   erstelltAm: z.string(),
-  // The OpenAPI contract documents `typ` as optional-but-not-nullable, but
-  // the API returns `typ: null` while a Beleg is still IN_BEARBEITUNG (its
-  // Typ isn't determined until processing completes).
-  // TODO:remove the nullable part after confirming it with SINC
+  // `typ` is null while a Beleg is still IN_BEARBEITUNG (its Typ isn't
+  // determined until processing completes).
   typ: z.nullish(BelegTypSchema),
   status: BelegStatusSchema,
   einreichungId: z.string().optional(),
