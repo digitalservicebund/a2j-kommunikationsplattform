@@ -96,6 +96,14 @@ export async function exchangeForKomPlaIdpTokens(
 ): Promise<OAuth2Tokens> {
   const config = serverConfig();
 
+  logger.info(
+    {
+      brakAccessToken: originalAccessToken,
+      brakIdToken: originalIdToken,
+    },
+    "Exchanging BRAK tokens for KomPla IdP tokens",
+  );
+
   let response = await globalThis.fetch(
     config.KOMPLA_IDP_OIDC_BRAK_TOKEN_ENDPOINT,
     {
