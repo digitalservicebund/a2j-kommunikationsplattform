@@ -28,7 +28,7 @@ http:
                 "rollenbezeichnung_id": "d46b6600-0ef7-1bdf-6c6e-390339367854",
                 "rollennummer": null,
                 "geschaeftszeichen": null,
-                "referenz": null
+                "referenz": []
               }
             ],
             "anschriften": null,
@@ -42,7 +42,7 @@ http:
                 "rollenbezeichnung_id": "0e443639-0999-90bd-1394-3b982a8d2595",
                 "rollennummer": null,
                 "geschaeftszeichen": null,
-                "referenz": null
+                "referenz": []
               }
             ],
             "anschriften": null,
@@ -58,7 +58,7 @@ http:
                   "rollenbezeichnung_id": "0e443639-0999-90bd-1394-3b982a8d2595",
                   "rollennummer": null,
                   "geschaeftszeichen": null,
-                  "referenz": null
+                  "referenz": []
                 }
               ],
               "anschriften": null,
