@@ -39,7 +39,9 @@ export default function buildDokumentDateiHeaders(
     "X-Content-Type-Options": "nosniff",
   });
 
-  // Browsers' built-in PDF viewers don't render inside a sandboxed document.
+  // Downloaded types are sandboxed in case a browser renders them anyway.
+  // Inline types are left out: PDF viewers don't render inside a sandboxed
+  // document, and images and videos can't run scripts.
   if (!isInline) {
     headers.set("Content-Security-Policy", "default-src 'none'; sandbox");
   }
