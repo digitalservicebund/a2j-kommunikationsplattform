@@ -45,7 +45,7 @@ export class PageObject {
         : pathOrURLPattern;
 
     this.siteHeader = new SiteHeader(this.page);
-    this.siteFooter = new SiteHeader(this.page);
+    this.siteFooter = new SiteFooter(this.page);
   }
 
   async waitUntilHere() {
@@ -104,7 +104,7 @@ export class SiteHeader extends PageSectionObject {
 
 /**
  * Page object representation of the current page's site footer (if any).
- * Can be accessed from any page object through the `siteHeader` property.
+ * Can be accessed from any page object through the `siteFooter` property.
  */
 export class SiteFooter extends PageSectionObject {
   constructor(page: Page) {
