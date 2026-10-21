@@ -35,7 +35,7 @@ export default function VerfahrenTimelineStepCard({
           <header className="kern-card__header">
             <h2 className="kern-title">{title}</h2>
           </header>
-          <section className="kern-card__body">
+          <div className="kern-card__body">
             <div className="flex w-full flex-row items-center justify-between">
               <p className="kern-body">{body}</p>
               {editTo && (
@@ -46,7 +46,7 @@ export default function VerfahrenTimelineStepCard({
                 </Link>
               )}
             </div>
-          </section>
+          </div>
         </div>
       </div>
     </VerfahrenTimelineStep>
