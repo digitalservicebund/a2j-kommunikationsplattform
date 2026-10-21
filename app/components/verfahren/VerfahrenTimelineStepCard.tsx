@@ -30,7 +30,7 @@ export default function VerfahrenTimelineStepCard({
       iconClassName={iconClassName}
       showConnector={showConnector}
     >
-      <article className="kern-card kern-card--small">
+      <div className="kern-card kern-card--small">
         <div className="kern-card__container">
           <header className="kern-card__header">
             <h2 className="kern-title">{title}</h2>
@@ -48,7 +48,7 @@ export default function VerfahrenTimelineStepCard({
             </div>
           </section>
         </div>
-      </article>
+      </div>
     </VerfahrenTimelineStep>
   );
 }

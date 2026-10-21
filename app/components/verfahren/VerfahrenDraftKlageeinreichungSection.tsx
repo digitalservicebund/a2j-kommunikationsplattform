@@ -86,6 +86,7 @@ export default function VerfahrenDraftKlageeinreichungSection({
     <>
       {/* Aktuelle Einreichung */}
       <VerfahrenTimelineStep
+        data-testid="klageeinreichung-timeline-step"
         timelineLabel={
           isBelegReady && beleg
             ? new Date(beleg.erstelltAm).toLocaleDateString()
@@ -94,15 +95,12 @@ export default function VerfahrenDraftKlageeinreichungSection({
         }
         iconClassName={isBelegReady ? "kern-icon--check" : "kern-icon--edit"}
       >
-        <article
-          className="kern-card"
-          key={draftKlageeinreichung.einreichung.id}
-        >
+        <div className="kern-card" key={draftKlageeinreichung.einreichung.id}>
           <div className="kern-card__container">
             {/* Einreichung Header */}
             <header className="kern-card__header">
               <hgroup className="kern-hgroup">
-                <h4
+                <h3
                   className="kern-title"
                   id="card-current-einreichung-heading"
                 >
@@ -113,7 +111,7 @@ export default function VerfahrenDraftKlageeinreichungSection({
                   -{" "}
                   {draftKlageeinreichung.einreichung.name ??
                     NOT_AVAILABLE_LABEL}
-                </h4>
+                </h3>
                 <VerfahrenEinreichungStatusBadge
                   beleg={beleg}
                   validierungPresentation={validierungPresentation}
@@ -280,7 +278,7 @@ export default function VerfahrenDraftKlageeinreichungSection({
               </footer>
             )}
           </div>
-        </article>
+        </div>
       </VerfahrenTimelineStep>
 
       {/* Timeline */}

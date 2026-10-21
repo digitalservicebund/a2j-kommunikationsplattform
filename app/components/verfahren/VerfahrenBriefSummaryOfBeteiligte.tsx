@@ -31,9 +31,9 @@ export default function VerfahrenBriefSummaryOfBeteiligte({
 }: Readonly<VerfahrenBriefSummaryOfBeteiligteProps>) {
   return (
     <div className="kern-p-md space-y-(--kern-metric-space-default) rounded-(--kern-metric-border-radius-default) border border-(--kern-color-decorative-border-contextual)">
-      <h3 className="kern-heading-small kern-pb-md border-b border-(--kern-color-decorative-border-contextual) px-0">
+      <h2 className="kern-heading-small kern-pb-md border-b border-(--kern-color-decorative-border-contextual) px-0">
         {title}
-      </h3>
+      </h2>
       <dl className="kern-description-list kern-description-list--col">
         {beteiligte.length === 0 ? (
           <div>

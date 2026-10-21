@@ -62,13 +62,13 @@ export default function VerfahrenEinreichungTimeline({
           >
             <details className="kern-accordion space-y-2.5">
               <summary className="kern-accordion__header">
-                <span className="kern-title flex-none">{einreichung.name}</span>
+                <h3 className="kern-title flex-none">{einreichung.name}</h3>
                 <VerfahrenTimelineStatusBadge status={einreichung.status} />
                 <span className="kern-body kern-body--muted ml-auto">
                   {dokumenteCountLabel}
                 </span>
               </summary>
-              <section className="kern-accordion__body">
+              <div className="kern-accordion__body">
                 {visibleDokumente.length > 0 ? (
                   <div className="kern-gap-md flex w-full flex-col">
                     {visibleDokumente.map((dokument) => (
@@ -83,7 +83,7 @@ export default function VerfahrenEinreichungTimeline({
                 ) : (
                   <p className="kern-body m-0">Keine Dokumente vorhanden.</p>
                 )}
-              </section>
+              </div>
             </details>
           </VerfahrenTimelineStep>
         );

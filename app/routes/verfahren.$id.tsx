@@ -474,10 +474,16 @@ export default function VerfahrenId() {
                 gerichtInformation={gerichtInformation}
               />
 
-              <section className="space-y-(--kern-metric-space-default)">
-                <h3 className="kern-heading-medium">
-                  {t.routes.verfahrenId.headline}
-                </h3>
+              <section
+                className="space-y-(--kern-metric-space-default)"
+                aria-labelledby="verfahren-timeline-heading"
+              >
+                <h2
+                  id="verfahren-timeline-heading"
+                  className="kern-heading-medium"
+                >
+                  {t.routes.verfahrenId.timelineHeading}
+                </h2>
 
                 {draftKlageeinreichung ? (
                   <VerfahrenDraftKlageeinreichungSection
@@ -516,6 +522,7 @@ export default function VerfahrenId() {
                 )}
               </section>
             </div>
+
             <VerfahrenLoader
               active={isSubmitting === "submitting"}
               label="Wird geladen..."

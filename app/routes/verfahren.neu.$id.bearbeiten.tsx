@@ -842,9 +842,9 @@ export default function VerfahrenNeuBearbeiten({
                   {/* Form Section: Anlagen & Beweismittel */}
                   <VerfahrenDokumenteFormSection
                     id="dokumente"
-                    dokumente={dokumente}
                     uploadedDokumente={uploadedDokumente}
-                    submitState={submitState}
+                    disabled={submitState !== "idle"}
+                    uploading={submitState === "upload"}
                     showFileInputError={showFileInputError}
                     uploadFileInputRef={uploadFileInputRef}
                     onFileInputChange={() => setIsFileInputErrorDismissed(true)}
