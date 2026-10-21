@@ -90,7 +90,6 @@ export default function VerfahrenKlaegerSection({
       />
 
       {hasLawyer && (
-        // TODO: Turn into <fieldset>
         <fieldset>
           <legend>
             <h3 className="kern-title kern-title--small">
