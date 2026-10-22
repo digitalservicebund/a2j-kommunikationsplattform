@@ -7,7 +7,7 @@ This repository contains the web frontend for the _Kommunikationsplattform_ (com
 
 ## Documentation
 
-- [Architecture](./doc/ARCHITECTURE.md)
+- [Architecture](./doc/architecture.md)
 - [Development](./doc/DEVELOPMENT.md)
 - [Contributing](./doc/CONTRIBUTING.md)
 - [Security](./doc/SECURITY.md)

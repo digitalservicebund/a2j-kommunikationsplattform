@@ -1,4 +1,4 @@
-# 5. How the project is structured
+# 5. Project structure
 
 Date: 2026-05-22
 

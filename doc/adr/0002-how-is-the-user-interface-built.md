@@ -1,8 +1,6 @@
 # 2. How is the user interface built
 
-- 2025-04-09: Drafted
-- 2025-07-15: Accepted
-- 2025-08-18: Updated
+Date: 2025-08-18
 
 ## Status
 

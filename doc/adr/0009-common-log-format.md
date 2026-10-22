@@ -1,4 +1,6 @@
-# 9. Adopt common log format and logigng library
+# 9. Common log format
+
+Date: 2026-09-28
 
 ## Status
 
