@@ -1,5 +1,7 @@
 # 7. Remove Talisman
 
+Date: 2026-10-09
+
 ## Status
 
 Accepted

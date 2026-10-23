@@ -1,12 +1,10 @@
 # 8. Switch to Better Auth (after all)
 
-Accepted
+Date: 2026-09-25
 
 ## Status
 
 Accepted
-
-Supersedes [ADR 0006](0006-better-auth-spike-and-why-we-reverted-it.md)
 
 ## Context
 
