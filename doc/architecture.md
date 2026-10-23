@@ -90,7 +90,7 @@ The KomPla frontend does not directly interact with beA. However, the API backen
 
 The BRAK IdP is the beA's identity management solution based on the [OpenID Connect][openid-connect] protocol. It implements the login flow for the beA web portal and mobile app; in addition, it lets users log into registered third-party applications with their beA credentials (a cryptographic hardware token or software certificate).
 
-The KomPla frontend is registered as a BRAK IdP client so that it can offer beA login to users from the Anwaltschaft (including ReFas / ReNos). See ??? for details.
+The KomPla frontend is registered as a BRAK IdP client so that it can offer beA login to users from the Anwaltschaft (including ReFas / ReNos). For access to the KomPla API, it exchanges access tokens from the BRAK IdP for tokens from the KomPla Identity Broker (described below).
 
 [openid-connect]: https://openid.net/developers/how-connect-works/
 
