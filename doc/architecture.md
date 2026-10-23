@@ -96,7 +96,7 @@ The KomPla frontend is registered as a BRAK IdP client so that it can offer beA 
 
 #### KomPla Identity Broker (KomPla IdP)
 
-To support multiple Identity Providers in the future (such as [Bund ID][bund-id] when the KomPla is eventually opened to the general public) while providing a single form of user accounts and access tokens to API consumer, the API backend is accompanied by the **KomPla Identity Broker** (also called **KomPla IdP**). This is an an [Keycloak][keycloak] instance which hands out KomPla API access tokens in exchange for tokens from supported third-party identity providers. The token exchange is done through the [OAuth 2.0 JWT Authorization Grant flow][jwt-grant].
+To support multiple Identity Providers in the future (such as [Bund ID][bund-id] when the KomPla is eventually opened to the general public) while providing a single form of user accounts and access tokens to API consumer, the API backend is accompanied by the **KomPla Identity Broker** (also called **KomPla IdP**). This is a [Keycloak][keycloak] instance which hands out KomPla API access tokens in exchange for tokens from supported third-party identity providers. The token exchange is done through the [OAuth 2.0 JWT Authorization Grant flow][jwt-grant].
 
 The frontend uses the KomPla IdP's token exchange features to exchange BRAK IdP access tokens for KomPla IdP ones. In non-production environments, it also offers the option of logging into the KomPla IdP with a username and password (again using OpenID Connect), which is handy for development and demos as it removes the need for a beA client certificate for logging in.
 
