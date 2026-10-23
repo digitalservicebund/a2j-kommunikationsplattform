@@ -76,7 +76,7 @@ flowchart TB
 
 The API backend is the main component that the frontend communicates it. It implements most of the KomPla's domain logic and integrations with external systems, exposing this funcitionlality as a REST API. For instance, it offers API endpoints to create _Verfahren_, send bundles of uploaded files (_Einreichungen_) to the courts and opposing parties, and retrieve Verfahren details.
 
-The API relies on access token from the KomPla Identity Provider for authentiction (see below).
+The API relies on access tokens from the KomPla Identity Provider for authentiction (see below).
 
 #### besonderes Anwaltspostfach (beA)
 
