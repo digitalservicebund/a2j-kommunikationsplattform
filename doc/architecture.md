@@ -108,7 +108,7 @@ The frontend uses the KomPla IdP's token exchange features to exchange BRAK IdP 
 
 Among the types of software systems used by the courts' employees (_Gerichtsmitarbeitende_), the following two are particularly relevant to the KomPla:
 
-- The _**E-Akte**_ (electronic file) system, which are used to store and manage documents related to _Verfahren_, including those submitted by _Beteiligte_ and created by the court.
+- _**E-Akte**_ (electronic file) systems, which are used to store and manage documents related to _Verfahren_, including those submitted by _Beteiligte_ and created by the court.
 
 - **Fachverfahren**, which implement digitalized versions of the courts' internal worfklows.
 
