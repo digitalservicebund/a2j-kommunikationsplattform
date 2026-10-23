@@ -136,7 +136,7 @@ This section summarizes the main features of the KomPla frontend architecture an
 
 The KomPla frontend is written in [TypeScript][typescript] due to JavaScript ecosystem's excellent support for full-stack web applications and the extra correctness guarantees provided by TypeScript's static type system.
 
-[**React**][react] for rendering and interactivity. [**React Router**][react-router] in [Framework Mode][react-router-framework] provides routing as well as both server-side and client-side rendering, data fetching, and action handlers, allowing us to write both the server and client as a single codebase and to hide secrets from clients (see [Architecture Principles][#architecture-principles]).
+[**React**][react] for rendering and interactivity. [**React Router**][react-router] in [Framework Mode][react-router-framework] provides routing as well as both server-side and client-side rendering, data fetching, and action handlers, allowing us to write both the server and client as a single codebase and to hide secrets from clients (see [Architecture Principles](#architecture-principles)).
 
 [react]: https://react.dev/
 [react-router]: https://reactrouter.com/
