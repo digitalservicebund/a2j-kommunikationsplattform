@@ -384,7 +384,6 @@ export default function VerfahrenNeuBearbeiten({
   actionData,
 }: Route.ComponentProps) {
   const { verfahren, einreichung, kanzleiformen } = loaderData;
-  console.log("verfahren", verfahren);
 
   const isInvalid = actionData?.status === "invalid";
   const isError = actionData?.status === "error";

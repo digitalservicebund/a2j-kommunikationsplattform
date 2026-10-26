@@ -34,6 +34,7 @@ import de from "~/services/translations/de";
 import { safeParseActionFormData } from "~/utils/actionInput";
 import { actionError, actionResultFromApiError } from "~/utils/actionResult";
 import { dispatchFormAction } from "~/utils/dispatchFormAction";
+import { logger } from "~/utils/logger.server";
 import { Route } from "./+types/verfahren.neu.dokumente";
 
 // One upload box per type, starting with the Klageschrift
@@ -58,6 +59,10 @@ const UPLOAD_BOXES: readonly {
   { typ: "SIGNATURDATEI" },
 ];
 
+// Marks a failed first upload: the Verfahren was created regardless, so the
+// page continues with it instead of creating another one on retry
+const UPLOAD_FAILED_PARAM = "uploadFehlgeschlagen";
+
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
 
@@ -76,6 +81,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
       verfahrenId,
       einreichungId: einreichung.id,
       dokumente: dokumente.filter(({ typ }) => typ !== "XJUSTIZ"),
+      uploadFailed: searchParams.has(UPLOAD_FAILED_PARAM),
     };
   }
 
@@ -87,7 +93,12 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     throw redirect(KLAGEEINREICHUNG_PATHS.gerichtAuswahl);
   }
 
-  return { verfahrenId: undefined, einreichungId: undefined, dokumente: [] };
+  return {
+    verfahrenId: undefined,
+    einreichungId: undefined,
+    dokumente: [],
+    uploadFailed: false,
+  };
 }
 
 type FormActionContext = {
@@ -131,12 +142,12 @@ async function handleUploadAction(
   let { einreichungId } = input.data;
   let targetVerfahrenId = verfahrenId;
 
-  try {
-    if (!targetVerfahrenId) {
-      if (!gerichtId) {
-        return invalidSubmissionResponse();
-      }
+  if (!targetVerfahrenId) {
+    if (!gerichtId) {
+      return invalidSubmissionResponse();
+    }
 
+    try {
       const verfahren = await createVerfahren(
         authSession,
         VerfahrenAendernInputSchema.parse({
@@ -154,12 +165,23 @@ async function handleUploadAction(
         KLAGEEINREICHUNG_NAME,
       );
       einreichungId = einreichung.id;
+    } catch (error) {
+      return actionResultFromApiError(error, {
+        message: de.shared.form.errors.uploadFailed,
+        data: actionResultData,
+      });
     }
+  }
 
-    if (!einreichungId) {
-      return invalidSubmissionResponse();
-    }
+  if (!einreichungId) {
+    return invalidSubmissionResponse();
+  }
 
+  const dokumentePath = buildKlageeinreichungPath("dokumente", {
+    verfahren: targetVerfahrenId,
+  });
+
+  try {
     await uploadDokument(
       authSession,
       targetVerfahrenId,
@@ -168,15 +190,20 @@ async function handleUploadAction(
       typ,
     );
   } catch (error) {
+    // The Verfahren was just created: continue with it, so that a retry
+    // doesn't create yet another one
+    if (!verfahrenId) {
+      logger.error({ error }, "Dokument upload failed for a new Verfahren");
+      return redirect(`${dokumentePath}&${UPLOAD_FAILED_PARAM}`);
+    }
+
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.uploadFailed,
       data: actionResultData,
     });
   }
 
-  return redirect(
-    buildKlageeinreichungPath("dokumente", { verfahren: targetVerfahrenId }),
-  );
+  return redirect(dokumentePath);
 }
 
 const DokumentDeletionInputSchema = z.object({
@@ -265,7 +292,7 @@ export default function VerfahrenNeuDokumente({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const { verfahrenId, einreichungId, dokumente } = loaderData;
+  const { verfahrenId, einreichungId, dokumente, uploadFailed } = loaderData;
 
   const { shared, routes, buttons } = useTranslations();
   const navigation = useNavigation();
@@ -324,6 +351,14 @@ export default function VerfahrenNeuDokumente({
                   type="error"
                   title={shared.form.submit.title}
                   message={actionData.error ?? shared.form.submit.message}
+                />
+              )}
+
+              {!isError && uploadFailed && (
+                <Alert
+                  type="error"
+                  title={shared.form.submit.title}
+                  message={shared.form.errors.uploadFailed}
                 />
               )}
 

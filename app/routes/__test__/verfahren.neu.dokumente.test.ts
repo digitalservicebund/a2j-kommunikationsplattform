@@ -126,6 +126,7 @@ describe("/verfahren/neu/dokumente", () => {
         verfahrenId: undefined,
         einreichungId: undefined,
         dokumente: [],
+        uploadFailed: false,
       });
     });
 
@@ -172,7 +173,21 @@ describe("/verfahren/neu/dokumente", () => {
         verfahrenId: "verfahren-1",
         einreichungId: "einreichung-1",
         dokumente: [klageschrift, signatur],
+        uploadFailed: false,
       });
+    });
+
+    it("flags a failed first upload", async () => {
+      mocks.loadVerfahrenEinreichungBundle.mockResolvedValue({
+        verfahren: makeVerfahren({ id: "verfahren-1" }),
+        einreichung: { id: "einreichung-1", name: "Klageeinreichung" },
+        dokumente: [],
+      });
+      mocks.fetchLatestBelegForEinreichung.mockResolvedValue(undefined);
+
+      expect(
+        await callLoader("?verfahren=verfahren-1&uploadFehlgeschlagen"),
+      ).toMatchObject({ uploadFailed: true });
     });
   });
 
@@ -235,6 +250,59 @@ describe("/verfahren/neu/dokumente", () => {
         response,
         "/verfahren/neu/dokumente?verfahren=verfahren-1",
       );
+    });
+
+    it("continues with the created Verfahren when the first upload fails", async () => {
+      mocks.createVerfahren.mockResolvedValue({ id: "verfahren-1" });
+      mocks.createEinreichung.mockResolvedValue({ id: "einreichung-1" });
+      mocks.uploadDokument.mockRejectedValue(
+        new ApiError("rejected", { status: 422 }),
+      );
+
+      const response = await callAction(`?gericht=${gericht.id}`, {
+        formType: "upload",
+        typ: "ANHANG",
+        file: pdfFile,
+      });
+
+      expectRedirect(
+        response,
+        "/verfahren/neu/dokumente?verfahren=verfahren-1&uploadFehlgeschlagen",
+      );
+    });
+
+    it("reports a failed upload for an existing Verfahren in place", async () => {
+      mocks.uploadDokument.mockRejectedValue(
+        new ApiError("rejected", { status: 422 }),
+      );
+
+      const result = await callAction("?verfahren=verfahren-1", {
+        formType: "upload",
+        typ: "ANHANG",
+        einreichungId: "einreichung-1",
+        file: pdfFile,
+      });
+
+      expect(result).toMatchObject({
+        data: { status: "error" },
+        init: { status: 422 },
+      });
+    });
+
+    it("creates nothing more when creating the Verfahren fails", async () => {
+      mocks.createVerfahren.mockRejectedValue(
+        new ApiError("failed", { status: 500 }),
+      );
+
+      const result = await callAction(`?gericht=${gericht.id}`, {
+        formType: "upload",
+        typ: "ANHANG",
+        file: pdfFile,
+      });
+
+      expect(result).toMatchObject({ data: { status: "error" } });
+      expect(mocks.createEinreichung).not.toHaveBeenCalled();
+      expect(mocks.uploadDokument).not.toHaveBeenCalled();
     });
 
     it("reports a missing file for the uploaded type", async () => {

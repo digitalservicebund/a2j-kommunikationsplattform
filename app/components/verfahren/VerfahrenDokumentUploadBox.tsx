@@ -109,7 +109,13 @@ export default function VerfahrenDokumentUploadBox({
       )}
 
       {canUpload && (
-        <Form method="post" encType="multipart/form-data">
+        <Form
+          method="post"
+          encType="multipart/form-data"
+          // After the first upload has created the Verfahren, going back must
+          // not return to the page that would create another one
+          replace
+        >
           <input type="hidden" name="formType" value="upload" />
           <input type="hidden" name="typ" value={typ} />
           {einreichungId && (
