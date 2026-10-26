@@ -9,22 +9,23 @@ type VerfahrenDetailsFormSectionProps = {
   kurzrubrum: string;
   claimReference: string;
   verfahrensgegenstand: string;
-  courtId: string;
-  gerichte: GerichtSelectItem[];
+  // The Empfängergericht is fixed once chosen, so it is shown but not editable
+  gericht: GerichtSelectItem | null;
+  errors?: Record<string, string[]>;
 };
 
 export default function VerfahrenDetailsFormSection({
   kurzrubrum,
   claimReference,
   verfahrensgegenstand,
-  courtId,
-  gerichte,
+  gericht,
+  errors,
 }: Readonly<VerfahrenDetailsFormSectionProps>) {
   const { routes, shared } = useTranslations();
 
   return (
     <FieldsetCard
-      title={routes.verfahrenNeu.step2.form.verfahrenDetails.title}
+      title={routes.verfahrenNeu.verfahrendetails.subline}
       TitleComponent="h3"
     >
       <InputField
@@ -32,6 +33,7 @@ export default function VerfahrenDetailsFormSection({
         id="claim-rubrum"
         name="claimRubrum"
         defaultValue={kurzrubrum}
+        errors={errors}
       />
 
       <div className="kern-gap-md flex w-full">
@@ -47,9 +49,9 @@ export default function VerfahrenDetailsFormSection({
           id="claim-court"
           label={shared.form.labels.empfaengergericht}
           className="flex-1 self-end"
-          placeholder={shared.form.select.placeholder}
-          gerichte={gerichte}
-          initialSelectedValue={courtId}
+          gerichte={gericht ? [gericht] : []}
+          initialSelectedValue={gericht?.id ?? ""}
+          disabled
         />
       </div>
 
@@ -59,6 +61,7 @@ export default function VerfahrenDetailsFormSection({
         name="subjectMatterOfTheProceedings"
         required
         defaultValue={verfahrensgegenstand}
+        errors={errors}
       />
     </FieldsetCard>
   );

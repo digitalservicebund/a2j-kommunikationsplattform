@@ -25,8 +25,8 @@ export default function VerfahrenBeklagterSection({
 
   return (
     <FieldsetCard
-      title={routes.verfahrenNeu.step2.form.beklagtePartei.title}
-      subline={routes.verfahrenNeu.step2.form.beklagtePartei.description}
+      title={routes.verfahrenNeu.beteiligte.form.beklagtePartei.title}
+      subline={routes.verfahrenNeu.beteiligte.form.beklagtePartei.description}
       TitleComponent="h3"
     >
       <p className="kern-subline -mbs-(--kern-metric-space-default) mbe-(--kern-metric-space-default)"></p>

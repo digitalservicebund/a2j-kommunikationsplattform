@@ -31,7 +31,6 @@ describe("buildKlageeinreichungTimelineSteps", () => {
     const timelineSteps = buildKlageeinreichungTimelineSteps({
       verfahrenId: "123",
       verfahrenStatusGeaendertAm: "2026-07-04T12:00:00.000Z",
-      einreichungId: "456",
       einreichungStatus: "ERSTELLT",
       einreichungDokumente: dokumente,
       detailsCompleted: {
@@ -52,7 +51,7 @@ describe("buildKlageeinreichungTimelineSteps", () => {
           "{{count}}",
           "2",
         ),
-        editTo: "/verfahren/neu/123/bearbeiten#dokumente",
+        editTo: "/verfahren/neu/dokumente?verfahren=123#dokumente-anhang",
       },
       // Completed Details
       {
@@ -64,7 +63,7 @@ describe("buildKlageeinreichungTimelineSteps", () => {
           stepTranslations.detailsAdded.rubrum,
           stepTranslations.detailsAdded.gericht,
         ].join(", "),
-        editTo: "/verfahren/neu/123/bearbeiten",
+        editTo: "/verfahren/neu/verfahrendetails?verfahren=123",
       },
       // Klageschrift
       {
@@ -72,7 +71,7 @@ describe("buildKlageeinreichungTimelineSteps", () => {
         title: stepTranslations.klageschriftUploaded.title,
         body: "Klageschrift.pdf",
         showConnector: false,
-        editTo: "/verfahren/neu?verfahrenId=123&einreichungId=456",
+        editTo: "/verfahren/neu/dokumente?verfahren=123",
       },
     ]);
   });
@@ -81,7 +80,6 @@ describe("buildKlageeinreichungTimelineSteps", () => {
     const timelineSteps = buildKlageeinreichungTimelineSteps({
       verfahrenId: "123",
       verfahrenStatusGeaendertAm: "2026-07-04T12:00:00.000Z",
-      einreichungId: "456",
       einreichungStatus: "BEANTRAGT",
       einreichungDokumente: dokumente,
       detailsCompleted: {
@@ -128,7 +126,6 @@ describe("buildKlageeinreichungTimelineSteps", () => {
     const timelineSteps = buildKlageeinreichungTimelineSteps({
       verfahrenId: "123",
       verfahrenStatusGeaendertAm: "2026-07-04T12:00:00.000Z",
-      einreichungId: "456",
       einreichungStatus: "ERSTELLT",
       einreichungDokumente: dokumente,
       detailsCompleted: {
@@ -149,7 +146,7 @@ describe("buildKlageeinreichungTimelineSteps", () => {
           "{{count}}",
           "2",
         ),
-        editTo: "/verfahren/neu/123/bearbeiten#dokumente",
+        editTo: "/verfahren/neu/dokumente?verfahren=123#dokumente-anhang",
       },
       // Completed Details
       {
@@ -159,7 +156,7 @@ describe("buildKlageeinreichungTimelineSteps", () => {
           stepTranslations.detailsAdded.klaeger,
           stepTranslations.detailsAdded.rubrum,
         ].join(", "),
-        editTo: "/verfahren/neu/123/bearbeiten",
+        editTo: "/verfahren/neu/verfahrendetails?verfahren=123",
       },
       // Klageschrift
       {
@@ -167,7 +164,7 @@ describe("buildKlageeinreichungTimelineSteps", () => {
         title: stepTranslations.klageschriftUploaded.title,
         body: "Klageschrift.pdf",
         showConnector: false,
-        editTo: "/verfahren/neu?verfahrenId=123&einreichungId=456",
+        editTo: "/verfahren/neu/dokumente?verfahren=123",
       },
     ]);
   });
@@ -176,7 +173,6 @@ describe("buildKlageeinreichungTimelineSteps", () => {
     const timelineSteps = buildKlageeinreichungTimelineSteps({
       verfahrenId: "123",
       verfahrenStatusGeaendertAm: "2026-07-04T12:00:00.000Z",
-      einreichungId: "456",
       einreichungStatus: "ERSTELLT",
       einreichungDokumente: [dokumente[0]],
       detailsCompleted: {
@@ -197,7 +193,7 @@ describe("buildKlageeinreichungTimelineSteps", () => {
           "{{count}}",
           "0",
         ),
-        editTo: "/verfahren/neu/123/bearbeiten#dokumente",
+        editTo: "/verfahren/neu/dokumente?verfahren=123#dokumente-anhang",
       },
       // Completed Details
       {
@@ -209,7 +205,7 @@ describe("buildKlageeinreichungTimelineSteps", () => {
           stepTranslations.detailsAdded.rubrum,
           stepTranslations.detailsAdded.gericht,
         ].join(", "),
-        editTo: "/verfahren/neu/123/bearbeiten",
+        editTo: "/verfahren/neu/verfahrendetails?verfahren=123",
       },
       // Klageschrift
       {
@@ -217,7 +213,7 @@ describe("buildKlageeinreichungTimelineSteps", () => {
         title: stepTranslations.klageschriftUploaded.title,
         body: "Klageschrift.pdf",
         showConnector: false,
-        editTo: "/verfahren/neu?verfahrenId=123&einreichungId=456",
+        editTo: "/verfahren/neu/dokumente?verfahren=123",
       },
     ]);
   });

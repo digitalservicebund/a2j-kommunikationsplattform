@@ -14,11 +14,7 @@ export type DokumentType = z.infer<typeof DokumentTypeSchema>;
 // system instead.
 export const UploadDokumentTypeSchema = DokumentTypeSchema.exclude(["XJUSTIZ"]);
 
-// The Klageeinreichung's only Schriftstück is the Klageschrift, uploaded in the
-// first step — further uploads to it are ancillary files.
-export const AnlagenDokumentTypeSchema = UploadDokumentTypeSchema.exclude([
-  "SCHRIFTSTUECK",
-]);
+export type UploadDokumentType = z.infer<typeof UploadDokumentTypeSchema>;
 
 export const DokumentStatusSchema = z.enum([
   "ANGELEGT",

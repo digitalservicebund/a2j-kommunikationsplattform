@@ -1,4 +1,5 @@
 import { VerfahrenTimelineStepCardProps } from "~/components/verfahren/VerfahrenTimelineStepCard";
+import { buildKlageeinreichungPath } from "~/config/klageeinreichungRoutes";
 import { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import { isDraftEinreichungStatus } from "~/domains/verfahren/services/einreichungStatus";
@@ -8,7 +9,6 @@ import { formatDate } from "~/utils/dates";
 export type EinreichungTimelineStepParams = {
   verfahrenId: string;
   verfahrenStatusGeaendertAm: string;
-  einreichungId: string;
   einreichungStatus: Einreichung["status"];
   einreichungDokumente: Pick<Dokument, "anzeigename" | "erstelltAm">[];
   detailsCompleted: {
@@ -31,7 +31,6 @@ export type KlageeinreichungTimelineStep = VerfahrenTimelineStepCardProps;
 export function buildKlageeinreichungTimelineSteps({
   verfahrenId,
   verfahrenStatusGeaendertAm,
-  einreichungId,
   einreichungStatus,
   einreichungDokumente: dokumente,
   detailsCompleted,
@@ -61,7 +60,9 @@ export function buildKlageeinreichungTimelineSteps({
       body: klageschrift.anzeigename,
       showConnector: false,
       ...(isDraftEinreichungStatus(einreichungStatus) && {
-        editTo: `/verfahren/neu?verfahrenId=${verfahrenId}&einreichungId=${einreichungId}`,
+        editTo: buildKlageeinreichungPath("dokumente", {
+          verfahren: verfahrenId,
+        }),
       }),
     });
   }
@@ -79,7 +80,9 @@ export function buildKlageeinreichungTimelineSteps({
       .filter((label): label is string => Boolean(label))
       .join(", "),
     ...(isDraftEinreichungStatus(einreichungStatus) && {
-      editTo: `/verfahren/neu/${verfahrenId}/bearbeiten`,
+      editTo: buildKlageeinreichungPath("verfahrendetails", {
+        verfahren: verfahrenId,
+      }),
     }),
   });
 
@@ -94,7 +97,7 @@ export function buildKlageeinreichungTimelineSteps({
       String(additionalDokumente.length),
     ),
     ...(isDraftEinreichungStatus(einreichungStatus) && {
-      editTo: `/verfahren/neu/${verfahrenId}/bearbeiten#dokumente`,
+      editTo: `${buildKlageeinreichungPath("dokumente", { verfahren: verfahrenId })}#dokumente-anhang`,
     }),
   });
 

@@ -232,33 +232,62 @@ export const de = {
       redeemBeitrittscode: "Beitrittscode einlösen",
       verfahrenTableLabel: "Liste der Verfahren",
     },
+    verfahrenGerichtAuswahl: {
+      headline: "Neue Klage einreichen",
+      subline: "Empfängergericht auswählen",
+      intro:
+        "Wählen Sie das Gericht aus, bei dem Sie die Klage einreichen möchten. Je nach Gericht steht Ihnen die Einreichung in der KomPla und/oder mit dem Eingabesystem zur Verfügung.",
+      klageEinreichenKompla: "Klage einreichen in der KomPla",
+      klageErstellenEingabesystem: "Klage mit dem Eingabesystem erstellen",
+    },
     verfahrenNeu: {
-      step1: {
+      dokumente: {
         headline: "Neue Klage einreichen",
-        progress: "Schritt 1 von 2",
-        subline: "Klageschrift hochladen",
+        progress: "Schritt 1 von 3",
+        subline: "Dokumente hochladen",
         intro:
-          "Laden Sie Ihre Klageschrift als PDF- oder Word-Datei hoch. Wir extrahieren die wichtigsten Daten automatisch für Sie.",
-        analysis: {
-          hint: "Wir lesen Beteiligte, Gericht und Streitgegenstand aus und füllen das Formular vor.",
-          label: "Automatische Analyse der Klageschrift aktivieren",
+          "Laden Sie die Dokumente Ihrer Klage hoch. Mit dem ersten Dokument wird das Verfahren angelegt. Die Klageschrift ist erforderlich, um fortzufahren.",
+        uploadedListLabel: "Hochgeladene Dateien",
+        types: {
+          SCHRIFTSTUECK: {
+            title: "Klageschrift",
+            description:
+              "Laden Sie Ihre Klageschrift als PDF- oder Word-Datei hoch.",
+          },
+          ANHANG: {
+            title: "Anlagen & Beweismittel",
+            description:
+              "Fügen Sie Beweismittel und weitere Dokumente hinzu (optional).",
+          },
+          SIGNATURDATEI: {
+            title: "Signaturdateien",
+            description:
+              "Fügen Sie Signaturdateien zu Ihren Dokumenten hinzu (optional).",
+            hint: "Maximale Dateigröße ist 104 MB.",
+          },
         },
         navigation: {
-          next: "Datei hochladen und weiter",
+          next: "Weiter",
+        },
+      },
+      verfahrendetails: {
+        headline: "Neue Klage einreichen",
+        progress: "Schritt 2 von 3",
+        subline: "Verfahrensdetails",
+        navigation: {
+          next: "Weiter",
         },
         form: {
           validation: {
-            file: "Bitte laden Sie eine Datei hoch.",
             verfahrensgegenstand:
               "Bitte geben Sie den Verfahrensgegenstand an.",
-            gericht: "Bitte wählen Sie ein Gericht aus.",
           },
         },
       },
-      step2: {
+      beteiligte: {
         headline: "Neue Klage einreichen",
-        progress: "Schritt 2 von 2",
-        subline: "Verfahrensbeteiligte & Details",
+        progress: "Schritt 3 von 3",
+        subline: "Verfahrensbeteiligte",
         intro: "Bitte prüfen und ergänzen Sie die Angaben zu den Beteiligten.",
         navigation: {
           next: "Weiter zur Überprüfung",
@@ -284,15 +313,6 @@ export const de = {
             title: "Beklagte Partei",
             description:
               "Alle Angaben zur beklagten Partei, dem Beklagten oder der Beklagten.",
-          },
-          verfahrenDetails: {
-            title: "Verfahrensdetails",
-          },
-          assets: {
-            title: "Anlagen & Beweismittel",
-            description:
-              "Fügen Sie Beweismittel und weitere Dokumente hinzu (optional).",
-            listLabel: "Hochgeladene Dateien",
           },
           validation: {
             klagendeParteiNachname:
@@ -437,6 +457,7 @@ export const de = {
   breadcrumb: {
     start: "Start",
     verfahrenNeu: "Neue Klage einreichen",
+    verfahrenGerichtAuswahl: "Gericht auswählen",
     verfahrenId: "Verfahren",
   },
 } as const;
