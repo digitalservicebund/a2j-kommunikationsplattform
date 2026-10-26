@@ -14,7 +14,9 @@ We tried migrating to Better Auth in the past due to issues with token recovatio
 
 Switch to [Better Auth](https://www.better-auth.com/) after all, replacing `remix-auth`, `remix-auth-oauth2` and Arctic.
 
-In accordance with the database-less design described in [ADR 004](0004-how-we-do-user-and-api-authentication.md), **no `database` will be configured.** Instead, we will let Better Auth store the account data in a cookie (via [`storeAccountCookie`](https://better-auth.com/docs/reference/options#storeaccountcookie)) so that it is preserved across server restarts and, in the future, shared across server instances.
+In accordance with the database-less design we decided on in [ADR 4](0004-how-we-do-user-and-api-authentication.md), **no `database` will be configured.** Instead, we will let Better Auth store the account data and tokens in cookies (via [`storeAccountCookie`](https://better-auth.com/docs/reference/options#storeaccountcookie)) so that it is preserved across requests, server restarts and, in the future, multiple server instances.
+
+In addition to adopting session cookies, we will move the BRAK-for-KomPla token exchange to right after beA login so that the cookie already contains the KomPla tokens. This means that we don't need to repeat the token exchange on every request to the server, obsoleting ADR 4.
 
 ## Consequences
 
