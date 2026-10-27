@@ -239,6 +239,9 @@ export const de = {
         "Wählen Sie das Gericht aus, bei dem Sie die Klage einreichen möchten. Je nach Gericht steht Ihnen die Einreichung in der KomPla und/oder mit dem Eingabesystem zur Verfügung.",
       klageEinreichenKompla: "Klage einreichen in der KomPla",
       klageErstellenEingabesystem: "Klage mit dem Eingabesystem erstellen",
+      // Announced to screen readers once a court has been selected, as the
+      // buttons for the available options appear only then
+      optionsAnnouncement: "Für {{gericht}} verfügbar: {{optionen}}.",
     },
     verfahrenNeu: {
       dokumente: {
@@ -248,6 +251,10 @@ export const de = {
         intro:
           "Laden Sie die Dokumente Ihrer Klage hoch. Mit dem ersten Dokument wird das Verfahren angelegt. Die Klageschrift ist erforderlich, um fortzufahren.",
         uploadedListLabel: "Hochgeladene Dateien",
+        errors: {
+          klageschriftExists:
+            "Es wurde bereits eine Klageschrift hochgeladen. Entfernen Sie diese, um eine andere hochzuladen.",
+        },
         types: {
           SCHRIFTSTUECK: {
             title: "Klageschrift",

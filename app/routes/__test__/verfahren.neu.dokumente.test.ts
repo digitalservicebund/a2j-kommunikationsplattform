@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => ({
   createEinreichung: vi.fn(),
   uploadDokument: vi.fn(),
   fetchDokument: vi.fn(),
+  fetchDokumente: vi.fn(),
   deleteDokument: vi.fn(),
   loadVerfahrenEinreichungBundle: vi.fn(),
   fetchLatestBelegForEinreichung: vi.fn(),
@@ -34,6 +35,7 @@ vi.mock(
   () => ({
     uploadDokument: mocks.uploadDokument,
     fetchDokument: mocks.fetchDokument,
+    fetchDokumente: mocks.fetchDokumente,
     deleteDokument: mocks.deleteDokument,
   }),
 );
@@ -340,6 +342,46 @@ describe("/verfahren/neu/dokumente", () => {
       expect(result).toMatchObject({ data: { status: "error" } });
       expect(mocks.createEinreichung).not.toHaveBeenCalled();
       expect(mocks.uploadDokument).not.toHaveBeenCalled();
+    });
+
+    it("rejects a second Klageschrift", async () => {
+      mocks.fetchDokumente.mockResolvedValue({
+        elemente: [makeDokument({ typ: "SCHRIFTSTUECK" })],
+      });
+
+      const result = await callAction(
+        "?verfahren=11111111-1111-1111-1111-111111111111",
+        {
+          formType: "upload",
+          typ: "SCHRIFTSTUECK",
+          einreichungId: "einreichung-1",
+          file: pdfFile,
+        },
+      );
+
+      expect(result).toMatchObject({
+        data: {
+          status: "error",
+          error: expect.stringContaining("bereits eine Klageschrift"),
+        },
+        init: { status: 409 },
+      });
+      expect(mocks.uploadDokument).not.toHaveBeenCalled();
+    });
+
+    it("uploads a Klageschrift when none exists yet", async () => {
+      mocks.fetchDokumente.mockResolvedValue({
+        elemente: [makeDokument({ typ: "ANHANG" })],
+      });
+
+      await callAction("?verfahren=11111111-1111-1111-1111-111111111111", {
+        formType: "upload",
+        typ: "SCHRIFTSTUECK",
+        einreichungId: "einreichung-1",
+        file: pdfFile,
+      });
+
+      expect(mocks.uploadDokument).toHaveBeenCalledOnce();
     });
 
     it("reports a missing file for the uploaded type", async () => {

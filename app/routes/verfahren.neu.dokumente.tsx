@@ -23,6 +23,7 @@ import { VERFAHRENSGEGENSTAND_ZAHLUNGSKLAGE } from "~/domains/verfahren/entities
 import {
   deleteDokument,
   fetchDokument,
+  fetchDokumente,
   uploadDokument,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
@@ -182,6 +183,32 @@ async function handleUploadAction(
   const dokumentePath = buildKlageeinreichungPath("dokumente", {
     verfahren: targetVerfahrenId,
   });
+
+  // The page only offers one Klageschrift, but e.g. a second tab could still
+  // submit another one
+  if (verfahrenId && typ === "SCHRIFTSTUECK") {
+    try {
+      const { elemente: dokumente } = await fetchDokumente(authSession, {
+        verfahrenId,
+        einreichungId,
+      });
+
+      if (dokumente.some((dokument) => dokument.typ === "SCHRIFTSTUECK")) {
+        return data(
+          actionError(
+            de.routes.verfahrenNeu.dokumente.errors.klageschriftExists,
+            { data: actionResultData },
+          ),
+          { status: 409 },
+        );
+      }
+    } catch (error) {
+      return actionResultFromApiError(error, {
+        message: de.shared.form.errors.uploadFailed,
+        data: actionResultData,
+      });
+    }
+  }
 
   try {
     await uploadDokument(

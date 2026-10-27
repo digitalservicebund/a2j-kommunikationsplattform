@@ -36,6 +36,17 @@ export default function VerfahrenNeuGerichtAuswahl({
   const selectedGericht = gerichtOptions.find(
     ({ value }) => value === selectedValue,
   );
+  const availableOptions = [
+    selectedGericht?.komplaGerichtId &&
+      routes.verfahrenGerichtAuswahl.klageEinreichenKompla,
+    selectedGericht?.isZov &&
+      routes.verfahrenGerichtAuswahl.klageErstellenEingabesystem,
+  ].filter((option): option is string => Boolean(option));
+  const optionsAnnouncement = selectedGericht
+    ? routes.verfahrenGerichtAuswahl.optionsAnnouncement
+        .replace("{{gericht}}", selectedGericht.label)
+        .replace("{{optionen}}", availableOptions.join(", "))
+    : "";
 
   return (
     <>
@@ -64,6 +75,11 @@ export default function VerfahrenNeuGerichtAuswahl({
                 selectedValue={selectedValue}
                 onChange={(event) => setSelectedValue(event.target.value)}
               />
+
+              {/* Always rendered, so screen readers pick up content changes */}
+              <p className="kern-sr-only" aria-live="polite">
+                {optionsAnnouncement}
+              </p>
 
               <div className="kern-gap-md flex flex-wrap">
                 <Link to="/" className="kern-btn kern-btn--secondary">
