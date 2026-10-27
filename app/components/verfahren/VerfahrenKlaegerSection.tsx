@@ -21,6 +21,7 @@ export type VerfahrenKlaegerSectionProps = {
   lawyerEmail: string;
   lawyerTelefon: string;
   lawyerKanzleiformId: string;
+  lawyerGeschaeftszeichen: string;
   kanzleiformen: KanzleiformSelectItem[];
   errors: Record<string, string[]>;
 };
@@ -38,6 +39,7 @@ export default function VerfahrenKlaegerSection({
   lawyerEmail,
   lawyerTelefon,
   lawyerKanzleiformId,
+  lawyerGeschaeftszeichen,
   kanzleiformen,
   errors,
 }: Readonly<VerfahrenKlaegerSectionProps>) {
@@ -120,6 +122,14 @@ export default function VerfahrenKlaegerSection({
             kanzleiformen={kanzleiformen}
             initialSelectedValue={lawyerKanzleiformId}
             error={errors.lawyerKanzleiformId?.join(" ")}
+          />
+
+          <InputField
+            id="lawyer-geschaeftszeichen"
+            name="lawyerGeschaeftszeichen"
+            label={shared.form.labels.geschaeftszeichenProzessbevollmaechtigte}
+            optional
+            defaultValue={lawyerGeschaeftszeichen}
           />
 
           <VerfahrenAdresseKontaktFields

@@ -88,9 +88,6 @@ test.describe("Verfahren creation", () => {
       detailsStep.empfaengergerichtSelect.locator("option:checked"),
     ).toHaveText("Amtsgericht Bremen");
     await detailsStep.enterRubrum("Mustermann ./. Kartal");
-    await detailsStep.enterGeschaeftszeichenProzessbevollmaechigte(
-      "Mustermann ./. Kartal",
-    );
     await detailsStep.next();
 
     // I should be redirected to the Beteiligte step
@@ -109,6 +106,7 @@ test.describe("Verfahren creation", () => {
     await beteiligteStep.addKlagendeParteiProzessbevollmaechtigte({
       bezeichnung: "Rechtsanwalt Dr. Kathrin Hölzer",
       kanzleiform: "Einzelanwalt",
+      geschaeftszeichen: "Mustermann ./. Kartal",
       strasse: "Hauptstraße",
       hausnummer: "15",
       postleitzahl: "80123",

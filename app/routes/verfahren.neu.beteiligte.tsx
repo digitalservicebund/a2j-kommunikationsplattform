@@ -31,6 +31,7 @@ import {
 import { VerfahrenAendernInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.input.schema";
 import {
   getBeteiligungByRoleCode,
+  getGeschaeftszeichenByRoleCode,
   getProzessbevollmaechtigteByReferenz,
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
@@ -79,6 +80,7 @@ const DUMMY_FORM_VALUES = {
   klagendeParteiTelefon: "0123456789",
   lawyerName: "Test-Kanzlei",
   lawyerKanzleiformId: "Einzelanwalt",
+  lawyerGeschaeftszeichen: "AZ-TEST-001",
   lawyerStrasse: "Teststraße",
   lawyerHausnummer: "2",
   lawyerPlz: "12345",
@@ -136,6 +138,7 @@ function getParteiFormValues(
 function getAnwaltFormValues(formData: FormData): AnwaltFormValues {
   return {
     name: getFormText(formData, "lawyerName"),
+    geschaeftszeichen: getFormText(formData, "lawyerGeschaeftszeichen"),
     strasse: getFormText(formData, "lawyerStrasse"),
     hausnummer: getFormText(formData, "lawyerHausnummer"),
     postleitzahl: getFormText(formData, "lawyerPlz"),
@@ -323,7 +326,7 @@ async function handleSubmitAction(
   ].filter((beteiligung) => beteiligung !== null);
 
   // Persist the Verfahren and regenerate the resulting XJustiz document.
-  // The Verfahrensdetails are kept as saved in the /neu step.
+  // The Verfahrensdetails are kept as saved in the previous step.
   try {
     const verfahren = await fetchVerfahrenById(authSession, {
       id: verfahrenId,
@@ -379,7 +382,7 @@ export const action = async ({ request, context }: Route.ActionArgs) => {
   );
 };
 
-export default function VerfahrenNeuBearbeiten({
+export default function VerfahrenNeuBeteiligte({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
@@ -447,6 +450,11 @@ export default function VerfahrenNeuBearbeiten({
     klagendeParteiAnwalt && "kanzleiform" in klagendeParteiAnwalt
       ? (klagendeParteiAnwalt.kanzleiform?.id ?? "")
       : "";
+  const klagendeParteiAnwaltGeschaeftszeichen =
+    getGeschaeftszeichenByRoleCode(
+      klagendeParteiAnwalt,
+      ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+    ) ?? "";
   const hasExistingLawyer = Boolean(klagendeParteiAnwalt);
 
   const [hasLawyer, setHasLawyer] = useState(hasExistingLawyer);
@@ -580,6 +588,9 @@ export default function VerfahrenNeuBearbeiten({
                     lawyerEmail={klagendeParteiAnwaltEmail}
                     lawyerTelefon={klagendeParteiAnwaltTelefon}
                     lawyerKanzleiformId={klagendeParteiAnwaltKanzleiformId}
+                    lawyerGeschaeftszeichen={
+                      klagendeParteiAnwaltGeschaeftszeichen
+                    }
                     kanzleiformen={kanzleiformen}
                     errors={fieldErrors || {}}
                   />

@@ -10,7 +10,9 @@ import {
   buildKlageeinreichungPath,
   KLAGEEINREICHUNG_PATHS,
 } from "~/config/klageeinreichungRoutes";
-import loadKlageeinreichungDraft from "~/domains/verfahren/application/loadKlageeinreichungDraft.server";
+import loadKlageeinreichungDraft, {
+  readVerfahrenSearchParam,
+} from "~/domains/verfahren/application/loadKlageeinreichungDraft.server";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
 import {
   type UploadDokumentType,
@@ -69,7 +71,7 @@ export const middleware = [authMiddleware];
 export async function loader({ request, context }: Route.LoaderArgs) {
   const authSession = requireAuthSession(context, "loader");
   const { searchParams } = new URL(request.url);
-  const verfahrenId = searchParams.get("verfahren");
+  const verfahrenId = readVerfahrenSearchParam(searchParams);
 
   if (verfahrenId) {
     const { einreichung, dokumente } = await loadKlageeinreichungDraft(
@@ -281,7 +283,7 @@ export const action = async ({ request, context }: Route.ActionArgs) => {
     formActionHandlers,
     {
       authSession,
-      verfahrenId: searchParams.get("verfahren") ?? undefined,
+      verfahrenId: readVerfahrenSearchParam(searchParams),
       gerichtId: searchParams.get("gericht") ?? undefined,
     },
     invalidSubmissionResponse,

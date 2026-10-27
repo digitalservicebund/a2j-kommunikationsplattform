@@ -62,11 +62,60 @@ describe("/verfahren/neu/beteiligte action", () => {
     vi.clearAllMocks();
   });
 
+  it("stores the Geschäftszeichen on the Prozessbevollmächtigte's Rolle", async () => {
+    mocks.fetchVerfahrenById.mockResolvedValue(
+      makeVerfahren({
+        id: "11111111-1111-1111-1111-111111111111",
+        gericht: makeGericht(),
+      }),
+    );
+
+    const formData = new FormData();
+    formData.set("formType", "submit");
+    formData.set("einreichungId", "einreichung-1");
+    formData.set("klagendeParteiNachname", "Müller");
+    formData.set("beklagteParteiNachname", "Weber");
+    formData.set("hasLawyer", "on");
+    formData.set("lawyerName", "Kanzlei Böhm");
+    formData.set("lawyerKanzleiformId", "kanzleiform-1");
+    formData.set("lawyerGeschaeftszeichen", "B-17/26");
+
+    await action({
+      request: new Request(
+        "http://localhost:3000/?verfahren=11111111-1111-1111-1111-111111111111",
+        {
+          method: "POST",
+          body: formData,
+        },
+      ),
+      params: {},
+      context: { get: () => authSession, set: () => {} },
+    } as unknown as ActionFunctionArgs);
+
+    expect(mocks.updateVerfahren).toHaveBeenCalledWith(
+      authSession,
+      "11111111-1111-1111-1111-111111111111",
+      expect.objectContaining({
+        beteiligungen: expect.arrayContaining([
+          expect.objectContaining({
+            beteiligtenart: "raKanzlei",
+            rollen: [
+              expect.objectContaining({
+                rollenbezeichnung_id: "id-132",
+                geschaeftszeichen: "B-17/26",
+              }),
+            ],
+          }),
+        ]),
+      }),
+    );
+  });
+
   it("keeps the Verfahrensdetails saved in the previous step", async () => {
     const gericht = makeGericht();
     mocks.fetchVerfahrenById.mockResolvedValue(
       makeVerfahren({
-        id: "verfahren-1",
+        id: "11111111-1111-1111-1111-111111111111",
         gericht,
         kurzrubrum: "Müller ./. Weber",
         verfahrensgegenstand: "Zahlungsklage",
@@ -80,17 +129,20 @@ describe("/verfahren/neu/beteiligte action", () => {
     formData.set("beklagteParteiNachname", "Weber");
 
     const response = await action({
-      request: new Request("http://localhost:3000/?verfahren=verfahren-1", {
-        method: "POST",
-        body: formData,
-      }),
+      request: new Request(
+        "http://localhost:3000/?verfahren=11111111-1111-1111-1111-111111111111",
+        {
+          method: "POST",
+          body: formData,
+        },
+      ),
       params: {},
       context: { get: () => authSession, set: () => {} },
     } as unknown as ActionFunctionArgs);
 
     expect(mocks.updateVerfahren).toHaveBeenCalledWith(
       authSession,
-      "verfahren-1",
+      "11111111-1111-1111-1111-111111111111",
       expect.objectContaining({
         verfahrensgegenstand: "Zahlungsklage",
         kurzrubrum: "Müller ./. Weber",
@@ -100,7 +152,7 @@ describe("/verfahren/neu/beteiligte action", () => {
     );
     expect(response).toBeInstanceOf(Response);
     expect((response as Response).headers.get("Location")).toBe(
-      "/verfahren/verfahren-1",
+      "/verfahren/11111111-1111-1111-1111-111111111111",
     );
   });
 });

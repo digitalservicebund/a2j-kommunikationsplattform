@@ -19,6 +19,7 @@ type NatuerlichePersonDetails = {
 type KanzleiDetails = {
   bezeichnung: string;
   kanzleiform: string;
+  geschaeftszeichen?: string;
   strasse: string;
   hausnummer: string;
   postleitzahl: string;
@@ -123,14 +124,6 @@ export class VerfahrenDetailsStepPage extends PageObject {
       .fill(value);
   }
 
-  async enterGeschaeftszeichenProzessbevollmaechigte(value: string) {
-    await this.page
-      .getByRole("textbox", {
-        name: t.shared.form.labels.geschaeftszeichenProzessbevollmaechtigte,
-      })
-      .fill(value);
-  }
-
   async next() {
     await this.page
       .getByRole("button", {
@@ -207,6 +200,13 @@ export class VerfahrenBeteiligtePage extends PageObject {
     await fieldset
       .getByRole("combobox", { name: labels.kanzleiform })
       .selectOption({ label: details.kanzleiform });
+    if (details.geschaeftszeichen) {
+      await fieldset
+        .getByRole("textbox", {
+          name: t.shared.form.labels.geschaeftszeichenProzessbevollmaechtigte,
+        })
+        .fill(details.geschaeftszeichen);
+    }
     await this.#fillBasicBeteiligungDetils(fieldset, details);
   }
 

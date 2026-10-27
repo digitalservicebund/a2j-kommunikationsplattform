@@ -11,7 +11,6 @@ describe("VerfahrenDetailsFormSection", () => {
     const { getByText, getByLabelText } = renderWithTestTranslations(
       <VerfahrenDetailsFormSection
         kurzrubrum="Müller ./. Weber"
-        claimReference="AZ-TEST-001"
         verfahrensgegenstand="Zahlungsklage"
         gericht={gericht}
       />,
@@ -30,7 +29,6 @@ describe("VerfahrenDetailsFormSection", () => {
     const { getByLabelText, getAllByRole } = renderWithTestTranslations(
       <VerfahrenDetailsFormSection
         kurzrubrum=""
-        claimReference=""
         verfahrensgegenstand=""
         gericht={gericht}
       />,
@@ -46,7 +44,6 @@ describe("VerfahrenDetailsFormSection", () => {
     const { getByText } = renderWithTestTranslations(
       <VerfahrenDetailsFormSection
         kurzrubrum=""
-        claimReference=""
         verfahrensgegenstand=""
         gericht={gericht}
         errors={{ subjectMatterOfTheProceedings: ["Pflichtfeld."] }}

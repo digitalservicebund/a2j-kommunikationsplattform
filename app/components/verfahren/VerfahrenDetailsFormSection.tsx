@@ -7,7 +7,6 @@ import FieldsetCard from "../FieldsetCard";
 
 type VerfahrenDetailsFormSectionProps = {
   kurzrubrum: string;
-  claimReference: string;
   verfahrensgegenstand: string;
   // The Empfängergericht is fixed once chosen, so it is shown but not editable
   gericht: GerichtSelectItem | null;
@@ -16,7 +15,6 @@ type VerfahrenDetailsFormSectionProps = {
 
 export default function VerfahrenDetailsFormSection({
   kurzrubrum,
-  claimReference,
   verfahrensgegenstand,
   gericht,
   errors,
@@ -28,6 +26,13 @@ export default function VerfahrenDetailsFormSection({
       title={routes.verfahrenNeu.verfahrendetails.subline}
       TitleComponent="h3"
     >
+      <VerfahrenGerichteSelect
+        id="claim-court"
+        label={shared.form.labels.empfaengergericht}
+        gerichte={gericht ? [gericht] : []}
+        initialSelectedValue={gericht?.id ?? ""}
+        disabled
+      />
       <InputField
         label={shared.form.labels.rubrum}
         id="claim-rubrum"
@@ -35,26 +40,6 @@ export default function VerfahrenDetailsFormSection({
         defaultValue={kurzrubrum}
         errors={errors}
       />
-
-      <div className="kern-gap-md flex w-full">
-        <InputField
-          className="flex-1 self-end"
-          label={shared.form.labels.geschaeftszeichenProzessbevollmaechtigte}
-          id="claim-reference"
-          name="claimReference"
-          defaultValue={claimReference}
-        />
-
-        <VerfahrenGerichteSelect
-          id="claim-court"
-          label={shared.form.labels.empfaengergericht}
-          className="flex-1 self-end"
-          gerichte={gericht ? [gericht] : []}
-          initialSelectedValue={gericht?.id ?? ""}
-          disabled
-        />
-      </div>
-
       <InputField
         label={shared.form.labels.subjectMatterOfTheProceedings}
         id="subject-matter-of-the-proceedings"

@@ -20,11 +20,11 @@ import buildBeteiligungenInputFromVerfahren from "~/domains/verfahren/services/b
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
+import { safeParseActionFormData } from "~/utils/actionInput";
 import {
-  safeParseActionFormData,
-  safeParseActionInput,
-} from "~/utils/actionInput";
-import { actionResultFromApiError } from "~/utils/actionResult";
+  actionResultFromApiError,
+  actionResultFromSchemaParsingError,
+} from "~/utils/actionResult";
 import { Route } from "./+types/verfahren.neu.verfahrendetails";
 
 // this route requires users to be logged in
@@ -88,21 +88,22 @@ export async function action({ request, context }: Route.ActionArgs) {
       id: verfahrenId,
     });
 
-    const verfahrenUpdateInput = safeParseActionInput(
-      {
-        verfahrensgegenstand: subjectMatterOfTheProceedings,
-        kurzrubrum: claimRubrum || null,
-        gerichtId: verfahren.gericht?.id,
-        beteiligungen: buildBeteiligungenInputFromVerfahren(
-          verfahren.beteiligungen,
-        ),
-      },
-      VerfahrenAendernInputSchema,
-      { errorResultData: actionResultData },
-    );
+    const verfahrenUpdateInput = VerfahrenAendernInputSchema.safeParse({
+      verfahrensgegenstand: subjectMatterOfTheProceedings,
+      kurzrubrum: claimRubrum || null,
+      gerichtId: verfahren.gericht?.id,
+      beteiligungen: buildBeteiligungenInputFromVerfahren(
+        verfahren.beteiligungen,
+      ),
+    });
 
+    // The user input was validated above, so a failure here comes from the
+    // stored court or Beteiligungen, which can't be fixed on this page
     if (!verfahrenUpdateInput.success) {
-      return verfahrenUpdateInput.error;
+      return actionResultFromSchemaParsingError(verfahrenUpdateInput.error, {
+        message: de.shared.form.errors.saveFailed,
+        data: actionResultData,
+      });
     }
 
     await updateVerfahren(authSession, verfahrenId, verfahrenUpdateInput.data);
@@ -165,7 +166,6 @@ export default function VerfahrenNeuVerfahrendetails({
 
               <VerfahrenDetailsFormSection
                 kurzrubrum={verfahren.kurzrubrum ?? ""}
-                claimReference={verfahren.aktenzeichenGericht ?? ""}
                 verfahrensgegenstand={verfahren.verfahrensgegenstand ?? ""}
                 gericht={verfahren.gericht}
                 errors={fieldErrors}
