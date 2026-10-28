@@ -24,4 +24,10 @@ export class HomePage extends PageObject {
       .getByRole("link", { name: t.routes.index.createVerfahren })
       .click();
   }
+
+  async startBeitrittscodeFlow() {
+    await this.page
+      .getByRole("link", { name: t.routes.index.redeemBeitrittscode })
+      .click();
+  }
 }

@@ -222,7 +222,7 @@ function LiftConfirmationForm({
   return (
     <Form method="POST" className="kern-mt-md kern-alert kern-alert--success">
       <input type="hidden" name="liftId" value={lift.id} />
-      <input type="hidden" name="liftEtag" value={liftETag} />
+      <input type="hidden" name="liftETag" value={liftETag} />
       <input type="hidden" name="code" value={code} />
 
       <div className="kern-alert__header">
