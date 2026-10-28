@@ -1,4 +1,4 @@
-# Architecture
+# Architecture Overview
 
 This document explains the context, principles and main elements of the _Kommunikationsplattform_ (_KomPla_) frontend architecture.
 
@@ -168,7 +168,7 @@ Integrations into the BRAK IdP and KomPla IdP are implemented using [Better Auth
 [node]: https://nodejs.org/
 [oci]: https://opencontainers.org/
 
-## Futher Resources
+## Futher Reading
 
 - [Architecture Decision Records](./adr/README.md)
-- [Development](./DEVELOPMENT.md)
+- ["Architecture" section in `doc/README.md`](./README.md#architecture)

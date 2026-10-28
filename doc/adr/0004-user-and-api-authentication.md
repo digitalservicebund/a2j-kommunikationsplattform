@@ -4,7 +4,7 @@ Date: 2026-01-27
 
 ## Status
 
-Accepted
+Superseded by [8. Switch to Better Auth (after all)](./0008-switch-to-better-auth-after-all.md)
 
 ## Context
 

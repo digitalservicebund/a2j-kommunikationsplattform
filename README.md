@@ -1,4 +1,4 @@
-# A2J / Access to Justice / Zugang zu Recht — Kommunikationsplattform für Zivilverfahren
+# A2J / Access to Justice / Zugang zu Recht — Kommunikationsplattform für Zivilverfahren — Frontend
 
 [![Pipeline](https://github.com/digitalservicebund/a2j-kommunikationsplattform/actions/workflows/pipeline.yml/badge.svg)](https://github.com/digitalservicebund/a2j-kommunikationsplattform/actions/workflows/pipeline.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=digitalservicebund_a2j-kommunikationsplattform&metric=alert_status&token=3a9d166b3c1d77115a6389ffdc28b32e09beb5e0)](https://sonarcloud.io/summary/new_code?id=digitalservicebund_a2j-kommunikationsplattform)
@@ -7,10 +7,7 @@ This repository contains the web frontend for the _Kommunikationsplattform_ (com
 
 ## Documentation
 
-- [Architecture](./doc/architecture.md)
-- [Development](./doc/DEVELOPMENT.md)
-- [Contributing](./doc/CONTRIBUTING.md)
-- [Security](./doc/SECURITY.md)
+See [`doc/README.md`](./doc/README.md).
 
 ## License
 
