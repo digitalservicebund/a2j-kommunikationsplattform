@@ -64,6 +64,8 @@ export default function InputField({
         )}
         id={id}
         name={name}
+        aria-required={!optional}
+        aria-invalid={!!error}
         aria-disabled={disabled}
         aria-required={required || ariaRequired || undefined}
         aria-describedby={
