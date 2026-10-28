@@ -29,5 +29,4 @@ Bitte stelle sicher, dass deine Änderungen getestet wurden, bevor du einen Pull
 
 ## Resources
 
-- [Development guide](./doc/DEVELOPMENT.md)
-- [Architecture documentation](./doc/architecture.md)
+- [Documentation](./doc/README.md)
