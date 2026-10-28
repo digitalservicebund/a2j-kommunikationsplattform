@@ -2,7 +2,8 @@ import { ChangeEvent } from "react";
 import { Form } from "react-router";
 import Button from "~/components/Button";
 import InputFile from "~/components/InputFile";
-import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
+import VerfahrenDokumentItem from "~/components/verfahren/VerfahrenDokumentItem";
+import VerfahrenDokumentSichtbarkeitForm from "~/components/verfahren/VerfahrenDokumentSichtbarkeitForm";
 import type {
   Dokument,
   UploadDokumentType,
@@ -13,6 +14,7 @@ import FieldsetCard from "../FieldsetCard";
 export type VerfahrenDokumentUploadBoxProps = {
   typ: UploadDokumentType;
   dokumente: Dokument[];
+  verfahrenId: string | undefined;
   einreichungId: string | undefined;
   // Only one Dokument may be uploaded, e.g. the Klageschrift
   single?: boolean;
@@ -28,6 +30,7 @@ export type VerfahrenDokumentUploadBoxProps = {
 export default function VerfahrenDokumentUploadBox({
   typ,
   dokumente,
+  verfahrenId,
   einreichungId,
   single = false,
   accept,
@@ -62,47 +65,56 @@ export default function VerfahrenDokumentUploadBox({
       subline={description}
       TitleComponent="h3"
     >
-      {dokumente.length > 0 && (
+      {/* Uploaded Dokumente always belong to an existing Verfahren */}
+      {verfahrenId && einreichungId && dokumente.length > 0 && (
         <ul
           className="kern-mt-md kern-mb-lg kern-px-none kern-gap-md flex w-full flex-col"
           aria-label={routes.verfahrenNeu.dokumente.uploadedListLabel}
         >
           {dokumente.map((dokument) => (
-            <li
-              key={dokument.id}
-              className="kern-p-md align-center kern-gap-md flex flex-wrap rounded-(--kern-metric-border-radius-default) border border-(--kern-color-decorative-border-contextual)"
-            >
-              <div className="flex-1">
-                <div className="kern-body kern-body--bold">
-                  {dokument.anzeigename}
+            <li key={dokument.id}>
+              <VerfahrenDokumentItem
+                dokument={dokument}
+                verfahrenId={verfahrenId}
+                einreichungId={einreichungId}
+              >
+                <div className="kern-gap-sm flex items-end">
+                  <VerfahrenDokumentSichtbarkeitForm
+                    dokument={dokument}
+                    verfahrenId={verfahrenId}
+                    einreichungId={einreichungId}
+                    disabled={disabled}
+                  />
+                  <Form method="post" className="flex items-center">
+                    <input
+                      type="hidden"
+                      name="einreichungId"
+                      value={einreichungId}
+                    />
+                    <input
+                      type="hidden"
+                      name="dokumentId"
+                      value={dokument.id}
+                    />
+                    <Button
+                      appearance="secondary"
+                      className="kern-btn--x-small border-feedback-danger"
+                      type="submit"
+                      name="formType"
+                      value="delete"
+                      disabled={disabled}
+                    >
+                      <span
+                        className="kern-icon kern-icon--delete bg-feedback-danger"
+                        aria-hidden="true"
+                      ></span>
+                      <span className="kern-label kern-sr-only">
+                        {shared.form.deleteDokument.label}
+                      </span>
+                    </Button>
+                  </Form>
                 </div>
-                <div className="kern-body kern-body--small">
-                  {formatDokumentSize(dokument.sizeInBytes ?? 0)}
-                </div>
-              </div>
-
-              <Form method="post" className="flex items-center">
-                <input
-                  type="hidden"
-                  name="einreichungId"
-                  value={einreichungId}
-                />
-                <input type="hidden" name="dokumentId" value={dokument.id} />
-                <Button
-                  appearance="secondary"
-                  className="kern-btn--x-small"
-                  type="submit"
-                  name="formType"
-                  value="delete"
-                  disabled={disabled}
-                  label={shared.form.deleteDokument.label}
-                >
-                  <span
-                    className="kern-icon kern-icon--delete"
-                    aria-hidden="true"
-                  ></span>
-                </Button>
-              </Form>
+              </VerfahrenDokumentItem>
             </li>
           ))}
         </ul>

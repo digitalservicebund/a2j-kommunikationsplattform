@@ -69,6 +69,15 @@ export const de = {
       select: {
         placeholder: "Bitte auswählen",
       },
+      sichtbarkeit: {
+        label: "Sichtbarkeit",
+        alleParteien: "Alle Parteien",
+        nurGerichtUndPartei: "Nur Gericht und zugeordnete Partei",
+        // Only read by screen readers, to tell the selects of several
+        // Dokumente apart
+        dokumentLabelSuffix: "von {{name}}",
+        updateFailed: "Die Sichtbarkeit konnte nicht geändert werden.",
+      },
       selectDokumentType: {
         label: "Dateityp",
         hint: "Wählen Sie einen Dateityp zur besseren Zuordnung",
@@ -410,11 +419,6 @@ export const de = {
       weitereEinreichung: {
         headline: "Neue Einreichung erstellen",
         artLabel: "Art der Einreichung",
-        sichtbarkeit: {
-          label: "Sichtbarkeit",
-          alleParteien: "Alle Parteien",
-          nurGerichtUndPartei: "Nur Gericht und zugeordnete Partei",
-        },
         upload: "Hochladen",
         uploading: "Wird hochgeladen...",
         submit: "Einreichen & Abgabe ans Gericht",

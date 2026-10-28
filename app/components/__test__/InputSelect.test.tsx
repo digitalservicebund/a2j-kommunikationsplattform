@@ -117,4 +117,26 @@ describe("InputSelect", () => {
     expect(select).toHaveAttribute("id", "test-select");
     expect(label).toHaveAttribute("for", "test-select");
   });
+
+  it("links each select to its own error message", () => {
+    renderWithTestTranslations(
+      <>
+        <InputSelect
+          {...defaultProps}
+          id="select-a"
+          label="A"
+          error="Fehler A"
+        />
+        <InputSelect
+          {...defaultProps}
+          id="select-b"
+          label="B"
+          error="Fehler B"
+        />
+      </>,
+    );
+
+    expect(screen.getByLabelText("A")).toHaveAccessibleDescription("Fehler A");
+    expect(screen.getByLabelText("B")).toHaveAccessibleDescription("Fehler B");
+  });
 });

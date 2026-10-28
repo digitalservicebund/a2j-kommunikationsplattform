@@ -163,6 +163,33 @@ export async function deleteDokument(
   return { success: false };
 }
 
+type UpdateDokumentSichtbarkeitOptions = {
+  verfahrenId: string;
+  einreichungId: string;
+  id: string;
+  sichtbarkeitAlle: boolean;
+  eTag: string;
+};
+
+/**
+ * Changes who can see the Dokument. Only possible until the Dokument has been
+ * submitted (the API responds with 409 afterwards).
+ */
+export async function updateDokumentSichtbarkeit(
+  authSession: AuthSession,
+  options: UpdateDokumentSichtbarkeitOptions,
+): Promise<Dokument> {
+  return apiRequest({
+    authSession,
+    path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.einreichungId}/dokumente/${options.id}`,
+    method: "PATCH",
+    body: { sichtbarkeit_alle: options.sichtbarkeitAlle },
+    eTag: options.eTag,
+    schema: DokumentSchema,
+    errorMessage: `Sichtbarkeit of Dokument with id ${options.id} could not be updated.`,
+  });
+}
+
 type DeleteDokumentFromEinreichungOptions = {
   authSession: AuthSession;
   verfahrenId: string;

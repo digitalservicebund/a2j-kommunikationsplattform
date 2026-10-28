@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   fetchDokument: vi.fn(),
   fetchDokumente: vi.fn(),
   deleteDokument: vi.fn(),
+  updateDokumentSichtbarkeit: vi.fn(),
   loadVerfahrenEinreichungBundle: vi.fn(),
   fetchLatestBelegForEinreichung: vi.fn(),
 }));
@@ -37,6 +38,7 @@ vi.mock(
     fetchDokument: mocks.fetchDokument,
     fetchDokumente: mocks.fetchDokumente,
     deleteDokument: mocks.deleteDokument,
+    updateDokumentSichtbarkeit: mocks.updateDokumentSichtbarkeit,
   }),
 );
 vi.mock(
@@ -449,6 +451,75 @@ describe("/verfahren/neu/dokumente", () => {
 
       expectRedirect(response, "/verfahren/neu/gericht-auswahl");
       expect(mocks.uploadDokument).not.toHaveBeenCalled();
+    });
+
+    it("changes the Sichtbarkeit of a Dokument", async () => {
+      mocks.fetchDokument.mockResolvedValue({ eTag: "etag-1" });
+
+      const result = await callAction(
+        "?verfahren=11111111-1111-1111-1111-111111111111",
+        {
+          formType: "sichtbarkeit",
+          einreichungId: "einreichung-1",
+          dokumentId: "dok-1",
+          sichtbarkeitAlle: "false",
+        },
+      );
+
+      expect(mocks.updateDokumentSichtbarkeit).toHaveBeenCalledWith(
+        authSession,
+        {
+          verfahrenId: "11111111-1111-1111-1111-111111111111",
+          einreichungId: "einreichung-1",
+          id: "dok-1",
+          sichtbarkeitAlle: false,
+          eTag: "etag-1",
+        },
+      );
+      expect(result).toMatchObject({
+        status: "success",
+        data: { formType: "sichtbarkeit", dokumentId: "dok-1" },
+      });
+    });
+
+    it("reports a failed Sichtbarkeit change", async () => {
+      mocks.fetchDokument.mockResolvedValue({ eTag: "etag-1" });
+      mocks.updateDokumentSichtbarkeit.mockRejectedValue(
+        new ApiError("already submitted", { status: 409 }),
+      );
+
+      const result = await callAction(
+        "?verfahren=11111111-1111-1111-1111-111111111111",
+        {
+          formType: "sichtbarkeit",
+          einreichungId: "einreichung-1",
+          dokumentId: "dok-1",
+          sichtbarkeitAlle: "false",
+        },
+      );
+
+      expect(result).toMatchObject({
+        data: {
+          status: "error",
+          error: "Die Sichtbarkeit konnte nicht geändert werden.",
+        },
+        init: { status: 409 },
+      });
+    });
+
+    it("rejects an invalid Sichtbarkeit", async () => {
+      const result = await callAction(
+        "?verfahren=11111111-1111-1111-1111-111111111111",
+        {
+          formType: "sichtbarkeit",
+          einreichungId: "einreichung-1",
+          dokumentId: "dok-1",
+          sichtbarkeitAlle: "maybe",
+        },
+      );
+
+      expect(result).toMatchObject({ data: { status: "invalid" } });
+      expect(mocks.updateDokumentSichtbarkeit).not.toHaveBeenCalled();
     });
 
     it("rejects a deletion without a Verfahren", async () => {

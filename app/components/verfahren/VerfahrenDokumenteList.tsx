@@ -87,11 +87,11 @@ export default function VerfahrenDokumenteList({
                   <input type="hidden" name="dokumentId" value={dokument.id} />
                   <Button
                     appearance="secondary"
-                    className="kern-btn--x-small"
+                    className="kern-btn--x-small border-feedback-danger"
                     type="submit"
                   >
                     <span
-                      className="kern-icon kern-icon--delete"
+                      className="kern-icon kern-icon--delete bg-feedback-danger"
                       aria-hidden="true"
                     ></span>
                     <span className="kern-label kern-sr-only">

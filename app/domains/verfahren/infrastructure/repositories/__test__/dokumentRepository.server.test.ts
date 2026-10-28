@@ -8,9 +8,11 @@ import {
   fetchDokumentDownloadLink,
   fetchDokumente,
   fetchDokumentValidierungsstatus,
+  updateDokumentSichtbarkeit,
   uploadDokument,
   uploadDokumentDatei,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
+import { DokumentSchema } from "~/domains/verfahren/infrastructure/schemas/dokument.schema";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 
 const mocks = vi.hoisted(() => ({
@@ -214,6 +216,33 @@ describe("fetchDokumentValidierungsstatus", () => {
       }),
     );
     expect(result).toEqual(status);
+  });
+});
+
+describe("updateDokumentSichtbarkeit", () => {
+  it("calls the PATCH endpoint with the Sichtbarkeit and eTag", async () => {
+    const dokument = { id: "d-1", sichtbarkeitAlle: false };
+    mocks.apiRequest.mockResolvedValueOnce(dokument);
+
+    const result = await updateDokumentSichtbarkeit(makeAuthSession(), {
+      id: "d-1",
+      verfahrenId: "v-1",
+      einreichungId: "e-1",
+      sichtbarkeitAlle: false,
+      eTag: 'W/"0"',
+    });
+
+    expect(result).toBe(dokument);
+    expect(mocks.apiRequest).toHaveBeenCalledWith({
+      authSession: makeAuthSession(),
+      path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1",
+      method: "PATCH",
+      body: { sichtbarkeit_alle: false },
+      eTag: 'W/"0"',
+      schema: DokumentSchema,
+      errorMessage:
+        "Sichtbarkeit of Dokument with id d-1 could not be updated.",
+    });
   });
 });
 

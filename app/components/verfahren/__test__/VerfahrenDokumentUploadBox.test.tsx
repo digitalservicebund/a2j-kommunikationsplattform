@@ -12,6 +12,7 @@ import VerfahrenDokumentUploadBox, {
 const baseProps: VerfahrenDokumentUploadBoxProps = {
   typ: "ANHANG",
   dokumente: [],
+  verfahrenId: "verfahren-1",
   einreichungId: "einreichung-1",
   disabled: false,
   showFileError: false,
@@ -67,6 +68,24 @@ describe("VerfahrenDokumentUploadBox", () => {
 
     expect(await findByText("a.pdf")).toBeInTheDocument();
     expect(getAllByRole("button", { name: "Entfernen" })).toHaveLength(2);
+  });
+
+  it("lets the uploaded Dokumente be opened and downloaded", async () => {
+    const { findByRole, getByRole } = renderBox({
+      dokumente: [
+        makeDokument({ id: "dok-1", anzeigename: "a.pdf", typ: "ANHANG" }),
+      ],
+    });
+
+    const dateiPath =
+      "/verfahren/verfahren-1/einreichungen/einreichung-1/dokumente/dok-1/datei";
+    expect(
+      await findByRole("link", { name: "a.pdf (öffnet in neuem Tab)" }),
+    ).toHaveAttribute("href", `${dateiPath}?disposition=inline`);
+    expect(getByRole("link", { name: "a.pdf herunterladen" })).toHaveAttribute(
+      "href",
+      `${dateiPath}?disposition=attachment`,
+    );
   });
 
   it("hides the file input of a single-Dokument box once uploaded", async () => {

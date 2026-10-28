@@ -3,8 +3,8 @@ import { Form, useActionData, useNavigation } from "react-router";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import InputFile from "~/components/InputFile";
-import InputSelect from "~/components/InputSelect";
 import VerfahrenDokumentTypeSelect from "~/components/verfahren/VerfahrenDokumentTypeSelect";
+import VerfahrenSichtbarkeitSelect from "~/components/verfahren/VerfahrenSichtbarkeitSelect";
 import { useTranslations } from "~/services/translations/context";
 import type { ActionResult } from "~/utils/actionResult";
 
@@ -23,7 +23,7 @@ export default function VerfahrenWeitereDokumentUploadForm({
   const labels = routes.verfahrenId.weitereEinreichung;
 
   const [selectedDokumentType, setSelectedDokumentType] = useState("");
-  const [sichtbarkeitAlle, setSichtbarkeitAlle] = useState("true");
+  const [sichtbarkeitAlle, setSichtbarkeitAlle] = useState(true);
 
   const navigation = useNavigation();
   const actionData = useActionData<ActionResult<UploadActionData>>();
@@ -79,15 +79,10 @@ export default function VerfahrenWeitereDokumentUploadForm({
         }
       />
 
-      <InputSelect
+      <VerfahrenSichtbarkeitSelect
         id="sichtbarkeitAlle"
-        label={labels.sichtbarkeit.label}
-        options={[
-          { value: "true", label: labels.sichtbarkeit.alleParteien },
-          { value: "false", label: labels.sichtbarkeit.nurGerichtUndPartei },
-        ]}
-        selectedValue={sichtbarkeitAlle}
-        onChange={(event) => setSichtbarkeitAlle(event.target.value)}
+        sichtbarkeitAlle={sichtbarkeitAlle}
+        onChange={setSichtbarkeitAlle}
       />
 
       {uploadError && <Alert type="error" title={uploadError} />}

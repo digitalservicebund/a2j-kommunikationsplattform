@@ -24,6 +24,7 @@ import {
   deleteDokument,
   fetchDokument,
   fetchDokumente,
+  updateDokumentSichtbarkeit,
   uploadDokument,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
@@ -35,7 +36,11 @@ import { AuthSession } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
 import { safeParseActionFormData } from "~/utils/actionInput";
-import { actionError, actionResultFromApiError } from "~/utils/actionResult";
+import {
+  actionError,
+  actionResultFromApiError,
+  actionSuccess,
+} from "~/utils/actionResult";
 import { dispatchFormAction } from "~/utils/dispatchFormAction";
 import { logger } from "~/utils/logger.server";
 import { Route } from "./+types/verfahren.neu.dokumente";
@@ -294,9 +299,68 @@ async function handleDeleteAction(
   );
 }
 
+const DokumentSichtbarkeitInputSchema = z.object({
+  einreichungId: z.string().min(1),
+  dokumentId: z.string().min(1),
+  sichtbarkeitAlle: z.enum(["true", "false"]).transform((v) => v === "true"),
+});
+
+// Changes who can see an uploaded Dokument. Submitted via a fetcher, so the
+// page stays in place and the loader is revalidated afterwards.
+async function handleSichtbarkeitAction(
+  formData: FormData,
+  { authSession, verfahrenId }: FormActionContext,
+) {
+  const actionResultData = {
+    formType: "sichtbarkeit",
+    dokumentId: formData.get("dokumentId"),
+  } as const;
+
+  if (!verfahrenId) {
+    return invalidSubmissionResponse();
+  }
+
+  const input = safeParseActionFormData(
+    formData,
+    DokumentSichtbarkeitInputSchema,
+    { errorResultData: actionResultData },
+  );
+
+  if (!input.success) {
+    return input.error;
+  }
+
+  const { einreichungId, dokumentId, sichtbarkeitAlle } = input.data;
+
+  try {
+    // The API requires the current eTag for the update
+    const { eTag } = await fetchDokument(authSession, {
+      verfahrenId,
+      einreichungId,
+      id: dokumentId,
+    });
+
+    await updateDokumentSichtbarkeit(authSession, {
+      verfahrenId,
+      einreichungId,
+      id: dokumentId,
+      sichtbarkeitAlle,
+      eTag: eTag ?? "",
+    });
+  } catch (error) {
+    return actionResultFromApiError(error, {
+      message: de.shared.form.sichtbarkeit.updateFailed,
+      data: actionResultData,
+    });
+  }
+
+  return actionSuccess(actionResultData);
+}
+
 const formActionHandlers = {
   upload: handleUploadAction,
   delete: handleDeleteAction,
+  sichtbarkeit: handleSichtbarkeitAction,
 } as const;
 
 export const action = async ({ request, context }: Route.ActionArgs) => {
@@ -398,6 +462,7 @@ export default function VerfahrenNeuDokumente({
                   dokumente={dokumente.filter(
                     (dokument) => dokument.typ === typ,
                   )}
+                  verfahrenId={verfahrenId}
                   einreichungId={einreichungId}
                   single={single}
                   accept={accept}
