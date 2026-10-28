@@ -95,7 +95,10 @@ export default function VerfahrenDokumenteList({
                       aria-hidden="true"
                     ></span>
                     <span className="kern-label kern-sr-only">
-                      {shared.form.deleteDokument.label}
+                      {shared.form.deleteDokument.labelForDokument.replace(
+                        "{{name}}",
+                        dokument.anzeigename,
+                      )}
                     </span>
                   </Button>
                   {statusBadge}

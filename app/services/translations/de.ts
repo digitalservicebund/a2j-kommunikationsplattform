@@ -92,7 +92,7 @@ export const de = {
         submitting: "Wird hochgeladen...",
       },
       deleteDokument: {
-        label: "Entfernen",
+        labelForDokument: "{{name}} entfernen",
       },
       submit: {
         title: "Fehler beim Absenden des Formulars",

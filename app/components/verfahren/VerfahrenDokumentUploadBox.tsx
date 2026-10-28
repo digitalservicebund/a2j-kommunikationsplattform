@@ -85,7 +85,13 @@ export default function VerfahrenDokumentUploadBox({
                     einreichungId={einreichungId}
                     disabled={disabled}
                   />
-                  <Form method="post" className="flex items-center">
+                  <Form
+                    method="post"
+                    className="flex items-center"
+                    // Deleting reloads the same page, so it shouldn't add
+                    // another history entry
+                    replace
+                  >
                     <input
                       type="hidden"
                       name="einreichungId"
@@ -102,14 +108,20 @@ export default function VerfahrenDokumentUploadBox({
                       type="submit"
                       name="formType"
                       value="delete"
-                      disabled={disabled}
+                      // aria-disabled keeps the button focusable, as KERN
+                      // recommends; it doesn't block the submit itself
+                      aria-disabled={disabled}
+                      onClick={(event) => disabled && event.preventDefault()}
                     >
                       <span
                         className="kern-icon kern-icon--delete bg-feedback-danger"
                         aria-hidden="true"
                       ></span>
                       <span className="kern-label kern-sr-only">
-                        {shared.form.deleteDokument.label}
+                        {shared.form.deleteDokument.labelForDokument.replace(
+                          "{{name}}",
+                          dokument.anzeigename,
+                        )}
                       </span>
                     </Button>
                   </Form>

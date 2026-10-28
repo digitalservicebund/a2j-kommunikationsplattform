@@ -67,7 +67,7 @@ describe("VerfahrenDokumentUploadBox", () => {
     });
 
     expect(await findByText("a.pdf")).toBeInTheDocument();
-    expect(getAllByRole("button", { name: "Entfernen" })).toHaveLength(2);
+    expect(getAllByRole("button", { name: /entfernen$/ })).toHaveLength(2);
   });
 
   it("lets the uploaded Dokumente be opened and downloaded", async () => {
@@ -120,6 +120,28 @@ describe("VerfahrenDokumentUploadBox", () => {
       "aria-describedby",
       "file-anhang-hint file-anhang-error",
     );
+  });
+
+  it("names the Dokument in its delete button", async () => {
+    const { findByRole } = renderBox({
+      dokumente: [makeDokument({ anzeigename: "a.pdf", typ: "ANHANG" })],
+    });
+
+    expect(
+      await findByRole("button", { name: "a.pdf entfernen" }),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps the delete button focusable but blocks it while disabled", async () => {
+    const { findByRole } = renderBox({
+      disabled: true,
+      dokumente: [makeDokument({ anzeigename: "a.pdf", typ: "ANHANG" })],
+    });
+
+    const button = await findByRole("button", { name: "a.pdf entfernen" });
+    expect(button).not.toBeDisabled();
+    expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(fireEvent.click(button)).toBe(false);
   });
 
   it("blocks opening the file picker while disabled", async () => {

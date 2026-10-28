@@ -121,7 +121,10 @@ describe("VerfahrenDokumenteList", () => {
   it("shows a delete action for a deletable Dokument", () => {
     renderList([buildDokument({ typ: "ANHANG", id: "d-1" })]);
 
-    const deleteButton = screen.getByRole("button", { name: /entfernen/i });
+    // Names the Dokument, so the buttons of several Dokumente can be told apart
+    const deleteButton = screen.getByRole("button", {
+      name: "Klageschrift.pdf entfernen",
+    });
     expect(deleteButton).toBeInTheDocument();
     expect(deleteButton.closest("form")).toHaveFormValues({
       formType: "delete",
