@@ -62,6 +62,8 @@ export default function InputField({
         )}
         id={id}
         name={name}
+        aria-required={!optional}
+        aria-invalid={!!error}
         aria-disabled={disabled}
         aria-describedby={
           [hintId, errorId].filter(Boolean).join(" ") || undefined
