@@ -14,6 +14,7 @@ function renderForm({
   actionResult = { status: "success", data: { formType: "sichtbarkeit" } },
 }: { disabled?: boolean; actionResult?: unknown } = {}) {
   const submissions: Record<string, FormDataEntryValue>[] = [];
+  const submissionUrls: string[] = [];
   const Stub = createRoutesStub([
     {
       path: "/verfahren/neu/dokumente",
@@ -24,12 +25,12 @@ function renderForm({
             anzeigename: "a.pdf",
             sichtbarkeitAlle: true,
           })}
-          verfahrenId={verfahrenId}
           einreichungId="einreichung-1"
           disabled={disabled}
         />
       ),
       action: vi.fn(async ({ request }: { request: Request }) => {
+        submissionUrls.push(request.url);
         submissions.push(Object.fromEntries(await request.formData()));
         return actionResult;
       }),
@@ -43,6 +44,7 @@ function renderForm({
       />,
     ),
     submissions,
+    submissionUrls,
   };
 }
 
@@ -70,6 +72,19 @@ describe("VerfahrenDokumentSichtbarkeitForm", () => {
         },
       ]),
     );
+  });
+
+  it("submits to the current route, keeping its search params", async () => {
+    const { findByLabelText, submissionUrls } = renderForm();
+
+    fireEvent.change(await findByLabelText("Sichtbarkeit von a.pdf"), {
+      target: { value: "false" },
+    });
+
+    await waitFor(() => expect(submissionUrls).toHaveLength(1));
+    const url = new URL(submissionUrls[0] ?? "");
+    expect(url.pathname).toBe("/verfahren/neu/dokumente");
+    expect(url.searchParams.get("verfahren")).toBe(verfahrenId);
   });
 
   it("shows the error of a failed change", async () => {

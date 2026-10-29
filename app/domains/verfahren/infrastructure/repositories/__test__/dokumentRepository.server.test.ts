@@ -378,6 +378,23 @@ describe("deleteDokumentFromEinreichung", () => {
     expect(mocks.apiRequest).toHaveBeenCalledTimes(2);
   });
 
+  test("allows deleting a Schriftstück of the Klageeinreichung where it's replaceable", async () => {
+    mockLookups([klageschrift, anlage]);
+    mocks.apiRequest
+      .mockResolvedValueOnce({ data: { id: "d-1" }, eTag: 'W/"1"' })
+      .mockResolvedValueOnce({ ok: true });
+
+    const result = await deleteDokumentFromEinreichung({
+      authSession: makeAuthSession(),
+      verfahrenId: "v-1",
+      einreichungId: "e-1",
+      dokumentId: "d-1",
+      allowSchriftstueck: true,
+    });
+
+    expect(result).toEqual({ status: "deleted" });
+  });
+
   test("allows deleting a Schriftstück of a Weitere Einreichung", async () => {
     mockLookups([klageschrift], "Schriftsatz");
     mocks.apiRequest

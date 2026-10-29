@@ -65,6 +65,10 @@ test.describe("Verfahren creation", () => {
       "SCHRIFTSTUECK",
       "klageschrift.pdf",
     );
+    await dokumenteStep.expectValidierungsstatusToBeShown(
+      "SCHRIFTSTUECK",
+      "klageschrift.pdf",
+    );
     await dokumenteStep.upload("ANHANG", "beweismittel2.pdf");
     await dokumenteStep.expectDokumentToHaveBeenUploaded(
       "ANHANG",

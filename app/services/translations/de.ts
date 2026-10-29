@@ -57,9 +57,10 @@ export const de = {
     unknown: "(Unbekannt)",
     missing: "(Nicht verfügbar)",
     dokumentType: {
-      anhang: "Anhang",
-      schriftstueck: "Schriftstück",
-      xjustiz: "XJustiz",
+      ANHANG: "Anlage",
+      SCHRIFTSTUECK: "Schriftstück",
+      SIGNATURDATEI: "Signaturdatei",
+      XJUSTIZ: "XJustiz",
     },
     form: {
       search: {
@@ -68,6 +69,15 @@ export const de = {
       },
       select: {
         placeholder: "Bitte auswählen",
+      },
+      uploadedDokumenteListLabel: "Hochgeladene Dateien",
+      // One upload section per Dokument type
+      dokumentUpload: {
+        typLegend: "Art des Dokuments",
+        // Only one Schriftstück per Einreichung
+        alreadyUploaded: "(bereits hochgeladen)",
+        // Signaturdateien aren't PDF or Word files
+        signaturdateiHint: "Maximale Dateigröße ist 104 MB.",
       },
       sichtbarkeit: {
         label: "Sichtbarkeit",
@@ -78,18 +88,11 @@ export const de = {
         dokumentLabelSuffix: "von {{name}}",
         updateFailed: "Die Sichtbarkeit konnte nicht geändert werden.",
       },
-      selectDokumentType: {
-        label: "Dateityp",
-        hint: "Wählen Sie einen Dateityp zur besseren Zuordnung",
-        error: "Bitte wählen Sie einen Dateityp aus.",
-      },
       uploadDokument: {
         label: "Datei hochladen",
         hint: "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
         error:
           "Keine Datei ausgewählt? Ist ihre Datei zu groß? Oder der Dateityp wird nicht unterstützt. Bitte laden Sie eine Datei mit maximal 104 MB hoch. Unterstützte Dateitypen sind: *.pdf, *.doc, *.docx und *.xml (XJustiz).",
-        submit: "Hochladen",
-        submitting: "Wird hochgeladen...",
       },
       deleteDokument: {
         labelForDokument: "{{name}} entfernen",
@@ -103,6 +106,8 @@ export const de = {
         invalidSubmission: "Ungültige Formularübermittlung.",
         saveFailed: "Die Änderungen konnten nicht gespeichert werden.",
         uploadFailed: "Das Dokument konnte nicht hochgeladen werden.",
+        schriftstueckExists:
+          "Es wurde bereits ein Schriftstück hochgeladen. Entfernen Sie es, um ein anderes hochzuladen.",
         submissionFailed: "Die Klage konnte nicht gespeichert werden.",
         einreichungFailed: "Die Einreichung konnte nicht übermittelt werden.",
         createEinreichungFailed:
@@ -259,29 +264,8 @@ export const de = {
         subline: "Dokumente hochladen",
         intro:
           "Laden Sie die Dokumente Ihrer Klage hoch. Mit dem ersten Dokument wird das Verfahren angelegt. Die Klageschrift ist erforderlich, um fortzufahren.",
-        uploadedListLabel: "Hochgeladene Dateien",
-        errors: {
-          klageschriftExists:
-            "Es wurde bereits eine Klageschrift hochgeladen. Entfernen Sie diese, um eine andere hochzuladen.",
-        },
-        types: {
-          SCHRIFTSTUECK: {
-            title: "Klageschrift",
-            description:
-              "Laden Sie Ihre Klageschrift als PDF- oder Word-Datei hoch.",
-          },
-          ANHANG: {
-            title: "Anlagen & Beweismittel",
-            description:
-              "Fügen Sie Beweismittel und weitere Dokumente hinzu (optional).",
-          },
-          SIGNATURDATEI: {
-            title: "Signaturdateien",
-            description:
-              "Fügen Sie Signaturdateien zu Ihren Dokumenten hinzu (optional).",
-            hint: "Maximale Dateigröße ist 104 MB.",
-          },
-        },
+        // The Klageeinreichung's Schriftstück
+        schriftstueckLabel: "Klageschrift",
         navigation: {
           next: "Weiter",
         },
@@ -419,8 +403,6 @@ export const de = {
       weitereEinreichung: {
         headline: "Neue Einreichung erstellen",
         artLabel: "Art der Einreichung",
-        upload: "Hochladen",
-        uploading: "Wird hochgeladen...",
         submit: "Einreichen & Abgabe ans Gericht",
       },
     },

@@ -3,30 +3,43 @@ import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import { resolveDokumentPresentation } from "~/components/verfahren/presentation/validierungPresentation";
 import VerfahrenDokumentItem from "~/components/verfahren/VerfahrenDokumentItem";
-import VerfahrenDokumentStatusBadge from "~/components/verfahren/VerfahrenDokumentStatusBadge";
-import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import VerfahrenDokumentSichtbarkeitForm from "~/components/verfahren/VerfahrenDokumentSichtbarkeitForm";
+import type { DokumentWithValidierungsstatus } from "~/domains/verfahren/application/loadDokumenteWithValidierungsstatus.server";
 import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
-import type { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
 import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
 import { useTranslations } from "~/services/translations/context";
 import type { ActionResult } from "~/utils/actionResult";
 
-type DeleteDokumentActionData = { formType?: string; dokumentId?: string };
+export type { DokumentWithValidierungsstatus };
 
-export type DokumentWithValidierungsstatus = Dokument & {
-  validierungsstatus: Validierungsstatus;
-};
+type DeleteDokumentActionData = { formType?: string; dokumentId?: string };
 
 type VerfahrenDokumenteListProps = {
   verfahrenId: string;
   dokumente: DokumentWithValidierungsstatus[];
   einreichung: Pick<Einreichung, "id" | "name">;
+  // See canDeleteDokument
+  allowSchriftstueck?: boolean;
+  // Overrides the Schriftstück's type label, e.g. to call it the Klageschrift
+  schriftstueckLabel?: string;
+  // E.g. while an upload is running; uses aria-disabled to keep the
+  // controls reachable, as KERN recommends
+  disabled?: boolean;
 };
 
+/**
+ * The Dokumente of a draft Einreichung: each can be opened, downloaded, have
+ * its Sichtbarkeit changed and (unless protected) be deleted, and shows its
+ * Validierungsstatus. The route's action handles the "delete" and
+ * "sichtbarkeit" formTypes (see einreichungDokumentActions.server).
+ */
 export default function VerfahrenDokumenteList({
   verfahrenId,
   dokumente,
   einreichung,
+  allowSchriftstueck = false,
+  schriftstueckLabel,
+  disabled = false,
 }: Readonly<VerfahrenDokumenteListProps>) {
   const { routes, shared } = useTranslations();
   const actionData = useActionData<ActionResult<DeleteDokumentActionData>>();
@@ -41,10 +54,19 @@ export default function VerfahrenDokumenteList({
   }
 
   // The XJustiz Dokument is system-generated metadata, not a file the user
-  // submitted — it's never shown in this list.
-  const visibleDokumente = dokumente.filter(
-    (dokument) => dokument.typ !== "XJUSTIZ",
-  );
+  // submitted — it's never shown in this list. The Schriftstück comes first.
+  const visibleDokumente = dokumente
+    .filter((dokument) => dokument.typ !== "XJUSTIZ")
+    // sort() is safe here: filter() already returned a new array
+    .sort(
+      (a, b) =>
+        Number(b.typ === "SCHRIFTSTUECK") - Number(a.typ === "SCHRIFTSTUECK"),
+    );
+
+  const getTypLabel = ({ typ }: DokumentWithValidierungsstatus) =>
+    typ === "SCHRIFTSTUECK" && schriftstueckLabel
+      ? schriftstueckLabel
+      : shared.dokumentType[typ];
 
   if (visibleDokumente.length === 0) {
     return (
@@ -53,60 +75,88 @@ export default function VerfahrenDokumenteList({
   }
 
   return (
-    <div className="kern-mt-md kern-gap-md flex w-full flex-col">
+    <ul
+      className="kern-mt-md kern-px-none kern-gap-md flex w-full flex-col"
+      aria-label={shared.form.uploadedDokumenteListLabel}
+    >
       {visibleDokumente.map((dokument) => {
         const deleteDokumentError = findDeleteDokumentError(dokument.id);
         const dokumentErgebnis = dokument.validierungsstatus.ergebnis;
         const dokumentHasValidationIssues =
           dokumentErgebnis === "ROT" || dokumentErgebnis === "GELB";
-        const statusBadge = (
-          <VerfahrenDokumentStatusBadge
-            validierungsstatus={dokument.validierungsstatus}
-          />
-        );
 
         return (
-          <div key={dokument.id} className="kern-gap-sm flex w-full flex-col">
+          <li key={dokument.id} className="kern-gap-sm flex w-full flex-col">
             <VerfahrenDokumentItem
               dokument={dokument}
               verfahrenId={verfahrenId}
               einreichungId={einreichung.id}
-            >
-              {canDeleteDokument(dokument, einreichung) ? (
-                <Form
-                  method="post"
-                  preventScrollReset
-                  className="kern-gap-sm flex items-center"
-                >
-                  <input type="hidden" name="formType" value="delete" />
-                  <input
-                    type="hidden"
-                    name="einreichungId"
-                    value={einreichung.id}
+              typLabel={getTypLabel(dokument)}
+              validierungsstatus={dokument.validierungsstatus}
+              actions={
+                // Anchored to the right edge with only the delete button (or
+                // its placeholder) right of the Sichtbarkeit, so the selects
+                // are aligned across all Dokumente
+                <div className="kern-gap-sm flex items-end">
+                  <VerfahrenDokumentSichtbarkeitForm
+                    dokument={dokument}
+                    einreichungId={einreichung.id}
+                    disabled={disabled}
                   />
-                  <input type="hidden" name="dokumentId" value={dokument.id} />
-                  <Button
-                    appearance="secondary"
-                    className="kern-btn--x-small border-feedback-danger"
-                    type="submit"
-                  >
+                  {canDeleteDokument(dokument, einreichung, {
+                    allowSchriftstueck,
+                  }) ? (
+                    <Form
+                      method="post"
+                      preventScrollReset
+                      // Deleting reloads the same page, so it shouldn't add
+                      // another history entry
+                      replace
+                      className="flex items-center"
+                    >
+                      <input type="hidden" name="formType" value="delete" />
+                      <input
+                        type="hidden"
+                        name="einreichungId"
+                        value={einreichung.id}
+                      />
+                      <input
+                        type="hidden"
+                        name="dokumentId"
+                        value={dokument.id}
+                      />
+                      <Button
+                        appearance="secondary"
+                        className="kern-btn--x-small border-feedback-danger"
+                        type="submit"
+                        // aria-disabled doesn't block the submit itself
+                        aria-disabled={disabled}
+                        onClick={(event) => disabled && event.preventDefault()}
+                      >
+                        <span
+                          className="kern-icon kern-icon--delete bg-feedback-danger"
+                          aria-hidden="true"
+                        ></span>
+                        <span className="kern-label kern-sr-only">
+                          {shared.form.deleteDokument.labelForDokument.replace(
+                            "{{name}}",
+                            dokument.anzeigename,
+                          )}
+                        </span>
+                      </Button>
+                    </Form>
+                  ) : (
+                    // Takes the delete button's space, keeping the alignment
                     <span
-                      className="kern-icon kern-icon--delete bg-feedback-danger"
+                      className="kern-btn kern-btn--secondary kern-btn--x-small invisible"
                       aria-hidden="true"
-                    ></span>
-                    <span className="kern-label kern-sr-only">
-                      {shared.form.deleteDokument.labelForDokument.replace(
-                        "{{name}}",
-                        dokument.anzeigename,
-                      )}
+                    >
+                      <span className="kern-icon kern-icon--delete"></span>
                     </span>
-                  </Button>
-                  {statusBadge}
-                </Form>
-              ) : (
-                <div className="flex items-center">{statusBadge}</div>
-              )}
-            </VerfahrenDokumentItem>
+                  )}
+                </div>
+              }
+            />
             {deleteDokumentError && (
               <Alert type="error" title={deleteDokumentError} />
             )}
@@ -123,9 +173,9 @@ export default function VerfahrenDokumenteList({
                 message={dokument.validierungsstatus.fehler.join("\n")}
               />
             )}
-          </div>
+          </li>
         );
       })}
-    </div>
+    </ul>
   );
 }

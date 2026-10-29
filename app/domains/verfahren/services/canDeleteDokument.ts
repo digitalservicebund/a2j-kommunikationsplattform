@@ -13,13 +13,21 @@ const PROTECTED_DOKUMENT_TYPES_KLAGEEINREICHUNG: ReadonlySet<DokumentType> =
 const PROTECTED_DOKUMENT_TYPES_WEITERE_EINREICHUNG: ReadonlySet<DokumentType> =
   new Set<DokumentType>(["XJUSTIZ"]);
 
+export type CanDeleteDokumentOptions = {
+  // The Klageschrift can be deleted in the Klageeinreichung's Dokumente step,
+  // which is where it is replaced
+  allowSchriftstueck?: boolean;
+};
+
 export default function canDeleteDokument(
   dokument: { typ: DokumentType },
   einreichung: Pick<Einreichung, "name">,
+  { allowSchriftstueck = false }: CanDeleteDokumentOptions = {},
 ): boolean {
-  const protectedTypes = isKlageeinreichung(einreichung)
-    ? PROTECTED_DOKUMENT_TYPES_KLAGEEINREICHUNG
-    : PROTECTED_DOKUMENT_TYPES_WEITERE_EINREICHUNG;
+  const protectedTypes =
+    isKlageeinreichung(einreichung) && !allowSchriftstueck
+      ? PROTECTED_DOKUMENT_TYPES_KLAGEEINREICHUNG
+      : PROTECTED_DOKUMENT_TYPES_WEITERE_EINREICHUNG;
 
   return !protectedTypes.has(dokument.typ);
 }

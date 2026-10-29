@@ -19,6 +19,22 @@ describe("canDeleteDokument", () => {
         expect(canDeleteDokument({ typ }, klageeinreichung)).toBe(true);
       },
     );
+
+    it("allows deleting the Schriftstück where it's replaceable", () => {
+      expect(
+        canDeleteDokument({ typ: "SCHRIFTSTUECK" }, klageeinreichung, {
+          allowSchriftstueck: true,
+        }),
+      ).toBe(true);
+    });
+
+    it("still protects the XJustiz-Dokument where the Schriftstück is replaceable", () => {
+      expect(
+        canDeleteDokument({ typ: "XJUSTIZ" }, klageeinreichung, {
+          allowSchriftstueck: true,
+        }),
+      ).toBe(false);
+    });
   });
 
   describe("in a Weitere Einreichung", () => {

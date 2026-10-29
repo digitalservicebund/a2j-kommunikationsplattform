@@ -2,9 +2,8 @@ import { Form } from "react-router";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
-import VerfahrenDokumenteList from "~/components/verfahren/VerfahrenDokumenteList";
 import type { EinreichungDetails } from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
-import VerfahrenWeitereDokumentUploadForm from "~/components/verfahren/VerfahrenWeitereDokumentUploadForm";
+import VerfahrenEinreichungDokumente from "~/components/verfahren/VerfahrenEinreichungDokumente";
 import { isValidierungslaufRunning } from "~/domains/verfahren/services/validierungslauf";
 import { useTranslations } from "~/services/translations/context";
 
@@ -39,24 +38,14 @@ export default function VerfahrenWeitereEinreichungDokumenteStep({
     });
 
   return (
-    // A disabled fieldset disables every control inside, incl. both forms.
-    <fieldset
-      disabled={isDisabled}
-      className="kern-gap-md flex w-full flex-col disabled:opacity-50"
+    <div
+      className={`kern-gap-md flex w-full flex-col ${isDisabled ? "opacity-50" : ""}`}
     >
-      {draftWeitereEinreichung && hasUploadedDokumente && (
-        <VerfahrenDokumenteList
-          verfahrenId={verfahrenId}
-          dokumente={dokumente}
-          einreichung={draftWeitereEinreichung.einreichung}
-        />
-      )}
-
-      {/* Keyed by the Dokument count so the form (incl. the selected file)
-          resets after a successful upload, but keeps its values on failure. */}
-      <VerfahrenWeitereDokumentUploadForm
-        key={dokumente.length}
-        einreichungId={einreichungId}
+      <VerfahrenEinreichungDokumente
+        verfahrenId={verfahrenId}
+        einreichung={draftWeitereEinreichung?.einreichung}
+        dokumente={dokumente}
+        disabled={isDisabled}
       />
 
       {error && (
@@ -76,6 +65,7 @@ export default function VerfahrenWeitereEinreichungDokumenteStep({
           appearance="primary"
           type="submit"
           disabled={
+            isDisabled ||
             isSubmitting === "submitting" ||
             isValidating ||
             !hasUploadedDokumente
@@ -83,6 +73,6 @@ export default function VerfahrenWeitereEinreichungDokumenteStep({
           label={labels.submit}
         />
       </Form>
-    </fieldset>
+    </div>
   );
 }

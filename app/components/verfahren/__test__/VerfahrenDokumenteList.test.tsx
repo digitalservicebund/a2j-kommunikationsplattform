@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRoutesStub } from "react-router";
 import { describe, expect, it, vi } from "vitest";
@@ -42,6 +42,7 @@ const klageeinreichung = { id: "e-1", name: "Klageeinreichung" };
 function renderList(
   dokumente: DokumentWithValidierungsstatus[],
   einreichung = klageeinreichung,
+  options: { allowSchriftstueck?: boolean; disabled?: boolean } = {},
 ) {
   const Stub = createRoutesStub([
     {
@@ -51,6 +52,7 @@ function renderList(
           verfahrenId="v-1"
           dokumente={dokumente}
           einreichung={einreichung}
+          {...options}
         />
       ),
       action: vi.fn(),
@@ -97,11 +99,15 @@ describe("VerfahrenDokumenteList", () => {
   });
 
   it("hides the delete action for a Schriftstück of the Klageeinreichung", () => {
-    renderList([buildDokument({ typ: "SCHRIFTSTUECK" })]);
+    const { container } = renderList([buildDokument({ typ: "SCHRIFTSTUECK" })]);
 
     expect(
       screen.queryByRole("button", { name: /entfernen/i }),
     ).not.toBeInTheDocument();
+    // An invisible placeholder keeps the controls aligned with other rows
+    expect(
+      container.querySelector('.kern-btn.invisible[aria-hidden="true"]'),
+    ).toBeInTheDocument();
   });
 
   it("shows a delete action for a Schriftstück of a Weitere Einreichung", () => {
@@ -175,6 +181,104 @@ describe("VerfahrenDokumenteList", () => {
 
     expect(screen.getByText("Keine Dokumente vorhanden.")).toBeInTheDocument();
     expect(screen.queryByText("xjustiz.xml")).not.toBeInTheDocument();
+  });
+
+  it("lists the Dokumente as a labelled list", () => {
+    renderList([
+      buildDokument({ id: "d-1", typ: "ANHANG", anzeigename: "a.pdf" }),
+      buildDokument({ id: "d-2", typ: "ANHANG", anzeigename: "b.pdf" }),
+    ]);
+
+    const list = screen.getByRole("list", { name: "Hochgeladene Dateien" });
+    expect(within(list).getAllByRole("listitem")).toHaveLength(2);
+  });
+
+  it("shows each Dokument's type, the Schriftstück first", () => {
+    renderList([
+      buildDokument({ id: "d-1", typ: "ANHANG", anzeigename: "a.pdf" }),
+      buildDokument({ id: "d-2", typ: "SIGNATURDATEI", anzeigename: "s.p7s" }),
+      buildDokument({ id: "d-3", typ: "SCHRIFTSTUECK", anzeigename: "k.pdf" }),
+    ]);
+
+    const [first, second, third] = screen.getAllByRole("listitem");
+    expect(first).toHaveTextContent(/k\.pdf.*Schriftstück ·/);
+    expect(second).toHaveTextContent(/a\.pdf.*Anlage ·/);
+    expect(third).toHaveTextContent(/s\.p7s.*Signaturdatei ·/);
+  });
+
+  it("can call the Schriftstück by another name", () => {
+    const Stub = createRoutesStub([
+      {
+        path: "/verfahren/:id",
+        Component: () => (
+          <VerfahrenDokumenteList
+            verfahrenId="v-1"
+            dokumente={[buildDokument({ typ: "SCHRIFTSTUECK" })]}
+            einreichung={klageeinreichung}
+            schriftstueckLabel="Klageschrift"
+          />
+        ),
+      },
+    ]);
+    render(<Stub initialEntries={["/verfahren/v-1"]} />);
+
+    expect(screen.getByRole("listitem")).toHaveTextContent("Klageschrift ·");
+  });
+
+  it("lets each Dokument be opened and downloaded", () => {
+    renderList([
+      buildDokument({ id: "d-1", typ: "ANHANG", anzeigename: "a.pdf" }),
+    ]);
+
+    const dateiPath = "/verfahren/v-1/einreichungen/e-1/dokumente/d-1/datei";
+    expect(
+      screen.getByRole("link", { name: "a.pdf (öffnet in neuem Tab)" }),
+    ).toHaveAttribute("href", `${dateiPath}?disposition=inline`);
+    expect(
+      screen.getByRole("link", { name: "a.pdf herunterladen" }),
+    ).toHaveAttribute("href", `${dateiPath}?disposition=attachment`);
+  });
+
+  it("lets each Dokument's Sichtbarkeit be changed", () => {
+    renderList([
+      buildDokument({
+        id: "d-1",
+        typ: "ANHANG",
+        anzeigename: "a.pdf",
+        sichtbarkeitAlle: false,
+      }),
+    ]);
+
+    expect(screen.getByLabelText("Sichtbarkeit von a.pdf")).toHaveValue(
+      "false",
+    );
+  });
+
+  it("allows deleting the Klageschrift where it's replaceable", () => {
+    renderList([buildDokument({ typ: "SCHRIFTSTUECK" })], klageeinreichung, {
+      allowSchriftstueck: true,
+    });
+
+    expect(
+      screen.getByRole("button", { name: "Klageschrift.pdf entfernen" }),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps the delete button focusable but blocks it while disabled", () => {
+    renderList(
+      [buildDokument({ typ: "ANHANG", anzeigename: "a.pdf" })],
+      klageeinreichung,
+      { disabled: true },
+    );
+
+    const button = screen.getByRole("button", { name: "a.pdf entfernen" });
+    expect(button).not.toBeDisabled();
+    expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(fireEvent.click(button)).toBe(false);
+    expect(screen.getByLabelText("Sichtbarkeit von a.pdf")).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
   });
 
   it("shows a validation Alert when a Dokument's ergebnis is ROT", () => {

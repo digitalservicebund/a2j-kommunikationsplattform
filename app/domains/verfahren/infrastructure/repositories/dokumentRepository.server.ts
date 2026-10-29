@@ -14,7 +14,9 @@ import {
   DokumentSchema,
 } from "~/domains/verfahren/infrastructure/schemas/dokument.schema";
 import { ValidierungsstatusSchema } from "~/domains/verfahren/infrastructure/schemas/validierungsstatus.schema";
-import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
+import canDeleteDokument, {
+  type CanDeleteDokumentOptions,
+} from "~/domains/verfahren/services/canDeleteDokument";
 import { AuthSession } from "~/services/auth/auth.types";
 import { ApiError } from "~/utils/apiError";
 import { logger } from "~/utils/logger.server";
@@ -195,7 +197,7 @@ type DeleteDokumentFromEinreichungOptions = {
   verfahrenId: string;
   einreichungId: FormDataEntryValue | null;
   dokumentId: FormDataEntryValue | null;
-};
+} & CanDeleteDokumentOptions;
 
 export type DeleteDokumentFromEinreichungResult =
   | { status: "invalid-form-data" }
@@ -208,6 +210,7 @@ export async function deleteDokumentFromEinreichung({
   verfahrenId,
   einreichungId,
   dokumentId,
+  allowSchriftstueck,
 }: DeleteDokumentFromEinreichungOptions): Promise<DeleteDokumentFromEinreichungResult> {
   if (typeof einreichungId !== "string" || typeof dokumentId !== "string") {
     return { status: "invalid-form-data" };
@@ -224,7 +227,10 @@ export async function deleteDokumentFromEinreichung({
     (dokument) => dokument.id === dokumentId,
   );
 
-  if (targetDokument && !canDeleteDokument(targetDokument, einreichung)) {
+  if (
+    targetDokument &&
+    !canDeleteDokument(targetDokument, einreichung, { allowSchriftstueck })
+  ) {
     return { status: "protected-dokument" };
   }
 

@@ -1,71 +1,45 @@
 import { data, Link, redirect, useNavigation } from "react-router";
-import z from "zod";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
+import { useRevalidateWhilePending } from "~/components/hooks/useRevalidateWhilePending";
 import { PageMetadata } from "~/components/PageMetadata";
 import Progress from "~/components/Progress";
-import VerfahrenDokumentUploadBox from "~/components/verfahren/VerfahrenDokumentUploadBox";
+import VerfahrenEinreichungDokumente from "~/components/verfahren/VerfahrenEinreichungDokumente";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import {
   buildKlageeinreichungPath,
   KLAGEEINREICHUNG_PATHS,
 } from "~/config/klageeinreichungRoutes";
+import {
+  buildUploadResultData,
+  DokumentUploadInputSchema,
+  type EinreichungDokumentActionContext,
+  handleDokumentDelete,
+  handleDokumentSichtbarkeit,
+  handleDokumentUpload,
+} from "~/domains/verfahren/application/einreichungDokumentActions.server";
+import loadDokumenteWithValidierungsstatus from "~/domains/verfahren/application/loadDokumenteWithValidierungsstatus.server";
 import loadKlageeinreichungDraft, {
   readVerfahrenSearchParam,
 } from "~/domains/verfahren/application/loadKlageeinreichungDraft.server";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
-import {
-  type UploadDokumentType,
-  UploadDokumentTypeSchema,
-} from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { KLAGEEINREICHUNG_NAME } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import { VERFAHRENSGEGENSTAND_ZAHLUNGSKLAGE } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
-import {
-  deleteDokument,
-  fetchDokument,
-  fetchDokumente,
-  updateDokumentSichtbarkeit,
-  uploadDokument,
-} from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
+import { uploadDokument } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
 import { createVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { VerfahrenAendernInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.input.schema";
+import { isValidierungslaufRunning } from "~/domains/verfahren/services/validierungslauf";
 import { authMiddleware } from "~/middleware/auth.server";
 import { AuthSession } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
 import { safeParseActionFormData } from "~/utils/actionInput";
-import {
-  actionError,
-  actionResultFromApiError,
-  actionSuccess,
-} from "~/utils/actionResult";
+import { actionError, actionResultFromApiError } from "~/utils/actionResult";
 import { dispatchFormAction } from "~/utils/dispatchFormAction";
 import { logger } from "~/utils/logger.server";
 import { Route } from "./+types/verfahren.neu.dokumente";
-
-// One upload box per type, starting with the Klageschrift
-const UPLOAD_BOXES: readonly {
-  typ: UploadDokumentType;
-  single?: boolean;
-  accept?: string;
-}[] = [
-  {
-    typ: "SCHRIFTSTUECK",
-    single: true,
-    accept: [
-      // Word
-      ".docx",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      // PDF
-      ".pdf",
-      "application/pdf",
-    ].join(","),
-  },
-  { typ: "ANHANG" },
-  { typ: "SIGNATURDATEI" },
-];
 
 // Marks a failed first upload: the Verfahren was created regardless, so the
 // page continues with it instead of creating another one on retry
@@ -87,8 +61,13 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
     return {
       verfahrenId,
-      einreichungId: einreichung.id,
-      dokumente: dokumente.filter(({ typ }) => typ !== "XJUSTIZ"),
+      einreichung: { id: einreichung.id, name: einreichung.name },
+      // The XJustiz-Dokument is system-generated, not uploaded by the user
+      dokumente: await loadDokumenteWithValidierungsstatus(authSession, {
+        verfahrenId,
+        einreichungId: einreichung.id,
+        dokumente: dokumente.filter(({ typ }) => typ !== "XJUSTIZ"),
+      }),
       uploadFailed: searchParams.has(UPLOAD_FAILED_PARAM),
     };
   }
@@ -103,7 +82,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
   return {
     verfahrenId: undefined,
-    einreichungId: undefined,
+    einreichung: undefined,
     dokumente: [],
     uploadFailed: false,
   };
@@ -121,22 +100,14 @@ function invalidSubmissionResponse() {
   });
 }
 
-const DokumentUploadInputSchema = z.object({
-  einreichungId: z.string().optional(),
-  typ: UploadDokumentTypeSchema,
-  file: z.file().min(1),
-});
-
-// Uploads a Dokument. Without an existing Verfahren, the Verfahren for the
-// court from the URL and its Klageeinreichung are created first.
-async function handleUploadAction(
+// The first upload creates the Verfahren for the court from the URL and its
+// Klageeinreichung, then uploads the Dokument to it
+async function handleFirstUpload(
   formData: FormData,
-  { authSession, verfahrenId, gerichtId }: FormActionContext,
+  authSession: AuthSession,
+  gerichtId: string,
 ) {
-  const actionResultData = {
-    formType: "upload",
-    typ: formData.get("typ"),
-  } as const;
+  const actionResultData = buildUploadResultData(formData);
 
   const input = safeParseActionFormData(formData, DokumentUploadInputSchema, {
     errorResultData: actionResultData,
@@ -147,220 +118,101 @@ async function handleUploadAction(
   }
 
   const { typ, file } = input.data;
-  let { einreichungId } = input.data;
-  let targetVerfahrenId = verfahrenId;
-
-  if (!targetVerfahrenId) {
-    if (!gerichtId) {
-      return invalidSubmissionResponse();
-    }
-
-    try {
-      const verfahren = await createVerfahren(
-        authSession,
-        VerfahrenAendernInputSchema.parse({
-          verfahrensgegenstand: VERFAHRENSGEGENSTAND_ZAHLUNGSKLAGE,
-          kurzrubrum: null,
-          gerichtId,
-          beteiligungen: null,
-        }),
-      );
-      targetVerfahrenId = verfahren.id;
-
-      const einreichung = await createEinreichung(
-        authSession,
-        targetVerfahrenId,
-        KLAGEEINREICHUNG_NAME,
-      );
-      einreichungId = einreichung.id;
-    } catch (error) {
-      return actionResultFromApiError(error, {
-        message: de.shared.form.errors.uploadFailed,
-        data: actionResultData,
-      });
-    }
-  }
-
-  if (!einreichungId) {
-    return invalidSubmissionResponse();
-  }
-
-  const dokumentePath = buildKlageeinreichungPath("dokumente", {
-    verfahren: targetVerfahrenId,
-  });
-
-  // The page only offers one Klageschrift, but e.g. a second tab could still
-  // submit another one
-  if (verfahrenId && typ === "SCHRIFTSTUECK") {
-    try {
-      const { elemente: dokumente } = await fetchDokumente(authSession, {
-        verfahrenId,
-        einreichungId,
-      });
-
-      if (dokumente.some((dokument) => dokument.typ === "SCHRIFTSTUECK")) {
-        return data(
-          actionError(
-            de.routes.verfahrenNeu.dokumente.errors.klageschriftExists,
-            { data: actionResultData },
-          ),
-          { status: 409 },
-        );
-      }
-    } catch (error) {
-      return actionResultFromApiError(error, {
-        message: de.shared.form.errors.uploadFailed,
-        data: actionResultData,
-      });
-    }
-  }
+  let verfahrenId: string;
+  let einreichungId: string;
 
   try {
-    await uploadDokument(
+    const verfahren = await createVerfahren(
       authSession,
-      targetVerfahrenId,
-      einreichungId,
-      file,
-      typ,
+      VerfahrenAendernInputSchema.parse({
+        verfahrensgegenstand: VERFAHRENSGEGENSTAND_ZAHLUNGSKLAGE,
+        kurzrubrum: null,
+        gerichtId,
+        beteiligungen: null,
+      }),
     );
-  } catch (error) {
-    // The Verfahren was just created: continue with it, so that a retry
-    // doesn't create yet another one
-    if (!verfahrenId) {
-      logger.error({ error }, "Dokument upload failed for a new Verfahren");
-      return redirect(`${dokumentePath}&${UPLOAD_FAILED_PARAM}`);
-    }
+    verfahrenId = verfahren.id;
 
+    const einreichung = await createEinreichung(
+      authSession,
+      verfahrenId,
+      KLAGEEINREICHUNG_NAME,
+    );
+    einreichungId = einreichung.id;
+  } catch (error) {
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.uploadFailed,
       data: actionResultData,
     });
   }
 
+  const dokumentePath = buildKlageeinreichungPath("dokumente", {
+    verfahren: verfahrenId,
+  });
+
+  try {
+    await uploadDokument(authSession, verfahrenId, einreichungId, file, typ);
+  } catch (error) {
+    // The Verfahren was just created: continue with it, so that a retry
+    // doesn't create yet another one
+    logger.error({ error }, "Dokument upload failed for a new Verfahren");
+    return redirect(`${dokumentePath}&${UPLOAD_FAILED_PARAM}`);
+  }
+
   return redirect(dokumentePath);
 }
 
-const DokumentDeletionInputSchema = z.object({
-  einreichungId: z.string().min(1),
-  dokumentId: z.string().min(1),
-});
-
-async function handleDeleteAction(
-  formData: FormData,
-  { authSession, verfahrenId }: FormActionContext,
-) {
-  const actionResultData = { formType: "delete" } as const;
-
-  if (!verfahrenId) {
-    return invalidSubmissionResponse();
-  }
-
-  const input = safeParseActionFormData(formData, DokumentDeletionInputSchema, {
-    errorResultData: actionResultData,
-  });
-
-  if (!input.success) {
-    return input.error;
-  }
-
-  const { einreichungId, dokumentId } = input.data;
-
-  try {
-    const { eTag } = await fetchDokument(authSession, {
-      verfahrenId,
-      einreichungId,
-      id: dokumentId,
-    });
-
-    const deleteResult = await deleteDokument(authSession, {
-      verfahrenId,
-      einreichungId,
-      id: dokumentId,
-      eTag: eTag ?? "",
-    });
-
-    if (!deleteResult.success) {
-      return data(
-        actionError(de.shared.form.errors.deleteFailed, {
-          data: actionResultData,
-        }),
-        { status: 500 },
-      );
-    }
-  } catch (error) {
-    return actionResultFromApiError(error, {
-      message: de.shared.form.errors.deleteFailed,
-      data: actionResultData,
-    });
-  }
-
-  return redirect(
-    buildKlageeinreichungPath("dokumente", { verfahren: verfahrenId }),
-  );
-}
-
-const DokumentSichtbarkeitInputSchema = z.object({
-  einreichungId: z.string().min(1),
-  dokumentId: z.string().min(1),
-  sichtbarkeitAlle: z.enum(["true", "false"]).transform((v) => v === "true"),
-});
-
-// Changes who can see an uploaded Dokument. Submitted via a fetcher, so the
-// page stays in place and the loader is revalidated afterwards.
-async function handleSichtbarkeitAction(
-  formData: FormData,
-  { authSession, verfahrenId }: FormActionContext,
-) {
-  const actionResultData = {
-    formType: "sichtbarkeit",
-    dokumentId: formData.get("dokumentId"),
-  } as const;
-
-  if (!verfahrenId) {
-    return invalidSubmissionResponse();
-  }
-
-  const input = safeParseActionFormData(
-    formData,
-    DokumentSichtbarkeitInputSchema,
-    { errorResultData: actionResultData },
-  );
-
-  if (!input.success) {
-    return input.error;
-  }
-
-  const { einreichungId, dokumentId, sichtbarkeitAlle } = input.data;
-
-  try {
-    // The API requires the current eTag for the update
-    const { eTag } = await fetchDokument(authSession, {
-      verfahrenId,
-      einreichungId,
-      id: dokumentId,
-    });
-
-    await updateDokumentSichtbarkeit(authSession, {
-      verfahrenId,
-      einreichungId,
-      id: dokumentId,
-      sichtbarkeitAlle,
-      eTag: eTag ?? "",
-    });
-  } catch (error) {
-    return actionResultFromApiError(error, {
-      message: de.shared.form.sichtbarkeit.updateFailed,
-      data: actionResultData,
-    });
-  }
-
-  return actionSuccess(actionResultData);
+function buildDokumentActionContext(
+  authSession: AuthSession,
+  verfahrenId: string,
+): EinreichungDokumentActionContext {
+  return {
+    authSession,
+    verfahrenId,
+    redirectTo: buildKlageeinreichungPath("dokumente", {
+      verfahren: verfahrenId,
+    }),
+    // This step is where the Klageschrift is replaced
+    allowSchriftstueck: true,
+  };
 }
 
 const formActionHandlers = {
-  upload: handleUploadAction,
-  delete: handleDeleteAction,
-  sichtbarkeit: handleSichtbarkeitAction,
+  upload: (
+    formData: FormData,
+    { authSession, verfahrenId, gerichtId }: FormActionContext,
+  ) => {
+    if (verfahrenId) {
+      return handleDokumentUpload(
+        formData,
+        buildDokumentActionContext(authSession, verfahrenId),
+      );
+    }
+
+    return gerichtId
+      ? handleFirstUpload(formData, authSession, gerichtId)
+      : invalidSubmissionResponse();
+  },
+  delete: (
+    formData: FormData,
+    { authSession, verfahrenId }: FormActionContext,
+  ) =>
+    verfahrenId
+      ? handleDokumentDelete(
+          formData,
+          buildDokumentActionContext(authSession, verfahrenId),
+        )
+      : invalidSubmissionResponse(),
+  sichtbarkeit: (
+    formData: FormData,
+    { authSession, verfahrenId }: FormActionContext,
+  ) =>
+    verfahrenId
+      ? handleDokumentSichtbarkeit(
+          formData,
+          buildDokumentActionContext(authSession, verfahrenId),
+        )
+      : invalidSubmissionResponse(),
 } as const;
 
 export const action = async ({ request, context }: Route.ActionArgs) => {
@@ -385,17 +237,26 @@ export default function VerfahrenNeuDokumente({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const { verfahrenId, einreichungId, dokumente, uploadFailed } = loaderData;
+  const { verfahrenId, einreichung, dokumente, uploadFailed } = loaderData;
 
   const { shared, routes, buttons } = useTranslations();
   const navigation = useNavigation();
   const isBusy = navigation.state !== "idle";
 
-  const isError = actionData?.status === "error";
-  const invalidUploadTyp =
-    actionData?.status === "invalid" && actionData.data?.formType === "upload"
-      ? actionData.data.typ
-      : undefined;
+  // Keep the badges up to date while e.g. the virus check is running
+  useRevalidateWhilePending(
+    dokumente.some(({ validierungsstatus }) =>
+      isValidierungslaufRunning(validierungsstatus),
+    ),
+  );
+
+  // Upload and delete errors are shown next to the section or Dokument they
+  // belong to; anything else (e.g. an invalid submission) up here
+  const formType = actionData?.data?.formType;
+  const isError =
+    actionData?.status === "error" &&
+    formType !== "upload" &&
+    formType !== "delete";
 
   const hasKlageschrift = dokumente.some(({ typ }) => typ === "SCHRIFTSTUECK");
   const nextLabel = (
@@ -443,7 +304,7 @@ export default function VerfahrenNeuDokumente({
                 <Alert
                   type="error"
                   title={shared.form.submit.title}
-                  message={actionData.error ?? shared.form.submit.message}
+                  message={actionData?.error ?? shared.form.submit.message}
                 />
               )}
 
@@ -455,21 +316,16 @@ export default function VerfahrenNeuDokumente({
                 />
               )}
 
-              {UPLOAD_BOXES.map(({ typ, single, accept }) => (
-                <VerfahrenDokumentUploadBox
-                  key={typ}
-                  typ={typ}
-                  dokumente={dokumente.filter(
-                    (dokument) => dokument.typ === typ,
-                  )}
-                  verfahrenId={verfahrenId}
-                  einreichungId={einreichungId}
-                  single={single}
-                  accept={accept}
-                  disabled={isBusy}
-                  showFileError={invalidUploadTyp === typ}
-                />
-              ))}
+              <VerfahrenEinreichungDokumente
+                verfahrenId={verfahrenId}
+                einreichung={einreichung}
+                dokumente={dokumente}
+                schriftstueckLabel={
+                  routes.verfahrenNeu.dokumente.schriftstueckLabel
+                }
+                allowSchriftstueck
+                disabled={isBusy}
+              />
 
               <div className="kern-gap-md flex flex-wrap justify-end">
                 <Link

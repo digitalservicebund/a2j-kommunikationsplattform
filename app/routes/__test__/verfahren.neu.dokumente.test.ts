@@ -11,12 +11,12 @@ const mocks = vi.hoisted(() => ({
   createVerfahren: vi.fn(),
   createEinreichung: vi.fn(),
   uploadDokument: vi.fn(),
-  fetchDokument: vi.fn(),
-  fetchDokumente: vi.fn(),
-  deleteDokument: vi.fn(),
-  updateDokumentSichtbarkeit: vi.fn(),
+  fetchDokumentValidierungsstatus: vi.fn(),
   loadVerfahrenEinreichungBundle: vi.fn(),
   fetchLatestBelegForEinreichung: vi.fn(),
+  handleDokumentUpload: vi.fn(),
+  handleDokumentDelete: vi.fn(),
+  handleDokumentSichtbarkeit: vi.fn(),
 }));
 
 vi.mock(
@@ -35,10 +35,7 @@ vi.mock(
   "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server",
   () => ({
     uploadDokument: mocks.uploadDokument,
-    fetchDokument: mocks.fetchDokument,
-    fetchDokumente: mocks.fetchDokumente,
-    deleteDokument: mocks.deleteDokument,
-    updateDokumentSichtbarkeit: mocks.updateDokumentSichtbarkeit,
+    fetchDokumentValidierungsstatus: mocks.fetchDokumentValidierungsstatus,
   }),
 );
 vi.mock(
@@ -49,6 +46,17 @@ vi.mock(
   "~/domains/verfahren/infrastructure/repositories/belegRepository.server",
   () => ({
     fetchLatestBelegForEinreichung: mocks.fetchLatestBelegForEinreichung,
+  }),
+);
+// The Dokumente of an existing Einreichung are handled by the shared actions
+// (tested on their own); only the delegation is tested here
+vi.mock(
+  "~/domains/verfahren/application/einreichungDokumentActions.server",
+  async (importOriginal) => ({
+    ...(await importOriginal<object>()),
+    handleDokumentUpload: mocks.handleDokumentUpload,
+    handleDokumentDelete: mocks.handleDokumentDelete,
+    handleDokumentSichtbarkeit: mocks.handleDokumentSichtbarkeit,
   }),
 );
 vi.mock("~/middleware/auth.server", () => ({
@@ -62,6 +70,14 @@ const authSession = makeAuthSession();
 const gericht = makeGericht();
 const context = { get: () => authSession, set: () => {} };
 const BASE_URL = "http://localhost:3000/verfahren/neu/dokumente";
+const VERFAHREN_ID = "11111111-1111-1111-1111-111111111111";
+const DOKUMENTE_PATH = `/verfahren/neu/dokumente?verfahren=${VERFAHREN_ID}`;
+
+const validierungsstatus = {
+  validierungslaufStatus: "ABGESCHLOSSEN",
+  ergebnis: "GRUEN",
+  fehler: [],
+};
 
 function callLoader(search: string) {
   return loader({
@@ -100,6 +116,19 @@ function expectRedirect(response: unknown, location: string) {
   expect((response as Response).headers.get("Location")).toBe(location);
 }
 
+function mockDraft(dokumente: ReturnType<typeof makeDokument>[] = []) {
+  mocks.loadVerfahrenEinreichungBundle.mockResolvedValue({
+    verfahren: makeVerfahren({ id: VERFAHREN_ID }),
+    einreichung: {
+      id: "einreichung-1",
+      name: "Klageeinreichung",
+      status: "ERSTELLT",
+    },
+    dokumente,
+  });
+  mocks.fetchLatestBelegForEinreichung.mockResolvedValue(undefined);
+}
+
 const pdfFile = new File(["%PDF-1.7"], "anlage.pdf", {
   type: "application/pdf",
 });
@@ -108,6 +137,7 @@ describe("/verfahren/neu/dokumente", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mocks.fetchGerichte.mockResolvedValue({ elemente: [gericht] });
+    mocks.fetchDokumentValidierungsstatus.mockResolvedValue(validierungsstatus);
   });
 
   describe("loader", () => {
@@ -128,7 +158,7 @@ describe("/verfahren/neu/dokumente", () => {
     it("starts without Dokumente for a known court", async () => {
       expect(await callLoader(`?gericht=${gericht.id}`)).toEqual({
         verfahrenId: undefined,
-        einreichungId: undefined,
+        einreichung: undefined,
         dokumente: [],
         uploadFailed: false,
       });
@@ -161,74 +191,51 @@ describe("/verfahren/neu/dokumente", () => {
     });
 
     it("redirects to the Verfahren once it has been submitted", async () => {
-      mocks.loadVerfahrenEinreichungBundle.mockResolvedValue({
-        verfahren: makeVerfahren({
-          id: "11111111-1111-1111-1111-111111111111",
-        }),
-        einreichung: { id: "einreichung-1", name: "Klageeinreichung" },
-        dokumente: [],
-      });
+      mockDraft();
       mocks.fetchLatestBelegForEinreichung.mockResolvedValue({ id: "beleg" });
 
       expectRedirect(
-        await catchThrown(
-          callLoader("?verfahren=11111111-1111-1111-1111-111111111111"),
-        ),
-        "/verfahren/11111111-1111-1111-1111-111111111111",
+        await catchThrown(callLoader(`?verfahren=${VERFAHREN_ID}`)),
+        `/verfahren/${VERFAHREN_ID}`,
       );
     });
 
-    it("returns the uploaded Dokumente without the XJustiz", async () => {
+    it("returns the uploaded Dokumente with their Validierungsstatus, without the XJustiz", async () => {
       const klageschrift = makeDokument({ id: "klage", typ: "SCHRIFTSTUECK" });
       const signatur = makeDokument({ id: "sig", typ: "SIGNATURDATEI" });
-      mocks.loadVerfahrenEinreichungBundle.mockResolvedValue({
-        verfahren: makeVerfahren({
-          id: "11111111-1111-1111-1111-111111111111",
-        }),
+      mockDraft([
+        klageschrift,
+        makeDokument({ id: "xjustiz", typ: "XJUSTIZ" }),
+        signatur,
+      ]);
+
+      expect(await callLoader(`?verfahren=${VERFAHREN_ID}`)).toEqual({
+        verfahrenId: VERFAHREN_ID,
         einreichung: { id: "einreichung-1", name: "Klageeinreichung" },
         dokumente: [
-          klageschrift,
-          makeDokument({ id: "xjustiz", typ: "XJUSTIZ" }),
-          signatur,
+          { ...klageschrift, validierungsstatus },
+          { ...signatur, validierungsstatus },
         ],
-      });
-      mocks.fetchLatestBelegForEinreichung.mockResolvedValue(undefined);
-
-      expect(
-        await callLoader("?verfahren=11111111-1111-1111-1111-111111111111"),
-      ).toEqual({
-        verfahrenId: "11111111-1111-1111-1111-111111111111",
-        einreichungId: "einreichung-1",
-        dokumente: [klageschrift, signatur],
         uploadFailed: false,
       });
+      // Not fetched for the XJustiz-Dokument, which isn't shown
+      expect(mocks.fetchDokumentValidierungsstatus).toHaveBeenCalledTimes(2);
     });
 
     it("flags a failed first upload", async () => {
-      mocks.loadVerfahrenEinreichungBundle.mockResolvedValue({
-        verfahren: makeVerfahren({
-          id: "11111111-1111-1111-1111-111111111111",
-        }),
-        einreichung: { id: "einreichung-1", name: "Klageeinreichung" },
-        dokumente: [],
-      });
-      mocks.fetchLatestBelegForEinreichung.mockResolvedValue(undefined);
+      mockDraft();
 
       expect(
-        await callLoader(
-          "?verfahren=11111111-1111-1111-1111-111111111111&uploadFehlgeschlagen",
-        ),
+        await callLoader(`?verfahren=${VERFAHREN_ID}&uploadFehlgeschlagen`),
       ).toMatchObject({ uploadFailed: true });
     });
   });
 
-  describe("action", () => {
+  describe("action: first upload", () => {
     it.each(["SCHRIFTSTUECK", "ANHANG", "SIGNATURDATEI"])(
       "creates Verfahren, Einreichung and Dokument on the first %s upload",
       async (typ) => {
-        mocks.createVerfahren.mockResolvedValue({
-          id: "11111111-1111-1111-1111-111111111111",
-        });
+        mocks.createVerfahren.mockResolvedValue({ id: VERFAHREN_ID });
         mocks.createEinreichung.mockResolvedValue({ id: "einreichung-1" });
 
         const response = await callAction(`?gericht=${gericht.id}`, {
@@ -245,53 +252,22 @@ describe("/verfahren/neu/dokumente", () => {
         });
         expect(mocks.createEinreichung).toHaveBeenCalledWith(
           authSession,
-          "11111111-1111-1111-1111-111111111111",
+          VERFAHREN_ID,
           "Klageeinreichung",
         );
         expect(mocks.uploadDokument).toHaveBeenCalledWith(
           authSession,
-          "11111111-1111-1111-1111-111111111111",
+          VERFAHREN_ID,
           "einreichung-1",
           expect.any(File),
           typ,
         );
-        expectRedirect(
-          response,
-          "/verfahren/neu/dokumente?verfahren=11111111-1111-1111-1111-111111111111",
-        );
+        expectRedirect(response, DOKUMENTE_PATH);
       },
     );
 
-    it("only uploads the Dokument for an existing Verfahren", async () => {
-      const response = await callAction(
-        "?verfahren=11111111-1111-1111-1111-111111111111",
-        {
-          formType: "upload",
-          typ: "ANHANG",
-          einreichungId: "einreichung-1",
-          file: pdfFile,
-        },
-      );
-
-      expect(mocks.createVerfahren).not.toHaveBeenCalled();
-      expect(mocks.createEinreichung).not.toHaveBeenCalled();
-      expect(mocks.uploadDokument).toHaveBeenCalledWith(
-        authSession,
-        "11111111-1111-1111-1111-111111111111",
-        "einreichung-1",
-        expect.any(File),
-        "ANHANG",
-      );
-      expectRedirect(
-        response,
-        "/verfahren/neu/dokumente?verfahren=11111111-1111-1111-1111-111111111111",
-      );
-    });
-
     it("continues with the created Verfahren when the first upload fails", async () => {
-      mocks.createVerfahren.mockResolvedValue({
-        id: "11111111-1111-1111-1111-111111111111",
-      });
+      mocks.createVerfahren.mockResolvedValue({ id: VERFAHREN_ID });
       mocks.createEinreichung.mockResolvedValue({ id: "einreichung-1" });
       mocks.uploadDokument.mockRejectedValue(
         new ApiError("rejected", { status: 422 }),
@@ -303,31 +279,7 @@ describe("/verfahren/neu/dokumente", () => {
         file: pdfFile,
       });
 
-      expectRedirect(
-        response,
-        "/verfahren/neu/dokumente?verfahren=11111111-1111-1111-1111-111111111111&uploadFehlgeschlagen",
-      );
-    });
-
-    it("reports a failed upload for an existing Verfahren in place", async () => {
-      mocks.uploadDokument.mockRejectedValue(
-        new ApiError("rejected", { status: 422 }),
-      );
-
-      const result = await callAction(
-        "?verfahren=11111111-1111-1111-1111-111111111111",
-        {
-          formType: "upload",
-          typ: "ANHANG",
-          einreichungId: "einreichung-1",
-          file: pdfFile,
-        },
-      );
-
-      expect(result).toMatchObject({
-        data: { status: "error" },
-        init: { status: 422 },
-      });
+      expectRedirect(response, `${DOKUMENTE_PATH}&uploadFehlgeschlagen`);
     });
 
     it("creates nothing more when creating the Verfahren fails", async () => {
@@ -344,46 +296,6 @@ describe("/verfahren/neu/dokumente", () => {
       expect(result).toMatchObject({ data: { status: "error" } });
       expect(mocks.createEinreichung).not.toHaveBeenCalled();
       expect(mocks.uploadDokument).not.toHaveBeenCalled();
-    });
-
-    it("rejects a second Klageschrift", async () => {
-      mocks.fetchDokumente.mockResolvedValue({
-        elemente: [makeDokument({ typ: "SCHRIFTSTUECK" })],
-      });
-
-      const result = await callAction(
-        "?verfahren=11111111-1111-1111-1111-111111111111",
-        {
-          formType: "upload",
-          typ: "SCHRIFTSTUECK",
-          einreichungId: "einreichung-1",
-          file: pdfFile,
-        },
-      );
-
-      expect(result).toMatchObject({
-        data: {
-          status: "error",
-          error: expect.stringContaining("bereits eine Klageschrift"),
-        },
-        init: { status: 409 },
-      });
-      expect(mocks.uploadDokument).not.toHaveBeenCalled();
-    });
-
-    it("uploads a Klageschrift when none exists yet", async () => {
-      mocks.fetchDokumente.mockResolvedValue({
-        elemente: [makeDokument({ typ: "ANHANG" })],
-      });
-
-      await callAction("?verfahren=11111111-1111-1111-1111-111111111111", {
-        formType: "upload",
-        typ: "SCHRIFTSTUECK",
-        einreichungId: "einreichung-1",
-        file: pdfFile,
-      });
-
-      expect(mocks.uploadDokument).toHaveBeenCalledOnce();
     });
 
     it("reports a missing file for the uploaded type", async () => {
@@ -413,30 +325,34 @@ describe("/verfahren/neu/dokumente", () => {
       expect(result).toMatchObject({ data: { status: "invalid" } });
       expect(mocks.createVerfahren).not.toHaveBeenCalled();
     });
+  });
 
-    it("deletes a Dokument of the Verfahren", async () => {
-      mocks.fetchDokument.mockResolvedValue({ eTag: "etag-1" });
-      mocks.deleteDokument.mockResolvedValue({ success: true });
+  describe("action: existing Verfahren", () => {
+    const expectedContext = {
+      authSession,
+      verfahrenId: VERFAHREN_ID,
+      redirectTo: DOKUMENTE_PATH,
+      // This step is where the Klageschrift is replaced
+      allowSchriftstueck: true,
+    };
 
-      const response = await callAction(
-        "?verfahren=11111111-1111-1111-1111-111111111111",
-        {
-          formType: "delete",
-          einreichungId: "einreichung-1",
-          dokumentId: "dok-1",
-        },
-      );
+    it.each([
+      ["upload", mocks.handleDokumentUpload],
+      ["delete", mocks.handleDokumentDelete],
+      ["sichtbarkeit", mocks.handleDokumentSichtbarkeit],
+    ])("hands %s to the shared Dokument action", async (formType, handler) => {
+      handler.mockResolvedValue("handled");
 
-      expect(mocks.deleteDokument).toHaveBeenCalledWith(authSession, {
-        verfahrenId: "11111111-1111-1111-1111-111111111111",
-        einreichungId: "einreichung-1",
-        id: "dok-1",
-        eTag: "etag-1",
+      const result = await callAction(`?verfahren=${VERFAHREN_ID}`, {
+        formType,
       });
-      expectRedirect(
-        response,
-        "/verfahren/neu/dokumente?verfahren=11111111-1111-1111-1111-111111111111",
+
+      expect(result).toBe("handled");
+      expect(handler).toHaveBeenCalledWith(
+        expect.any(FormData),
+        expectedContext,
       );
+      expect(mocks.createVerfahren).not.toHaveBeenCalled();
     });
 
     it("rejects a malformed Verfahren id before calling the API", async () => {
@@ -450,87 +366,20 @@ describe("/verfahren/neu/dokumente", () => {
       );
 
       expectRedirect(response, "/verfahren/neu/gericht-auswahl");
-      expect(mocks.uploadDokument).not.toHaveBeenCalled();
+      expect(mocks.handleDokumentUpload).not.toHaveBeenCalled();
     });
 
-    it("changes the Sichtbarkeit of a Dokument", async () => {
-      mocks.fetchDokument.mockResolvedValue({ eTag: "etag-1" });
+    it.each(["delete", "sichtbarkeit"])(
+      "rejects %s without a Verfahren",
+      async (formType) => {
+        const result = await callAction(`?gericht=${gericht.id}`, {
+          formType,
+        });
 
-      const result = await callAction(
-        "?verfahren=11111111-1111-1111-1111-111111111111",
-        {
-          formType: "sichtbarkeit",
-          einreichungId: "einreichung-1",
-          dokumentId: "dok-1",
-          sichtbarkeitAlle: "false",
-        },
-      );
-
-      expect(mocks.updateDokumentSichtbarkeit).toHaveBeenCalledWith(
-        authSession,
-        {
-          verfahrenId: "11111111-1111-1111-1111-111111111111",
-          einreichungId: "einreichung-1",
-          id: "dok-1",
-          sichtbarkeitAlle: false,
-          eTag: "etag-1",
-        },
-      );
-      expect(result).toMatchObject({
-        status: "success",
-        data: { formType: "sichtbarkeit", dokumentId: "dok-1" },
-      });
-    });
-
-    it("reports a failed Sichtbarkeit change", async () => {
-      mocks.fetchDokument.mockResolvedValue({ eTag: "etag-1" });
-      mocks.updateDokumentSichtbarkeit.mockRejectedValue(
-        new ApiError("already submitted", { status: 409 }),
-      );
-
-      const result = await callAction(
-        "?verfahren=11111111-1111-1111-1111-111111111111",
-        {
-          formType: "sichtbarkeit",
-          einreichungId: "einreichung-1",
-          dokumentId: "dok-1",
-          sichtbarkeitAlle: "false",
-        },
-      );
-
-      expect(result).toMatchObject({
-        data: {
-          status: "error",
-          error: "Die Sichtbarkeit konnte nicht geändert werden.",
-        },
-        init: { status: 409 },
-      });
-    });
-
-    it("rejects an invalid Sichtbarkeit", async () => {
-      const result = await callAction(
-        "?verfahren=11111111-1111-1111-1111-111111111111",
-        {
-          formType: "sichtbarkeit",
-          einreichungId: "einreichung-1",
-          dokumentId: "dok-1",
-          sichtbarkeitAlle: "maybe",
-        },
-      );
-
-      expect(result).toMatchObject({ data: { status: "invalid" } });
-      expect(mocks.updateDokumentSichtbarkeit).not.toHaveBeenCalled();
-    });
-
-    it("rejects a deletion without a Verfahren", async () => {
-      const result = await callAction(`?gericht=${gericht.id}`, {
-        formType: "delete",
-        einreichungId: "einreichung-1",
-        dokumentId: "dok-1",
-      });
-
-      expect(result).toMatchObject({ init: { status: 400 } });
-      expect(mocks.deleteDokument).not.toHaveBeenCalled();
-    });
+        expect(result).toMatchObject({ init: { status: 400 } });
+        expect(mocks.handleDokumentDelete).not.toHaveBeenCalled();
+        expect(mocks.handleDokumentSichtbarkeit).not.toHaveBeenCalled();
+      },
+    );
   });
 });

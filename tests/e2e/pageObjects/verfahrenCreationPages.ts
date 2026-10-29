@@ -63,10 +63,19 @@ export class VerfahrenDokumentePage extends PageObject {
     super(page, "/verfahren/neu/dokumente");
   }
 
-  #uploadBox(typ: UploadDokumentType) {
-    return this.page.getByRole("group", {
-      name: t.routes.verfahrenNeu.dokumente.types[typ].title,
-    });
+  #typLabel(typ: UploadDokumentType) {
+    return typ === "SCHRIFTSTUECK"
+      ? t.routes.verfahrenNeu.dokumente.schriftstueckLabel
+      : t.shared.dokumentType[typ];
+  }
+
+  // Listed with its type, e.g. "Anlage · 12 KB · …"
+  #uploadedDokument(typ: UploadDokumentType, filename: string) {
+    return this.page
+      .getByRole("list", { name: t.shared.form.uploadedDokumenteListLabel })
+      .getByRole("listitem")
+      .filter({ hasText: filename })
+      .filter({ hasText: this.#typLabel(typ) });
   }
 
   get nextButton() {
@@ -82,7 +91,8 @@ export class VerfahrenDokumentePage extends PageObject {
   }
 
   async upload(typ: UploadDokumentType, testDataFileName: string) {
-    await this.#uploadBox(typ)
+    await this.page.getByRole("radio", { name: this.#typLabel(typ) }).check();
+    await this.page
       .getByLabel(t.shared.form.uploadDokument.label)
       .setInputFiles(getTestDataFilePath(testDataFileName));
   }
@@ -91,9 +101,19 @@ export class VerfahrenDokumentePage extends PageObject {
     typ: UploadDokumentType,
     filename: string,
   ) {
-    await expect(
-      this.#uploadBox(typ).getByRole("listitem").filter({ hasText: filename }),
-    ).toBeVisible();
+    await expect(this.#uploadedDokument(typ, filename)).toBeVisible();
+  }
+
+  // The virus check may still be running or already be done
+  async expectValidierungsstatusToBeShown(
+    typ: UploadDokumentType,
+    filename: string,
+  ) {
+    const { checking, checkedClean } =
+      t.routes.verfahrenId.draftKlageeinreichung.summary.badgeLabels;
+    await expect(this.#uploadedDokument(typ, filename)).toContainText(
+      new RegExp(`${checking}|${checkedClean}`),
+    );
   }
 
   async next() {
