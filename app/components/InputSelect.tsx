@@ -56,7 +56,7 @@ export default function InputSelect({
           id={id}
           value={selectedValue}
           onChange={onChange}
-          required={required}
+          aria-required={required || undefined}
           aria-describedby={[hint && `select-hint-${id}`, error && errorId]
             .filter(Boolean)
             .join(" ")}

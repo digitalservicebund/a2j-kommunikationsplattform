@@ -65,4 +65,12 @@ describe("InputFile", () => {
     input.dispatchEvent(new Event("change", { bubbles: true }));
     expect(handleChange).toHaveBeenCalledTimes(1);
   });
+
+  it("marks a required file input via aria-required only", () => {
+    render(<InputFile label="Datei hochladen" id="file" required />);
+
+    const input = screen.getByLabelText("Datei hochladen");
+    expect(input).toHaveAttribute("aria-required", "true");
+    expect(input).not.toHaveAttribute("required");
+  });
 });

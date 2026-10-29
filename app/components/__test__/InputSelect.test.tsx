@@ -139,4 +139,12 @@ describe("InputSelect", () => {
     expect(screen.getByLabelText("A")).toHaveAccessibleDescription("Fehler A");
     expect(screen.getByLabelText("B")).toHaveAccessibleDescription("Fehler B");
   });
+
+  it("marks a required select via aria-required only", () => {
+    renderWithTestTranslations(<InputSelect {...defaultProps} required />);
+
+    const select = screen.getByRole("combobox");
+    expect(select).toHaveAttribute("aria-required", "true");
+    expect(select).not.toHaveAttribute("required");
+  });
 });
