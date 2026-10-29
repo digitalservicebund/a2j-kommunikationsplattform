@@ -79,6 +79,8 @@ export const de = {
         // Only one Schriftstück per Einreichung
         alreadyUploaded: "(bereits hochgeladen)",
         // Signaturdateien aren't PDF or Word files
+        // TODO: raise to 200 MB once SINC's fix for larger uploads is live
+        // (the API currently refuses files over 100 MiB)
         signaturdateiHint: "Maximale Dateigröße ist 104 MB.",
       },
       sichtbarkeit: {
@@ -92,6 +94,8 @@ export const de = {
       },
       uploadDokument: {
         label: "Datei hochladen",
+        // TODO: raise to 200 MB (here and in `error`) once SINC's fix for
+        // larger uploads is live (the API currently refuses files over 100 MiB)
         hint: "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
         error:
           "Keine Datei ausgewählt? Ist ihre Datei zu groß? Oder der Dateityp wird nicht unterstützt. Bitte laden Sie eine Datei mit maximal 104 MB hoch. Unterstützte Dateitypen sind: *.pdf, *.doc, *.docx und *.xml (XJustiz).",
