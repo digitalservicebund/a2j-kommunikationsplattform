@@ -62,7 +62,6 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     return {
       verfahrenId,
       einreichung: { id: einreichung.id, name: einreichung.name },
-      // The XJustiz-Dokument is system-generated, not uploaded by the user
       dokumente: await loadDokumenteWithValidierungsstatus(authSession, {
         verfahrenId,
         einreichungId: einreichung.id,

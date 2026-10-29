@@ -12,7 +12,7 @@ describe("VerfahrenDetailsFormSection", () => {
       <VerfahrenDetailsFormSection
         kurzrubrum="Müller ./. Weber"
         verfahrensgegenstand="Zahlungsklage"
-        gericht={gericht}
+        selectedGericht={gericht}
       />,
     );
 
@@ -30,7 +30,7 @@ describe("VerfahrenDetailsFormSection", () => {
       <VerfahrenDetailsFormSection
         kurzrubrum=""
         verfahrensgegenstand=""
-        gericht={gericht}
+        selectedGericht={gericht}
       />,
     );
 
@@ -45,7 +45,7 @@ describe("VerfahrenDetailsFormSection", () => {
       <VerfahrenDetailsFormSection
         kurzrubrum=""
         verfahrensgegenstand=""
-        gericht={gericht}
+        selectedGericht={gericht}
         errors={{ subjectMatterOfTheProceedings: ["Pflichtfeld."] }}
       />,
     );

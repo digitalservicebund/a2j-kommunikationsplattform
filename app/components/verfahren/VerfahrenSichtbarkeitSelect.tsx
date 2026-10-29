@@ -3,8 +3,6 @@ import { useTranslations } from "~/services/translations/context";
 
 type VerfahrenSichtbarkeitSelectProps = {
   id: string;
-  // Added to the accessible name, when there's a select for each of
-  // several Dokumente
   dokumentName?: string;
   sichtbarkeitAlle: boolean;
   onChange: (sichtbarkeitAlle: boolean) => void;
@@ -13,10 +11,6 @@ type VerfahrenSichtbarkeitSelectProps = {
   className?: string;
 };
 
-/**
- * Selects who can see a Dokument: all Beteiligten of the Verfahren
- * (sichtbarkeitAlle) or only the Gericht and the associated Partei.
- */
 export default function VerfahrenSichtbarkeitSelect({
   id,
   dokumentName,

@@ -25,25 +25,12 @@ const ACCEPTED_SCHRIFTSTUECK_FILE_TYPES = [
 ].join(",");
 
 export type VerfahrenDokumentUploadFormProps = {
-  // Undefined until the Einreichung exists (e.g. before the Klageeinreichung's
-  // first upload, which creates it)
   einreichungId: string | undefined;
-  // An Einreichung has only one Schriftstück
   hasSchriftstueck: boolean;
-  // Overrides the Schriftstück's type label, e.g. to call it the Klageschrift
   schriftstueckLabel?: string;
   disabled: boolean;
 };
 
-/**
- * Uploads a Dokument of the chosen type. Type and file can be chosen in any
- * order; nothing is uploaded until the user clicks "Hochladen". The
- * Schriftstück is preselected until one exists, then the Anlage. The route's
- * action handles the "upload" formType (see einreichungDokumentActions.server).
- *
- * Keyed by the parent on the Dokumente count, so the type and file reset
- * after each successful upload.
- */
 export default function VerfahrenDokumentUploadForm({
   einreichungId,
   hasSchriftstueck,
@@ -143,8 +130,6 @@ export default function VerfahrenDokumentUploadForm({
             : undefined
         }
         error={showFileError ? shared.form.uploadDokument.error : undefined}
-        // KERN recommends aria-disabled over disabled to keep the input
-        // reachable; it doesn't block anything itself, so do it here
         aria-disabled={disabled}
         onClick={(event) => disabled && event.preventDefault()}
       />
@@ -155,7 +140,6 @@ export default function VerfahrenDokumentUploadForm({
         <Button
           appearance="secondary"
           type="submit"
-          // aria-disabled doesn't block the submit itself
           aria-disabled={disabled}
           onClick={(event) => disabled && event.preventDefault()}
           label={isUploading ? labels.submitting : labels.submit}

@@ -9,12 +9,6 @@ type VerfahrenDokumentSichtbarkeitFormProps = {
   disabled: boolean;
 };
 
-/**
- * Changes the Sichtbarkeit of an uploaded Dokument as soon as another option
- * is selected. Uses a fetcher, so the page (and the focus) stays in place.
- * Submits the "sichtbarkeit" formType to the current route (incl. its search
- * params, e.g. the Klageeinreichung's `?verfahren=`).
- */
 export default function VerfahrenDokumentSichtbarkeitForm({
   dokument,
   einreichungId,
@@ -22,9 +16,6 @@ export default function VerfahrenDokumentSichtbarkeitForm({
 }: Readonly<VerfahrenDokumentSichtbarkeitFormProps>) {
   const fetcher = useFetcher<ActionResult<{ formType: string }>>();
   const isSaving = fetcher.state !== "idle";
-
-  // Show the selected option while saving; afterwards, the revalidated
-  // Dokument (unchanged, if saving failed)
   const pendingSichtbarkeitAlle = fetcher.formData?.get("sichtbarkeitAlle");
   const sichtbarkeitAlle =
     typeof pendingSichtbarkeitAlle === "string"

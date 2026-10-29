@@ -24,12 +24,6 @@ type VerfahrenDokumenteListProps = {
   disabled?: boolean;
 };
 
-/**
- * The Dokumente of a draft Einreichung: each can be opened, downloaded, have
- * its Sichtbarkeit changed and (unless protected) be deleted, and shows its
- * Validierungsstatus. The route's action handles the "delete" and
- * "sichtbarkeit" formTypes (see einreichungDokumentActions.server).
- */
 export default function VerfahrenDokumenteList({
   verfahrenId,
   dokumente,
@@ -120,7 +114,6 @@ export default function VerfahrenDokumenteList({
                         appearance="secondary"
                         className="kern-btn--x-small border-feedback-danger"
                         type="submit"
-                        // aria-disabled doesn't block the submit itself
                         aria-disabled={disabled}
                         onClick={(event) => disabled && event.preventDefault()}
                       >

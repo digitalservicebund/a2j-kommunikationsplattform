@@ -8,15 +8,14 @@ import FieldsetCard from "../FieldsetCard";
 type VerfahrenDetailsFormSectionProps = {
   kurzrubrum: string;
   verfahrensgegenstand: string;
-  // The Empfängergericht is fixed once chosen, so it is shown but not editable
-  gericht: GerichtSelectItem | null;
+  selectedGericht: GerichtSelectItem | null;
   errors?: Record<string, string[]>;
 };
 
 export default function VerfahrenDetailsFormSection({
   kurzrubrum,
   verfahrensgegenstand,
-  gericht,
+  selectedGericht,
   errors,
 }: Readonly<VerfahrenDetailsFormSectionProps>) {
   const { routes, shared } = useTranslations();
@@ -29,8 +28,8 @@ export default function VerfahrenDetailsFormSection({
       <VerfahrenGerichteSelect
         id="claim-court"
         label={shared.form.labels.empfaengergericht}
-        gerichte={gericht ? [gericht] : []}
-        initialSelectedValue={gericht?.id ?? ""}
+        gerichte={selectedGericht ? [selectedGericht] : []}
+        initialSelectedValue={selectedGericht?.id ?? ""}
         disabled
       />
       <InputField

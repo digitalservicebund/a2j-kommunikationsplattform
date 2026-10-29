@@ -167,7 +167,7 @@ export default function VerfahrenNeuVerfahrendetails({
               <VerfahrenDetailsFormSection
                 kurzrubrum={verfahren.kurzrubrum ?? ""}
                 verfahrensgegenstand={verfahren.verfahrensgegenstand ?? ""}
-                gericht={verfahren.gericht}
+                selectedGericht={verfahren.gericht}
                 errors={fieldErrors}
               />
 

@@ -5,20 +5,13 @@ import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einre
 
 type VerfahrenEinreichungDokumenteProps = {
   verfahrenId: string | undefined;
-  // Undefined until the Einreichung exists (e.g. before the Klageeinreichung's
-  // first upload)
   einreichung: Pick<Einreichung, "id" | "name"> | undefined;
   dokumente: DokumentWithValidierungsstatus[];
-  // Overrides the Schriftstück's label, e.g. to call it the Klageschrift
   schriftstueckLabel?: string;
   allowSchriftstueck?: boolean;
   disabled: boolean;
 };
 
-/**
- * Lists the Dokumente of a draft Einreichung and uploads further ones. Used
- * for the Klageeinreichung's Dokumente step and the Weitere Einreichung.
- */
 export default function VerfahrenEinreichungDokumente({
   verfahrenId,
   einreichung,
@@ -27,7 +20,6 @@ export default function VerfahrenEinreichungDokumente({
   allowSchriftstueck,
   disabled,
 }: Readonly<VerfahrenEinreichungDokumenteProps>) {
-  // The system-generated XJustiz-Dokument isn't the user's upload
   const uploadedDokumente = dokumente.filter(({ typ }) => typ !== "XJUSTIZ");
 
   return (
@@ -44,8 +36,6 @@ export default function VerfahrenEinreichungDokumente({
       )}
 
       <VerfahrenDokumentUploadForm
-        // Resets the type and file after each successful upload, but keeps
-        // them after a failed one
         key={uploadedDokumente.length}
         einreichungId={einreichung?.id}
         hasSchriftstueck={uploadedDokumente.some(

@@ -10,14 +10,8 @@ type VerfahrenDokumentItemProps = {
   dokument: Dokument;
   verfahrenId: string;
   einreichungId: string;
-  // Shown before the size, e.g. "Anlage", where Dokumente of several types
-  // are listed together
   typLabel?: string;
-  // Shown as a badge next to the Dokument's info. Only loaded for drafts, so
-  // e.g. the timeline of submitted Einreichungen has none.
   validierungsstatus?: Validierungsstatus;
-  // Controls in their own row below, aligned right, e.g. the Sichtbarkeit
-  // and a delete button
   actions?: ReactNode;
 };
 
