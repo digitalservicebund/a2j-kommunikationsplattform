@@ -118,11 +118,7 @@ export default function VerfahrenDokumentUploadForm({
         id="dokument-upload-file"
         name="file"
         label={shared.form.uploadDokument.label}
-        hint={
-          typ === "SIGNATURDATEI"
-            ? labels.signaturdateiHint
-            : shared.form.uploadDokument.hint
-        }
+        hint={labels.hints[typ]}
         accept={
           typ === "SCHRIFTSTUECK"
             ? ACCEPTED_SCHRIFTSTUECK_FILE_TYPES

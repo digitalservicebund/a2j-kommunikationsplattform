@@ -71,11 +71,18 @@ describe("VerfahrenDokumentUploadForm", () => {
       "accept",
       expect.stringContaining(".pdf"),
     );
+    expect(
+      await findByText(
+        "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
+      ),
+    ).toBeInTheDocument();
 
     fireEvent.click(getByRole("radio", { name: "Signaturdatei" }));
 
     expect(
-      await findByText("Maximale Dateigröße ist 104 MB."),
+      await findByText(
+        "Signaturdateien zu Ihren Dokumenten. Maximale Dateigröße ist 104 MB.",
+      ),
     ).toBeInTheDocument();
     expect(await findByLabelText("Datei hochladen")).not.toHaveAttribute(
       "accept",

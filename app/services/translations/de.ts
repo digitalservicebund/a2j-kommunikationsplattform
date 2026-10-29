@@ -78,10 +78,18 @@ export const de = {
         submitting: "Wird hochgeladen...",
         // Only one Schriftstück per Einreichung
         alreadyUploaded: "(bereits hochgeladen)",
-        // Signaturdateien aren't PDF or Word files
-        // TODO: raise to 200 MB once SINC's fix for larger uploads is live
-        // (the API currently refuses files over 100 MiB)
-        signaturdateiHint: "Maximale Dateigröße ist 104 MB.",
+        // Shown for the chosen type, matching the files it accepts
+        // TODO: raise to 200 MB (here and in uploadDokument.error) once SINC's
+        // fix for larger uploads is live (the API currently refuses files
+        // over 100 MiB)
+        hints: {
+          SCHRIFTSTUECK:
+            "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
+          ANHANG:
+            "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
+          SIGNATURDATEI:
+            "Signaturdateien zu Ihren Dokumenten. Maximale Dateigröße ist 104 MB.",
+        },
       },
       sichtbarkeit: {
         label: "Sichtbarkeit",
@@ -94,11 +102,10 @@ export const de = {
       },
       uploadDokument: {
         label: "Datei hochladen",
-        // TODO: raise to 200 MB (here and in `error`) once SINC's fix for
-        // larger uploads is live (the API currently refuses files over 100 MiB)
-        hint: "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
+        // TODO: raise to 200 MB once SINC's fix for larger uploads is live
+        // (the API currently refuses files over 100 MiB)
         error:
-          "Keine Datei ausgewählt? Ist ihre Datei zu groß? Oder der Dateityp wird nicht unterstützt. Bitte laden Sie eine Datei mit maximal 104 MB hoch. Unterstützte Dateitypen sind: *.pdf, *.doc, *.docx und *.xml (XJustiz).",
+          "Keine Datei ausgewählt? Ist ihre Datei zu groß? Oder der Dateityp wird nicht unterstützt. Bitte laden Sie eine Datei mit maximal 104 MB hoch. Unterstützte Dateitypen sind: *.pdf, *.doc, *.docx, *.xml (XJustiz) und Signaturdateien.",
       },
       deleteDokument: {
         labelForDokument: "{{name}} entfernen",
