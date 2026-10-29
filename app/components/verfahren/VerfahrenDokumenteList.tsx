@@ -19,12 +19,8 @@ type VerfahrenDokumenteListProps = {
   verfahrenId: string;
   dokumente: DokumentWithValidierungsstatus[];
   einreichung: Pick<Einreichung, "id" | "name">;
-  // See canDeleteDokument
   allowSchriftstueck?: boolean;
-  // Overrides the Schriftstück's type label, e.g. to call it the Klageschrift
   schriftstueckLabel?: string;
-  // E.g. while an upload is running; uses aria-disabled to keep the
-  // controls reachable, as KERN recommends
   disabled?: boolean;
 };
 
@@ -45,7 +41,6 @@ export default function VerfahrenDokumenteList({
   const { routes, shared } = useTranslations();
   const actionData = useActionData<ActionResult<DeleteDokumentActionData>>();
 
-  // Matched by Dokument id, since a page can render several lists.
   function findDeleteDokumentError(dokumentId: string) {
     return actionData?.status === "error" &&
       actionData.data?.formType === "delete" &&
@@ -93,9 +88,6 @@ export default function VerfahrenDokumenteList({
               typLabel={getTypLabel(dokument)}
               validierungsstatus={dokument.validierungsstatus}
               actions={
-                // Anchored to the right edge with only the delete button (or
-                // its placeholder) right of the Sichtbarkeit, so the selects
-                // are aligned across all Dokumente
                 <div className="kern-gap-sm flex items-end">
                   <VerfahrenDokumentSichtbarkeitForm
                     dokument={dokument}
