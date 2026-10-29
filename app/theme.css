@@ -41,5 +41,6 @@
    */
   --color-layout-text-default: var(--kern-color-layout-text-default-contextual);
   --color-decorative-border: var(--kern-color-decorative-border-contextual);
+  --color-layout-border: var(--kern-color-layout-border);
   --color-kern-white: var(--kern-color-white);
 }

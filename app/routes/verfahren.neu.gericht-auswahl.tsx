@@ -58,7 +58,7 @@ export default function VerfahrenNeuGerichtAuswahl({
             {routes.verfahrenGerichtAuswahl.headline}
           </h1>
           <div className="kern-pt-xl">
-            <div className="kern-p-lg kern-gap-lg flex flex-col rounded-(--kern-metric-border-radius-default) border border-(--kern-color-layout-border)">
+            <div className="kern-p-lg kern-gap-lg flex flex-col rounded-(--kern-metric-border-radius-default) border border-layout-border">
               <h2 className="kern-heading-medium">
                 {routes.verfahrenGerichtAuswahl.subline}
               </h2>
