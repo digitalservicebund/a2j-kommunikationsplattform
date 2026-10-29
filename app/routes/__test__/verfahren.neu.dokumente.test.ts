@@ -333,7 +333,7 @@ describe("/verfahren/neu/dokumente", () => {
       verfahrenId: VERFAHREN_ID,
       redirectTo: DOKUMENTE_PATH,
       // This step is where the Klageschrift is replaced
-      allowSchriftstueck: true,
+      allowSchriftstueckDeletion: true,
     };
 
     it.each([

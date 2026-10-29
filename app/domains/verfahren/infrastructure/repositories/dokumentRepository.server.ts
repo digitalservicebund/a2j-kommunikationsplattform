@@ -210,7 +210,7 @@ export async function deleteDokumentFromEinreichung({
   verfahrenId,
   einreichungId,
   dokumentId,
-  allowSchriftstueck,
+  allowSchriftstueckDeletion,
 }: DeleteDokumentFromEinreichungOptions): Promise<DeleteDokumentFromEinreichungResult> {
   if (typeof einreichungId !== "string" || typeof dokumentId !== "string") {
     return { status: "invalid-form-data" };
@@ -229,7 +229,9 @@ export async function deleteDokumentFromEinreichung({
 
   if (
     targetDokument &&
-    !canDeleteDokument(targetDokument, einreichung, { allowSchriftstueck })
+    !canDeleteDokument(targetDokument, einreichung, {
+      allowSchriftstueckDeletion,
+    })
   ) {
     return { status: "protected-dokument" };
   }

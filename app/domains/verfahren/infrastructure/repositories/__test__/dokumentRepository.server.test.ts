@@ -389,7 +389,7 @@ describe("deleteDokumentFromEinreichung", () => {
       verfahrenId: "v-1",
       einreichungId: "e-1",
       dokumentId: "d-1",
-      allowSchriftstueck: true,
+      allowSchriftstueckDeletion: true,
     });
 
     expect(result).toEqual({ status: "deleted" });

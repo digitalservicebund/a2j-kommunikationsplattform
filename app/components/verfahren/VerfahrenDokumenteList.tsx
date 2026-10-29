@@ -19,7 +19,7 @@ type VerfahrenDokumenteListProps = {
   verfahrenId: string;
   dokumente: DokumentWithValidierungsstatus[];
   einreichung: Pick<Einreichung, "id" | "name">;
-  allowSchriftstueck?: boolean;
+  allowSchriftstueckDeletion?: boolean;
   schriftstueckLabel?: string;
   disabled?: boolean;
 };
@@ -28,7 +28,7 @@ export default function VerfahrenDokumenteList({
   verfahrenId,
   dokumente,
   einreichung,
-  allowSchriftstueck = false,
+  allowSchriftstueckDeletion = false,
   schriftstueckLabel,
   disabled = false,
 }: Readonly<VerfahrenDokumenteListProps>) {
@@ -89,7 +89,7 @@ export default function VerfahrenDokumenteList({
                     disabled={disabled}
                   />
                   {canDeleteDokument(dokument, einreichung, {
-                    allowSchriftstueck,
+                    allowSchriftstueckDeletion,
                   }) ? (
                     <Form
                       method="post"

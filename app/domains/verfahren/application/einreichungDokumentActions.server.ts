@@ -103,7 +103,7 @@ export async function handleDokumentDelete(
     authSession,
     verfahrenId,
     redirectTo,
-    allowSchriftstueck,
+    allowSchriftstueckDeletion,
   }: EinreichungDokumentActionContext,
 ) {
   const actionResultData = {
@@ -127,7 +127,7 @@ export async function handleDokumentDelete(
       verfahrenId,
       einreichungId,
       dokumentId,
-      allowSchriftstueck,
+      allowSchriftstueckDeletion,
     });
 
     if (deleteResult.status === "protected-dokument") {

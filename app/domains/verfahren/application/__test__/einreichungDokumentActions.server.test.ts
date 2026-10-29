@@ -171,7 +171,7 @@ describe("einreichungDokumentActions", () => {
 
       const response = await handleDokumentDelete(
         buildFormData({ einreichungId: "e-1", dokumentId: "d-1" }),
-        { ...context, allowSchriftstueck: true },
+        { ...context, allowSchriftstueckDeletion: true },
       );
 
       expect(mocks.deleteDokumentFromEinreichung).toHaveBeenCalledWith({
@@ -179,7 +179,7 @@ describe("einreichungDokumentActions", () => {
         verfahrenId: "v-1",
         einreichungId: "e-1",
         dokumentId: "d-1",
-        allowSchriftstueck: true,
+        allowSchriftstueckDeletion: true,
       });
       expectRedirect(response, "/verfahren/v-1");
     });

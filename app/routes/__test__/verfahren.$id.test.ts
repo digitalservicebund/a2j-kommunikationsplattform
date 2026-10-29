@@ -50,7 +50,7 @@ describe("/verfahren/:id action", () => {
       handler.mockResolvedValue("handled");
 
       expect(await callAction(formType)).toBe("handled");
-      // Without allowSchriftstueck: the draft Klageschrift stays protected
+      // Without allowSchriftstueckDeletion: the draft Klageschrift stays protected
       expect(handler).toHaveBeenCalledWith(expect.any(FormData), {
         authSession,
         verfahrenId: "v-1",

@@ -8,7 +8,7 @@ type VerfahrenEinreichungDokumenteProps = {
   einreichung: Pick<Einreichung, "id" | "name"> | undefined;
   dokumente: DokumentWithValidierungsstatus[];
   schriftstueckLabel?: string;
-  allowSchriftstueck?: boolean;
+  allowSchriftstueckDeletion?: boolean;
   disabled: boolean;
 };
 
@@ -17,7 +17,7 @@ export default function VerfahrenEinreichungDokumente({
   einreichung,
   dokumente,
   schriftstueckLabel,
-  allowSchriftstueck,
+  allowSchriftstueckDeletion,
   disabled,
 }: Readonly<VerfahrenEinreichungDokumenteProps>) {
   const uploadedDokumente = dokumente.filter(({ typ }) => typ !== "XJUSTIZ");
@@ -29,7 +29,7 @@ export default function VerfahrenEinreichungDokumente({
           verfahrenId={verfahrenId}
           dokumente={uploadedDokumente}
           einreichung={einreichung}
-          allowSchriftstueck={allowSchriftstueck}
+          allowSchriftstueckDeletion={allowSchriftstueckDeletion}
           schriftstueckLabel={schriftstueckLabel}
           disabled={disabled}
         />

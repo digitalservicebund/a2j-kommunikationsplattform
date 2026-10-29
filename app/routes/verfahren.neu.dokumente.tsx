@@ -172,7 +172,7 @@ function buildDokumentActionContext(
       verfahren: verfahrenId,
     }),
     // This step is where the Klageschrift is replaced
-    allowSchriftstueck: true,
+    allowSchriftstueckDeletion: true,
   };
 }
 
@@ -322,7 +322,7 @@ export default function VerfahrenNeuDokumente({
                 schriftstueckLabel={
                   routes.verfahrenNeu.dokumente.schriftstueckLabel
                 }
-                allowSchriftstueck
+                allowSchriftstueckDeletion
                 disabled={isBusy}
               />
 

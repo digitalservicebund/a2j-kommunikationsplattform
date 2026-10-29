@@ -42,7 +42,7 @@ const klageeinreichung = { id: "e-1", name: "Klageeinreichung" };
 function renderList(
   dokumente: DokumentWithValidierungsstatus[],
   einreichung = klageeinreichung,
-  options: { allowSchriftstueck?: boolean; disabled?: boolean } = {},
+  options: { allowSchriftstueckDeletion?: boolean; disabled?: boolean } = {},
 ) {
   const Stub = createRoutesStub([
     {
@@ -256,7 +256,7 @@ describe("VerfahrenDokumenteList", () => {
 
   it("allows deleting the Klageschrift where it's replaceable", () => {
     renderList([buildDokument({ typ: "SCHRIFTSTUECK" })], klageeinreichung, {
-      allowSchriftstueck: true,
+      allowSchriftstueckDeletion: true,
     });
 
     expect(
