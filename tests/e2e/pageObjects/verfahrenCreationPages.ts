@@ -95,6 +95,12 @@ export class VerfahrenDokumentePage extends PageObject {
     await this.page
       .getByLabel(t.shared.form.uploadDokument.label)
       .setInputFiles(getTestDataFilePath(testDataFileName));
+    await this.page
+      .getByRole("button", {
+        name: t.shared.form.dokumentUpload.submit,
+        exact: true,
+      })
+      .click();
   }
 
   async expectDokumentToHaveBeenUploaded(

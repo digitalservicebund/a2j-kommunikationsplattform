@@ -18,17 +18,29 @@ function renderForm(
   props: Partial<VerfahrenDokumentUploadFormProps> = {},
   actionResult: unknown = null,
 ) {
+  // The action can't parse the request in jsdom (its File isn't the one
+  // Node's fetch expects), so the submitted values are captured from the
+  // form's submit event instead
+  const submissions: FormData[] = [];
+  const action = vi.fn(() => actionResult);
   const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => (
         <VerfahrenDokumentUploadForm {...baseProps} {...props} />
       ),
-      action: () => actionResult,
+      action,
     },
   ]);
-  return renderWithTestTranslations(<Stub />);
+  const result = renderWithTestTranslations(<Stub />);
+  result.container.addEventListener("submit", ({ target, submitter }) => {
+    submissions.push(new FormData(target as HTMLFormElement, submitter));
+  });
+
+  return { ...result, submissions, action };
 }
+
+const pdfFile = new File(["%PDF"], "a.pdf", { type: "application/pdf" });
 
 describe("VerfahrenDokumentUploadForm", () => {
   it("preselects the Schriftstück until one exists", async () => {
@@ -91,39 +103,52 @@ describe("VerfahrenDokumentUploadForm", () => {
     expect(container.querySelector('input[name="einreichungId"]')).toBeNull();
   });
 
-  it("uploads as soon as a file is selected", async () => {
-    const requestSubmit = vi
-      .spyOn(HTMLFormElement.prototype, "requestSubmit")
-      .mockImplementation(() => {});
-    const { findByLabelText } = renderForm();
+  it("doesn't upload when a file is selected", async () => {
+    const { findByLabelText, submissions } = renderForm();
 
     fireEvent.change(await findByLabelText("Datei hochladen"), {
-      target: { files: [new File(["%PDF"], "a.pdf")] },
+      target: { files: [pdfFile] },
     });
 
-    expect(requestSubmit).toHaveBeenCalledOnce();
-    requestSubmit.mockRestore();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(submissions).toHaveLength(0);
+  });
+
+  it("uploads with the type chosen last, in any order, on clicking Hochladen", async () => {
+    const { findByLabelText, getByRole, submissions, action } = renderForm();
+
+    // File first, then the type
+    fireEvent.change(await findByLabelText("Datei hochladen"), {
+      target: { files: [pdfFile] },
+    });
+    fireEvent.click(getByRole("radio", { name: "Anlage" }));
+    fireEvent.click(getByRole("button", { name: "Hochladen" }));
+
+    await vi.waitFor(() => expect(submissions).toHaveLength(1));
+    expect(submissions[0]?.get("typ")).toBe("ANHANG");
+    expect(submissions[0]?.get("formType")).toBe("upload");
+    await vi.waitFor(() => expect(action).toHaveBeenCalledOnce());
   });
 
   it("keeps everything focusable but blocks it while disabled", async () => {
-    const requestSubmit = vi
-      .spyOn(HTMLFormElement.prototype, "requestSubmit")
-      .mockImplementation(() => {});
-    const { findByLabelText, getByRole } = renderForm({ disabled: true });
+    const { findByLabelText, getByRole, submissions } = renderForm({
+      disabled: true,
+    });
 
     const input = await findByLabelText("Datei hochladen");
     expect(input).not.toBeDisabled();
     expect(input).toHaveAttribute("aria-disabled", "true");
     expect(fireEvent.click(input)).toBe(false);
 
-    fireEvent.change(input, {
-      target: { files: [new File(["%PDF"], "a.pdf")] },
-    });
-    expect(requestSubmit).not.toHaveBeenCalled();
-
     fireEvent.click(getByRole("radio", { name: "Anlage" }));
     expect(getByRole("radio", { name: "Schriftstück" })).toBeChecked();
-    requestSubmit.mockRestore();
+
+    const button = getByRole("button", { name: "Hochladen" });
+    expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(fireEvent.click(button)).toBe(false);
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(submissions).toHaveLength(0);
   });
 
   it("shows the file error of an invalid upload", async () => {

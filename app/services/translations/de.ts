@@ -74,6 +74,8 @@ export const de = {
       // One upload section per Dokument type
       dokumentUpload: {
         typLegend: "Art des Dokuments",
+        submit: "Hochladen",
+        submitting: "Wird hochgeladen...",
         // Only one Schriftstück per Einreichung
         alreadyUploaded: "(bereits hochgeladen)",
         // Signaturdateien aren't PDF or Word files

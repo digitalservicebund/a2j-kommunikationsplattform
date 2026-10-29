@@ -1,6 +1,7 @@
-import { ChangeEvent, useState } from "react";
-import { Form, useActionData } from "react-router";
+import { useState } from "react";
+import { Form, useActionData, useNavigation } from "react-router";
 import Alert from "~/components/Alert";
+import Button from "~/components/Button";
 import InputFile from "~/components/InputFile";
 import type { UploadDokumentType } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { useTranslations } from "~/services/translations/context";
@@ -35,7 +36,8 @@ export type VerfahrenDokumentUploadFormProps = {
 };
 
 /**
- * Uploads a Dokument of the chosen type as soon as a file is selected. The
+ * Uploads a Dokument of the chosen type. Type and file can be chosen in any
+ * order; nothing is uploaded until the user clicks "Hochladen". The
  * Schriftstück is preselected until one exists, then the Anlage. The route's
  * action handles the "upload" formType (see einreichungDokumentActions.server).
  *
@@ -62,6 +64,11 @@ export default function VerfahrenDokumentUploadForm({
       : undefined;
   const showFileError = isUploadResult && actionData.status === "invalid";
 
+  const navigation = useNavigation();
+  const isUploading =
+    navigation.state !== "idle" &&
+    navigation.formData?.get("formType") === "upload";
+
   const isTypUnavailable = (option: UploadDokumentType) =>
     option === "SCHRIFTSTUECK" && hasSchriftstueck;
 
@@ -72,18 +79,6 @@ export default function VerfahrenDokumentUploadForm({
     }
 
     setTyp(option);
-  };
-
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const input = event.currentTarget;
-
-    // Clicks are blocked while disabled, but a file can still be dropped
-    if (disabled) {
-      input.value = "";
-      return;
-    }
-
-    input.form?.requestSubmit();
   };
 
   return (
@@ -152,10 +147,20 @@ export default function VerfahrenDokumentUploadForm({
         // reachable; it doesn't block anything itself, so do it here
         aria-disabled={disabled}
         onClick={(event) => disabled && event.preventDefault()}
-        onChange={handleFileChange}
       />
 
       {uploadError && <Alert type="error" title={uploadError} />}
+
+      <div className="flex justify-end">
+        <Button
+          appearance="secondary"
+          type="submit"
+          // aria-disabled doesn't block the submit itself
+          aria-disabled={disabled}
+          onClick={(event) => disabled && event.preventDefault()}
+          label={isUploading ? labels.submitting : labels.submit}
+        />
+      </div>
     </Form>
   );
 }
