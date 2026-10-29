@@ -1,3 +1,4 @@
+import { partition } from "es-toolkit";
 import { Form, useActionData } from "react-router";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
@@ -53,15 +54,13 @@ export default function VerfahrenDokumenteList({
       : null;
   }
 
-  // The XJustiz Dokument is system-generated metadata, not a file the user
-  // submitted — it's never shown in this list. The Schriftstück comes first.
-  const visibleDokumente = dokumente
-    .filter((dokument) => dokument.typ !== "XJUSTIZ")
-    // sort() is safe here: filter() already returned a new array
-    .sort(
-      (a, b) =>
-        Number(b.typ === "SCHRIFTSTUECK") - Number(a.typ === "SCHRIFTSTUECK"),
-    );
+  // The XJustiz-Dokument is system-generated metadata, not a file the user
+  // submitted, so it's never shown. The Schriftstück comes first.
+  const [schriftstuecke, weitereDokumente] = partition(
+    dokumente.filter(({ typ }) => typ !== "XJUSTIZ"),
+    ({ typ }) => typ === "SCHRIFTSTUECK",
+  );
+  const visibleDokumente = [...schriftstuecke, ...weitereDokumente];
 
   const getTypLabel = ({ typ }: DokumentWithValidierungsstatus) =>
     typ === "SCHRIFTSTUECK" && schriftstueckLabel
