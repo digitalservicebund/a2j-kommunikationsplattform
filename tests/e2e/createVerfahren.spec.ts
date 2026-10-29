@@ -1,10 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { HomePage } from "./pageObjects/homePage";
 import {
-  VerfahrenCreationStep2Page,
-  VerfahrenCreationStep1Page,
+  GerichtAuswahlPage,
+  VerfahrenBeteiligtePage,
+  VerfahrenDetailsStepPage,
+  VerfahrenDokumentePage,
 } from "./pageObjects/verfahrenCreationPages";
 import { VerfahrenDetailsPage } from "./pageObjects/verfahrenDetailsPage";
+import { expectNoA11yViolations } from "./utils/a11y";
 import { logInAsTestUser } from "./utils/login";
 
 test.describe("Verfahren creation", () => {
@@ -25,24 +28,78 @@ test.describe("Verfahren creation", () => {
     const homePage = new HomePage(page);
     await homePage.startVerfahrenCreationFlow();
 
-    // I should be redirected to the first Verfahren creation step
-    const step1 = new VerfahrenCreationStep1Page(page);
-    await step1.expectToBeHere();
+    // I should be redirected to the court selection
+    const gerichtAuswahl = new GerichtAuswahlPage(page);
+    await gerichtAuswahl.expectToBeHere();
+    await expectNoA11yViolations(page);
 
-    // Upload Klageschrift
-    await step1.selectKlageschriftFile("klageschrift.pdf");
+    // Amtsgericht Bremen supports both KomPla and the Eingabesystem
+    await gerichtAuswahl.selectEmpfaengergericht("Amtsgericht Bremen");
+    await expect(gerichtAuswahl.komplaButton).toBeVisible();
+    await expect(gerichtAuswahl.eingabesystemButton).toBeVisible();
+    await gerichtAuswahl.startKomplaKlageeinreichung();
 
-    // Enter initial Verfahren details and submit
-    await step1.enterVerfahrensgegenstand("Zahlungsklage");
-    await step1.selectEmpfaengergericht("Amtsgericht Bremen");
-    await step1.submit();
+    // I should be redirected to the Dokumente step
+    const dokumenteStep = new VerfahrenDokumentePage(page);
+    await dokumenteStep.expectToBeHere();
+    await expectNoA11yViolations(page);
+    await expect(dokumenteStep.disabledNextButton).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
 
-    // I should be redirected to the second step
-    const step2 = new VerfahrenCreationStep2Page(page);
-    await step2.expectToBeHere();
+    // The first upload creates the Verfahren, regardless of its type
+    await dokumenteStep.upload("ANHANG", "beweismittel1.pdf");
+    await dokumenteStep.expectDokumentToHaveBeenUploaded(
+      "ANHANG",
+      "beweismittel1.pdf",
+    );
+    await expect(dokumenteStep.disabledNextButton).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+
+    // Weiter is only available once the Klageschrift has been uploaded
+    await dokumenteStep.upload("SCHRIFTSTUECK", "klageschrift.pdf");
+    await dokumenteStep.expectDokumentToHaveBeenUploaded(
+      "SCHRIFTSTUECK",
+      "klageschrift.pdf",
+    );
+    await dokumenteStep.expectValidierungsstatusToBeShown(
+      "SCHRIFTSTUECK",
+      "klageschrift.pdf",
+    );
+    await dokumenteStep.upload("ANHANG", "beweismittel2.pdf");
+    await dokumenteStep.expectDokumentToHaveBeenUploaded(
+      "ANHANG",
+      "beweismittel2.pdf",
+    );
+    await expectNoA11yViolations(page);
+    await dokumenteStep.next();
+
+    // The Verfahrensdetails are prefilled, the court is fixed
+    const detailsStep = new VerfahrenDetailsStepPage(page);
+    await detailsStep.expectToBeHere();
+    await expectNoA11yViolations(page);
+    await expect(detailsStep.verfahrensgegenstandInput).toHaveValue(
+      "Zahlungsklage",
+    );
+    await expect(detailsStep.empfaengergerichtSelect).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    await expect(
+      detailsStep.empfaengergerichtSelect.locator("option:checked"),
+    ).toHaveText("Amtsgericht Bremen");
+    await detailsStep.enterRubrum("Mustermann ./. Kartal");
+    await detailsStep.next();
+
+    // I should be redirected to the Beteiligte step
+    const beteiligteStep = new VerfahrenBeteiligtePage(page);
+    await beteiligteStep.expectToBeHere();
 
     // Specify Beteiligungen
-    await step2.addKlagendePartei({
+    await beteiligteStep.addKlagendePartei({
       vorname: "Erika",
       nachname: "Mustermann",
       strasse: "Heidestraße",
@@ -50,15 +107,16 @@ test.describe("Verfahren creation", () => {
       postleitzahl: "51147",
       ort: "Köln",
     });
-    await step2.addKlagendeParteiProzessbevollmaechtigte({
+    await beteiligteStep.addKlagendeParteiProzessbevollmaechtigte({
       bezeichnung: "Rechtsanwalt Dr. Kathrin Hölzer",
       kanzleiform: "Einzelanwalt",
+      geschaeftszeichen: "Mustermann ./. Kartal",
       strasse: "Hauptstraße",
       hausnummer: "15",
       postleitzahl: "80123",
       ort: "München",
     });
-    await step2.addBeklagtePartei({
+    await beteiligteStep.addBeklagtePartei({
       vorname: "Emine",
       nachname: "Kartal",
       strasse: "Eichenring",
@@ -69,18 +127,7 @@ test.describe("Verfahren creation", () => {
       telefon: "0170123456",
     });
 
-    // Enter last Verfahren details
-    await step2.enterRubrum("Mustermann ./. Kartal");
-    await step2.enterGeschaeftszeichenProzessbevollmaechigte(
-      "Mustermann ./. Kartal",
-    );
-
-    // Upload Anlagen and submit
-    await step2.uploadAnhang("beweismittel1.pdf");
-    await step2.expectAnhangToHaveBeenUploaded("beweismittel1.pdf");
-    await step2.uploadAnhang("beweismittel2.pdf");
-    await step2.expectAnhangToHaveBeenUploaded("beweismittel2.pdf");
-    await step2.submit();
+    await beteiligteStep.submit();
 
     // I should be redirected to the details page
     const detailsPage = new VerfahrenDetailsPage(page);

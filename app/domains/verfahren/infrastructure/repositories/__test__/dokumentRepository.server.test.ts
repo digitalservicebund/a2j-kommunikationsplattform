@@ -8,9 +8,11 @@ import {
   fetchDokumentDownloadLink,
   fetchDokumente,
   fetchDokumentValidierungsstatus,
+  updateDokumentSichtbarkeit,
   uploadDokument,
   uploadDokumentDatei,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
+import { DokumentSchema } from "~/domains/verfahren/infrastructure/schemas/dokument.schema";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 
 const mocks = vi.hoisted(() => ({
@@ -217,6 +219,33 @@ describe("fetchDokumentValidierungsstatus", () => {
   });
 });
 
+describe("updateDokumentSichtbarkeit", () => {
+  it("calls the PATCH endpoint with the Sichtbarkeit and eTag", async () => {
+    const dokument = { id: "d-1", sichtbarkeitAlle: false };
+    mocks.apiRequest.mockResolvedValueOnce(dokument);
+
+    const result = await updateDokumentSichtbarkeit(makeAuthSession(), {
+      id: "d-1",
+      verfahrenId: "v-1",
+      einreichungId: "e-1",
+      sichtbarkeitAlle: false,
+      eTag: 'W/"0"',
+    });
+
+    expect(result).toBe(dokument);
+    expect(mocks.apiRequest).toHaveBeenCalledWith({
+      authSession: makeAuthSession(),
+      path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1",
+      method: "PATCH",
+      body: { sichtbarkeit_alle: false },
+      eTag: 'W/"0"',
+      schema: DokumentSchema,
+      errorMessage:
+        "Sichtbarkeit of Dokument with id d-1 could not be updated.",
+    });
+  });
+});
+
 describe("deleteDokument", () => {
   it("calls DELETE endpoint and returns success result", async () => {
     mocks.apiRequest.mockResolvedValueOnce({ ok: true });
@@ -347,6 +376,23 @@ describe("deleteDokumentFromEinreichung", () => {
 
     expect(result).toEqual({ status: "protected-dokument" });
     expect(mocks.apiRequest).toHaveBeenCalledTimes(2);
+  });
+
+  test("allows deleting a Schriftstück of the Klageeinreichung where it's replaceable", async () => {
+    mockLookups([klageschrift, anlage]);
+    mocks.apiRequest
+      .mockResolvedValueOnce({ data: { id: "d-1" }, eTag: 'W/"1"' })
+      .mockResolvedValueOnce({ ok: true });
+
+    const result = await deleteDokumentFromEinreichung({
+      authSession: makeAuthSession(),
+      verfahrenId: "v-1",
+      einreichungId: "e-1",
+      dokumentId: "d-1",
+      allowSchriftstueckDeletion: true,
+    });
+
+    expect(result).toEqual({ status: "deleted" });
   });
 
   test("allows deleting a Schriftstück of a Weitere Einreichung", async () => {

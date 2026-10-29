@@ -1,52 +1,37 @@
-import { SubmitEventHandler, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import {
-  ActionFunctionArgs,
-  data,
-  Form,
-  Link,
-  LoaderFunctionArgs,
-  redirect,
-  useFetcher,
-  useNavigation,
-  useRevalidator,
-} from "react-router";
+import { Form, Link, redirect, useNavigation } from "react-router";
 import { z } from "zod";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import { PageMetadata } from "~/components/PageMetadata";
 import Progress from "~/components/Progress";
 import VerfahrenBeklagterSection from "~/components/verfahren/VerfahrenBeklagterSection";
-import VerfahrenDetailsFormSection from "~/components/verfahren/VerfahrenDetailsFormSection";
-import VerfahrenDokumenteFormSection from "~/components/verfahren/VerfahrenDokumenteFormSection.tsx";
 import VerfahrenKlaegerSection from "~/components/verfahren/VerfahrenKlaegerSection";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import { config } from "~/config/config";
-import loadVerfahrenEinreichungBundle, {
-  Dokument,
-} from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import { buildKlageeinreichungPath } from "~/config/klageeinreichungRoutes";
+import loadKlageeinreichungDraft, {
+  requireVerfahrenSearchParam,
+} from "~/domains/verfahren/application/loadKlageeinreichungDraft.server";
 import regenerateEinreichungXJustiz from "~/domains/verfahren/application/regenerateEinreichungXJustiz.server";
-import { requireAuthAndVerfahrenId } from "~/domains/verfahren/application/routeContext.server";
+import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
 import { CodeWertSchema } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
-import { AnlagenDokumentTypeSchema } from "~/domains/verfahren/entities/dokument/dokument.entity";
-import { fetchLatestBelegForEinreichung } from "~/domains/verfahren/infrastructure/repositories/belegRepository.server";
-import {
-  deleteDokument,
-  fetchDokument,
-  uploadDokument,
-} from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import {
   fetchAnschriftstypen,
-  fetchGerichte,
   fetchKanzleiformen,
   fetchRollenbezeichnungen,
   fetchStaaten,
   fetchTelekommunikationsarten,
 } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
-import { updateVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
+import {
+  fetchVerfahrenById,
+  updateVerfahren,
+} from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { VerfahrenAendernInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.input.schema";
 import {
   getBeteiligungByRoleCode,
+  getGeschaeftszeichenByRoleCode,
   getProzessbevollmaechtigteByReferenz,
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
@@ -61,7 +46,6 @@ import buildBeteiligungFromFormValues, {
   buildRaKanzleiFromFormValues,
   ParteiFormValues,
 } from "~/domains/verfahren/services/buildBeteiligungFromFormValues";
-import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
 import resolveCodeWertId from "~/domains/verfahren/services/resolveCodeWertId";
 import {
   ANSCHRIFTSTYP_CODE_PRIVATANSCHRIFT,
@@ -78,19 +62,11 @@ import {
   safeParseActionFormData,
   safeParseActionInput,
 } from "~/utils/actionInput";
-import {
-  actionError,
-  ActionResult,
-  actionResultFromApiError,
-  actionSuccess,
-} from "~/utils/actionResult";
+import { actionResultFromApiError } from "~/utils/actionResult";
 import { dispatchFormAction } from "~/utils/dispatchFormAction";
-import { Route } from "./+types/verfahren.neu.$id.bearbeiten";
+import { Route } from "./+types/verfahren.neu.beteiligte";
 
 type CodeWertItem = z.infer<typeof CodeWertSchema>;
-
-const SubmitState = z.enum(["idle", "submit", "upload", "delete"]);
-type SubmitState = z.infer<typeof SubmitState>;
 
 // Dev-only convenience data for the "Fill details with dummy data" button below.
 const DUMMY_FORM_VALUES = {
@@ -104,6 +80,7 @@ const DUMMY_FORM_VALUES = {
   klagendeParteiTelefon: "0123456789",
   lawyerName: "Test-Kanzlei",
   lawyerKanzleiformId: "Einzelanwalt",
+  lawyerGeschaeftszeichen: "AZ-TEST-001",
   lawyerStrasse: "Teststraße",
   lawyerHausnummer: "2",
   lawyerPlz: "12345",
@@ -118,9 +95,6 @@ const DUMMY_FORM_VALUES = {
   beklagteParteiOrt: "Testort",
   beklagteParteiEmail: "test-beklagte@test.de",
   beklagteParteiTelefon: "0123456789",
-  claimRubrum: "Test-Rubrum",
-  claimReference: "AZ-TEST-001",
-  subjectMatterOfTheProceedings: "Test-Verfahrensgegenstand",
 };
 
 function fillFormFields(form: HTMLFormElement, values: Record<string, string>) {
@@ -164,6 +138,7 @@ function getParteiFormValues(
 function getAnwaltFormValues(formData: FormData): AnwaltFormValues {
   return {
     name: getFormText(formData, "lawyerName"),
+    geschaeftszeichen: getFormText(formData, "lawyerGeschaeftszeichen"),
     strasse: getFormText(formData, "lawyerStrasse"),
     hausnummer: getFormText(formData, "lawyerHausnummer"),
     postleitzahl: getFormText(formData, "lawyerPlz"),
@@ -176,39 +151,22 @@ function getAnwaltFormValues(formData: FormData): AnwaltFormValues {
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
 
-export async function loader({ context, params }: LoaderFunctionArgs) {
-  const { authSession, verfahrenId } = requireAuthAndVerfahrenId(
-    context,
-    params,
-    "loader",
+export async function loader({ request, context }: Route.LoaderArgs) {
+  const authSession = requireAuthSession(context, "loader");
+  const verfahrenId = requireVerfahrenSearchParam(
+    new URL(request.url).searchParams,
   );
 
-  const { verfahren, einreichung, dokumente } =
-    await loadVerfahrenEinreichungBundle(authSession, verfahrenId);
-
-  // Once the Einreichung has been submitted (a Beleg exists), the API no
-  // longer accepts changes to the Verfahren — bounce back instead of
-  // letting the user edit a form that will fail with a 409 on submit.
-  const beleg = await fetchLatestBelegForEinreichung(authSession, {
+  const { verfahren, einreichung } = await loadKlageeinreichungDraft(
+    authSession,
     verfahrenId,
-    einreichungId: einreichung.id,
-  });
+  );
 
-  if (beleg) {
-    return redirect(`/verfahren/${verfahrenId}`);
-  }
-
-  const [{ elemente: gerichte }, { elemente: kanzleiformen }] =
-    await Promise.all([
-      fetchGerichte(authSession),
-      fetchKanzleiformen(authSession),
-    ]);
+  const { elemente: kanzleiformen } = await fetchKanzleiformen(authSession);
 
   return {
     verfahren,
     einreichung,
-    dokumente,
-    gerichte,
     kanzleiformen,
   };
 }
@@ -218,99 +176,6 @@ type FormActionContext = {
   verfahrenId: string;
 };
 
-const DokumentUploadInputSchema = z.object({
-  einreichungId: z.string(),
-  // we will exclude SCHRIFTSTUECK type from here
-  // as it's being handled in the previous step /neu
-  type: AnlagenDokumentTypeSchema,
-  file: z.file().min(1),
-});
-
-async function handleUploadAction(
-  formData: FormData,
-  { authSession, verfahrenId }: FormActionContext,
-) {
-  const actionResultData = {
-    formType: "upload",
-  } as const;
-
-  const input = safeParseActionFormData(formData, DokumentUploadInputSchema, {
-    errorResultData: actionResultData,
-  });
-
-  if (!input.success) {
-    return input.error;
-  }
-
-  const { einreichungId, type, file } = input.data;
-
-  try {
-    await uploadDokument(authSession, verfahrenId, einreichungId, file, type);
-  } catch (error) {
-    return actionResultFromApiError(error, {
-      message: de.shared.form.errors.uploadFailed,
-      data: actionResultData,
-    });
-  }
-
-  return actionSuccess(actionResultData);
-}
-
-const DokumentDeletionInputSchema = z.object({
-  einreichungId: z.string().min(1),
-  dokumentId: z.string().min(1),
-});
-
-async function handleDeleteAction(
-  formData: FormData,
-  { authSession, verfahrenId }: FormActionContext,
-) {
-  const actionResultData = {
-    formType: "delete",
-  } as const;
-
-  const input = safeParseActionFormData(formData, DokumentDeletionInputSchema, {
-    errorResultData: actionResultData,
-  });
-
-  if (!input.success) {
-    return input.error;
-  }
-
-  const { einreichungId, dokumentId } = input.data;
-
-  try {
-    const { eTag } = await fetchDokument(authSession, {
-      verfahrenId,
-      einreichungId: einreichungId,
-      id: dokumentId,
-    });
-
-    const deleteResult = await deleteDokument(authSession, {
-      verfahrenId,
-      einreichungId,
-      id: dokumentId,
-      eTag: eTag ?? "",
-    });
-
-    if (!deleteResult.success) {
-      return data(
-        actionError(de.shared.form.errors.deleteFailed, {
-          data: actionResultData,
-        }),
-        { status: 500 },
-      );
-    }
-
-    return actionSuccess(actionResultData);
-  } catch (error) {
-    return actionResultFromApiError(error, {
-      message: de.shared.form.errors.deleteFailed,
-      data: actionResultData,
-    });
-  }
-}
-
 const SubmitInputSchema = z.object({
   einreichungId: z.string().min(1),
   // buildBeteiligungFromFormValues() silently omits a Partei from the
@@ -318,10 +183,12 @@ const SubmitInputSchema = z.object({
   // it here first so a blank Nachname is reported as a field error rather
   // than the party quietly disappearing from the Klage.
   klagendeParteiNachname: z.string().min(1, {
-    error: de.routes.verfahrenNeu.step2.form.validation.klagendeParteiNachname,
+    error:
+      de.routes.verfahrenNeu.beteiligte.form.validation.klagendeParteiNachname,
   }),
   beklagteParteiNachname: z.string().min(1, {
-    error: de.routes.verfahrenNeu.step2.form.validation.beklagteParteiNachname,
+    error:
+      de.routes.verfahrenNeu.beteiligte.form.validation.beklagteParteiNachname,
   }),
   hasLawyer: z
     .string()
@@ -332,10 +199,10 @@ const SubmitInputSchema = z.object({
 
 const LawyerRequiredFieldsSchema = z.object({
   lawyerName: z.string().min(1, {
-    error: de.routes.verfahrenNeu.step2.form.validation.lawyerName,
+    error: de.routes.verfahrenNeu.beteiligte.form.validation.lawyerName,
   }),
   lawyerKanzleiformId: z.string().min(1, {
-    error: de.routes.verfahrenNeu.step2.form.validation.lawyerKanzleiform,
+    error: de.routes.verfahrenNeu.beteiligte.form.validation.lawyerKanzleiform,
   }),
 });
 
@@ -458,23 +325,28 @@ async function handleSubmitAction(
     anwaltBeteiligung,
   ].filter((beteiligung) => beteiligung !== null);
 
-  const verfahrenUpdateInput = safeParseActionInput(
-    {
-      verfahrensgegenstand: formData.get("subjectMatterOfTheProceedings"),
-      kurzrubrum: formData.get("claimRubrum"),
-      gerichtId: formData.get("claim-court"),
-      beteiligungen: beteiligungen.length > 0 ? beteiligungen : null,
-    },
-    VerfahrenAendernInputSchema,
-    { errorResultData: actionResultData },
-  );
-
-  if (!verfahrenUpdateInput.success) {
-    return verfahrenUpdateInput.error;
-  }
-
-  // Persist the Verfahren and regenerate the resulting XJustiz document
+  // Persist the Verfahren and regenerate the resulting XJustiz document.
+  // The Verfahrensdetails are kept as saved in the previous step.
   try {
+    const verfahren = await fetchVerfahrenById(authSession, {
+      id: verfahrenId,
+    });
+
+    const verfahrenUpdateInput = safeParseActionInput(
+      {
+        verfahrensgegenstand: verfahren.verfahrensgegenstand,
+        kurzrubrum: verfahren.kurzrubrum,
+        gerichtId: verfahren.gericht?.id,
+        beteiligungen: beteiligungen.length > 0 ? beteiligungen : null,
+      },
+      VerfahrenAendernInputSchema,
+      { errorResultData: actionResultData },
+    );
+
+    if (!verfahrenUpdateInput.success) {
+      return verfahrenUpdateInput.error;
+    }
+
     await updateVerfahren(authSession, verfahrenId, verfahrenUpdateInput.data);
     await regenerateEinreichungXJustiz(authSession, {
       verfahrenId,
@@ -491,20 +363,13 @@ async function handleSubmitAction(
 }
 
 const formActionHandlers = {
-  upload: handleUploadAction,
-  delete: handleDeleteAction,
   submit: handleSubmitAction,
 } as const;
 
-export const action = async ({
-  request,
-  context,
-  params,
-}: ActionFunctionArgs) => {
-  const { authSession, verfahrenId } = requireAuthAndVerfahrenId(
-    context,
-    params,
-    "action",
+export const action = async ({ request, context }: Route.ActionArgs) => {
+  const authSession = requireAuthSession(context, "action");
+  const verfahrenId = requireVerfahrenSearchParam(
+    new URL(request.url).searchParams,
   );
 
   const formData = await request.formData();
@@ -517,95 +382,20 @@ export const action = async ({
   );
 };
 
-export default function VerfahrenNeuBearbeiten({
+export default function VerfahrenNeuBeteiligte({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const { verfahren, einreichung, dokumente, gerichte, kanzleiformen } =
-    loaderData;
+  const { verfahren, einreichung, kanzleiformen } = loaderData;
 
   const isInvalid = actionData?.status === "invalid";
   const isError = actionData?.status === "error";
   const fieldErrors = isInvalid ? actionData.fieldErrors : undefined;
-  const formValues = isInvalid ? actionData.data?.input : undefined;
-  const actionFormType = actionData?.data?.formType;
 
   const { routes, buttons, shared } = useTranslations();
   const navigation = useNavigation();
-  const revalidator = useRevalidator();
-  const deleteFetcher = useFetcher<ActionResult>();
-  const [submitState, setSubmitState] = useState<SubmitState>("idle");
-  const uploadFileInputRef = useRef<HTMLInputElement>(null);
+  const isSubmitting = navigation.state !== "idle";
   const mainFormRef = useRef<HTMLFormElement>(null);
-  const [isFileInputErrorDismissed, setIsFileInputErrorDismissed] =
-    useState(false);
-
-  const showFileInputError =
-    Boolean(fieldErrors?.file) && !isFileInputErrorDismissed;
-
-  useEffect(() => {
-    if (actionData?.status === "success" && navigation.state === "idle") {
-      void revalidator.revalidate();
-    }
-  }, [actionData?.status, navigation.state, revalidator]);
-
-  useEffect(() => {
-    if (navigation.state === "idle") {
-      setSubmitState("idle");
-    }
-  }, [navigation.state]);
-
-  useEffect(() => {
-    if (
-      submitState === "delete" &&
-      deleteFetcher.state === "idle" &&
-      deleteFetcher.data?.status === "success"
-    ) {
-      void revalidator.revalidate();
-      setSubmitState("idle");
-    }
-
-    if (submitState === "delete" && deleteFetcher.state === "idle") {
-      setSubmitState("idle");
-    }
-  }, [
-    deleteFetcher.data?.status,
-    deleteFetcher.state,
-    revalidator,
-    submitState,
-  ]);
-
-  useEffect(() => {
-    if (fieldErrors?.file) {
-      setIsFileInputErrorDismissed(false);
-    }
-  }, [fieldErrors?.file]);
-
-  const [selectedDokumentType, setSelectedDokumentType] = useState<string>(
-    formValues && "type" in formValues && typeof formValues.type === "string"
-      ? formValues.type
-      : "",
-  );
-  const dokumentTypeError =
-    fieldErrors?.type &&
-    selectedDokumentType === "" &&
-    shared.form.selectDokumentType.error;
-
-  useEffect(() => {
-    if (
-      navigation.state !== "idle" ||
-      actionFormType !== "upload" ||
-      fieldErrors
-    ) {
-      return;
-    }
-
-    setSelectedDokumentType("");
-
-    if (uploadFileInputRef.current) {
-      uploadFileInputRef.current.value = "";
-    }
-  }, [actionFormType, fieldErrors, navigation.state]);
 
   const klagendePartei = getBeteiligungByRoleCode(
     verfahren.beteiligungen,
@@ -660,33 +450,14 @@ export default function VerfahrenNeuBearbeiten({
     klagendeParteiAnwalt && "kanzleiform" in klagendeParteiAnwalt
       ? (klagendeParteiAnwalt.kanzleiform?.id ?? "")
       : "";
+  const klagendeParteiAnwaltGeschaeftszeichen =
+    getGeschaeftszeichenByRoleCode(
+      klagendeParteiAnwalt,
+      ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+    ) ?? "";
   const hasExistingLawyer = Boolean(klagendeParteiAnwalt);
-  const courtId = verfahren.gericht?.id ?? "";
-  const claimReference = verfahren.aktenzeichenGericht ?? "";
 
   const [hasLawyer, setHasLawyer] = useState(hasExistingLawyer);
-
-  const uploadedDokumente = dokumente.filter((dokument) =>
-    canDeleteDokument(dokument, einreichung),
-  );
-
-  const handleDeleteDokument = (dokument: Dokument) => {
-    setSubmitState("delete");
-    void deleteFetcher.submit(
-      {
-        formType: "delete",
-        einreichungId: einreichung.id,
-        dokumentId: dokument.id,
-      },
-      { method: "post" },
-    );
-  };
-
-  const handleSubmit: SubmitEventHandler<HTMLFormElement> = (e) => {
-    const formData = new FormData(e.target, e.submitter);
-    const { data: formType } = SubmitState.safeParse(formData.get("formType"));
-    setSubmitState(formType ?? "submit");
-  };
 
   // To be used in development for easier manual testing
   // TODO: delete after full implementation
@@ -711,19 +482,19 @@ export default function VerfahrenNeuBearbeiten({
       <PageMetadata />
 
       <div
-        className={`${submitState === "submit" ? "pointer-events-none opacity-50" : ""} relative`}
+        className={`${isSubmitting ? "pointer-events-none opacity-50" : ""} relative`}
       >
         <div className="kern-row">
           <div className="kern-col-12 kern-col-xl-10 kern-col-xl-offset-1">
             <h1 className="kern-heading-large">
-              {routes.verfahrenNeu.step2.headline}
+              {routes.verfahrenNeu.beteiligte.headline}
             </h1>
 
             <Progress
-              id="progress-2"
-              label={routes.verfahrenNeu.step2.progress}
-              value={2}
-              max={2}
+              id="progress-3"
+              label={routes.verfahrenNeu.beteiligte.progress}
+              value={3}
+              max={3}
             />
 
             <div className="kern-pt-xl">
@@ -732,7 +503,6 @@ export default function VerfahrenNeuBearbeiten({
                 method="post"
                 encType="multipart/form-data"
                 className="kern-gap-lg flex flex-col"
-                onSubmit={handleSubmit}
               >
                 <input
                   type="hidden"
@@ -744,10 +514,10 @@ export default function VerfahrenNeuBearbeiten({
                   {/* Intro */}
                   <div>
                     <h2 className="kern-heading-medium">
-                      {routes.verfahrenNeu.step2.subline}
+                      {routes.verfahrenNeu.beteiligte.subline}
                     </h2>
                     <p className="kern-body">
-                      {routes.verfahrenNeu.step2.intro}
+                      {routes.verfahrenNeu.beteiligte.intro}
                     </p>
                     {config().ENVIRONMENT === "development" && (
                       <Button
@@ -763,7 +533,9 @@ export default function VerfahrenNeuBearbeiten({
                   {/* Navigtion Buttons (Top) */}
                   <div className="kern-gap-md flex">
                     <Link
-                      to={`/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichung.id}`}
+                      to={buildKlageeinreichungPath("verfahrendetails", {
+                        verfahren: verfahren.id,
+                      })}
                       className="kern-btn kern-btn--secondary"
                     >
                       <span className="kern-label">{buttons.prev}</span>
@@ -773,10 +545,10 @@ export default function VerfahrenNeuBearbeiten({
                       type="submit"
                       name="formType"
                       value="submit"
-                      disabled={submitState !== "idle"}
+                      disabled={isSubmitting}
                     >
                       <span className="kern-label">
-                        {routes.verfahrenNeu.step2.navigation.next}
+                        {routes.verfahrenNeu.beteiligte.navigation.next}
                       </span>
                       <span
                         className="kern-icon kern-icon--arrow-forward"
@@ -789,8 +561,8 @@ export default function VerfahrenNeuBearbeiten({
                 {/* Success / Error Alert */}
                 <Alert
                   type="success"
-                  title={routes.verfahrenNeu.step2.notification.headline}
-                  message={routes.verfahrenNeu.step2.notification.copy}
+                  title={routes.verfahrenNeu.beteiligte.notification.headline}
+                  message={routes.verfahrenNeu.beteiligte.notification.copy}
                 />
 
                 {isError && (
@@ -816,6 +588,9 @@ export default function VerfahrenNeuBearbeiten({
                     lawyerEmail={klagendeParteiAnwaltEmail}
                     lawyerTelefon={klagendeParteiAnwaltTelefon}
                     lawyerKanzleiformId={klagendeParteiAnwaltKanzleiformId}
+                    lawyerGeschaeftszeichen={
+                      klagendeParteiAnwaltGeschaeftszeichen
+                    }
                     kanzleiformen={kanzleiformen}
                     errors={fieldErrors || {}}
                   />
@@ -830,35 +605,13 @@ export default function VerfahrenNeuBearbeiten({
                     errors={fieldErrors || {}}
                   />
 
-                  {/* Form Section: Verfahrendetails */}
-                  <VerfahrenDetailsFormSection
-                    kurzrubrum={verfahren?.kurzrubrum ?? ""}
-                    claimReference={claimReference}
-                    verfahrensgegenstand={verfahren?.verfahrensgegenstand ?? ""}
-                    courtId={courtId}
-                    gerichte={gerichte}
-                  />
-
-                  {/* Form Section: Anlagen & Beweismittel */}
-                  <VerfahrenDokumenteFormSection
-                    id="dokumente"
-                    uploadedDokumente={uploadedDokumente}
-                    disabled={submitState !== "idle"}
-                    uploading={submitState === "upload"}
-                    showFileInputError={showFileInputError}
-                    uploadFileInputRef={uploadFileInputRef}
-                    onFileInputChange={() => setIsFileInputErrorDismissed(true)}
-                    selectedDokumentType={selectedDokumentType}
-                    onDokumentTypeChange={setSelectedDokumentType}
-                    dokumentTypeError={dokumentTypeError}
-                    onDeleteDokument={handleDeleteDokument}
-                  />
-
                   {/* Navigation Buttons (Bottom) */}
                   <div className="kern-gap-md flex flex-wrap justify-end">
                     <div className="kern-gap-md flex">
                       <Link
-                        to={`/verfahren/neu?verfahrenId=${verfahren.id}&einreichungId=${einreichung.id}`}
+                        to={buildKlageeinreichungPath("verfahrendetails", {
+                          verfahren: verfahren.id,
+                        })}
                         className="kern-btn kern-btn--secondary"
                       >
                         <span className="kern-label">{buttons.prev}</span>
@@ -868,10 +621,10 @@ export default function VerfahrenNeuBearbeiten({
                         type="submit"
                         name="formType"
                         value="submit"
-                        disabled={submitState !== "idle"}
+                        disabled={isSubmitting}
                       >
                         <span className="kern-label">
-                          {routes.verfahrenNeu.step2.navigation.next}
+                          {routes.verfahrenNeu.beteiligte.navigation.next}
                         </span>
                         <span
                           className="kern-icon kern-icon--arrow-forward"
@@ -882,7 +635,7 @@ export default function VerfahrenNeuBearbeiten({
                   </div>
 
                   <VerfahrenLoader
-                    active={submitState === "submit"}
+                    active={isSubmitting}
                     label="Wird geladen..."
                   />
                 </div>

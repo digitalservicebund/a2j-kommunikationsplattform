@@ -61,4 +61,35 @@ describe("VerfahrenDokumentItem", () => {
     );
     expect(downloadLink).not.toHaveAttribute("target");
   });
+
+  it("shows the Validierungsstatus with the Dokument's info and the actions beside it", () => {
+    renderWithTestTranslations(
+      <VerfahrenDokumentItem
+        dokument={dokument}
+        verfahrenId="v-1"
+        einreichungId="e-1"
+        typLabel="Anlage"
+        validierungsstatus={{
+          validierungslaufStatus: "ABGESCHLOSSEN",
+          ergebnis: "GRUEN",
+          fehler: [],
+        }}
+        actions={<button type="button">Aktion</button>}
+      />,
+    );
+
+    // The top row holds the name, the info line and the status, the actions
+    // have their own row below
+    const topRow = screen.getByText(/^Anlage ·/).parentElement?.parentElement;
+    expect(topRow).toHaveTextContent("Geprüft und virenfrei");
+    expect(topRow).not.toContainElement(
+      screen.getByRole("button", { name: "Aktion" }),
+    );
+  });
+
+  it("shows no status without a Validierungsstatus", () => {
+    renderItem();
+
+    expect(screen.queryByText("Geprüft und virenfrei")).not.toBeInTheDocument();
+  });
 });

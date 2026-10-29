@@ -27,6 +27,8 @@ export default function InputField({
   errors,
   type = "text",
   name = id,
+  required,
+  "aria-required": ariaRequired,
   ...inputProps
 }: Readonly<InputFieldProps>) {
   const hintId = hint ? `${id}-hint` : undefined;
@@ -63,6 +65,7 @@ export default function InputField({
         id={id}
         name={name}
         aria-disabled={disabled}
+        aria-required={required || ariaRequired || undefined}
         aria-describedby={
           [hintId, errorId].filter(Boolean).join(" ") || undefined
         }

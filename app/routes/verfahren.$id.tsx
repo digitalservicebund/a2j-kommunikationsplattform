@@ -16,9 +16,15 @@ import VerfahrenEinreichungTimeline from "~/components/verfahren/VerfahrenEinrei
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import VerfahrenOverviewCard from "~/components/verfahren/VerfahrenOverviewCard";
 import VerfahrenTimelineStep from "~/components/verfahren/VerfahrenTimelineStep";
-import { UPLOAD_WEITERE_DOKUMENT_FORM_TYPE } from "~/components/verfahren/VerfahrenWeitereDokumentUploadForm";
 import { CREATE_EINREICHUNG_FORM_TYPE } from "~/components/verfahren/VerfahrenWeitereEinreichungArtStep";
 import VerfahrenWeitereEinreichungSection from "~/components/verfahren/VerfahrenWeitereEinreichungSection";
+import {
+  type EinreichungDokumentActionContext,
+  handleDokumentDelete,
+  handleDokumentSichtbarkeit,
+  handleDokumentUpload,
+} from "~/domains/verfahren/application/einreichungDokumentActions.server";
+import loadDokumenteWithValidierungsstatus from "~/domains/verfahren/application/loadDokumenteWithValidierungsstatus.server";
 import type { Verfahren } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
 import loadVerfahrenEinreichungenOverview, {
   EinreichungSummary,
@@ -26,17 +32,11 @@ import loadVerfahrenEinreichungenOverview, {
 import { requireAuthAndVerfahrenId } from "~/domains/verfahren/application/routeContext.server";
 import submitEinreichungIfNeeded from "~/domains/verfahren/application/submitEinreichungIfNeeded.server";
 import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
-import { UploadDokumentTypeSchema } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { EinreichungArtSchema } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import {
   fetchBelegDownloadLink,
   fetchLatestBelegForEinreichung,
 } from "~/domains/verfahren/infrastructure/repositories/belegRepository.server";
-import {
-  deleteDokumentFromEinreichung,
-  fetchDokumentValidierungsstatus,
-  uploadDokument,
-} from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { fetchGerichtInformation } from "~/domains/verfahren/infrastructure/repositories/gerichtInformationRepository.server";
 import { GerichtInformation } from "~/domains/verfahren/infrastructure/schemas/gerichtInformation.schema";
@@ -49,11 +49,7 @@ import { AuthSession } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
 import { parseActionFormData } from "~/utils/actionInput";
-import {
-  actionErrorResponse,
-  actionResultFromApiError,
-  actionSuccess,
-} from "~/utils/actionResult";
+import { actionResultFromApiError, actionSuccess } from "~/utils/actionResult";
 import { rethrowApiNotFoundAsRouteError } from "~/utils/apiError";
 import { dispatchFormAction } from "~/utils/dispatchFormAction";
 
@@ -74,20 +70,12 @@ async function loadEinreichungDetails(
   verfahrenId: string,
   { einreichung, dokumente }: EinreichungSummary,
 ): Promise<EinreichungDetails> {
-  const dokumenteWithValidierungsstatus = await Promise.all(
-    dokumente.map(async (dokument) => {
-      const validierungsstatus = await fetchDokumentValidierungsstatus(
-        authSession,
-        {
-          verfahrenId,
-          einreichungId: einreichung.id,
-          id: dokument.id,
-        },
-      );
-
-      return { ...dokument, validierungsstatus };
-    }),
-  );
+  const dokumenteWithValidierungsstatus =
+    await loadDokumenteWithValidierungsstatus(authSession, {
+      verfahrenId,
+      einreichungId: einreichung.id,
+      dokumente,
+    });
 
   const beleg = await fetchLatestBelegForEinreichung(authSession, {
     verfahrenId,
@@ -189,55 +177,13 @@ type FormActionContext = {
   verfahrenId: string;
 };
 
-const DokumentDeletionInputSchema = z.object({
-  einreichungId: z.string().min(1),
-  dokumentId: z.string().min(1),
-});
-
-async function handleDelete(
-  formData: FormData,
-  { authSession, verfahrenId }: FormActionContext,
-) {
-  const { einreichungId, dokumentId } = parseActionFormData(
-    formData,
-    DokumentDeletionInputSchema,
-    { errorResultData: { formType: "delete" } },
-  );
-
-  const errorResultData = {
-    formType: "delete",
-    dokumentId,
-  };
-
-  try {
-    const deleteResult = await deleteDokumentFromEinreichung({
-      authSession,
-      verfahrenId,
-      einreichungId,
-      dokumentId,
-    });
-
-    if (deleteResult.status === "protected-dokument") {
-      return actionErrorResponse(de.shared.form.errors.deleteFailed, {
-        data: errorResultData,
-        status: 403,
-      });
-    }
-
-    if (deleteResult.status === "delete-failed") {
-      return actionErrorResponse(de.shared.form.errors.deleteFailed, {
-        data: errorResultData,
-        status: 500,
-      });
-    }
-
-    return redirect(`/verfahren/${verfahrenId}`);
-  } catch (error) {
-    return actionResultFromApiError(error, {
-      message: de.shared.form.errors.deleteFailed,
-      data: errorResultData,
-    });
-  }
+// The Dokumente of both drafts (Klageeinreichung, Weitere Einreichung) are
+// changed in place on this page
+function buildDokumentActionContext({
+  authSession,
+  verfahrenId,
+}: FormActionContext): EinreichungDokumentActionContext {
+  return { authSession, verfahrenId, redirectTo: `/verfahren/${verfahrenId}` };
 }
 
 const EinreichenInputSchema = z.object({
@@ -301,46 +247,6 @@ async function handleCreateEinreichung(
   }
 }
 
-const WeitereDokumentUploadInputSchema = z.object({
-  einreichungId: z.string().min(1),
-  file: z.file().min(1),
-  type: UploadDokumentTypeSchema,
-  sichtbarkeitAlle: z.enum(["true", "false"]).transform((v) => v === "true"),
-});
-
-async function handleUploadWeitereDokument(
-  formData: FormData,
-  { authSession, verfahrenId }: FormActionContext,
-) {
-  const errorResultData = {
-    formType: UPLOAD_WEITERE_DOKUMENT_FORM_TYPE,
-  };
-
-  const { einreichungId, file, type, sichtbarkeitAlle } = parseActionFormData(
-    formData,
-    WeitereDokumentUploadInputSchema,
-    { errorResultData },
-  );
-
-  try {
-    await uploadDokument(
-      authSession,
-      verfahrenId,
-      einreichungId,
-      file,
-      type,
-      sichtbarkeitAlle,
-    );
-
-    return redirect(`/verfahren/${verfahrenId}`);
-  } catch (error) {
-    return actionResultFromApiError(error, {
-      message: de.shared.form.errors.uploadFailed,
-      data: errorResultData,
-    });
-  }
-}
-
 const BelegDownloadInputSchema = z.object({
   belegId: z.string().min(1),
 });
@@ -374,11 +280,15 @@ async function handleDownloadBeleg(
 }
 
 const formActionHandlers = {
-  delete: handleDelete,
+  upload: (formData: FormData, context: FormActionContext) =>
+    handleDokumentUpload(formData, buildDokumentActionContext(context)),
+  delete: (formData: FormData, context: FormActionContext) =>
+    handleDokumentDelete(formData, buildDokumentActionContext(context)),
+  sichtbarkeit: (formData: FormData, context: FormActionContext) =>
+    handleDokumentSichtbarkeit(formData, buildDokumentActionContext(context)),
   einreichen: handleEinreichen,
   "download-beleg": handleDownloadBeleg,
   [CREATE_EINREICHUNG_FORM_TYPE]: handleCreateEinreichung,
-  [UPLOAD_WEITERE_DOKUMENT_FORM_TYPE]: handleUploadWeitereDokument,
 } as const;
 
 export const action = async ({

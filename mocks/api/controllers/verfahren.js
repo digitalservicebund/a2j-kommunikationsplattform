@@ -17,7 +17,7 @@ export const getVerfahrenById = (id) => {
 
 export const filterVerfahrenByGericht = (verfahren, gerichtId) => {
   try {
-    return verfahren.filter((v) => v.gericht?.id === gerichtId);
+    return verfahren.filter((v) => v.selectedGericht?.id === gerichtId);
   } catch (error) {
     console.error("Error filtering verfahren by gericht:", error);
     return [];
@@ -35,8 +35,8 @@ export const searchVerfahren = (verfahren, searchParam) => {
     if (
       matchesString(verfahren.aktenzeichen_gericht) ||
       matchesString(verfahren.status) ||
-      matchesString(verfahren.gericht?.wert) ||
-      matchesString(verfahren.gericht?.code)
+      matchesString(verfahren.selectedGericht?.wert) ||
+      matchesString(verfahren.selectedGericht?.code)
     ) {
       return true;
     }

@@ -20,6 +20,8 @@ export default function InputFile({
   error,
   accept,
   ref,
+  required,
+  "aria-required": ariaRequired,
   ...inputProps
 }: Readonly<InputFileProps>) {
   const hintId = hint ? `${id}-hint` : undefined;
@@ -44,6 +46,7 @@ export default function InputFile({
         id={id}
         name={id}
         accept={accept}
+        aria-required={required || ariaRequired || undefined}
         aria-describedby={
           [hintId, errorId].filter(Boolean).join(" ") || undefined
         }

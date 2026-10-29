@@ -1,12 +1,7 @@
 import type { SyntheticEvent } from "react";
-import { useEffect, useRef, useState } from "react";
-import { useRevalidator } from "react-router";
+import { useRef, useState } from "react";
+import { useRevalidateWhilePending } from "~/components/hooks/useRevalidateWhilePending";
 import { logger } from "~/utils/logger.client";
-
-// Poll interval while the Einreichung's Validierungslauf is still running or
-// the Beleg hasn't been finalized yet, so badges/alerts pick up the result
-// without the user having to reload the page manually.
-const VALIDIERUNGSSTATUS_POLL_INTERVAL_MS = 5_000;
 
 type UseEinreichenSubmissionOptions = {
   isValidating: boolean;
@@ -30,21 +25,8 @@ export function useEinreichenSubmission({
   );
   const [error, setError] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-  const revalidator = useRevalidator();
 
-  useEffect(() => {
-    if (!isValidating && !isBelegPending) {
-      return undefined;
-    }
-
-    const intervalId = setInterval(() => {
-      if (revalidator.state === "idle") {
-        void revalidator.revalidate();
-      }
-    }, VALIDIERUNGSSTATUS_POLL_INTERVAL_MS);
-
-    return () => clearInterval(intervalId);
-  }, [isValidating, isBelegPending, revalidator]);
+  useRevalidateWhilePending(isValidating || isBelegPending);
 
   const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();

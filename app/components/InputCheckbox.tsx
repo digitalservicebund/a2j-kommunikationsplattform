@@ -13,6 +13,8 @@ export default function InputCheckbox({
   label,
   id,
   className = "",
+  required,
+  "aria-required": ariaRequired,
   ...inputProps
 }: Readonly<InputCheckboxProps>) {
   return (
@@ -22,6 +24,7 @@ export default function InputCheckbox({
         className="kern-form-check__checkbox"
         id={id}
         name={id}
+        aria-required={required || ariaRequired || undefined}
         {...inputProps}
       />
       <label className="kern-label" htmlFor={id}>

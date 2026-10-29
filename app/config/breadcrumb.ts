@@ -9,11 +9,19 @@ export interface BreadcrumbConfig {
 
 export const breadcrumbConfig: BreadcrumbConfig = {
   "/": { label: dictionaries.de.breadcrumb.start },
-  "/verfahren/neu": {
+  "/verfahren/neu/gericht-auswahl": {
+    label: dictionaries.de.breadcrumb.verfahrenGerichtAuswahl,
+    parent: "/",
+  },
+  "/verfahren/neu/dokumente": {
     label: dictionaries.de.breadcrumb.verfahrenNeu,
     parent: "/",
   },
-  "/verfahren/neu/:id/bearbeiten": {
+  "/verfahren/neu/verfahrendetails": {
+    label: dictionaries.de.breadcrumb.verfahrenNeu,
+    parent: "/",
+  },
+  "/verfahren/neu/beteiligte": {
     label: dictionaries.de.breadcrumb.verfahrenNeu,
     parent: "/",
   },

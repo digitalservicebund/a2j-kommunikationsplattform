@@ -21,6 +21,7 @@ export type VerfahrenKlaegerSectionProps = {
   lawyerEmail: string;
   lawyerTelefon: string;
   lawyerKanzleiformId: string;
+  lawyerGeschaeftszeichen: string;
   kanzleiformen: KanzleiformSelectItem[];
   errors: Record<string, string[]>;
 };
@@ -38,6 +39,7 @@ export default function VerfahrenKlaegerSection({
   lawyerEmail,
   lawyerTelefon,
   lawyerKanzleiformId,
+  lawyerGeschaeftszeichen,
   kanzleiformen,
   errors,
 }: Readonly<VerfahrenKlaegerSectionProps>) {
@@ -45,8 +47,8 @@ export default function VerfahrenKlaegerSection({
 
   return (
     <FieldsetCard
-      title={routes.verfahrenNeu.step2.form.klagendePartei.title}
-      subline={routes.verfahrenNeu.step2.form.klagendePartei.description}
+      title={routes.verfahrenNeu.beteiligte.form.klagendePartei.title}
+      subline={routes.verfahrenNeu.beteiligte.form.klagendePartei.description}
       TitleComponent="h3"
     >
       <div className="kern-gap-md flex w-full">
@@ -81,7 +83,7 @@ export default function VerfahrenKlaegerSection({
       <InputCheckbox
         className={hasLawyer ? "kern-my-md" : "kern-mt-md"}
         label={
-          routes.verfahrenNeu.step2.form.klagendePartei.vertretung.checkbox
+          routes.verfahrenNeu.beteiligte.form.klagendePartei.vertretung.checkbox
         }
         id="has-lawyer"
         name="hasLawyer"
@@ -93,14 +95,17 @@ export default function VerfahrenKlaegerSection({
         <fieldset>
           <legend>
             <h3 className="kern-title kern-title--small">
-              {routes.verfahrenNeu.step2.form.klagendePartei.vertretung.title}
+              {
+                routes.verfahrenNeu.beteiligte.form.klagendePartei.vertretung
+                  .title
+              }
             </h3>
           </legend>
           <InputField
             id="lawyer-name"
             name="lawyerName"
             label={
-              routes.verfahrenNeu.step2.form.klagendePartei.vertretung
+              routes.verfahrenNeu.beteiligte.form.klagendePartei.vertretung
                 .bezeichnung
             }
             defaultValue={lawyerName}
@@ -110,13 +115,21 @@ export default function VerfahrenKlaegerSection({
           <VerfahrenKanzleiformSelect
             id="lawyerKanzleiformId"
             label={
-              routes.verfahrenNeu.step2.form.klagendePartei.vertretung
+              routes.verfahrenNeu.beteiligte.form.klagendePartei.vertretung
                 .kanzleiform
             }
             placeholder={shared.form.select.placeholder}
             kanzleiformen={kanzleiformen}
             initialSelectedValue={lawyerKanzleiformId}
             error={errors.lawyerKanzleiformId?.join(" ")}
+          />
+
+          <InputField
+            id="lawyer-geschaeftszeichen"
+            name="lawyerGeschaeftszeichen"
+            label={shared.form.labels.geschaeftszeichenProzessbevollmaechtigte}
+            optional
+            defaultValue={lawyerGeschaeftszeichen}
           />
 
           <VerfahrenAdresseKontaktFields

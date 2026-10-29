@@ -34,8 +34,13 @@ export default [
 
   // verfahren routes
   ...prefix("verfahren", [
-    route("neu", "./routes/verfahren.neu.tsx"),
-    route("neu/:id/bearbeiten", "./routes/verfahren.neu.$id.bearbeiten.tsx"),
+    route("neu/gericht-auswahl", "./routes/verfahren.neu.gericht-auswahl.tsx"),
+    route("neu/dokumente", "./routes/verfahren.neu.dokumente.tsx"),
+    route(
+      "neu/verfahrendetails",
+      "./routes/verfahren.neu.verfahrendetails.tsx",
+    ),
+    route("neu/beteiligte", "./routes/verfahren.neu.beteiligte.tsx"),
     route(":id", "./routes/verfahren.$id.tsx"),
     route(
       ":id/einreichungen/:einreichungId/dokumente/:dokumentId/datei",

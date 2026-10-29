@@ -14,7 +14,9 @@ import {
   DokumentSchema,
 } from "~/domains/verfahren/infrastructure/schemas/dokument.schema";
 import { ValidierungsstatusSchema } from "~/domains/verfahren/infrastructure/schemas/validierungsstatus.schema";
-import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
+import canDeleteDokument, {
+  type CanDeleteDokumentOptions,
+} from "~/domains/verfahren/services/canDeleteDokument";
 import { AuthSession } from "~/services/auth/auth.types";
 import { ApiError } from "~/utils/apiError";
 import { logger } from "~/utils/logger.server";
@@ -163,12 +165,39 @@ export async function deleteDokument(
   return { success: false };
 }
 
+type UpdateDokumentSichtbarkeitOptions = {
+  verfahrenId: string;
+  einreichungId: string;
+  id: string;
+  sichtbarkeitAlle: boolean;
+  eTag: string;
+};
+
+/**
+ * Changes who can see the Dokument. Only possible until the Dokument has been
+ * submitted (the API responds with 409 afterwards).
+ */
+export async function updateDokumentSichtbarkeit(
+  authSession: AuthSession,
+  options: UpdateDokumentSichtbarkeitOptions,
+): Promise<Dokument> {
+  return apiRequest({
+    authSession,
+    path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.einreichungId}/dokumente/${options.id}`,
+    method: "PATCH",
+    body: { sichtbarkeit_alle: options.sichtbarkeitAlle },
+    eTag: options.eTag,
+    schema: DokumentSchema,
+    errorMessage: `Sichtbarkeit of Dokument with id ${options.id} could not be updated.`,
+  });
+}
+
 type DeleteDokumentFromEinreichungOptions = {
   authSession: AuthSession;
   verfahrenId: string;
   einreichungId: FormDataEntryValue | null;
   dokumentId: FormDataEntryValue | null;
-};
+} & CanDeleteDokumentOptions;
 
 export type DeleteDokumentFromEinreichungResult =
   | { status: "invalid-form-data" }
@@ -181,6 +210,7 @@ export async function deleteDokumentFromEinreichung({
   verfahrenId,
   einreichungId,
   dokumentId,
+  allowSchriftstueckDeletion,
 }: DeleteDokumentFromEinreichungOptions): Promise<DeleteDokumentFromEinreichungResult> {
   if (typeof einreichungId !== "string" || typeof dokumentId !== "string") {
     return { status: "invalid-form-data" };
@@ -197,7 +227,12 @@ export async function deleteDokumentFromEinreichung({
     (dokument) => dokument.id === dokumentId,
   );
 
-  if (targetDokument && !canDeleteDokument(targetDokument, einreichung)) {
+  if (
+    targetDokument &&
+    !canDeleteDokument(targetDokument, einreichung, {
+      allowSchriftstueckDeletion,
+    })
+  ) {
     return { status: "protected-dokument" };
   }
 

@@ -19,6 +19,7 @@ type NatuerlichePersonDetails = {
 type KanzleiDetails = {
   bezeichnung: string;
   kanzleiform: string;
+  geschaeftszeichen?: string;
   strasse: string;
   hausnummer: string;
   postleitzahl: string;
@@ -27,21 +28,21 @@ type KanzleiDetails = {
   telefon?: string;
 };
 
-export class VerfahrenCreationStep1Page extends PageObject {
+export class GerichtAuswahlPage extends PageObject {
   constructor(page: Page) {
-    super(page, "/verfahren/neu");
+    super(page, "/verfahren/neu/gericht-auswahl");
   }
 
-  async selectKlageschriftFile(testDataFileName: string) {
-    await this.page
-      .getByLabel(t.shared.form.uploadDokument.label)
-      .setInputFiles(getTestDataFilePath(testDataFileName));
+  get komplaButton() {
+    return this.page.getByRole("link", {
+      name: t.routes.verfahrenGerichtAuswahl.klageEinreichenKompla,
+    });
   }
 
-  async enterVerfahrensgegenstand(value: string) {
-    await this.page
-      .getByRole("textbox", { name: t.shared.form.labels.verfahrensgegenstand })
-      .fill(value);
+  get eingabesystemButton() {
+    return this.page.getByRole("link", {
+      name: t.routes.verfahrenGerichtAuswahl.klageErstellenEingabesystem,
+    });
   }
 
   async selectEmpfaengergericht(name: string) {
@@ -50,35 +51,135 @@ export class VerfahrenCreationStep1Page extends PageObject {
       .selectOption({ label: name });
   }
 
-  async submit() {
+  async startKomplaKlageeinreichung() {
+    await this.komplaButton.click();
+  }
+}
+
+type UploadDokumentType = "SCHRIFTSTUECK" | "ANHANG" | "SIGNATURDATEI";
+
+export class VerfahrenDokumentePage extends PageObject {
+  constructor(page: Page) {
+    super(page, "/verfahren/neu/dokumente");
+  }
+
+  #typLabel(typ: UploadDokumentType) {
+    return typ === "SCHRIFTSTUECK"
+      ? t.routes.verfahrenNeu.dokumente.schriftstueckLabel
+      : t.shared.dokumentType[typ];
+  }
+
+  // Listed with its type, e.g. "Anlage · 12 KB · …"
+  #uploadedDokument(typ: UploadDokumentType, filename: string) {
+    return this.page
+      .getByRole("list", { name: t.shared.form.uploadedDokumenteListLabel })
+      .getByRole("listitem")
+      .filter({ hasText: filename })
+      .filter({ hasText: this.#typLabel(typ) });
+  }
+
+  get nextButton() {
+    return this.page.getByRole("link", {
+      name: t.routes.verfahrenNeu.dokumente.navigation.next,
+    });
+  }
+
+  get disabledNextButton() {
+    return this.page.getByRole("button", {
+      name: t.routes.verfahrenNeu.dokumente.navigation.next,
+    });
+  }
+
+  async upload(typ: UploadDokumentType, testDataFileName: string) {
+    await this.page.getByRole("radio", { name: this.#typLabel(typ) }).check();
+    await this.page
+      .getByLabel(t.shared.form.uploadDokument.label)
+      .setInputFiles(getTestDataFilePath(testDataFileName));
     await this.page
       .getByRole("button", {
-        name: t.routes.verfahrenNeu.step1.navigation.next,
+        name: t.shared.form.dokumentUpload.submit,
+        exact: true,
+      })
+      .click();
+  }
+
+  async expectDokumentToHaveBeenUploaded(
+    typ: UploadDokumentType,
+    filename: string,
+  ) {
+    await expect(this.#uploadedDokument(typ, filename)).toBeVisible();
+  }
+
+  // The virus check may still be running or already be done
+  async expectValidierungsstatusToBeShown(
+    typ: UploadDokumentType,
+    filename: string,
+  ) {
+    const { checking, checkedClean } =
+      t.routes.verfahrenId.draftKlageeinreichung.summary.badgeLabels;
+    await expect(this.#uploadedDokument(typ, filename)).toContainText(
+      new RegExp(`${checking}|${checkedClean}`),
+    );
+  }
+
+  async next() {
+    await this.nextButton.click();
+  }
+}
+
+export class VerfahrenDetailsStepPage extends PageObject {
+  constructor(page: Page) {
+    super(page, "/verfahren/neu/verfahrendetails");
+  }
+
+  get verfahrensgegenstandInput() {
+    return this.page.getByRole("textbox", {
+      name: t.shared.form.labels.subjectMatterOfTheProceedings,
+    });
+  }
+
+  get empfaengergerichtSelect() {
+    return this.page.getByRole("combobox", {
+      name: t.shared.form.labels.empfaengergericht,
+    });
+  }
+
+  async enterRubrum(value: string) {
+    await this.page
+      .getByRole("textbox", { name: t.shared.form.labels.rubrum })
+      .fill(value);
+  }
+
+  async next() {
+    await this.page
+      .getByRole("button", {
+        name: t.routes.verfahrenNeu.verfahrendetails.navigation.next,
       })
       .click();
   }
 }
 
-export class VerfahrenCreationStep2Page extends PageObject {
+export class VerfahrenBeteiligtePage extends PageObject {
   constructor(page: Page) {
-    super(page, "/verfahren/neu/:id/bearbeiten");
+    super(page, "/verfahren/neu/beteiligte");
   }
 
   get #klagendeParteiFieldset() {
     return this.page.getByRole("group", {
-      name: t.routes.verfahrenNeu.step2.form.klagendePartei.title,
+      name: t.routes.verfahrenNeu.beteiligte.form.klagendePartei.title,
     });
   }
 
   get #klagendeParteiProzessbevollmaechtigteFieldset() {
     return this.page.getByRole("group", {
-      name: t.routes.verfahrenNeu.step2.form.klagendePartei.vertretung.title,
+      name: t.routes.verfahrenNeu.beteiligte.form.klagendePartei.vertretung
+        .title,
     });
   }
 
   get #beklagteParteiFieldset() {
     return this.page.getByRole("group", {
-      name: t.routes.verfahrenNeu.step2.form.beklagtePartei.title,
+      name: t.routes.verfahrenNeu.beteiligte.form.beklagtePartei.title,
     });
   }
 
@@ -117,13 +218,21 @@ export class VerfahrenCreationStep2Page extends PageObject {
   }
 
   async #fillKanzleiDetails(fieldset: Locator, details: KanzleiDetails) {
-    const labels = t.routes.verfahrenNeu.step2.form.klagendePartei.vertretung;
+    const labels =
+      t.routes.verfahrenNeu.beteiligte.form.klagendePartei.vertretung;
     await fieldset
       .getByRole("textbox", { name: labels.bezeichnung })
       .fill(details.bezeichnung);
     await fieldset
       .getByRole("combobox", { name: labels.kanzleiform })
       .selectOption({ label: details.kanzleiform });
+    if (details.geschaeftszeichen) {
+      await fieldset
+        .getByRole("textbox", {
+          name: t.shared.form.labels.geschaeftszeichenProzessbevollmaechtigte,
+        })
+        .fill(details.geschaeftszeichen);
+    }
     await this.#fillBasicBeteiligungDetils(fieldset, details);
   }
 
@@ -137,7 +246,7 @@ export class VerfahrenCreationStep2Page extends PageObject {
   async addKlagendeParteiProzessbevollmaechtigte(details: KanzleiDetails) {
     await this.page
       .getByRole("checkbox", {
-        name: t.routes.verfahrenNeu.step2.form.klagendePartei.vertretung
+        name: t.routes.verfahrenNeu.beteiligte.form.klagendePartei.vertretung
           .checkbox,
       })
       .check();
@@ -154,45 +263,10 @@ export class VerfahrenCreationStep2Page extends PageObject {
     );
   }
 
-  async enterRubrum(value: string) {
-    await this.page
-      .getByRole("textbox", { name: t.shared.form.labels.rubrum })
-      .fill(value);
-  }
-
-  async enterGeschaeftszeichenProzessbevollmaechigte(value: string) {
-    await this.page
-      .getByRole("textbox", {
-        name: t.shared.form.labels.geschaeftszeichenProzessbevollmaechtigte,
-      })
-      .fill(value);
-  }
-
-  async uploadAnhang(testDataFileName: string) {
-    await this.page
-      .getByLabel(t.shared.form.uploadDokument.label)
-      .setInputFiles(getTestDataFilePath(testDataFileName));
-    await this.page
-      .getByLabel(t.shared.form.selectDokumentType.label)
-      .selectOption({ label: "Anhang" });
-    await this.page
-      .getByRole("button", {
-        name: t.shared.form.uploadDokument.submit,
-        exact: true,
-      })
-      .click();
-  }
-
-  async expectAnhangToHaveBeenUploaded(filename: string) {
-    await expect(
-      this.page.getByRole("listitem").filter({ hasText: filename }),
-    ).toBeVisible();
-  }
-
   async submit() {
     await this.page
       .getByRole("button", {
-        name: t.routes.verfahrenNeu.step2.navigation.next,
+        name: t.routes.verfahrenNeu.beteiligte.navigation.next,
       })
       .first()
       .click();

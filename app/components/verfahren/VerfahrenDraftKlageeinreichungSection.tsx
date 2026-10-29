@@ -15,6 +15,7 @@ import VerfahrenDokumenteList, {
 import VerfahrenEinreichungStatusBadge from "~/components/verfahren/VerfahrenEinreichungStatusBadge";
 import VerfahrenTimelineStep from "~/components/verfahren/VerfahrenTimelineStep";
 import VerfahrenTimelineStepCard from "~/components/verfahren/VerfahrenTimelineStepCard";
+import { buildKlageeinreichungPath } from "~/config/klageeinreichungRoutes";
 import type {
   EinreichungWithStatus,
   Verfahren,
@@ -70,7 +71,6 @@ export default function VerfahrenDraftKlageeinreichungSection({
   const klageeinreichungTimelineSteps = buildKlageeinreichungTimelineSteps({
     verfahrenId: verfahren.id,
     verfahrenStatusGeaendertAm: verfahren.statusGeaendertAm,
-    einreichungId: draftKlageeinreichung.einreichung.id,
     einreichungStatus: draftKlageeinreichung.einreichung.status,
     einreichungDokumente: draftKlageeinreichung.dokumente,
     detailsCompleted: {
@@ -242,7 +242,9 @@ export default function VerfahrenDraftKlageeinreichungSection({
               <footer className="kern-card__footer">
                 {/* Edit */}
                 <Link
-                  to={`/verfahren/neu/${verfahren.id}/bearbeiten`}
+                  to={buildKlageeinreichungPath("dokumente", {
+                    verfahren: verfahren.id,
+                  })}
                   className="kern-btn kern-btn--secondary"
                 >
                   <span className="kern-label">

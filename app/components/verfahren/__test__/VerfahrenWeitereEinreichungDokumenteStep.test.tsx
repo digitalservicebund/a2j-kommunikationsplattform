@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { describe, expect, it } from "vitest";
 import { TranslationsProvider } from "~/services/translations/context";
@@ -92,32 +92,41 @@ describe("VerfahrenWeitereEinreichungDokumenteStep", () => {
   it("disables every control while there is no draft yet", () => {
     renderSection(null);
 
-    expect(screen.getByLabelText("Datei hochladen")).toBeDisabled();
-    expect(
-      screen.getByRole("combobox", { name: "Sichtbarkeit" }),
-    ).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Hochladen" })).toBeDisabled();
+    for (const input of screen.getAllByLabelText("Datei hochladen")) {
+      expect(input).toHaveAttribute("aria-disabled", "true");
+    }
     expect(
       screen.getByRole("button", { name: submitButtonName }),
     ).toBeDisabled();
   });
 
-  it("offers both Sichtbarkeit options, defaulting to Alle Parteien", () => {
+  it("offers one upload area for every Dokument type", () => {
     renderSection(buildWeitereEinreichung([]));
 
-    const sichtbarkeit = screen.getByRole("combobox", { name: "Sichtbarkeit" });
+    const typ = screen.getByRole("group", { name: "Art des Dokuments" });
+    for (const name of ["Schriftstück", "Anlage", "Signaturdatei"]) {
+      expect(within(typ).getByRole("radio", { name })).toBeInTheDocument();
+    }
+    expect(screen.getByLabelText("Datei hochladen")).not.toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+  });
 
-    expect(sichtbarkeit).toHaveAttribute("name", "sichtbarkeitAlle");
-    expect(sichtbarkeit).toHaveValue("true");
+  it("lets an uploaded Dokument's Sichtbarkeit be changed", () => {
+    renderSection(
+      buildWeitereEinreichung([
+        buildDokument({
+          validierungslaufStatus: "ABGESCHLOSSEN",
+          ergebnis: "GRUEN",
+          fehler: [],
+        }),
+      ]),
+    );
+
     expect(
-      screen.getByRole("option", { name: "Alle Parteien" }),
-    ).toHaveAttribute("value", "true");
-    expect(
-      screen.getByRole("option", {
-        name: "Nur Gericht und zugeordnete Partei",
-      }),
-    ).toHaveAttribute("value", "false");
-    expect(screen.getByLabelText("Datei hochladen")).toBeInTheDocument();
+      screen.getByLabelText("Sichtbarkeit von Schriftsatz.pdf"),
+    ).toHaveValue("true");
   });
 
   it("disables submitting while no Dokument has been uploaded", () => {

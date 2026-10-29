@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, ReactNode } from "react";
 
 export interface InputSelectOption {
   value: string;
@@ -7,7 +7,8 @@ export interface InputSelectOption {
 
 interface InputSelectProps {
   id: string;
-  label: string;
+  // ReactNode, e.g. to add visually hidden context to the accessible name
+  label: ReactNode;
   hint?: string;
   error?: string;
   options: InputSelectOption[];
@@ -32,6 +33,8 @@ export default function InputSelect({
   className = "",
   required,
 }: Readonly<InputSelectProps>) {
+  const errorId = `${id}-error`;
+
   return (
     <div
       className={`kern-form-input ${className} ${error && "kern-form-input--error"}`}
@@ -53,11 +56,8 @@ export default function InputSelect({
           id={id}
           value={selectedValue}
           onChange={onChange}
-          required={required}
-          aria-describedby={[
-            hint && `select-hint-${id}`,
-            error && "kern-input-error",
-          ]
+          aria-required={required || undefined}
+          aria-describedby={[hint && `select-hint-${id}`, error && errorId]
             .filter(Boolean)
             .join(" ")}
           aria-disabled={disabled} // using aria-disabled as recommended in https://www.kern-ux.de/komponenten/form-inputs/#disabled-attribut
@@ -76,7 +76,7 @@ export default function InputSelect({
       </div>
 
       {error && (
-        <p className="kern-error" id="kern-input-error">
+        <p className="kern-error" id={errorId}>
           <span
             className="kern-icon kern-icon--danger kern-icon--md"
             aria-hidden="true"
