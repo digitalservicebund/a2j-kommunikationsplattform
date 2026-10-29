@@ -16,7 +16,7 @@ const DOKUMENT_TYPES: readonly UploadDokumentType[] = [
   "SIGNATURDATEI",
 ];
 
-const ACCEPTED_SCHRIFTSTUECK_FILE_TYPES = [
+const PDF_AND_DOCX_FILE_TYPES = [
   // Word
   ".docx",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -24,6 +24,15 @@ const ACCEPTED_SCHRIFTSTUECK_FILE_TYPES = [
   ".pdf",
   "application/pdf",
 ].join(",");
+
+// The files the picker offers for each type, matching the type's hint.
+// Signaturdateien come in various formats, so they aren't limited.
+const ACCEPTED_FILE_TYPES: Record<UploadDokumentType, string | undefined> = {
+  SCHRIFTSTUECK: PDF_AND_DOCX_FILE_TYPES,
+  ANHANG: PDF_AND_DOCX_FILE_TYPES,
+  // TODO: add signature file extension (e.g., `.p7s`) for verifying a digital signature
+  SIGNATURDATEI: undefined,
+};
 
 export type VerfahrenDokumentUploadFormProps = {
   einreichungId: string | undefined;
@@ -119,11 +128,7 @@ export default function VerfahrenDokumentUploadForm({
         name="file"
         label={shared.form.uploadDokument.label}
         hint={labels.hints[typ]}
-        accept={
-          typ === "SCHRIFTSTUECK"
-            ? ACCEPTED_SCHRIFTSTUECK_FILE_TYPES
-            : undefined
-        }
+        accept={ACCEPTED_FILE_TYPES[typ]}
         error={showFileError ? shared.form.uploadDokument.error : undefined}
         aria-disabled={disabled}
         onClick={(event) => disabled && event.preventDefault()}

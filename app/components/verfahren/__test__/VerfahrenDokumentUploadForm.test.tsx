@@ -77,6 +77,13 @@ describe("VerfahrenDokumentUploadForm", () => {
       ),
     ).toBeInTheDocument();
 
+    fireEvent.click(getByRole("radio", { name: "Anlage" }));
+
+    expect(await findByLabelText("Datei hochladen")).toHaveAttribute(
+      "accept",
+      expect.stringContaining(".docx"),
+    );
+
     fireEvent.click(getByRole("radio", { name: "Signaturdatei" }));
 
     expect(
