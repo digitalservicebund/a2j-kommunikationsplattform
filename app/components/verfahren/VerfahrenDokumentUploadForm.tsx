@@ -3,6 +3,7 @@ import { Form, useActionData, useNavigation } from "react-router";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import InputFile from "~/components/InputFile";
+import InputRadio from "~/components/InputRadio";
 import type { UploadDokumentType } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { useTranslations } from "~/services/translations/context";
 import type { ActionResult } from "~/utils/actionResult";
@@ -94,22 +95,20 @@ export default function VerfahrenDokumentUploadForm({
                 : shared.dokumentType[option];
 
             return (
-              <div key={option} className="kern-form-check">
-                <input
-                  type="radio"
-                  className="kern-form-check__radio"
-                  id={id}
-                  name="typ"
-                  value={option}
-                  checked={typ === option}
-                  onChange={() => handleTypChange(option)}
-                  aria-disabled={disabled || isTypUnavailable(option)}
-                />
-                <label className="kern-label" htmlFor={id}>
-                  {label}
-                  {isTypUnavailable(option) && ` ${labels.alreadyUploaded}`}
-                </label>
-              </div>
+              <InputRadio
+                key={option}
+                id={id}
+                name="typ"
+                value={option}
+                label={
+                  isTypUnavailable(option)
+                    ? `${label} ${labels.alreadyUploaded}`
+                    : label
+                }
+                checked={typ === option}
+                onChange={() => handleTypChange(option)}
+                aria-disabled={disabled || isTypUnavailable(option)}
+              />
             );
           })}
         </div>
