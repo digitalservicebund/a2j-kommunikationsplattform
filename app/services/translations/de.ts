@@ -71,24 +71,21 @@ export const de = {
         placeholder: "Bitte auswählen",
       },
       uploadedDokumenteListLabel: "Hochgeladene Dateien",
-      // One upload section per Dokument type
       dokumentUpload: {
         typLegend: "Art des Dokuments",
         submit: "Hochladen",
         submitting: "Wird hochgeladen...",
         // Only one Schriftstück per Einreichung
         alreadyUploaded: "(bereits hochgeladen)",
-        // Shown for the chosen type, matching the files it accepts
         // TODO: raise to 200 MB (here and in uploadDokument.error) once SINC's
         // fix for larger uploads is live (the API currently refuses files
         // over 100 MiB)
-        hints: {
-          SCHRIFTSTUECK:
-            "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
-          ANHANG:
-            "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
-          SIGNATURDATEI:
-            "Signaturdateien zu Ihren Dokumenten. Maximale Dateigröße ist 104 MB.",
+        hint: "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
+        signaturdatei: {
+          label: "Zugehörige Signaturdatei (optional)",
+          hint: "Die Signatur zur oben gewählten Datei. Erlaubte Formate: P7S, PKCS7, P7. Maximale Dateigröße ist 104 MB.",
+          error:
+            "Bitte wählen Sie eine Signaturdatei im Format .p7s, .pkcs7 oder .p7 aus.",
         },
       },
       sichtbarkeit: {
@@ -105,7 +102,7 @@ export const de = {
         // TODO: raise to 200 MB once SINC's fix for larger uploads is live
         // (the API currently refuses files over 100 MiB)
         error:
-          "Keine Datei ausgewählt? Ist ihre Datei zu groß? Oder der Dateityp wird nicht unterstützt. Bitte laden Sie eine Datei mit maximal 104 MB hoch. Unterstützte Dateitypen sind: *.pdf, *.doc, *.docx, *.xml (XJustiz) und Signaturdateien.",
+          "Keine Datei ausgewählt? Ist ihre Datei zu groß? Oder der Dateityp wird nicht unterstützt. Bitte laden Sie eine Datei mit maximal 104 MB hoch. Unterstützte Dateitypen sind: *.pdf und *.docx.",
       },
       deleteDokument: {
         labelForDokument: "{{name}} entfernen",
@@ -119,6 +116,8 @@ export const de = {
         invalidSubmission: "Ungültige Formularübermittlung.",
         saveFailed: "Die Änderungen konnten nicht gespeichert werden.",
         uploadFailed: "Das Dokument konnte nicht hochgeladen werden.",
+        signaturdateiUploadFailed:
+          "Das Dokument wurde hochgeladen, die Signaturdatei aber nicht. Entfernen Sie das Dokument und laden Sie es zusammen mit der Signaturdatei erneut hoch.",
         schriftstueckExists:
           "Es wurde bereits ein Schriftstück hochgeladen. Entfernen Sie es, um ein anderes hochzuladen.",
         submissionFailed: "Die Klage konnte nicht gespeichert werden.",

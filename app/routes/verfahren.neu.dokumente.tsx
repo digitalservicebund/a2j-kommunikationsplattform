@@ -17,6 +17,7 @@ import {
   handleDokumentDelete,
   handleDokumentSichtbarkeit,
   handleDokumentUpload,
+  uploadSignaturdatei,
 } from "~/domains/verfahren/application/einreichungDokumentActions.server";
 import loadDokumenteWithValidierungsstatus from "~/domains/verfahren/application/loadDokumenteWithValidierungsstatus.server";
 import loadKlageeinreichungDraft, {
@@ -116,7 +117,7 @@ async function handleFirstUpload(
     return input.error;
   }
 
-  const { typ, file } = input.data;
+  const { typ, file, signaturdatei } = input.data;
   let verfahrenId: string;
   let einreichungId: string;
 
@@ -158,7 +159,13 @@ async function handleFirstUpload(
     return redirect(`${dokumentePath}&${UPLOAD_FAILED_PARAM}`);
   }
 
-  return redirect(dokumentePath);
+  return uploadSignaturdatei(authSession, {
+    verfahrenId,
+    einreichungId,
+    dokument: file,
+    signaturdatei,
+    redirectTo: dokumentePath,
+  });
 }
 
 function buildDokumentActionContext(

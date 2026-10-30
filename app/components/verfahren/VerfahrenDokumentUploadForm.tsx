@@ -1,10 +1,20 @@
 import { useState } from "react";
-import { Form, useActionData, useNavigation } from "react-router";
+import {
+  Form,
+  useActionData,
+  useNavigation,
+  useSearchParams,
+} from "react-router";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import InputFile from "~/components/InputFile";
 import InputRadio from "~/components/InputRadio";
+import { SIGNATURDATEI_UPLOAD_FAILED_PARAM } from "~/config/signaturdateiUploadFailed";
 import type { UploadDokumentType } from "~/domains/verfahren/entities/dokument/dokument.entity";
+import {
+  SIGNATURDATEI_EXTENSIONS,
+  SIGNATURDATEI_MIME_TYPES,
+} from "~/domains/verfahren/services/isSignaturdatei";
 import { useTranslations } from "~/services/translations/context";
 import type { ActionResult } from "~/utils/actionResult";
 
@@ -13,10 +23,9 @@ type UploadActionData = { formType?: string; typ?: string };
 const DOKUMENT_TYPES: readonly UploadDokumentType[] = [
   "SCHRIFTSTUECK",
   "ANHANG",
-  "SIGNATURDATEI",
 ];
 
-const PDF_AND_DOCX_FILE_TYPES = [
+const ACCEPTED_FILE_TYPES = [
   // Word
   ".docx",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -25,14 +34,10 @@ const PDF_AND_DOCX_FILE_TYPES = [
   "application/pdf",
 ].join(",");
 
-// The files the picker offers for each type, matching the type's hint.
-// Signaturdateien come in various formats, so they aren't limited.
-const ACCEPTED_FILE_TYPES: Record<UploadDokumentType, string | undefined> = {
-  SCHRIFTSTUECK: PDF_AND_DOCX_FILE_TYPES,
-  ANHANG: PDF_AND_DOCX_FILE_TYPES,
-  // TODO: add signature file extension (e.g., `.p7s`) for verifying a digital signature
-  SIGNATURDATEI: undefined,
-};
+const ACCEPTED_SIGNATURDATEI_TYPES = [
+  ...SIGNATURDATEI_EXTENSIONS,
+  ...SIGNATURDATEI_MIME_TYPES,
+].join(",");
 
 export type VerfahrenDokumentUploadFormProps = {
   einreichungId: string | undefined;
@@ -47,19 +52,33 @@ export default function VerfahrenDokumentUploadForm({
   schriftstueckLabel,
   disabled,
 }: Readonly<VerfahrenDokumentUploadFormProps>) {
-  const { shared } = useTranslations();
-  const labels = shared.form.dokumentUpload;
+  const t = useTranslations();
+
+  const labels = t.shared.form.dokumentUpload;
   const [typ, setTyp] = useState<UploadDokumentType>(
     hasSchriftstueck ? "ANHANG" : "SCHRIFTSTUECK",
   );
 
   const actionData = useActionData<ActionResult<UploadActionData>>();
   const isUploadResult = actionData?.data?.formType === "upload";
+  const [searchParams] = useSearchParams();
+  const signaturdateiUploadError =
+    einreichungId !== undefined &&
+    searchParams.get(SIGNATURDATEI_UPLOAD_FAILED_PARAM) === einreichungId
+      ? t.shared.form.errors.signaturdateiUploadFailed
+      : undefined;
   const uploadError =
     isUploadResult && actionData.status === "error"
       ? actionData.error
+      : signaturdateiUploadError;
+  const fieldErrors =
+    isUploadResult && actionData.status === "invalid"
+      ? actionData.fieldErrors
       : undefined;
-  const showFileError = isUploadResult && actionData.status === "invalid";
+  const showSignaturdateiError = Boolean(fieldErrors?.signaturdatei);
+  const showFileError =
+    Boolean(fieldErrors?.file) ||
+    (fieldErrors !== undefined && !showSignaturdateiError);
 
   const navigation = useNavigation();
   const isUploading =
@@ -101,7 +120,7 @@ export default function VerfahrenDokumentUploadForm({
             const label =
               option === "SCHRIFTSTUECK" && schriftstueckLabel
                 ? schriftstueckLabel
-                : shared.dokumentType[option];
+                : t.shared.dokumentType[option];
 
             return (
               <InputRadio
@@ -126,10 +145,21 @@ export default function VerfahrenDokumentUploadForm({
       <InputFile
         id="dokument-upload-file"
         name="file"
-        label={shared.form.uploadDokument.label}
-        hint={labels.hints[typ]}
-        accept={ACCEPTED_FILE_TYPES[typ]}
-        error={showFileError ? shared.form.uploadDokument.error : undefined}
+        label={t.shared.form.uploadDokument.label}
+        hint={labels.hint}
+        accept={ACCEPTED_FILE_TYPES}
+        error={showFileError ? t.shared.form.uploadDokument.error : undefined}
+        aria-disabled={disabled}
+        onClick={(event) => disabled && event.preventDefault()}
+      />
+
+      <InputFile
+        id="dokument-upload-signaturdatei"
+        name="signaturdatei"
+        label={labels.signaturdatei.label}
+        hint={labels.signaturdatei.hint}
+        accept={ACCEPTED_SIGNATURDATEI_TYPES}
+        error={showSignaturdateiError ? labels.signaturdatei.error : undefined}
         aria-disabled={disabled}
         onClick={(event) => disabled && event.preventDefault()}
       />

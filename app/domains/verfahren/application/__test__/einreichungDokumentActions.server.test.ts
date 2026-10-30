@@ -40,6 +40,9 @@ function expectRedirect(response: unknown, location: string) {
 }
 
 const pdfFile = new File(["%PDF-1.7"], "a.pdf", { type: "application/pdf" });
+const signaturdatei = new File(["signature"], "signatur.p7s", {
+  type: "application/pkcs7-signature",
+});
 
 describe("einreichungDokumentActions", () => {
   beforeEach(() => {
@@ -61,6 +64,168 @@ describe("einreichungDokumentActions", () => {
         "ANHANG",
       );
       expectRedirect(response, "/verfahren/v-1");
+    });
+
+    it("rejects a Signaturdatei that isn't a detached signature", async () => {
+      const result = await handleDokumentUpload(
+        buildFormData({
+          einreichungId: "e-1",
+          typ: "ANHANG",
+          file: pdfFile,
+          signaturdatei: new File(["signed"], "a.pdf.p7m"),
+        }),
+        context,
+      );
+
+      expect(result).toMatchObject({
+        data: {
+          status: "invalid",
+          fieldErrors: { signaturdatei: [expect.any(String)] },
+        },
+      });
+      expect(mocks.uploadDokument).not.toHaveBeenCalled();
+    });
+
+    it("rejects a Signaturdatei whose MIME type isn't a signature's", async () => {
+      const result = await handleDokumentUpload(
+        buildFormData({
+          einreichungId: "e-1",
+          typ: "ANHANG",
+          file: pdfFile,
+          signaturdatei: new File(["%PDF-1.7"], "signatur.p7s", {
+            type: "application/pdf",
+          }),
+        }),
+        context,
+      );
+
+      expect(result).toMatchObject({
+        data: {
+          status: "invalid",
+          fieldErrors: { signaturdatei: [expect.any(String)] },
+        },
+      });
+      expect(mocks.uploadDokument).not.toHaveBeenCalled();
+    });
+
+    it("accepts the signature extensions in any case", async () => {
+      mocks.uploadDokument.mockResolvedValue({ id: "d-1" });
+
+      await handleDokumentUpload(
+        buildFormData({
+          einreichungId: "e-1",
+          typ: "ANHANG",
+          file: pdfFile,
+          signaturdatei: new File(["signature"], "SIGNATUR.PKCS7"),
+        }),
+        context,
+      );
+
+      expect(mocks.uploadDokument).toHaveBeenLastCalledWith(
+        authSession,
+        "v-1",
+        "e-1",
+        expect.objectContaining({ name: "a.pdf.pkcs7" }),
+        "SIGNATURDATEI",
+      );
+    });
+
+    it("ignores an empty Signaturdatei input", async () => {
+      await handleDokumentUpload(
+        buildFormData({
+          einreichungId: "e-1",
+          typ: "ANHANG",
+          file: pdfFile,
+          signaturdatei: new File([], ""),
+        }),
+        context,
+      );
+
+      expect(mocks.uploadDokument).toHaveBeenCalledOnce();
+    });
+
+    it("uploads the Signaturdatei named after the Dokument", async () => {
+      mocks.uploadDokument.mockResolvedValue({ id: "d-1" });
+
+      const response = await handleDokumentUpload(
+        buildFormData({
+          einreichungId: "e-1",
+          typ: "SCHRIFTSTUECK",
+          file: pdfFile,
+          signaturdatei: signaturdatei,
+        }),
+        context,
+      );
+
+      expect(mocks.uploadDokument).toHaveBeenCalledTimes(2);
+      expect(mocks.uploadDokument).toHaveBeenLastCalledWith(
+        authSession,
+        "v-1",
+        "e-1",
+        expect.objectContaining({ name: "a.pdf.p7s" }),
+        "SIGNATURDATEI",
+      );
+      expectRedirect(response, "/verfahren/v-1");
+    });
+
+    it("keeps the Dokument and marks the failed Signaturdatei in the redirect", async () => {
+      mocks.uploadDokument
+        .mockResolvedValueOnce({ id: "d-1" })
+        .mockRejectedValueOnce(new ApiError("rejected", { status: 422 }));
+
+      const response = await handleDokumentUpload(
+        buildFormData({
+          einreichungId: "e-1",
+          typ: "ANHANG",
+          file: pdfFile,
+          signaturdatei: signaturdatei,
+        }),
+        context,
+      );
+
+      expectRedirect(
+        response,
+        "/verfahren/v-1?signaturdateiFehlgeschlagen=e-1",
+      );
+    });
+
+    it("doesn't upload the Signaturdatei when its Dokument fails", async () => {
+      mocks.uploadDokument.mockRejectedValue(
+        new ApiError("rejected", { status: 422 }),
+      );
+
+      const result = await handleDokumentUpload(
+        buildFormData({
+          einreichungId: "e-1",
+          typ: "ANHANG",
+          file: pdfFile,
+          signaturdatei: signaturdatei,
+        }),
+        context,
+      );
+
+      expect(mocks.uploadDokument).toHaveBeenCalledOnce();
+      expect(result).toMatchObject({
+        data: {
+          status: "error",
+          error: "Das Dokument konnte nicht hochgeladen werden.",
+        },
+        init: { status: 422 },
+      });
+    });
+
+    it("rejects a Signaturdatei uploaded on its own", async () => {
+      const result = await handleDokumentUpload(
+        buildFormData({
+          einreichungId: "e-1",
+          typ: "SIGNATURDATEI",
+          file: signaturdatei,
+        }),
+        context,
+      );
+
+      expect(result).toMatchObject({ data: { status: "invalid" } });
+      expect(mocks.uploadDokument).not.toHaveBeenCalled();
     });
 
     it("explains the API's refusal of a second Schriftstück", async () => {

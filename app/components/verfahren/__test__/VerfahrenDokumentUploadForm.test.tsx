@@ -17,6 +17,7 @@ const baseProps: VerfahrenDokumentUploadFormProps = {
 function renderForm(
   props: Partial<VerfahrenDokumentUploadFormProps> = {},
   actionResult: unknown = null,
+  url = "/",
 ) {
   // The action can't parse the request in jsdom (its File isn't the one
   // Node's fetch expects), so the submitted values are captured from the
@@ -32,7 +33,7 @@ function renderForm(
       action,
     },
   ]);
-  const result = renderWithTestTranslations(<Stub />);
+  const result = renderWithTestTranslations(<Stub initialEntries={[url]} />);
   result.container.addEventListener("submit", ({ target, submitter }) => {
     submissions.push(new FormData(target as HTMLFormElement, submitter));
   });
@@ -64,47 +65,49 @@ describe("VerfahrenDokumentUploadForm", () => {
     expect(getByRole("radio", { name: "Anlage" })).toBeChecked();
   });
 
-  it("adapts the hint and accepted files to the chosen type", async () => {
-    const { findByLabelText, getByRole, findByText } = renderForm();
+  it("offers only the Schriftstück and the Anlage as types", async () => {
+    const { findAllByRole } = renderForm();
 
-    expect(await findByLabelText("Datei hochladen")).toHaveAttribute(
+    expect(
+      (await findAllByRole("radio")).map((radio) =>
+        radio.getAttribute("value"),
+      ),
+    ).toEqual(["SCHRIFTSTUECK", "ANHANG"]);
+  });
+
+  it("limits the Dokument to PDF and DOCX and its Signaturdatei to signatures", async () => {
+    const { findByLabelText } = renderForm();
+
+    const dokumentInput = await findByLabelText("Datei hochladen");
+    expect(dokumentInput).toHaveAttribute(
       "accept",
       expect.stringContaining(".pdf"),
     );
-    expect(
-      await findByText(
-        "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
-      ),
-    ).toBeInTheDocument();
-
-    fireEvent.click(getByRole("radio", { name: "Anlage" }));
-
-    expect(await findByLabelText("Datei hochladen")).toHaveAttribute(
+    expect(dokumentInput).toHaveAttribute(
       "accept",
       expect.stringContaining(".docx"),
     );
 
-    fireEvent.click(getByRole("radio", { name: "Signaturdatei" }));
-
-    expect(
-      await findByText(
-        "Signaturdateien zu Ihren Dokumenten. Maximale Dateigröße ist 104 MB.",
-      ),
-    ).toBeInTheDocument();
-    expect(await findByLabelText("Datei hochladen")).not.toHaveAttribute(
-      "accept",
+    const signaturdateiInput = await findByLabelText(
+      "Zugehörige Signaturdatei (optional)",
     );
+    expect(signaturdateiInput).toHaveAttribute("name", "signaturdatei");
+    expect(signaturdateiInput).toHaveAttribute(
+      "accept",
+      ".p7s,.pkcs7,.p7,application/pkcs7-signature,application/x-pkcs7-signature",
+    );
+    expect(signaturdateiInput).not.toHaveAttribute("aria-required");
   });
 
   it("submits the chosen type and the Einreichung", async () => {
     const { findByRole, container } = renderForm();
 
-    fireEvent.click(await findByRole("radio", { name: "Signaturdatei" }));
+    fireEvent.click(await findByRole("radio", { name: "Anlage" }));
 
     expect(container.querySelector("form")).toHaveFormValues({
       formType: "upload",
       einreichungId: "einreichung-1",
-      typ: "SIGNATURDATEI",
+      typ: "ANHANG",
     });
   });
 
@@ -149,10 +152,15 @@ describe("VerfahrenDokumentUploadForm", () => {
       disabled: true,
     });
 
-    const input = await findByLabelText("Datei hochladen");
-    expect(input).not.toBeDisabled();
-    expect(input).toHaveAttribute("aria-disabled", "true");
-    expect(fireEvent.click(input)).toBe(false);
+    for (const label of [
+      "Datei hochladen",
+      "Zugehörige Signaturdatei (optional)",
+    ]) {
+      const input = await findByLabelText(label);
+      expect(input).not.toBeDisabled();
+      expect(input).toHaveAttribute("aria-disabled", "true");
+      expect(fireEvent.click(input)).toBe(false);
+    }
 
     fireEvent.click(getByRole("radio", { name: "Anlage" }));
     expect(getByRole("radio", { name: "Schriftstück" })).toBeChecked();
@@ -185,6 +193,50 @@ describe("VerfahrenDokumentUploadForm", () => {
       ),
     );
   });
+
+  it("shows an invalid Signaturdatei at its own input", async () => {
+    const { findByLabelText, getByLabelText, container } = renderForm(
+      {},
+      {
+        status: "invalid",
+        fieldErrors: { signaturdatei: ["Invalid input"] },
+        data: { formType: "upload", typ: "SCHRIFTSTUECK" },
+      },
+    );
+
+    const input = await findByLabelText("Zugehörige Signaturdatei (optional)");
+    fireEvent.submit(container.querySelector("form") as HTMLFormElement);
+
+    await vi.waitFor(() =>
+      expect(input).toHaveAttribute(
+        "aria-describedby",
+        "dokument-upload-signaturdatei-hint dokument-upload-signaturdatei-error",
+      ),
+    );
+    expect(getByLabelText("Datei hochladen")).toHaveAttribute(
+      "aria-describedby",
+      "dokument-upload-file-hint",
+    );
+  });
+
+  it.each([
+    ["einreichung-1", true],
+    ["another-einreichung", false],
+  ])(
+    "shows a failed Signaturdatei marked for %s: %s",
+    async (markedEinreichungId, isShown) => {
+      const { findByLabelText, queryByText } = renderForm(
+        {},
+        null,
+        `/?signaturdateiFehlgeschlagen=${markedEinreichungId}`,
+      );
+
+      await findByLabelText("Datei hochladen");
+      expect(queryByText(/die Signaturdatei aber nicht/) !== null).toBe(
+        isShown,
+      );
+    },
+  );
 
   it("shows a refused upload", async () => {
     const { findByText, findByLabelText, container } = renderForm(

@@ -90,7 +90,10 @@ export class VerfahrenDokumentePage extends PageObject {
     });
   }
 
-  async upload(typ: UploadDokumentType, testDataFileName: string) {
+  async upload(
+    typ: Exclude<UploadDokumentType, "SIGNATURDATEI">,
+    testDataFileName: string,
+  ) {
     await this.page.getByRole("radio", { name: this.#typLabel(typ) }).check();
     await this.page
       .getByLabel(t.shared.form.uploadDokument.label)

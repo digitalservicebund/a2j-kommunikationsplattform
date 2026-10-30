@@ -232,7 +232,7 @@ describe("/verfahren/neu/dokumente", () => {
   });
 
   describe("action: first upload", () => {
-    it.each(["SCHRIFTSTUECK", "ANHANG", "SIGNATURDATEI"])(
+    it.each(["SCHRIFTSTUECK", "ANHANG"])(
       "creates Verfahren, Einreichung and Dokument on the first %s upload",
       async (typ) => {
         mocks.createVerfahren.mockResolvedValue({ id: VERFAHREN_ID });
@@ -265,6 +265,48 @@ describe("/verfahren/neu/dokumente", () => {
         expectRedirect(response, DOKUMENTE_PATH);
       },
     );
+
+    it("uploads the Signaturdatei along with the first Dokument", async () => {
+      mocks.createVerfahren.mockResolvedValue({ id: VERFAHREN_ID });
+      mocks.createEinreichung.mockResolvedValue({ id: "einreichung-1" });
+      mocks.uploadDokument.mockResolvedValue({ id: "klage" });
+
+      const response = await callAction(`?gericht=${gericht.id}`, {
+        formType: "upload",
+        typ: "SCHRIFTSTUECK",
+        file: pdfFile,
+        signaturdatei: new File(["signature"], "signatur.p7s"),
+      });
+
+      expect(mocks.uploadDokument).toHaveBeenLastCalledWith(
+        authSession,
+        VERFAHREN_ID,
+        "einreichung-1",
+        expect.objectContaining({ name: `${pdfFile.name}.p7s` }),
+        "SIGNATURDATEI",
+      );
+      expectRedirect(response, DOKUMENTE_PATH);
+    });
+
+    it("keeps the first Dokument and marks its failed Signaturdatei", async () => {
+      mocks.createVerfahren.mockResolvedValue({ id: VERFAHREN_ID });
+      mocks.createEinreichung.mockResolvedValue({ id: "einreichung-1" });
+      mocks.uploadDokument
+        .mockResolvedValueOnce({ id: "klage" })
+        .mockRejectedValueOnce(new ApiError("rejected", { status: 422 }));
+
+      const response = await callAction(`?gericht=${gericht.id}`, {
+        formType: "upload",
+        typ: "SCHRIFTSTUECK",
+        file: pdfFile,
+        signaturdatei: new File(["signature"], "signatur.p7s"),
+      });
+
+      expectRedirect(
+        response,
+        `${DOKUMENTE_PATH}&signaturdateiFehlgeschlagen=einreichung-1`,
+      );
+    });
 
     it("continues with the created Verfahren when the first upload fails", async () => {
       mocks.createVerfahren.mockResolvedValue({ id: VERFAHREN_ID });
@@ -301,7 +343,7 @@ describe("/verfahren/neu/dokumente", () => {
     it("reports a missing file for the uploaded type", async () => {
       const result = await callAction(`?gericht=${gericht.id}`, {
         formType: "upload",
-        typ: "SIGNATURDATEI",
+        typ: "ANHANG",
         file: new File([], ""),
       });
 
@@ -309,7 +351,7 @@ describe("/verfahren/neu/dokumente", () => {
         data: {
           status: "invalid",
           fieldErrors: { file: [expect.any(String)] },
-          data: { formType: "upload", typ: "SIGNATURDATEI" },
+          data: { formType: "upload", typ: "ANHANG" },
         },
       });
       expect(mocks.createVerfahren).not.toHaveBeenCalled();
