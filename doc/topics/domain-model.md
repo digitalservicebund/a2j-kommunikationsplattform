@@ -112,12 +112,120 @@ The KomPla reuses XÖV code lists for its domain model, and the backend API offe
 [xoev]: https://www.itzbund.de/DE/itloesungen/standardloesungen/xoev/xoev.html
 [genericode]: https://docs.oasis-open.org/codelist/cs-genericode-1.0/doc/oasis-code-list-representation-genericode.html
 
-### _Verfahren_ Lifecycle
+### Entity Status & Lifecycle
 
-TODO
+Several domain entities have defined states (_Status_) and transitions between them. These are described below.
 
-### _Einreichung_ Lifecycle
+#### _Verfahren_ Lifecycle
 
-TODO
+```mermaid
+stateDiagram-v2
+    erstellt: **Erstellt** <br/> (created)
+    eingereicht: **Eingereicht** <br/> (initial _Einreichung_ submitted)
+    gerichtsverfahren_angelegt: **Gerichtsverfahren angelegt** <br/> (created on court side)
+    abgeschlossen: **Abgeschlossen** <br/> (completed)
+    gelöscht: **Gelöscht** <br/> (deleted)
+
+    [*] --> erstellt
+
+    erstellt --> gelöscht: delete
+    gelöscht --> [*]
+
+    erstellt --> eingereicht: submit <br/> (_einreichen_)
+    eingereicht --> gerichtsverfahren_angelegt: court set up _Verfahren_ in their systems
+
+    gerichtsverfahren_angelegt --> abgeschlossen
+    abgeschlossen --> [*]
+```
+
+A newly created, a _Verfahren_ starts as a draft, represented by the `ERSTELLT` (created) state. The user can then edit the _Verfahren_ details, including its _Beteiligungen_. They can also construct the initial _Einreichung_ containing the legal claim document (_Klageschrift_), pieces of evidence (_Beweismittel_) and other documents, also known as the _Klageeinreichung_ (claim submission). In the draft state, it is also still possible to delete the _Verfahren_.
+
+Once the user has successfully submitted the initial _Einreichung_, the _Verfahren_ moves to the `EINGEREICHT` (submitted) state. From this point on, the _Verfahren_ details cannot be deleted or freely edited anymore.
+
+Next, the KomPla backend sendsthe sent _Dokumente_ of the _Einreichung_ — which includes a generated XJustiz file with the _Verfahren_ details — to the court, which sets up the _Verfahren_ in their _Fachverfahren_ and _E-Akte_ systems (see the [architecture overview](../architecture.md)). It then sends the KomPla a receipt (_Beleg_), which also includes the _Aktenzeichen_ it assigned to the _Verfahren_. Once the receipt has been received, the KomPla _Verfahren_ state changes to `GERICHTSVERFAHREN_ERSTELLT`.
+
+Finally, when the _Verfahren_ has ended, it is moved to the `ABGESCHLOSSEN` (completed) state. It remains there for 30 days before being automatically being deleted from the KomPla for data privacy reasons.
+
+> [!note]
+> As the KomPla backend is currently not integrated with the courts' _Fachverfahren_ software, court employees need to manually mark a _Verfahren_ as `ABGESCHLOSSEN` in the KomPla frontend.
+
+#### _Einreichung_ Lifecycle
+
+```mermaid
+stateDiagram-v2
+    erstellt: <b>Erstellt</b><br/>(created)
+    beantragt: <b>Beantragt</b><br/>(submission requested)
+    eingereicht: <b>Eingereicht</b><br/>(submitted)
+    fehlgeschlagen: <b>Fehlgeschlagen</b><br/>(submission failed)
+    versendet: <b>Versendet</b><br/>(sent to court)
+    veraktet: <b>Veraktet</b><br/>(filed in <i>E-Akte</i>)
+    gelöscht: <b>Gelöscht</b><br/>(deleted)
+    state is_valid <<choice>>
+
+    [*] --> erstellt
+
+    erstellt --> erstellt: create & edit _Dokumente_
+    erstellt --> beantragt: submit <br/> (_einreichen_)
+    beantragt --> is_valid: validation completed
+    is_valid --> fehlgeschlagen: invalid
+    is_valid --> eingereicht: valid
+
+    erstellt --> gelöscht: delete
+    gelöscht --> [*]
+    fehlgeschlagen --> fehlgeschlagen: create & edit _Dokumente_
+    fehlgeschlagen --> gelöscht: invalid
+
+    eingereicht --> versendet: sent to court
+    versendet --> veraktet: saved in the court's <i>E-Akte</i> system
+    veraktet --> [*]
+```
+
+Like _Verfahren_, an _Einreichung_ start as a draft (`ERSTELLT` state) to which one or more _Dokumente_ can be added. The draft can also be deleted, moving it to the `GELOESCHT` (deleted) state.
+
+Once the _Einreichung_ is submitted (_einreichen_), it moves to the `BEANTRAGT` (submission requested) state until the validation of its _Dokumente_ has been completed (see [below](#dokument-einreichung-validation)). The next state depends on the validation result:
+
+- If validation fails, the _Einreichung_ moves into the `FEHLGESCHLAGEN` (failed) state. Like `ERSTELLT`, this is considered a draft state, allowing the user to edit the _Einreichung_ contents and try again (or delete the _Einreichung_).
+
+- Otherwise, the _Einreichung_ is considered `EINGEREICHT` (submitted) until the _Dokumente_ of the _Einreichung_ have been successfully sent to the court, at which point the state changes to `VERSENDET` (sent). Once the court has filed the _Dokument_ in their _E-Akte_ system, the _Einreichung_ reaches the final _VERAKTET_ (filed) state.
+
+When the _Einreichung_ enters the `EINGEREICHT` or `FEHLGESCHLAGEN` state, a _Beleg_ of type `NACHWEIS` or `PROTOKOLL`, respectively, is generated for it (see [above](#einreichungen-belege)).
+
+#### _Dokument_ Lifecycle
+
+```mermaid
+stateDiagram-v2
+    angelegt: <b>Angelegt</b><br/>(pre-created)
+    erstellt: <b>Erstellt</b><br/>(created)
+    gelöscht: <b>Gelöscht</b><br/>(deleted)
+    eingereicht: <b>Eingereicht</b><br/>(submitted)
+    nicht_eingereicht: <b>Nicht Eingereicht</b><br/>(not submitted)
+    versendet: <b>Versendet</b><br/>(sent to court)
+    veraktet: <b>Veraktet</b><br/>(filed in <i>E-Akte</i>)
+    state is_valid <<choice>>
+
+    [*] --> angelegt: Create <i>Dokument</i><br/>(metadata only)
+    angelegt --> erstellt: Upload <i>Dokument</i> file
+
+    angelegt --> gelöscht: delete
+    erstellt --> gelöscht: delete
+    gelöscht --> [*]
+
+    erstellt --> is_valid: einreichen<br/>(submit)
+
+    is_valid --> nicht_eingereicht: <i>Dokument</i> is invalid
+    is_valid --> eingereicht: <i>Dokument</i> is valid
+
+    nicht_eingereicht --> [*]
+
+    eingereicht --> versendet: sent to court
+    versendet --> veraktet: saved in the court's <i>E-Akte</i> system
+    veraktet --> [*]
+```
+
+The _Dokument_ state are basically document-scoped versions of the equivalent _Einreichung_ ones. There are some differences, though:
+
+- The initial draft state is not `ERSTELLT`, but `ANGELEGT` (roughly "pre-created"). In this state, the _Dokument_ metadata has been defined, but the actual file has not been uploaded yet; in the KomPla API, these are separate operations.
+
+- The validation failure state is called `NICHT_EINGEREICHT` instead of `FEHLGESCHLAGEN`.
 
 ### _Dokument_ & _Einreichung_ Validation
