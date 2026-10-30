@@ -17,7 +17,6 @@ import {
   handleDokumentDelete,
   handleDokumentSichtbarkeit,
   handleDokumentUpload,
-  uploadSignaturdatei,
 } from "~/domains/verfahren/application/einreichungDokumentActions.server";
 import loadDokumenteWithValidierungsstatus from "~/domains/verfahren/application/loadDokumenteWithValidierungsstatus.server";
 import loadKlageeinreichungDraft, {
@@ -26,7 +25,7 @@ import loadKlageeinreichungDraft, {
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
 import { KLAGEEINREICHUNG_NAME } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import { VERFAHRENSGEGENSTAND_ZAHLUNGSKLAGE } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
-import { uploadDokument } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
+import { uploadDokumentWithSignaturdatei } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
 import { createVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
@@ -151,7 +150,13 @@ async function handleFirstUpload(
   });
 
   try {
-    await uploadDokument(authSession, verfahrenId, einreichungId, file, typ);
+    await uploadDokumentWithSignaturdatei(authSession, {
+      verfahrenId,
+      einreichungId,
+      file,
+      typ,
+      signaturdatei,
+    });
   } catch (error) {
     // The Verfahren was just created: continue with it, so that a retry
     // doesn't create yet another one
@@ -159,13 +164,7 @@ async function handleFirstUpload(
     return redirect(`${dokumentePath}&${UPLOAD_FAILED_PARAM}`);
   }
 
-  return uploadSignaturdatei(authSession, {
-    verfahrenId,
-    einreichungId,
-    dokument: file,
-    signaturdatei,
-    redirectTo: dokumentePath,
-  });
+  return redirect(dokumentePath);
 }
 
 function buildDokumentActionContext(

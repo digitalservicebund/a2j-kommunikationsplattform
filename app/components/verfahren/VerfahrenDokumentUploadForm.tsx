@@ -1,15 +1,9 @@
 import { useState } from "react";
-import {
-  Form,
-  useActionData,
-  useNavigation,
-  useSearchParams,
-} from "react-router";
+import { Form, useActionData, useNavigation } from "react-router";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import InputFile from "~/components/InputFile";
 import InputRadio from "~/components/InputRadio";
-import { SIGNATURDATEI_UPLOAD_FAILED_PARAM } from "~/config/signaturdateiUploadFailed";
 import type { UploadDokumentType } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import {
   SIGNATURDATEI_EXTENSIONS,
@@ -61,16 +55,10 @@ export default function VerfahrenDokumentUploadForm({
 
   const actionData = useActionData<ActionResult<UploadActionData>>();
   const isUploadResult = actionData?.data?.formType === "upload";
-  const [searchParams] = useSearchParams();
-  const signaturdateiUploadError =
-    einreichungId !== undefined &&
-    searchParams.get(SIGNATURDATEI_UPLOAD_FAILED_PARAM) === einreichungId
-      ? t.shared.form.errors.signaturdateiUploadFailed
-      : undefined;
   const uploadError =
     isUploadResult && actionData.status === "error"
       ? actionData.error
-      : signaturdateiUploadError;
+      : undefined;
   const fieldErrors =
     isUploadResult && actionData.status === "invalid"
       ? actionData.fieldErrors

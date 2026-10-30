@@ -14,6 +14,7 @@ import {
   DokumentSchema,
 } from "~/domains/verfahren/infrastructure/schemas/dokument.schema";
 import { ValidierungsstatusSchema } from "~/domains/verfahren/infrastructure/schemas/validierungsstatus.schema";
+import buildSignaturdateiName from "~/domains/verfahren/services/buildSignaturdateiName";
 import canDeleteDokument, {
   type CanDeleteDokumentOptions,
 } from "~/domains/verfahren/services/canDeleteDokument";
@@ -368,6 +369,90 @@ export async function uploadDokument(
       logger.error(
         { verfahrenId, einreichungId, dokumentId: dokument.id },
         "Failed to delete orphaned Dokument after Datei upload failed",
+      );
+    }
+
+    throw error;
+  }
+}
+
+type UploadDokumentWithSignaturdateiOptions = {
+  verfahrenId: string;
+  einreichungId: string;
+  file: File;
+  typ: DokumentType;
+  signaturdatei?: File;
+};
+
+async function tryDeleteDokument(
+  authSession: AuthSession,
+  options: FetchDokumentOptions,
+): Promise<boolean> {
+  try {
+    const { eTag } = await fetchDokument(authSession, options);
+    const { success } = await deleteDokument(authSession, {
+      ...options,
+      eTag: eTag ?? "",
+    });
+    return success;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Uploads a Dokument and its optional Signaturdatei, named after it (see
+ * buildSignaturdateiName). If the Signaturdatei fails, the Dokument is
+ * deleted again, best-effort like in uploadDokument, so both can be uploaded
+ * again together.
+ */
+export async function uploadDokumentWithSignaturdatei(
+  authSession: AuthSession,
+  {
+    verfahrenId,
+    einreichungId,
+    file,
+    typ,
+    signaturdatei,
+  }: UploadDokumentWithSignaturdateiOptions,
+): Promise<void> {
+  const dokument = await uploadDokument(
+    authSession,
+    verfahrenId,
+    einreichungId,
+    file,
+    typ,
+  );
+
+  if (!signaturdatei) {
+    return;
+  }
+
+  const namedSignaturdatei = new File(
+    [signaturdatei],
+    buildSignaturdateiName(file.name, signaturdatei.name),
+    { type: signaturdatei.type },
+  );
+
+  try {
+    await uploadDokument(
+      authSession,
+      verfahrenId,
+      einreichungId,
+      namedSignaturdatei,
+      "SIGNATURDATEI",
+    );
+  } catch (error) {
+    const cleanupSucceeded = await tryDeleteDokument(authSession, {
+      verfahrenId,
+      einreichungId,
+      id: dokument.id,
+    });
+
+    if (!cleanupSucceeded) {
+      logger.error(
+        { verfahrenId, einreichungId, dokumentId: dokument.id },
+        "Failed to delete Dokument after its Signaturdatei upload failed",
       );
     }
 

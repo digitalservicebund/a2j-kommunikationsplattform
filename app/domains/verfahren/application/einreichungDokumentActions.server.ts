@@ -1,14 +1,12 @@
 import { redirect } from "react-router";
 import z from "zod";
-import { buildSignaturdateiUploadFailedPath } from "~/config/signaturdateiUploadFailed";
 import { UploadDokumentTypeSchema } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import {
   deleteDokumentFromEinreichung,
   fetchDokument,
   updateDokumentSichtbarkeit,
-  uploadDokument,
+  uploadDokumentWithSignaturdatei,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
-import buildSignaturdateiName from "~/domains/verfahren/services/buildSignaturdateiName";
 import type { CanDeleteDokumentOptions } from "~/domains/verfahren/services/canDeleteDokument";
 import isSignaturdatei from "~/domains/verfahren/services/isSignaturdatei";
 import { AuthSession } from "~/services/auth/auth.types";
@@ -20,7 +18,6 @@ import {
   actionSuccess,
 } from "~/utils/actionResult";
 import { ApiError } from "~/utils/apiError";
-import { logger } from "~/utils/logger.server";
 
 /**
  * Form actions for the Dokumente of a draft Einreichung, shared by the
@@ -45,58 +42,6 @@ export const DokumentUploadInputSchema = z.object({
     .transform((file) => (file?.size ? file : undefined))
     .refine((file) => !file || isSignaturdatei(file)),
 });
-
-type UploadSignaturdateiOptions = {
-  verfahrenId: string;
-  einreichungId: string;
-  dokument: File;
-  signaturdatei: File | undefined;
-  redirectTo: string;
-};
-
-/**
- * Uploads the Signaturdatei, if any, of a just uploaded Dokument, named after
- * it (see buildSignaturdateiName), then continues on the page. If it fails,
- * the Dokument stays, so the page has to reload its Dokumente: the failure is
- * marked in the redirect, as an error response wouldn't reload them.
- */
-export async function uploadSignaturdatei(
-  authSession: AuthSession,
-  {
-    verfahrenId,
-    einreichungId,
-    dokument,
-    signaturdatei,
-    redirectTo,
-  }: UploadSignaturdateiOptions,
-) {
-  if (!signaturdatei) {
-    return redirect(redirectTo);
-  }
-
-  const namedSignaturdatei = new File(
-    [signaturdatei],
-    buildSignaturdateiName(dokument.name, signaturdatei.name),
-    { type: signaturdatei.type },
-  );
-
-  try {
-    await uploadDokument(
-      authSession,
-      verfahrenId,
-      einreichungId,
-      namedSignaturdatei,
-      "SIGNATURDATEI",
-    );
-  } catch (error) {
-    logger.error({ error }, "Signaturdatei upload failed for a Dokument");
-    return redirect(
-      buildSignaturdateiUploadFailedPath(redirectTo, einreichungId),
-    );
-  }
-
-  return redirect(redirectTo);
-}
 
 export function buildUploadResultData(formData: FormData) {
   return { formType: "upload", typ: formData.get("typ") } as const;
@@ -136,7 +81,13 @@ export async function handleDokumentUpload(
   }
 
   try {
-    await uploadDokument(authSession, verfahrenId, einreichungId, file, typ);
+    await uploadDokumentWithSignaturdatei(authSession, {
+      verfahrenId,
+      einreichungId,
+      file,
+      typ,
+      signaturdatei,
+    });
   } catch (error) {
     return actionResultFromApiError(error, {
       // The page only offers one Schriftstück, but e.g. a second tab could
@@ -148,13 +99,7 @@ export async function handleDokumentUpload(
     });
   }
 
-  return uploadSignaturdatei(authSession, {
-    verfahrenId,
-    einreichungId,
-    dokument: file,
-    signaturdatei,
-    redirectTo,
-  });
+  return redirect(redirectTo);
 }
 
 const DokumentDeletionInputSchema = z.object({

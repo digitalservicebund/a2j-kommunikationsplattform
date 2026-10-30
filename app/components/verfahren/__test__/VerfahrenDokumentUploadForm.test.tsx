@@ -17,7 +17,6 @@ const baseProps: VerfahrenDokumentUploadFormProps = {
 function renderForm(
   props: Partial<VerfahrenDokumentUploadFormProps> = {},
   actionResult: unknown = null,
-  url = "/",
 ) {
   // The action can't parse the request in jsdom (its File isn't the one
   // Node's fetch expects), so the submitted values are captured from the
@@ -33,7 +32,7 @@ function renderForm(
       action,
     },
   ]);
-  const result = renderWithTestTranslations(<Stub initialEntries={[url]} />);
+  const result = renderWithTestTranslations(<Stub />);
   result.container.addEventListener("submit", ({ target, submitter }) => {
     submissions.push(new FormData(target as HTMLFormElement, submitter));
   });
@@ -218,25 +217,6 @@ describe("VerfahrenDokumentUploadForm", () => {
       "dokument-upload-file-hint",
     );
   });
-
-  it.each([
-    ["einreichung-1", true],
-    ["another-einreichung", false],
-  ])(
-    "shows a failed Signaturdatei marked for %s: %s",
-    async (markedEinreichungId, isShown) => {
-      const { findByLabelText, queryByText } = renderForm(
-        {},
-        null,
-        `/?signaturdateiFehlgeschlagen=${markedEinreichungId}`,
-      );
-
-      await findByLabelText("Datei hochladen");
-      expect(queryByText(/die Signaturdatei aber nicht/) !== null).toBe(
-        isShown,
-      );
-    },
-  );
 
   it("shows a refused upload", async () => {
     const { findByText, findByLabelText, container } = renderForm(

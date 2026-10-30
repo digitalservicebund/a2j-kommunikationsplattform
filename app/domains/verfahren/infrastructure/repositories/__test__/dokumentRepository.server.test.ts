@@ -11,6 +11,7 @@ import {
   updateDokumentSichtbarkeit,
   uploadDokument,
   uploadDokumentDatei,
+  uploadDokumentWithSignaturdatei,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { DokumentSchema } from "~/domains/verfahren/infrastructure/schemas/dokument.schema";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
@@ -712,6 +713,111 @@ describe("uploadDokument", () => {
     expect(mocks.loggerError).toHaveBeenCalledWith(
       { verfahrenId: "v-1", einreichungId: "e-1", dokumentId: "d-1" },
       "Failed to delete orphaned Dokument after Datei upload failed",
+    );
+  });
+});
+
+describe("uploadDokumentWithSignaturdatei", () => {
+  const options = {
+    verfahrenId: "v-1",
+    einreichungId: "e-1",
+    file: new File(["%PDF"], "Klageschrift.pdf", { type: "application/pdf" }),
+    typ: "SCHRIFTSTUECK",
+  } as const;
+  const signaturdatei = new File(["signature"], "signatur.P7S", {
+    type: "application/pkcs7-signature",
+  });
+
+  function mockUploadedDokument() {
+    mocks.apiRequest.mockResolvedValueOnce({
+      data: { id: "d-1" },
+      eTag: 'W/"0"',
+    });
+    mocks.apiRequest.mockResolvedValueOnce({ id: "d-1" });
+  }
+
+  it("uploads only the Dokument without a Signaturdatei", async () => {
+    mockUploadedDokument();
+
+    await uploadDokumentWithSignaturdatei(makeAuthSession(), options);
+
+    expect(mocks.apiRequest).toHaveBeenCalledTimes(2);
+  });
+
+  it("uploads the Signaturdatei named after the Dokument", async () => {
+    mockUploadedDokument();
+    mocks.apiRequest.mockResolvedValueOnce({
+      data: { id: "s-1" },
+      eTag: 'W/"0"',
+    });
+    mocks.apiRequest.mockResolvedValueOnce({ id: "s-1" });
+
+    await uploadDokumentWithSignaturdatei(makeAuthSession(), {
+      ...options,
+      signaturdatei,
+    });
+
+    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+      3,
+      expect.objectContaining({
+        method: "POST",
+        body: {
+          typ: "SIGNATURDATEI",
+          anzeigename: "Klageschrift.pdf.p7s",
+          sichtbarkeit_alle: true,
+        },
+      }),
+    );
+    const { body } = mocks.apiRequest.mock.calls[3][0];
+    expect((body as FormData).get("datei")).toMatchObject({
+      name: "Klageschrift.pdf.p7s",
+      type: "application/pkcs7-signature",
+    });
+  });
+
+  it("deletes the Dokument again and rethrows when the Signaturdatei fails", async () => {
+    mockUploadedDokument();
+    const signaturdateiError = new Error("Signaturdatei upload failed");
+    mocks.apiRequest.mockRejectedValueOnce(signaturdateiError);
+    mocks.apiRequest.mockResolvedValueOnce({
+      data: { id: "d-1" },
+      eTag: 'W/"1"',
+    });
+    mocks.apiRequest.mockResolvedValueOnce({ ok: true });
+
+    await expect(
+      uploadDokumentWithSignaturdatei(makeAuthSession(), {
+        ...options,
+        signaturdatei,
+      }),
+    ).rejects.toBe(signaturdateiError);
+
+    expect(mocks.apiRequest).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1",
+        method: "DELETE",
+        eTag: 'W/"1"',
+      }),
+    );
+    expect(mocks.loggerError).not.toHaveBeenCalled();
+  });
+
+  it("logs and rethrows the Signaturdatei error when deleting the Dokument fails", async () => {
+    mockUploadedDokument();
+    const signaturdateiError = new Error("Signaturdatei upload failed");
+    mocks.apiRequest.mockRejectedValueOnce(signaturdateiError);
+    mocks.apiRequest.mockRejectedValueOnce(new Error("Fetch failed"));
+
+    await expect(
+      uploadDokumentWithSignaturdatei(makeAuthSession(), {
+        ...options,
+        signaturdatei,
+      }),
+    ).rejects.toBe(signaturdateiError);
+
+    expect(mocks.loggerError).toHaveBeenCalledWith(
+      { verfahrenId: "v-1", einreichungId: "e-1", dokumentId: "d-1" },
+      "Failed to delete Dokument after its Signaturdatei upload failed",
     );
   });
 });

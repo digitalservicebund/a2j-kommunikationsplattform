@@ -116,8 +116,6 @@ export const de = {
         invalidSubmission: "Ungültige Formularübermittlung.",
         saveFailed: "Die Änderungen konnten nicht gespeichert werden.",
         uploadFailed: "Das Dokument konnte nicht hochgeladen werden.",
-        signaturdateiUploadFailed:
-          "Das Dokument wurde hochgeladen, die Signaturdatei aber nicht. Entfernen Sie das Dokument und laden Sie es zusammen mit der Signaturdatei erneut hoch.",
         schriftstueckExists:
           "Es wurde bereits ein Schriftstück hochgeladen. Entfernen Sie es, um ein anderes hochzuladen.",
         submissionFailed: "Die Klage konnte nicht gespeichert werden.",
