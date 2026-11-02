@@ -169,7 +169,7 @@ describe("VerfahrenDokumenteList", () => {
     const alert = await screen.findByRole("alert");
     expect(alert).toHaveTextContent("Löschen fehlgeschlagen.");
     // Rendered in the failed Dokument's own block, not the other one's.
-    const dokumentBlock = alert.parentElement;
+    const dokumentBlock = alert.closest("li");
     expect(dokumentBlock).toHaveTextContent("b.pdf");
     expect(dokumentBlock).not.toHaveTextContent("a.pdf");
   });
@@ -201,9 +201,9 @@ describe("VerfahrenDokumenteList", () => {
     ]);
 
     const [first, second, third] = screen.getAllByRole("listitem");
-    expect(first).toHaveTextContent(/k\.pdf.*Schriftstück ·/);
-    expect(second).toHaveTextContent(/a\.pdf.*Anlage ·/);
-    expect(third).toHaveTextContent(/s\.p7s.*Signaturdatei ·/);
+    expect(first).toHaveTextContent(/Schriftstück.*k\.pdf/);
+    expect(second).toHaveTextContent(/Anlage.*a\.pdf/);
+    expect(third).toHaveTextContent(/Signaturdatei.*s\.p7s/);
   });
 
   it("can call the Schriftstück by another name", () => {
@@ -222,7 +222,7 @@ describe("VerfahrenDokumenteList", () => {
     ]);
     render(<Stub initialEntries={["/verfahren/v-1"]} />);
 
-    expect(screen.getByRole("listitem")).toHaveTextContent("Klageschrift ·");
+    expect(screen.getByRole("listitem")).toHaveTextContent("Klageschrift");
   });
 
   it("lets each Dokument be opened and downloaded", () => {

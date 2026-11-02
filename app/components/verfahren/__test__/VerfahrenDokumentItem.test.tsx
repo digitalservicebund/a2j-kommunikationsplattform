@@ -4,6 +4,7 @@ import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
+import formatDokumentSize from "../presentation/formatDokumentSize";
 import VerfahrenDokumentItem from "../VerfahrenDokumentItem";
 
 const dokument: Dokument = {
@@ -62,29 +63,32 @@ describe("VerfahrenDokumentItem", () => {
     expect(downloadLink).not.toHaveAttribute("target");
   });
 
-  it("shows the Validierungsstatus with the Dokument's info and the actions beside it", () => {
-    renderWithTestTranslations(
+  it("shows typ, name, size, date, status and actions in one row, in that order", () => {
+    const { container } = renderWithTestTranslations(
       <VerfahrenDokumentItem
         dokument={dokument}
         verfahrenId="v-1"
         einreichungId="e-1"
-        typLabel="Anlage"
+        typLabel="Klageschrift"
         validierungsstatus={{
           validierungslaufStatus: "ABGESCHLOSSEN",
           ergebnis: "GRUEN",
           fehler: [],
         }}
-        actions={<button type="button">Aktion</button>}
+        sichtbarkeit={<button type="button">Sichtbarkeit</button>}
+        deleteAction={<button type="button">Entfernen</button>}
       />,
     );
 
-    // The top row holds the name, the info line and the status, the actions
-    // have their own row below
-    const topRow = screen.getByText(/^Anlage ·/).parentElement?.parentElement;
-    expect(topRow).toHaveTextContent("Geprüft und virenfrei");
-    expect(topRow).not.toContainElement(
-      screen.getByRole("button", { name: "Aktion" }),
-    );
+    const cells = Array.from(container.firstElementChild?.children ?? []);
+    expect(cells.map((cell) => cell.textContent)).toEqual([
+      "Klageschrift",
+      "Klageschrift.pdf (öffnet in neuem Tab)",
+      formatDokumentSize(1234),
+      `hochgeladen am ${new Date(dokument.erstelltAm).toLocaleDateString()}`,
+      expect.stringContaining("Geprüft und virenfrei"),
+      "SichtbarkeitKlageschrift.pdf herunterladenEntfernen",
+    ]);
   });
 
   it.each([

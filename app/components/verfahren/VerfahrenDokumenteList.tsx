@@ -64,7 +64,7 @@ export default function VerfahrenDokumenteList({
 
   return (
     <ul
-      className="kern-mt-md kern-px-none kern-gap-md flex w-full flex-col"
+      className="kern-mt-md kern-px-none flex w-full flex-col"
       aria-label={shared.form.uploadedDokumenteListLabel}
     >
       {visibleDokumente.map((dokument) => {
@@ -81,64 +81,65 @@ export default function VerfahrenDokumenteList({
               einreichungId={einreichung.id}
               typLabel={getTypLabel(dokument)}
               validierungsstatus={dokument.validierungsstatus}
-              actions={
-                <div className="kern-gap-sm flex items-end">
-                  <VerfahrenDokumentSichtbarkeitForm
-                    dokument={dokument}
-                    einreichungId={einreichung.id}
-                    disabled={disabled}
-                  />
-                  {canDeleteDokument(dokument, einreichung, {
-                    allowSchriftstueckDeletion,
-                  }) ? (
-                    <Form
-                      method="post"
-                      preventScrollReset
-                      // Deleting reloads the same page, so it shouldn't add
-                      // another history entry
-                      replace
-                      className="flex items-center"
+              sichtbarkeit={
+                <VerfahrenDokumentSichtbarkeitForm
+                  dokument={dokument}
+                  einreichungId={einreichung.id}
+                  disabled={disabled}
+                />
+              }
+              deleteAction={
+                canDeleteDokument(dokument, einreichung, {
+                  allowSchriftstueckDeletion,
+                }) ? (
+                  <Form
+                    method="post"
+                    preventScrollReset
+                    // Deleting reloads the same page, so it shouldn't add
+                    // another history entry
+                    replace
+                    className="flex items-center"
+                  >
+                    <input type="hidden" name="formType" value="delete" />
+                    <input
+                      type="hidden"
+                      name="einreichungId"
+                      value={einreichung.id}
+                    />
+                    <input
+                      type="hidden"
+                      name="dokumentId"
+                      value={dokument.id}
+                    />
+                    <Button
+                      appearance="secondary"
+                      className="kern-btn--x-small border-feedback-danger"
+                      type="submit"
+                      aria-disabled={disabled}
+                      onClick={(event) => disabled && event.preventDefault()}
                     >
-                      <input type="hidden" name="formType" value="delete" />
-                      <input
-                        type="hidden"
-                        name="einreichungId"
-                        value={einreichung.id}
-                      />
-                      <input
-                        type="hidden"
-                        name="dokumentId"
-                        value={dokument.id}
-                      />
-                      <Button
-                        appearance="secondary"
-                        className="kern-btn--x-small border-feedback-danger"
-                        type="submit"
-                        aria-disabled={disabled}
-                        onClick={(event) => disabled && event.preventDefault()}
-                      >
-                        <span
-                          className="kern-icon kern-icon--delete bg-feedback-danger"
-                          aria-hidden="true"
-                        ></span>
-                        <span className="kern-label kern-sr-only">
-                          {shared.form.deleteDokument.labelForDokument.replace(
-                            "{{name}}",
-                            dokument.anzeigename,
-                          )}
-                        </span>
-                      </Button>
-                    </Form>
-                  ) : (
-                    // Takes the delete button's space, keeping the alignment
-                    <span
-                      className="kern-btn kern-btn--secondary kern-btn--x-small invisible"
-                      aria-hidden="true"
-                    >
-                      <span className="kern-icon kern-icon--delete"></span>
-                    </span>
-                  )}
-                </div>
+                      <span
+                        className="kern-icon kern-icon--delete bg-feedback-danger"
+                        aria-hidden="true"
+                      ></span>
+                      <span className="kern-label kern-sr-only">
+                        {shared.form.deleteDokument.labelForDokument.replace(
+                          "{{name}}",
+                          dokument.anzeigename,
+                        )}
+                      </span>
+                    </Button>
+                  </Form>
+                ) : (
+                  // Takes the delete button's space, keeping the alignment
+                  <span
+                    className="kern-btn kern-btn--secondary kern-btn--x-small invisible"
+                    aria-hidden="true"
+                  >
+                    <span className="kern-icon kern-icon--delete"></span>
+                    <span className="kern-label kern-sr-only"></span>
+                  </span>
+                )
               }
             />
             {deleteDokumentError && (

@@ -9,6 +9,8 @@ interface InputSelectProps {
   id: string;
   // ReactNode, e.g. to add visually hidden context to the accessible name
   label: ReactNode;
+  // Keeps the label for screen readers only, e.g. in a table-like row
+  hideLabel?: boolean;
   hint?: string;
   error?: string;
   options: InputSelectOption[];
@@ -23,6 +25,7 @@ interface InputSelectProps {
 export default function InputSelect({
   id,
   label,
+  hideLabel = false,
   hint,
   error,
   options,
@@ -39,7 +42,10 @@ export default function InputSelect({
     <div
       className={`kern-form-input ${className} ${error && "kern-form-input--error"}`}
     >
-      <label className="kern-label" htmlFor={id}>
+      <label
+        className={`kern-label ${hideLabel ? "kern-sr-only" : ""}`}
+        htmlFor={id}
+      >
         {label}
       </label>
 

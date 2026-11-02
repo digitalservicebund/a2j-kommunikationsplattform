@@ -26,6 +26,7 @@ export default function VerfahrenSichtbarkeitSelect({
   return (
     <InputSelect
       id={id}
+      hideLabel
       label={
         <>
           {labels.label}
