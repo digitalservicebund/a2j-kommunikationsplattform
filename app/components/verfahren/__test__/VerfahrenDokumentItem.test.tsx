@@ -24,10 +24,10 @@ const dokument: Dokument = {
   sichtbarkeitAlle: true,
 };
 
-function renderItem() {
+function renderItem(itemDokument: Dokument = dokument) {
   return renderWithTestTranslations(
     <VerfahrenDokumentItem
-      dokument={dokument}
+      dokument={itemDokument}
       verfahrenId="v-1"
       einreichungId="e-1"
     />,
@@ -84,6 +84,20 @@ describe("VerfahrenDokumentItem", () => {
     expect(topRow).toHaveTextContent("Geprüft und virenfrei");
     expect(topRow).not.toContainElement(
       screen.getByRole("button", { name: "Aktion" }),
+    );
+  });
+
+  it.each([
+    ["SCHRIFTSTUECK", "Schriftstück", "kern-icon--description"],
+    ["ANHANG", "Anlage", "kern-icon--attach-file"],
+    ["SIGNATURDATEI", "Signaturdatei", "kern-icon--signature"],
+  ] as const)("shows an icon labelled with the typ %s", (typ, label, icon) => {
+    renderItem({ ...dokument, typ });
+
+    const iconWrapper = screen.getByText(label).parentElement;
+    expect(iconWrapper?.querySelector(`.${icon}`)).toHaveAttribute(
+      "aria-hidden",
+      "true",
     );
   });
 

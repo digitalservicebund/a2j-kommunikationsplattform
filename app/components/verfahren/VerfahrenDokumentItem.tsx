@@ -3,8 +3,16 @@ import buildDokumentDateiHref from "~/components/verfahren/presentation/buildDok
 import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
 import VerfahrenDokumentStatusBadge from "~/components/verfahren/VerfahrenDokumentStatusBadge";
 import type { Dokument } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import type { DokumentType } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import type { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
 import { useTranslations } from "~/services/translations/context";
+
+// Custom icons, see styles.css. XJustiz-Dokumente aren't listed.
+const DOKUMENT_TYPE_ICONS: Partial<Record<DokumentType, string>> = {
+  SCHRIFTSTUECK: "kern-icon--description",
+  ANHANG: "kern-icon--attach-file",
+  SIGNATURDATEI: "kern-icon--signature",
+};
 
 type VerfahrenDokumentItemProps = {
   dokument: Dokument;
@@ -23,10 +31,11 @@ export default function VerfahrenDokumentItem({
   validierungsstatus,
   actions,
 }: Readonly<VerfahrenDokumentItemProps>) {
-  const { routes } = useTranslations();
+  const { routes, shared } = useTranslations();
   const labels =
     routes.verfahrenId.draftKlageeinreichung.proceduralSteps.einreichung
       .dokumente;
+  const typIcon = DOKUMENT_TYPE_ICONS[dokument.typ];
   const dateiHrefOptions = {
     verfahrenId,
     einreichungId,
@@ -40,6 +49,18 @@ export default function VerfahrenDokumentItem({
       <div className="kern-gap-sm flex flex-wrap items-center justify-between">
         <div className="kern-gap-sm flex flex-col">
           <div className="kern-gap-sm flex items-center">
+            {typIcon && (
+              // Labelled, since the timeline shows the Dokument without its typ
+              <span>
+                <span
+                  className={`kern-icon ${typIcon}`}
+                  aria-hidden="true"
+                ></span>
+                <span className="kern-sr-only">
+                  {shared.dokumentType[dokument.typ]}
+                </span>
+              </span>
+            )}
             <a
               className="kern-link kern-body kern-body--bold"
               href={buildDokumentDateiHref({
