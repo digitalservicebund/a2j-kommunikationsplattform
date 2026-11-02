@@ -8,6 +8,7 @@ import {
   uploadDokumentWithSignaturdatei,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import type { CanDeleteDokumentOptions } from "~/domains/verfahren/services/canDeleteDokument";
+import isSchriftstueckDatei from "~/domains/verfahren/services/isSchriftstueckDatei";
 import isSignaturdatei from "~/domains/verfahren/services/isSignaturdatei";
 import { AuthSession } from "~/services/auth/auth.types";
 import de from "~/services/translations/de";
@@ -32,16 +33,24 @@ export type EinreichungDokumentActionContext = {
   redirectTo: string;
 } & CanDeleteDokumentOptions;
 
-export const DokumentUploadInputSchema = z.object({
-  einreichungId: z.string().optional(),
-  typ: UploadDokumentTypeSchema,
-  file: z.file().min(1),
-  signaturdatei: z
-    .file()
-    .optional()
-    .transform((file) => (file?.size ? file : undefined))
-    .refine((file) => !file || isSignaturdatei(file)),
-});
+export const DokumentUploadInputSchema = z
+  .object({
+    einreichungId: z.string().optional(),
+    typ: UploadDokumentTypeSchema,
+    file: z.file().min(1),
+    signaturdatei: z
+      .file()
+      .optional()
+      .transform((file) => (file?.size ? file : undefined))
+      .refine((file) => !file || isSignaturdatei(file)),
+  })
+  // Anlagen may be any file, only the Schriftstück is limited to PDF and DOCX
+  .refine(
+    ({ typ, file }) => typ !== "SCHRIFTSTUECK" || isSchriftstueckDatei(file),
+    {
+      path: ["file"],
+    },
+  );
 
 export function buildUploadResultData(formData: FormData) {
   return { formType: "upload", typ: formData.get("typ") } as const;

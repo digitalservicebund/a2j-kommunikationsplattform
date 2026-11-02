@@ -69,6 +69,42 @@ describe("einreichungDokumentActions", () => {
       expectRedirect(response, "/verfahren/v-1");
     });
 
+    it.each([
+      ["a signature", new File(["signature"], "signatur.p7s")],
+      [
+        "an image named like a PDF",
+        new File(["png"], "a.pdf", { type: "image/png" }),
+      ],
+    ])("rejects %s as the Schriftstück", async (_, file) => {
+      const result = await handleDokumentUpload(
+        buildFormData({ einreichungId: "e-1", typ: "SCHRIFTSTUECK", file }),
+        context,
+      );
+
+      expect(result).toMatchObject({
+        data: {
+          status: "invalid",
+          fieldErrors: { file: [expect.any(String)] },
+        },
+      });
+      expect(mocks.uploadDokumentWithSignaturdatei).not.toHaveBeenCalled();
+    });
+
+    it("accepts any file as an Anlage", async () => {
+      const image = new File(["png"], "foto.png", { type: "image/png" });
+
+      const response = await handleDokumentUpload(
+        buildFormData({ einreichungId: "e-1", typ: "ANHANG", file: image }),
+        context,
+      );
+
+      expect(mocks.uploadDokumentWithSignaturdatei).toHaveBeenCalledWith(
+        authSession,
+        expect.objectContaining({ typ: "ANHANG", file: expect.any(File) }),
+      );
+      expectRedirect(response, "/verfahren/v-1");
+    });
+
     it("rejects a Signaturdatei that isn't a detached signature", async () => {
       const result = await handleDokumentUpload(
         buildFormData({

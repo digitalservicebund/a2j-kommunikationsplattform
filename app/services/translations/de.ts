@@ -81,6 +81,7 @@ export const de = {
         // fix for larger uploads is live (the API currently refuses files
         // over 100 MiB)
         hint: "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
+        anhangHint: "Maximale Dateigröße ist 104 MB.",
         signaturdatei: {
           label: "Zugehörige Signaturdatei (optional)",
           hint: "Die Signatur zur oben gewählten Datei. Erlaubte Formate: P7S, PKCS7, P7. Maximale Dateigröße ist 104 MB.",

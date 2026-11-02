@@ -74,7 +74,16 @@ describe("VerfahrenDokumentUploadForm", () => {
     ).toEqual(["SCHRIFTSTUECK", "ANHANG"]);
   });
 
-  it("limits the Dokument to PDF and DOCX and its Signaturdatei to signatures", async () => {
+  it("lets an Anlage be any file", async () => {
+    const { findByRole, getByLabelText, getByText } = renderForm();
+
+    fireEvent.click(await findByRole("radio", { name: "Anlage" }));
+
+    expect(getByLabelText("Datei hochladen")).not.toHaveAttribute("accept");
+    expect(getByText("Maximale Dateigröße ist 104 MB.")).toBeInTheDocument();
+  });
+
+  it("limits the Schriftstück to PDF and DOCX and its Signaturdatei to signatures", async () => {
     const { findByLabelText } = renderForm();
 
     const dokumentInput = await findByLabelText("Datei hochladen");

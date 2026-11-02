@@ -6,6 +6,10 @@ import InputFile from "~/components/InputFile";
 import InputRadio from "~/components/InputRadio";
 import type { UploadDokumentType } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import {
+  SCHRIFTSTUECK_EXTENSIONS,
+  SCHRIFTSTUECK_MIME_TYPES,
+} from "~/domains/verfahren/services/isSchriftstueckDatei";
+import {
   SIGNATURDATEI_EXTENSIONS,
   SIGNATURDATEI_MIME_TYPES,
 } from "~/domains/verfahren/services/isSignaturdatei";
@@ -19,13 +23,9 @@ const DOKUMENT_TYPES: readonly UploadDokumentType[] = [
   "ANHANG",
 ];
 
-const ACCEPTED_FILE_TYPES = [
-  // Word
-  ".docx",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  // PDF
-  ".pdf",
-  "application/pdf",
+const ACCEPTED_SCHRIFTSTUECK_TYPES = [
+  ...SCHRIFTSTUECK_EXTENSIONS,
+  ...SCHRIFTSTUECK_MIME_TYPES,
 ].join(",");
 
 const ACCEPTED_SIGNATURDATEI_TYPES = [
@@ -72,6 +72,8 @@ export default function VerfahrenDokumentUploadForm({
   const isUploading =
     navigation.state !== "idle" &&
     navigation.formData?.get("formType") === "upload";
+
+  const isSchriftstueck = typ === "SCHRIFTSTUECK";
 
   const isTypUnavailable = (option: UploadDokumentType) =>
     option === "SCHRIFTSTUECK" && hasSchriftstueck;
@@ -134,8 +136,8 @@ export default function VerfahrenDokumentUploadForm({
         id="dokument-upload-file"
         name="file"
         label={t.shared.form.uploadDokument.label}
-        hint={labels.hint}
-        accept={ACCEPTED_FILE_TYPES}
+        hint={isSchriftstueck ? labels.hint : labels.anhangHint}
+        accept={isSchriftstueck ? ACCEPTED_SCHRIFTSTUECK_TYPES : undefined}
         error={showFileError ? t.shared.form.uploadDokument.error : undefined}
         aria-disabled={disabled}
         onClick={(event) => disabled && event.preventDefault()}
