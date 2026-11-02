@@ -69,13 +69,15 @@ export class VerfahrenDokumentePage extends PageObject {
       : t.shared.dokumentType[typ];
   }
 
-  // Listed with its type, e.g. "Anlage · 12 KB · …"
+  // The type is an icon, named by its title
   #uploadedDokument(typ: UploadDokumentType, filename: string) {
     return this.page
       .getByRole("list", { name: t.shared.form.uploadedDokumenteListLabel })
       .getByRole("listitem")
       .filter({ hasText: filename })
-      .filter({ hasText: this.#typLabel(typ) });
+      .filter({
+        has: this.page.getByTitle(this.#typLabel(typ), { exact: true }),
+      });
   }
 
   get nextButton() {

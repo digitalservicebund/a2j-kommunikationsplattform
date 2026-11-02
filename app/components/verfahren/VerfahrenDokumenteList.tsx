@@ -1,3 +1,4 @@
+import { clsx } from "clsx";
 import { partition } from "es-toolkit";
 import { Form, useActionData } from "react-router";
 import Alert from "~/components/Alert";
@@ -74,7 +75,12 @@ export default function VerfahrenDokumenteList({
           dokumentErgebnis === "ROT" || dokumentErgebnis === "GELB";
 
         return (
-          <li key={dokument.id} className="kern-gap-sm flex w-full flex-col">
+          <li
+            key={dokument.id}
+            className={clsx("kern-gap-sm flex w-full flex-col", {
+              "kern-pb-sm": deleteDokumentError || dokumentHasValidationIssues,
+            })}
+          >
             <VerfahrenDokumentItem
               dokument={dokument}
               verfahrenId={verfahrenId}

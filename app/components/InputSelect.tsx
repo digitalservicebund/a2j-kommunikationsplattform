@@ -9,7 +9,7 @@ interface InputSelectProps {
   id: string;
   // ReactNode, e.g. to add visually hidden context to the accessible name
   label: ReactNode;
-  // Keeps the label for screen readers only, e.g. in a table-like row
+  // Keeps the label for screen readers only, e.g. in a compact row
   hideLabel?: boolean;
   hint?: string;
   error?: string;

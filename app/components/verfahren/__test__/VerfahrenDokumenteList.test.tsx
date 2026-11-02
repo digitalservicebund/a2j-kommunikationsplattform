@@ -213,7 +213,9 @@ describe("VerfahrenDokumenteList", () => {
         Component: () => (
           <VerfahrenDokumenteList
             verfahrenId="v-1"
-            dokumente={[buildDokument({ typ: "SCHRIFTSTUECK" })]}
+            dokumente={[
+              buildDokument({ typ: "SCHRIFTSTUECK", anzeigename: "k.pdf" }),
+            ]}
             einreichung={klageeinreichung}
             schriftstueckLabel="Klageschrift"
           />
@@ -222,7 +224,8 @@ describe("VerfahrenDokumenteList", () => {
     ]);
     render(<Stub initialEntries={["/verfahren/v-1"]} />);
 
-    expect(screen.getByRole("listitem")).toHaveTextContent("Klageschrift");
+    expect(screen.getByTitle("Klageschrift")).toHaveTextContent("Klageschrift");
+    expect(screen.queryByText("Schriftstück")).not.toBeInTheDocument();
   });
 
   it("lets each Dokument be opened and downloaded", () => {
