@@ -83,6 +83,24 @@ describe("VerfahrenDokumentUploadForm", () => {
     expect(getByText("Maximale Dateigröße ist 104 MB.")).toBeInTheDocument();
   });
 
+  it("clears the selected files when the type changes", async () => {
+    const { findByLabelText, getByRole, getByLabelText } = renderForm();
+    const labels = ["Datei hochladen", "Zugehörige Signaturdatei (optional)"];
+
+    fireEvent.change(await findByLabelText(labels[0]), {
+      target: { files: [pdfFile] },
+    });
+    fireEvent.change(getByLabelText(labels[1]), {
+      target: { files: [new File(["signature"], "signatur.p7s")] },
+    });
+    fireEvent.click(getByRole("radio", { name: "Anlage" }));
+
+    for (const label of labels) {
+      const input = getByLabelText(label) as HTMLInputElement;
+      expect(input.files).toHaveLength(0);
+    }
+  });
+
   it("limits the Schriftstück to PDF and DOCX and its Signaturdatei to signatures", async () => {
     const { findByLabelText } = renderForm();
 

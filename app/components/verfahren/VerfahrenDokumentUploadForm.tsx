@@ -133,6 +133,8 @@ export default function VerfahrenDokumentUploadForm({
       </fieldset>
 
       <InputFile
+        // Key type would clear selection after type change
+        key={`file-${typ}`}
         id="dokument-upload-file"
         name="file"
         label={t.shared.form.uploadDokument.label}
@@ -144,6 +146,7 @@ export default function VerfahrenDokumentUploadForm({
       />
 
       <InputFile
+        key={`signaturdatei-${typ}`}
         id="dokument-upload-signaturdatei"
         name="signaturdatei"
         label={labels.signaturdatei.label}
