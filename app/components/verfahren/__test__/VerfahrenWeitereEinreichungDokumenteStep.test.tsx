@@ -142,6 +142,25 @@ describe("VerfahrenWeitereEinreichungDokumenteStep", () => {
     ).toBeDisabled();
   });
 
+  it("disables submitting while only Anlagen have been uploaded", () => {
+    renderSection(
+      buildWeitereEinreichung([
+        {
+          ...buildDokument({
+            validierungslaufStatus: "ABGESCHLOSSEN",
+            ergebnis: "GRUEN",
+            fehler: [],
+          }),
+          typ: "ANHANG",
+        },
+      ]),
+    );
+
+    expect(
+      screen.getByRole("button", { name: submitButtonName }),
+    ).toBeDisabled();
+  });
+
   it("disables submitting and shows the checking badge while a Dokument is being validated", () => {
     renderSection(
       buildWeitereEinreichung([

@@ -49,7 +49,11 @@ import { AuthSession } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
 import { parseActionFormData } from "~/utils/actionInput";
-import { actionResultFromApiError, actionSuccess } from "~/utils/actionResult";
+import {
+  actionErrorResponse,
+  actionResultFromApiError,
+  actionSuccess,
+} from "~/utils/actionResult";
 import { rethrowApiNotFoundAsRouteError } from "~/utils/apiError";
 import { dispatchFormAction } from "~/utils/dispatchFormAction";
 
@@ -206,10 +210,17 @@ async function handleEinreichen(
   };
 
   try {
-    await submitEinreichungIfNeeded(authSession, {
+    const result = await submitEinreichungIfNeeded(authSession, {
       verfahrenId,
       einreichungId,
     });
+
+    if (result === "missingSchriftstueck") {
+      return actionErrorResponse(de.shared.form.errors.einreichungFailed, {
+        data: actionErrorResultData,
+        status: 400,
+      });
+    }
 
     return redirect(`/verfahren/${verfahrenId}`);
   } catch (error) {

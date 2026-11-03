@@ -25,6 +25,7 @@ import {
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/services/beteiligteByRole";
+import hasSchriftstueck from "~/domains/verfahren/services/hasSchriftstueck";
 import { useTranslations } from "~/services/translations/context";
 
 export type EinreichungDetails = {
@@ -270,7 +271,11 @@ export default function VerfahrenDraftKlageeinreichungSection({
                     appearance="primary"
                     type="submit"
                     aria-describedby="card-current-einreichung-heading"
-                    disabled={isSubmitting === "submitting" || isValidating}
+                    disabled={
+                      isSubmitting === "submitting" ||
+                      isValidating ||
+                      !hasSchriftstueck(draftKlageeinreichung.dokumente)
+                    }
                     label={
                       translations.routes.verfahrenId.draftKlageeinreichung
                         .proceduralSteps.einreichung.submit

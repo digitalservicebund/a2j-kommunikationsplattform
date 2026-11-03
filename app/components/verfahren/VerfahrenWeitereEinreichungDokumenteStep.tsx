@@ -4,6 +4,7 @@ import Button from "~/components/Button";
 import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
 import type { EinreichungDetails } from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
 import VerfahrenEinreichungDokumente from "~/components/verfahren/VerfahrenEinreichungDokumente";
+import hasSchriftstueck from "~/domains/verfahren/services/hasSchriftstueck";
 import { isValidierungslaufRunning } from "~/domains/verfahren/services/validierungslauf";
 import { useTranslations } from "~/services/translations/context";
 
@@ -24,9 +25,6 @@ export default function VerfahrenWeitereEinreichungDokumenteStep({
 
   const isValidating = dokumente.some((dokument) =>
     isValidierungslaufRunning(dokument.validierungsstatus),
-  );
-  const hasUploadedDokumente = dokumente.some(
-    (dokument) => dokument.typ !== "XJUSTIZ",
   );
 
   const { formRef, isSubmitting, error, handleSubmit } =
@@ -66,7 +64,7 @@ export default function VerfahrenWeitereEinreichungDokumenteStep({
             isDisabled ||
             isSubmitting === "submitting" ||
             isValidating ||
-            !hasUploadedDokumente
+            !hasSchriftstueck(dokumente)
           }
           label={labels.submit}
         />
