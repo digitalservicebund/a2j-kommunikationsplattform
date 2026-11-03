@@ -1,0 +1,8 @@
+[tools]
+1password-cli = "latest"
+lefthook = "2"
+npm = "12"
+
+[settings]
+lockfile = true
+idiomatic_version_file_enable_tools = ["node"]

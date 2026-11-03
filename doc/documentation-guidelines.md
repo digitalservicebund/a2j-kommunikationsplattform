@@ -35,6 +35,7 @@ This document contains guidelines regarding the technical documentation in this 
 - In each document, open with a **one-sentence purpose statement** right after the title, e.g., "This document explains…" or "This document gives an overview of…".
 
 - Use **"Title Case" for headings**, and prefer "&" to "and".
+  - As an exception, Architecture Decision Record titles use "Sentence case" instead, for consistency with the `adr-tools` standard format.
 
 - Consider ending documents with a **"Further Reading" section** with links to related docs.
 
@@ -48,4 +49,4 @@ This document contains guidelines regarding the technical documentation in this 
 
 ## Links
 
-- Within paragraphs, **prefer reference-style links** (e.g., `[React][react]`) to inline ones, with the definitions (e.g., `[react]: https://react.dev/`) placed at the end of the first section that uses them. This makes it easier to read documents in their plain-text form.
+- Within paragraphs, **prefer reference-style links** (e.g., `[React][react]`) to inline ones, with the definitions (e.g., `[react]: https://react.dev/`) placed at the end of the first section that uses them. This makes it easier to read documents in their plain-text form. Inline links to other files in the repository are fine as long as they are short (e.g., `See the [architecture overview](../architecture.md)`).
