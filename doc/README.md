@@ -20,3 +20,7 @@ This folder contains the technical documentation for the _Kommunikationsplattfor
 - [Contributing](../CONTRIBUTING.md)
 - [Code of Conduct](../CODE_OF_CONDUCT.md)
 - [Security Policy](../SECURITY.md)
+
+## Meta
+
+- [Documentation Guidelines](./documentation-guidelines.md)
