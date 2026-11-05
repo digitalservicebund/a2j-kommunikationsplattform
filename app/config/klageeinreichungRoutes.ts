@@ -3,7 +3,7 @@
 export const KLAGEEINREICHUNG_PATHS = {
   gerichtAuswahl: "/verfahren/neu/gericht-auswahl",
   dokumente: "/verfahren/neu/dokumente",
-  verfahrendetails: "/verfahren/neu/verfahrendetails",
+  details: "/verfahren/neu/details",
   beteiligte: "/verfahren/neu/beteiligte",
 } as const;
 

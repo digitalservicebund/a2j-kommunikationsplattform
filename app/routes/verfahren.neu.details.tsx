@@ -25,7 +25,7 @@ import {
   actionResultFromApiError,
   actionResultFromSchemaParsingError,
 } from "~/utils/actionResult";
-import { Route } from "./+types/verfahren.neu.verfahrendetails";
+import { Route } from "./+types/verfahren.neu.details";
 
 // this route requires users to be logged in
 export const middleware = [authMiddleware];

@@ -533,7 +533,7 @@ export default function VerfahrenNeuBeteiligte({
                   {/* Navigtion Buttons (Top) */}
                   <div className="kern-gap-md flex">
                     <Link
-                      to={buildKlageeinreichungPath("verfahrendetails", {
+                      to={buildKlageeinreichungPath("details", {
                         verfahren: verfahren.id,
                       })}
                       className="kern-btn kern-btn--secondary"
@@ -609,7 +609,7 @@ export default function VerfahrenNeuBeteiligte({
                   <div className="kern-gap-md flex flex-wrap justify-end">
                     <div className="kern-gap-md flex">
                       <Link
-                        to={buildKlageeinreichungPath("verfahrendetails", {
+                        to={buildKlageeinreichungPath("details", {
                           verfahren: verfahren.id,
                         })}
                         className="kern-btn kern-btn--secondary"

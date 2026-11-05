@@ -134,7 +134,7 @@ export class VerfahrenDokumentePage extends PageObject {
 
 export class VerfahrenDetailsStepPage extends PageObject {
   constructor(page: Page) {
-    super(page, "/verfahren/neu/verfahrendetails");
+    super(page, "/verfahren/neu/details");
   }
 
   get verfahrensgegenstandInput() {

@@ -38,11 +38,11 @@ vi.mock("~/middleware/auth.server", () => ({
   authMiddleware: vi.fn(),
 }));
 
-import { action, loader } from "../verfahren.neu.verfahrendetails";
+import { action, loader } from "../verfahren.neu.details";
 
 const authSession = makeAuthSession();
 const context = { get: () => authSession, set: () => {} };
-const BASE_URL = "http://localhost:3000/verfahren/neu/verfahrendetails";
+const BASE_URL = "http://localhost:3000/verfahren/neu/details";
 
 function callLoader(search: string) {
   return loader({
@@ -79,7 +79,7 @@ function mockDraft(dokumente: ReturnType<typeof makeDokument>[]) {
   return verfahren;
 }
 
-describe("/verfahren/neu/verfahrendetails", () => {
+describe("/verfahren/neu/details", () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });

@@ -17,7 +17,7 @@ export const breadcrumbConfig: BreadcrumbConfig = {
     label: dictionaries.de.breadcrumb.verfahrenNeu,
     parent: "/",
   },
-  "/verfahren/neu/verfahrendetails": {
+  "/verfahren/neu/details": {
     label: dictionaries.de.breadcrumb.verfahrenNeu,
     parent: "/",
   },

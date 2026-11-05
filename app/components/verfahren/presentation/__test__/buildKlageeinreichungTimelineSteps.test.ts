@@ -63,7 +63,7 @@ describe("buildKlageeinreichungTimelineSteps", () => {
           stepTranslations.detailsAdded.rubrum,
           stepTranslations.detailsAdded.gericht,
         ].join(", "),
-        editTo: "/verfahren/neu/verfahrendetails?verfahren=123",
+        editTo: "/verfahren/neu/details?verfahren=123",
       },
       // Klageschrift
       {
@@ -156,7 +156,7 @@ describe("buildKlageeinreichungTimelineSteps", () => {
           stepTranslations.detailsAdded.klaeger,
           stepTranslations.detailsAdded.rubrum,
         ].join(", "),
-        editTo: "/verfahren/neu/verfahrendetails?verfahren=123",
+        editTo: "/verfahren/neu/details?verfahren=123",
       },
       // Klageschrift
       {
@@ -205,7 +205,7 @@ describe("buildKlageeinreichungTimelineSteps", () => {
           stepTranslations.detailsAdded.rubrum,
           stepTranslations.detailsAdded.gericht,
         ].join(", "),
-        editTo: "/verfahren/neu/verfahrendetails?verfahren=123",
+        editTo: "/verfahren/neu/details?verfahren=123",
       },
       // Klageschrift
       {

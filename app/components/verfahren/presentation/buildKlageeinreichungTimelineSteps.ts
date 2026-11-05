@@ -80,7 +80,7 @@ export function buildKlageeinreichungTimelineSteps({
       .filter((label): label is string => Boolean(label))
       .join(", "),
     ...(isDraftEinreichungStatus(einreichungStatus) && {
-      editTo: buildKlageeinreichungPath("verfahrendetails", {
+      editTo: buildKlageeinreichungPath("details", {
         verfahren: verfahrenId,
       }),
     }),
