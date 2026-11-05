@@ -4,12 +4,15 @@ import { useRevalidator } from "react-router";
 // Poll interval while e.g. a Validierungslauf is still running or a Beleg
 // hasn't been finalized yet, so badges/alerts pick up the result without the
 // user having to reload the page manually.
-const POLL_INTERVAL_MS = 5_000;
+const DEFAULT_POLL_INTERVAL_MS = 5_000;
 
 /**
- * Revalidates the page's loaders periodically while `isPending` is true.
+ * Revalidates the page's loaders every `intervalMs` while `isPending` is true.
  */
-export function useRevalidateWhilePending(isPending: boolean) {
+export function useRevalidateWhilePending(
+  isPending: boolean,
+  intervalMs = DEFAULT_POLL_INTERVAL_MS,
+) {
   const revalidator = useRevalidator();
 
   useEffect(() => {
@@ -21,8 +24,8 @@ export function useRevalidateWhilePending(isPending: boolean) {
       if (revalidator.state === "idle") {
         void revalidator.revalidate();
       }
-    }, POLL_INTERVAL_MS);
+    }, intervalMs);
 
     return () => clearInterval(intervalId);
-  }, [isPending, revalidator]);
+  }, [isPending, intervalMs, revalidator]);
 }
