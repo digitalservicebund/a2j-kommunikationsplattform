@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 
 import { describe, expect, it } from "vitest";
+import { makeGericht } from "~tests/utils/factories/gericht";
 import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
 import VerfahrenDetailsFormSection from "../VerfahrenDetailsFormSection";
 
-const gericht = { id: "gericht-1", wert: "Amtsgericht Bremen" };
+const gericht = makeGericht();
 
 describe("VerfahrenDetailsFormSection", () => {
   it("renders the verfahren detail fields with the given values", () => {
@@ -35,7 +36,7 @@ describe("VerfahrenDetailsFormSection", () => {
     );
 
     const select = getByLabelText("Empfängergericht") as HTMLSelectElement;
-    expect(select.value).toBe("gericht-1");
+    expect(select.value).toBe(gericht.id);
     expect(select).toHaveAttribute("aria-disabled", "true");
     expect(getAllByRole("option")).toHaveLength(1);
   });
