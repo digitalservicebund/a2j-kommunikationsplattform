@@ -126,12 +126,14 @@ describe("InputSelect", () => {
           id="select-a"
           label="A"
           error="Fehler A"
+          aria-describedby="select-a-error"
         />
         <InputSelect
           {...defaultProps}
           id="select-b"
           label="B"
           error="Fehler B"
+          aria-describedby="select-b-error"
         />
       </>,
     );
@@ -146,5 +148,32 @@ describe("InputSelect", () => {
     const select = screen.getByRole("combobox");
     expect(select).toHaveAttribute("aria-required", "true");
     expect(select).not.toHaveAttribute("required");
+  });
+
+  it.each([
+    [true, "true"],
+    ["true", "true"],
+    ["false", "false"],
+  ] as const)("passes aria-required=%j on", (ariaRequired, expected) => {
+    renderWithTestTranslations(
+      <InputSelect {...defaultProps} aria-required={ariaRequired} />,
+    );
+
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "aria-required",
+      expected,
+    );
+  });
+
+  it("passes other select attributes on", async () => {
+    const onBlur = vi.fn();
+    renderWithTestTranslations(
+      <InputSelect {...defaultProps} data-testid="select" onBlur={onBlur} />,
+    );
+
+    const select = screen.getByTestId("select");
+    select.focus();
+    await userEvent.tab();
+    expect(onBlur).toHaveBeenCalled();
   });
 });

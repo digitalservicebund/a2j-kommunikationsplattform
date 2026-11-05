@@ -1,11 +1,15 @@
-import { ChangeEvent, ReactNode } from "react";
+import { clsx } from "clsx";
+import { ReactNode, SelectHTMLAttributes } from "react";
 
 export interface InputSelectOption {
   value: string;
   label: string;
 }
 
-interface InputSelectProps {
+export interface InputSelectProps extends Omit<
+  SelectHTMLAttributes<HTMLSelectElement>,
+  "value" | "defaultValue" | "children" | "name"
+> {
   id: string;
   // ReactNode, e.g. to add visually hidden context to the accessible name
   label: ReactNode;
@@ -15,11 +19,8 @@ interface InputSelectProps {
   error?: string;
   options: InputSelectOption[];
   placeholder?: string;
-  disabled?: boolean;
   selectedValue: string;
-  onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
   className?: string;
-  required?: boolean;
 }
 
 export default function InputSelect({
@@ -32,18 +33,21 @@ export default function InputSelect({
   placeholder,
   disabled,
   selectedValue,
-  onChange,
-  className = "",
+  className,
   required,
+  "aria-required": ariaRequired,
+  ...selectProps
 }: Readonly<InputSelectProps>) {
   const errorId = `${id}-error`;
 
   return (
     <div
-      className={`kern-form-input ${className} ${error && "kern-form-input--error"}`}
+      className={clsx("kern-form-input", className, {
+        "kern-form-input--error": error,
+      })}
     >
       <label
-        className={`kern-label ${hideLabel ? "kern-sr-only" : ""}`}
+        className={clsx("kern-label", { "kern-sr-only": hideLabel })}
         htmlFor={id}
       >
         {label}
@@ -57,15 +61,14 @@ export default function InputSelect({
 
       <div className="kern-form-input__select-wrapper">
         <select
-          className={`kern-form-input__select ${error && "kern-form-input__select--error"}`}
+          {...selectProps}
+          className={clsx("kern-form-input__select", {
+            "kern-form-input__select--error": error,
+          })}
           name={id}
           id={id}
           value={selectedValue}
-          onChange={onChange}
-          aria-required={required || undefined}
-          aria-describedby={[hint && `select-hint-${id}`, error && errorId]
-            .filter(Boolean)
-            .join(" ")}
+          aria-required={required || ariaRequired || undefined}
           aria-disabled={disabled} // using aria-disabled as recommended in https://www.kern-ux.de/komponenten/form-inputs/#disabled-attribut
         >
           {placeholder && (
