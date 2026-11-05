@@ -35,4 +35,4 @@ export type Verfahren = z.infer<typeof VerfahrenSchema>;
  * Verfahrensgegenstand every new Verfahren starts with; the user can change
  * it once the Verfahren has been created.
  */
-export const VERFAHRENSGEGENSTAND_ZAHLUNGSKLAGE = "Zahlungsklage";
+export const DEFAULT_VERFAHRENSGEGENSTAND = "Zahlungsklage";

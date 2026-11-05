@@ -24,7 +24,7 @@ import loadKlageeinreichungDraft, {
 } from "~/domains/verfahren/application/loadKlageeinreichungDraft.server";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
 import { KLAGEEINREICHUNG_NAME } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
-import { VERFAHRENSGEGENSTAND_ZAHLUNGSKLAGE } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
+import { DEFAULT_VERFAHRENSGEGENSTAND } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import { uploadDokumentWithSignaturdatei } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
@@ -124,7 +124,7 @@ async function handleFirstUpload(
     const verfahren = await createVerfahren(
       authSession,
       VerfahrenAendernInputSchema.parse({
-        verfahrensgegenstand: VERFAHRENSGEGENSTAND_ZAHLUNGSKLAGE,
+        verfahrensgegenstand: DEFAULT_VERFAHRENSGEGENSTAND,
         kurzrubrum: null,
         gerichtId,
         beteiligungen: null,
@@ -341,7 +341,7 @@ export default function VerfahrenNeuDokumente({
                 </Link>
                 {verfahrenId && hasKlageschrift ? (
                   <Link
-                    to={buildKlageeinreichungPath("verfahrendetails", {
+                    to={buildKlageeinreichungPath("details", {
                       verfahren: verfahrenId,
                     })}
                     className="kern-btn kern-btn--primary"
