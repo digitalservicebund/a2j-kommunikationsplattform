@@ -33,7 +33,8 @@ test.describe("Verfahren creation", () => {
     await gerichtAuswahl.expectToBeHere();
     await expectNoA11yViolations(page);
 
-    // Amtsgericht Bremen supports both KomPla and the Eingabesystem
+    // Temporary test setup: the placeholder ZOV list includes Amtsgericht
+    // Bremen, so both options show. Bremen is not part of the KomPla pilot.
     await gerichtAuswahl.selectEmpfaengergericht("Amtsgericht Bremen");
     await expect(gerichtAuswahl.komplaButton).toBeVisible();
     await expect(gerichtAuswahl.eingabesystemButton).toBeVisible();

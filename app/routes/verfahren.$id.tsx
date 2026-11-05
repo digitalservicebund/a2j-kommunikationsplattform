@@ -347,8 +347,6 @@ export default function VerfahrenId() {
       (dokument) => dokument.validierungsstatus,
     ) ?? [];
 
-  console.log("einreichungen", einreichungen);
-
   const validierungPresentation = draftKlageeinreichung
     ? resolveEinreichungPresentation(
         draftKlageeinreichung.einreichung.einreichungsStatus,
