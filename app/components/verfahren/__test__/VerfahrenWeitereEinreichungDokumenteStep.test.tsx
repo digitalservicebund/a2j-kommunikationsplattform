@@ -103,13 +103,16 @@ describe("VerfahrenWeitereEinreichungDokumenteStep", () => {
   it("offers one upload area for the Dokument and its Signaturdatei", () => {
     renderSection(buildWeitereEinreichung([]));
 
-    const typ = screen.getByRole("group", { name: "Art des Dokuments" });
-    for (const name of ["Schriftstück", "Anlage"]) {
+    const { dokumentType, form } = getTestTranslations().shared;
+    const typ = screen.getByRole("group", {
+      name: form.dokumentUpload.typLegend,
+    });
+    for (const name of [dokumentType.SCHRIFTSTUECK, dokumentType.ANHANG]) {
       expect(within(typ).getByRole("radio", { name })).toBeInTheDocument();
     }
     for (const label of [
-      "Datei hochladen",
-      "Zugehörige Signaturdatei (optional)",
+      form.uploadDokument.label,
+      form.dokumentUpload.signaturdatei.label,
     ]) {
       expect(screen.getByLabelText(label)).not.toHaveAttribute(
         "aria-disabled",
