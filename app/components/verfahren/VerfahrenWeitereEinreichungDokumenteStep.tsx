@@ -1,7 +1,7 @@
 import { Form } from "react-router";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
-import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
+import { useEinreichungSubmission } from "~/components/hooks/useEinreichungSubmission";
 import type { EinreichungDetails } from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
 import VerfahrenEinreichungDokumente from "~/components/verfahren/VerfahrenEinreichungDokumente";
 import hasSchriftstueck from "~/domains/verfahren/services/hasSchriftstueck";
@@ -28,7 +28,7 @@ export default function VerfahrenWeitereEinreichungDokumenteStep({
   );
 
   const { formRef, isSubmitting, error, handleSubmit } =
-    useEinreichenSubmission({
+    useEinreichungSubmission({
       isValidating,
       isBelegPending: false,
     });

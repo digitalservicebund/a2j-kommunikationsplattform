@@ -9,14 +9,14 @@ type UseEinreichenSubmissionOptions = {
 };
 
 /**
- * useEinreichenSubmission custom hook
+ * useEinreichungSubmission custom hook
  *
  * Bundles the client-side submit flow for the "Klage einreichen" Form
  * (fetch-then-real-submit, so failures surface without a full navigation)
  * together with the background polling that keeps the page's readiness/Beleg
  * data fresh while a Validierungslauf or Beleg is still in progress.
  */
-export function useEinreichenSubmission({
+export function useEinreichungSubmission({
   isValidating,
   isBelegPending,
 }: UseEinreichenSubmissionOptions) {

@@ -5,7 +5,7 @@ import {
   useLoaderData,
 } from "react-router";
 import z from "zod";
-import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
+import { useEinreichungSubmission } from "~/components/hooks/useEinreichungSubmission";
 import { PageMetadata } from "~/components/PageMetadata";
 import { resolveEinreichungPresentation } from "~/components/verfahren/presentation/validierungPresentation";
 import VerfahrenDraftKlageeinreichungSection, {
@@ -364,7 +364,7 @@ export default function VerfahrenId() {
     validationErgebnis === "ROT" || validationErgebnis === "GELB";
 
   const { formRef, isSubmitting, error, handleSubmit } =
-    useEinreichenSubmission({
+    useEinreichungSubmission({
       isValidating,
       isBelegPending,
     });
