@@ -3,17 +3,17 @@ import VerfahrenSichtbarkeitSelect from "~/components/verfahren/VerfahrenSichtba
 import type { Dokument } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import type { ActionResult } from "~/utils/actionResult";
 
-type VerfahrenDokumentSichtbarkeitFormProps = {
+type VerfahrenDokumentSichtbarkeitSelectProps = {
   dokument: Dokument;
   einreichungId: string;
   disabled: boolean;
 };
 
-export default function VerfahrenDokumentSichtbarkeitForm({
+export default function VerfahrenDokumentSichtbarkeitSelect({
   dokument,
   einreichungId,
   disabled,
-}: Readonly<VerfahrenDokumentSichtbarkeitFormProps>) {
+}: Readonly<VerfahrenDokumentSichtbarkeitSelectProps>) {
   const fetcher = useFetcher<ActionResult<{ formType: string }>>();
   const isSaving = fetcher.state !== "idle";
   const pendingSichtbarkeitAlle = fetcher.formData?.get("sichtbarkeitAlle");

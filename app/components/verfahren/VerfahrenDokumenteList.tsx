@@ -5,7 +5,7 @@ import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import { resolveDokumentPresentation } from "~/components/verfahren/presentation/validierungPresentation";
 import VerfahrenDokumentItem from "~/components/verfahren/VerfahrenDokumentItem";
-import VerfahrenDokumentSichtbarkeitForm from "~/components/verfahren/VerfahrenDokumentSichtbarkeitForm";
+import VerfahrenDokumentSichtbarkeitSelect from "~/components/verfahren/VerfahrenDokumentSichtbarkeitSelect";
 import type { DokumentWithValidierungsstatus } from "~/domains/verfahren/application/loadDokumenteWithValidierungsstatus.server";
 import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
@@ -88,7 +88,7 @@ export default function VerfahrenDokumenteList({
               typLabel={getTypLabel(dokument)}
               validierungsstatus={dokument.validierungsstatus}
               sichtbarkeit={
-                <VerfahrenDokumentSichtbarkeitForm
+                <VerfahrenDokumentSichtbarkeitSelect
                   dokument={dokument}
                   einreichungId={einreichung.id}
                   disabled={disabled}

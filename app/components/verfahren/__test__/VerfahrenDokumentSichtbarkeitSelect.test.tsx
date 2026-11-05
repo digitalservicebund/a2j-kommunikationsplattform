@@ -5,7 +5,7 @@ import { createRoutesStub } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import { makeDokument } from "~tests/utils/factories/dokument";
 import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
-import VerfahrenDokumentSichtbarkeitForm from "../VerfahrenDokumentSichtbarkeitForm";
+import VerfahrenDokumentSichtbarkeitSelect from "../VerfahrenDokumentSichtbarkeitSelect";
 
 const verfahrenId = "11111111-1111-1111-1111-111111111111";
 
@@ -19,7 +19,7 @@ function renderForm({
     {
       path: "/verfahren/neu/dokumente",
       Component: () => (
-        <VerfahrenDokumentSichtbarkeitForm
+        <VerfahrenDokumentSichtbarkeitSelect
           dokument={makeDokument({
             id: "dok-1",
             anzeigename: "a.pdf",
@@ -48,7 +48,7 @@ function renderForm({
   };
 }
 
-describe("VerfahrenDokumentSichtbarkeitForm", () => {
+describe("VerfahrenDokumentSichtbarkeitSelect", () => {
   it("shows the Dokument's current Sichtbarkeit", async () => {
     const { findByLabelText } = renderForm();
 
