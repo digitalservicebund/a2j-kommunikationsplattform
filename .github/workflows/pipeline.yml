@@ -29,14 +29,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Setup Node
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v6
+      - name: Install Node.js
+        uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
         with:
-          node-version-file: .nvmrc
-          cache: npm
-
-      - name: Disable npm script execution
-        run: npm config set ignore-scripts true
+          minimum_release_age: 7d
+          install: true
+          install_args: "node npm"
 
       - name: Cache npm dependencies
         id: cache-npm-deps
@@ -170,13 +168,13 @@ jobs:
       contents: read
       security-events: write # trivy scan needs this
 
-  deploy-staging-stackit:
+  deploy-staging:
     name: Deploy to staging
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' }}
     permissions:
       contents: read
-    concurrency: deploy
+    concurrency: deploy # only one deployment at a time
     environment: staging
     needs: [build-and-push-image, vulnerability-scan]
     steps:
@@ -206,21 +204,19 @@ jobs:
     name: End-to-end tests (staging)
     runs-on: ubuntu-latest
     needs:
-      - deploy-staging-stackit
+      - deploy-staging
     permissions:
       contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Setup Node
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v6
+      - name: Install Node.js
+        uses: jdx/mise-action@f5be966e4a917d54244728e6a5fdcd1d93a35e6c # v5.2.6
         with:
-          node-version-file: .nvmrc
-          cache: npm
-
-      - name: Disable npm script execution
-        run: npm config set ignore-scripts true
+          minimum_release_age: 7d
+          install: true
+          install_args: "node npm"
 
       - name: Cache npm dependencies
         id: cache-npm-deps
@@ -275,6 +271,7 @@ jobs:
     name: Deploy prototype to GitHub Pages
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    concurrency: github-pages # only one deployment at a time
     permissions:
       contents: read
       id-token: write

@@ -37,7 +37,7 @@ The main target users of the KomPla frontend are members of the _**Anwaltschaft*
 - View the status of court proceedings (_Verfahren_)
 - Access communication by the court and the opposing party and respond to it
 
-Employees of the courts (**Gerichtsmitarbeitende**) usually interact with the KomPla only indirectly, through integrations of the API backend with their _E-Akte_ and, eventually, _Fachverfahren_ systems (see [Technical Landscape](#technical-landscape)). The one exception is updating the list of participants (_Beteiligte_) in a _Verfahren_, which for the time being _Gerichtsmitarbeitende_ will have to do both in their _Fachverfahren_ and the KomPla frontend due to the missing synchronization between the two.
+Employees of the courts (**Gerichtsmitarbeitende**) usually interact with the KomPla only indirectly, through integrations of the API backend with their _E-Akte_ and, eventually, _Fachverfahren_ systems (see [Technical Landscape](#technical-landscape)). The only exceptions are updating the list of participants (_Beteiligte_) in a _Verfahren_ and marking a _Verfahren_ as closed; for the time being, _Gerichtsmitarbeitende_ will have to make these changes both in their _Fachverfahren_ and the KomPla frontend due to the missing synchronization between the two.
 
 In the future, the KomPla may be opened up to general citizens so that plaintiffs (_Klagende_) and defendants (_Beklagte_) can access the communication concerning their _Verfahren_ directly. For now, though, there is no ability for them to log into the KomPla.
 

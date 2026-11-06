@@ -8,11 +8,12 @@ This folder contains the technical documentation for the _Kommunikationsplattfor
 ## Architecture
 
 - [Architecture Overview](./architecture.md)
-- [Authentication](./topic/authentication.md)
+- [Domain Model](./topics/domain-model.md)
+- [Authentication](./topics/authentication.md)
 
 ## Development
 
-- [Development Guide](./DEVELOPMENT.md)
+- [Development Guide](./development.md)
 - [Project Structure](./PROJECT_STRUCTURE.md)
 
 ## Misc
