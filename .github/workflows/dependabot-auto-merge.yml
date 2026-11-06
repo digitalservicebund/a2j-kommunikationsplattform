@@ -23,10 +23,10 @@ jobs:
           app-id: ${{ secrets.AUTO_MERGE_A2J_APP_CLIENT_ID }}
           private-key: ${{ secrets.AUTO_MERGE_A2J_APP_PRIVATE_KEY }}
 
-      - name: Auto-merge patch and minor updates
+      - name: Auto-merge if patch or minor version update
         if: |
           steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' ||
           steps.dependabot-metadata.outputs.update-type == 'version-update:semver-minor'
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: gh pr merge --auto --squash "${{ github.event.pull_request.html_url }}"
+        run: gh pr merge --squash "${{ github.event.pull_request.html_url }}"
