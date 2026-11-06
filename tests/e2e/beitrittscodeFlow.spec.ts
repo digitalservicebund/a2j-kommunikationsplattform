@@ -82,5 +82,6 @@ test.describe("Joining a Verfahren (Beitrittscode / Lift)", () => {
     await beitrittscodePage.submit();
 
     await beitrittscodePage.expectInvalidCodeFeedback();
+    await expectNoA11yViolations(page);
   });
 });
