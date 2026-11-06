@@ -152,13 +152,16 @@ See [`lefthook.yml`](../lefthook.yml) for the currently configured Git hooks.
 
 ### Testing the Container Build
 
-The KomPla frontend is deployed as an [OCI][oci] container image. Assuming you have the Docker CLI and a compatible container runtime installed (see the [prerequisites](#prerequisites)), you can build and run the image by running:
+The KomPla frontend is deployed as an [OCI][oci] container image. Assuming you have a Docker-compatible container runtime installed and running (see the [prerequisites](#prerequisites)), you can build and run the image as follows:
 
 ```sh
 npm run compose:up
 ```
 
 This command uses [Docker Compose][docker-compose] (installed by Mise) to run the container and expose it at <http://localhost:3000/>. The required secrets are injected using the 1Password CLI, just like with `npm run dev:op`.
+
+> [!note]
+> As `npm run compose:up` uses the same port as `npm run dev:op`, only one of them can run at the same time.
 
 See [`compose.yaml`](../compose.yaml) for the Docker Compose configuration.
 
