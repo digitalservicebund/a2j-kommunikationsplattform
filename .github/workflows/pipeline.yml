@@ -168,13 +168,13 @@ jobs:
       contents: read
       security-events: write # trivy scan needs this
 
-  deploy-staging-stackit:
+  deploy-staging:
     name: Deploy to staging
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' }}
     permissions:
       contents: read
-    concurrency: deploy
+    concurrency: deploy # only one deployment at a time
     environment: staging
     needs: [build-and-push-image, vulnerability-scan]
     steps:
@@ -204,7 +204,7 @@ jobs:
     name: End-to-end tests (staging)
     runs-on: ubuntu-latest
     needs:
-      - deploy-staging-stackit
+      - deploy-staging
     permissions:
       contents: read
     steps:
@@ -271,6 +271,7 @@ jobs:
     name: Deploy prototype to GitHub Pages
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    concurrency: github-pages # only one deployment at a time
     permissions:
       contents: read
       id-token: write
