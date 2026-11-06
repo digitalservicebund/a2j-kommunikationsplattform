@@ -3,7 +3,7 @@ import { act, renderHook } from "@testing-library/react";
 import { useRevalidator } from "react-router";
 import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { useEinreichenSubmission } from "~/components/hooks/useEinreichenSubmission";
+import { useEinreichungSubmission } from "~/components/hooks/useEinreichungSubmission";
 
 vi.mock("react-router", () => ({
   useRevalidator: vi.fn(),
@@ -11,7 +11,7 @@ vi.mock("react-router", () => ({
 
 const mockUseRevalidator = useRevalidator as unknown as Mock;
 
-describe("useEinreichenSubmission", () => {
+describe("useEinreichungSubmission", () => {
   const revalidate = vi.fn();
 
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe("useEinreichenSubmission", () => {
 
   it("polls revalidate every 5s while isValidating", () => {
     renderHook(() =>
-      useEinreichenSubmission({
+      useEinreichungSubmission({
         isValidating: true,
         isBelegPending: false,
       }),
@@ -41,7 +41,7 @@ describe("useEinreichenSubmission", () => {
 
   it("polls revalidate while isBelegPending", () => {
     renderHook(() =>
-      useEinreichenSubmission({
+      useEinreichungSubmission({
         isValidating: false,
         isBelegPending: true,
       }),
@@ -56,7 +56,7 @@ describe("useEinreichenSubmission", () => {
 
   it("does not poll when neither condition holds", () => {
     renderHook(() =>
-      useEinreichenSubmission({
+      useEinreichungSubmission({
         isValidating: false,
         isBelegPending: false,
       }),
@@ -73,7 +73,7 @@ describe("useEinreichenSubmission", () => {
     mockUseRevalidator.mockReturnValue({ state: "loading", revalidate });
 
     renderHook(() =>
-      useEinreichenSubmission({
+      useEinreichungSubmission({
         isValidating: true,
         isBelegPending: false,
       }),
@@ -111,7 +111,7 @@ describe("useEinreichenSubmission", () => {
       globalThis.fetch = vi.fn().mockResolvedValue({ ok: true });
 
       const { result } = renderHook(() =>
-        useEinreichenSubmission({
+        useEinreichungSubmission({
           isValidating: false,
           isBelegPending: false,
         }),
@@ -130,7 +130,7 @@ describe("useEinreichenSubmission", () => {
       globalThis.fetch = vi.fn().mockResolvedValue({ ok: false });
 
       const { result } = renderHook(() =>
-        useEinreichenSubmission({
+        useEinreichungSubmission({
           isValidating: false,
           isBelegPending: false,
         }),
@@ -151,7 +151,7 @@ describe("useEinreichenSubmission", () => {
       vi.spyOn(console, "error").mockImplementation(() => {});
 
       const { result } = renderHook(() =>
-        useEinreichenSubmission({
+        useEinreichungSubmission({
           isValidating: false,
           isBelegPending: false,
         }),

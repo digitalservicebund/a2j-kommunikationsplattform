@@ -54,8 +54,8 @@ describe("Breadcrumb component", () => {
     expect(screen.getByText("Start")).toBeInTheDocument();
   });
 
-  it("renders breadcrumb chain for /verfahren/neu", () => {
-    mockUseLocation.mockReturnValue({ pathname: "/verfahren/neu" });
+  it("renders breadcrumb chain for /verfahren/neu/dokumente", () => {
+    mockUseLocation.mockReturnValue({ pathname: "/verfahren/neu/dokumente" });
     mockUseParams.mockReturnValue({});
 
     renderWithTestTranslations(
@@ -96,11 +96,11 @@ describe("Breadcrumb component", () => {
     expect(screen.getByText("Verfahren")).toBeInTheDocument();
   });
 
-  it("renders breadcrumb for nested dynamic route /verfahren/neu/:id/bearbeiten", () => {
+  it("renders breadcrumb for the nested route /verfahren/neu/beteiligte", () => {
     mockUseLocation.mockReturnValue({
-      pathname: "/verfahren/neu/123/bearbeiten",
+      pathname: "/verfahren/neu/beteiligte",
     });
-    mockUseParams.mockReturnValue({ id: "123" });
+    mockUseParams.mockReturnValue({});
 
     renderWithTestTranslations(
       <MemoryRouter>

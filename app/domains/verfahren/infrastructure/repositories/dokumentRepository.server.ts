@@ -14,7 +14,10 @@ import {
   DokumentSchema,
 } from "~/domains/verfahren/infrastructure/schemas/dokument.schema";
 import { ValidierungsstatusSchema } from "~/domains/verfahren/infrastructure/schemas/validierungsstatus.schema";
-import canDeleteDokument from "~/domains/verfahren/services/canDeleteDokument";
+import buildSignaturdateiName from "~/domains/verfahren/services/buildSignaturdateiName";
+import canDeleteDokument, {
+  type CanDeleteDokumentOptions,
+} from "~/domains/verfahren/services/canDeleteDokument";
 import { AuthSession } from "~/services/auth/auth.types";
 import { ApiError } from "~/utils/apiError";
 import { logger } from "~/utils/logger.server";
@@ -163,12 +166,39 @@ export async function deleteDokument(
   return { success: false };
 }
 
+type UpdateDokumentSichtbarkeitOptions = {
+  verfahrenId: string;
+  einreichungId: string;
+  id: string;
+  sichtbarkeitAlle: boolean;
+  eTag: string;
+};
+
+/**
+ * Changes who can see the Dokument. Only possible until the Dokument has been
+ * submitted (the API responds with 409 afterwards).
+ */
+export async function updateDokumentSichtbarkeit(
+  authSession: AuthSession,
+  options: UpdateDokumentSichtbarkeitOptions,
+): Promise<Dokument> {
+  return apiRequest({
+    authSession,
+    path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.einreichungId}/dokumente/${options.id}`,
+    method: "PATCH",
+    body: { sichtbarkeit_alle: options.sichtbarkeitAlle },
+    eTag: options.eTag,
+    schema: DokumentSchema,
+    errorMessage: `Sichtbarkeit of Dokument with id ${options.id} could not be updated.`,
+  });
+}
+
 type DeleteDokumentFromEinreichungOptions = {
   authSession: AuthSession;
   verfahrenId: string;
   einreichungId: FormDataEntryValue | null;
   dokumentId: FormDataEntryValue | null;
-};
+} & CanDeleteDokumentOptions;
 
 export type DeleteDokumentFromEinreichungResult =
   | { status: "invalid-form-data" }
@@ -181,6 +211,7 @@ export async function deleteDokumentFromEinreichung({
   verfahrenId,
   einreichungId,
   dokumentId,
+  allowSchriftstueckDeletion,
 }: DeleteDokumentFromEinreichungOptions): Promise<DeleteDokumentFromEinreichungResult> {
   if (typeof einreichungId !== "string" || typeof dokumentId !== "string") {
     return { status: "invalid-form-data" };
@@ -197,7 +228,12 @@ export async function deleteDokumentFromEinreichung({
     (dokument) => dokument.id === dokumentId,
   );
 
-  if (targetDokument && !canDeleteDokument(targetDokument, einreichung)) {
+  if (
+    targetDokument &&
+    !canDeleteDokument(targetDokument, einreichung, {
+      allowSchriftstueckDeletion,
+    })
+  ) {
     return { status: "protected-dokument" };
   }
 
@@ -333,6 +369,90 @@ export async function uploadDokument(
       logger.error(
         { verfahrenId, einreichungId, dokumentId: dokument.id },
         "Failed to delete orphaned Dokument after Datei upload failed",
+      );
+    }
+
+    throw error;
+  }
+}
+
+type UploadDokumentWithSignaturdateiOptions = {
+  verfahrenId: string;
+  einreichungId: string;
+  file: File;
+  typ: DokumentType;
+  signaturdatei?: File;
+};
+
+async function tryDeleteDokument(
+  authSession: AuthSession,
+  options: FetchDokumentOptions,
+): Promise<boolean> {
+  try {
+    const { eTag } = await fetchDokument(authSession, options);
+    const { success } = await deleteDokument(authSession, {
+      ...options,
+      eTag: eTag ?? "",
+    });
+    return success;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Uploads a Dokument and its optional Signaturdatei, named after it (see
+ * buildSignaturdateiName). If the Signaturdatei fails, the Dokument is
+ * deleted again, best-effort like in uploadDokument, so both can be uploaded
+ * again together.
+ */
+export async function uploadDokumentWithSignaturdatei(
+  authSession: AuthSession,
+  {
+    verfahrenId,
+    einreichungId,
+    file,
+    typ,
+    signaturdatei,
+  }: UploadDokumentWithSignaturdateiOptions,
+): Promise<void> {
+  const dokument = await uploadDokument(
+    authSession,
+    verfahrenId,
+    einreichungId,
+    file,
+    typ,
+  );
+
+  if (!signaturdatei) {
+    return;
+  }
+
+  const namedSignaturdatei = new File(
+    [signaturdatei],
+    buildSignaturdateiName(file.name, signaturdatei.name),
+    { type: signaturdatei.type },
+  );
+
+  try {
+    await uploadDokument(
+      authSession,
+      verfahrenId,
+      einreichungId,
+      namedSignaturdatei,
+      "SIGNATURDATEI",
+    );
+  } catch (error) {
+    const cleanupSucceeded = await tryDeleteDokument(authSession, {
+      verfahrenId,
+      einreichungId,
+      id: dokument.id,
+    });
+
+    if (!cleanupSucceeded) {
+      logger.error(
+        { verfahrenId, einreichungId, dokumentId: dokument.id },
+        "Failed to delete Dokument after its Signaturdatei upload failed",
       );
     }
 

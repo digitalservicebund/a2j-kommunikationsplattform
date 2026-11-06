@@ -48,7 +48,7 @@ function renderSection(draft: EinreichungDetails | null) {
 }
 
 const artLabel = "Art der Einreichung";
-const uploadButtonName = "Hochladen";
+const uploadInputLabel = "Datei hochladen";
 
 describe("VerfahrenWeitereEinreichungSection", () => {
   it("lets the Art be picked while the Dokumente step is still disabled", () => {
@@ -58,17 +58,17 @@ describe("VerfahrenWeitereEinreichungSection", () => {
       "aria-disabled",
       "true",
     );
-    expect(
-      screen.getByRole("button", { name: uploadButtonName }),
-    ).toBeDisabled();
+    for (const input of screen.getAllByLabelText(uploadInputLabel)) {
+      expect(input).toHaveAttribute("aria-disabled", "true");
+    }
   });
 
   it("passes the draft's Art down and enables the Dokumente step once the draft exists", () => {
     renderSection(draftWeitereEinreichung);
 
     expect(screen.getByLabelText(artLabel)).toHaveValue("Schriftsatz");
-    expect(
-      screen.getByRole("button", { name: uploadButtonName }),
-    ).toBeEnabled();
+    for (const input of screen.getAllByLabelText(uploadInputLabel)) {
+      expect(input).not.toHaveAttribute("aria-disabled", "true");
+    }
   });
 });

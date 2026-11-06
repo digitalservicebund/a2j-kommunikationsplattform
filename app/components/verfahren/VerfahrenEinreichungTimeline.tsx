@@ -70,7 +70,7 @@ export default function VerfahrenEinreichungTimeline({
               </summary>
               <div className="kern-accordion__body">
                 {visibleDokumente.length > 0 ? (
-                  <div className="kern-gap-md flex w-full flex-col">
+                  <div className="flex w-full flex-col">
                     {visibleDokumente.map((dokument) => (
                       <VerfahrenDokumentItem
                         key={dokument.id}

@@ -15,6 +15,7 @@ import VerfahrenDokumenteList, {
 import VerfahrenEinreichungStatusBadge from "~/components/verfahren/VerfahrenEinreichungStatusBadge";
 import VerfahrenTimelineStep from "~/components/verfahren/VerfahrenTimelineStep";
 import VerfahrenTimelineStepCard from "~/components/verfahren/VerfahrenTimelineStepCard";
+import { buildKlageeinreichungPath } from "~/config/klageeinreichungRoutes";
 import type {
   EinreichungWithStatus,
   Verfahren,
@@ -24,6 +25,7 @@ import {
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/services/beteiligteByRole";
+import hasSchriftstueck from "~/domains/verfahren/services/hasSchriftstueck";
 import { useTranslations } from "~/services/translations/context";
 
 export type EinreichungDetails = {
@@ -70,7 +72,6 @@ export default function VerfahrenDraftKlageeinreichungSection({
   const klageeinreichungTimelineSteps = buildKlageeinreichungTimelineSteps({
     verfahrenId: verfahren.id,
     verfahrenStatusGeaendertAm: verfahren.statusGeaendertAm,
-    einreichungId: draftKlageeinreichung.einreichung.id,
     einreichungStatus: draftKlageeinreichung.einreichung.status,
     einreichungDokumente: draftKlageeinreichung.dokumente,
     detailsCompleted: {
@@ -242,7 +243,9 @@ export default function VerfahrenDraftKlageeinreichungSection({
               <footer className="kern-card__footer">
                 {/* Edit */}
                 <Link
-                  to={`/verfahren/neu/${verfahren.id}/bearbeiten`}
+                  to={buildKlageeinreichungPath("dokumente", {
+                    verfahren: verfahren.id,
+                  })}
                   className="kern-btn kern-btn--secondary"
                 >
                   <span className="kern-label">
@@ -268,7 +271,11 @@ export default function VerfahrenDraftKlageeinreichungSection({
                     appearance="primary"
                     type="submit"
                     aria-describedby="card-current-einreichung-heading"
-                    disabled={isSubmitting === "submitting" || isValidating}
+                    disabled={
+                      isSubmitting === "submitting" ||
+                      isValidating ||
+                      !hasSchriftstueck(draftKlageeinreichung.dokumente)
+                    }
                     label={
                       translations.routes.verfahrenId.draftKlageeinreichung
                         .proceduralSteps.einreichung.submit

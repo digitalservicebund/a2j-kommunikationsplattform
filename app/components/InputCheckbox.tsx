@@ -1,4 +1,5 @@
 import { InputHTMLAttributes } from "react";
+import InputLabel from "./InputLabel";
 
 export interface InputCheckboxProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -7,12 +8,16 @@ export interface InputCheckboxProps extends Omit<
   label: string;
   id: string;
   className?: string;
+  optional?: boolean;
 }
 
 export default function InputCheckbox({
   label,
   id,
   className = "",
+  optional,
+  required,
+  "aria-required": ariaRequired,
   ...inputProps
 }: Readonly<InputCheckboxProps>) {
   return (
@@ -22,11 +27,12 @@ export default function InputCheckbox({
         className="kern-form-check__checkbox"
         id={id}
         name={id}
+        aria-required={required || ariaRequired || undefined}
         {...inputProps}
       />
-      <label className="kern-label" htmlFor={id}>
+      <InputLabel htmlFor={id} optional={optional}>
         {label}
-      </label>
+      </InputLabel>
     </div>
   );
 }

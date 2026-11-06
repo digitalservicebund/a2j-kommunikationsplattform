@@ -132,4 +132,21 @@ describe("InputField", () => {
       "name-input-hint name-input-error",
     );
   });
+
+  it.each([{ required: true }, { "aria-required": true }])(
+    "marks the field as required via aria-required only for %o",
+    (requiredProps) => {
+      render(<InputField label="Name" id="name-input" {...requiredProps} />);
+
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("aria-required", "true");
+      expect(input).not.toHaveAttribute("required");
+    },
+  );
+
+  it("doesn't mark an optional field as required", () => {
+    render(<InputField label="Name" id="name-input" />);
+
+    expect(screen.getByRole("textbox")).not.toHaveAttribute("aria-required");
+  });
 });

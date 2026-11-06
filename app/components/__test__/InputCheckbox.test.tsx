@@ -60,4 +60,12 @@ describe("InputCheckbox", () => {
       "kern-my-md",
     );
   });
+
+  it("marks a required checkbox via aria-required only", () => {
+    render(<InputCheckbox label="Zustimmen" id="consent" required />);
+
+    const checkbox = screen.getByRole("checkbox");
+    expect(checkbox).toHaveAttribute("aria-required", "true");
+    expect(checkbox).not.toHaveAttribute("required");
+  });
 });

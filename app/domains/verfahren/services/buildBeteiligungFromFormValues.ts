@@ -29,6 +29,7 @@ export type ParteiFormValues = AdresseKontaktFormValues & {
 
 export type AnwaltFormValues = AdresseKontaktFormValues & {
   name: string;
+  geschaeftszeichen: string;
 };
 
 export type BeteiligungCodeIds = {
@@ -141,7 +142,7 @@ export function buildRaKanzleiFromFormValues(
       {
         rollennummer: null,
         rollenbezeichnungId: codeIds.rollenbezeichnungId,
-        geschaeftszeichen: null,
+        geschaeftszeichen: anwalt.geschaeftszeichen || null,
         referenz: [vertreteneRollennummer],
       },
     ],

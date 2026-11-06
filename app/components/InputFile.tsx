@@ -1,4 +1,5 @@
 import { InputHTMLAttributes, Ref } from "react";
+import InputLabel from "./InputLabel";
 
 export interface InputFileProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -7,6 +8,7 @@ export interface InputFileProps extends Omit<
   label: string;
   id: string;
   className?: string;
+  optional?: boolean;
   hint?: string;
   error?: string;
   ref?: Ref<HTMLInputElement>;
@@ -16,10 +18,13 @@ export default function InputFile({
   label,
   id,
   className = "",
+  optional,
   hint,
   error,
   accept,
   ref,
+  required,
+  "aria-required": ariaRequired,
   ...inputProps
 }: Readonly<InputFileProps>) {
   const hintId = hint ? `${id}-hint` : undefined;
@@ -29,9 +34,9 @@ export default function InputFile({
     <div
       className={`kern-form-input ${error ? "kern-form-input--error" : ""} ${className}`.trim()}
     >
-      <label className="kern-label" htmlFor={id}>
+      <InputLabel htmlFor={id} optional={optional}>
         {label}
-      </label>
+      </InputLabel>
       {hint && (
         <div className="kern-hint" id={hintId}>
           {hint}
@@ -44,6 +49,7 @@ export default function InputFile({
         id={id}
         name={id}
         accept={accept}
+        aria-required={required || ariaRequired || undefined}
         aria-describedby={
           [hintId, errorId].filter(Boolean).join(" ") || undefined
         }

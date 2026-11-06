@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { InputHTMLAttributes } from "react";
+import InputLabel from "./InputLabel";
 
 export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -27,6 +28,8 @@ export default function InputField({
   errors,
   type = "text",
   name = id,
+  required,
+  "aria-required": ariaRequired,
   ...inputProps
 }: Readonly<InputFieldProps>) {
   const hintId = hint ? `${id}-hint` : undefined;
@@ -42,10 +45,9 @@ export default function InputField({
         className,
       )}
     >
-      <label className="kern-label" htmlFor={id}>
+      <InputLabel htmlFor={id} optional={optional}>
         {label}
-        {optional && <span className="kern-label__optional">- Optional</span>}
-      </label>
+      </InputLabel>
 
       {hint && (
         <div className="kern-hint" id={hintId}>
@@ -63,6 +65,7 @@ export default function InputField({
         id={id}
         name={name}
         aria-disabled={disabled}
+        aria-required={required || ariaRequired || undefined}
         aria-describedby={
           [hintId, errorId].filter(Boolean).join(" ") || undefined
         }

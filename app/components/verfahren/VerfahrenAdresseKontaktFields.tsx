@@ -65,6 +65,7 @@ export default function VerfahrenAdresseKontaktFields({
         <InputField
           className="flex-1"
           label={shared.form.labels.email}
+          optional
           id={`${idPrefix}-email`}
           name={`${namePrefix}Email`}
           type="email"
@@ -73,6 +74,7 @@ export default function VerfahrenAdresseKontaktFields({
         <InputField
           className="flex-1"
           label={shared.form.labels.telefon}
+          optional
           id={`${idPrefix}-telefon`}
           name={`${namePrefix}Telefon`}
           type="tel"

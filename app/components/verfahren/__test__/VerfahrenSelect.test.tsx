@@ -75,7 +75,8 @@ describe("VerfahrenSelect", () => {
     const select = screen.getByRole("combobox");
     expect(screen.getByText("Wahlen Sie ein Gericht")).toBeInTheDocument();
     expect(screen.getByText("Bitte Gericht auswahlen")).toBeInTheDocument();
-    expect(select).toHaveAttribute("required");
+    expect(select).toHaveAttribute("aria-required", "true");
+    expect(select).not.toHaveAttribute("required");
     expect(select).toHaveAttribute("aria-disabled", "true");
   });
 });

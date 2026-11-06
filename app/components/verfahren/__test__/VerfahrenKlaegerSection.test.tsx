@@ -21,6 +21,7 @@ describe("VerfahrenKlaegerSection", () => {
     lawyerEmail: "",
     lawyerTelefon: "",
     lawyerKanzleiformId: "",
+    lawyerGeschaeftszeichen: "",
     kanzleiformen: [],
     errors: {},
   };
@@ -49,6 +50,20 @@ describe("VerfahrenKlaegerSection", () => {
     );
 
     expect(getByText("Angaben zum Anwalt")).toBeInTheDocument();
+  });
+
+  it("prefills the lawyer's Geschäftszeichen", () => {
+    const { getByLabelText } = renderWithTestTranslations(
+      <VerfahrenKlaegerSection
+        {...baseProps}
+        hasLawyer
+        lawyerGeschaeftszeichen="B-17/26"
+      />,
+    );
+
+    expect(
+      getByLabelText(/Geschäftszeichen des Prozessbevollmächtigten/),
+    ).toHaveValue("B-17/26");
   });
 
   it("shows a validation error on the lawyer name field", () => {

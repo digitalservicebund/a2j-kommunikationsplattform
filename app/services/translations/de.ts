@@ -57,11 +57,13 @@ export const de = {
     unknown: "(Unbekannt)",
     missing: "(Nicht verfügbar)",
     dokumentType: {
-      anhang: "Anhang",
-      schriftstueck: "Schriftstück",
-      xjustiz: "XJustiz",
+      ANHANG: "Anlage",
+      SCHRIFTSTUECK: "Schriftstück",
+      SIGNATURDATEI: "Signaturdatei",
+      XJUSTIZ: "XJustiz",
     },
     form: {
+      optionalSuffix: "- Optional",
       search: {
         placeholder:
           "Freie Textsuche zum Beispiel nach Aktenzeichen, Parteien, Gerichten, ...",
@@ -69,21 +71,43 @@ export const de = {
       select: {
         placeholder: "Bitte auswählen",
       },
-      selectDokumentType: {
-        label: "Dateityp",
-        hint: "Wählen Sie einen Dateityp zur besseren Zuordnung",
-        error: "Bitte wählen Sie einen Dateityp aus.",
+      uploadedDokumenteListLabel: "Hochgeladene Dateien",
+      dokumentUpload: {
+        typLegend: "Art des Dokuments",
+        submit: "Hochladen",
+        submitting: "Wird hochgeladen...",
+        // Only one Schriftstück per Einreichung
+        alreadyUploaded: "(bereits hochgeladen)",
+        // TODO: raise to 200 MB (here and in uploadDokument.error) once SINC's
+        // fix for larger uploads is live (the API currently refuses files
+        // over 100 MiB)
+        hint: "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
+        anhangHint: "Maximale Dateigröße ist 104 MB.",
+        signaturdatei: {
+          label: "Zugehörige Signaturdatei",
+          hint: "Die Signatur zur oben gewählten Datei. Erlaubte Formate: P7S, PKCS7, P7. Maximale Dateigröße ist 104 MB.",
+          error:
+            "Bitte wählen Sie eine Signaturdatei im Format .p7s, .pkcs7 oder .p7 aus.",
+        },
+      },
+      sichtbarkeit: {
+        label: "Sichtbarkeit",
+        alleParteien: "Alle Parteien",
+        nurGerichtUndPartei: "Nur Gericht und zugeordnete Partei",
+        // Only read by screen readers, to tell the selects of several
+        // Dokumente apart
+        dokumentLabelSuffix: "von {{name}}",
+        updateFailed: "Die Sichtbarkeit konnte nicht geändert werden.",
       },
       uploadDokument: {
         label: "Datei hochladen",
-        hint: "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
+        // TODO: raise to 200 MB once SINC's fix for larger uploads is live
+        // (the API currently refuses files over 100 MiB)
         error:
-          "Keine Datei ausgewählt? Ist ihre Datei zu groß? Oder der Dateityp wird nicht unterstützt. Bitte laden Sie eine Datei mit maximal 104 MB hoch. Unterstützte Dateitypen sind: *.pdf, *.doc, *.docx und *.xml (XJustiz).",
-        submit: "Hochladen",
-        submitting: "Wird hochgeladen...",
+          "Keine Datei ausgewählt? Ist ihre Datei zu groß? Oder der Dateityp wird nicht unterstützt. Bitte laden Sie eine Datei mit maximal 104 MB hoch. Unterstützte Dateitypen sind: *.pdf und *.docx.",
       },
       deleteDokument: {
-        label: "Entfernen",
+        labelForDokument: "{{name}} entfernen",
       },
       submit: {
         title: "Fehler beim Absenden des Formulars",
@@ -94,6 +118,8 @@ export const de = {
         invalidSubmission: "Ungültige Formularübermittlung.",
         saveFailed: "Die Änderungen konnten nicht gespeichert werden.",
         uploadFailed: "Das Dokument konnte nicht hochgeladen werden.",
+        schriftstueckExists:
+          "Es wurde bereits ein Schriftstück hochgeladen. Entfernen Sie es, um ein anderes hochzuladen.",
         submissionFailed: "Die Klage konnte nicht gespeichert werden.",
         einreichungFailed: "Die Einreichung konnte nicht übermittelt werden.",
         createEinreichungFailed:
@@ -108,8 +134,8 @@ export const de = {
         hausnummer: "Hausnummer",
         postleitzahl: "Postleitzahl",
         ort: "Ort",
-        email: "E-Mail (optional)",
-        telefon: "Telefon (optional)",
+        email: "E-Mail",
+        telefon: "Telefon",
         rubrum: "Rubrum",
         geschaeftszeichenProzessbevollmaechtigte:
           "Geschäftszeichen des Prozessbevollmächtigten",
@@ -232,33 +258,48 @@ export const de = {
       redeemBeitrittscode: "Beitrittscode einlösen",
       verfahrenTableLabel: "Liste der Verfahren",
     },
+    verfahrenGerichtAuswahl: {
+      headline: "Neue Klage einreichen",
+      subline: "Empfängergericht auswählen",
+      intro:
+        "Wählen Sie das Gericht aus, bei dem Sie die Klage einreichen möchten. Je nach Gericht steht Ihnen die Einreichung in der KomPla und/oder mit dem Eingabesystem zur Verfügung.",
+      klageEinreichenKompla: "Klage einreichen in der KomPla",
+      klageErstellenEingabesystem: "Klage mit dem Eingabesystem erstellen",
+      // Announced to screen readers once a court has been selected, as the
+      // buttons for the available options appear only then
+      optionsAnnouncement: "Für {{gericht}} verfügbar: {{optionen}}.",
+    },
     verfahrenNeu: {
-      step1: {
+      dokumente: {
         headline: "Neue Klage einreichen",
-        progress: "Schritt 1 von 2",
-        subline: "Klageschrift hochladen",
+        progress: "Schritt 1 von 3",
+        subline: "Dokumente hochladen",
         intro:
-          "Laden Sie Ihre Klageschrift als PDF- oder Word-Datei hoch. Wir extrahieren die wichtigsten Daten automatisch für Sie.",
-        analysis: {
-          hint: "Wir lesen Beteiligte, Gericht und Streitgegenstand aus und füllen das Formular vor.",
-          label: "Automatische Analyse der Klageschrift aktivieren",
-        },
+          "Laden Sie die Dokumente Ihrer Klage hoch. Mit dem ersten Dokument wird das Verfahren angelegt. Die Klageschrift ist erforderlich, um fortzufahren.",
+        // The Klageeinreichung's Schriftstück
+        schriftstueckLabel: "Klageschrift",
         navigation: {
-          next: "Datei hochladen und weiter",
+          next: "Weiter",
+        },
+      },
+      verfahrendetails: {
+        headline: "Neue Klage einreichen",
+        progress: "Schritt 2 von 3",
+        subline: "Verfahrensdetails",
+        navigation: {
+          next: "Weiter",
         },
         form: {
           validation: {
-            file: "Bitte laden Sie eine Datei hoch.",
             verfahrensgegenstand:
               "Bitte geben Sie den Verfahrensgegenstand an.",
-            gericht: "Bitte wählen Sie ein Gericht aus.",
           },
         },
       },
-      step2: {
+      beteiligte: {
         headline: "Neue Klage einreichen",
-        progress: "Schritt 2 von 2",
-        subline: "Verfahrensbeteiligte & Details",
+        progress: "Schritt 3 von 3",
+        subline: "Verfahrensbeteiligte",
         intro: "Bitte prüfen und ergänzen Sie die Angaben zu den Beteiligten.",
         navigation: {
           next: "Weiter zur Überprüfung",
@@ -284,15 +325,6 @@ export const de = {
             title: "Beklagte Partei",
             description:
               "Alle Angaben zur beklagten Partei, dem Beklagten oder der Beklagten.",
-          },
-          verfahrenDetails: {
-            title: "Verfahrensdetails",
-          },
-          assets: {
-            title: "Anlagen & Beweismittel",
-            description:
-              "Fügen Sie Beweismittel und weitere Dokumente hinzu (optional).",
-            listLabel: "Hochgeladene Dateien",
           },
           validation: {
             klagendeParteiNachname:
@@ -383,13 +415,6 @@ export const de = {
       weitereEinreichung: {
         headline: "Neue Einreichung erstellen",
         artLabel: "Art der Einreichung",
-        sichtbarkeit: {
-          label: "Sichtbarkeit",
-          alleParteien: "Alle Parteien",
-          nurGerichtUndPartei: "Nur Gericht und zugeordnete Partei",
-        },
-        upload: "Hochladen",
-        uploading: "Wird hochgeladen...",
         submit: "Einreichen & Abgabe ans Gericht",
       },
     },
@@ -437,6 +462,7 @@ export const de = {
   breadcrumb: {
     start: "Start",
     verfahrenNeu: "Neue Klage einreichen",
+    verfahrenGerichtAuswahl: "Gericht auswählen",
     verfahrenId: "Verfahren",
   },
 } as const;

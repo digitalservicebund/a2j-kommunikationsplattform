@@ -167,6 +167,7 @@ describe("buildRaKanzleiFromFormValues", () => {
   const anwaltCodeIds = { ...codeIds, kanzleiformId: "kanzleiform-1" };
   const emptyAnwalt: AnwaltFormValues = {
     name: "",
+    geschaeftszeichen: "",
     strasse: "",
     hausnummer: "",
     postleitzahl: "",
@@ -179,6 +180,16 @@ describe("buildRaKanzleiFromFormValues", () => {
     expect(
       buildRaKanzleiFromFormValues(emptyAnwalt, anwaltCodeIds, "klaegerin"),
     ).toBeNull();
+  });
+
+  it("stores the Geschäftszeichen on the Prozessbevollmächtigte's Rolle", () => {
+    const result = buildRaKanzleiFromFormValues(
+      { ...emptyAnwalt, name: "Kanzlei Böhm", geschaeftszeichen: "B-17/26" },
+      anwaltCodeIds,
+      "klaegerin",
+    );
+
+    expect(result?.rollen[0]?.geschaeftszeichen).toBe("B-17/26");
   });
 
   it("builds a raKanzlei request linked to the represented party via referenz", () => {
