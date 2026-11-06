@@ -163,6 +163,12 @@ This command uses [Docker Compose][docker-compose] (installed by Mise) to run th
 > [!note]
 > As `npm run compose:up` uses the same port as `npm run dev:op`, only one of them can run at the same time.
 
+To stop the container, run:
+
+```sh
+npm run compose:stop
+```
+
 See [`compose.yaml`](../compose.yaml) for the Docker Compose configuration.
 
 [docker-compose]: https://docs.docker.com/compose/

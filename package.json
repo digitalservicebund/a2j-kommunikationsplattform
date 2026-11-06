@@ -19,7 +19,8 @@
     "format:fix": "oxfmt",
     "style:check": "npm run format:check && npm run lint:check",
     "style:fix": "npm run format:fix && npm run lint:fix",
-    "compose:up": "op run --no-masking --env-file=.env.defaults --env-file=.env.op -- docker-compose up --build"
+    "compose:up": "op run --no-masking --env-file=.env.defaults --env-file=.env.op -- docker-compose up --build",
+    "compose:stop": "docker-compose stop"
   },
   "dependencies": {
     "@kern-ux/native": "^2.8.2",
