@@ -1,4 +1,5 @@
 version: 2
+
 updates:
   - package-ecosystem: "npm"
     directory: "/"
@@ -28,7 +29,7 @@ updates:
     schedule:
       interval: "daily"
     cooldown:
-      default-days: 1
+      default-days: 3
 
   - package-ecosystem: "github-actions"
     directory: "/"
