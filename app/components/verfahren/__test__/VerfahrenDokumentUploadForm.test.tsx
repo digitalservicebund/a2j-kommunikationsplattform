@@ -3,10 +3,16 @@
 import { fireEvent } from "@testing-library/react";
 import { createRoutesStub } from "react-router";
 import { describe, expect, it, vi } from "vitest";
-import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
+import {
+  getTestTranslations,
+  renderWithTestTranslations,
+} from "~tests/utils/translationsUtil";
 import VerfahrenDokumentUploadForm, {
   type VerfahrenDokumentUploadFormProps,
 } from "../VerfahrenDokumentUploadForm";
+
+const t = getTestTranslations();
+const signaturdateiLabel = `${t.shared.form.dokumentUpload.signaturdatei.label} ${t.shared.form.optionalSuffix}`;
 
 const baseProps: VerfahrenDokumentUploadFormProps = {
   einreichungId: "einreichung-1",
@@ -85,7 +91,7 @@ describe("VerfahrenDokumentUploadForm", () => {
 
   it("clears the selected files when the type changes", async () => {
     const { findByLabelText, getByRole, getByLabelText } = renderForm();
-    const labels = ["Datei hochladen", "Zugehörige Signaturdatei (optional)"];
+    const labels = ["Datei hochladen", signaturdateiLabel];
 
     fireEvent.change(await findByLabelText(labels[0]), {
       target: { files: [pdfFile] },
@@ -114,9 +120,7 @@ describe("VerfahrenDokumentUploadForm", () => {
       expect.stringContaining(".docx"),
     );
 
-    const signaturdateiInput = await findByLabelText(
-      "Zugehörige Signaturdatei (optional)",
-    );
+    const signaturdateiInput = await findByLabelText(signaturdateiLabel);
     expect(signaturdateiInput).toHaveAttribute("name", "signaturdatei");
     expect(signaturdateiInput).toHaveAttribute(
       "accept",
@@ -178,10 +182,7 @@ describe("VerfahrenDokumentUploadForm", () => {
       disabled: true,
     });
 
-    for (const label of [
-      "Datei hochladen",
-      "Zugehörige Signaturdatei (optional)",
-    ]) {
+    for (const label of ["Datei hochladen", signaturdateiLabel]) {
       const input = await findByLabelText(label);
       expect(input).not.toBeDisabled();
       expect(input).toHaveAttribute("aria-disabled", "true");
@@ -230,7 +231,7 @@ describe("VerfahrenDokumentUploadForm", () => {
       },
     );
 
-    const input = await findByLabelText("Zugehörige Signaturdatei (optional)");
+    const input = await findByLabelText(signaturdateiLabel);
     fireEvent.submit(container.querySelector("form") as HTMLFormElement);
 
     await vi.waitFor(() =>

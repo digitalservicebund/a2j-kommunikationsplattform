@@ -1,10 +1,15 @@
 // @vitest-environment jsdom
 
 import { describe, expect, it } from "vitest";
-import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
+import {
+  getTestTranslations,
+  renderWithTestTranslations,
+} from "~tests/utils/translationsUtil";
 import VerfahrenAdresseKontaktFields from "../VerfahrenAdresseKontaktFields";
 
 describe("VerfahrenAdresseKontaktFields", () => {
+  const t = getTestTranslations();
+
   it("renders all six fields with the given id/name prefixes and values", () => {
     const { getByLabelText } = renderWithTestTranslations(
       <VerfahrenAdresseKontaktFields
@@ -29,7 +34,9 @@ describe("VerfahrenAdresseKontaktFields", () => {
     expect(hausnummer.name).toBe("klagendeParteiHausnummer");
     expect(hausnummer.value).toBe("42");
 
-    const email = getByLabelText("E-Mail (optional)") as HTMLInputElement;
+    const email = getByLabelText(
+      `${t.shared.form.labels.email} ${t.shared.form.optionalSuffix}`,
+    ) as HTMLInputElement;
     expect(email.id).toBe("klagende-partei-email");
     expect(email.name).toBe("klagendeParteiEmail");
     expect(email.value).toBe("emilia@example.de");

@@ -103,16 +103,19 @@ describe("VerfahrenWeitereEinreichungDokumenteStep", () => {
   it("offers one upload area for the Dokument and its Signaturdatei", () => {
     renderSection(buildWeitereEinreichung([]));
 
-    const { dokumentType, form } = getTestTranslations().shared;
+    const t = getTestTranslations();
     const typ = screen.getByRole("group", {
-      name: form.dokumentUpload.typLegend,
+      name: t.shared.form.dokumentUpload.typLegend,
     });
-    for (const name of [dokumentType.SCHRIFTSTUECK, dokumentType.ANHANG]) {
+    for (const name of [
+      t.shared.dokumentType.SCHRIFTSTUECK,
+      t.shared.dokumentType.ANHANG,
+    ]) {
       expect(within(typ).getByRole("radio", { name })).toBeInTheDocument();
     }
     for (const label of [
-      form.uploadDokument.label,
-      form.dokumentUpload.signaturdatei.label,
+      t.shared.form.uploadDokument.label,
+      `${t.shared.form.dokumentUpload.signaturdatei.label} ${t.shared.form.optionalSuffix}`,
     ]) {
       expect(screen.getByLabelText(label)).not.toHaveAttribute(
         "aria-disabled",

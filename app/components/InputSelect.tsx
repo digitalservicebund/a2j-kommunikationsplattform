@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { ReactNode, SelectHTMLAttributes } from "react";
+import InputLabel from "./InputLabel";
 
 export interface InputSelectOption {
   value: string;
@@ -15,6 +16,7 @@ export interface InputSelectProps extends Omit<
   label: ReactNode;
   // Keeps the label for screen readers only, e.g. in a compact row
   hideLabel?: boolean;
+  optional?: boolean;
   hint?: string;
   error?: string;
   options: InputSelectOption[];
@@ -27,6 +29,7 @@ export default function InputSelect({
   id,
   label,
   hideLabel = false,
+  optional,
   hint,
   error,
   options,
@@ -46,12 +49,13 @@ export default function InputSelect({
         "kern-form-input--error": error,
       })}
     >
-      <label
-        className={clsx("kern-label", { "kern-sr-only": hideLabel })}
+      <InputLabel
         htmlFor={id}
+        optional={optional}
+        className={clsx({ "kern-sr-only": hideLabel })}
       >
         {label}
-      </label>
+      </InputLabel>
 
       {hint && (
         <div className="kern-hint" id={`select-hint-${id}`}>

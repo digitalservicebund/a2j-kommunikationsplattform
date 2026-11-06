@@ -150,6 +150,7 @@ export default function VerfahrenDokumentUploadForm({
         id="dokument-upload-signaturdatei"
         name="signaturdatei"
         label={labels.signaturdatei.label}
+        optional
         hint={labels.signaturdatei.hint}
         accept={ACCEPTED_SIGNATURDATEI_TYPES}
         error={showSignaturdateiError ? labels.signaturdatei.error : undefined}

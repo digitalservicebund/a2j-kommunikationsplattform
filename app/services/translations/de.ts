@@ -63,6 +63,7 @@ export const de = {
       XJUSTIZ: "XJustiz",
     },
     form: {
+      optionalSuffix: "- Optional",
       search: {
         placeholder:
           "Freie Textsuche zum Beispiel nach Aktenzeichen, Parteien, Gerichten, ...",
@@ -83,7 +84,7 @@ export const de = {
         hint: "Erlaubte Formate: PDF, DOCX. Maximale Dateigröße ist 104 MB.",
         anhangHint: "Maximale Dateigröße ist 104 MB.",
         signaturdatei: {
-          label: "Zugehörige Signaturdatei (optional)",
+          label: "Zugehörige Signaturdatei",
           hint: "Die Signatur zur oben gewählten Datei. Erlaubte Formate: P7S, PKCS7, P7. Maximale Dateigröße ist 104 MB.",
           error:
             "Bitte wählen Sie eine Signaturdatei im Format .p7s, .pkcs7 oder .p7 aus.",
@@ -133,8 +134,8 @@ export const de = {
         hausnummer: "Hausnummer",
         postleitzahl: "Postleitzahl",
         ort: "Ort",
-        email: "E-Mail (optional)",
-        telefon: "Telefon (optional)",
+        email: "E-Mail",
+        telefon: "Telefon",
         rubrum: "Rubrum",
         geschaeftszeichenProzessbevollmaechtigte:
           "Geschäftszeichen des Prozessbevollmächtigten",

@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { InputHTMLAttributes } from "react";
+import InputLabel from "./InputLabel";
 
 export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -44,10 +45,9 @@ export default function InputField({
         className,
       )}
     >
-      <label className="kern-label" htmlFor={id}>
+      <InputLabel htmlFor={id} optional={optional}>
         {label}
-        {optional && <span className="kern-label__optional">- Optional</span>}
-      </label>
+      </InputLabel>
 
       {hint && (
         <div className="kern-hint" id={hintId}>
