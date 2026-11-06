@@ -38,7 +38,7 @@ test.describe("Joining a Verfahren (Beitrittscode / Lift)", () => {
 
     const confirmationPage = new BeitrittscodeConfirmationPage(page, code);
     await confirmationPage.expectToBeHere();
-
+ await expectNoA11yViolations(page);
     const {
       kurzrubrum,
       gericht,
