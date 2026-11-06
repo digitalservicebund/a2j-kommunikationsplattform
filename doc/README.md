@@ -12,7 +12,7 @@ This folder contains the technical documentation for the _Kommunikationsplattfor
 
 ## Development
 
-- [Development Guide](./DEVELOPMENT.md)
+- [Development Guide](./development.md)
 - [Project Structure](./PROJECT_STRUCTURE.md)
 
 ## Misc
