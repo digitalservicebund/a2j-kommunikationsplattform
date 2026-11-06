@@ -28,7 +28,7 @@ export function getDefinitionByTermLabel(
 ): Locator {
   return locator
     .getByRole("term")
-    .and(locator.getByText(label))
+    .and(locator.getByText(label, { exact: true }))
     .locator("xpath=following-sibling::*")
     .and(locator.getByRole("definition"))
     .first();
