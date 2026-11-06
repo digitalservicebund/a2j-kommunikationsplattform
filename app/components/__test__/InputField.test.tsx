@@ -92,6 +92,13 @@ describe("InputField", () => {
     expect(wrapper).toHaveClass("kern-form-input--error");
     expect(input).toHaveClass("kern-form-input__input--error");
     expect(input).toHaveAttribute("aria-describedby", "name-input-error");
+    expect(input).toHaveAttribute("aria-invalid", "true");
+  });
+
+  it("is not marked invalid without errors", () => {
+    render(<InputField label="Name" id="name-input" />);
+    const input = screen.getByRole("textbox");
+    expect(input).toHaveAttribute("aria-invalid", "false");
   });
 
   it("joins multiple error messages for the same field with a space", () => {
