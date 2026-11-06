@@ -5,6 +5,7 @@ import {
 } from "./pageObjects/beitrittscodePage";
 import { HomePage } from "./pageObjects/homePage";
 import { VerfahrenDetailsPage } from "./pageObjects/verfahrenDetailsPage";
+import { expectNoA11yViolations } from "./utils/a11y";
 import { logInAsTestUser } from "./utils/login";
 
 test.describe("Joining a Verfahren (Beitrittscode / Lift)", () => {
@@ -38,7 +39,7 @@ test.describe("Joining a Verfahren (Beitrittscode / Lift)", () => {
 
     const confirmationPage = new BeitrittscodeConfirmationPage(page, code);
     await confirmationPage.expectToBeHere();
- await expectNoA11yViolations(page);
+    await expectNoA11yViolations(page);
     const {
       kurzrubrum,
       gericht,
