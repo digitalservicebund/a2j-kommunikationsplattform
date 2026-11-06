@@ -4,7 +4,7 @@ export type ZovGericht = {
 };
 
 /**
- * Courts reachable via the ZOV Eingabesystem. Matched against the KomPla
+ * Courts reachable via the [ZOV Eingabesystem](https://github.com/digitalservicebund/a2j-rechtsantragstelle). Matched against the KomPla
  * Gerichte code list by `code` to find courts that support both systems.
  */
 // TODO: replace placeholders with the real ZOV court list
