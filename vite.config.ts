@@ -29,7 +29,8 @@ export default defineConfig((config) => {
     server: {
       port: 3000,
       watch: {
-        include: ["app/**/*", "server.js"],
+        usePolling: true,
+        interval: 120,
       },
     },
   };
