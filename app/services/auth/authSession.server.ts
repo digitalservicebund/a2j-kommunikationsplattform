@@ -32,6 +32,10 @@ async function getOAuth2Tokens(
   }
 }
 
+function isKnownAuthProvider(value: string): value is AuthProvider {
+  return Object.values(AuthProvider).includes(value);
+}
+
 /**
  * Retrieves the authentication session details for the user who made the
  * given request. Returns null if the user has no valid authentication session,
@@ -51,17 +55,18 @@ export async function getAuthSession(
   }
 
   const { user } = sessionResponse;
+  const provider = user.authProvider;
 
-  // We know that `user.authProvider` is one of the known auth providers.
-  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-  const provider = user.authProvider as AuthProvider;
-
-  const setCookieHeaders = sessionHeaders.getSetCookie();
+  if (!isKnownAuthProvider(provider)) {
+    return null;
+  }
 
   const tokens = await getOAuth2Tokens(request, user.id, provider);
   if (!tokens) {
     return null;
   }
+
+  const setCookieHeaders = sessionHeaders.getSetCookie();
 
   return {
     provider,
