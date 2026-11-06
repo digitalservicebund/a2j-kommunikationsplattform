@@ -32,6 +32,7 @@ test.describe("Joining a Verfahren (Beitrittscode / Lift)", () => {
 
     const beitrittscodePage = new BeitrittscodePage(page);
     await beitrittscodePage.expectToBeHere();
+    await expectNoA11yViolations(page);
     await beitrittscodePage.enterBeitrittscode(code);
     await beitrittscodePage.submit();
 
