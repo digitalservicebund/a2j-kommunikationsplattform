@@ -10,14 +10,20 @@ This document explains how to get started with coding on the _Kommunikationsplat
 
 - [**1Password desktop app**][1password-desktop] (optional): The development setup uses the [1Password CLI][1password-cli] (installed through Mise) to access the secrets needed to run the app locally. Installing and signing into the desktop app makes authorizing the CLI more convenient. See the [CLI's getting-started instructions][1password-cli-get-started].
 
-> [!note]
-> For the time being, running the app requires access to the development team's 1Password vault, which contains several secrets that can neither be shared with nor easily obtained by the general public. We might implement a mock backend at some point to work around this issue.
+- [**Podman Desktop**][podman], [**Colima**][colima], or similar (optional): Needed if you want to test building and running the container image used for deployment. [Docker Desktop][docker-desktop] works as well, but you [may need a paid subscription][docker-desktop-pricing] if you want to use it.
+
+> [!important]
+> For the time being, **running the app requires access to the development team's 1Password vault**, which contains several secrets that can neither be shared with nor easily obtained by the general public. We might implement a mock backend at some point to work around this issue.
 
 [1password-cli]: https://www.1password.dev/cli
 [1password-cli-get-started]: https://www.1password.dev/cli/get-started#step-2-turn-on-the-1password-desktop-app-integration
 [1password-desktop]: https://1password.com/downloads
+[colima]: https://colima.run/
+[docker-desktop]: https://www.docker.com/products/docker-desktop/
+[docker-desktop-pricing]: https://docs.docker.com/subscription-billing/desktop-license/
 [mise]: https://mise.jdx.dev/
 [mise-install]: https://mise.jdx.dev/installing-mise.html
+[podman]: https://podman-desktop.io/
 
 ### Development Setup
 
@@ -143,6 +149,21 @@ See [`lefthook.yml`](../lefthook.yml) for the currently configured Git hooks.
 
 [commitlint]: https://commitlint.js.org/
 [lefthook]: https://lefthook.dev/
+
+### Testing the Container Build
+
+The KomPla frontend is deployed as an [OCI][oci] container image. Assuming you have the Docker CLI and a compatible container runtime installed (see the [prerequisites](#prerequisites)), you can build and run the image by running:
+
+```sh
+npm run compose:up
+```
+
+This command uses [Docker Compose][docker-compose] (installed by Mise) to run the container and expose it at <http://localhost:3000/>. The required secrets are injected using the 1Password CLI, just like with `npm run dev:op`.
+
+See [`compose.yaml`](../compose.yaml) for the Docker Compose configuration.
+
+[docker-compose]: https://docs.docker.com/compose/
+[oci]: https://opencontainers.org/
 
 ## Further Reading
 

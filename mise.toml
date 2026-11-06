@@ -1,5 +1,7 @@
 [tools]
 1password-cli = "latest"
+docker-cli = "latest"
+docker-compose = "latest"
 lefthook = "2"
 npm = "12"
 
