@@ -83,6 +83,7 @@ export class VerfahrenDokumentePage extends PageObject {
   get nextButton() {
     return this.page.getByRole("link", {
       name: t.routes.verfahrenNeu.dokumente.navigation.next,
+      exact: true,
     });
   }
 

@@ -23,7 +23,7 @@ export default function VerfahrenDetailsFormSection({
   return (
     <FieldsetCard
       title={routes.verfahrenNeu.verfahrendetails.subline}
-      TitleComponent="h3"
+      TitleComponent="h2"
     >
       <VerfahrenGerichteSelect
         id="claim-court"
