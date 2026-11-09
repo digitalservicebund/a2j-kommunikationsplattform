@@ -19,7 +19,12 @@ test.describe("Login", () => {
     await loginPage.expectToBeHere();
   });
 
-  test("I am redirected to the BRAK IdP when choosing beA login", async ({
+  // As of 2026-11-09, we have switched to same BRAK IdP client credentials
+  // used by the KomPla backend (the previous ones were deleted), but the
+  // BRAK has not updated the client configuration on their side yet. Starting
+  // the beA login thus results in an "invalid redirect_uri" error at the
+  // moment.
+  test.skip("I am redirected to the BRAK IdP when choosing beA login", async ({
     page,
   }) => {
     const loginPage = new LoginPage(page);
