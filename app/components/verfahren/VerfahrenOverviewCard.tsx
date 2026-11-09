@@ -1,3 +1,4 @@
+import ConfirmDeleteDialog from "~/components/ConfirmDeleteDialog";
 import { buildBeteiligteSummaryItems } from "~/components/verfahren/presentation/buildBeteiligteSummaryItems";
 import { NOT_AVAILABLE_LABEL } from "~/components/verfahren/presentation/placeholders";
 import VerfahrenBriefSummaryOfBeteiligte from "~/components/verfahren/VerfahrenBriefSummaryOfBeteiligte";
@@ -11,6 +12,8 @@ import {
 } from "~/domains/verfahren/services/beteiligteByRole";
 import { useTranslations } from "~/services/translations/context";
 import { getVerfahrenDisplayName } from "./presentation/verfahrenDisplayName";
+
+export const DELETE_VERFAHREN_FORM_TYPE = "delete-verfahren";
 
 type VerfahrenOverviewCardProps = {
   verfahren: Verfahren;
@@ -59,7 +62,17 @@ export default function VerfahrenOverviewCard({
               </span>
             </div>
           </div>
-          <VerfahrenStatusBadge status={verfahren.status} />
+          <div className="kern-gap-md flex flex-wrap items-center">
+            <VerfahrenStatusBadge status={verfahren.status} />
+            {/* Only a Verfahren whose Klage hasn't been submitted yet can be deleted */}
+            {verfahren.status === "ERSTELLT" && (
+              <ConfirmDeleteDialog
+                formType={DELETE_VERFAHREN_FORM_TYPE}
+                title={t.routes.verfahrenId.deleteVerfahren.title}
+                message={t.routes.verfahrenId.deleteVerfahren.message}
+              />
+            )}
+          </div>
         </div>
         <div className="kern-gap-md grid w-full grid-cols-1 md:grid-cols-3">
           <VerfahrenBriefSummaryOfBeteiligte

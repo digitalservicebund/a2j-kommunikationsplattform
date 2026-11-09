@@ -1,9 +1,14 @@
 // @vitest-environment jsdom
 
+import { screen } from "@testing-library/react";
+import { createRoutesStub } from "react-router";
 import { describe, expect, it } from "vitest";
 import { makeGerichtInformation } from "~tests/utils/factories/gerichtInformation";
 import { makeVerfahren } from "~tests/utils/factories/verfahren";
-import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
+import {
+  getTestTranslations,
+  renderWithTestTranslations,
+} from "~tests/utils/translationsUtil";
 import VerfahrenOverviewCard from "../VerfahrenOverviewCard";
 
 const verfahren = makeVerfahren({
@@ -103,5 +108,38 @@ describe("VerfahrenOverviewCard", () => {
 
     expect(getByText("Müller ./. Weber u.a.")).toBeInTheDocument();
     expect(queryByText("Klaus Müller ./. Maria Weber")).not.toBeInTheDocument();
+  });
+
+  it("offers deleting the Verfahren while its Klage hasn't been submitted", () => {
+    const Stub = createRoutesStub([
+      {
+        path: "/",
+        Component: () => (
+          <VerfahrenOverviewCard
+            verfahren={{ ...verfahren, status: "ERSTELLT" }}
+            gerichtInformation={null}
+          />
+        ),
+      },
+    ]);
+    renderWithTestTranslations(<Stub />);
+
+    expect(
+      screen.getByRole("button", {
+        name: getTestTranslations().shared.form.confirmDelete.open,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("doesn't offer deleting the Verfahren once its Klage has been submitted", () => {
+    renderWithTestTranslations(
+      <VerfahrenOverviewCard verfahren={verfahren} gerichtInformation={null} />,
+    );
+
+    expect(
+      screen.queryByRole("button", {
+        name: getTestTranslations().shared.form.confirmDelete.open,
+      }),
+    ).not.toBeInTheDocument();
   });
 });
