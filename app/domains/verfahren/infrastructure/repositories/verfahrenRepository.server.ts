@@ -111,3 +111,31 @@ export async function updateVerfahren(
     errorMessage,
   });
 }
+
+/**
+ * Deletes the Verfahren together with its Einreichungen and Dokumente. Only
+ * possible while it hasn't been submitted (the API responds with 409
+ * otherwise).
+ */
+export async function deleteVerfahren(
+  authSession: AuthSession,
+  id: string,
+): Promise<void> {
+  const errorMessage = `Verfahren with id ${id} could not be deleted.`;
+
+  const { eTag } = await apiRequest<Verfahren>({
+    authSession,
+    path: `/api/v1/verfahren/${id}`,
+    schema: VerfahrenSchema,
+    includeResponseETag: true,
+    errorMessage,
+  });
+
+  await apiRequest({
+    authSession,
+    path: `/api/v1/verfahren/${id}`,
+    method: "DELETE",
+    eTag: eTag ?? undefined,
+    errorMessage,
+  });
+}
