@@ -12,8 +12,13 @@ export class VerfahrenDetailsPage extends PageObject {
   readonly overview: VerfahrenDetailsOverviewSection;
   readonly timeline: VerfahrenDetailsTimelineSection;
 
-  constructor(page: Page) {
-    super(page, "/verfahren/:id");
+  constructor(page: Page, verfahrenId?: string) {
+    super(
+      page,
+      verfahrenId
+        ? `/verfahren/${encodeURIComponent(verfahrenId)}`
+        : "/verfahren/:id",
+    );
     this.overview = new VerfahrenDetailsOverviewSection(page);
     this.timeline = new VerfahrenDetailsTimelineSection(page);
   }
