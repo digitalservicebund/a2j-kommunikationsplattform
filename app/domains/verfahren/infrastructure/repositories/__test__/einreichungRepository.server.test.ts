@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createEinreichung,
   createEinreichungXJustiz,
+  deleteEinreichung,
   fetchEinreichungById,
   fetchEinreichungenById,
   fetchEinreichungStatus,
@@ -212,6 +213,35 @@ describe("submitEinreichungen", () => {
       eTag: 'W/"0"',
       schema: expect.anything(),
       errorMessage: "Einreichung with id e-1 could not be submitted.",
+    });
+  });
+});
+
+describe("deleteEinreichung", () => {
+  it("reads the current eTag before sending the DELETE with If-Match", async () => {
+    mocks.apiRequest
+      .mockResolvedValueOnce({ data: { id: "e-1" }, eTag: 'W/"3"' })
+      .mockResolvedValueOnce(undefined);
+
+    await deleteEinreichung(makeAuthSession(), {
+      verfahrenId: "v-1",
+      id: "e-1",
+    });
+
+    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        path: "/api/v1/verfahren/v-1/einreichungen/e-1",
+        includeResponseETag: true,
+      }),
+    );
+    expect(mocks.apiRequest).toHaveBeenNthCalledWith(2, {
+      authSession: makeAuthSession(),
+      path: "/api/v1/verfahren/v-1/einreichungen/e-1",
+      method: "DELETE",
+      eTag: 'W/"3"',
+      errorMessage:
+        "Einreichung with id e-1 of Verfahren with id v-1 could not be deleted.",
     });
   });
 });

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 import {
   createVerfahren,
+  deleteVerfahren,
   updateVerfahren,
 } from "../verfahrenRepository.server";
 
@@ -139,6 +140,45 @@ describe("updateVerfahren", () => {
     expect(mocks.apiRequest).toHaveBeenNthCalledWith(
       2,
       expect.objectContaining({ eTag: undefined }),
+    );
+  });
+});
+
+describe("deleteVerfahren", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("reads the current eTag before sending the DELETE with If-Match", async () => {
+    mocks.apiRequest
+      .mockResolvedValueOnce({ data: { id: "v-1" }, eTag: 'W/"1"' })
+      .mockResolvedValueOnce(undefined);
+
+    await deleteVerfahren(makeAuthSession(), "v-1");
+
+    expect(mocks.apiRequest).toHaveBeenNthCalledWith(1, {
+      authSession: makeAuthSession(),
+      path: "/api/v1/verfahren/v-1",
+      schema: expect.anything(),
+      includeResponseETag: true,
+      errorMessage: "Verfahren with id v-1 could not be deleted.",
+    });
+    expect(mocks.apiRequest).toHaveBeenNthCalledWith(2, {
+      authSession: makeAuthSession(),
+      path: "/api/v1/verfahren/v-1",
+      method: "DELETE",
+      eTag: 'W/"1"',
+      errorMessage: "Verfahren with id v-1 could not be deleted.",
+    });
+  });
+
+  it("propagates API errors", async () => {
+    mocks.apiRequest
+      .mockResolvedValueOnce({ data: { id: "v-1" }, eTag: 'W/"1"' })
+      .mockRejectedValueOnce(new Error("409"));
+
+    await expect(deleteVerfahren(makeAuthSession(), "v-1")).rejects.toThrow(
+      "409",
     );
   });
 });
