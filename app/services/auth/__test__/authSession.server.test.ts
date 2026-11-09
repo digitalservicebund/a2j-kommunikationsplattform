@@ -124,7 +124,18 @@ describe("getAuthSession", () => {
     expect(result?.safeId).toBe("DE.KOMPLA_SPT.xyz");
   });
 
-  it("returns null instead of throwing when getAccessToken fails (e.g. expired refresh token)", async () => {
+  it("returns null if the auth provider is unknown", async () => {
+    mockSession({
+      id: "user-2",
+      authProvider: "unknown",
+    });
+
+    const result = await getAuthSession(request);
+
+    expect(result).toBeNull();
+  });
+
+  it("returns null when getAccessToken fails (e.g. expired refresh token)", async () => {
     mockSession({
       id: "user-7",
       authProvider: AuthProvider.BEA,
