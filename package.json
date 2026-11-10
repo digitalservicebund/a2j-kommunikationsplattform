@@ -64,7 +64,7 @@
     "globals": "^17.14.0",
     "jsdom": "^31.0.0",
     "msw": "^3.0.4",
-    "oxfmt": "^0.74.0",
+    "oxfmt": "^0.77.0",
     "oxlint": "^1.91.0",
     "oxlint-tsgolint": "^7.0.2006",
     "prettier-plugin-organize-imports": "^4.3.0",
