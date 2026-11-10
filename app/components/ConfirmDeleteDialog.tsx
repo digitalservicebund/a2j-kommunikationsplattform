@@ -51,10 +51,16 @@ export default function ConfirmDeleteDialog({
       <Button
         appearance="secondary"
         type="button"
+        className="border-feedback-danger"
         onClick={() => dialogRef.current?.showModal()}
       >
-        <span className="kern-icon kern-icon--delete" aria-hidden="true" />
-        <span className="kern-label">{t.shared.form.confirmDelete.open}</span>
+        <span
+          className="kern-icon kern-icon--delete bg-feedback-danger"
+          aria-hidden="true"
+        />
+        <span className="kern-label text-feedback-danger">
+          {t.shared.form.confirmDelete.open}
+        </span>
       </Button>
 
       <dialog
@@ -89,6 +95,7 @@ export default function ConfirmDeleteDialog({
             <Button
               appearance="primary"
               type="submit"
+              className="bg-feedback-danger enabled:hover:bg-feedback-danger-hover enabled:active:bg-feedback-danger-active"
               disabled={isDeleting}
               label={t.shared.form.confirmDelete.confirm}
             />
