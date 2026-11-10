@@ -42,7 +42,7 @@ const SearchParamsSchema = FetchVerfahrenOptionsSchema.pick({
   offset: true,
   gericht: true,
   sort: true,
-  search_text: true,
+  suchbegriff: true,
 }).extend({
   showDebugInfo: z.boolean().default(false),
 });
@@ -54,7 +54,10 @@ export const loader = async ({ context, url }: Route.LoaderArgs) => {
     offset: url.searchParams.get("offset"),
     gericht: url.searchParams.get("gericht"),
     sort: url.searchParams.get("sort"),
+    suchbegriff: url.searchParams.get("suchbegriff"),
   });
+
+  console.log("S", searchParams);
 
   if (!searchParams) {
     searchParams = {
@@ -63,7 +66,7 @@ export const loader = async ({ context, url }: Route.LoaderArgs) => {
     };
   }
 
-  const { offset, gericht, sort, search_text, showDebugInfo } = searchParams;
+  const { offset, gericht, sort, suchbegriff, showDebugInfo } = searchParams;
 
   const verfahrenPromise = (async () => {
     const verfahren = await fetchVerfahren(authSession, {
@@ -71,7 +74,7 @@ export const loader = async ({ context, url }: Route.LoaderArgs) => {
       offset,
       gericht,
       sort,
-      search_text,
+      suchbegriff,
     });
 
     const hasMoreItems = verfahren.elemente.length > VERFAHREN_PAGE_LIMIT;
@@ -185,11 +188,11 @@ function VerfahrenContent({
   const { getParamValue, updateParam } = useParamsState<{
     sort: "";
     gericht: "";
-    search_text: "";
+    suchbegriff: "";
   }>();
 
   const hasFilters = Boolean(
-    getParamValue("search_text") || Boolean(getParamValue("gericht")),
+    getParamValue("suchbegriff") || Boolean(getParamValue("gericht")),
   );
 
   // isInputSelectDisabled when loading, or when no items have been returned and no filters are applied
@@ -199,8 +202,8 @@ function VerfahrenContent({
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-    const value = formData.get("search_text") as string | null;
-    updateParam("search_text", value || null);
+    const value = formData.get("suchbegriff") as string | null;
+    updateParam("suchbegriff", value || null);
   };
 
   return (
@@ -208,7 +211,7 @@ function VerfahrenContent({
       <VerfahrenFilterBar
         gerichte={gerichte}
         isInputDisabled={isInputDisabled}
-        searchDefaultValue={getParamValue("search_text") || ""}
+        searchDefaultValue={getParamValue("suchbegriff") || ""}
         onSearch={handleSearch}
         gerichtValue={getParamValue("gericht") || ""}
         onGerichtChange={(e) => updateParam("gericht", e.target.value || null)}

@@ -75,7 +75,7 @@ describe("fetchVerfahren", () => {
     const result = await fetchVerfahren(makeAuthSession(), {
       limit: 99,
       offset: 123,
-      search_text: "test-search",
+      suchbegriff: "test-search",
       sort: SORT_VALUES[0],
     });
 
@@ -133,7 +133,7 @@ describe("fetchVerfahren", () => {
         gericht: "b727131c-0c32-91ba-3eaa-f44405967b6d",
         limit: 99,
         offset: 123,
-        search_text: "test-search",
+        suchbegriff: "test-search",
         sort: SORT_VALUES[0],
       });
 
@@ -201,14 +201,14 @@ describe("fetchVerfahren", () => {
       await expect(result).rejects.toThrow();
     });
 
-    it("includes suchbegriff parameter when search_text is provided", async () => {
+    it("includes suchbegriff parameter when suchbegriff is provided", async () => {
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
       });
 
       await fetchVerfahren(makeAuthSession(), {
-        search_text: "legal case",
+        suchbegriff: "legal case",
       });
 
       expect(mocks.fetch).toHaveBeenCalledWith(
@@ -217,26 +217,26 @@ describe("fetchVerfahren", () => {
       );
     });
 
-    it("excludes suchbegriff parameter when search_text is null", async () => {
+    it("excludes suchbegriff parameter when suchbegriff is null", async () => {
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
       });
-      await fetchVerfahren(makeAuthSession(), { search_text: null });
+      await fetchVerfahren(makeAuthSession(), { suchbegriff: null });
       expect(mocks.fetch).toHaveBeenCalledWith(
         expect.not.stringContaining("suchbegriff="),
         expect.any(Object),
       );
     });
 
-    it("trims whitespace from search_text before sending as suchbegriff", async () => {
+    it("trims whitespace from suchbegriff before sending as suchbegriff", async () => {
       mocks.fetch.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
       });
 
       await fetchVerfahren(makeAuthSession(), {
-        search_text: "   trimmed search   ",
+        suchbegriff: "   trimmed search   ",
       });
 
       expect(mocks.fetch).toHaveBeenCalledWith(
