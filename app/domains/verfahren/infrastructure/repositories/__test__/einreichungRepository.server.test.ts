@@ -218,24 +218,16 @@ describe("submitEinreichungen", () => {
 });
 
 describe("deleteEinreichung", () => {
-  it("reads the current eTag before sending the DELETE with If-Match", async () => {
-    mocks.apiRequest
-      .mockResolvedValueOnce({ data: { id: "e-1" }, eTag: 'W/"3"' })
-      .mockResolvedValueOnce(undefined);
+  it("sends the DELETE with the given eTag as If-Match", async () => {
+    mocks.apiRequest.mockResolvedValueOnce(undefined);
 
     await deleteEinreichung(makeAuthSession(), {
       verfahrenId: "v-1",
       id: "e-1",
+      eTag: 'W/"3"',
     });
 
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        path: "/api/v1/verfahren/v-1/einreichungen/e-1",
-        includeResponseETag: true,
-      }),
-    );
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(2, {
+    expect(mocks.apiRequest).toHaveBeenCalledWith({
       authSession: makeAuthSession(),
       path: "/api/v1/verfahren/v-1/einreichungen/e-1",
       method: "DELETE",

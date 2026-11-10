@@ -130,6 +130,7 @@ export async function createEinreichung(
 type DeleteEinreichungOptions = {
   verfahrenId: string;
   id: string;
+  eTag: string | null;
 };
 
 /**
@@ -140,13 +141,11 @@ export async function deleteEinreichung(
   authSession: AuthSession,
   options: DeleteEinreichungOptions,
 ): Promise<void> {
-  const { eTag } = await fetchEinreichungById(authSession, options);
-
   await apiRequest({
     authSession,
     path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.id}`,
     method: "DELETE",
-    eTag: eTag ?? undefined,
+    eTag: options.eTag ?? undefined,
     errorMessage: `Einreichung with id ${options.id} of Verfahren with id ${options.verfahrenId} could not be deleted.`,
   });
 }

@@ -44,10 +44,12 @@ import {
 import {
   createEinreichung,
   deleteEinreichung,
+  fetchEinreichungById,
 } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { fetchGerichtInformation } from "~/domains/verfahren/infrastructure/repositories/gerichtInformationRepository.server";
 import { deleteVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { GerichtInformation } from "~/domains/verfahren/infrastructure/schemas/gerichtInformation.schema";
+import canDeleteEinreichung from "~/domains/verfahren/services/canDeleteEinreichung";
 import findEinreichungDraft, {
   sortEinreichungenNewestFirst,
 } from "~/domains/verfahren/services/findEinreichungDraft.ts";
@@ -298,7 +300,26 @@ async function handleDeleteEinreichung(
   );
 
   try {
-    await deleteEinreichung(authSession, { verfahrenId, id: einreichungId });
+    const { einreichung, eTag } = await fetchEinreichungById(authSession, {
+      verfahrenId,
+      id: einreichungId,
+    });
+
+    if (!canDeleteEinreichung(einreichung)) {
+      return actionErrorResponse(
+        de.shared.form.errors.deleteEinreichungFailed,
+        {
+          data: errorResultData,
+          status: 403,
+        },
+      );
+    }
+
+    await deleteEinreichung(authSession, {
+      verfahrenId,
+      id: einreichungId,
+      eTag,
+    });
     return redirect(`/verfahren/${verfahrenId}`);
   } catch (error) {
     return actionResultFromApiError(error, {

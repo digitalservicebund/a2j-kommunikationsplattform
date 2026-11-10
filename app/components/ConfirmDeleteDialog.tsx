@@ -13,7 +13,7 @@ type ConfirmDeleteDialogProps = {
 };
 
 /**
- * A dialog that is opened by the"Löschen" button, asking for confirmation
+ * A dialog that is opened by the "Löschen" button, asking for confirmation
  * before the delete form is submitted to the current route's action.
  */
 export default function ConfirmDeleteDialog({
