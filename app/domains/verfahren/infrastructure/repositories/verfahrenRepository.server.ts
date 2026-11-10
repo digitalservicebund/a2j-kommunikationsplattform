@@ -10,11 +10,11 @@ import {
 import { AuthSession } from "~/services/auth/auth.types";
 
 export const FetchVerfahrenOptionsSchema = z.object({
-  offset: z.number().int().nonnegative().optional(),
-  limit: z.number().int().positive().optional(),
+  offset: z.nullish(z.number().int().nonnegative()),
+  limit: z.nullish(z.number().int().positive()),
   gericht: z.nullish(z.guid()),
-  sort: z.union([z.enum(SORT_VALUES), z.literal("")]).optional(),
-  search_text: z.nullish(z.string().trim()),
+  sort: z.nullish(z.union([z.enum(SORT_VALUES), z.literal("")])),
+  suchbegriff: z.nullish(z.string().trim()),
 });
 
 export type FetchVerfahrenOptions = z.infer<typeof FetchVerfahrenOptionsSchema>;
@@ -27,23 +27,20 @@ export async function fetchVerfahren(
   authSession: AuthSession,
   options?: FetchVerfahrenOptions,
 ): Promise<z.infer<typeof fetchVerfahrenSchema>> {
-  const errorMessage = "Verfahren could not be fetched.";
-  const { search_text, sort, ...parsed } = FetchVerfahrenOptionsSchema.parse(
+  const { sort, ...parsedOptions } = FetchVerfahrenOptionsSchema.parse(
     options ?? {},
   );
 
   return apiRequest({
     authSession,
     path: "/api/v1/verfahren",
-    // The API expects `suchbegriff` as the query parameter name and sort
-    // values in snake_case (e.g. "eingereicht_am").
     searchParams: {
-      ...parsed,
+      ...parsedOptions,
+      // Convert field names in `sort` to snake case (e.g. "eingereicht_am")
       sort: sort ? toSortQueryValue(sort) : sort,
-      suchbegriff: search_text,
     },
     schema: fetchVerfahrenSchema,
-    errorMessage,
+    errorMessage: "Verfahren could not be fetched.",
   });
 }
 

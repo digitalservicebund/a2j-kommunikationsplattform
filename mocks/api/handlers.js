@@ -49,7 +49,7 @@ export const handlers = [
       const limitParam = url.searchParams.get("limit");
       const gerichtParam = url.searchParams.get("gericht");
       const sortParam = url.searchParams.get("sort");
-      const searchParam = url.searchParams.get("search_text");
+      const searchParam = url.searchParams.get("suchbegriff");
 
       let filteredVerfahren = getAllVerfahren();
 

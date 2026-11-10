@@ -19,7 +19,7 @@ http:
       value: eingereicht_am
       type: query
       disabled: true
-    - name: search_text
+    - name: suchbegriff
       value: ""
       type: query
       disabled: true
