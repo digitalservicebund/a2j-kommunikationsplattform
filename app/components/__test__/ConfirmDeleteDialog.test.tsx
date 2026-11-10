@@ -18,6 +18,7 @@ beforeAll(() => {
   };
   HTMLDialogElement.prototype.close = function close() {
     this.removeAttribute("open");
+    this.dispatchEvent(new Event("close"));
   };
 });
 
@@ -107,6 +108,40 @@ describe("ConfirmDeleteDialog", () => {
       screen.getByRole("button", { name: t.shared.form.confirmDelete.confirm }),
     );
 
+    expect(
+      await screen.findByText("Löschen fehlgeschlagen."),
+    ).toBeInTheDocument();
+  });
+
+  it("hides the error once the dialog is closed, until the next attempt fails", async () => {
+    renderDialog(() =>
+      actionError("Löschen fehlgeschlagen.", {
+        data: { formType: "delete-thing" },
+      }),
+    );
+    const openButton = screen.getByRole("button", {
+      name: t.shared.form.confirmDelete.open,
+    });
+    const confirmButton = screen.getByRole("button", {
+      name: t.shared.form.confirmDelete.confirm,
+      hidden: true,
+    });
+
+    await userEvent.click(openButton);
+    await userEvent.click(confirmButton);
+    expect(
+      await screen.findByText("Löschen fehlgeschlagen."),
+    ).toBeInTheDocument();
+
+    await userEvent.click(
+      screen.getByRole("button", { name: t.shared.cancel }),
+    );
+    await userEvent.click(openButton);
+    expect(
+      screen.queryByText("Löschen fehlgeschlagen."),
+    ).not.toBeInTheDocument();
+
+    await userEvent.click(confirmButton);
     expect(
       await screen.findByText("Löschen fehlgeschlagen."),
     ).toBeInTheDocument();

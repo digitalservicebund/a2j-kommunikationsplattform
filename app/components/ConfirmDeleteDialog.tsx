@@ -1,4 +1,4 @@
-import { useId, useRef } from "react";
+import { useId, useRef, useState } from "react";
 import { Form, useActionData, useNavigation } from "react-router";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
@@ -32,8 +32,13 @@ export default function ConfirmDeleteDialog({
   const isDeleting =
     navigation.state !== "idle" &&
     navigation.formData?.get("formType") === formType;
+  // The action data outlives the dialog, so an error is hidden once the
+  // dialog has been closed, until the next attempt returns a new one
+  const [dismissedActionData, setDismissedActionData] = useState(actionData);
   const deleteError =
-    actionData?.status === "error" && actionData.data?.formType === formType
+    actionData !== dismissedActionData &&
+    actionData?.status === "error" &&
+    actionData.data?.formType === formType
       ? actionData.error
       : null;
 
@@ -52,7 +57,13 @@ export default function ConfirmDeleteDialog({
         <span className="kern-label">{t.shared.form.confirmDelete.open}</span>
       </Button>
 
-      <dialog ref={dialogRef} className="kern-dialog" aria-labelledby={titleId}>
+      <dialog
+        ref={dialogRef}
+        className="kern-dialog"
+        aria-labelledby={titleId}
+        // Also fired when closed with the Escape key
+        onClose={() => setDismissedActionData(actionData)}
+      >
         <Form method="post" preventScrollReset replace>
           <input type="hidden" name="formType" value={formType} />
           {Object.entries(fields).map(([name, value]) => (
