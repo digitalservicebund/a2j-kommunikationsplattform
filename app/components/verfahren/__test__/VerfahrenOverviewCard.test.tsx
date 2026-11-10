@@ -85,6 +85,7 @@ describe("VerfahrenOverviewCard", () => {
       <VerfahrenOverviewCard
         verfahren={verfahren}
         gerichtInformation={gerichtInformation}
+        isDraft={false}
       />,
     );
 
@@ -103,6 +104,7 @@ describe("VerfahrenOverviewCard", () => {
       <VerfahrenOverviewCard
         verfahren={{ ...verfahren, kurzrubrum: "Müller ./. Weber u.a." }}
         gerichtInformation={null}
+        isDraft={false}
       />,
     );
 
@@ -110,7 +112,7 @@ describe("VerfahrenOverviewCard", () => {
     expect(queryByText("Klaus Müller ./. Maria Weber")).not.toBeInTheDocument();
   });
 
-  it("offers deleting the Verfahren while its Klage hasn't been submitted", () => {
+  it("offers deleting a draft Verfahren", () => {
     const Stub = createRoutesStub([
       {
         path: "/",
@@ -118,6 +120,7 @@ describe("VerfahrenOverviewCard", () => {
           <VerfahrenOverviewCard
             verfahren={{ ...verfahren, status: "ERSTELLT" }}
             gerichtInformation={null}
+            isDraft
           />
         ),
       },
@@ -131,9 +134,13 @@ describe("VerfahrenOverviewCard", () => {
     ).toBeInTheDocument();
   });
 
-  it("doesn't offer deleting the Verfahren once its Klage has been submitted", () => {
+  it("doesn't offer deleting a Verfahren that isn't a draft", () => {
     renderWithTestTranslations(
-      <VerfahrenOverviewCard verfahren={verfahren} gerichtInformation={null} />,
+      <VerfahrenOverviewCard
+        verfahren={verfahren}
+        gerichtInformation={null}
+        isDraft={false}
+      />,
     );
 
     expect(

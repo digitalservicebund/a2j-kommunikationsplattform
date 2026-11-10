@@ -54,6 +54,7 @@ import findEinreichungDraft, {
   sortEinreichungenNewestFirst,
 } from "~/domains/verfahren/services/findEinreichungDraft.ts";
 import isKlageeinreichung from "~/domains/verfahren/services/isKlageeinreichung";
+import isVerfahrenDraft from "~/domains/verfahren/services/isVerfahrenDraft";
 import { authMiddleware } from "~/middleware/auth.server";
 import { AuthSession } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
@@ -466,6 +467,10 @@ export default function VerfahrenId() {
               <VerfahrenOverviewCard
                 verfahren={verfahren}
                 gerichtInformation={gerichtInformation}
+                isDraft={isVerfahrenDraft(
+                  verfahren,
+                  einreichungen.map(({ einreichung }) => einreichung),
+                )}
               />
 
               <section

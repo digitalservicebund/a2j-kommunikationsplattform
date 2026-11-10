@@ -18,11 +18,14 @@ export const DELETE_VERFAHREN_FORM_TYPE = "delete-verfahren";
 type VerfahrenOverviewCardProps = {
   verfahren: Verfahren;
   gerichtInformation: GerichtInformation | null;
+  // Only a draft Verfahren can be deleted
+  isDraft: boolean;
 };
 
 export default function VerfahrenOverviewCard({
   verfahren,
   gerichtInformation,
+  isDraft,
 }: Readonly<VerfahrenOverviewCardProps>) {
   const t = useTranslations();
 
@@ -64,8 +67,7 @@ export default function VerfahrenOverviewCard({
           </div>
           <div className="kern-gap-md flex flex-wrap items-center">
             <VerfahrenStatusBadge status={verfahren.status} />
-            {/* Only a Verfahren whose Klage hasn't been submitted yet can be deleted */}
-            {verfahren.status === "ERSTELLT" && (
+            {isDraft && (
               <ConfirmDeleteDialog
                 formType={DELETE_VERFAHREN_FORM_TYPE}
                 title={t.routes.verfahrenId.deleteVerfahren.title}
