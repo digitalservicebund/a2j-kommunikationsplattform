@@ -14,10 +14,14 @@ import VerfahrenDraftKlageeinreichungSection, {
 import VerfahrenEinreichungOutcomeBanner from "~/components/verfahren/VerfahrenEinreichungOutcomeBanner";
 import VerfahrenEinreichungTimeline from "~/components/verfahren/VerfahrenEinreichungTimeline";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
-import VerfahrenOverviewCard from "~/components/verfahren/VerfahrenOverviewCard";
+import VerfahrenOverviewCard, {
+  DELETE_VERFAHREN_FORM_TYPE,
+} from "~/components/verfahren/VerfahrenOverviewCard";
 import VerfahrenTimelineStep from "~/components/verfahren/VerfahrenTimelineStep";
 import { CREATE_EINREICHUNG_FORM_TYPE } from "~/components/verfahren/VerfahrenWeitereEinreichungArtStep";
-import VerfahrenWeitereEinreichungSection from "~/components/verfahren/VerfahrenWeitereEinreichungSection";
+import VerfahrenWeitereEinreichungSection, {
+  DELETE_EINREICHUNG_FORM_TYPE,
+} from "~/components/verfahren/VerfahrenWeitereEinreichungSection";
 import {
   type EinreichungDokumentActionContext,
   handleDokumentDelete,
@@ -37,8 +41,12 @@ import {
   fetchBelegDownloadLink,
   fetchLatestBelegForEinreichung,
 } from "~/domains/verfahren/infrastructure/repositories/belegRepository.server";
-import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
+import {
+  createEinreichung,
+  deleteEinreichung,
+} from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { fetchGerichtInformation } from "~/domains/verfahren/infrastructure/repositories/gerichtInformationRepository.server";
+import { deleteVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { GerichtInformation } from "~/domains/verfahren/infrastructure/schemas/gerichtInformation.schema";
 import findEinreichungDraft, {
   sortEinreichungenNewestFirst,
@@ -258,6 +266,48 @@ async function handleCreateEinreichung(
   }
 }
 
+async function handleDeleteVerfahren(
+  _formData: FormData,
+  { authSession, verfahrenId }: FormActionContext,
+) {
+  try {
+    await deleteVerfahren(authSession, verfahrenId);
+    return redirect("/");
+  } catch (error) {
+    return actionResultFromApiError(error, {
+      message: de.shared.form.errors.deleteVerfahrenFailed,
+      data: { formType: DELETE_VERFAHREN_FORM_TYPE },
+    });
+  }
+}
+
+const DeleteEinreichungInputSchema = z.object({
+  einreichungId: z.string().min(1),
+});
+
+async function handleDeleteEinreichung(
+  formData: FormData,
+  { authSession, verfahrenId }: FormActionContext,
+) {
+  const errorResultData = { formType: DELETE_EINREICHUNG_FORM_TYPE };
+
+  const { einreichungId } = parseActionFormData(
+    formData,
+    DeleteEinreichungInputSchema,
+    { errorResultData },
+  );
+
+  try {
+    await deleteEinreichung(authSession, { verfahrenId, id: einreichungId });
+    return redirect(`/verfahren/${verfahrenId}`);
+  } catch (error) {
+    return actionResultFromApiError(error, {
+      message: de.shared.form.errors.deleteEinreichungFailed,
+      data: errorResultData,
+    });
+  }
+}
+
 const BelegDownloadInputSchema = z.object({
   belegId: z.string().min(1),
 });
@@ -300,6 +350,8 @@ const formActionHandlers = {
   einreichen: handleEinreichen,
   "download-beleg": handleDownloadBeleg,
   [CREATE_EINREICHUNG_FORM_TYPE]: handleCreateEinreichung,
+  [DELETE_VERFAHREN_FORM_TYPE]: handleDeleteVerfahren,
+  [DELETE_EINREICHUNG_FORM_TYPE]: handleDeleteEinreichung,
 } as const;
 
 export const action = async ({
