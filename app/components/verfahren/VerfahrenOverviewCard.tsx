@@ -18,7 +18,6 @@ export const DELETE_VERFAHREN_FORM_TYPE = "delete-verfahren";
 type VerfahrenOverviewCardProps = {
   verfahren: Verfahren;
   gerichtInformation: GerichtInformation | null;
-  // Only a draft Verfahren can be deleted
   isDraft: boolean;
 };
 
