@@ -155,3 +155,6 @@ lefthook-local.yml
 
 # API migration test folder
 /data/api/migration/*.json
+
+# Generated API client (Kubb)
+/api/generated

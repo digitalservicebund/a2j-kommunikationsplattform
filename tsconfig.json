@@ -4,6 +4,7 @@
     "app/**/*",
     "app/**/.server/**/*",
     "app/**/.client/**/*",
+    "api/generated/**/*",
     "tests/**/*",
     ".react-router/types/**/*"
   ],
@@ -18,6 +19,7 @@
     "noEmit": true,
     "paths": {
       "~/*": ["./app/*"],
+      "~api/*": ["./api/generated/*"],
       "~tests/*": ["./tests/*"]
     },
     "resolveJsonModule": true,
