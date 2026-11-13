@@ -75,7 +75,7 @@ export async function getAuthSession(
     safeId: user?.safeId ?? null,
     // TODO: Derive `authorizedForSafeIds` from the `granted_privileges` of
     // the access token once it becomes available.
-    authorizedForSafeIds: user?.safeId ? [user.safeId] : [],
+    authorizedForSafeIds: user.grantedPrivileges || [],
     sessionCookieHeaders: [...setCookieHeaders, ...tokens.setCookieHeaders],
   };
 }

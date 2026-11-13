@@ -18,6 +18,7 @@ const IdTokenClaimsSchema = z.object({
   name: z.optional(z.string()),
   email: z.optional(z.string()),
   email_verified: z.optional(z.boolean()),
+  granted_privileges: z.optional(z.array(z.string())),
 });
 
 type IdTokenClaims = z.infer<typeof IdTokenClaimsSchema>;
@@ -77,6 +78,7 @@ export function makeMapProfileToUser<P extends AuthProvider>(
   return (profile) => ({
     authProvider: provider,
     safeId: profile["safe-id"],
+    grantedPrivileges: profile["granted_privileges"],
   });
 }
 
