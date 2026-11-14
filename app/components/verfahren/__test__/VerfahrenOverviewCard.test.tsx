@@ -1,9 +1,14 @@
 // @vitest-environment jsdom
 
+import { screen } from "@testing-library/react";
+import { createRoutesStub } from "react-router";
 import { describe, expect, it } from "vitest";
 import { makeGerichtInformation } from "~tests/utils/factories/gerichtInformation";
 import { makeVerfahren } from "~tests/utils/factories/verfahren";
-import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
+import {
+  getTestTranslations,
+  renderWithTestTranslations,
+} from "~tests/utils/translationsUtil";
 import VerfahrenOverviewCard from "../VerfahrenOverviewCard";
 
 const verfahren = makeVerfahren({
@@ -80,6 +85,7 @@ describe("VerfahrenOverviewCard", () => {
       <VerfahrenOverviewCard
         verfahren={verfahren}
         gerichtInformation={gerichtInformation}
+        isDraft={false}
       />,
     );
 
@@ -98,10 +104,49 @@ describe("VerfahrenOverviewCard", () => {
       <VerfahrenOverviewCard
         verfahren={{ ...verfahren, kurzrubrum: "Müller ./. Weber u.a." }}
         gerichtInformation={null}
+        isDraft={false}
       />,
     );
 
     expect(getByText("Müller ./. Weber u.a.")).toBeInTheDocument();
     expect(queryByText("Klaus Müller ./. Maria Weber")).not.toBeInTheDocument();
+  });
+
+  it("offers deleting a draft Verfahren", () => {
+    const Stub = createRoutesStub([
+      {
+        path: "/",
+        Component: () => (
+          <VerfahrenOverviewCard
+            verfahren={{ ...verfahren, status: "ERSTELLT" }}
+            gerichtInformation={null}
+            isDraft
+          />
+        ),
+      },
+    ]);
+    renderWithTestTranslations(<Stub />);
+
+    expect(
+      screen.getByRole("button", {
+        name: getTestTranslations().shared.form.confirmDelete.open,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("doesn't offer deleting a Verfahren that isn't a draft", () => {
+    renderWithTestTranslations(
+      <VerfahrenOverviewCard
+        verfahren={verfahren}
+        gerichtInformation={null}
+        isDraft={false}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("button", {
+        name: getTestTranslations().shared.form.confirmDelete.open,
+      }),
+    ).not.toBeInTheDocument();
   });
 });

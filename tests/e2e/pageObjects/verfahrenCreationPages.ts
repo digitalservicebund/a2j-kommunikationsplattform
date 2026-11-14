@@ -131,6 +131,11 @@ export class VerfahrenDokumentePage extends PageObject {
   async next() {
     await this.nextButton.click();
   }
+
+  // Set once the first upload has created the Verfahren
+  get verfahrenId() {
+    return new URL(this.page.url()).searchParams.get("verfahren");
+  }
 }
 
 export class VerfahrenDetailsStepPage extends PageObject {

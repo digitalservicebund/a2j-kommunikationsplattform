@@ -127,6 +127,29 @@ export async function createEinreichung(
   });
 }
 
+type DeleteEinreichungOptions = {
+  verfahrenId: string;
+  id: string;
+  eTag: string | null;
+};
+
+/**
+ * Deletes the Einreichung together with its Dokumente. Only possible while
+ * it's ERSTELLT or FEHLGESCHLAGEN (the API responds with 409 otherwise).
+ */
+export async function deleteEinreichung(
+  authSession: AuthSession,
+  options: DeleteEinreichungOptions,
+): Promise<void> {
+  await apiRequest({
+    authSession,
+    path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.id}`,
+    method: "DELETE",
+    eTag: options.eTag ?? undefined,
+    errorMessage: `Einreichung with id ${options.id} of Verfahren with id ${options.verfahrenId} could not be deleted.`,
+  });
+}
+
 type SubmitEinreichungenOptions = {
   verfahrenId: string;
   id: string;

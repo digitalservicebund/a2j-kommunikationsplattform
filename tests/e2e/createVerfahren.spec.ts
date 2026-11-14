@@ -167,5 +167,22 @@ test.describe("Verfahren creation", () => {
     await detailsPage.timeline
       .entryByTitle("Klageeinreichung")
       .expectDisplayedStatus("beantragt");
+
+    // Start a Weitere Einreichung and delete its draft again
+    const weitereEinreichung = detailsPage.timeline.weitereEinreichung;
+    await weitereEinreichung.selectArt("Schriftsatz");
+    await expect(weitereEinreichung.artSelect).toHaveValue("Schriftsatz");
+
+    const deleteDialog = await weitereEinreichung.openDeleteDialog();
+    await deleteDialog.expectToBeVisible();
+    await expectNoA11yViolations(page);
+    await deleteDialog.confirm();
+
+    // The Art can be picked again for a new draft
+    await expect(weitereEinreichung.artSelect).toHaveValue("");
+    await expect(weitereEinreichung.artSelect).not.toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
   });
 });
