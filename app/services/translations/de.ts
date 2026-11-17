@@ -267,7 +267,11 @@ export const de = {
       klageErstellenEingabesystem: "Klage mit dem Eingabesystem erstellen",
       // Announced to screen readers once a court has been selected, as the
       // buttons for the available options appear only then
-      optionsAnnouncement: "Für {{gericht}} verfügbar: {{optionen}}.",
+      gerichtOptionsAnnouncement: "Für {{gericht}} verfügbar: {{optionen}}.",
+    },
+    safeIdAuswahl: {
+      subline: "Safe ID auswählen",
+      intro: "Wählen Sie die Safe ID aus, die Sie verwenden möchten.",
     },
     verfahrenNeu: {
       dokumente: {
@@ -278,6 +282,7 @@ export const de = {
           "Laden Sie die Dokumente Ihrer Klage hoch. Mit dem ersten Dokument wird das Verfahren angelegt. Die Klageschrift ist erforderlich, um fortzufahren.",
         // The Klageeinreichung's Schriftstück
         schriftstueckLabel: "Klageschrift",
+        safeId: "SAFE-ID",
         navigation: {
           next: "Weiter",
         },

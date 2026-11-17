@@ -14,7 +14,7 @@ type KlageeinreichungStep = Exclude<
 
 export function buildKlageeinreichungPath(
   step: KlageeinreichungStep,
-  params: { verfahren: string } | { gericht: string },
+  params: { verfahren: string } | { gericht: string; safeId: string },
 ): string {
   return `${KLAGEEINREICHUNG_PATHS[step]}?${new URLSearchParams(params)}`;
 }
