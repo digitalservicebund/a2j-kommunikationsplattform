@@ -558,13 +558,6 @@ export default function VerfahrenNeuBeteiligte({
                   </div>
                 </div>
 
-                {/* Success / Error Alert */}
-                <Alert
-                  type="success"
-                  title={routes.verfahrenNeu.beteiligte.notification.headline}
-                  message={routes.verfahrenNeu.beteiligte.notification.copy}
-                />
-
                 {isError && (
                   <Alert
                     type="error"
