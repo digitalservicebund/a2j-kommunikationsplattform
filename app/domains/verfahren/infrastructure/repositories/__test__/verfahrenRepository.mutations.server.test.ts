@@ -20,19 +20,16 @@ const verfahrenPayload = {
   beteiligungen: null,
 };
 
+const SAFE_ID = "DE.BRAK.selected-safe-id";
+
 describe("createVerfahren", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("throws when safeId is missing", async () => {
-    const authWithoutSafeId = makeAuthSession({
-      safeId: null,
-      authorizedForSafeIds: [],
-    });
-
     await expect(
-      createVerfahren(authWithoutSafeId, verfahrenPayload),
+      createVerfahren(makeAuthSession(), "", verfahrenPayload),
     ).rejects.toThrow("No safeId is available");
     expect(mocks.apiRequest).not.toHaveBeenCalled();
   });
@@ -57,14 +54,18 @@ describe("createVerfahren", () => {
     };
     mocks.apiRequest.mockResolvedValueOnce(verfahren);
 
-    const result = await createVerfahren(makeAuthSession(), verfahrenPayload);
+    const result = await createVerfahren(
+      makeAuthSession(),
+      SAFE_ID,
+      verfahrenPayload,
+    );
 
     expect(mocks.apiRequest).toHaveBeenCalledWith({
       authSession: makeAuthSession(),
       path: "/api/v1/verfahren",
       method: "POST",
       body: {
-        safe_id: makeAuthSession().safeId,
+        safe_id: SAFE_ID,
         verfahren: verfahrenPayload,
       },
       schema: expect.anything(),
@@ -76,14 +77,14 @@ describe("createVerfahren", () => {
   it("omits verfahren from the request body when not provided", async () => {
     mocks.apiRequest.mockResolvedValueOnce({});
 
-    await createVerfahren(makeAuthSession());
+    await createVerfahren(makeAuthSession(), SAFE_ID);
 
     expect(mocks.apiRequest).toHaveBeenCalledWith({
       authSession: makeAuthSession(),
       path: "/api/v1/verfahren",
       method: "POST",
       body: {
-        safe_id: makeAuthSession().safeId,
+        safe_id: SAFE_ID,
         verfahren: undefined,
       },
       schema: expect.anything(),

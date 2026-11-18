@@ -29,15 +29,21 @@ const gerichtOptions: GerichtAuswahlOption[] = [
   { value: "zov:Z0001", label: "Amtsgericht Hamburg", isZov: true },
 ];
 
+const SAFE_ID = "DE.BRAK.test";
+
 async function renderPage() {
   const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => (
         <VerfahrenNeu
-          {...({ loaderData: { gerichtOptions } } as unknown as Parameters<
-            typeof VerfahrenNeu
-          >[0])}
+          {...({
+            loaderData: {
+              gerichtOptions,
+              safeId: SAFE_ID,
+              authorizedForSafeIds: [SAFE_ID],
+            },
+          } as unknown as Parameters<typeof VerfahrenNeu>[0])}
         />
       ),
     },
@@ -73,7 +79,10 @@ describe("VerfahrenNeuGerichtAuswahl", () => {
 
     expect(
       getByRole("link", { name: "Klage einreichen in der KomPla" }),
-    ).toHaveAttribute("href", "/verfahren/neu/dokumente?gericht=bremen");
+    ).toHaveAttribute(
+      "href",
+      "/verfahren/neu/dokumente?gericht=bremen&safeId=DE.BRAK.test",
+    );
     expect(getEingabesystemLink()).toBeInTheDocument();
     expect(container.querySelector("[aria-live]")).toHaveTextContent(
       "Für Amtsgericht Bremen verfügbar: Klage einreichen in der KomPla, Klage mit dem Eingabesystem erstellen.",

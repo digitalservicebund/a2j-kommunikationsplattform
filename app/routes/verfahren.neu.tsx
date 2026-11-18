@@ -2,7 +2,6 @@ import { ReactNode, useState } from "react";
 import { Link } from "react-router";
 import InputSelect from "~/components/InputSelect.tsx";
 import { PageMetadata } from "~/components/PageMetadata";
-import { DOKUMENT_UPLOAD_FORM_ID } from "~/components/verfahren/VerfahrenDokumentUploadForm.tsx";
 import VerfahrenSelect from "~/components/verfahren/VerfahrenSelect";
 import { buildKlageeinreichungPath } from "~/config/klageeinreichungRoutes";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
@@ -33,12 +32,9 @@ export async function loader({ context }: Route.LoaderArgs) {
   };
 }
 
-export default function VerfahrenNeu({
-  loaderData,
-}: Route.ComponentProps) {
+export default function VerfahrenNeu({ loaderData }: Route.ComponentProps) {
   const t = useTranslations();
   const { gerichtOptions, safeId, authorizedForSafeIds } = loaderData;
-  console.log("authorizedForSafeIds", authorizedForSafeIds);
 
   const safeIdOptions = authorizedForSafeIds.map((id) => ({
     value: id,
@@ -82,7 +78,6 @@ export default function VerfahrenNeu({
           >
             <InputSelect
               id="safeId"
-              form={DOKUMENT_UPLOAD_FORM_ID}
               label={t.routes.verfahrenNeu.dokumente.safeId}
               options={safeIdOptions}
               selectedValue={selectedSafeId}
@@ -106,7 +101,11 @@ export default function VerfahrenNeu({
             <p className="kern-sr-only" aria-live="polite">
               {optionsAnnouncement}
             </p>
-            <GerichtSelectLinks t={t} selectedGericht={selectedGericht} selectedSafeId={selectedSafeId} />
+            <GerichtSelectLinks
+              t={t}
+              selectedGericht={selectedGericht}
+              selectedSafeId={selectedSafeId}
+            />
           </SelectCard>
         </div>
       </div>
