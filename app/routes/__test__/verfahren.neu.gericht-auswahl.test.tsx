@@ -11,7 +11,7 @@ vi.mock("~/middleware/auth.server", () => ({
   authMiddleware: vi.fn(),
 }));
 
-import VerfahrenNeuGerichtAuswahl from "../verfahren.neu.gericht-auswahl";
+import VerfahrenNeu from "../verfahren.neu.tsx";
 
 const gerichtOptions: GerichtAuswahlOption[] = [
   {
@@ -34,9 +34,9 @@ async function renderPage() {
     {
       path: "/",
       Component: () => (
-        <VerfahrenNeuGerichtAuswahl
+        <VerfahrenNeu
           {...({ loaderData: { gerichtOptions } } as unknown as Parameters<
-            typeof VerfahrenNeuGerichtAuswahl
+            typeof VerfahrenNeu
           >[0])}
         />
       ),

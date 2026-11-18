@@ -88,7 +88,7 @@ describe("/verfahren/neu/details", () => {
     it("redirects to the court selection without a Verfahren", async () => {
       expectRedirect(
         await catchThrown(callLoader("")),
-        "/verfahren/neu/gericht-auswahl",
+        "/verfahren/neu",
       );
     });
 

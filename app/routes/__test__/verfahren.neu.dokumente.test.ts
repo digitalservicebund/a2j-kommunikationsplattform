@@ -144,14 +144,14 @@ describe("/verfahren/neu/dokumente", () => {
     it("redirects to the court selection without params", async () => {
       expectRedirect(
         await catchThrown(callLoader("")),
-        "/verfahren/neu/gericht-auswahl",
+        "/verfahren/neu",
       );
     });
 
     it("redirects to the court selection for an unknown court", async () => {
       expectRedirect(
         await catchThrown(callLoader("?gericht=unknown")),
-        "/verfahren/neu/gericht-auswahl",
+        "/verfahren/neu",
       );
     });
 
@@ -171,7 +171,7 @@ describe("/verfahren/neu/dokumente", () => {
           await catchThrown(
             callLoader(`?${new URLSearchParams({ verfahren: verfahrenId })}`),
           ),
-          "/verfahren/neu/gericht-auswahl",
+          "/verfahren/neu",
         );
         expect(mocks.loadVerfahrenEinreichungBundle).not.toHaveBeenCalled();
       },
@@ -186,7 +186,7 @@ describe("/verfahren/neu/dokumente", () => {
         await catchThrown(
           callLoader("?verfahren=99999999-9999-9999-9999-999999999999"),
         ),
-        "/verfahren/neu/gericht-auswahl",
+        "/verfahren/neu",
       );
     });
 
@@ -388,7 +388,7 @@ describe("/verfahren/neu/dokumente", () => {
         }),
       );
 
-      expectRedirect(response, "/verfahren/neu/gericht-auswahl");
+      expectRedirect(response, "/verfahren/neu");
       expect(mocks.handleDokumentUpload).not.toHaveBeenCalled();
     });
 
