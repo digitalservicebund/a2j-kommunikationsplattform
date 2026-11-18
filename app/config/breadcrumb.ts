@@ -9,7 +9,7 @@ export interface BreadcrumbConfig {
 
 export const breadcrumbConfig: BreadcrumbConfig = {
   "/": { label: dictionaries.de.breadcrumb.start },
-  "/verfahren/neu/gericht-auswahl": {
+  "/verfahren/neu": {
     label: dictionaries.de.breadcrumb.verfahrenGerichtAuswahl,
     parent: "/",
   },

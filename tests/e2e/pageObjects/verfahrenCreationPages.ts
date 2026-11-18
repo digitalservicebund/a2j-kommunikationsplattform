@@ -30,7 +30,7 @@ type KanzleiDetails = {
 
 export class GerichtAuswahlPage extends PageObject {
   constructor(page: Page) {
-    super(page, "/verfahren/neu/gericht-auswahl");
+    super(page, "/verfahren/neu");
   }
 
   get komplaButton() {

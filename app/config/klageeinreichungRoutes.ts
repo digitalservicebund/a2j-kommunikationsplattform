@@ -1,7 +1,7 @@
 // Paths of the Klageeinreichung flow: the court selection followed by the
 // three steps, which identify their draft by the `?verfahren=` search param
 export const KLAGEEINREICHUNG_PATHS = {
-  gerichtAuswahl: "/verfahren/neu/gericht-auswahl",
+  gerichtAuswahl: "/verfahren/neu",
   dokumente: "/verfahren/neu/dokumente",
   details: "/verfahren/neu/details",
   beteiligte: "/verfahren/neu/beteiligte",

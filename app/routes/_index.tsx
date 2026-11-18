@@ -125,7 +125,7 @@ export default function VerfahrenRoute() {
           </Link>
 
           <Link
-            to="/verfahren/neu/gericht-auswahl"
+            to="/verfahren/neu"
             className="kern-btn kern-btn--primary"
           >
             <span

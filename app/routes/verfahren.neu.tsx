@@ -17,7 +17,7 @@ import buildGerichtAuswahlOptions, {
 import { authMiddleware } from "~/middleware/auth.server";
 import { Translations } from "~/services/translations";
 import { useTranslations } from "~/services/translations/context";
-import { Route } from "./+types/verfahren.neu.gericht-auswahl";
+import { Route } from "./+types/verfahren.neu";
 
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
@@ -33,7 +33,7 @@ export async function loader({ context }: Route.LoaderArgs) {
   };
 }
 
-export default function VerfahrenNeuGerichtAuswahl({
+export default function VerfahrenNeu({
   loaderData,
 }: Route.ComponentProps) {
   const t = useTranslations();

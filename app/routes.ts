@@ -34,7 +34,7 @@ export default [
 
   // verfahren routes
   ...prefix("verfahren", [
-    route("neu/gericht-auswahl", "./routes/verfahren.neu.gericht-auswahl.tsx"),
+    route("neu", "./routes/verfahren.neu.tsx"),
     route("neu/dokumente", "./routes/verfahren.neu.dokumente.tsx"),
     route("neu/details", "./routes/verfahren.neu.details.tsx"),
     route("neu/beteiligte", "./routes/verfahren.neu.beteiligte.tsx"),
