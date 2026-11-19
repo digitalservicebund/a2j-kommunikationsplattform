@@ -6,7 +6,6 @@ import {
   EinreichungStatusSchema,
 } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import { ValidierungslaufStatusSchema } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
-import { getListeResponseSchema } from "~/domains/verfahren/infrastructure/api/listResponse";
 
 /**
  * EinreichungApiSchema
@@ -40,7 +39,9 @@ export const EinreichungSchema = EinreichungApiSchema.transform(
   }),
 );
 
-export const EinreichungenSchema = getListeResponseSchema(EinreichungSchema);
+export const EinreichungenSchema = z.object({
+  elemente: z.array(EinreichungSchema),
+});
 
 /**
  * EinreichungErstellenResponseApiSchema

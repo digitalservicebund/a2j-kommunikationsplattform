@@ -1,5 +1,5 @@
 import z from "zod";
-import { CodeWertSchema } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
+import { CodeWertSchema } from "~/domains/verfahren/entities/codelisten/codeWert.entity";
 
 export const TelekommunikationSchema = z.object({
   id: z.string(),

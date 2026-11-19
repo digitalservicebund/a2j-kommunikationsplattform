@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { describe, expect, it, vi } from "vitest";
-import type { CodeWert } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
+import type { CodeWert } from "~/domains/verfahren/entities/codelisten/codeWert.entity";
 import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
 import VerfahrenFilterBar from "../VerfahrenFilterBar";
 

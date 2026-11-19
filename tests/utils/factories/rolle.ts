@@ -1,5 +1,5 @@
-import { CodeWert } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
 import { Rolle } from "~/domains/verfahren/entities/beteiligung/rollen.entity";
+import { Rollenbezeichnung } from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
 import {
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
@@ -49,8 +49,8 @@ export function makeProzessbevollmeachtigteRolle(
 }
 
 export function makeKlaegerinRollenbeschreibung(
-  params?: Omit<Partial<CodeWert>, "code">,
-): CodeWert {
+  params?: Omit<Partial<Rollenbezeichnung>, "code">,
+): Rollenbezeichnung {
   return {
     id: "81b65e37-7790-44c6-92b8-858a842dacbc",
     wert: "Kläger(in)",
@@ -60,8 +60,8 @@ export function makeKlaegerinRollenbeschreibung(
 }
 
 export function makeBeklagteRollenbeschreibung(
-  params?: Omit<Partial<CodeWert>, "code">,
-): CodeWert {
+  params?: Omit<Partial<Rollenbezeichnung>, "code">,
+): Rollenbezeichnung {
   return {
     id: "8b764709-aa24-46d2-9d90-f4de86cb3280",
     wert: "Beklagte(r)",
@@ -71,8 +71,8 @@ export function makeBeklagteRollenbeschreibung(
 }
 
 export function makeProzessbevollmaechtigteRollenbeschreibung(
-  params?: Omit<Partial<CodeWert>, "code">,
-): CodeWert {
+  params?: Omit<Partial<Rollenbezeichnung>, "code">,
+): Rollenbezeichnung {
   return {
     id: "8b764709-aa24-46d2-9d90-f4de86cb3280",
     wert: "Prozessbevollmächtigte(r)",

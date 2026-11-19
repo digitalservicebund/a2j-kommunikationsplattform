@@ -16,7 +16,7 @@ import loadKlageeinreichungDraft, {
 } from "~/domains/verfahren/application/loadKlageeinreichungDraft.server";
 import regenerateEinreichungXJustiz from "~/domains/verfahren/application/regenerateEinreichungXJustiz.server";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
-import { CodeWertSchema } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
+import { CodeWertSchema } from "~/domains/verfahren/entities/codelisten/codeWert.entity";
 import {
   fetchAnschriftstypen,
   fetchKanzleiformen,

@@ -6,7 +6,6 @@ import {
   DokumentTypeSchema,
 } from "~/domains/verfahren/entities/dokument/dokument.entity";
 import { ValidierungslaufStatusSchema } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
-import { getListeResponseSchema } from "~/domains/verfahren/infrastructure/api/listResponse";
 
 /**
  * DokumentApiSchema
@@ -51,7 +50,9 @@ export const DokumentSchema = DokumentApiSchema.transform((dto): Dokument => ({
   sichtbarkeitAlle: dto.sichtbarkeit_alle,
 }));
 
-export const DokumenteSchema = getListeResponseSchema(DokumentSchema);
+export const DokumenteSchema = z.object({
+  elemente: z.array(DokumentSchema),
+});
 
 /**
  * DokumentErstellenResponseApiSchema

@@ -2,7 +2,7 @@ import { ChangeEvent, SyntheticEvent } from "react";
 import InputSelect from "~/components/InputSelect";
 import Search from "~/components/Search";
 import { sortOptions } from "~/components/verfahren/presentation/sortOptions";
-import type { CodeWert } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
+import type { CodeWert } from "~/domains/verfahren/entities/codelisten/codeWert.entity";
 import { useTranslations } from "~/services/translations/context";
 
 type VerfahrenFilterBarProps = {

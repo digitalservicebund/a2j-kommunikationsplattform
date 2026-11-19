@@ -13,7 +13,7 @@ import VerfahrenFilterBar from "~/components/verfahren/VerfahrenFilterBar";
 import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
 import { VerfahrenTable } from "~/components/verfahren/VerfahrenTable";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
-import type { CodeWert } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
+import type { CodeWert } from "~/domains/verfahren/entities/codelisten/codeWert.entity";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
 import {
