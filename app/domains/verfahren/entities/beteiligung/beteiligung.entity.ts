@@ -1,8 +1,9 @@
 import z from "zod";
 import { AnschriftSchema } from "~/domains/verfahren/entities/beteiligung/anschrift.entity";
-import { CodeWertSchema } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
 import { RolleSchema } from "~/domains/verfahren/entities/beteiligung/rollen.entity";
 import { TelekommunikationSchema } from "~/domains/verfahren/entities/beteiligung/telekommunikation.entity";
+import { KanzleiformSchema } from "../codelisten/kanzleiform.entity";
+import { RechtsformSchema } from "../codelisten/rechtsform.entity";
 
 const BeteiligteSchema = z.object({
   id: z.string(),
@@ -35,8 +36,8 @@ const RAKanzleiBeteiligungSchema = BeteiligteSchema.extend({
   beteiligtenart: z.literal("raKanzlei"),
   bezeichnung: z.string(),
   // TODO: remove the nullable part after confirming it with SINC
-  rechtsform: z.nullable(CodeWertSchema),
-  kanzleiform: CodeWertSchema,
+  rechtsform: z.nullable(RechtsformSchema),
+  kanzleiform: KanzleiformSchema,
 });
 export type RAKanzleiBeteiligung = z.infer<typeof RAKanzleiBeteiligungSchema>;
 

@@ -1,6 +1,6 @@
 import z from "zod";
 import { BeteiligungSchema } from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
-import { CodeWertSchema } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
+import { CodeWertSchema } from "~/domains/verfahren/entities/codelisten/codeWert.entity";
 
 export const VerfahrenStatusSchema = z.enum([
   "ERSTELLT",

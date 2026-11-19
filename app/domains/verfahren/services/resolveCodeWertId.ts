@@ -1,8 +1,7 @@
-import z from "zod";
-import { CodeWertSchema } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
+import { CodeWert } from "~/domains/verfahren/entities/codelisten/codeWert.entity";
 
 export default function resolveCodeWertId(
-  elemente: z.infer<typeof CodeWertSchema>[],
+  elemente: CodeWert[],
   code: string,
 ): string {
   const match = elemente.find((element) => element.code === code);

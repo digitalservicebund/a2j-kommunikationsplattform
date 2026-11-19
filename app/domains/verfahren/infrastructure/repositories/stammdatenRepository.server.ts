@@ -1,105 +1,107 @@
-import z from "zod";
-import { CodeWertSchema } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
-import { RechtsformSchema } from "~/domains/verfahren/entities/beteiligung/rechtsform.entity";
+import {
+  AnschriftstypListe,
+  AnschriftstypListeSchema,
+} from "~/domains/verfahren/entities/codelisten/anschriftstyp.entity";
+import {
+  GerichtListe,
+  GerichtListeSchema,
+} from "~/domains/verfahren/entities/codelisten/gericht.entity";
+import {
+  KanzleiformListe,
+  KanzleiformListeSchema,
+} from "~/domains/verfahren/entities/codelisten/kanzleiform.entity";
+import {
+  RechtsformListe,
+  RechtsformListeSchema,
+} from "~/domains/verfahren/entities/codelisten/rechtsform.entity";
+import {
+  RollenbezeichnungListe,
+  RollenbezeichnungListeSchema,
+} from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
+import {
+  StaatListe,
+  StaatListeSchema,
+} from "~/domains/verfahren/entities/codelisten/staat.entity";
+import {
+  TelekommunikationsartListe,
+  TelekommunikationsartListeSchema,
+} from "~/domains/verfahren/entities/codelisten/telekommunikationsart";
 import { apiRequest } from "~/domains/verfahren/infrastructure/api/apiClient";
-import { getListeResponseSchema } from "~/domains/verfahren/infrastructure/api/listResponse";
 import { AuthSession } from "~/services/auth/auth.types";
-
-export const fetchAnschriftstypenSchema =
-  getListeResponseSchema(CodeWertSchema);
 
 export async function fetchAnschriftstypen(
   authSession: AuthSession,
-): Promise<z.infer<typeof fetchAnschriftstypenSchema>> {
+): Promise<AnschriftstypListe> {
   return apiRequest({
     authSession,
     path: "/api/v1/codelisten/anschriftstypen",
-    schema: fetchAnschriftstypenSchema,
+    schema: AnschriftstypListeSchema,
     errorMessage: "Anschriftstyp data could not be fetched.",
   });
 }
 
-export const fetchGerichteSchema = getListeResponseSchema(CodeWertSchema);
-
 export async function fetchGerichte(
   authSession: AuthSession,
-): Promise<z.infer<typeof fetchGerichteSchema>> {
+): Promise<GerichtListe> {
   return apiRequest({
     authSession,
     path: "/api/v1/codelisten/gerichte",
-    schema: fetchGerichteSchema,
+    schema: GerichtListeSchema,
     errorMessage: "Gericht data could not be fetched.",
   });
 }
 
-export const fetchKanzleiformenSchema = getListeResponseSchema(CodeWertSchema);
-
 export async function fetchKanzleiformen(
   authSession: AuthSession,
-): Promise<z.infer<typeof fetchKanzleiformenSchema>> {
+): Promise<KanzleiformListe> {
   return apiRequest({
     authSession,
     path: "/api/v1/codelisten/kanzleiformen",
-    schema: fetchKanzleiformenSchema,
+    schema: KanzleiformListeSchema,
     errorMessage: "Kanzleiform data could not be fetched.",
   });
 }
 
-export const fetchRechtsformenSchema = getListeResponseSchema(RechtsformSchema);
-
 export async function fetchRechtsformen(
   authSession: AuthSession,
-): Promise<z.infer<typeof fetchRechtsformenSchema>> {
+): Promise<RechtsformListe> {
   return apiRequest({
     authSession,
     path: "/api/v1/codelisten/rechtsformen",
-    schema: fetchRechtsformenSchema,
+    schema: RechtsformListeSchema,
     errorMessage: "Rechtsform data could not be fetched.",
   });
 }
 
-export const fetchRollenbezeichnungenSchema =
-  getListeResponseSchema(CodeWertSchema);
-
 export async function fetchRollenbezeichnungen(
   authSession: AuthSession,
-): Promise<z.infer<typeof fetchRollenbezeichnungenSchema>> {
+): Promise<RollenbezeichnungListe> {
   return apiRequest({
     authSession,
     path: "/api/v1/codelisten/rollenbezeichnungen",
-    schema: fetchRollenbezeichnungenSchema,
+    schema: RollenbezeichnungListeSchema,
     errorMessage: "Rollenbezeichnung data could not be fetched.",
   });
 }
 
-export const fetchStaatenSchema = getListeResponseSchema(CodeWertSchema);
-
 export async function fetchStaaten(
   authSession: AuthSession,
-): Promise<z.infer<typeof fetchStaatenSchema>> {
+): Promise<StaatListe> {
   return apiRequest({
     authSession,
     path: "/api/v1/codelisten/staaten",
-    schema: fetchStaatenSchema,
+    schema: StaatListeSchema,
     errorMessage: "Staat data could not be fetched.",
   });
 }
 
-const TelekommunikationsartCodeWertSchema = CodeWertSchema.extend({
-  beschreibung: z.nullable(z.string()),
-});
-
-export const fetchTelekommunikationsartenSchema = getListeResponseSchema(
-  TelekommunikationsartCodeWertSchema,
-);
-
 export async function fetchTelekommunikationsarten(
   authSession: AuthSession,
-): Promise<z.infer<typeof fetchTelekommunikationsartenSchema>> {
+): Promise<TelekommunikationsartListe> {
   return apiRequest({
     authSession,
     path: "/api/v1/codelisten/telekommunikationsarten",
-    schema: fetchTelekommunikationsartenSchema,
+    schema: TelekommunikationsartListeSchema,
     errorMessage: "Telekommunikationsart data could not be fetched.",
   });
 }

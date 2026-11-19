@@ -4,7 +4,6 @@ import {
   BelegStatusSchema,
   BelegTypSchema,
 } from "~/domains/verfahren/entities/beleg/beleg.entity";
-import { getListeResponseSchema } from "~/domains/verfahren/infrastructure/api/listResponse";
 
 /**
  * BelegApiSchema
@@ -36,4 +35,6 @@ export const BelegSchema = BelegApiSchema.transform((dto): Beleg => ({
   sizeInBytes: dto.size_in_bytes,
 }));
 
-export const BelegeSchema = getListeResponseSchema(BelegSchema);
+export const BelegeSchema = z.object({
+  elemente: z.array(BelegSchema),
+});
