@@ -33,6 +33,12 @@ export class GerichtAuswahlPage extends PageObject {
     super(page, "/verfahren/neu");
   }
 
+  get safeIdSelect() {
+    return this.page.getByRole("combobox", {
+      name: t.routes.verfahrenNeu.dokumente.safeId,
+    });
+  }
+
   get komplaButton() {
     return this.page.getByRole("link", {
       name: t.routes.verfahrenGerichtAuswahl.klageEinreichenKompla,

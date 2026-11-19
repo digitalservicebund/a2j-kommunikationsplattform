@@ -33,6 +33,10 @@ test.describe("Verfahren creation", () => {
     await gerichtAuswahl.expectToBeHere();
     await expectNoA11yViolations(page);
 
+    // One of my authorized SAFE-IDs is preselected for the new Verfahren
+    await expect(gerichtAuswahl.safeIdSelect).not.toHaveValue("");
+    const safeId = await gerichtAuswahl.safeIdSelect.inputValue();
+
     // Temporary test setup: the placeholder ZOV list includes Amtsgericht
     // Bremen, so both options show. Bremen is not part of the KomPla pilot.
     await gerichtAuswahl.selectEmpfaengergericht("Amtsgericht Bremen");
@@ -43,6 +47,7 @@ test.describe("Verfahren creation", () => {
     // I should be redirected to the Dokumente step
     const dokumenteStep = new VerfahrenDokumentePage(page);
     await dokumenteStep.expectToBeHere();
+    expect(new URL(page.url()).searchParams.get("safeId")).toBe(safeId);
     await expectNoA11yViolations(page);
     await expect(dokumenteStep.disabledNextButton).toHaveAttribute(
       "aria-disabled",
