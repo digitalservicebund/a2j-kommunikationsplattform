@@ -18,9 +18,6 @@ import type { ActionResult } from "~/utils/actionResult";
 
 type UploadActionData = { formType?: string; typ?: string };
 
-// Lets fields rendered outside the form submit with it via `form`
-export const DOKUMENT_UPLOAD_FORM_ID = "dokument-upload-form";
-
 const DOKUMENT_TYPES: readonly UploadDokumentType[] = [
   "SCHRIFTSTUECK",
   "ANHANG",
@@ -92,7 +89,6 @@ export default function VerfahrenDokumentUploadForm({
 
   return (
     <Form
-      id={DOKUMENT_UPLOAD_FORM_ID}
       method="post"
       encType="multipart/form-data"
       preventScrollReset
