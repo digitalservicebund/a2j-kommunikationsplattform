@@ -46,7 +46,7 @@ describe("useParamsState", () => {
       useParamsState<{
         sort: "";
         gericht: "";
-        search_text: "";
+        suchbegriff: "";
       }>(),
     );
 

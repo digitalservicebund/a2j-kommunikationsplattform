@@ -41,7 +41,7 @@ export default function VerfahrenFilterBar({
             handleSearch={onSearch}
             disabled={isInputDisabled}
             defaultValue={searchDefaultValue}
-            id="search_text"
+            id="suchbegriff"
           />
         </div>
         <InputSelect
