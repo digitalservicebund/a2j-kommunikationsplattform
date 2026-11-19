@@ -73,9 +73,13 @@ export async function getAuthSession(
     accessToken: tokens.accessToken,
     userName: user.name,
     safeId: user?.safeId ?? null,
-    // TODO: Derive `authorizedForSafeIds` from the `granted_privileges` of
-    // the access token once it becomes available.
-    authorizedForSafeIds: user.grantedPrivileges || [],
+    // the below might need to be changed when the Reno functionality is available,
+    // as a Reno should not be able to file a Klage using their own SAFE_ID
+    authorizedForSafeIds: user.grantedPrivileges?.length
+      ? user.grantedPrivileges
+      : user.safeId
+        ? [user.safeId]
+        : [],
     sessionCookieHeaders: [...setCookieHeaders, ...tokens.setCookieHeaders],
   };
 }
