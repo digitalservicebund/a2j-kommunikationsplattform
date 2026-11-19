@@ -34,7 +34,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const authSession = await getAuthSession(request);
   const userIsLoggedIn = Boolean(authSession);
   const userName = authSession?.userName;
-  console.log("authSession", authSession);
   return data({ userIsLoggedIn, userName });
 };
 

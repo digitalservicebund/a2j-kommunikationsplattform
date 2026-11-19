@@ -28,7 +28,6 @@ type IdTokenClaims = z.infer<typeof IdTokenClaimsSchema>;
 function decodeIdTokenClaims(idToken: string): IdTokenClaims {
   const jwtPayload = idToken.split(".")[1];
   const payloadJSON = Buffer.from(jwtPayload, "base64url").toString("utf-8");
-  console.log("payloadJSON", payloadJSON);
   return IdTokenClaimsSchema.parse(JSON.parse(payloadJSON));
 }
 
