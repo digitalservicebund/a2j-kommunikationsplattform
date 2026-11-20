@@ -1,8 +1,10 @@
+import { Ref } from "react";
 import { Link } from "react-router";
 
 type AlertType = "success" | "error" | "warning" | "info";
 
 interface AlertProps {
+  ref?: Ref<HTMLDivElement>;
   type: AlertType;
   title: string;
   message?: string;
@@ -11,6 +13,7 @@ interface AlertProps {
 }
 
 export default function Alert({
+  ref,
   type,
   title,
   message,
@@ -34,7 +37,7 @@ export default function Alert({
   const showBody = Boolean(message || (redirectUrl && redirectText));
 
   return (
-    <div className={`kern-alert ${typeClasses[type]}`} role="alert">
+    <div ref={ref} className={`kern-alert ${typeClasses[type]}`} role="alert">
       <div className="kern-alert__header">
         <span
           className={`kern-icon ${iconClasses[type]}`}

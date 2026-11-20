@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { ElementType, ReactNode } from "react";
 
 export interface FieldsetCardProps {
@@ -6,6 +7,7 @@ export interface FieldsetCardProps {
   children: ReactNode;
   TitleComponent?: ElementType;
   id?: string;
+  className?: string;
 }
 
 /**
@@ -18,13 +20,16 @@ export default function FieldsetCard({
   subline,
   children,
   id,
+  className,
   TitleComponent = "span",
 }: FieldsetCardProps) {
   return (
-    <div className="kern-card mx-0" id={id}>
+    <div className={clsx("kern-card", "mx-0", className)} id={id}>
       <fieldset className="kern-card__container kern-mb-sm border-none">
-        <legend className="kern-card__header kern-pt-lg kern-px-none">
-          <TitleComponent className="kern-title pbs-0">{title}</TitleComponent>
+        <legend className="kern-card__header kern-px-none">
+          <TitleComponent className="kern-title kern-pt-lg">
+            {title}
+          </TitleComponent>
         </legend>
         <div className="kern-card__body">
           {subline && (
