@@ -113,6 +113,10 @@ export const de = {
         title: "Fehler beim Absenden des Formulars",
         message: "Bitte versuchen Sie es später erneut.",
       },
+      invalid: {
+        title: "Ungültige Angaben",
+        message: "Bitte überprüfen Sie Ihre Eingaben.",
+      },
       errors: {
         deleteFailed: "Löschen fehlgeschlagen.",
         invalidSubmission: "Ungültige Formularübermittlung.",
@@ -128,6 +132,7 @@ export const de = {
         unknown: "Ein unbekannter Fehler ist aufgetreten.",
       },
       labels: {
+        bezeichnung: "Bezeichnung",
         vorname: "Vorname",
         nachname: "Nachname",
         strasse: "Straße",
@@ -309,6 +314,21 @@ export const de = {
           copy: "Wir haben die Angaben aus Ihrer Klageschrift vorausgefüllt. Bitte prüfen Sie alle Felder sorgfältig.",
         },
         form: {
+          beteiligtenart: {
+            label: "Art der Partei",
+            options: {
+              natuerlichePerson: "Natürliche Person",
+              organisation: "Firma / Organisation",
+            },
+          },
+          addPartei: "Partei hinzufügen",
+          addProzessbevollmaechtigte: "Anwaltliche Vertretung hinzufügen",
+          klagendenseite: "Klagendenseite",
+          beklagtenseite: "Beklagtenseite",
+          parteiWithNumber: "Partei {{number}}",
+          prozessbevollmaechtigterWithNumber:
+            "Prozessbevollmächtigter {{number}}",
+          vertretungReferenzen: "Vertretung für",
           klagendePartei: {
             title: "Klagende Partei",
             description:
@@ -319,20 +339,13 @@ export const de = {
               bezeichnung:
                 "Name der Kanzlei / Sozietät / Berufsausübungsgesellschaft",
               kanzleiform: "Art der anwaltlichen Vertretung",
+              rechtsform: "Rechtsform",
             },
           },
           beklagtePartei: {
             title: "Beklagte Partei",
             description:
               "Alle Angaben zur beklagten Partei, dem Beklagten oder der Beklagten.",
-          },
-          validation: {
-            klagendeParteiNachname:
-              "Bitte geben Sie den Nachnamen der klagenden Partei an.",
-            beklagteParteiNachname:
-              "Bitte geben Sie den Nachnamen der beklagten Partei an.",
-            lawyerName: "Bitte geben Sie den Namen der Kanzlei an.",
-            lawyerKanzleiform: "Bitte wählen Sie die Kanzleiform aus.",
           },
         },
       },

@@ -14,6 +14,11 @@ const ExampleInputSchema = z.object({
   bar: z.preprocess(Number, z.number()),
 });
 
+const ExampleNestedInputSchema = z.object({
+  nested: z.object({ field: z.string() }),
+  items: z.array(ExampleInputSchema),
+});
+
 describe(parseActionInput, () => {
   it("returns the parsed form data if valid", () => {
     const input = {
@@ -158,6 +163,48 @@ describe(parseActionFormData, () => {
     });
   });
 
+  it("optionally supports bracket notation for nesting", () => {
+    const formData = new FormData();
+    formData.append("nested[field]", "value");
+    formData.append("items[0][foo]", "something");
+    formData.append("items[0][bar]", "123");
+    formData.append("items[1][foo]", "something else");
+    formData.append("items[1][bar]", "456");
+
+    const result = parseActionFormData(formData, ExampleNestedInputSchema, {
+      parseNestingSyntax: true,
+    });
+
+    expect(result).toEqual({
+      nested: {
+        field: "value",
+      },
+      items: [
+        {
+          foo: "something",
+          bar: 123,
+        },
+        {
+          foo: "something else",
+          bar: 456,
+        },
+      ],
+    });
+  });
+
+  it("does not parse nesting syntax by default", () => {
+    const formData = new FormData();
+    formData.append("nested[field]", "value");
+    formData.append("items[0][foo]", "something");
+    formData.append("items[0][bar]", "123");
+    formData.append("items[1][foo]", "something else");
+    formData.append("items[1][bar]", "456");
+
+    expect(() =>
+      parseActionFormData(formData, ExampleNestedInputSchema),
+    ).toThrow();
+  });
+
   it("throws an action-invalid result if the form data is invalid", () => {
     const formData = new FormData();
     formData.append("foo", "");
@@ -222,6 +269,49 @@ describe(safeParseActionFormData, () => {
       success: true,
       data: { foo: "something", bar: 123 },
       input: { foo: "something", bar: "123" },
+    });
+  });
+
+  it("optionally supports bracket notation for nesting", () => {
+    const formData = new FormData();
+    formData.append("nested[field]", "value");
+    formData.append("items[0][foo]", "something");
+    formData.append("items[0][bar]", "123");
+
+    const result = safeParseActionFormData(formData, ExampleNestedInputSchema, {
+      parseNestingSyntax: true,
+    });
+
+    expect(result).toEqual({
+      success: true,
+      data: {
+        nested: { field: "value" },
+        items: [{ foo: "something", bar: 123 }],
+      },
+      input: {
+        nested: { field: "value" },
+        items: [{ foo: "something", bar: "123" }],
+      },
+    });
+  });
+
+  it("does not parse nesting syntax by default", () => {
+    const formData = new FormData();
+    formData.append("nested[field]", "value");
+    formData.append("items[0][foo]", "something");
+    formData.append("items[0][bar]", "123");
+    formData.append("items[1][foo]", "something else");
+    formData.append("items[1][bar]", "456");
+
+    const result = safeParseActionFormData(formData, ExampleNestedInputSchema);
+
+    expect(result.success).toBe(false);
+    expect(result.input).toEqual({
+      "nested[field]": "value",
+      "items[0][foo]": "something",
+      "items[0][bar]": "123",
+      "items[1][foo]": "something else",
+      "items[1][bar]": "456",
     });
   });
 

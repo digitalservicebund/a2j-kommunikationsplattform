@@ -3,17 +3,22 @@ import { AnschriftRequestSchema } from "~/domains/verfahren/infrastructure/schem
 import { KommunikationsanschlussRequestSchema } from "~/domains/verfahren/infrastructure/schemas/requests/kommunikationsanschluss.request.schema";
 import { RollenRequestSchema } from "~/domains/verfahren/infrastructure/schemas/requests/rollen.request.schema";
 
-// Shared fields, spread AFTER beteiligtenart in each concrete schema below.
-// The API's discriminated deserializer requires "beteiligtenart" to be the
-// first JSON property of a beteiligungen entry; zod's `.extend()` would put
-// it last (base-shape fields first), so we build each shape by hand instead.
-const beteiligteRequestFields = {
+export const BeteiligungRequestBaseSchema = z.object({
   rollen: z.array(RollenRequestSchema).min(1),
   anschriften: z.nullable(z.array(AnschriftRequestSchema)),
   kommunikationsanschluesse: z.nullable(
     z.array(KommunikationsanschlussRequestSchema),
   ),
-};
+});
+
+export type BeteiligungRequestBase = z.infer<
+  typeof BeteiligungRequestBaseSchema
+>;
+
+// The API's discriminated-union deserializer requires "beteiligtenart" to be
+// the first JSON property of a `BeteiligungRequest`, but using
+// `BeteiligungRequestBaseSchema.extend(...)` would would put it last, so use
+// `z.object(..., ...BeteiligungRequestBaseSchema.shape)` instead below.
 
 export const NatuerlichePersonRequestSchema = z.object({
   beteiligtenart: z.literal("natuerlichePerson"),
@@ -21,29 +26,35 @@ export const NatuerlichePersonRequestSchema = z.object({
   titel: z.nullable(z.string()),
   namensvorsatz: z.nullable(z.string()),
   nachname: z.string().min(1),
-  ...beteiligteRequestFields,
+  ...BeteiligungRequestBaseSchema.shape,
 });
+
+export type NatuerlichePersonRequest = z.infer<
+  typeof NatuerlichePersonRequestSchema
+>;
 
 export const OrganisationRequestSchema = z.object({
   beteiligtenart: z.literal("organisation"),
   bezeichnung: z.string().min(1),
-  ...beteiligteRequestFields,
+  ...BeteiligungRequestBaseSchema.shape,
 });
+
+export type OrganisationRequest = z.infer<typeof OrganisationRequestSchema>;
 
 export const RaKanzleiRequestSchema = z.object({
   beteiligtenart: z.literal("raKanzlei"),
   bezeichnung: z.string().min(1),
   rechtsform_id: z.nullable(z.string()),
   kanzleiform_id: z.string().min(1),
-  ...beteiligteRequestFields,
+  ...BeteiligungRequestBaseSchema.shape,
 });
 
-export const BeteiligungenRequestSchema = z.nullable(
-  z.array(
-    z.discriminatedUnion("beteiligtenart", [
-      NatuerlichePersonRequestSchema,
-      OrganisationRequestSchema,
-      RaKanzleiRequestSchema,
-    ]),
-  ),
-);
+export type RaKanzleiRequest = z.infer<typeof RaKanzleiRequestSchema>;
+
+export const BeteiligungRequestSchema = z.discriminatedUnion("beteiligtenart", [
+  NatuerlichePersonRequestSchema,
+  OrganisationRequestSchema,
+  RaKanzleiRequestSchema,
+]);
+
+export type BeteiligungRequest = z.infer<typeof BeteiligungRequestSchema>;

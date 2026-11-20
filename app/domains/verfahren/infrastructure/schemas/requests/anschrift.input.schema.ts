@@ -28,3 +28,5 @@ export const AnschriftInputSchema = z
     postfachnummer: input.postfachnummer,
     staat_id: input.staatId,
   }));
+
+export type AnschriftInput = z.input<typeof AnschriftInputSchema>;

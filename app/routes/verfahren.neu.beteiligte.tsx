@@ -1,155 +1,68 @@
-import { useRef, useState } from "react";
-import { flushSync } from "react-dom";
+import { useEffect, useRef } from "react";
 import { Form, Link, redirect, useNavigation } from "react-router";
 import { z } from "zod";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import { PageMetadata } from "~/components/PageMetadata";
 import Progress from "~/components/Progress";
-import VerfahrenBeklagterSection from "~/components/verfahren/VerfahrenBeklagterSection";
-import VerfahrenKlaegerSection from "~/components/verfahren/VerfahrenKlaegerSection";
+import {
+  BeteiligungFieldValues,
+  BeteiligungFieldValuesSchema,
+} from "~/components/verfahren/beteiligte/BeteiligungFieldset";
+import VerfahrenCreationBeteiligungenEditForm from "~/components/verfahren/beteiligte/VerfahrenCreationBeteiligungenEditForm";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
-import { config } from "~/config/config";
 import { buildKlageeinreichungPath } from "~/config/klageeinreichungRoutes";
 import loadKlageeinreichungDraft, {
   requireVerfahrenSearchParam,
 } from "~/domains/verfahren/application/loadKlageeinreichungDraft.server";
 import regenerateEinreichungXJustiz from "~/domains/verfahren/application/regenerateEinreichungXJustiz.server";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
-import { CodeWertSchema } from "~/domains/verfahren/entities/codelisten/codeWert.entity";
+import { Beteiligung } from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
+import {
+  Anschriftstyp,
+  ANSCHRIFTSTYP_CODE_DIENST_GESCHAEFTSANSCHRIFT,
+  ANSCHRIFTSTYP_CODE_PRIVATANSCHRIFT,
+} from "~/domains/verfahren/entities/codelisten/anschriftstyp.entity";
+import { Kanzleiform } from "~/domains/verfahren/entities/codelisten/kanzleiform.entity";
+import { Rechtsform } from "~/domains/verfahren/entities/codelisten/rechtsform.entity";
+import { Rollenbezeichnung } from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
+import {
+  Staat,
+  STAAT_CODE_DEUTSCHLAND,
+} from "~/domains/verfahren/entities/codelisten/staat.entity";
+import {
+  Telekommunikationsart,
+  TELEKOMMUNIKATIONSART_CODE_EMAIL,
+  TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
+} from "~/domains/verfahren/entities/codelisten/telekommunikationsart";
 import {
   fetchAnschriftstypen,
   fetchKanzleiformen,
+  fetchRechtsformen,
   fetchRollenbezeichnungen,
   fetchStaaten,
   fetchTelekommunikationsarten,
 } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
-import {
-  fetchVerfahrenById,
-  updateVerfahren,
-} from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
+import { updateVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
+import { AnschriftInput } from "~/domains/verfahren/infrastructure/schemas/requests/anschrift.input.schema";
+import { BeteiligungInput } from "~/domains/verfahren/infrastructure/schemas/requests/beteiligung.input.schema";
 import { VerfahrenAendernInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.input.schema";
-import {
-  getBeteiligungByRoleCode,
-  getGeschaeftszeichenByRoleCode,
-  getProzessbevollmaechtigteByReferenz,
-  ROLE_CODE_BEKLAGTE,
-  ROLE_CODE_KLAEGERIN,
-} from "~/domains/verfahren/services/beteiligteByRole";
-import {
-  getBeteiligteAnschrift,
-  getBeteiligteEmail,
-  getBeteiligteTelefon,
-} from "~/domains/verfahren/services/beteiligteContactInfo";
-import buildBeteiligungFromFormValues, {
-  AnwaltFormValues,
-  buildRaKanzleiFromFormValues,
-  ParteiFormValues,
-} from "~/domains/verfahren/services/buildBeteiligungFromFormValues";
+import { buildBeteiligungInputFromBeteiligung } from "~/domains/verfahren/services/buildBeteiligungenInputFromVerfahren";
 import resolveCodeWertId from "~/domains/verfahren/services/resolveCodeWertId";
-import {
-  ANSCHRIFTSTYP_CODE_PRIVATANSCHRIFT,
-  ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
-  STAAT_CODE_DEUTSCHLAND,
-  TELEKOMMUNIKATIONSART_CODE_EMAIL,
-  TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
-} from "~/domains/verfahren/services/verfahrenCodeConstants";
 import { authMiddleware } from "~/middleware/auth.server";
-import { AuthSession } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
 import de from "~/services/translations/de";
-import {
-  safeParseActionFormData,
-  safeParseActionInput,
-} from "~/utils/actionInput";
+import { safeParseActionFormData } from "~/utils/actionInput";
 import { actionResultFromApiError } from "~/utils/actionResult";
-import { dispatchFormAction } from "~/utils/dispatchFormAction";
+import { logger } from "~/utils/logger.server";
 import { Route } from "./+types/verfahren.neu.beteiligte";
-
-type CodeWertItem = z.infer<typeof CodeWertSchema>;
-
-// Dev-only convenience data for the "Fill details with dummy data" button below.
-const DUMMY_FORM_VALUES = {
-  klagendeParteiVorname: "Test-Klaeger-Vorname",
-  klagendeParteiNachname: "Test-Klaeger-Nachname",
-  klagendeParteiStrasse: "Teststraße",
-  klagendeParteiHausnummer: "1",
-  klagendeParteiPlz: "12345",
-  klagendeParteiOrt: "Testort",
-  klagendeParteiEmail: "test-klaeger@test.de",
-  klagendeParteiTelefon: "0123456789",
-  lawyerName: "Test-Kanzlei",
-  lawyerKanzleiformId: "Einzelanwalt",
-  lawyerGeschaeftszeichen: "AZ-TEST-001",
-  lawyerStrasse: "Teststraße",
-  lawyerHausnummer: "2",
-  lawyerPlz: "12345",
-  lawyerOrt: "Testort",
-  lawyerEmail: "test-kanzlei@test.de",
-  lawyerTelefon: "0123456789",
-  beklagteParteiVorname: "Test-Beklagte-Vorname",
-  beklagteParteiNachname: "Test-Beklagte-Nachname",
-  beklagteParteiStrasse: "Teststraße",
-  beklagteParteiHausnummer: "3",
-  beklagteParteiPlz: "12345",
-  beklagteParteiOrt: "Testort",
-  beklagteParteiEmail: "test-beklagte@test.de",
-  beklagteParteiTelefon: "0123456789",
-};
-
-function fillFormFields(form: HTMLFormElement, values: Record<string, string>) {
-  Object.entries(values).forEach(([name, value]) => {
-    const field = form.elements.namedItem(name);
-
-    if (field instanceof HTMLInputElement) {
-      field.value = value;
-    } else if (field instanceof HTMLSelectElement) {
-      for (const option of field.options) {
-        if (option.value === value || option.textContent === value) {
-          field.value = option.value;
-          break;
-        }
-      }
-    }
-  });
-}
-
-function getFormText(formData: FormData, name: string): string {
-  const value = formData.get(name);
-  return typeof value === "string" ? value : "";
-}
-
-function getParteiFormValues(
-  formData: FormData,
-  prefix: "klagendePartei" | "beklagtePartei",
-): ParteiFormValues {
-  return {
-    vorname: getFormText(formData, `${prefix}Vorname`),
-    nachname: getFormText(formData, `${prefix}Nachname`),
-    strasse: getFormText(formData, `${prefix}Strasse`),
-    hausnummer: getFormText(formData, `${prefix}Hausnummer`),
-    postleitzahl: getFormText(formData, `${prefix}Plz`),
-    ort: getFormText(formData, `${prefix}Ort`),
-    email: getFormText(formData, `${prefix}Email`),
-    telefon: getFormText(formData, `${prefix}Telefon`),
-  };
-}
-
-function getAnwaltFormValues(formData: FormData): AnwaltFormValues {
-  return {
-    name: getFormText(formData, "lawyerName"),
-    geschaeftszeichen: getFormText(formData, "lawyerGeschaeftszeichen"),
-    strasse: getFormText(formData, "lawyerStrasse"),
-    hausnummer: getFormText(formData, "lawyerHausnummer"),
-    postleitzahl: getFormText(formData, "lawyerPlz"),
-    ort: getFormText(formData, "lawyerOrt"),
-    email: getFormText(formData, "lawyerEmail"),
-    telefon: getFormText(formData, "lawyerTelefon"),
-  };
-}
 
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
+
+// =============================================================================
+// Loader
+// =============================================================================
 
 export async function loader({ request, context }: Route.LoaderArgs) {
   const authSession = requireAuthSession(context, "loader");
@@ -157,325 +70,355 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     new URL(request.url).searchParams,
   );
 
-  const { verfahren, einreichung } = await loadKlageeinreichungDraft(
+  const { verfahren } = await loadKlageeinreichungDraft(
     authSession,
     verfahrenId,
   );
 
-  const { elemente: kanzleiformen } = await fetchKanzleiformen(authSession);
+  const [{ elemente: kanzleiformen }, { elemente: rechtsformen }] =
+    await Promise.all([
+      fetchKanzleiformen(authSession),
+      fetchRechtsformen(authSession),
+    ]);
 
   return {
     verfahren,
-    einreichung,
     kanzleiformen,
+    rechtsformen,
   };
 }
 
-type FormActionContext = {
-  authSession: AuthSession;
-  verfahrenId: string;
+// =============================================================================
+// Action
+// =============================================================================
+
+const ActionInputSchema = z.object({
+  beteiligungen: z.array(BeteiligungFieldValuesSchema),
+});
+
+/**
+ * The code lists used to resolve the CodeWert codes in the form values to the
+ * CodeWert IDs expected by the API.
+ */
+type CodelistenForBuildingBeteiligungInput = {
+  anschriftstypen: Anschriftstyp[];
+  kanzleiformen: Kanzleiform[];
+  rechtsformen: Rechtsform[];
+  rollenbezeichnungen: Rollenbezeichnung[];
+  staaten: Staat[];
+  telekommunikationsarten: Telekommunikationsart[];
 };
 
-const SubmitInputSchema = z.object({
-  einreichungId: z.string().min(1),
-  // buildBeteiligungFromFormValues() silently omits a Partei from the
-  // submission when their Nachname is blank instead of failing — validate
-  // it here first so a blank Nachname is reported as a field error rather
-  // than the party quietly disappearing from the Klage.
-  klagendeParteiNachname: z.string().min(1, {
-    error:
-      de.routes.verfahrenNeu.beteiligte.form.validation.klagendeParteiNachname,
-  }),
-  beklagteParteiNachname: z.string().min(1, {
-    error:
-      de.routes.verfahrenNeu.beteiligte.form.validation.beklagteParteiNachname,
-  }),
-  hasLawyer: z
-    .string()
-    .optional()
-    .transform((value) => !!value),
-  // TODO: Validate all inputs here
-});
+/**
+ * Builds the API input for a Beteiligung from its form values. If the
+ * Beteiligung already exists, its data not editable in the form is kept.
+ */
+function beteiligungInputFromFormValues(
+  fieldValues: BeteiligungFieldValues,
+  existingBeteiligung: Beteiligung | undefined,
+  codelisten: CodelistenForBuildingBeteiligungInput,
+): BeteiligungInput {
+  const input: BeteiligungInput = existingBeteiligung
+    ? buildBeteiligungInputFromBeteiligung(existingBeteiligung)
+    : {
+        beteiligtenart: "natuerlichePerson",
+        rollen: [],
+        anschriften: [],
+        kommunikationsanschluesse: [],
+        vorname: null,
+        titel: null,
+        namensvorsatz: null,
+        nachname: "",
+      };
 
-const LawyerRequiredFieldsSchema = z.object({
-  lawyerName: z.string().min(1, {
-    error: de.routes.verfahrenNeu.beteiligte.form.validation.lawyerName,
-  }),
-  lawyerKanzleiformId: z.string().min(1, {
-    error: de.routes.verfahrenNeu.beteiligte.form.validation.lawyerKanzleiform,
-  }),
-});
+  setRolle(input, fieldValues, codelisten);
+  setAnschrift(input, fieldValues, codelisten);
+  setKommunikationsanschluesse(input, fieldValues, codelisten);
+  setBeteiligtenartSpecificFields(input, fieldValues, codelisten);
 
-// Persists the Verfahren and its Beteiligungen, then regenerates the
-// resulting XJustiz document.
-async function handleSubmitAction(
-  formData: FormData,
-  { authSession, verfahrenId }: FormActionContext,
+  return input;
+}
+
+function setRolle(
+  input: BeteiligungInput,
+  fieldValues: BeteiligungFieldValues,
+  codelisten: CodelistenForBuildingBeteiligungInput,
 ) {
-  const actionResultData = {
-    formType: "submit",
-  } as const;
+  input.rollen = fieldValues.rollen.map((rolle) => ({
+    rollennummer: rolle.rollennummer ?? null,
+    rollenbezeichnungId: resolveCodeWertId(
+      codelisten.rollenbezeichnungen,
+      rolle.rollenbezeichnungCode,
+    ),
+    referenz: rolle.referenz,
+    geschaeftszeichen: rolle.geschaeftszeichen ?? null,
+  }));
+}
 
-  const submitInput = safeParseActionFormData(formData, SubmitInputSchema, {
-    errorResultData: actionResultData,
-  });
+function setAnschrift(
+  input: BeteiligungInput,
+  fieldValues: BeteiligungFieldValues,
+  codelisten: CodelistenForBuildingBeteiligungInput,
+) {
+  input.anschriften ??= [];
 
-  if (!submitInput.success) {
-    return submitInput.error;
-  }
+  const primaryAnschriftstypCode =
+    fieldValues.beteiligtenart === "natuerlichePerson"
+      ? ANSCHRIFTSTYP_CODE_PRIVATANSCHRIFT
+      : ANSCHRIFTSTYP_CODE_DIENST_GESCHAEFTSANSCHRIFT;
 
-  const { einreichungId, hasLawyer } = submitInput.data;
-
-  if (hasLawyer) {
-    const lawyerRequiredFields = safeParseActionFormData(
-      formData,
-      LawyerRequiredFieldsSchema,
-      { errorResultData: actionResultData },
-    );
-    if (!lawyerRequiredFields.success) {
-      return lawyerRequiredFields.error;
-    }
-  }
-
-  // Fetch the code lists needed to resolve Beteiligung/Rolle references
-  let staaten: CodeWertItem[];
-  let anschriftstypen: CodeWertItem[];
-  let telekommunikationsarten: CodeWertItem[];
-  let rollenbezeichnungen: CodeWertItem[];
-
-  try {
-    [
-      { elemente: staaten },
-      { elemente: anschriftstypen },
-      { elemente: telekommunikationsarten },
-      { elemente: rollenbezeichnungen },
-    ] = await Promise.all([
-      fetchStaaten(authSession),
-      fetchAnschriftstypen(authSession),
-      fetchTelekommunikationsarten(authSession),
-      fetchRollenbezeichnungen(authSession),
-    ]);
-  } catch (error) {
-    return actionResultFromApiError(error, {
-      message: de.shared.form.errors.saveFailed,
-      data: actionResultData,
-    });
-  }
-
-  const sharedCodeIds = {
+  const newAnschrift: AnschriftInput = {
     anschriftstypId: resolveCodeWertId(
-      anschriftstypen,
-      ANSCHRIFTSTYP_CODE_PRIVATANSCHRIFT,
+      codelisten.anschriftstypen,
+      primaryAnschriftstypCode,
     ),
-    staatId: resolveCodeWertId(staaten, STAAT_CODE_DEUTSCHLAND),
-    emailTelekommunikationsartId: resolveCodeWertId(
-      telekommunikationsarten,
-      TELEKOMMUNIKATIONSART_CODE_EMAIL,
-    ),
-    telefonTelekommunikationsartId: resolveCodeWertId(
-      telekommunikationsarten,
-      TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
-    ),
+    strasse: fieldValues.strasse ?? "",
+    hausnummer: fieldValues.hausnummer ?? "",
+    postleitzahl: fieldValues.postleitzahl ?? "",
+    ort: fieldValues.ort ?? "",
+    postfachnummer: null,
+    staatId: resolveCodeWertId(codelisten.staaten, STAAT_CODE_DEUTSCHLAND),
   };
 
-  // Build the Beteiligungen (plaintiff, defendant, and their lawyer) from
-  // the submitted form data
-  const klagendeParteiBeteiligung = buildBeteiligungFromFormValues(
-    getParteiFormValues(formData, "klagendePartei"),
-    {
-      ...sharedCodeIds,
-      rollenbezeichnungId: resolveCodeWertId(
-        rollenbezeichnungen,
-        ROLE_CODE_KLAEGERIN,
-      ),
-    },
-    ROLE_CODE_KLAEGERIN,
-  );
-  const beklagteParteiBeteiligung = buildBeteiligungFromFormValues(
-    getParteiFormValues(formData, "beklagtePartei"),
-    {
-      ...sharedCodeIds,
-      rollenbezeichnungId: resolveCodeWertId(
-        rollenbezeichnungen,
-        ROLE_CODE_BEKLAGTE,
-      ),
-    },
-  );
-  // Only include the Prozessbevollmächtigte(r) if the Klägerin they
-  // reference is actually part of this submission — otherwise their
-  // Rolle.referenz would be an orphan, pointing at a party that no longer exists.
-  const anwaltBeteiligung = klagendeParteiBeteiligung
-    ? buildRaKanzleiFromFormValues(
-        getAnwaltFormValues(formData),
-        {
-          ...sharedCodeIds,
-          rollenbezeichnungId: resolveCodeWertId(
-            rollenbezeichnungen,
-            ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
-          ),
-          kanzleiformId: getFormText(formData, "lawyerKanzleiformId"),
-        },
-        ROLE_CODE_KLAEGERIN,
-      )
-    : null;
+  // Overwrite the Anschrift with the same Anschriftstyp if it exists.
+  // Otherwise, add a new Anschrift. Possible other Anschriften are preserved.
 
-  const beteiligungen = [
-    klagendeParteiBeteiligung,
-    beklagteParteiBeteiligung,
-    anwaltBeteiligung,
-  ].filter((beteiligung) => beteiligung !== null);
+  const existingAnschriftIndex = input.anschriften.findIndex(
+    (anschrift) => anschrift.anschriftstypId === newAnschrift.anschriftstypId,
+  );
 
-  // Persist the Verfahren and regenerate the resulting XJustiz document.
-  // The Verfahrensdetails are kept as saved in the previous step.
+  if (existingAnschriftIndex >= 0) {
+    input.anschriften[existingAnschriftIndex] = newAnschrift;
+  } else {
+    input.anschriften.push(newAnschrift);
+  }
+}
+
+function setKommunikationsanschluesse(
+  input: BeteiligungInput,
+  fieldValues: BeteiligungFieldValues,
+  codelisten: CodelistenForBuildingBeteiligungInput,
+) {
+  setKommunikationsanschluss(
+    input,
+    resolveCodeWertId(
+      codelisten.telekommunikationsarten,
+      TELEKOMMUNIKATIONSART_CODE_EMAIL,
+    ),
+    fieldValues.email,
+  );
+  setKommunikationsanschluss(
+    input,
+    resolveCodeWertId(
+      codelisten.telekommunikationsarten,
+      TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
+    ),
+    fieldValues.telefon,
+  );
+}
+
+function setKommunikationsanschluss(
+  input: BeteiligungInput,
+  telekommunikationsartId: string,
+  verbindung: string | null | undefined,
+) {
+  input.kommunikationsanschluesse ??= [];
+
+  const anschluss = input.kommunikationsanschluesse.find(
+    (a) => a.telekommunikationsartId === telekommunikationsartId,
+  );
+
+  if (verbindung) {
+    if (anschluss) {
+      anschluss.verbindung = verbindung;
+    } else {
+      input.kommunikationsanschluesse.push({
+        telekommunikationsartId,
+        verbindung,
+      });
+    }
+  } else if (anschluss) {
+    const anschlussIndex = input.kommunikationsanschluesse.indexOf(anschluss);
+    input.kommunikationsanschluesse.splice(anschlussIndex, 1);
+  }
+}
+
+function setBeteiligtenartSpecificFields(
+  input: BeteiligungInput,
+  fieldValues: BeteiligungFieldValues,
+  codelisten: CodelistenForBuildingBeteiligungInput,
+) {
+  input.beteiligtenart = fieldValues.beteiligtenart;
+  switch (input.beteiligtenart) {
+    case "natuerlichePerson":
+      input.vorname = fieldValues.vorname ?? null;
+      input.nachname = fieldValues.nachname ?? "";
+      break;
+    case "organisation":
+      input.bezeichnung = fieldValues.bezeichnung ?? "";
+      break;
+    case "raKanzlei":
+      input.bezeichnung = fieldValues.bezeichnung ?? "";
+      input.kanzleiformId = fieldValues.kanzleiformCode
+        ? resolveCodeWertId(
+            codelisten.kanzleiformen,
+            fieldValues.kanzleiformCode,
+          )
+        : "";
+      input.rechtsformId = fieldValues.rechtsformCode
+        ? resolveCodeWertId(codelisten.rechtsformen, fieldValues.rechtsformCode)
+        : null;
+      break;
+  }
+}
+
+/**
+ * Saves the user-defined list of Beteilungen in the Verfahren, then
+ * regenerates the Verfahren's XJustiz document.
+ *
+ * The array of Beteiligungen (conforming to {@link ActionInputSchema})
+ * is expected form data, with of each Beteiligung's fields specified as
+ * individual key-value pairs; the nesting is indicated using bracket notation,
+ * e.g. "beteiligungen[0][vorname]".
+ *
+ * Existing Beteiligungen are referenced by their ID; those not included in
+ * the form data are kept unchanged.
+ */
+export async function action({ request, context }: Route.ActionArgs) {
+  const authSession = requireAuthSession(context, "action");
+  const verfahrenId = requireVerfahrenSearchParam(
+    new URL(request.url).searchParams,
+  );
+
+  const input = safeParseActionFormData(
+    await request.formData(),
+    ActionInputSchema,
+    { parseNestingSyntax: true },
+  );
+
+  if (!input.success) {
+    logger.debug(input.error.data, "Invalid Beteiligungen update input");
+    return input.error;
+  }
+
   try {
-    const verfahren = await fetchVerfahrenById(authSession, {
-      id: verfahrenId,
-    });
+    // Fetch the Klageeinreichung draft and the code lists required for
+    // building the API inputs.
+    const [
+      { verfahren, einreichung },
+      { elemente: anschriftstypen },
+      { elemente: kanzleiformen },
+      { elemente: rechtsformen },
+      { elemente: rollenbezeichnungen },
+      { elemente: staaten },
+      { elemente: telekommunikationsarten },
+    ] = await Promise.all([
+      loadKlageeinreichungDraft(authSession, verfahrenId),
+      fetchAnschriftstypen(authSession),
+      fetchKanzleiformen(authSession),
+      fetchRechtsformen(authSession),
+      fetchRollenbezeichnungen(authSession),
+      fetchStaaten(authSession),
+      fetchTelekommunikationsarten(authSession),
+    ]);
+    const codelisten: CodelistenForBuildingBeteiligungInput = {
+      anschriftstypen,
+      kanzleiformen,
+      rechtsformen,
+      rollenbezeichnungen,
+      staaten,
+      telekommunikationsarten,
+    };
 
-    const verfahrenUpdateInput = safeParseActionInput(
-      {
-        verfahrensgegenstand: verfahren.verfahrensgegenstand,
-        kurzrubrum: verfahren.kurzrubrum,
-        gerichtId: verfahren.gericht?.id,
-        beteiligungen: beteiligungen.length > 0 ? beteiligungen : null,
-      },
-      VerfahrenAendernInputSchema,
-      { errorResultData: actionResultData },
+    // Build the Beteiligung inputs for the API from the form data. This
+    // throws if the form data contains a code missing from its code list.
+    const existingBeteiligungen = verfahren.beteiligungen ?? [];
+    const existingBeteiligungenById = new Map(
+      existingBeteiligungen.map((beteiligung) => [beteiligung.id, beteiligung]),
+    );
+    const submittedBeteiligungInputs = input.data.beteiligungen.map(
+      (fieldValues) =>
+        beteiligungInputFromFormValues(
+          fieldValues,
+          fieldValues.id
+            ? existingBeteiligungenById.get(fieldValues.id)
+            : undefined,
+          codelisten,
+        ),
     );
 
-    if (!verfahrenUpdateInput.success) {
-      return verfahrenUpdateInput.error;
-    }
+    // Keep existing Beteiligungen that are not part of the form (e.g.,
+    // Streitverkündete) unchanged, as the API replaces all Beteiligungen.
+    const submittedIds = new Set(
+      input.data.beteiligungen.map((fieldValues) => fieldValues.id),
+    );
+    const unchangedBeteiligungInputs = existingBeteiligungen
+      .filter((beteiligung) => !submittedIds.has(beteiligung.id))
+      .map(buildBeteiligungInputFromBeteiligung);
 
-    await updateVerfahren(authSession, verfahrenId, verfahrenUpdateInput.data);
+    const beteiligungInputs = [
+      ...submittedBeteiligungInputs,
+      ...unchangedBeteiligungInputs,
+    ];
+
+    await updateVerfahren(
+      authSession,
+      verfahrenId,
+      VerfahrenAendernInputSchema.parse({
+        verfahrensgegenstand: verfahren.verfahrensgegenstand!,
+        kurzrubrum: verfahren.kurzrubrum!,
+        gerichtId: verfahren.gericht!.id,
+        beteiligungen: beteiligungInputs,
+      }),
+    );
+
     await regenerateEinreichungXJustiz(authSession, {
       verfahrenId,
-      einreichungId,
+      einreichungId: einreichung.id,
     });
   } catch (error) {
+    // Let redirects thrown by `loadKlageeinreichungDraft()` through (e.g. once
+    // the Klageeinreichung has been submitted).
+    if (error instanceof Response) {
+      throw error;
+    }
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.saveFailed,
-      data: actionResultData,
     });
   }
 
   return redirect(`/verfahren/${verfahrenId}`);
 }
 
-const formActionHandlers = {
-  submit: handleSubmitAction,
-} as const;
-
-export const action = async ({ request, context }: Route.ActionArgs) => {
-  const authSession = requireAuthSession(context, "action");
-  const verfahrenId = requireVerfahrenSearchParam(
-    new URL(request.url).searchParams,
-  );
-
-  const formData = await request.formData();
-
-  return dispatchFormAction(
-    formData,
-    formActionHandlers,
-    { authSession, verfahrenId },
-    () => undefined,
-  );
-};
+// =============================================================================
+// Component
+// =============================================================================
 
 export default function VerfahrenNeuBeteiligte({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const { verfahren, einreichung, kanzleiformen } = loaderData;
+  const { verfahren, kanzleiformen, rechtsformen } = loaderData;
 
   const isInvalid = actionData?.status === "invalid";
   const isError = actionData?.status === "error";
-  const fieldErrors = isInvalid ? actionData.fieldErrors : undefined;
 
   const { routes, buttons, shared } = useTranslations();
   const navigation = useNavigation();
   const isSubmitting = navigation.state !== "idle";
-  const mainFormRef = useRef<HTMLFormElement>(null);
 
-  const klagendePartei = getBeteiligungByRoleCode(
-    verfahren.beteiligungen,
-    ROLE_CODE_KLAEGERIN,
-  );
-  const beklagtePartei = getBeteiligungByRoleCode(
-    verfahren.beteiligungen,
-    ROLE_CODE_BEKLAGTE,
-  );
-  const klagendeParteiFirstName =
-    klagendePartei && "vorname" in klagendePartei
-      ? (klagendePartei.vorname ?? "")
-      : "";
-  const klagendeParteiLastName =
-    klagendePartei && "nachname" in klagendePartei
-      ? klagendePartei.nachname
-      : "";
-  const beklagteParteiFirstName =
-    beklagtePartei && "vorname" in beklagtePartei
-      ? (beklagtePartei.vorname ?? "")
-      : "";
-  const beklagteParteiLastName =
-    beklagtePartei && "nachname" in beklagtePartei
-      ? beklagtePartei.nachname
-      : "";
-  const klagendeParteiAnschrift = getBeteiligteAnschrift(klagendePartei);
-  const beklagteParteiAnschrift = getBeteiligteAnschrift(beklagtePartei);
-  const klagendeParteiEmail = getBeteiligteEmail(klagendePartei);
-  const klagendeParteiTelefon = getBeteiligteTelefon(klagendePartei);
-  const beklagteParteiEmail = getBeteiligteEmail(beklagtePartei);
-  const beklagteParteiTelefon = getBeteiligteTelefon(beklagtePartei);
-  // A Prozessbevollmächtigter is its own Beteiligte (a RaKanzlei), linked to
-  // the party it represents via its Rolle.referenz. We don't track a separate
-  // rollennummer scheme — we just reuse the represented party's role code
-  // (e.g. ROLE_CODE_KLAEGERIN) as both its rollennummer and the lawyer's
-  // referenz when writing (see updateVerfahren action below).
-  const klagendeParteiAnwalt = getProzessbevollmaechtigteByReferenz(
-    verfahren.beteiligungen,
-    ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
-    ROLE_CODE_KLAEGERIN,
-  );
-  const klagendeParteiLawyerName =
-    klagendeParteiAnwalt && "bezeichnung" in klagendeParteiAnwalt
-      ? (klagendeParteiAnwalt.bezeichnung ?? "")
-      : "";
-  const klagendeParteiAnwaltAnschrift =
-    getBeteiligteAnschrift(klagendeParteiAnwalt);
-  const klagendeParteiAnwaltEmail = getBeteiligteEmail(klagendeParteiAnwalt);
-  const klagendeParteiAnwaltTelefon =
-    getBeteiligteTelefon(klagendeParteiAnwalt);
-  const klagendeParteiAnwaltKanzleiformId =
-    klagendeParteiAnwalt && "kanzleiform" in klagendeParteiAnwalt
-      ? (klagendeParteiAnwalt.kanzleiform?.id ?? "")
-      : "";
-  const klagendeParteiAnwaltGeschaeftszeichen =
-    getGeschaeftszeichenByRoleCode(
-      klagendeParteiAnwalt,
-      ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
-    ) ?? "";
-  const hasExistingLawyer = Boolean(klagendeParteiAnwalt);
+  const errorAlertRef = useRef<HTMLDivElement>(null);
+  const invalidAlertRef = useRef<HTMLDivElement>(null);
 
-  const [hasLawyer, setHasLawyer] = useState(hasExistingLawyer);
-
-  // To be used in development for easier manual testing
-  // TODO: delete after full implementation
-  const handleFillDummyData = () => {
-    const form = mainFormRef.current;
-
-    if (!form) {
-      return;
+  useEffect(() => {
+    if (isError) {
+      errorAlertRef.current?.focus();
+      // errorAlertRef.current?.scrollIntoView();
+    } else if (isInvalid) {
+      invalidAlertRef.current?.focus();
+      invalidAlertRef.current?.scrollIntoView();
     }
-
-    // The lawyer fields only mount once hasLawyer becomes true, so force
-    // a synchronous re-render before filling the other form fields.
-    flushSync(() => {
-      setHasLawyer(true);
-    });
-
-    fillFormFields(form, DUMMY_FORM_VALUES);
-  };
+  }, [isError, isInvalid]);
 
   return (
     <>
@@ -499,17 +442,10 @@ export default function VerfahrenNeuBeteiligte({
 
             <div className="kern-pt-xl">
               <Form
-                ref={mainFormRef}
                 method="post"
                 encType="multipart/form-data"
                 className="kern-gap-lg flex flex-col"
               >
-                <input
-                  type="hidden"
-                  name="einreichungId"
-                  value={einreichung.id}
-                />
-
                 <div className="kern-gap-md flex flex-wrap items-start justify-between">
                   {/* Intro */}
                   <div>
@@ -519,15 +455,6 @@ export default function VerfahrenNeuBeteiligte({
                     <p className="kern-body">
                       {routes.verfahrenNeu.beteiligte.intro}
                     </p>
-                    {config().ENVIRONMENT === "development" && (
-                      <Button
-                        appearance="secondary"
-                        type="button"
-                        className="kern-btn--x-small kern-mt-sm"
-                        onClick={handleFillDummyData}
-                        label="Fill details with dummy data"
-                      />
-                    )}
                   </div>
 
                   {/* Navigtion Buttons (Top) */}
@@ -560,42 +487,27 @@ export default function VerfahrenNeuBeteiligte({
 
                 {isError && (
                   <Alert
+                    ref={errorAlertRef}
                     type="error"
                     title={shared.form.submit.title}
                     message={actionData.error ?? shared.form.submit.message}
                   />
                 )}
 
-                <div className="kern-gap-lg flex flex-col">
-                  {/* Form Section: Klagende Partei */}
-                  <VerfahrenKlaegerSection
-                    firstName={klagendeParteiFirstName}
-                    lastName={klagendeParteiLastName}
-                    anschrift={klagendeParteiAnschrift}
-                    email={klagendeParteiEmail}
-                    telefon={klagendeParteiTelefon}
-                    hasLawyer={hasLawyer}
-                    onHasLawyerChange={setHasLawyer}
-                    lawyerName={klagendeParteiLawyerName}
-                    lawyerAnschrift={klagendeParteiAnwaltAnschrift}
-                    lawyerEmail={klagendeParteiAnwaltEmail}
-                    lawyerTelefon={klagendeParteiAnwaltTelefon}
-                    lawyerKanzleiformId={klagendeParteiAnwaltKanzleiformId}
-                    lawyerGeschaeftszeichen={
-                      klagendeParteiAnwaltGeschaeftszeichen
-                    }
-                    kanzleiformen={kanzleiformen}
-                    errors={fieldErrors || {}}
+                {isInvalid && (
+                  <Alert
+                    ref={invalidAlertRef}
+                    type="error"
+                    title={shared.form.invalid.title}
+                    message={shared.form.invalid.message}
                   />
+                )}
 
-                  {/* Form Section: Beklagte Partei */}
-                  <VerfahrenBeklagterSection
-                    firstName={beklagteParteiFirstName}
-                    lastName={beklagteParteiLastName}
-                    anschrift={beklagteParteiAnschrift}
-                    email={beklagteParteiEmail}
-                    telefon={beklagteParteiTelefon}
-                    errors={fieldErrors || {}}
+                <div className="kern-gap-lg flex flex-col">
+                  <VerfahrenCreationBeteiligungenEditForm
+                    existingBeteiligungen={verfahren.beteiligungen ?? []}
+                    kanzleiformen={kanzleiformen}
+                    rechtsformen={rechtsformen}
                   />
 
                   {/* Navigation Buttons (Bottom) */}
