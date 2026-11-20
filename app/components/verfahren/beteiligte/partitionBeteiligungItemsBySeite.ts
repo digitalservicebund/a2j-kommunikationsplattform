@@ -1,10 +1,9 @@
+import {
+  ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
+  ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+  ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+} from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
 import type { BeteiligungFieldsetItem } from "./VerfahrenCreationBeteiligungSeiteFieldset";
-
-export type RollenbezeichnungIdsBySeite = {
-  klagendePartei: string;
-  beklagtePartei: string;
-  prozessbevollmaechtigte: string;
-};
 
 export type BeteiligungItemsBySeite = {
   klagendenseite: BeteiligungFieldsetItem[];
@@ -13,46 +12,43 @@ export type BeteiligungItemsBySeite = {
 
 function hasRolle(
   item: BeteiligungFieldsetItem,
-  rollenbezeichnungId: string,
+  rollenbezeichnungCode: string,
 ): boolean {
   return item.defaultValues.rollen.some(
-    (rolle) => rolle.rollenbezeichnungId === rollenbezeichnungId,
+    (rolle) => rolle.rollenbezeichnungCode === rollenbezeichnungCode,
   );
 }
 
 function representsParteiWithRolle(
   item: BeteiligungFieldsetItem,
-  parteiRollenbezeichnungId: string,
-  rollenbezeichnungIds: RollenbezeichnungIdsBySeite,
-  rollennummerToRollenbezeichnungId: Map<string, string>,
+  parteiRollenbezeichnungCode: string,
+  rollennummerToRollenbezeichnungCode: Map<string, string>,
 ): boolean {
   const vertretungRolle = item.defaultValues.rollen.find(
     (rolle) =>
-      rolle.rollenbezeichnungId ===
-      rollenbezeichnungIds.prozessbevollmaechtigte,
+      rolle.rollenbezeichnungCode ===
+      ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
   );
   return (
     vertretungRolle?.referenz.some(
       (rollennummer) =>
-        rollennummerToRollenbezeichnungId.get(rollennummer) ===
-        parteiRollenbezeichnungId,
+        rollennummerToRollenbezeichnungCode.get(rollennummer) ===
+        parteiRollenbezeichnungCode,
     ) ?? false
   );
 }
 
 function belongsToSeite(
   item: BeteiligungFieldsetItem,
-  parteiRollenbezeichnungId: string,
-  rollenbezeichnungIds: RollenbezeichnungIdsBySeite,
-  rollennummerToRollenbezeichnungId: Map<string, string>,
+  parteiRollenbezeichnungCode: string,
+  rollennummerToRollenbezeichnungCode: Map<string, string>,
 ): boolean {
   return (
-    hasRolle(item, parteiRollenbezeichnungId) ||
+    hasRolle(item, parteiRollenbezeichnungCode) ||
     representsParteiWithRolle(
       item,
-      parteiRollenbezeichnungId,
-      rollenbezeichnungIds,
-      rollennummerToRollenbezeichnungId,
+      parteiRollenbezeichnungCode,
+      rollennummerToRollenbezeichnungCode,
     )
   );
 }
@@ -71,8 +67,7 @@ function belongsToSeite(
  */
 export function partitionBeteiligungItemsBySeite(
   items: BeteiligungFieldsetItem[],
-  rollenbezeichnungIds: RollenbezeichnungIdsBySeite,
-  rollennummerToRollenbezeichnungId: Map<string, string>,
+  rollennummerToRollenbezeichnungCode: Map<string, string>,
 ): BeteiligungItemsBySeite {
   const result: BeteiligungItemsBySeite = {
     klagendenseite: [],
@@ -83,18 +78,16 @@ export function partitionBeteiligungItemsBySeite(
     if (
       belongsToSeite(
         item,
-        rollenbezeichnungIds.klagendePartei,
-        rollenbezeichnungIds,
-        rollennummerToRollenbezeichnungId,
+        ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+        rollennummerToRollenbezeichnungCode,
       )
     ) {
       result.klagendenseite.push(item);
     } else if (
       belongsToSeite(
         item,
-        rollenbezeichnungIds.beklagtePartei,
-        rollenbezeichnungIds,
-        rollennummerToRollenbezeichnungId,
+        ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
+        rollennummerToRollenbezeichnungCode,
       )
     ) {
       result.beklagtenseite.push(item);

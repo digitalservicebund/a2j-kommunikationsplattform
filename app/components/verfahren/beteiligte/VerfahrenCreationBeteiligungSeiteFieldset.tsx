@@ -2,6 +2,7 @@ import { useCallback, useMemo } from "react";
 import Button from "~/components/Button";
 import { Kanzleiform } from "~/domains/verfahren/entities/codelisten/kanzleiform.entity";
 import { Rechtsform } from "~/domains/verfahren/entities/codelisten/rechtsform.entity";
+import { ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE } from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
 import { useTranslations } from "~/services/translations/context";
 import BeteiligungFieldset, {
   BeteiligungFieldValues,
@@ -15,35 +16,33 @@ export type BeteiligungFieldsetItem = {
 export type VerfahrenCreationBeteiligungSeiteFieldsetProps = {
   title: string;
   items: BeteiligungFieldsetItem[];
-  parteiRollenbezeichnungId: string;
-  prozessbevollmaechtigteRollenbezeichnungId: string;
+  parteiRollenbezeichnungCode: string;
   kanzleiformen: Kanzleiform[];
   rechtsformen: Rechtsform[];
-  onAddPartei: (rollenbezeichnungId: string) => void;
-  onAddProzessbevollmaechtigte: (parteiRollenbezeichnungId: string) => void;
+  onAddPartei: (rollenbezeichnungCode: string) => void;
+  onAddProzessbevollmaechtigte: (parteiRollenbezeichnungCode: string) => void;
 };
 
-function getRolleByBezeichnungId(
+function getRolleByBezeichnungCode(
   item: BeteiligungFieldsetItem,
-  rollenbezeichnungId: string,
+  rollenbezeichnungCode: string,
 ) {
   return item.defaultValues.rollen.find(
-    (rolle) => rolle.rollenbezeichnungId === rollenbezeichnungId,
+    (rolle) => rolle.rollenbezeichnungCode === rollenbezeichnungCode,
   );
 }
 
-function hasRolleWithBezeichnungId(
+function hasRolleWithBezeichnungCode(
   item: BeteiligungFieldsetItem,
-  rollenbezeichnungId: string,
+  rollenbezeichnungCode: string,
 ) {
-  return !!getRolleByBezeichnungId(item, rollenbezeichnungId);
+  return !!getRolleByBezeichnungCode(item, rollenbezeichnungCode);
 }
 
 export default function VerfahrenCreationBeteiligungSeiteFieldset({
   title,
   items,
-  parteiRollenbezeichnungId,
-  prozessbevollmaechtigteRollenbezeichnungId,
+  parteiRollenbezeichnungCode,
   kanzleiformen,
   rechtsformen,
   onAddPartei,
@@ -54,23 +53,23 @@ export default function VerfahrenCreationBeteiligungSeiteFieldset({
   const parteiRollennummern = useMemo(
     () =>
       items.flatMap((item) => {
-        const parteiRolle = getRolleByBezeichnungId(
+        const parteiRolle = getRolleByBezeichnungCode(
           item,
-          parteiRollenbezeichnungId,
+          parteiRollenbezeichnungCode,
         );
         return parteiRolle?.rollennummer ? [parteiRolle.rollennummer] : [];
       }),
-    [items, parteiRollenbezeichnungId],
+    [items, parteiRollenbezeichnungCode],
   );
 
   const handleAddPartei = useCallback(
-    () => onAddPartei(parteiRollenbezeichnungId),
-    [onAddPartei, parteiRollenbezeichnungId],
+    () => onAddPartei(parteiRollenbezeichnungCode),
+    [onAddPartei, parteiRollenbezeichnungCode],
   );
 
   const handleAddProzessbevollmaechtigte = useCallback(
-    () => onAddProzessbevollmaechtigte(parteiRollenbezeichnungId),
-    [onAddProzessbevollmaechtigte, parteiRollenbezeichnungId],
+    () => onAddProzessbevollmaechtigte(parteiRollenbezeichnungCode),
+    [onAddProzessbevollmaechtigte, parteiRollenbezeichnungCode],
   );
 
   let parteiCounter = 1;
@@ -87,9 +86,9 @@ export default function VerfahrenCreationBeteiligungSeiteFieldset({
         <div className="kern-gap-lg flex flex-col self-stretch">
           {/* Parteien & Vertretungen */}
           {items.map((item) => {
-            const isProzessbevollmaechtigte = hasRolleWithBezeichnungId(
+            const isProzessbevollmaechtigte = hasRolleWithBezeichnungCode(
               item,
-              prozessbevollmaechtigteRollenbezeichnungId,
+              ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
             );
             return (
               <BeteiligungFieldset
@@ -98,15 +97,18 @@ export default function VerfahrenCreationBeteiligungSeiteFieldset({
                 defaultValues={item.defaultValues}
                 title={
                   isProzessbevollmaechtigte
-                    ? // oxlint-disable-next-line react/immutability
-                      `Prozessbevollmächtigter ${prozessbevollmaechtigteCounter++}`
-                    : `Partei ${parteiCounter++}`
+                    ? t.routes.verfahrenNeu.beteiligte.form.prozessbevollmaechtigterWithNumber.replace(
+                        "{{number}}",
+                        // oxlint-disable-next-line react/immutability
+                        String(prozessbevollmaechtigteCounter++),
+                      )
+                    : t.routes.verfahrenNeu.beteiligte.form.parteiWithNumber.replace(
+                        "{{number}}",
+                        String(parteiCounter++),
+                      )
                 }
                 kanzleiformen={kanzleiformen}
                 rechtsformen={rechtsformen}
-                prozessbevollmaechtigteRollenbezeichnungId={
-                  prozessbevollmaechtigteRollenbezeichnungId
-                }
                 vertretungReferenzOptions={
                   isProzessbevollmaechtigte ? parteiRollennummern : undefined
                 }

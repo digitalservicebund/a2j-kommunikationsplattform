@@ -323,7 +323,11 @@ export const de = {
           },
           addPartei: "Partei hinzufügen",
           addProzessbevollmaechtigte: "Anwaltliche Vertretung hinzufügen",
+          klagendenseite: "Klagendenseite",
+          beklagtenseite: "Beklagtenseite",
           parteiWithNumber: "Partei {{number}}",
+          prozessbevollmaechtigterWithNumber:
+            "Prozessbevollmächtigter {{number}}",
           vertretungReferenzen: "Vertretung für",
           klagendePartei: {
             title: "Klagende Partei",
@@ -342,14 +346,6 @@ export const de = {
             title: "Beklagte Partei",
             description:
               "Alle Angaben zur beklagten Partei, dem Beklagten oder der Beklagten.",
-          },
-          validation: {
-            klagendeParteiNachname:
-              "Bitte geben Sie den Nachnamen der klagenden Partei an.",
-            beklagteParteiNachname:
-              "Bitte geben Sie den Nachnamen der beklagten Partei an.",
-            lawyerName: "Bitte geben Sie den Namen der Kanzlei an.",
-            lawyerKanzleiform: "Bitte wählen Sie die Kanzleiform aus.",
           },
         },
       },

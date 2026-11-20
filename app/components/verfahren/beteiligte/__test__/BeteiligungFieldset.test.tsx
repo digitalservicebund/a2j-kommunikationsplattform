@@ -1,15 +1,17 @@
 // @vitest-environment jsdom
 
 import { describe, expect, it } from "vitest";
+import { ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE } from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
 import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
 import BeteiligungFieldset, {
   BeteiligungFieldValues,
 } from "../BeteiligungFieldset";
 
-const PROZESSBEVOLLMAECHTIGTE = "id-prozessbevollmaechtigte";
-
 function renderFieldset(
-  defaultValues: Omit<BeteiligungFieldValues, "kanzleiformId" | "rechtsformId">,
+  defaultValues: Omit<
+    BeteiligungFieldValues,
+    "kanzleiformCode" | "rechtsformCode"
+  >,
   vertretungReferenzOptions?: string[],
 ) {
   const { container } = renderWithTestTranslations(
@@ -18,13 +20,12 @@ function renderFieldset(
         title="Beteiligung"
         beteiligungKey={3}
         defaultValues={{
-          kanzleiformId: null,
-          rechtsformId: null,
+          kanzleiformCode: null,
+          rechtsformCode: null,
           ...defaultValues,
         }}
         kanzleiformen={[]}
         rechtsformen={[]}
-        prozessbevollmaechtigteRollenbezeichnungId={PROZESSBEVOLLMAECHTIGTE}
         vertretungReferenzOptions={vertretungReferenzOptions}
       />
     </form>,
@@ -59,7 +60,8 @@ describe(BeteiligungFieldset, () => {
         rollen: [
           {
             rollennummer: "r2",
-            rollenbezeichnungId: PROZESSBEVOLLMAECHTIGTE,
+            rollenbezeichnungCode:
+              ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
             referenz: ["r0", "r1"],
           },
         ],

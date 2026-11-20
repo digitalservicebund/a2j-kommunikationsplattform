@@ -1,5 +1,11 @@
-import type { ActionFunctionArgs } from "react-router";
+import { redirect, type ActionFunctionArgs } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { KANZLEIFORM_CODE_EINZELANWALT } from "~/domains/verfahren/entities/codelisten/kanzleiform.entity";
+import {
+  ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
+  ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+  ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+} from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 import { makeNatuerlichePersonBeteiligung } from "~tests/utils/factories/beteiligung";
 import { makeGericht } from "~tests/utils/factories/gericht";
@@ -7,7 +13,6 @@ import { makeKlaegerinRolle, makeRolle } from "~tests/utils/factories/rolle";
 import { makeVerfahren } from "~tests/utils/factories/verfahren";
 
 const mocks = vi.hoisted(() => ({
-  fetchVerfahrenById: vi.fn(),
   updateVerfahren: vi.fn(),
   loadKlageeinreichungDraft: vi.fn(),
   regenerateEinreichungXJustiz: vi.fn(),
@@ -48,7 +53,6 @@ vi.mock(
 vi.mock(
   "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server",
   () => ({
-    fetchVerfahrenById: mocks.fetchVerfahrenById,
     updateVerfahren: mocks.updateVerfahren,
   }),
 );
@@ -128,19 +132,23 @@ function updatedBeteiligungen() {
   return mocks.updateVerfahren.mock.calls[0][2].beteiligungen;
 }
 
+function mockDraftVerfahren(verfahren: ReturnType<typeof makeVerfahren>) {
+  mocks.loadKlageeinreichungDraft.mockResolvedValue({
+    verfahren,
+    einreichung: { id: "einreichung-1" },
+  });
+}
+
 describe("/verfahren/neu/beteiligte action", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.fetchVerfahrenById.mockResolvedValue(
+    mockDraftVerfahren(
       makeVerfahren({
         id: VERFAHREN_ID,
         gericht: makeGericht(),
         beteiligungen: [],
       }),
     );
-    mocks.loadKlageeinreichungDraft.mockResolvedValue({
-      einreichung: { id: "einreichung-1" },
-    });
   });
 
   it("stores multiple Parteien and Prozessbevollmächtigte on both sides", async () => {
@@ -148,7 +156,7 @@ describe("/verfahren/neu/beteiligte action", () => {
       beteiligungFields(0, {
         "[beteiligtenart]": "natuerlichePerson",
         "[rollen][0][rollennummer]": `0:${KLAEGERIN}`,
-        "[rollen][0][rollenbezeichnungId]": KLAEGERIN,
+        "[rollen][0][rollenbezeichnungCode]": ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
         "[vorname]": "Erika",
         "[nachname]": "Mustermann",
         "[strasse]": "Heidestraße",
@@ -161,7 +169,7 @@ describe("/verfahren/neu/beteiligte action", () => {
       beteiligungFields(1, {
         "[beteiligtenart]": "organisation",
         "[rollen][0][rollennummer]": `1:${KLAEGERIN}`,
-        "[rollen][0][rollenbezeichnungId]": KLAEGERIN,
+        "[rollen][0][rollenbezeichnungCode]": ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
         "[bezeichnung]": "Mustermann GmbH",
         "[strasse]": "Industriestraße",
         "[hausnummer]": "3",
@@ -171,12 +179,13 @@ describe("/verfahren/neu/beteiligte action", () => {
       beteiligungFields(2, {
         "[beteiligtenart]": "raKanzlei",
         "[rollen][0][rollennummer]": `2:${PROZESSBEVOLLMAECHTIGTE}`,
-        "[rollen][0][rollenbezeichnungId]": PROZESSBEVOLLMAECHTIGTE,
+        "[rollen][0][rollenbezeichnungCode]":
+          ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
         "[rollen][0][referenz][]": [`0:${KLAEGERIN}`, `1:${KLAEGERIN}`],
         "[rollen][0][geschaeftszeichen]": "B-17/26",
         "[bezeichnung]": "Kanzlei Böhm",
-        "[kanzleiformId]": "id-001",
-        "[rechtsformId]": "",
+        "[kanzleiformCode]": KANZLEIFORM_CODE_EINZELANWALT,
+        "[rechtsformCode]": "",
         "[strasse]": "Hauptstraße",
         "[hausnummer]": "15",
         "[postleitzahl]": "80123",
@@ -186,7 +195,7 @@ describe("/verfahren/neu/beteiligte action", () => {
       beteiligungFields(3, {
         "[beteiligtenart]": "natuerlichePerson",
         "[rollen][0][rollennummer]": `3:${BEKLAGTE}`,
-        "[rollen][0][rollenbezeichnungId]": BEKLAGTE,
+        "[rollen][0][rollenbezeichnungCode]": ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
         "[vorname]": "Emine",
         "[nachname]": "Kartal",
         "[strasse]": "Gartenweg",
@@ -197,11 +206,12 @@ describe("/verfahren/neu/beteiligte action", () => {
       beteiligungFields(4, {
         "[beteiligtenart]": "raKanzlei",
         "[rollen][0][rollennummer]": `4:${PROZESSBEVOLLMAECHTIGTE}`,
-        "[rollen][0][rollenbezeichnungId]": PROZESSBEVOLLMAECHTIGTE,
+        "[rollen][0][rollenbezeichnungCode]":
+          ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
         "[rollen][0][referenz][]": [`3:${BEKLAGTE}`],
         "[bezeichnung]": "Weber & Partner",
-        "[kanzleiformId]": "id-001",
-        "[rechtsformId]": "id-001",
+        "[kanzleiformCode]": KANZLEIFORM_CODE_EINZELANWALT,
+        "[rechtsformCode]": "001",
         "[strasse]": "Marktplatz",
         "[hausnummer]": "1",
         "[postleitzahl]": "10117",
@@ -361,13 +371,13 @@ describe("/verfahren/neu/beteiligte action", () => {
     const formData = makeFormData(
       beteiligungFields(0, {
         "[beteiligtenart]": "natuerlichePerson",
-        "[rollen][0][rollenbezeichnungId]": KLAEGERIN,
+        "[rollen][0][rollenbezeichnungCode]": ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
         "[nachname]": "Müller",
         "[strasse]": "Heidestraße",
       }),
       beteiligungFields(5, {
         "[beteiligtenart]": "natuerlichePerson",
-        "[rollen][0][rollenbezeichnungId]": BEKLAGTE,
+        "[rollen][0][rollenbezeichnungCode]": ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
         "[nachname]": "Weber",
         "[strasse]": "Gartenweg",
       }),
@@ -411,7 +421,7 @@ describe("/verfahren/neu/beteiligte action", () => {
       ],
     });
 
-    mocks.fetchVerfahrenById.mockResolvedValue(
+    mockDraftVerfahren(
       makeVerfahren({
         id: VERFAHREN_ID,
         gericht: makeGericht(),
@@ -424,7 +434,7 @@ describe("/verfahren/neu/beteiligte action", () => {
         "[id]": existing.id,
         "[beteiligtenart]": "natuerlichePerson",
         "[rollen][0][rollennummer]": "rollennummer-1",
-        "[rollen][0][rollenbezeichnungId]": KLAEGERIN,
+        "[rollen][0][rollenbezeichnungCode]": ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
         "[vorname]": "Johanna",
         "[nachname]": "Groß-Weber",
         "[strasse]": "Bockenheimer Landstraße",
@@ -457,6 +467,115 @@ describe("/verfahren/neu/beteiligte action", () => {
     ]);
   });
 
+  describe("updating the Anschrift of an existing Beteiligung", () => {
+    const zustellanschrift = {
+      id: "anschrift-zustell",
+      anschriftstyp: {
+        id: "id-zustellanschrift",
+        wert: "Zustellanschrift",
+        code: "zustell",
+      },
+      strasse: "Postweg",
+      hausnummer: "1",
+      postleitzahl: "10115",
+      ort: "Berlin",
+      postfachnummer: null,
+      staat: { id: DEUTSCHLAND, wert: "Deutschland", code: "000" },
+    };
+
+    const zustellanschriftInput = {
+      anschriftstyp_id: "id-zustellanschrift",
+      strasse: "Postweg",
+      hausnummer: "1",
+      postleitzahl: "10115",
+      ort: "Berlin",
+      postfachnummer: null,
+      staat_id: DEUTSCHLAND,
+    };
+
+    const submittedPrivatanschriftInput = {
+      anschriftstyp_id: PRIVATANSCHRIFT,
+      strasse: "Bockenheimer Landstraße",
+      hausnummer: "42-44",
+      postleitzahl: "60323",
+      ort: "Frankfurt am Main",
+      postfachnummer: null,
+      staat_id: DEUTSCHLAND,
+    };
+
+    async function submitAnschrift(
+      existingAnschriften: (typeof zustellanschrift)[],
+    ) {
+      const existing = makeNatuerlichePersonBeteiligung({
+        rollen: [makeKlaegerinRolle({ rollennummer: "rollennummer-1" })],
+        anschriften: existingAnschriften,
+      });
+      mockDraftVerfahren(
+        makeVerfahren({
+          id: VERFAHREN_ID,
+          gericht: makeGericht(),
+          beteiligungen: [existing],
+        }),
+      );
+
+      await callAction(
+        makeFormData(
+          beteiligungFields(0, {
+            "[id]": existing.id,
+            "[beteiligtenart]": "natuerlichePerson",
+            "[rollen][0][rollennummer]": "rollennummer-1",
+            "[rollen][0][rollenbezeichnungCode]":
+              ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+            "[nachname]": "Groß",
+            "[strasse]": "Bockenheimer Landstraße",
+            "[hausnummer]": "42-44",
+            "[postleitzahl]": "60323",
+            "[ort]": "Frankfurt am Main",
+          }),
+        ),
+      );
+
+      return updatedBeteiligungen()[0].anschriften;
+    }
+
+    it("overwrites the Anschrift with the matching Anschriftstyp, keeping the others", async () => {
+      const privatanschrift = {
+        id: "anschrift-privat",
+        anschriftstyp: {
+          id: PRIVATANSCHRIFT,
+          wert: "Privatanschrift",
+          code: "017",
+        },
+        strasse: "Alte Straße",
+        hausnummer: "5",
+        postleitzahl: "50667",
+        ort: "Köln",
+        postfachnummer: null,
+        staat: { id: DEUTSCHLAND, wert: "Deutschland", code: "000" },
+      };
+
+      // The Privatanschrift is deliberately not the first Anschrift.
+      const anschriften = await submitAnschrift([
+        zustellanschrift,
+        privatanschrift,
+      ]);
+
+      expect(anschriften).toEqual([
+        zustellanschriftInput,
+        submittedPrivatanschriftInput,
+      ]);
+    });
+
+    it("adds the Anschrift if none with the matching Anschriftstyp exists", async () => {
+      const anschriften = await submitAnschrift([zustellanschrift]);
+
+      expect(anschriften).toEqual([
+        zustellanschriftInput,
+        submittedPrivatanschriftInput,
+      ]);
+    });
+  });
+
   it("keeps existing Beteiligungen not included in the form unchanged", async () => {
     const submitted = makeNatuerlichePersonBeteiligung({
       nachname: "Groß",
@@ -476,7 +595,7 @@ describe("/verfahren/neu/beteiligte action", () => {
         }),
       ],
     });
-    mocks.fetchVerfahrenById.mockResolvedValue(
+    mockDraftVerfahren(
       makeVerfahren({
         id: VERFAHREN_ID,
         gericht: makeGericht(),
@@ -489,7 +608,7 @@ describe("/verfahren/neu/beteiligte action", () => {
         "[id]": submitted.id,
         "[beteiligtenart]": "natuerlichePerson",
         "[rollen][0][rollennummer]": "rollennummer-1",
-        "[rollen][0][rollenbezeichnungId]": KLAEGERIN,
+        "[rollen][0][rollenbezeichnungCode]": ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
         "[nachname]": "Groß-Weber",
       }),
     );
@@ -513,7 +632,7 @@ describe("/verfahren/neu/beteiligte action", () => {
 
   it("keeps the Verfahrensdetails saved in the previous step", async () => {
     const gericht = makeGericht();
-    mocks.fetchVerfahrenById.mockResolvedValue(
+    mockDraftVerfahren(
       makeVerfahren({
         id: VERFAHREN_ID,
         gericht,
@@ -526,7 +645,7 @@ describe("/verfahren/neu/beteiligte action", () => {
     const formData = makeFormData(
       beteiligungFields(0, {
         "[beteiligtenart]": "natuerlichePerson",
-        "[rollen][0][rollenbezeichnungId]": KLAEGERIN,
+        "[rollen][0][rollenbezeichnungCode]": ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
         "[nachname]": "Müller",
         "[strasse]": "Heidestraße",
       }),
@@ -549,7 +668,7 @@ describe("/verfahren/neu/beteiligte action", () => {
     const formData = makeFormData(
       beteiligungFields(0, {
         "[beteiligtenart]": "natuerlichePerson",
-        "[rollen][0][rollenbezeichnungId]": KLAEGERIN,
+        "[rollen][0][rollenbezeichnungCode]": ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
         "[nachname]": "Müller",
         "[strasse]": "Heidestraße",
       }),
@@ -571,7 +690,7 @@ describe("/verfahren/neu/beteiligte action", () => {
     const formData = makeFormData(
       beteiligungFields(0, {
         "[beteiligtenart]": "unbekannt",
-        "[rollen][0][rollenbezeichnungId]": KLAEGERIN,
+        "[rollen][0][rollenbezeichnungCode]": ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
         "[nachname]": "Müller",
       }),
     );
@@ -582,6 +701,31 @@ describe("/verfahren/neu/beteiligte action", () => {
       init: { status: 400 },
       data: { status: "invalid" },
     });
+    expect(mocks.updateVerfahren).not.toHaveBeenCalled();
+    expect(mocks.regenerateEinreichungXJustiz).not.toHaveBeenCalled();
+  });
+
+  it("redirects without saving if the Klageeinreichung is no longer a draft", async () => {
+    mocks.loadKlageeinreichungDraft.mockRejectedValue(
+      redirect(`/verfahren/${VERFAHREN_ID}`),
+    );
+
+    const formData = makeFormData(
+      beteiligungFields(0, {
+        "[beteiligtenart]": "natuerlichePerson",
+        "[rollen][0][rollenbezeichnungCode]": ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+        "[nachname]": "Müller",
+      }),
+    );
+
+    const response = await callAction(formData).catch(
+      (thrown: unknown) => thrown,
+    );
+
+    expect(response).toBeInstanceOf(Response);
+    expect((response as Response).headers.get("Location")).toBe(
+      `/verfahren/${VERFAHREN_ID}`,
+    );
     expect(mocks.updateVerfahren).not.toHaveBeenCalled();
     expect(mocks.regenerateEinreichungXJustiz).not.toHaveBeenCalled();
   });

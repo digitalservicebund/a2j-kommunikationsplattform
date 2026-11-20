@@ -23,6 +23,7 @@ import {
 } from "~/domains/verfahren/entities/codelisten/anschriftstyp.entity";
 import { Kanzleiform } from "~/domains/verfahren/entities/codelisten/kanzleiform.entity";
 import { Rechtsform } from "~/domains/verfahren/entities/codelisten/rechtsform.entity";
+import { ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE } from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
 import {
   getBeteiligteEmail,
   getBeteiligteTelefon,
@@ -31,7 +32,7 @@ import { useTranslations } from "~/services/translations/context";
 
 export const BeteiligungRolleFieldValuesSchema = z.object({
   rollennummer: z.nullish(z.string()),
-  rollenbezeichnungId: z.string(),
+  rollenbezeichnungCode: z.string(),
   referenz: z.array(z.string()).default([]),
   geschaeftszeichen: z.nullish(z.string()),
 });
@@ -47,8 +48,12 @@ export const BeteiligungFieldValuesSchema = z.object({
   vorname: z.nullish(z.string().trim()),
   nachname: z.nullish(z.string().trim()),
   bezeichnung: z.nullish(z.string().trim()),
-  kanzleiformId: z.nullish(z.string().trim()).transform((id) => id || null),
-  rechtsformId: z.nullish(z.string().trim()).transform((id) => id || null),
+  kanzleiformCode: z
+    .nullish(z.string().trim())
+    .transform((code) => code || null),
+  rechtsformCode: z
+    .nullish(z.string().trim())
+    .transform((code) => code || null),
   strasse: z.nullish(z.string().trim()),
   hausnummer: z.nullish(z.string().trim()),
   postleitzahl: z.nullish(z.string().trim()),
@@ -85,14 +90,14 @@ export function existingBeteiligungToFieldValues(
     beteiligtenart: beteiligung.beteiligtenart,
     rollen: beteiligung.rollen.map((rolle) => ({
       rollennummer: rolle.rollennummer,
-      rollenbezeichnungId: rolle.rollenbezeichnung.id,
+      rollenbezeichnungCode: rolle.rollenbezeichnung.code,
       referenz: rolle.referenz,
     })),
     vorname: natuerlichePerson?.vorname,
     nachname: natuerlichePerson?.nachname,
     bezeichnung: organisation?.bezeichnung ?? raKanzlei?.bezeichnung,
-    rechtsformId: raKanzlei?.rechtsform?.id ?? null,
-    kanzleiformId: raKanzlei?.kanzleiform.id ?? null,
+    rechtsformCode: raKanzlei?.rechtsform?.code ?? null,
+    kanzleiformCode: raKanzlei?.kanzleiform.code ?? null,
     strasse: primaryAnschrift?.strasse ?? "",
     hausnummer: primaryAnschrift?.hausnummer,
     postleitzahl: primaryAnschrift?.postleitzahl,
@@ -109,7 +114,6 @@ export type BeteiligungFieldsetProps = {
   vertretungReferenzOptions?: string[];
   kanzleiformen: Kanzleiform[];
   rechtsformen: Rechtsform[];
-  prozessbevollmaechtigteRollenbezeichnungId: string;
   errors?: Record<string, string[]>;
 };
 
@@ -120,7 +124,6 @@ export default function BeteiligungFieldset({
   kanzleiformen,
   rechtsformen,
   vertretungReferenzOptions,
-  prozessbevollmaechtigteRollenbezeichnungId,
   errors,
 }: BeteiligungFieldsetProps) {
   const t = useTranslations();
@@ -133,7 +136,7 @@ export default function BeteiligungFieldset({
     () =>
       sortBy(
         kanzleiformen.map((kanzleiform) => ({
-          value: kanzleiform.id,
+          value: kanzleiform.code,
           label: kanzleiform.wert,
         })),
         ["label"],
@@ -144,7 +147,7 @@ export default function BeteiligungFieldset({
     () =>
       sortBy(
         rechtsformen.map((rechtsform) => ({
-          value: rechtsform.id,
+          value: rechtsform.code,
           label: rechtsform.wert,
         })),
         ["label"],
@@ -154,7 +157,8 @@ export default function BeteiligungFieldset({
 
   const vertretungRolleIndex = defaultValues.rollen.findIndex(
     (rolle) =>
-      rolle.rollenbezeichnungId === prozessbevollmaechtigteRollenbezeichnungId,
+      rolle.rollenbezeichnungCode ===
+      ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
   );
   const vertretungRolle =
     vertretungRolleIndex >= 0
@@ -297,8 +301,8 @@ export default function BeteiligungFieldset({
           )}
           <input
             type="hidden"
-            name={rolleInputName(index, "rollenbezeichnungId")}
-            value={rolle.rollenbezeichnungId}
+            name={rolleInputName(index, "rollenbezeichnungCode")}
+            value={rolle.rollenbezeichnungCode}
           />
         </Fragment>
       ))}
@@ -343,27 +347,27 @@ export default function BeteiligungFieldset({
         <div className="kern-gap-md flex w-full">
           <InputSelect
             className="flex-1"
-            id={inputName("kanzleiformId")}
-            name={inputName("kanzleiformId")}
+            id={inputName("kanzleiformCode")}
+            name={inputName("kanzleiformCode")}
             label={
               t.routes.verfahrenNeu.beteiligte.form.klagendePartei.vertretung
                 .kanzleiform
             }
             options={kanzleiformOptions}
             placeholder={t.shared.form.select.placeholder}
-            defaultValue={defaultValues.kanzleiformId ?? undefined}
+            defaultValue={defaultValues.kanzleiformCode ?? undefined}
           />
           <InputSelect
             className="flex-1"
-            id={inputName("rechtsformId")}
-            name={inputName("rechtsformId")}
+            id={inputName("rechtsformCode")}
+            name={inputName("rechtsformCode")}
             label={
               t.routes.verfahrenNeu.beteiligte.form.klagendePartei.vertretung
                 .rechtsform
             }
             options={rechtsformOptions}
             placeholder={t.shared.form.select.placeholder}
-            defaultValue={defaultValues.rechtsformId ?? undefined}
+            defaultValue={defaultValues.rechtsformCode ?? undefined}
             optional={true}
           />
         </div>

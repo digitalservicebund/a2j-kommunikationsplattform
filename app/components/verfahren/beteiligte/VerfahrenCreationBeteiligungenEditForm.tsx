@@ -8,7 +8,12 @@ import {
   KANZLEIFORM_CODE_EINZELANWALT,
 } from "~/domains/verfahren/entities/codelisten/kanzleiform.entity";
 import { Rechtsform } from "~/domains/verfahren/entities/codelisten/rechtsform.entity";
-import resolveCodeWertId from "~/domains/verfahren/services/resolveCodeWertId";
+import {
+  ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
+  ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+  ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+} from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
+import { useTranslations } from "~/services/translations/context";
 import {
   BeteiligungFieldValuesSchema,
   existingBeteiligungToFieldValues,
@@ -18,11 +23,7 @@ import VerfahrenCreationBeteiligungSeiteFieldset, {
   BeteiligungFieldsetItem,
 } from "./VerfahrenCreationBeteiligungSeiteFieldset";
 
-function defaultBeteiligungFieldsetItems(
-  klagendeParteiRollenbezeichnungId: string,
-  beklagteParteiRollenbezeichnungId: string,
-  prozessbevollmaechtigteRollenbezeichnungId: string,
-): BeteiligungFieldsetItem[] {
+function defaultBeteiligungFieldsetItems(): BeteiligungFieldsetItem[] {
   return [
     {
       key: 0,
@@ -30,8 +31,8 @@ function defaultBeteiligungFieldsetItems(
         beteiligtenart: "natuerlichePerson",
         rollen: [
           {
-            rollennummer: `0:${klagendeParteiRollenbezeichnungId}`,
-            rollenbezeichnungId: klagendeParteiRollenbezeichnungId,
+            rollennummer: `0:${ROLLENBEZEICHNUNG_CODE_KLAEGERIN}`,
+            rollenbezeichnungCode: ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
           },
         ],
       }),
@@ -42,9 +43,10 @@ function defaultBeteiligungFieldsetItems(
         beteiligtenart: "raKanzlei",
         rollen: [
           {
-            rollennummer: `1:${prozessbevollmaechtigteRollenbezeichnungId}`,
-            rollenbezeichnungId: prozessbevollmaechtigteRollenbezeichnungId,
-            referenz: [`0:${klagendeParteiRollenbezeichnungId}`],
+            rollennummer: `1:${ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE}`,
+            rollenbezeichnungCode:
+              ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+            referenz: [`0:${ROLLENBEZEICHNUNG_CODE_KLAEGERIN}`],
           },
         ],
       }),
@@ -55,8 +57,8 @@ function defaultBeteiligungFieldsetItems(
         beteiligtenart: "natuerlichePerson",
         rollen: [
           {
-            rollennummer: `2:${beklagteParteiRollenbezeichnungId}`,
-            rollenbezeichnungId: beklagteParteiRollenbezeichnungId,
+            rollennummer: `2:${ROLLENBEZEICHNUNG_CODE_BEKLAGTE}`,
+            rollenbezeichnungCode: ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
           },
         ],
       }),
@@ -64,17 +66,8 @@ function defaultBeteiligungFieldsetItems(
   ];
 }
 
-function dummyBeteiligungFieldsetItems(
-  klagendeParteiRollenbezeichnungId: string,
-  beklagteParteiRollenbezeichnungId: string,
-  prozessbevollmaechtigteRollenbezeichnungId: string,
-  kanzleiformen: Kanzleiform[],
-): BeteiligungFieldsetItem[] {
-  const items = defaultBeteiligungFieldsetItems(
-    klagendeParteiRollenbezeichnungId,
-    beklagteParteiRollenbezeichnungId,
-    prozessbevollmaechtigteRollenbezeichnungId,
-  );
+function dummyBeteiligungFieldsetItems(): BeteiligungFieldsetItem[] {
+  const items = defaultBeteiligungFieldsetItems();
   items[0].defaultValues = {
     ...items[0].defaultValues,
     vorname: "Erika",
@@ -93,10 +86,7 @@ function dummyBeteiligungFieldsetItems(
     hausnummer: "15",
     postleitzahl: "80123",
     ort: "München",
-    kanzleiformId: resolveCodeWertId(
-      kanzleiformen,
-      KANZLEIFORM_CODE_EINZELANWALT,
-    ),
+    kanzleiformCode: KANZLEIFORM_CODE_EINZELANWALT,
   };
   items[2].defaultValues = {
     ...items[2].defaultValues,
@@ -112,21 +102,17 @@ function dummyBeteiligungFieldsetItems(
 
 export type VerfahrenBeteiligungenEditFormProps = {
   existingBeteiligungen: Beteiligung[];
-  klagendeParteiRollenbezeichnungId: string;
-  beklagteParteiRollenbezeichnungId: string;
-  prozessbevollmaechtigteRollenbezeichnungId: string;
   kanzleiformen: Kanzleiform[];
   rechtsformen: Rechtsform[];
 };
 
 export default function VerfahrenCreationBeteiligungenEditForm({
   existingBeteiligungen,
-  klagendeParteiRollenbezeichnungId,
-  beklagteParteiRollenbezeichnungId,
-  prozessbevollmaechtigteRollenbezeichnungId,
   kanzleiformen,
   rechtsformen,
 }: VerfahrenBeteiligungenEditFormProps) {
+  const t = useTranslations();
+
   const [items, setItems] = useState(() => {
     if (existingBeteiligungen.length > 0) {
       return existingBeteiligungen.map((beteiligung, index) => ({
@@ -134,20 +120,16 @@ export default function VerfahrenCreationBeteiligungenEditForm({
         defaultValues: existingBeteiligungToFieldValues(beteiligung),
       }));
     } else {
-      return defaultBeteiligungFieldsetItems(
-        klagendeParteiRollenbezeichnungId,
-        beklagteParteiRollenbezeichnungId,
-        prozessbevollmaechtigteRollenbezeichnungId,
-      );
+      return defaultBeteiligungFieldsetItems();
     }
   });
 
-  const rollennummerToRollenbezeichnungId = useMemo(() => {
+  const rollennummerToRollenbezeichnungCode = useMemo(() => {
     const map = new Map<string, string>();
     for (const item of items) {
       for (const rolle of item.defaultValues.rollen) {
         if (rolle.rollennummer) {
-          map.set(rolle.rollennummer, rolle.rollenbezeichnungId);
+          map.set(rolle.rollennummer, rolle.rollenbezeichnungCode);
         }
       }
     }
@@ -158,23 +140,12 @@ export default function VerfahrenCreationBeteiligungenEditForm({
     () =>
       partitionBeteiligungItemsBySeite(
         items,
-        {
-          klagendePartei: klagendeParteiRollenbezeichnungId,
-          beklagtePartei: beklagteParteiRollenbezeichnungId,
-          prozessbevollmaechtigte: prozessbevollmaechtigteRollenbezeichnungId,
-        },
-        rollennummerToRollenbezeichnungId,
+        rollennummerToRollenbezeichnungCode,
       ),
-    [
-      items,
-      klagendeParteiRollenbezeichnungId,
-      beklagteParteiRollenbezeichnungId,
-      prozessbevollmaechtigteRollenbezeichnungId,
-      rollennummerToRollenbezeichnungId,
-    ],
+    [items, rollennummerToRollenbezeichnungCode],
   );
 
-  const handleAddPartei = useCallback((rollenbezeichnungId: string) => {
+  const handleAddPartei = useCallback((rollenbezeichnungCode: string) => {
     setItems((previousItems) => {
       const key = previousItems.length;
       return [
@@ -185,8 +156,8 @@ export default function VerfahrenCreationBeteiligungenEditForm({
             beteiligtenart: "natuerlichePerson",
             rollen: [
               {
-                rollennummer: `${key}:${rollenbezeichnungId}`,
-                rollenbezeichnungId,
+                rollennummer: `${key}:${rollenbezeichnungCode}`,
+                rollenbezeichnungCode,
               },
             ],
           }),
@@ -196,7 +167,7 @@ export default function VerfahrenCreationBeteiligungenEditForm({
   }, []);
 
   const handleAddProzessbevollmaechtigte = useCallback(
-    (parteiRollenbezeichnungId: string) => {
+    (parteiRollenbezeichnungCode: string) => {
       setItems((previousItems) => {
         const key = previousItems.length;
         return [
@@ -207,15 +178,15 @@ export default function VerfahrenCreationBeteiligungenEditForm({
               beteiligtenart: "raKanzlei",
               rollen: [
                 {
-                  rollennummer: `${key}:${prozessbevollmaechtigteRollenbezeichnungId}`,
-                  rollenbezeichnungId:
-                    prozessbevollmaechtigteRollenbezeichnungId,
+                  rollennummer: `${key}:${ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE}`,
+                  rollenbezeichnungCode:
+                    ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
                   referenz: Array.from(
-                    rollennummerToRollenbezeichnungId.entries(),
+                    rollennummerToRollenbezeichnungCode.entries(),
                   )
                     .filter(
-                      ([_rollennummer, rollenbezeichnungId]) =>
-                        rollenbezeichnungId === parteiRollenbezeichnungId,
+                      ([_rollennummer, rollenbezeichnungCode]) =>
+                        rollenbezeichnungCode === parteiRollenbezeichnungCode,
                     )
                     .map(([rollennummer]) => rollennummer),
                 },
@@ -225,29 +196,14 @@ export default function VerfahrenCreationBeteiligungenEditForm({
         ] satisfies BeteiligungFieldsetItem[];
       });
     },
-    [
-      prozessbevollmaechtigteRollenbezeichnungId,
-      rollennummerToRollenbezeichnungId,
-    ],
+    [rollennummerToRollenbezeichnungCode],
   );
 
   const handleFillInDummyData: MouseEventHandler<HTMLButtonElement> =
     useCallback(() => {
       flushSync(() => setItems([]));
-      setItems(
-        dummyBeteiligungFieldsetItems(
-          klagendeParteiRollenbezeichnungId,
-          beklagteParteiRollenbezeichnungId,
-          prozessbevollmaechtigteRollenbezeichnungId,
-          kanzleiformen,
-        ),
-      );
-    }, [
-      klagendeParteiRollenbezeichnungId,
-      beklagteParteiRollenbezeichnungId,
-      prozessbevollmaechtigteRollenbezeichnungId,
-      kanzleiformen,
-    ]);
+      setItems(dummyBeteiligungFieldsetItems());
+    }, []);
 
   return (
     <div>
@@ -264,12 +220,9 @@ export default function VerfahrenCreationBeteiligungenEditForm({
 
       {/* Klagendenseite */}
       <VerfahrenCreationBeteiligungSeiteFieldset
-        title="Klagendenseite"
+        title={t.routes.verfahrenNeu.beteiligte.form.klagendenseite}
         items={klagendenseite}
-        parteiRollenbezeichnungId={klagendeParteiRollenbezeichnungId}
-        prozessbevollmaechtigteRollenbezeichnungId={
-          prozessbevollmaechtigteRollenbezeichnungId
-        }
+        parteiRollenbezeichnungCode={ROLLENBEZEICHNUNG_CODE_KLAEGERIN}
         kanzleiformen={kanzleiformen}
         rechtsformen={rechtsformen}
         onAddPartei={handleAddPartei}
@@ -278,12 +231,9 @@ export default function VerfahrenCreationBeteiligungenEditForm({
 
       {/* Beklagtenseite */}
       <VerfahrenCreationBeteiligungSeiteFieldset
-        title="Beklagtennseite"
+        title={t.routes.verfahrenNeu.beteiligte.form.beklagtenseite}
         items={beklagtenseite}
-        parteiRollenbezeichnungId={beklagteParteiRollenbezeichnungId}
-        prozessbevollmaechtigteRollenbezeichnungId={
-          prozessbevollmaechtigteRollenbezeichnungId
-        }
+        parteiRollenbezeichnungCode={ROLLENBEZEICHNUNG_CODE_BEKLAGTE}
         kanzleiformen={kanzleiformen}
         rechtsformen={rechtsformen}
         onAddPartei={handleAddPartei}
