@@ -91,7 +91,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     !gerichte.some(({ id }) => id === gerichtId) ||
     !readSafeIdSearchParam(searchParams, authSession)
   ) {
-    throw redirect(KLAGEEINREICHUNG_PATHS.gerichtAuswahl);
+    throw redirect(KLAGEEINREICHUNG_PATHS.neu);
   }
 
   return {
@@ -353,7 +353,7 @@ export default function VerfahrenNeuDokumente({
 
               <div className="kern-gap-md flex flex-wrap justify-end">
                 <Link
-                  to={KLAGEEINREICHUNG_PATHS.gerichtAuswahl}
+                  to={KLAGEEINREICHUNG_PATHS.neu}
                   className="kern-btn kern-btn--secondary"
                 >
                   <span className="kern-label">{t.buttons.prev}</span>

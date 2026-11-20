@@ -28,14 +28,14 @@ type KanzleiDetails = {
   telefon?: string;
 };
 
-export class GerichtAuswahlPage extends PageObject {
+export class VerfahrenNeuPage extends PageObject {
   constructor(page: Page) {
     super(page, "/verfahren/neu");
   }
 
   get safeIdSelect() {
     return this.page.getByRole("combobox", {
-      name: t.routes.verfahrenNeu.dokumente.safeId,
+      name: t.routes.safeIdAuswahl.label,
     });
   }
 

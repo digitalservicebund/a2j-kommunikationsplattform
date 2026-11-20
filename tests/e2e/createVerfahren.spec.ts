@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { HomePage } from "./pageObjects/homePage";
 import {
-  GerichtAuswahlPage,
+  VerfahrenNeuPage,
   VerfahrenBeteiligtePage,
   VerfahrenDetailsStepPage,
   VerfahrenDokumentePage,
@@ -29,20 +29,20 @@ test.describe("Verfahren creation", () => {
     await homePage.startVerfahrenCreationFlow();
 
     // I should be redirected to the court selection
-    const gerichtAuswahl = new GerichtAuswahlPage(page);
-    await gerichtAuswahl.expectToBeHere();
+    const verfahrenNeu = new VerfahrenNeuPage(page);
+    await verfahrenNeu.expectToBeHere();
     await expectNoA11yViolations(page);
 
     // One of my authorized SAFE-IDs is preselected for the new Verfahren
-    await expect(gerichtAuswahl.safeIdSelect).not.toHaveValue("");
-    const safeId = await gerichtAuswahl.safeIdSelect.inputValue();
+    await expect(verfahrenNeu.safeIdSelect).not.toHaveValue("");
+    const safeId = await verfahrenNeu.safeIdSelect.inputValue();
 
     // Temporary test setup: the placeholder ZOV list includes Amtsgericht
     // Bremen, so both options show. Bremen is not part of the KomPla pilot.
-    await gerichtAuswahl.selectEmpfaengergericht("Amtsgericht Bremen");
-    await expect(gerichtAuswahl.komplaButton).toBeVisible();
-    await expect(gerichtAuswahl.eingabesystemButton).toBeVisible();
-    await gerichtAuswahl.startKomplaKlageeinreichung();
+    await verfahrenNeu.selectEmpfaengergericht("Amtsgericht Bremen");
+    await expect(verfahrenNeu.komplaButton).toBeVisible();
+    await expect(verfahrenNeu.eingabesystemButton).toBeVisible();
+    await verfahrenNeu.startKomplaKlageeinreichung();
 
     // I should be redirected to the Dokumente step
     const dokumenteStep = new VerfahrenDokumentePage(page);

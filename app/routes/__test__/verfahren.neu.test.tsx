@@ -70,7 +70,7 @@ async function renderPage({
   };
 }
 
-describe("VerfahrenNeuGerichtAuswahl", () => {
+describe("VerfahrenNeu", () => {
   it("shows no options and announces nothing before a court is selected", async () => {
     const { queryByRole, container } = await renderPage();
 

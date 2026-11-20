@@ -78,7 +78,7 @@ export default function VerfahrenNeu({ loaderData }: Route.ComponentProps) {
           >
             <InputSelect
               id="safeId"
-              label={t.routes.verfahrenNeu.dokumente.safeId}
+              label={t.routes.safeIdAuswahl.label}
               options={safeIdOptions}
               selectedValue={selectedSafeId}
               onChange={(event) => setSelectedSafeId(event.target.value)}
