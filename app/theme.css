@@ -33,6 +33,19 @@
   --color-feedback-danger-bg: var(
     --kern-color-feedback-danger-background-contextual
   );
+  /* KERN's primary button hover/active shading, applied to the danger color */
+  --color-feedback-danger-hover: color-mix(
+    in oklch,
+    var(--kern-color-feedback-danger-contextual),
+    var(--kern-color-layout-background-default)
+      calc(100% - var(--kern-color-action-state-opacity-hover))
+  );
+  --color-feedback-danger-active: color-mix(
+    in oklch,
+    var(--kern-color-feedback-danger-contextual),
+    var(--kern-color-layout-background-default)
+      calc(100% - var(--kern-color-action-state-opacity-active))
+  );
 
   /*
    * Use these instead of bg-(--kern-color-…) style classes: KERN's grid rule

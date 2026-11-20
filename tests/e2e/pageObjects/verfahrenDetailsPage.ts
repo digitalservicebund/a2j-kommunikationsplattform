@@ -28,6 +28,28 @@ export class VerfahrenDetailsOverviewSection extends PageSectionObject {
   constructor(page: Page) {
     super(page, page.getByTestId("verfahren-overview-card"));
   }
+
+  async openDeleteDialog() {
+    await this.locator
+      .getByRole("button", { name: t.shared.form.confirmDelete.open })
+      .click();
+    return new ConfirmDeleteDialog(
+      this.page,
+      t.routes.verfahrenId.deleteVerfahren.title,
+    );
+  }
+}
+
+export class ConfirmDeleteDialog extends PageSectionObject {
+  constructor(page: Page, title: string) {
+    super(page, page.getByRole("dialog", { name: title }));
+  }
+
+  async confirm() {
+    await this.locator
+      .getByRole("button", { name: t.shared.form.confirmDelete.confirm })
+      .click();
+  }
 }
 
 export class VerfahrenDetailsTimelineSection extends PageSectionObject {
@@ -44,6 +66,43 @@ export class VerfahrenDetailsTimelineSection extends PageSectionObject {
 
   get draftKlageeinreichung() {
     return new DraftKlageeinreichungTimelineEntry(this);
+  }
+
+  get weitereEinreichung() {
+    return new WeitereEinreichungSection(this);
+  }
+}
+
+export class WeitereEinreichungSection extends PageSectionObject {
+  constructor(parent: VerfahrenDetailsTimelineSection) {
+    super(
+      parent.page,
+      parent.locator.locator(".kern-card").filter({
+        has: parent.page.getByRole("heading", {
+          name: t.routes.verfahrenId.weitereEinreichung.headline,
+        }),
+      }),
+    );
+  }
+
+  get artSelect() {
+    return this.locator.getByRole("combobox", {
+      name: t.routes.verfahrenId.weitereEinreichung.artLabel,
+    });
+  }
+
+  async selectArt(art: string) {
+    await this.artSelect.selectOption(art);
+  }
+
+  async openDeleteDialog() {
+    await this.locator
+      .getByRole("button", { name: t.shared.form.confirmDelete.open })
+      .click();
+    return new ConfirmDeleteDialog(
+      this.page,
+      t.routes.verfahrenId.weitereEinreichung.delete.title,
+    );
   }
 }
 
