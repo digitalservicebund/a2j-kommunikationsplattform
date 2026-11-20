@@ -1,23 +1,29 @@
 import z from "zod";
 import { BeteiligungenSchema } from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
 import { GerichtSchema } from "~/domains/verfahren/entities/codelisten/gericht.entity";
-import {
-  Verfahren,
-  VerfahrenStatusSchema,
-} from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 
 /**
- * VerfahrenApiSchema
- *
- * Raw API contract (snake_case). See Verfahren Schema at:
- * https://app.kompla-justiz.sinc.de/main/swagger/index.html
+ * The KomPla API's `VerfahrenStatus` schema.
+ * @see https://app.kompla-justiz.sinc.de/main/swagger/index.html
  */
-const VerfahrenApiSchema = z.object({
+export const VerfahrenStatusApiSchema = z.enum([
+  "ERSTELLT",
+  "EINGEREICHT",
+  "GERICHTSVERFAHRENANGELEGT",
+  "GELOESCHT",
+  "ABGESCHLOSSEN",
+]);
+
+/**
+ * The KomPla API's `VerfahrenResponse` schema.
+ * @see https://app.kompla-justiz.sinc.de/main/swagger/index.html
+ */
+export const VerfahrenResponseApiSchema = z.object({
   id: z.string(),
   aktenzeichen_gericht: z.nullable(z.string()),
   verfahrensgegenstand: z.nullable(z.string()),
   kurzrubrum: z.nullable(z.string()),
-  status: VerfahrenStatusSchema,
+  status: VerfahrenStatusApiSchema,
   status_geaendert_am: z.iso.datetime(),
   erstellt_von: z.string(),
   erstellt_am: z.iso.datetime(),
@@ -25,19 +31,3 @@ const VerfahrenApiSchema = z.object({
   gericht: z.nullable(GerichtSchema),
   beteiligungen: BeteiligungenSchema,
 });
-
-export const VerfahrenSchema = VerfahrenApiSchema.transform(
-  (dto): Verfahren => ({
-    id: dto.id,
-    aktenzeichenGericht: dto.aktenzeichen_gericht,
-    verfahrensgegenstand: dto.verfahrensgegenstand,
-    kurzrubrum: dto.kurzrubrum,
-    status: dto.status,
-    statusGeaendertAm: dto.status_geaendert_am,
-    erstelltVon: dto.erstellt_von,
-    erstelltAm: dto.erstellt_am,
-    eingereichtAm: dto.eingereicht_am,
-    gericht: dto.gericht,
-    beteiligungen: dto.beteiligungen,
-  }),
-);

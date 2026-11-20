@@ -62,7 +62,7 @@ describe("beteiligteByRole", () => {
   });
 });
 
-describe("getProzessbevollmaechtigteByReferenz", () => {
+describe(getProzessbevollmaechtigteByReferenz, () => {
   const beteiligteMitAnwalt = [
     {
       id: "b-1",
@@ -70,6 +70,7 @@ describe("getProzessbevollmaechtigteByReferenz", () => {
       bezeichnung: null,
       rollen: [
         {
+          rollennummer: "b-1-rolle",
           rollenbezeichnung: { code: ROLE_CODE_KLAEGERIN },
           referenz: [],
         },
@@ -82,23 +83,22 @@ describe("getProzessbevollmaechtigteByReferenz", () => {
       rollen: [
         {
           rollenbezeichnung: { code: "132" },
-          referenz: [ROLE_CODE_KLAEGERIN],
+          referenz: ["b-1-rolle"],
         },
       ],
     },
   ];
 
-  test("finds the raKanzlei whose role references the given rollennummer", () => {
+  test("finds the Beteiligung whose Rolle references the given Rollennummer", () => {
     const result = getProzessbevollmaechtigteByReferenz(
       beteiligteMitAnwalt,
-      "132",
-      ROLE_CODE_KLAEGERIN,
+      "b-1-rolle",
     );
 
-    expect(result?.id).toBe("b-2");
+    expect(result).toMatchObject([{ id: "b-2" }]);
   });
 
-  test("finds the raKanzlei when the rollennummer is one of several referenzen", () => {
+  test("finds the Beteiligung when the rollennummer is one of several referenzen", () => {
     const beteiligteMitMehrfachReferenz = [
       {
         id: "b-4",
@@ -107,7 +107,7 @@ describe("getProzessbevollmaechtigteByReferenz", () => {
         rollen: [
           {
             rollenbezeichnung: { code: "132" },
-            referenz: [ROLE_CODE_BEKLAGTE, ROLE_CODE_KLAEGERIN],
+            referenz: ["other-rolle", "b-1-rolle"],
           },
         ],
       },
@@ -115,45 +115,19 @@ describe("getProzessbevollmaechtigteByReferenz", () => {
 
     const result = getProzessbevollmaechtigteByReferenz(
       beteiligteMitMehrfachReferenz,
-      "132",
-      ROLE_CODE_KLAEGERIN,
+      "b-1-rolle",
     );
 
-    expect(result?.id).toBe("b-4");
+    expect(result).toMatchObject([{ id: "b-4" }]);
   });
 
-  test("returns undefined when no matching raKanzlei exists", () => {
+  test("returns undefined when no matching Beteiligung exists", () => {
     const result = getProzessbevollmaechtigteByReferenz(
       beteiligteMitAnwalt,
-      "132",
-      ROLE_CODE_BEKLAGTE,
+      "unkonwn-rolle",
     );
 
-    expect(result).toBeUndefined();
-  });
-
-  test("returns undefined for a matching role on a non-raKanzlei beteiligung", () => {
-    const beteiligteOhneRaKanzlei = [
-      {
-        id: "b-3",
-        beteiligtenart: "natuerlichePerson",
-        bezeichnung: null,
-        rollen: [
-          {
-            rollenbezeichnung: { code: "132" },
-            referenz: [ROLE_CODE_KLAEGERIN],
-          },
-        ],
-      },
-    ];
-
-    const result = getProzessbevollmaechtigteByReferenz(
-      beteiligteOhneRaKanzlei,
-      "132",
-      ROLE_CODE_KLAEGERIN,
-    );
-
-    expect(result).toBeUndefined();
+    expect(result).toEqual([]);
   });
 });
 

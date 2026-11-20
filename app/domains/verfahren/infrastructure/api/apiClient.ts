@@ -266,7 +266,7 @@ export async function apiRequest<T = unknown>(
       method,
       url,
       headers,
-      body: fetchBody,
+      body,
       eTag,
     },
     "Sending API request",

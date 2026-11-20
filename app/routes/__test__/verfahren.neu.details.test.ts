@@ -118,7 +118,7 @@ describe("/verfahren/neu/details", () => {
         makeVerfahren({
           id: "11111111-1111-1111-1111-111111111111",
           gericht,
-          beteiligungen: null,
+          beteiligungen: [],
         }),
       );
       const formData = new FormData();

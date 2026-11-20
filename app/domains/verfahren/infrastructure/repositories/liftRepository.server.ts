@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { AuthSession } from "~/services/auth/auth.types";
+import { VerfahrenSchema } from "../../entities/verfahren/verfahren.entity";
 import { apiRequest } from "../api/apiClient";
-import { VerfahrenSchema } from "../schemas/verfahren.schema";
 
 export const LiftResponseSchema = z.object({
   id: z.string(),

@@ -20,15 +20,9 @@ import {
   handleDokumentUpload,
 } from "~/domains/verfahren/application/einreichungDokumentActions.server";
 import loadDokumenteWithValidierungsstatus from "~/domains/verfahren/application/loadDokumenteWithValidierungsstatus.server";
-import loadKlageeinreichungDraft, {
-  readVerfahrenSearchParam,
-} from "~/domains/verfahren/application/loadKlageeinreichungDraft.server";
+import loadKlageeinreichungDraft from "~/domains/verfahren/application/loadKlageeinreichungDraft.server";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
-import { KANZLEIFORM_CODE_EINZELANWALT } from "~/domains/verfahren/entities/codelisten/kanzleiform.entity";
-import {
-  ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
-  ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
-} from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
+import { readVerfahrenSearchParam } from "~/domains/verfahren/application/verfahrenSearchParam.server";
 import { KLAGEEINREICHUNG_NAME } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
 import { DEFAULT_VERFAHRENSGEGENSTAND } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import { uploadDokumentWithSignaturdatei } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
@@ -40,9 +34,8 @@ import {
 } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
 import { createVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { VerfahrenAendernInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.input.schema";
-import resolveCodeWertId from "~/domains/verfahren/services/resolveCodeWertId";
+import buildPlaceholderBeteiligungInputs from "~/domains/verfahren/services/buildPlaceholderBeteiligungInputs";
 import { isValidierungslaufRunning } from "~/domains/verfahren/services/validierungslauf";
-import { ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE } from "~/domains/verfahren/services/verfahrenCodeConstants";
 import { authMiddleware } from "~/middleware/auth.server";
 import { AuthSession } from "~/services/auth/auth.types";
 import { useTranslations } from "~/services/translations/context";
@@ -150,7 +143,7 @@ async function handleFirstUpload(
   let einreichungId: string;
 
   try {
-    const [{ elemente: rollenbezeichnugen }, { elemente: kanzleiformen }] =
+    const [{ elemente: rollenbezeichnungen }, { elemente: kanzleiformen }] =
       await Promise.all([
         fetchRollenbezeichnungen(authSession),
         fetchKanzleiformen(authSession),
@@ -163,57 +156,10 @@ async function handleFirstUpload(
         verfahrensgegenstand: DEFAULT_VERFAHRENSGEGENSTAND,
         kurzrubrum: null,
         gerichtId,
-        beteiligungen: [
-          // The API requires at least a "Kläger(in)" and a "Beklagte(r)".
-          // Also add a "Prozessbevollmächtigte(r)" on the Klagendenseite
-          // by default.
-          {
-            beteiligtenart: "natuerlichePerson",
-            rollen: [
-              {
-                rollennummer: `000:${ROLLENBEZEICHNUNG_CODE_KLAEGERIN}`,
-                rollenbezeichnungId: resolveCodeWertId(
-                  rollenbezeichnugen,
-                  ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
-                ),
-                referenz: [],
-              },
-            ],
-            nachname: "_",
-          },
-          {
-            beteiligtenart: "raKanzlei",
-            rollen: [
-              {
-                rollennummer: `001:${ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE}`,
-                rollenbezeichnungId: resolveCodeWertId(
-                  rollenbezeichnugen,
-                  ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
-                ),
-                referenz: [],
-              },
-            ],
-            bezeichnung: "_",
-            kanzleiformId: resolveCodeWertId(
-              kanzleiformen,
-              KANZLEIFORM_CODE_EINZELANWALT,
-            ),
-          },
-          {
-            beteiligtenart: "natuerlichePerson",
-            rollen: [
-              {
-                rollennummer: `002:${ROLLENBEZEICHNUNG_CODE_BEKLAGTE}`,
-                rollenbezeichnungId: resolveCodeWertId(
-                  rollenbezeichnugen,
-                  ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
-                ),
-                referenz: [],
-              },
-            ],
-            nachname: "_",
-          },
-        ],
+        beteiligungen: buildPlaceholderBeteiligungInputs({
+          rollenbezeichnungen,
+          kanzleiformen,
+        }),
       }),
     );
     verfahrenId = verfahren.id;
@@ -225,7 +171,6 @@ async function handleFirstUpload(
     );
     einreichungId = einreichung.id;
   } catch (error) {
-    console.error(error);
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.uploadFailed,
       data: actionResultData,

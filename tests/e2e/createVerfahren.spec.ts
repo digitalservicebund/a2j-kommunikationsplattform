@@ -49,12 +49,14 @@ test.describe("Verfahren creation", () => {
     await dokumenteStep.expectToBeHere();
     await dokumenteStep.expectSelectedSafeId(safeId);
     await expectNoA11yViolations(page);
+
+    // I should not be able to move to the next step yet
     await expect(dokumenteStep.disabledNextButton).toHaveAttribute(
       "aria-disabled",
       "true",
     );
 
-    // The first upload creates the Verfahren, regardless of its type
+    // I can upload an attachment (but should not be able to continue yet)
     await dokumenteStep.upload("ANHANG", "beweismittel1.pdf");
     await dokumenteStep.expectDokumentToHaveBeenUploaded(
       "ANHANG",
@@ -65,7 +67,7 @@ test.describe("Verfahren creation", () => {
       "true",
     );
 
-    // Weiter is only available once the Klageschrift has been uploaded
+    // I can continue to the next step once I uploaded the Klageschrift
     await dokumenteStep.upload("SCHRIFTSTUECK", "klageschrift.pdf");
     await dokumenteStep.expectDokumentToHaveBeenUploaded(
       "SCHRIFTSTUECK",
@@ -80,6 +82,7 @@ test.describe("Verfahren creation", () => {
       "ANHANG",
       "beweismittel2.pdf",
     );
+
     await expectNoA11yViolations(page);
     await dokumenteStep.next();
 
@@ -103,9 +106,10 @@ test.describe("Verfahren creation", () => {
     // I should be redirected to the Beteiligte step
     const beteiligteStep = new VerfahrenBeteiligtePage(page);
     await beteiligteStep.expectToBeHere();
+    await expectNoA11yViolations(page);
 
     // Specify Beteiligungen
-    await beteiligteStep.addKlagendePartei({
+    await beteiligteStep.fillFirstKlagendePartei({
       vorname: "Erika",
       nachname: "Mustermann",
       strasse: "Heidestraße",
@@ -113,7 +117,7 @@ test.describe("Verfahren creation", () => {
       postleitzahl: "51147",
       ort: "Köln",
     });
-    await beteiligteStep.addKlagendeParteiProzessbevollmaechtigte({
+    await beteiligteStep.fillFirstKlagendeParteiProzessbevollmaechtigte({
       bezeichnung: "Rechtsanwalt Dr. Kathrin Hölzer",
       kanzleiform: "Einzelanwalt",
       geschaeftszeichen: "Mustermann ./. Kartal",
@@ -122,7 +126,19 @@ test.describe("Verfahren creation", () => {
       postleitzahl: "80123",
       ort: "München",
     });
-    await beteiligteStep.addBeklagtePartei({
+    await beteiligteStep.addSecondKlagendePartei({
+      vorname: "Max",
+      nachname: "Mustermann",
+      strasse: "Heidestraße",
+      hausnummer: "17",
+      postleitzahl: "51147",
+      ort: "Köln",
+    });
+    await beteiligteStep.selectProzessbevollmaechtigteForKlagendePartei({
+      parteiNumber: 2,
+      prozessbevollmaechtigteNumber: 1,
+    });
+    await beteiligteStep.fillFirstBeklagtePartei({
       vorname: "Emine",
       nachname: "Kartal",
       strasse: "Eichenring",

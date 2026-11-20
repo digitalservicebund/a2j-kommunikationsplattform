@@ -1,8 +1,9 @@
-import type { Verfahren } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import { Beteiligung } from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
 import { ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE } from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
 import {
   getBeteiligteByRoleCode,
   getBeteiligteDisplayName,
+  getGeschaeftszeichenByRoleCode,
   getProzessbevollmaechtigteByReferenz,
 } from "~/domains/verfahren/services/beteiligteByRole";
 import {
@@ -26,8 +27,6 @@ export type BeteiligteSummaryItem = {
   telefon: string | null;
   prozessbevollmaechtigte: ProzessbevollmaechtigterSummaryItem[];
 };
-
-type Beteiligung = NonNullable<Verfahren["beteiligungen"]>[number];
 
 type Anschrift = {
   strasse?: string | null;
@@ -53,43 +52,55 @@ export function formatAnschrift(
   return [strassenzeile, ortszeile].filter(Boolean).join(", ") || null;
 }
 
-function buildSummaryItem(
+function buildProzessbevollmaechtigteSummaryItems(
+  prozessbevollmaechtigte: Beteiligung[],
+): ProzessbevollmaechtigterSummaryItem[] {
+  return prozessbevollmaechtigte.map((p) => ({
+    name: getBeteiligteDisplayName(p) ?? null,
+    aktenzeichen:
+      getGeschaeftszeichenByRoleCode(
+        p,
+        ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+      ) ?? null,
+    anschrift: formatAnschrift(getBeteiligteAnschrift(p)),
+    email: getBeteiligteEmail(p) || null,
+  }));
+}
+
+function buildBeteiligteSummaryItem(
   beteiligung: Beteiligung,
-): Omit<BeteiligteSummaryItem, "prozessbevollmaechtigte"> {
+  prozessbevollmaechtigte: Beteiligung[],
+): BeteiligteSummaryItem {
   return {
     id: beteiligung.id,
     name: getBeteiligteDisplayName(beteiligung) ?? null,
     anschrift: formatAnschrift(getBeteiligteAnschrift(beteiligung)),
     email: getBeteiligteEmail(beteiligung) || null,
     telefon: getBeteiligteTelefon(beteiligung) || null,
+    prozessbevollmaechtigte: buildProzessbevollmaechtigteSummaryItems(
+      prozessbevollmaechtigte,
+    ),
   };
 }
 
 export function buildBeteiligteSummaryItems(
-  beteiligungen: Verfahren["beteiligungen"],
-  roleCode: string,
+  beteiligungen: Beteiligung[],
+  rollenbezeichnungCode: string,
 ): BeteiligteSummaryItem[] {
-  const beteiligte = getBeteiligteByRoleCode(beteiligungen, roleCode);
-
-  const anwalt = getProzessbevollmaechtigteByReferenz(
+  const beteiligte = getBeteiligteByRoleCode(
     beteiligungen,
-    ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
-    roleCode,
+    rollenbezeichnungCode,
   );
-  const prozessbevollmaechtigte =
-    anwalt && "bezeichnung" in anwalt
-      ? [
-          {
-            name: anwalt.bezeichnung ?? null,
-            aktenzeichen: null,
-            anschrift: formatAnschrift(getBeteiligteAnschrift(anwalt)),
-            email: getBeteiligteEmail(anwalt) || null,
-          },
-        ]
+
+  return beteiligte.map((beteiligung) => {
+    const rolle = beteiligung.rollen.find(
+      (r) => r.rollenbezeichnung.code === rollenbezeichnungCode,
+    )!;
+
+    const prozessbevollmaechtigte = rolle.rollennummer
+      ? getProzessbevollmaechtigteByReferenz(beteiligungen, rolle.rollennummer)
       : [];
 
-  return beteiligte.map((beteiligung) => ({
-    ...buildSummaryItem(beteiligung),
-    prozessbevollmaechtigte,
-  }));
+    return buildBeteiligteSummaryItem(beteiligung, prozessbevollmaechtigte);
+  });
 }

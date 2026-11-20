@@ -1,11 +1,13 @@
-import z from "zod";
 import type { Beteiligung } from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
-import { BeteiligungInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/beteiligung.input.schema";
+import {
+  BeteiligungInput,
+  BeteiligungInputBase,
+} from "~/domains/verfahren/infrastructure/schemas/requests/beteiligung.input.schema";
 
-type BeteiligungInput = z.input<typeof BeteiligungInputSchema>;
-
-function buildBeteiligungInput(beteiligung: Beteiligung): BeteiligungInput {
-  const shared = {
+export function buildBeteiligungInputFromBeteiligung(
+  beteiligung: Beteiligung,
+): BeteiligungInput {
+  const shared: BeteiligungInputBase = {
     rollen: beteiligung.rollen.map((rolle) => ({
       rollennummer: rolle.rollennummer,
       rollenbezeichnungId: rolle.rollenbezeichnung.id,
@@ -69,5 +71,5 @@ export default function buildBeteiligungenInputFromVerfahren(
     return null;
   }
 
-  return beteiligungen.map(buildBeteiligungInput);
+  return beteiligungen.map(buildBeteiligungInputFromBeteiligung);
 }

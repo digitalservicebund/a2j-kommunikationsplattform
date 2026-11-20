@@ -187,22 +187,54 @@ export class VerfahrenBeteiligtePage extends PageObject {
     super(page, "/verfahren/neu/beteiligte");
   }
 
-  get #klagendeParteiFieldset() {
+  get #klagendenseiteFieldset() {
     return this.page.getByRole("group", {
-      name: t.routes.verfahrenNeu.beteiligte.form.klagendePartei.title,
+      name: t.routes.verfahrenNeu.beteiligte.form.klagendenseite.title,
     });
   }
 
-  get #klagendeParteiProzessbevollmaechtigteFieldset() {
+  get #beklagtenseiteFieldset() {
     return this.page.getByRole("group", {
-      name: t.routes.verfahrenNeu.beteiligte.form.klagendePartei.vertretung
-        .title,
+      name: t.routes.verfahrenNeu.beteiligte.form.beklagtenseite.title,
     });
   }
 
-  get #beklagteParteiFieldset() {
-    return this.page.getByRole("group", {
-      name: t.routes.verfahrenNeu.beteiligte.form.beklagtePartei.title,
+  get #firstKlagendeParteiFieldset() {
+    return this.#klagendeParteiFieldset(1);
+  }
+
+  get #firstKlagendeParteiProzessbevollmaechtigteFieldset() {
+    return this.#klagendeParteiProzessbevollmaechtigteFieldset(1);
+  }
+
+  get #firstBeklagteParteiFieldset() {
+    return this.#beklagteParteiFieldset(1);
+  }
+
+  #klagendeParteiFieldset(n: number) {
+    return this.#klagendenseiteFieldset.getByRole("group", {
+      name: t.routes.verfahrenNeu.beteiligte.form.klagendePartei.title.replace(
+        "{{number}}",
+        String(n),
+      ),
+    });
+  }
+
+  #klagendeParteiProzessbevollmaechtigteFieldset(n: number) {
+    return this.#klagendenseiteFieldset.getByRole("group", {
+      name: t.routes.verfahrenNeu.beteiligte.form.prozessbevollmaechtigte.title.replace(
+        "{{number}}",
+        String(n),
+      ),
+    });
+  }
+
+  #beklagteParteiFieldset(n: number) {
+    return this.#beklagtenseiteFieldset.getByRole("group", {
+      name: t.routes.verfahrenNeu.beteiligte.form.beklagtePartei.title.replace(
+        "{{number}}",
+        String(n),
+      ),
     });
   }
 
@@ -241,49 +273,72 @@ export class VerfahrenBeteiligtePage extends PageObject {
   }
 
   async #fillKanzleiDetails(fieldset: Locator, details: KanzleiDetails) {
-    const labels =
-      t.routes.verfahrenNeu.beteiligte.form.klagendePartei.vertretung;
     await fieldset
-      .getByRole("textbox", { name: labels.bezeichnung })
+      .getByRole("textbox", { name: t.shared.form.labels.bezeichnung })
       .fill(details.bezeichnung);
     await fieldset
-      .getByRole("combobox", { name: labels.kanzleiform })
+      .getByRole("combobox", {
+        name: t.routes.verfahrenNeu.beteiligte.form.kanzleiform,
+      })
       .selectOption({ label: details.kanzleiform });
     if (details.geschaeftszeichen) {
       await fieldset
         .getByRole("textbox", {
-          name: t.shared.form.labels.geschaeftszeichenProzessbevollmaechtigte,
+          name: t.routes.verfahrenNeu.beteiligte.form.geschaeftszeichen,
         })
         .fill(details.geschaeftszeichen);
     }
     await this.#fillBasicBeteiligungDetils(fieldset, details);
   }
 
-  async addKlagendePartei(details: NatuerlichePersonDetails) {
+  async fillFirstKlagendePartei(details: NatuerlichePersonDetails) {
     await this.#fillNatuerlichePersonDetails(
-      this.#klagendeParteiFieldset,
+      this.#firstKlagendeParteiFieldset,
       details,
     );
   }
 
-  async addKlagendeParteiProzessbevollmaechtigte(details: KanzleiDetails) {
-    await this.page
-      .getByRole("checkbox", {
-        name: t.routes.verfahrenNeu.beteiligte.form.klagendePartei.vertretung
-          .checkbox,
-      })
-      .check();
+  async fillFirstKlagendeParteiProzessbevollmaechtigte(
+    details: KanzleiDetails,
+  ) {
     await this.#fillKanzleiDetails(
-      this.#klagendeParteiProzessbevollmaechtigteFieldset,
+      this.#firstKlagendeParteiProzessbevollmaechtigteFieldset,
       details,
     );
   }
 
-  async addBeklagtePartei(details: NatuerlichePersonDetails) {
+  async fillFirstBeklagtePartei(details: NatuerlichePersonDetails) {
     await this.#fillNatuerlichePersonDetails(
-      this.#beklagteParteiFieldset,
+      this.#firstBeklagteParteiFieldset,
       details,
     );
+  }
+  async addSecondKlagendePartei(details: NatuerlichePersonDetails) {
+    await this.#klagendenseiteFieldset
+      .getByRole("button", {
+        name: t.routes.verfahrenNeu.beteiligte.form.addPartei,
+      })
+      .click();
+    await this.#fillNatuerlichePersonDetails(
+      this.#klagendeParteiFieldset(2),
+      details,
+    );
+  }
+
+  async selectProzessbevollmaechtigteForKlagendePartei(params: {
+    parteiNumber: number;
+    prozessbevollmaechtigteNumber: number;
+  }) {
+    const parteiTitle =
+      t.routes.verfahrenNeu.beteiligte.form.klagendePartei.title.replace(
+        "{{number}}",
+        String(params.parteiNumber),
+      );
+    await this.#klagendeParteiProzessbevollmaechtigteFieldset(
+      params.prozessbevollmaechtigteNumber,
+    )
+      .getByRole("checkbox", { name: parteiTitle })
+      .check();
   }
 
   async submit() {

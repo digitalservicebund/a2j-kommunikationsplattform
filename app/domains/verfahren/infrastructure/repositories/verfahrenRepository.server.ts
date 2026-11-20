@@ -1,8 +1,10 @@
 import z from "zod";
-import { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
+import {
+  Verfahren,
+  VerfahrenSchema,
+} from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import { apiRequest } from "~/domains/verfahren/infrastructure/api/apiClient";
 import { VerfahrenAendernRequestDTO } from "~/domains/verfahren/infrastructure/schemas/requests/verfahrenAendern.request.schema";
-import { VerfahrenSchema } from "~/domains/verfahren/infrastructure/schemas/verfahren.schema";
 import {
   SORT_VALUES,
   toSortQueryValue,

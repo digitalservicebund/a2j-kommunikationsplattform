@@ -40,7 +40,7 @@ export function makeProzessbevollmeachtigteRolle(
 ) {
   return makeRolle({
     ...params,
-    rollenbezeichnung: makeBeklagteRollenbezeichnung(),
+    rollenbezeichnung: makeProzessbevollmaechtigteRollenbezeichnung(),
   });
 }
 
