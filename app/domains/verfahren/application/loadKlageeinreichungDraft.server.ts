@@ -28,7 +28,7 @@ export function readVerfahrenSearchParam(
   }
 
   if (!VerfahrenIdSchema.safeParse(verfahrenId).success) {
-    throw redirect(KLAGEEINREICHUNG_PATHS.gerichtAuswahl);
+    throw redirect(KLAGEEINREICHUNG_PATHS.neu);
   }
 
   return verfahrenId;
@@ -44,7 +44,7 @@ export function requireVerfahrenSearchParam(
   const verfahrenId = readVerfahrenSearchParam(searchParams);
 
   if (!verfahrenId) {
-    throw redirect(KLAGEEINREICHUNG_PATHS.gerichtAuswahl);
+    throw redirect(KLAGEEINREICHUNG_PATHS.neu);
   }
 
   return verfahrenId;
@@ -65,7 +65,7 @@ export default async function loadKlageeinreichungDraft(
     verfahrenId,
   ).catch((error: unknown) => {
     if (isClientSideApiError(error)) {
-      throw redirect(KLAGEEINREICHUNG_PATHS.gerichtAuswahl);
+      throw redirect(KLAGEEINREICHUNG_PATHS.neu);
     }
     throw error;
   });

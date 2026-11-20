@@ -86,10 +86,7 @@ describe("/verfahren/neu/details", () => {
 
   describe("loader", () => {
     it("redirects to the court selection without a Verfahren", async () => {
-      expectRedirect(
-        await catchThrown(callLoader("")),
-        "/verfahren/neu/gericht-auswahl",
-      );
+      expectRedirect(await catchThrown(callLoader("")), "/verfahren/neu");
     });
 
     it("redirects to the Dokumente step without a Klageschrift", async () => {

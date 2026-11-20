@@ -11,7 +11,7 @@ vi.mock("~/middleware/auth.server", () => ({
   authMiddleware: vi.fn(),
 }));
 
-import VerfahrenNeuGerichtAuswahl from "../verfahren.neu.gericht-auswahl";
+import VerfahrenNeu from "../verfahren.neu.tsx";
 
 const gerichtOptions: GerichtAuswahlOption[] = [
   {
@@ -29,15 +29,21 @@ const gerichtOptions: GerichtAuswahlOption[] = [
   { value: "zov:Z0001", label: "Amtsgericht Hamburg", isZov: true },
 ];
 
-async function renderPage() {
+const SAFE_ID = "DE.BRAK.test";
+const OTHER_SAFE_ID = "DE.BRAK.other";
+
+async function renderPage({
+  safeId = SAFE_ID,
+  authorizedForSafeIds = [SAFE_ID],
+}: { safeId?: string | null; authorizedForSafeIds?: string[] } = {}) {
   const Stub = createRoutesStub([
     {
       path: "/",
       Component: () => (
-        <VerfahrenNeuGerichtAuswahl
-          {...({ loaderData: { gerichtOptions } } as unknown as Parameters<
-            typeof VerfahrenNeuGerichtAuswahl
-          >[0])}
+        <VerfahrenNeu
+          {...({
+            loaderData: { gerichtOptions, safeId, authorizedForSafeIds },
+          } as unknown as Parameters<typeof VerfahrenNeu>[0])}
         />
       ),
     },
@@ -46,16 +52,25 @@ async function renderPage() {
   const select = await result.findByLabelText("Empfängergericht");
   const selectGericht = (value: string) =>
     fireEvent.change(select, { target: { value } });
+  const safeIdSelect = result.getByLabelText("SAFE-ID");
+  const selectSafeId = (value: string) =>
+    fireEvent.change(safeIdSelect, { target: { value } });
 
   // ZOV_EINGABESYSTEM_URL is still an empty placeholder, and Testing Library
   // (unlike browsers) doesn't treat an <a href=""> as a link
   const getEingabesystemLink = () =>
     result.getByText("Klage mit dem Eingabesystem erstellen").closest("a");
 
-  return { ...result, selectGericht, getEingabesystemLink };
+  return {
+    ...result,
+    selectGericht,
+    safeIdSelect,
+    selectSafeId,
+    getEingabesystemLink,
+  };
 }
 
-describe("VerfahrenNeuGerichtAuswahl", () => {
+describe("VerfahrenNeu", () => {
   it("shows no options and announces nothing before a court is selected", async () => {
     const { queryByRole, container } = await renderPage();
 
@@ -73,7 +88,10 @@ describe("VerfahrenNeuGerichtAuswahl", () => {
 
     expect(
       getByRole("link", { name: "Klage einreichen in der KomPla" }),
-    ).toHaveAttribute("href", "/verfahren/neu/dokumente?gericht=bremen");
+    ).toHaveAttribute(
+      "href",
+      "/verfahren/neu/dokumente?gericht=bremen&safeId=DE.BRAK.test",
+    );
     expect(getEingabesystemLink()).toBeInTheDocument();
     expect(container.querySelector("[aria-live]")).toHaveTextContent(
       "Für Amtsgericht Bremen verfügbar: Klage einreichen in der KomPla, Klage mit dem Eingabesystem erstellen.",
@@ -101,5 +119,51 @@ describe("VerfahrenNeuGerichtAuswahl", () => {
       queryByRole("link", { name: "Klage einreichen in der KomPla" }),
     ).toBeNull();
     expect(getEingabesystemLink()).toBeInTheDocument();
+  });
+
+  describe("SAFE-ID selection", () => {
+    it("offers the authorized SAFE-IDs and preselects the user's own", async () => {
+      const { safeIdSelect, getAllByRole } = await renderPage({
+        authorizedForSafeIds: [OTHER_SAFE_ID, SAFE_ID],
+      });
+
+      expect(safeIdSelect).toHaveValue(SAFE_ID);
+      expect(
+        getAllByRole("option")
+          .filter((option) => safeIdSelect.contains(option))
+          .map((option) => option.textContent),
+      ).toEqual([OTHER_SAFE_ID, SAFE_ID]);
+    });
+
+    it.each([
+      ["has none", null],
+      ["isn't authorized", "DE.BRAK.unauthorized"],
+    ])(
+      "preselects the first authorized SAFE-ID when the user's own %s",
+      async (_, safeId) => {
+        const { safeIdSelect } = await renderPage({
+          safeId,
+          authorizedForSafeIds: [OTHER_SAFE_ID, SAFE_ID],
+        });
+
+        expect(safeIdSelect).toHaveValue(OTHER_SAFE_ID);
+      },
+    );
+
+    it("links to the Dokumente step with the selected SAFE-ID", async () => {
+      const { getByRole, selectGericht, selectSafeId } = await renderPage({
+        authorizedForSafeIds: [SAFE_ID, OTHER_SAFE_ID],
+      });
+
+      selectGericht("erding");
+      selectSafeId(OTHER_SAFE_ID);
+
+      expect(
+        getByRole("link", { name: "Klage einreichen in der KomPla" }),
+      ).toHaveAttribute(
+        "href",
+        `/verfahren/neu/dokumente?gericht=erding&safeId=${OTHER_SAFE_ID}`,
+      );
+    });
   });
 });

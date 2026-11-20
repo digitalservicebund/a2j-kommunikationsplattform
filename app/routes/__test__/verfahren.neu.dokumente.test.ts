@@ -72,6 +72,8 @@ const context = { get: () => authSession, set: () => {} };
 const BASE_URL = "http://localhost:3000/verfahren/neu/dokumente";
 const VERFAHREN_ID = "11111111-1111-1111-1111-111111111111";
 const DOKUMENTE_PATH = `/verfahren/neu/dokumente?verfahren=${VERFAHREN_ID}`;
+const SAFE_ID = authSession.authorizedForSafeIds[0];
+const NEW_VERFAHREN_SEARCH = `?${new URLSearchParams({ gericht: gericht.id, safeId: SAFE_ID })}`;
 
 const validierungsstatus = {
   validierungslaufStatus: "ABGESCHLOSSEN",
@@ -142,21 +144,28 @@ describe("/verfahren/neu/dokumente", () => {
 
   describe("loader", () => {
     it("redirects to the court selection without params", async () => {
-      expectRedirect(
-        await catchThrown(callLoader("")),
-        "/verfahren/neu/gericht-auswahl",
-      );
+      expectRedirect(await catchThrown(callLoader("")), "/verfahren/neu");
     });
 
     it("redirects to the court selection for an unknown court", async () => {
       expectRedirect(
         await catchThrown(callLoader("?gericht=unknown")),
-        "/verfahren/neu/gericht-auswahl",
+        "/verfahren/neu",
       );
     });
 
-    it("starts without Dokumente for a known court", async () => {
-      expect(await callLoader(`?gericht=${gericht.id}`)).toEqual({
+    it.each([
+      ["without a SAFE-ID", `?gericht=${gericht.id}`],
+      [
+        "for a SAFE-ID the user isn't authorized for",
+        `?${new URLSearchParams({ gericht: gericht.id, safeId: "DE.BRAK.other" })}`,
+      ],
+    ])("redirects to the court selection %s", async (_, search) => {
+      expectRedirect(await catchThrown(callLoader(search)), "/verfahren/neu");
+    });
+
+    it("starts without Dokumente for a known court and SAFE-ID", async () => {
+      expect(await callLoader(NEW_VERFAHREN_SEARCH)).toEqual({
         verfahrenId: undefined,
         einreichung: undefined,
         dokumente: [],
@@ -171,7 +180,7 @@ describe("/verfahren/neu/dokumente", () => {
           await catchThrown(
             callLoader(`?${new URLSearchParams({ verfahren: verfahrenId })}`),
           ),
-          "/verfahren/neu/gericht-auswahl",
+          "/verfahren/neu",
         );
         expect(mocks.loadVerfahrenEinreichungBundle).not.toHaveBeenCalled();
       },
@@ -186,7 +195,7 @@ describe("/verfahren/neu/dokumente", () => {
         await catchThrown(
           callLoader("?verfahren=99999999-9999-9999-9999-999999999999"),
         ),
-        "/verfahren/neu/gericht-auswahl",
+        "/verfahren/neu",
       );
     });
 
@@ -238,18 +247,22 @@ describe("/verfahren/neu/dokumente", () => {
         mocks.createVerfahren.mockResolvedValue({ id: VERFAHREN_ID });
         mocks.createEinreichung.mockResolvedValue({ id: "einreichung-1" });
 
-        const response = await callAction(`?gericht=${gericht.id}`, {
+        const response = await callAction(NEW_VERFAHREN_SEARCH, {
           formType: "upload",
           typ,
           file: pdfFile,
         });
 
-        expect(mocks.createVerfahren).toHaveBeenCalledWith(authSession, {
-          verfahrensgegenstand: "Zahlungsklage",
-          kurzrubrum: null,
-          gericht_id: gericht.id,
-          beteiligungen: null,
-        });
+        expect(mocks.createVerfahren).toHaveBeenCalledWith(
+          authSession,
+          SAFE_ID,
+          {
+            verfahrensgegenstand: "Zahlungsklage",
+            kurzrubrum: null,
+            gericht_id: gericht.id,
+            beteiligungen: null,
+          },
+        );
         expect(mocks.createEinreichung).toHaveBeenCalledWith(
           authSession,
           VERFAHREN_ID,
@@ -273,7 +286,7 @@ describe("/verfahren/neu/dokumente", () => {
       mocks.createVerfahren.mockResolvedValue({ id: VERFAHREN_ID });
       mocks.createEinreichung.mockResolvedValue({ id: "einreichung-1" });
 
-      const response = await callAction(`?gericht=${gericht.id}`, {
+      const response = await callAction(NEW_VERFAHREN_SEARCH, {
         formType: "upload",
         typ: "SCHRIFTSTUECK",
         file: pdfFile,
@@ -296,7 +309,7 @@ describe("/verfahren/neu/dokumente", () => {
         new ApiError("rejected", { status: 422 }),
       );
 
-      const response = await callAction(`?gericht=${gericht.id}`, {
+      const response = await callAction(NEW_VERFAHREN_SEARCH, {
         formType: "upload",
         typ: "ANHANG",
         file: pdfFile,
@@ -310,7 +323,7 @@ describe("/verfahren/neu/dokumente", () => {
         new ApiError("failed", { status: 500 }),
       );
 
-      const result = await callAction(`?gericht=${gericht.id}`, {
+      const result = await callAction(NEW_VERFAHREN_SEARCH, {
         formType: "upload",
         typ: "ANHANG",
         file: pdfFile,
@@ -322,7 +335,7 @@ describe("/verfahren/neu/dokumente", () => {
     });
 
     it("reports a missing file for the uploaded type", async () => {
-      const result = await callAction(`?gericht=${gericht.id}`, {
+      const result = await callAction(NEW_VERFAHREN_SEARCH, {
         formType: "upload",
         typ: "ANHANG",
         file: new File([], ""),
@@ -338,8 +351,25 @@ describe("/verfahren/neu/dokumente", () => {
       expect(mocks.createVerfahren).not.toHaveBeenCalled();
     });
 
+    it.each([
+      ["without a SAFE-ID", `?gericht=${gericht.id}`],
+      [
+        "for a SAFE-ID the user isn't authorized for",
+        `?${new URLSearchParams({ gericht: gericht.id, safeId: "DE.BRAK.other" })}`,
+      ],
+    ])("rejects the first upload %s", async (_, search) => {
+      const result = await callAction(search, {
+        formType: "upload",
+        typ: "ANHANG",
+        file: pdfFile,
+      });
+
+      expect(result).toMatchObject({ init: { status: 400 } });
+      expect(mocks.createVerfahren).not.toHaveBeenCalled();
+    });
+
     it("rejects the XJustiz type", async () => {
-      const result = await callAction(`?gericht=${gericht.id}`, {
+      const result = await callAction(NEW_VERFAHREN_SEARCH, {
         formType: "upload",
         typ: "XJUSTIZ",
         file: pdfFile,
@@ -388,14 +418,14 @@ describe("/verfahren/neu/dokumente", () => {
         }),
       );
 
-      expectRedirect(response, "/verfahren/neu/gericht-auswahl");
+      expectRedirect(response, "/verfahren/neu");
       expect(mocks.handleDokumentUpload).not.toHaveBeenCalled();
     });
 
     it.each(["delete", "sichtbarkeit"])(
       "rejects %s without a Verfahren",
       async (formType) => {
-        const result = await callAction(`?gericht=${gericht.id}`, {
+        const result = await callAction(NEW_VERFAHREN_SEARCH, {
           formType,
         });
 
