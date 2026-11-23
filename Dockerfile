@@ -21,7 +21,13 @@ COPY public ./public/
 
 RUN npm config set ignore-scripts true
 RUN npm ci
-RUN npm run build
+
+# Pass SENTRY_AUTH_TOKEN to `npm run build` as a build secret so that the
+# Sentry Vite plugin can upload the generated source maps. If the secret is
+# absent (e.g., local builds), the build still succeeds, just without uploading
+# source maps to Sentry.
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN \
+  npm run build
 
 # ==============================================================================
 # STAGE: Download and install runtime dependencies
