@@ -13,6 +13,7 @@ import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/s
 import buildGerichtAuswahlOptions, {
   GerichtAuswahlOption,
 } from "~/domains/verfahren/services/buildGerichtAuswahlOptions";
+import preselectSafeId from "~/domains/verfahren/services/preselectSafeId";
 import { authMiddleware } from "~/middleware/auth.server";
 import { Translations } from "~/services/translations";
 import { useTranslations } from "~/services/translations/context";
@@ -42,9 +43,7 @@ export default function VerfahrenNeu({ loaderData }: Route.ComponentProps) {
   }));
 
   const [selectedSafeId, setSelectedSafeId] = useState(
-    safeId && authorizedForSafeIds.includes(safeId)
-      ? safeId
-      : (authorizedForSafeIds[0] ?? ""),
+    preselectSafeId(safeId, authorizedForSafeIds),
   );
   const [selectedGerichtValue, setSelectedGerichtValue] = useState("");
 
