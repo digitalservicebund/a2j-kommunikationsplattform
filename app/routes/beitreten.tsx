@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { InputEventHandler, useCallback } from "react";
+import { InputEventHandler, useCallback, useState } from "react";
 import {
   data,
   Form,
@@ -13,6 +13,7 @@ import z from "zod";
 import Alert from "~/components/Alert";
 import Callout from "~/components/Callout";
 import InputField from "~/components/InputField";
+import InputSelect from "~/components/InputSelect";
 import { PageMetadata } from "~/components/PageMetadata";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
 import { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
@@ -27,6 +28,7 @@ import {
   ROLE_CODE_BEKLAGTE,
   ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/services/beteiligteByRole";
+import preselectSafeId from "~/domains/verfahren/services/preselectSafeId";
 import { authMiddleware } from "~/middleware/auth.server";
 import { useTranslations } from "~/services/translations/context";
 import { de } from "~/services/translations/de";
@@ -53,7 +55,14 @@ export async function loader({ url, context }: LoaderFunctionArgs) {
     try {
       const { lift, eTag } = await validateLiftCode(authSession, code);
       logger.debug({ lift, eTag }, "Lift code validated successully");
-      return data(actionSuccess({ lift, eTag }));
+      return data(
+        actionSuccess({
+          lift,
+          eTag,
+          safeId: authSession.safeId,
+          authorizedForSafeIds: authSession.authorizedForSafeIds,
+        }),
+      );
     } catch (error) {
       const isCodeInvalid = is4xxApiError(error);
       const status = isCodeInvalid ? 400 : 500;
@@ -67,24 +76,28 @@ export async function loader({ url, context }: LoaderFunctionArgs) {
   return null;
 }
 
-const ActionInputSchema = z.object({
-  code: z.string().min(1),
-  liftId: z.string().min(1),
-  liftETag: z.string().min(1),
-});
+function buildActionInputSchema(authorizedForSafeIds: string[]) {
+  return z.object({
+    code: z.string().min(1),
+    liftId: z.string().min(1),
+    liftETag: z.string().min(1),
+    safeId: z
+      .string()
+      .refine((safeId) => authorizedForSafeIds.includes(safeId)),
+  });
+}
 
 /**
  * Redeems the submitted lift code so that the user joins the associated
- * Verfahren.
+ * Verfahren with the selected SAFE-ID.
  */
 export async function action({ request, context }: Route.ActionArgs) {
   const authSession = requireAuthSession(context, "action");
-  const safeId = authSession.safeId!;
 
   const formData = await request.formData();
-  const { code, liftId, liftETag } = parseActionFormData(
+  const { code, liftId, liftETag, safeId } = parseActionFormData(
     formData,
-    ActionInputSchema,
+    buildActionInputSchema(authSession.authorizedForSafeIds),
   );
 
   try {
@@ -109,8 +122,7 @@ export default function Beitreten({ loaderData }: Route.ComponentProps) {
   const t = useTranslations();
 
   const code = searchParams.get("code") ?? undefined;
-  const { lift, eTag } =
-    loaderData?.status === "success" ? loaderData.data : {};
+  const lifted = loaderData?.status === "success" ? loaderData.data : undefined;
   const error = loaderData?.status === "error" ? loaderData.error : undefined;
 
   return (
@@ -120,12 +132,14 @@ export default function Beitreten({ loaderData }: Route.ComponentProps) {
       <h1 className="kern-heading">{t.routes.beitreten.title}</h1>
       <p className="kern-subline">{t.routes.beitreten.subtitle}</p>
 
-      {lift ? (
+      {lifted ? (
         <LiftConfirmationForm
-          lift={lift}
-          liftETag={eTag!}
+          lift={lifted.lift}
+          liftETag={lifted.eTag}
           code={code!}
-          verfahren={lift.verfahren}
+          verfahren={lifted.lift.verfahren}
+          safeId={lifted.safeId}
+          authorizedForSafeIds={lifted.authorizedForSafeIds}
         />
       ) : (
         <LiftCodeValidationForm initialCode={code} error={error} />
@@ -201,14 +215,21 @@ function LiftConfirmationForm({
   lift,
   liftETag,
   verfahren,
+  safeId,
+  authorizedForSafeIds,
 }: Readonly<{
   code: string;
   lift: LiftResponse;
   liftETag: string;
   verfahren: Verfahren;
+  safeId: string | null;
+  authorizedForSafeIds: string[];
 }>) {
   const t = useTranslations();
   const actionData = useActionData();
+  const [selectedSafeId, setSelectedSafeId] = useState(
+    preselectSafeId(safeId, authorizedForSafeIds),
+  );
 
   const klagende = getBeteiligteByRoleCode(
     verfahren.beteiligungen,
@@ -280,6 +301,15 @@ function LiftConfirmationForm({
             </dd>
           </div>
         </dl>
+
+        <InputSelect
+          id="safeId"
+          label={t.routes.safeIdAuswahl.label}
+          hint={t.routes.safeIdAuswahl.intro}
+          options={authorizedForSafeIds.map((id) => ({ value: id, label: id }))}
+          selectedValue={selectedSafeId}
+          onChange={(event) => setSelectedSafeId(event.target.value)}
+        />
 
         <Callout type="info" title={t.routes.beitreten.yourRole.title}>
           <span
