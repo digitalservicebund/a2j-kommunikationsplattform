@@ -68,8 +68,10 @@ export async function getAuthSession(
 
   const setCookieHeaders = sessionHeaders.getSetCookie();
 
-  const ownSafeId = user.safeId ? [user.safeId] : []
-  const authorizedForSafeIds = user.grantedPrivileges?.length ? user.grantedPrivileges : ownSafeId
+  const ownSafeId = user.safeId ? [user.safeId] : [];
+  const authorizedForSafeIds = user.grantedPrivileges?.length
+    ? user.grantedPrivileges
+    : ownSafeId;
 
   return {
     provider,
