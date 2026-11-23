@@ -68,6 +68,9 @@ export async function getAuthSession(
 
   const setCookieHeaders = sessionHeaders.getSetCookie();
 
+  const ownSafeId = user.safeId ? [user.safeId] : []
+  const authorizedForSafeIds = user.grantedPrivileges?.length ? user.grantedPrivileges : ownSafeId
+
   return {
     provider,
     accessToken: tokens.accessToken,
@@ -75,11 +78,7 @@ export async function getAuthSession(
     safeId: user?.safeId ?? null,
     // the below might need to be changed when the Reno functionality is available,
     // as a Reno should not be able to file a Klage using their own SAFE_ID
-    authorizedForSafeIds: user.grantedPrivileges?.length
-      ? user.grantedPrivileges
-      : user.safeId
-        ? [user.safeId]
-        : [],
+    authorizedForSafeIds,
     sessionCookieHeaders: [...setCookieHeaders, ...tokens.setCookieHeaders],
   };
 }
