@@ -150,6 +150,18 @@ describe("getAuthSession", () => {
         ["DE.BRAK_SPT.abc", "DE.BRAK_SPT.other"],
       ],
       [
+        "uses only the granted privileges, even without the user's SAFE-ID",
+        "DE.BRAK_SPT.abc",
+        ["DE.BRAK_SPT.other"],
+        ["DE.BRAK_SPT.other"],
+      ],
+      [
+        "uses the granted privileges without a SAFE-ID",
+        null,
+        ["DE.BRAK_SPT.other"],
+        ["DE.BRAK_SPT.other"],
+      ],
+      [
         "falls back to the user's SAFE-ID without granted privileges",
         "DE.BRAK_SPT.abc",
         undefined,
