@@ -44,6 +44,12 @@ export class BeitrittscodeConfirmationPage extends PageObject {
     );
   }
 
+  get safeIdSelect() {
+    return this.page.getByRole("combobox", {
+      name: t.routes.safeIdAuswahl.label,
+    });
+  }
+
   async expectRubrum(value: string) {
     await expect(
       getDefinitionByTermLabel(this.page, t.shared.kurzrubrum.label),

@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import {
   BeitrittscodeConfirmationPage,
   BeitrittscodePage,
@@ -52,6 +52,9 @@ test.describe("Joining a Verfahren (Beitrittscode / Lift)", () => {
     await confirmationPage.expectAktenzeichenGericht(aktenzeichenGericht);
     await confirmationPage.expectKlagendePartei(klagendePartei);
     await confirmationPage.expectBeklagtePartei(beklagtePartei);
+
+    await expect(confirmationPage.safeIdSelect).not.toHaveValue("");
+
     await confirmationPage.confirm();
 
     const { verfahrenId } = verfahrenDetailsForDummyValidCode;
