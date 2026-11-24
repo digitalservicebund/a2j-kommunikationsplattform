@@ -23,7 +23,7 @@
     "compose:stop": "docker-compose stop"
   },
   "dependencies": {
-    "@kern-ux/native": "^2.8.2",
+    "@kern-ux/native": "^2.9.0",
     "@react-router/express": "^8.5.2",
     "@react-router/node": "^8.5.2",
     "@react-router/serve": "^8.5.2",
