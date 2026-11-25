@@ -14,7 +14,7 @@ const beteiligung = {
       ort: "Frankfurt am Main",
     },
   ],
-  telekommunikation: [
+  telekommunikationen: [
     {
       telekommunikationsart: { code: "001" },
       verbindung: "emiliakuehn@posteo.de",
@@ -42,7 +42,7 @@ describe("getBeteiligteEmail", () => {
   });
 
   it("returns an empty string when there is no email entry", () => {
-    expect(getBeteiligteEmail({ telekommunikation: null })).toBe("");
+    expect(getBeteiligteEmail({ telekommunikationen: null })).toBe("");
   });
 });
 
@@ -52,6 +52,6 @@ describe("getBeteiligteTelefon", () => {
   });
 
   it("returns an empty string when there is no phone entry", () => {
-    expect(getBeteiligteTelefon({ telekommunikation: null })).toBe("");
+    expect(getBeteiligteTelefon({ telekommunikationen: null })).toBe("");
   });
 });

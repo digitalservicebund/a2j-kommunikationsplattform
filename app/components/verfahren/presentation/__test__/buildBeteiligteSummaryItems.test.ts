@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { Beteiligung } from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
 import {
   buildBeteiligteSummaryItems,
   formatAnschrift,
@@ -7,7 +8,7 @@ import {
 const ROLE_CODE_KLAEGERIN = "101";
 const ROLE_CODE_BEKLAGTE = "028";
 
-const beteiligungen = [
+const beteiligungen: Beteiligung[] = [
   {
     beteiligtenart: "natuerlichePerson" as const,
     id: "bet-1",
@@ -40,7 +41,7 @@ const beteiligungen = [
         staat: { id: "s-1", wert: "Deutschland", code: "000" },
       },
     ],
-    telekommunikation: [
+    telekommunikationen: [
       {
         id: "t-1",
         telekommunikationsart: {
@@ -94,7 +95,7 @@ const beteiligungen = [
         staat: { id: "s-1", wert: "Deutschland", code: "000" },
       },
     ],
-    telekommunikation: [
+    telekommunikationen: [
       {
         id: "t-3",
         telekommunikationsart: {
@@ -128,7 +129,7 @@ const beteiligungen = [
       },
     ],
     anschriften: null,
-    telekommunikation: null,
+    telekommunikationen: null,
   },
   {
     beteiligtenart: "natuerlichePerson" as const,
@@ -147,7 +148,7 @@ const beteiligungen = [
       },
     ],
     anschriften: null,
-    telekommunikation: null,
+    telekommunikationen: null,
   },
 ];
 

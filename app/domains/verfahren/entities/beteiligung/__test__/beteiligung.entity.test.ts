@@ -13,7 +13,7 @@ const baseFields = {
     },
   ],
   anschriften: null,
-  telekommunikation: null,
+  telekommunikationen: null,
 };
 
 describe("BeteiligungenSchema", () => {

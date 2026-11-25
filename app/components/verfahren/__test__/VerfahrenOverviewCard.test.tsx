@@ -44,7 +44,7 @@ const verfahren = makeVerfahren({
         },
       ],
       anschriften: null,
-      telekommunikation: null,
+      telekommunikationen: null,
     },
     {
       beteiligtenart: "natuerlichePerson",
@@ -63,7 +63,7 @@ const verfahren = makeVerfahren({
         },
       ],
       anschriften: null,
-      telekommunikation: null,
+      telekommunikationen: null,
     },
   ],
 });

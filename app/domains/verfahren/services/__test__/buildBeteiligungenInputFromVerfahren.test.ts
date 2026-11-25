@@ -16,7 +16,7 @@ describe("buildBeteiligungenInputFromVerfahren", () => {
     const rolle = makeKlaegerinRolle();
     const person = makeNatuerlichePersonBeteiligung({ rollen: [rolle] });
     const [anschrift] = person.anschriften ?? [];
-    const [email, telefon] = person.telekommunikation ?? [];
+    const [email, telefon] = person.telekommunikationen ?? [];
 
     expect(buildBeteiligungenInputFromVerfahren([person])).toEqual([
       {
@@ -44,7 +44,7 @@ describe("buildBeteiligungenInputFromVerfahren", () => {
             staatId: anschrift?.staat?.id,
           },
         ],
-        kommunikationsanschluesse: [
+        telekommunikationen: [
           {
             telekommunikationsartId: email?.telekommunikationsart.id,
             verbindung: "johanna.gross@example.com",
@@ -63,7 +63,7 @@ describe("buildBeteiligungenInputFromVerfahren", () => {
       bezeichnung: "Kanzlei Hölzer",
       rechtsform: { id: "rechtsform-1", wert: "GmbH", code: "010" },
       anschriften: null,
-      telekommunikation: null,
+      telekommunikationen: null,
     });
 
     expect(buildBeteiligungenInputFromVerfahren([kanzlei])).toEqual([
@@ -73,7 +73,7 @@ describe("buildBeteiligungenInputFromVerfahren", () => {
         rechtsformId: "rechtsform-1",
         kanzleiformId: kanzlei.kanzleiform.id,
         anschriften: null,
-        kommunikationsanschluesse: null,
+        telekommunikationen: null,
       }),
     ]);
   });

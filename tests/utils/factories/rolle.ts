@@ -1,20 +1,16 @@
 import { Rolle } from "~/domains/verfahren/entities/beteiligung/rollen.entity";
-import { Rollenbezeichnung } from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
 import {
-  ROLE_CODE_BEKLAGTE,
-  ROLE_CODE_KLAEGERIN,
-  ROLE_CODE_PROZESSBEVOLLMAECHTIGTE,
-} from "~/domains/verfahren/services/beteiligteByRole";
+  Rollenbezeichnung,
+  ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
+  ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+  ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+} from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
 
 export function makeRolle(params?: Partial<Rolle>): Rolle {
   return {
     id: "c53dd226-7bd9-4da5-19da-5302595a9469",
     rollennummer: "75ea4dbc-4073-40bb-b529-955d414396c7",
-    rollenbezeichnung: {
-      id: "81b65e37-7790-44c6-92b8-858a842dacbc",
-      wert: "Kläger(in)",
-      code: ROLE_CODE_KLAEGERIN,
-    },
+    rollenbezeichnung: makeKlaegerinRollenbezeichnung(),
     geschaeftszeichen: null,
     referenz: [],
     ...params,
@@ -26,7 +22,7 @@ export function makeKlaegerinRolle(
 ) {
   return makeRolle({
     ...params,
-    rollenbezeichnung: makeKlaegerinRollenbeschreibung(),
+    rollenbezeichnung: makeKlaegerinRollenbezeichnung(),
   });
 }
 
@@ -35,7 +31,7 @@ export function makeBeklagteRolle(
 ) {
   return makeRolle({
     ...params,
-    rollenbezeichnung: makeBeklagteRollenbeschreibung(),
+    rollenbezeichnung: makeBeklagteRollenbezeichnung(),
   });
 }
 
@@ -44,39 +40,39 @@ export function makeProzessbevollmeachtigteRolle(
 ) {
   return makeRolle({
     ...params,
-    rollenbezeichnung: makeBeklagteRollenbeschreibung(),
+    rollenbezeichnung: makeBeklagteRollenbezeichnung(),
   });
 }
 
-export function makeKlaegerinRollenbeschreibung(
+export function makeKlaegerinRollenbezeichnung(
   params?: Omit<Partial<Rollenbezeichnung>, "code">,
 ): Rollenbezeichnung {
   return {
     id: "81b65e37-7790-44c6-92b8-858a842dacbc",
     wert: "Kläger(in)",
-    code: ROLE_CODE_KLAEGERIN,
+    code: ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
     ...params,
   };
 }
 
-export function makeBeklagteRollenbeschreibung(
+export function makeBeklagteRollenbezeichnung(
   params?: Omit<Partial<Rollenbezeichnung>, "code">,
 ): Rollenbezeichnung {
   return {
     id: "8b764709-aa24-46d2-9d90-f4de86cb3280",
     wert: "Beklagte(r)",
-    code: ROLE_CODE_BEKLAGTE,
+    code: ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
     ...params,
   };
 }
 
-export function makeProzessbevollmaechtigteRollenbeschreibung(
+export function makeProzessbevollmaechtigteRollenbezeichnung(
   params?: Omit<Partial<Rollenbezeichnung>, "code">,
 ): Rollenbezeichnung {
   return {
     id: "8b764709-aa24-46d2-9d90-f4de86cb3280",
     wert: "Prozessbevollmächtigte(r)",
-    code: ROLE_CODE_PROZESSBEVOLLMAECHTIGTE,
+    code: ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
     ...params,
   };
 }

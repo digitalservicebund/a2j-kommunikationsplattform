@@ -11,14 +11,14 @@ type RollenRequestDTO = z.infer<typeof RollenRequestSchema>;
  */
 export const RollenInputSchema = z
   .object({
-    rollennummer: z.nullable(z.string()),
+    rollennummer: z.nullish(z.string()),
     rollenbezeichnungId: z.string(),
-    geschaeftszeichen: z.nullable(z.string()),
+    geschaeftszeichen: z.nullish(z.string()),
     referenz: z.array(z.string()),
   })
   .transform((input): RollenRequestDTO => ({
-    rollennummer: input.rollennummer,
+    rollennummer: input.rollennummer ?? null,
     rollenbezeichnung_id: input.rollenbezeichnungId,
-    geschaeftszeichen: input.geschaeftszeichen,
+    geschaeftszeichen: input.geschaeftszeichen ?? null,
     referenz: input.referenz,
   }));
