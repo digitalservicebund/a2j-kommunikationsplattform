@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { InputHTMLAttributes } from "react";
+import Icon from "./Icon";
 import InputLabel from "./InputLabel";
 
 export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -75,10 +76,7 @@ export default function InputField({
 
       {error && (
         <p className="kern-error" id={errorId}>
-          <span
-            className="kern-icon kern-icon--danger kern-icon--md"
-            aria-hidden="true"
-          ></span>
+          <Icon name="danger" />
           <span className="kern-body">{error}</span>
         </p>
       )}

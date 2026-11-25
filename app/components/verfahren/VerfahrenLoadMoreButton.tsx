@@ -14,12 +14,8 @@ export function VerfahrenLoadMoreButton({
         type="button"
         onClick={loadMore}
         label={buttons.LOAD_MORE_VERFAHREN}
-      >
-        <span
-          className="kern-icon kern-icon--arrow-down kern-icon--default"
-          aria-hidden="true"
-        ></span>
-      </Button>
+        icon="arrow-down"
+      />
     </div>
   );
 }

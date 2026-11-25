@@ -2,6 +2,7 @@ import { data, Link, redirect, useNavigation } from "react-router";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import { useRevalidateWhilePending } from "~/components/hooks/useRevalidateWhilePending";
+import Icon from "~/components/Icon";
 import { PageMetadata } from "~/components/PageMetadata";
 import Progress from "~/components/Progress";
 import VerfahrenEinreichungDokumente from "~/components/verfahren/VerfahrenEinreichungDokumente";
@@ -264,17 +265,7 @@ export default function VerfahrenNeuDokumente({
     formType !== "delete";
 
   const hasKlageschrift = dokumente.some(({ typ }) => typ === "SCHRIFTSTUECK");
-  const nextLabel = (
-    <>
-      <span className="kern-label">
-        {routes.verfahrenNeu.dokumente.navigation.next}
-      </span>
-      <span
-        className="kern-icon kern-icon--arrow-forward"
-        aria-hidden="true"
-      ></span>
-    </>
-  );
+  const nextLabel = routes.verfahrenNeu.dokumente.navigation.next;
 
   return (
     <>
@@ -346,14 +337,20 @@ export default function VerfahrenNeuDokumente({
                     })}
                     className="kern-btn kern-btn--primary"
                   >
-                    {nextLabel}
+                    <span className="kern-label">{nextLabel}</span>
+                    <Icon name="arrow-forward" />
                   </Link>
                 ) : (
                   // aria-disabled keeps it focusable and announced, as KERN
                   // recommends over disabled
-                  <Button appearance="primary" type="button" aria-disabled>
-                    {nextLabel}
-                  </Button>
+                  <Button
+                    appearance="primary"
+                    type="button"
+                    aria-disabled
+                    label={nextLabel}
+                    icon="arrow-forward"
+                    iconPosition="trailing"
+                  />
                 )}
               </div>
             </div>

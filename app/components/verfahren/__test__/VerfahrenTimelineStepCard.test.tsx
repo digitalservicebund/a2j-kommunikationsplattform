@@ -57,7 +57,7 @@ describe("VerfahrenTimelineStepCard", () => {
           body={<span>Dynamischer Inhalt</span>}
           editTo="/verfahren/neu/123/bearbeiten"
           editLabel="Bearbeiten"
-          iconClassName="kern-icon--edit"
+          icon="edit"
         />
       </MemoryRouter>,
     );

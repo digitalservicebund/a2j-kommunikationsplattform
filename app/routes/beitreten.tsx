@@ -11,7 +11,9 @@ import {
 } from "react-router";
 import z from "zod";
 import Alert from "~/components/Alert";
+import Button from "~/components/Button";
 import Callout from "~/components/Callout";
+import Icon from "~/components/Icon";
 import InputField from "~/components/InputField";
 import { PageMetadata } from "~/components/PageMetadata";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
@@ -184,13 +186,13 @@ function LiftCodeValidationForm({
           <span className="kern-label">{t.shared.cancel}</span>
         </Link>
 
-        <button type="submit" className="kern-btn kern-btn--primary">
-          <span className="kern-label">{t.routes.beitreten.validateCode}</span>
-          <span
-            className="kern-icon kern-icon--arrow-forward"
-            aria-hidden="true"
-          ></span>
-        </button>
+        <Button
+          type="submit"
+          appearance="primary"
+          label={t.routes.beitreten.validateCode}
+          icon="arrow-forward"
+          iconPosition="trailing"
+        />
       </div>
     </Form>
   );
@@ -226,10 +228,7 @@ function LiftConfirmationForm({
       <input type="hidden" name="code" value={code} />
 
       <div className="kern-alert__header">
-        <span
-          className="kern-icon kern-icon--success"
-          aria-hidden="true"
-        ></span>
+        <Icon name="success" />
         <h2 className="kern-title">Verfahren gefunden</h2>
       </div>
 
@@ -299,22 +298,17 @@ function LiftConfirmationForm({
 
         <div className="kern-gap-md flex justify-end">
           <Link to="/beitreten" className="kern-btn kern-btn--secondary">
-            <span
-              className="kern-icon kern-icon--arrow-back"
-              aria-hidden="true"
-            ></span>
+            <Icon name="arrow-back" />
             <span className="kern-label">{t.buttons.prev}</span>
           </Link>
 
-          <button type="submit" className="kern-btn kern-btn--primary">
-            <span className="kern-label">
-              {t.routes.beitreten.joinVerfahren.label}
-            </span>
-            <span
-              className="kern-icon kern-icon--check"
-              aria-hidden="true"
-            ></span>
-          </button>
+          <Button
+            type="submit"
+            appearance="primary"
+            label={t.routes.beitreten.joinVerfahren.label}
+            icon="check"
+            iconPosition="trailing"
+          />
         </div>
       </div>
     </Form>

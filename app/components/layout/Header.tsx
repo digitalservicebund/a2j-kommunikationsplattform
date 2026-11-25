@@ -1,6 +1,7 @@
 import { clsx } from "clsx";
 import { Form, Link, useLocation } from "react-router";
 import Button from "~/components/Button";
+import Icon from "~/components/Icon";
 import Kopfzeile from "~/components/layout/Kopfzeile";
 import Logo from "~/components/layout/Logo.";
 import TestEnvironmentBanner from "~/components/layout/TestEnvironmentBanner.static";
@@ -14,7 +15,7 @@ function LoginButton() {
   const t = useTranslations();
   return (
     <Link to="/login" className="kern-link">
-      <span className="kern-icon kern-icon--login kern-icon--account-circle"></span>
+      <Icon name="account-circle" />
       <span>{t.layout.header.login}</span>
     </Link>
   );
@@ -30,9 +31,8 @@ function LogoutButton() {
         size="small"
         type="submit"
         label={t.layout.header.logout}
-      >
-        <span className="kern-icon kern-icon--logout"></span>
-      </Button>
+        icon="logout"
+      />
     </Form>
   );
 }

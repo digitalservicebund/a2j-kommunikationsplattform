@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { ReactNode, SelectHTMLAttributes } from "react";
+import Icon from "./Icon";
 import InputLabel from "./InputLabel";
 
 export interface InputSelectOption {
@@ -90,10 +91,7 @@ export default function InputSelect({
 
       {error && (
         <p className="kern-error" id={errorId}>
-          <span
-            className="kern-icon kern-icon--danger kern-icon--md"
-            aria-hidden="true"
-          ></span>
+          <Icon name="danger" />
           <span className="kern-body">{error}</span>
         </p>
       )}

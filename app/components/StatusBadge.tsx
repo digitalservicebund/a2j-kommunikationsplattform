@@ -1,4 +1,5 @@
 import { clsx } from "clsx";
+import Icon, { IconName } from "~/components/Icon";
 
 // Where something is in its process:
 // draft — not submitted yet; pending — waiting for someone else;
@@ -12,15 +13,11 @@ export type StatusBadgeState =
   | "failed"
   | "closed";
 
-// KERN icon names (kern-icon--<name>) a badge can show. Extend as needed.
-export type StatusBadgeIcon =
-  | "success"
-  | "warning"
-  | "danger"
-  | "delete"
-  | "draft"
-  | "lock"
-  | "schedule";
+// Icons a badge can show. Extend as needed.
+export type StatusBadgeIcon = Extract<
+  IconName,
+  "success" | "warning" | "danger" | "delete" | "draft" | "lock" | "schedule"
+>;
 
 // What a badge shows. Every presentation helper (statusPresentation,
 // validierungPresentation) returns this shape.
@@ -97,16 +94,15 @@ export default function StatusBadge({
           aria-hidden="true"
         ></span>
       ) : (
-        <span
+        <Icon
+          name={icon}
           className={clsx(
-            `kern-icon kern-icon--${icon}`,
             iconColorClasses[state],
             // Like KERN's badge: keep the icon visible in Windows High Contrast,
             // which would otherwise replace its background (= icon) color.
             "forced-colors:bg-kern-white forced-colors:forced-color-adjust-none",
           )}
-          aria-hidden="true"
-        ></span>
+        />
       )}
       {/* Same label styles as KERN's kern-badge .kern-label. */}
       <span className="pl-(--kern-metric-space-x-small) font-(family-name:--kern-typography-font-family-default) text-(length:--kern-typography-font-size-small-static) leading-(--kern-typography-line-height-medium-static) font-(weight:--kern-typography-font-weight-label-default) tracking-(--kern-metric-space-none) text-layout-text-default not-italic slashed-zero tabular-nums">
