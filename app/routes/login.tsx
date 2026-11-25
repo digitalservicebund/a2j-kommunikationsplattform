@@ -1,5 +1,6 @@
 import { data, Form, redirect, useSearchParams } from "react-router";
 import Button from "~/components/Button";
+import Icon from "~/components/Icon";
 import { PageMetadata } from "~/components/PageMetadata";
 import {
   LoginError,
@@ -50,10 +51,7 @@ function LoginStatusAlert({ status }: Readonly<{ status: string }>) {
       return (
         <div className="kern-alert kern-alert--warning kern-my-md" role="alert">
           <div className="kern-alert__header">
-            <span
-              className="kern-icon kern-icon--warning kern-icon--small"
-              aria-hidden
-            ></span>
+            <Icon name="warning" size="small" />
             <span className="kern-title">
               {t.alerts.LOGOUT_AUTOMATIC_TITLE}
             </span>
@@ -67,10 +65,7 @@ function LoginStatusAlert({ status }: Readonly<{ status: string }>) {
       return (
         <div className="kern-alert kern-alert--success kern-my-md" role="alert">
           <div className="kern-alert__header">
-            <span
-              className="kern-icon kern-icon--success kern-icon--small"
-              aria-hidden
-            ></span>
+            <Icon name="success" size="small" />
             <span className="kern-title">
               {t.alerts.LOGOUT_BY_USER_MESSAGE}
             </span>
@@ -81,10 +76,7 @@ function LoginStatusAlert({ status }: Readonly<{ status: string }>) {
       return (
         <div className="kern-alert kern-alert--danger kern-my-md" role="alert">
           <div className="kern-alert__header">
-            <span
-              className="kern-icon kern-icon--danger kern-icon--small"
-              aria-hidden
-            ></span>
+            <Icon name="danger" size="small" />
             <span className="kern-title">{t.alerts.LOGIN_ERROR_BEA_TITLE}</span>
           </div>
           <div className="kern-alert__body">
@@ -96,10 +88,7 @@ function LoginStatusAlert({ status }: Readonly<{ status: string }>) {
       return (
         <div className="kern-alert kern-alert--danger kern-my-md" role="alert">
           <div className="kern-alert__header">
-            <span
-              className="kern-icon kern-icon--danger kern-icon--small"
-              aria-hidden
-            ></span>
+            <Icon name="danger" size="small" />
             <span className="kern-title">
               {t.alerts.LOGIN_ERROR_KOMPLA_IDP_TITLE}
             </span>

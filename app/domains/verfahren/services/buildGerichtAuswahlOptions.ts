@@ -1,4 +1,4 @@
-import type { CodeWert } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
+import type { Gericht } from "~/domains/verfahren/entities/codelisten/gericht.entity";
 import type { ZovGericht } from "~/domains/verfahren/entities/gericht/zovGerichte";
 
 export type GerichtAuswahlOption = {
@@ -15,7 +15,7 @@ const MISSING_GERICHT_NAME = "Wert fehlt";
  * `code`) into a single list of selectable courts, sorted by name.
  */
 export default function buildGerichtAuswahlOptions(
-  komplaGerichte: readonly CodeWert[],
+  komplaGerichte: readonly Gericht[],
   zovGerichte: readonly ZovGericht[],
 ): GerichtAuswahlOption[] {
   const zovCodes = new Set(zovGerichte.map(({ code }) => code));

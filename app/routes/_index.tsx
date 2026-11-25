@@ -4,6 +4,7 @@ import z from "zod";
 import Alert from "~/components/Alert";
 import { useLoadMore } from "~/components/hooks/useLoadMore";
 import { useParamsState } from "~/components/hooks/useParamsState";
+import Icon from "~/components/Icon";
 import Loader from "~/components/Loader";
 import { PageMetadata } from "~/components/PageMetadata";
 import ScrollToTopButton from "~/components/ScrollToTopButton";
@@ -13,7 +14,7 @@ import VerfahrenFilterBar from "~/components/verfahren/VerfahrenFilterBar";
 import { VerfahrenLoadMoreButton } from "~/components/verfahren/VerfahrenLoadMoreButton";
 import { VerfahrenTable } from "~/components/verfahren/VerfahrenTable";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
-import type { CodeWert } from "~/domains/verfahren/entities/beteiligung/codeWert.entity";
+import type { CodeWert } from "~/domains/verfahren/entities/codelisten/codeWert.entity";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import { fetchGerichte } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
 import {
@@ -115,10 +116,7 @@ export default function VerfahrenRoute() {
 
         <div className="kern-gap-md flex">
           <Link to="/beitreten" className="kern-btn kern-btn--secondary">
-            <span
-              className="kern-icon kern-icon--arrow-forward"
-              aria-hidden="true"
-            ></span>
+            <Icon name="arrow-forward" />
             <span className="kern-label">
               {routes.index.redeemBeitrittscode}
             </span>
@@ -128,10 +126,7 @@ export default function VerfahrenRoute() {
             to="/verfahren/neu/gericht-auswahl"
             className="kern-btn kern-btn--primary"
           >
-            <span
-              className="kern-icon kern-icon--add"
-              aria-hidden="true"
-            ></span>
+            <Icon name="add" />
             <span className="kern-label">{routes.index.createVerfahren}</span>
           </Link>
         </div>

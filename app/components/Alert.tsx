@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import Icon, { IconName } from "~/components/Icon";
 
 type AlertType = "success" | "error" | "warning" | "info";
 
@@ -24,11 +25,11 @@ export default function Alert({
     info: "kern-alert--info",
   };
 
-  const iconClasses: Record<AlertType, string> = {
-    success: "kern-icon--success",
-    error: "kern-icon--danger",
-    warning: "kern-icon--warning",
-    info: "kern-icon--info",
+  const icons: Record<AlertType, IconName> = {
+    success: "success",
+    error: "danger",
+    warning: "warning",
+    info: "info",
   };
 
   const showBody = Boolean(message || (redirectUrl && redirectText));
@@ -36,10 +37,7 @@ export default function Alert({
   return (
     <div className={`kern-alert ${typeClasses[type]}`} role="alert">
       <div className="kern-alert__header">
-        <span
-          className={`kern-icon ${iconClasses[type]}`}
-          aria-hidden="true"
-        ></span>
+        <Icon name={icons[type]} />
         <span className="kern-title">{title}</span>
       </div>
       {showBody && (
@@ -47,10 +45,7 @@ export default function Alert({
           {message && <p className="kern-body">{message}</p>}
           {redirectUrl && redirectText && (
             <Link to={redirectUrl} className="kern-link">
-              <span
-                className="kern-icon kern-icon--arrow-forward"
-                aria-hidden="true"
-              />
+              <Icon name="arrow-forward" />
               {redirectText}
             </Link>
           )}

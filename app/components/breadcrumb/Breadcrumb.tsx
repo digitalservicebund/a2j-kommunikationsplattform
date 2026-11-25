@@ -1,4 +1,5 @@
 import { Link, useLocation, useParams } from "react-router";
+import Icon from "~/components/Icon";
 import { breadcrumbConfig } from "~/config/breadcrumb";
 
 interface BreadcrumbItem {
@@ -117,10 +118,10 @@ export const Breadcrumb = () => {
                   >
                     {crumb.label}
                   </Link>
-                  <span
-                    className="kern-icon kern-icon--keyboard-double-arrow-right bg-(--kern-color-layout-text-muted)"
-                    aria-hidden="true"
-                  ></span>
+                  <Icon
+                    name="keyboard-double-arrow-right"
+                    className="bg-(--kern-color-layout-text-muted)"
+                  />
                 </>
               )}
             </li>

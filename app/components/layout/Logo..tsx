@@ -1,4 +1,5 @@
 import { href, Link } from "react-router";
+import Icon from "~/components/Icon";
 import { useTranslations } from "~/services/translations/context";
 
 export default function Logo() {
@@ -9,10 +10,7 @@ export default function Logo() {
       to={href("/")}
       className="kern-gap-sm kern-heading-medium flex flex-row items-center justify-center break-all no-underline hover:underline"
     >
-      <span
-        className="kern-icon kern-icon--network_node kern-icon--large"
-        aria-hidden
-      />
+      <Icon name="network_node" size="large" />
       {t.layout.header.logo.label}
     </Link>
   );

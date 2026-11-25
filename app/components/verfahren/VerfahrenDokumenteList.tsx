@@ -3,6 +3,7 @@ import { partition } from "es-toolkit";
 import { Form, useActionData } from "react-router";
 import Alert from "~/components/Alert";
 import Button from "~/components/Button";
+import Icon from "~/components/Icon";
 import { resolveDokumentPresentation } from "~/components/verfahren/presentation/validierungPresentation";
 import VerfahrenDokumentItem from "~/components/verfahren/VerfahrenDokumentItem";
 import VerfahrenDokumentSichtbarkeitSelect from "~/components/verfahren/VerfahrenDokumentSichtbarkeitSelect";
@@ -124,10 +125,7 @@ export default function VerfahrenDokumenteList({
                       aria-disabled={disabled}
                       onClick={(event) => disabled && event.preventDefault()}
                     >
-                      <span
-                        className="kern-icon kern-icon--delete bg-feedback-danger"
-                        aria-hidden="true"
-                      ></span>
+                      <Icon name="delete" className="bg-feedback-danger" />
                       <span className="kern-label kern-sr-only">
                         {shared.form.deleteDokument.labelForDokument.replace(
                           "{{name}}",
@@ -142,7 +140,7 @@ export default function VerfahrenDokumenteList({
                     className="kern-btn kern-btn--secondary kern-btn--x-small invisible"
                     aria-hidden="true"
                   >
-                    <span className="kern-icon kern-icon--delete"></span>
+                    <Icon name="delete" />
                     <span className="kern-label kern-sr-only"></span>
                   </span>
                 )

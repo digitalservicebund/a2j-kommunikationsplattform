@@ -502,7 +502,7 @@ export default function VerfahrenId() {
                         t.routes.verfahrenId.draftKlageeinreichung
                           .proceduralSteps.einreichung.draft
                       }
-                      iconClassName="kern-icon--edit"
+                      icon="edit"
                       showConnector={
                         Boolean(draftKlageeinreichung) ||
                         timelineEinreichungen.length > 0

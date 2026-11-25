@@ -45,20 +45,6 @@ describe("buildGerichtAuswahlOptions", () => {
     ]);
   });
 
-  it("treats KomPla courts without code as KomPla only", () => {
-    const [option] = buildGerichtAuswahlOptions(
-      [{ id: "id-1", wert: null, code: null }],
-      [{ code: "H1101", name: "Amtsgericht Bremen" }],
-    ).filter(({ komplaGerichtId }) => komplaGerichtId === "id-1");
-
-    expect(option).toEqual({
-      value: "id-1",
-      label: "Wert fehlt",
-      komplaGerichtId: "id-1",
-      isZov: false,
-    });
-  });
-
   it("sorts the options by label", () => {
     const options = buildGerichtAuswahlOptions(
       [{ id: "id-1", wert: "Amtsgericht München", code: "M1" }],

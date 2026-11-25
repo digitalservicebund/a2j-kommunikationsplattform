@@ -76,42 +76,6 @@ export async function fetchEinreichungStatus(
   });
 }
 
-type FetchEinreichungXJustizOptions = {
-  verfahrenId: string;
-  id: string;
-};
-
-export async function fetchEinreichungXJustiz(
-  authSession: AuthSession,
-  options: FetchEinreichungXJustizOptions,
-): Promise<string> {
-  return apiRequest<string>({
-    authSession,
-    path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.id}/xjustiz`,
-    responseType: "text",
-    errorMessage: `XJustiz-Nachricht for Einreichung with id ${options.id} of Verfahren with id ${options.verfahrenId} could not be fetched.`,
-  });
-}
-
-type CreateEinreichungXJustizOptions = {
-  verfahrenId: string;
-  id: string;
-  ersetzen: boolean;
-};
-
-export async function createEinreichungXJustiz(
-  authSession: AuthSession,
-  options: CreateEinreichungXJustizOptions,
-): Promise<void> {
-  await apiRequest({
-    authSession,
-    path: `/api/v1/verfahren/${options.verfahrenId}/einreichungen/${options.id}/xjustiz`,
-    method: "POST",
-    body: { ersetzen: options.ersetzen },
-    errorMessage: `XJustiz-Dokument for Einreichung with id ${options.id} of Verfahren with id ${options.verfahrenId} could not be created.`,
-  });
-}
-
 export async function createEinreichung(
   authSession: AuthSession,
   verfahrenId: string,

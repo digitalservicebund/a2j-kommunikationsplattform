@@ -53,11 +53,7 @@ export default function VerfahrenEinreichungTimeline({
             timelineLabel={formatDate(
               einreichung.eingereichtAm ?? einreichung.erstelltAm,
             )}
-            iconClassName={
-              isEinreichungDraft(einreichung)
-                ? "kern-icon--edit"
-                : "kern-icon--check"
-            }
+            icon={isEinreichungDraft(einreichung) ? "edit" : "check"}
             showConnector={index < newestFirst.length - 1}
           >
             <details className="kern-accordion space-y-2.5">

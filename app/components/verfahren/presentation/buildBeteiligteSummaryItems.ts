@@ -1,4 +1,5 @@
 import type { Verfahren } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import { ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE } from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
 import {
   getBeteiligteByRoleCode,
   getBeteiligteDisplayName,
@@ -9,7 +10,6 @@ import {
   getBeteiligteEmail,
   getBeteiligteTelefon,
 } from "~/domains/verfahren/services/beteiligteContactInfo";
-import { ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE } from "~/domains/verfahren/services/verfahrenCodeConstants";
 
 export type ProzessbevollmaechtigterSummaryItem = {
   name: string | null;

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useFetcher } from "react-router";
 import Button from "~/components/Button";
+import Icon from "~/components/Icon";
 import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import { useTranslations } from "~/services/translations/context";
 import type { ActionResult } from "~/utils/actionResult";
@@ -34,10 +35,12 @@ export default function VerfahrenBelegStatusAlert({
     IN_BEARBEITUNG: "kern-alert--info",
   }[beleg.status];
 
-  const iconType = {
-    ERSTELLT: "kern-icon--success",
-    IN_BEARBEITUNG: "kern-icon--info",
-  }[beleg.status];
+  const icon = (
+    {
+      ERSTELLT: "success",
+      IN_BEARBEITUNG: "info",
+    } as const
+  )[beleg.status];
 
   const timeStamp = new Date(beleg.erstelltAm).toLocaleDateString();
   const timeMessage = `Eingang: ${timeStamp}`;
@@ -81,7 +84,7 @@ export default function VerfahrenBelegStatusAlert({
   return (
     <div className={`kern-alert ${typeClass}`} role="alert">
       <div className="kern-alert__header">
-        <span className={`kern-icon ${iconType}`} aria-hidden="true"></span>
+        <Icon name={icon} />
         <span className="kern-title">{belegTitle}</span>
       </div>
       <div className="kern-alert__body">

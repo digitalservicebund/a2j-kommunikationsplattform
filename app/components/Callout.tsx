@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { HTMLAttributes, ReactNode } from "react";
+import Icon from "~/components/Icon";
 
 export type CalloutType = "info" | "warning";
 
@@ -40,19 +41,13 @@ export default function Callout({
       {...props}
     >
       {/* Icon */}
-      <span
+      <Icon
+        name={isInfo ? "info" : "warning"}
         className={clsx(
-          "kern-icon",
-          "kern-icon--default",
-          // Info
-          isInfo && "kern-icon--info",
           isInfo && "bg-(--kern-color-feedback-info-contextual)",
-          // Warning
-          isWarning && "kern-icon--warning",
           isWarning && "bg-(--kern-color-feedback-warning-contextual)",
         )}
-        aria-hidden="true"
-      ></span>
+      />
 
       <div>
         {/* Title */}

@@ -16,7 +16,7 @@ const mocks = vi.hoisted(() => ({
 
 globalThis.fetch = mocks.fetch;
 
-describe("fetchAnschriftstypen", () => {
+describe(fetchAnschriftstypen, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.KOMPLA_API_URL = "http://localhost:8080";
@@ -43,7 +43,11 @@ describe("fetchAnschriftstypen", () => {
         }),
       }),
     );
-    expect(result).toEqual(mockAnschriftstypen);
+
+    expect(result).toEqual({
+      listeVersion: mockAnschriftstypen.list_version,
+      elemente: mockAnschriftstypen.elemente,
+    });
   });
 
   it("throws when the schema does not match", async () => {
@@ -58,7 +62,7 @@ describe("fetchAnschriftstypen", () => {
   });
 });
 
-describe("fetchGerichte", () => {
+describe(fetchGerichte, () => {
   const originalEnv = process.env.KOMPLA_API_URL;
 
   beforeEach(() => {
@@ -98,7 +102,10 @@ describe("fetchGerichte", () => {
       }),
     );
 
-    expect(result).toEqual(mockGerichte);
+    expect(result).toEqual({
+      listeVersion: mockGerichte.list_version,
+      elemente: mockGerichte.elemente,
+    });
   });
 
   it("throws error when API returns non-ok response", async () => {
@@ -137,11 +144,14 @@ describe("fetchGerichte", () => {
 
     const result = await fetchGerichte(makeAuthSession());
 
-    expect(result).toEqual({ list_version: "1", elemente: [] });
+    expect(result).toEqual({
+      listeVersion: "1",
+      elemente: [],
+    });
   });
 });
 
-describe("fetchKanzleiformen", () => {
+describe(fetchKanzleiformen, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.KOMPLA_API_URL = "http://localhost:8080";
@@ -168,7 +178,11 @@ describe("fetchKanzleiformen", () => {
         }),
       }),
     );
-    expect(result).toEqual(mockKanzleiformen);
+
+    expect(result).toEqual({
+      listeVersion: mockKanzleiformen.list_version,
+      elemente: mockKanzleiformen.elemente,
+    });
   });
 
   it("throws when the schema does not match", async () => {
@@ -183,7 +197,7 @@ describe("fetchKanzleiformen", () => {
   });
 });
 
-describe("fetchRechtsformen", () => {
+describe(fetchRechtsformen, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.KOMPLA_API_URL = "http://localhost:8080";
@@ -210,7 +224,11 @@ describe("fetchRechtsformen", () => {
         }),
       }),
     );
-    expect(result).toEqual(mockRechtsformen);
+
+    expect(result).toEqual({
+      listeVersion: mockRechtsformen.list_version,
+      elemente: mockRechtsformen.elemente,
+    });
   });
 
   it("throws when the schema does not match", async () => {
@@ -225,7 +243,7 @@ describe("fetchRechtsformen", () => {
   });
 });
 
-describe("fetchRollenbezeichnungen", () => {
+describe(fetchRollenbezeichnungen, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.KOMPLA_API_URL = "http://localhost:8080";
@@ -252,7 +270,11 @@ describe("fetchRollenbezeichnungen", () => {
         }),
       }),
     );
-    expect(result).toEqual(mockRollenbezeichnungen);
+
+    expect(result).toEqual({
+      listeVersion: mockRollenbezeichnungen.list_version,
+      elemente: mockRollenbezeichnungen.elemente,
+    });
   });
 
   it("throws when the schema does not match", async () => {
@@ -267,7 +289,7 @@ describe("fetchRollenbezeichnungen", () => {
   });
 });
 
-describe("fetchStaaten", () => {
+describe(fetchStaaten, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.KOMPLA_API_URL = "http://localhost:8080";
@@ -291,7 +313,11 @@ describe("fetchStaaten", () => {
         }),
       }),
     );
-    expect(result).toEqual(mockStaaten);
+
+    expect(result).toEqual({
+      listeVersion: mockStaaten.list_version,
+      elemente: mockStaaten.elemente,
+    });
   });
 
   it("throws when the schema does not match", async () => {
@@ -306,7 +332,7 @@ describe("fetchStaaten", () => {
   });
 });
 
-describe("fetchTelekommunikationsarten", () => {
+describe(fetchTelekommunikationsarten, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.KOMPLA_API_URL = "http://localhost:8080";
@@ -335,7 +361,11 @@ describe("fetchTelekommunikationsarten", () => {
         }),
       }),
     );
-    expect(result).toEqual(mockTelekommunikationsarten);
+
+    expect(result).toEqual({
+      listeVersion: mockTelekommunikationsarten.list_version,
+      elemente: mockTelekommunikationsarten.elemente,
+    });
   });
 
   it("throws when the schema does not match", async () => {

@@ -94,7 +94,7 @@ export default function VerfahrenDraftKlageeinreichungSection({
             : translations.routes.verfahrenId.draftKlageeinreichung
                 .proceduralSteps.einreichung.draft
         }
-        iconClassName={isBelegReady ? "kern-icon--check" : "kern-icon--edit"}
+        icon={isBelegReady ? "check" : "edit"}
       >
         <div className="kern-card" key={draftKlageeinreichung.einreichung.id}>
           <div className="kern-card__container">

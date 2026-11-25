@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Icon, { type IconName } from "~/components/Icon";
 import buildDokumentDateiHref from "~/components/verfahren/presentation/buildDokumentDateiHref";
 import formatDokumentSize from "~/components/verfahren/presentation/formatDokumentSize";
 import VerfahrenDokumentStatusBadge from "~/components/verfahren/VerfahrenDokumentStatusBadge";
@@ -8,10 +9,10 @@ import type { Validierungsstatus } from "~/domains/verfahren/entities/validierun
 import { useTranslations } from "~/services/translations/context";
 
 // Custom icons, see styles.css. XJustiz-Dokumente aren't listed.
-const DOKUMENT_TYPE_ICONS: Partial<Record<DokumentType, string>> = {
-  SCHRIFTSTUECK: "kern-icon--description",
-  ANHANG: "kern-icon--attach-file",
-  SIGNATURDATEI: "kern-icon--signature",
+const DOKUMENT_TYPE_ICONS: Partial<Record<DokumentType, IconName>> = {
+  SCHRIFTSTUECK: "description",
+  ANHANG: "attach-file",
+  SIGNATURDATEI: "signature",
 };
 
 type VerfahrenDokumentItemProps = {
@@ -50,9 +51,7 @@ export default function VerfahrenDokumentItem({
     // KERN grid note in theme.css
     <div className="kern-gap-sm kern-py-sm flex flex-wrap items-center border-b border-decorative-border">
       <span className="flex" title={resolvedTypLabel}>
-        {typIcon && (
-          <span className={`kern-icon ${typIcon}`} aria-hidden="true"></span>
-        )}
+        {typIcon && <Icon name={typIcon} />}
         <span className="kern-sr-only">{resolvedTypLabel}</span>
       </span>
       <a
@@ -90,10 +89,7 @@ export default function VerfahrenDokumentItem({
             disposition: "attachment",
           })}
         >
-          <span
-            className="kern-icon kern-icon--download"
-            aria-hidden="true"
-          ></span>
+          <Icon name="download" />
           <span className="kern-label kern-sr-only">
             {labels.downloadLabel.replace("{{name}}", dokument.anzeigename)}
           </span>
