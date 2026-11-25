@@ -65,7 +65,7 @@
     "jsdom": "^31.0.1",
     "msw": "^3.0.7",
     "oxfmt": "^0.79.0",
-    "oxlint": "^1.93.0",
+    "oxlint": "^1.94.0",
     "oxlint-tsgolint": "^7.0.2006",
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-tailwindcss": "^0.8.1",
