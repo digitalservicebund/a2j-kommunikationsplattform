@@ -78,8 +78,6 @@ export async function getAuthSession(
     accessToken: tokens.accessToken,
     userName: user.name,
     safeId: user?.safeId ?? null,
-    // the below might need to be changed when the Reno functionality is available,
-    // as a Reno should not be able to file a Klage using their own SAFE_ID
     authorizedForSafeIds,
     sessionCookieHeaders: [...setCookieHeaders, ...tokens.setCookieHeaders],
   };
