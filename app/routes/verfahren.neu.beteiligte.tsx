@@ -401,7 +401,9 @@ export default function VerfahrenNeuBeteiligte({
       ? (klagendePartei.vorname ?? "")
       : "";
   const klagendeParteiLastName =
-    klagendePartei && "nachname" in klagendePartei
+    klagendePartei &&
+    "nachname" in klagendePartei &&
+    klagendePartei.nachname !== "_" // Dummy value we used for initial Verfahren creation
       ? klagendePartei.nachname
       : "";
   const beklagteParteiFirstName =
@@ -409,7 +411,9 @@ export default function VerfahrenNeuBeteiligte({
       ? (beklagtePartei.vorname ?? "")
       : "";
   const beklagteParteiLastName =
-    beklagtePartei && "nachname" in beklagtePartei
+    beklagtePartei &&
+    "nachname" in beklagtePartei &&
+    beklagtePartei.nachname !== "_" // Dummy value we used for initial Verfahren creation
       ? beklagtePartei.nachname
       : "";
   const klagendeParteiAnschrift = getBeteiligteAnschrift(klagendePartei);
@@ -429,7 +433,9 @@ export default function VerfahrenNeuBeteiligte({
     ROLE_CODE_KLAEGERIN,
   );
   const klagendeParteiLawyerName =
-    klagendeParteiAnwalt && "bezeichnung" in klagendeParteiAnwalt
+    klagendeParteiAnwalt &&
+    "bezeichnung" in klagendeParteiAnwalt &&
+    klagendeParteiAnwalt.bezeichnung !== "_" // Dummy value we used for initial Verfahren creation
       ? (klagendeParteiAnwalt.bezeichnung ?? "")
       : "";
   const klagendeParteiAnwaltAnschrift =

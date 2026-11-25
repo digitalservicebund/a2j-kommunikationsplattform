@@ -9,7 +9,7 @@ const BeteiligteSchema = z.object({
   id: z.string(),
   rollen: z.array(RolleSchema),
   anschriften: z.nullable(z.array(AnschriftSchema)),
-  telekommunikation: z.nullable(z.array(TelekommunikationSchema)),
+  telekommunikationen: z.nullable(z.array(TelekommunikationSchema)),
 });
 export type Beteiligte = z.infer<typeof BeteiligteSchema>;
 

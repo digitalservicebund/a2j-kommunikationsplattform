@@ -1,8 +1,8 @@
 import z from "zod";
-import { KommunikationsanschlussRequestSchema } from "~/domains/verfahren/infrastructure/schemas/requests/kommunikationsanschluss.request.schema";
+import { TelekommunikationRequestSchema } from "~/domains/verfahren/infrastructure/schemas/requests/telekommunikation.request.schema";
 
 type KommunikationsanschlussRequestDTO = z.infer<
-  typeof KommunikationsanschlussRequestSchema
+  typeof TelekommunikationRequestSchema
 >;
 
 /**
@@ -11,7 +11,7 @@ type KommunikationsanschlussRequestDTO = z.infer<
  * Domain-facing (camelCase) counterpart of KommunikationsanschlussRequestSchema.
  * Transforms into the snake_case wire shape the API expects.
  */
-export const KommunikationsanschlussInputSchema = z
+export const TelekommunikationInputSchema = z
   .object({
     telekommunikationsartId: z.string(),
     verbindung: z.string().min(1),

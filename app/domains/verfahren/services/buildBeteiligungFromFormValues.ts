@@ -4,13 +4,13 @@ import {
   NatuerlichePersonInputSchema,
   RaKanzleiInputSchema,
 } from "~/domains/verfahren/infrastructure/schemas/requests/beteiligung.input.schema";
-import { KommunikationsanschlussInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/kommunikationsanschluss.input.schema";
+import { TelekommunikationInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/kommunikationsanschluss.input.schema";
 
 type NatuerlichePersonInput = z.input<typeof NatuerlichePersonInputSchema>;
 type RaKanzleiInput = z.input<typeof RaKanzleiInputSchema>;
 type Anschriften = z.input<typeof AnschriftInputSchema>[] | null;
 type Kommunikationsanschluesse =
-  | z.input<typeof KommunikationsanschlussInputSchema>[]
+  | z.input<typeof TelekommunikationInputSchema>[]
   | null;
 
 type AdresseKontaktFormValues = {
@@ -120,7 +120,7 @@ export default function buildBeteiligungFromFormValues(
       },
     ],
     anschriften: buildAnschriften(partei, codeIds),
-    kommunikationsanschluesse: buildKommunikationsanschluesse(partei, codeIds),
+    telekommunikationen: buildKommunikationsanschluesse(partei, codeIds),
   };
 }
 
@@ -147,6 +147,6 @@ export function buildRaKanzleiFromFormValues(
       },
     ],
     anschriften: buildAnschriften(anwalt, codeIds),
-    kommunikationsanschluesse: buildKommunikationsanschluesse(anwalt, codeIds),
+    telekommunikationen: buildKommunikationsanschluesse(anwalt, codeIds),
   };
 }

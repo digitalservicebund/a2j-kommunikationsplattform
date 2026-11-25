@@ -67,7 +67,7 @@ describe("buildBeteiligungFromFormValues", () => {
           staatId: "staat-1",
         },
       ],
-      kommunikationsanschluesse: [
+      telekommunikationen: [
         {
           telekommunikationsartId: "tka-email",
           verbindung: "emiliakuehn@posteo.de",
@@ -138,7 +138,7 @@ describe("buildBeteiligungFromFormValues", () => {
 
     const result = buildBeteiligungFromFormValues(partei, codeIds);
 
-    expect(result?.kommunikationsanschluesse).toEqual([
+    expect(result?.telekommunikationen).toEqual([
       {
         telekommunikationsartId: "tka-email",
         verbindung: "emiliakuehn@posteo.de",
@@ -146,12 +146,12 @@ describe("buildBeteiligungFromFormValues", () => {
     ]);
   });
 
-  it("omits kommunikationsanschluesse when neither email nor phone was provided", () => {
+  it("omits telekommunikationen when neither email nor phone was provided", () => {
     const partei: ParteiFormValues = { ...emptyPartei, nachname: "Kühn" };
 
     const result = buildBeteiligungFromFormValues(partei, codeIds);
 
-    expect(result?.kommunikationsanschluesse).toBeNull();
+    expect(result?.telekommunikationen).toBeNull();
   });
 
   it("sets the given rollennummer on the built role", () => {
@@ -192,7 +192,7 @@ describe("buildRaKanzleiFromFormValues", () => {
     expect(result?.rollen[0]?.geschaeftszeichen).toBe("B-17/26");
   });
 
-  it("builds a raKanzlei request linked to the represented party via referenz", () => {
+  it("builds a raKanzlei request linked to the represented Partei via Referenz", () => {
     const anwalt: AnwaltFormValues = {
       ...emptyAnwalt,
       name: "Kanzlei Böhm",
@@ -230,7 +230,7 @@ describe("buildRaKanzleiFromFormValues", () => {
           staatId: "staat-1",
         },
       ],
-      kommunikationsanschluesse: [
+      telekommunikationen: [
         {
           telekommunikationsartId: "tka-email",
           verbindung: "kanzlei@ra-boehm.de",
