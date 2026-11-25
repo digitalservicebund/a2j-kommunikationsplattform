@@ -81,8 +81,7 @@ export function makeMapProfileToUser<P extends AuthProvider>(
     authProvider: provider,
     safeId: profile["safe-id"],
     //TODO: remove granted_privilege when it becomes granted_privileges
-    grantedPrivileges:
-      profile["granted_privileges"] || profile["granted_privilege"],
+    grantedPrivileges: profile.granted_privileges || profile.granted_privilege,
   });
 }
 

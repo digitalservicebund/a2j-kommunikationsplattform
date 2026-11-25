@@ -99,6 +99,12 @@ export class VerfahrenDokumentePage extends PageObject {
     });
   }
 
+  async expectSelectedSafeId(safeId: string) {
+    await expect(this.page).toHaveURL(
+      (url) => url.searchParams.get("safeId") === safeId,
+    );
+  }
+
   async upload(
     typ: Exclude<UploadDokumentType, "SIGNATURDATEI">,
     testDataFileName: string,

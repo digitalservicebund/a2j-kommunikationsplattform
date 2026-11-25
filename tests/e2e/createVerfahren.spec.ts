@@ -47,7 +47,7 @@ test.describe("Verfahren creation", () => {
     // I should be redirected to the Dokumente step
     const dokumenteStep = new VerfahrenDokumentePage(page);
     await dokumenteStep.expectToBeHere();
-    expect(new URL(page.url()).searchParams.get("safeId")).toBe(safeId);
+    await dokumenteStep.expectSelectedSafeId(safeId);
     await expectNoA11yViolations(page);
     await expect(dokumenteStep.disabledNextButton).toHaveAttribute(
       "aria-disabled",
