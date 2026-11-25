@@ -109,12 +109,19 @@ export const de = {
       deleteDokument: {
         labelForDokument: "{{name}} entfernen",
       },
+      confirmDelete: {
+        open: "Löschen",
+        confirm: "Endgültig löschen",
+      },
       submit: {
         title: "Fehler beim Absenden des Formulars",
         message: "Bitte versuchen Sie es später erneut.",
       },
       errors: {
         deleteFailed: "Löschen fehlgeschlagen.",
+        deleteVerfahrenFailed: "Das Verfahren konnte nicht gelöscht werden.",
+        deleteEinreichungFailed:
+          "Die Einreichung konnte nicht gelöscht werden.",
         invalidSubmission: "Ungültige Formularübermittlung.",
         saveFailed: "Die Änderungen konnten nicht gespeichert werden.",
         uploadFailed: "Das Dokument konnte nicht hochgeladen werden.",
@@ -340,6 +347,11 @@ export const de = {
 
     verfahrenId: {
       timelineHeading: "Verlauf der Akte",
+      deleteVerfahren: {
+        title: "Verfahren löschen?",
+        message:
+          "Das Verfahren wird mit der Klageeinreichung und allen hochgeladenen Dokumenten endgültig gelöscht. Dies kann nicht rückgängig gemacht werden.",
+      },
       einreichungHistory: {
         dokumenteCountSingular: "{{count}} Dokument",
         dokumenteCount: "{{count}} Dokumente",
@@ -416,6 +428,11 @@ export const de = {
         headline: "Neue Einreichung erstellen",
         artLabel: "Art der Einreichung",
         submit: "Einreichen & Abgabe ans Gericht",
+        delete: {
+          title: "Einreichung löschen?",
+          message:
+            "Die Einreichung wird mit allen hochgeladenen Dokumenten endgültig gelöscht. Dies kann nicht rückgängig gemacht werden.",
+        },
       },
     },
     beitreten: {
