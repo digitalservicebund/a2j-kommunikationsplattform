@@ -1,4 +1,4 @@
-import ConfirmDeleteDialog from "~/components/ConfirmDeleteDialog";
+import DeleteButton from "~/components/DeleteButton.tsx";
 import type { EinreichungDetails } from "~/components/verfahren/VerfahrenDraftKlageeinreichungSection";
 import VerfahrenWeitereEinreichungArtStep from "~/components/verfahren/VerfahrenWeitereEinreichungArtStep";
 import VerfahrenWeitereEinreichungDokumenteStep from "~/components/verfahren/VerfahrenWeitereEinreichungDokumenteStep";
@@ -24,7 +24,7 @@ export default function VerfahrenWeitereEinreichungSection({
         <header className="kern-card__header kern-gap-md flex flex-row flex-wrap items-start justify-between">
           <h3 className="kern-title">{labels.headline}</h3>
           {draftWeitereEinreichung && (
-            <ConfirmDeleteDialog
+            <DeleteButton
               formType={DELETE_EINREICHUNG_FORM_TYPE}
               fields={{ einreichungId: draftWeitereEinreichung.einreichung.id }}
               title={labels.delete.title}

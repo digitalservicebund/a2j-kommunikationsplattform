@@ -1,4 +1,4 @@
-import ConfirmDeleteDialog from "~/components/ConfirmDeleteDialog";
+import DeleteButton from "~/components/DeleteButton.tsx";
 import { buildBeteiligteSummaryItems } from "~/components/verfahren/presentation/buildBeteiligteSummaryItems";
 import { NOT_AVAILABLE_LABEL } from "~/components/verfahren/presentation/placeholders";
 import VerfahrenBriefSummaryOfBeteiligte from "~/components/verfahren/VerfahrenBriefSummaryOfBeteiligte";
@@ -67,7 +67,7 @@ export default function VerfahrenOverviewCard({
           <div className="kern-gap-md flex flex-wrap items-center">
             <VerfahrenStatusBadge status={verfahren.status} />
             {isDraft && (
-              <ConfirmDeleteDialog
+              <DeleteButton
                 formType={DELETE_VERFAHREN_FORM_TYPE}
                 title={t.routes.verfahrenId.deleteVerfahren.title}
                 message={t.routes.verfahrenId.deleteVerfahren.message}

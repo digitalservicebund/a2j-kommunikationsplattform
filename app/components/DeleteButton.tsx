@@ -5,7 +5,7 @@ import Button from "~/components/Button";
 import { useTranslations } from "~/services/translations/context";
 import type { ActionResult } from "~/utils/actionResult";
 
-type ConfirmDeleteDialogProps = {
+type DeleteButtonProps = {
   formType: string;
   fields?: Record<string, string>;
   title: string;
@@ -16,12 +16,12 @@ type ConfirmDeleteDialogProps = {
  * A dialog that is opened by the "Löschen" button, asking for confirmation
  * before the delete form is submitted to the current route's action.
  */
-export default function ConfirmDeleteDialog({
+export default function DeleteButton({
   formType,
   fields = {},
   title,
   message,
-}: Readonly<ConfirmDeleteDialogProps>) {
+}: Readonly<DeleteButtonProps>) {
   const t = useTranslations();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();

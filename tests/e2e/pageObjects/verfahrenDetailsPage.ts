@@ -33,14 +33,14 @@ export class VerfahrenDetailsOverviewSection extends PageSectionObject {
     await this.locator
       .getByRole("button", { name: t.shared.form.confirmDelete.open })
       .click();
-    return new ConfirmDeleteDialog(
+    return new DeleteButton(
       this.page,
       t.routes.verfahrenId.deleteVerfahren.title,
     );
   }
 }
 
-export class ConfirmDeleteDialog extends PageSectionObject {
+export class DeleteButton extends PageSectionObject {
   constructor(page: Page, title: string) {
     super(page, page.getByRole("dialog", { name: title }));
   }
@@ -99,7 +99,7 @@ export class WeitereEinreichungSection extends PageSectionObject {
     await this.locator
       .getByRole("button", { name: t.shared.form.confirmDelete.open })
       .click();
-    return new ConfirmDeleteDialog(
+    return new DeleteButton(
       this.page,
       t.routes.verfahrenId.weitereEinreichung.delete.title,
     );

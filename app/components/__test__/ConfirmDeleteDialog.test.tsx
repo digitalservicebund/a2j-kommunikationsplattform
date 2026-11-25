@@ -7,7 +7,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import { TranslationsProvider } from "~/services/translations/context";
 import { actionError } from "~/utils/actionResult";
 import { getTestTranslations } from "~tests/utils/translationsUtil";
-import ConfirmDeleteDialog from "../ConfirmDeleteDialog";
+import DeleteButton from "../DeleteButton.tsx";
 
 const t = getTestTranslations();
 
@@ -29,7 +29,7 @@ function renderDialog(action: (formData: FormData) => unknown) {
       action: async ({ request }) => action(await request.formData()),
       element: (
         <TranslationsProvider value={t}>
-          <ConfirmDeleteDialog
+          <DeleteButton
             formType="delete-thing"
             fields={{ thingId: "t-1" }}
             title="Ding löschen?"
@@ -47,7 +47,7 @@ function getDialog() {
   return screen.getByRole("dialog", { hidden: true });
 }
 
-describe("ConfirmDeleteDialog", () => {
+describe("DeleteButton", () => {
   it("opens a dialog asking for confirmation", async () => {
     renderDialog(vi.fn());
 
