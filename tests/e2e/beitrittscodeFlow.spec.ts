@@ -12,15 +12,6 @@ test.describe("Joining a Verfahren (Beitrittscode / Lift)", () => {
   const dummyValidCode = "K7M4-9PXQ-2WRT";
   const dummyInvalidCode = "3XQ7-TB2M-9KVH";
 
-  const verfahrenDetailsForDummyValidCode = {
-    verfahrenId: "01a1118d-8bbd-7a6d-b5b0-3f5611c01565",
-    kurzrubrum: "Schwanenburg-Weiß ./. Weiß",
-    gericht: "Amtsgericht Bremen",
-    aktenzeichenGericht: "43 C 6134/26",
-    klagendePartei: "Helene-Marie Augusta Schwanenburg-Weiß",
-    beklagtePartei: "Kathrin Weiß",
-  };
-
   test("I can join a Verfahren bei entering a valid, unused Beitrittscode", async ({
     page,
   }) => {
@@ -40,33 +31,16 @@ test.describe("Joining a Verfahren (Beitrittscode / Lift)", () => {
     const confirmationPage = new BeitrittscodeConfirmationPage(page, code);
     await confirmationPage.expectToBeHere();
     await expectNoA11yViolations(page);
-    const {
-      kurzrubrum,
-      gericht,
-      aktenzeichenGericht,
-      klagendePartei,
-      beklagtePartei,
-    } = verfahrenDetailsForDummyValidCode;
-    await confirmationPage.expectRubrum(kurzrubrum);
-    await confirmationPage.expectGericht(gericht);
-    await confirmationPage.expectAktenzeichenGericht(aktenzeichenGericht);
-    await confirmationPage.expectKlagendePartei(klagendePartei);
-    await confirmationPage.expectBeklagtePartei(beklagtePartei);
+    await confirmationPage.expectKurzrubrumDisplayed();
+    await confirmationPage.expectGerichtDisplayed();
+    await confirmationPage.expectAktenzeichenGerichtDisplayed();
+    await confirmationPage.expectKlagendeParteiDisplayed();
+    await confirmationPage.expectBeklagteParteiDisplayed();
     await confirmationPage.confirm();
 
-    const { verfahrenId } = verfahrenDetailsForDummyValidCode;
-    const detailsPage = new VerfahrenDetailsPage(page, verfahrenId);
+    const detailsPage = new VerfahrenDetailsPage(page);
     await detailsPage.expectToBeHere();
-
-    // TODO: Uncomment once the API gets a real lift code implementation
-    // await detailsPage.overview.expectToBeVisible();
-    // await expect(detailsPage.overview.locator).toContainText(kurzrubrum);
-    // await expect(detailsPage.overview.locator).toContainText(gericht);
-    // await expect(detailsPage.overview.locator).toContainText(
-    //   aktenzeichenGericht,
-    // );
-    // await expect(detailsPage.overview.locator).toContainText(klagendePartei);
-    // await expect(detailsPage.overview.locator).toContainText(beklagtePartei);
+    await detailsPage.overview.expectToBeVisible();
   });
 
   test("I get a helpful feedback if the code is invalid", async ({ page }) => {
