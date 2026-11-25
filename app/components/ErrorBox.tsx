@@ -1,3 +1,4 @@
+import Icon from "~/components/Icon";
 import { dictionaries } from "~/services/translations";
 
 interface ErrorPageProps {
@@ -30,10 +31,7 @@ export default function ErrorBox({
       </p>
       {redirectUrl && redirectText && (
         <a href={redirectUrl} className="kern-link">
-          <span
-            className="kern-icon kern-icon--arrow-forward"
-            aria-hidden="true"
-          />
+          <Icon name="arrow-forward" />
           {redirectText}
         </a>
       )}

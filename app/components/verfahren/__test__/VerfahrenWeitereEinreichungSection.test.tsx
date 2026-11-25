@@ -49,6 +49,7 @@ function renderSection(draft: EinreichungDetails | null) {
 
 const artLabel = "Art der Einreichung";
 const uploadInputLabel = "Datei hochladen";
+const deleteButtonLabel = getTestTranslations().shared.form.confirmDelete.open;
 
 describe("VerfahrenWeitereEinreichungSection", () => {
   it("lets the Art be picked while the Dokumente step is still disabled", () => {
@@ -70,5 +71,23 @@ describe("VerfahrenWeitereEinreichungSection", () => {
     for (const input of screen.getAllByLabelText(uploadInputLabel)) {
       expect(input).not.toHaveAttribute("aria-disabled", "true");
     }
+  });
+
+  it("offers deleting the draft only once it exists", () => {
+    const { unmount } = renderSection(null);
+    expect(
+      screen.queryByRole("button", { name: deleteButtonLabel }),
+    ).not.toBeInTheDocument();
+    unmount();
+
+    renderSection(draftWeitereEinreichung);
+    expect(
+      screen.getByRole("button", { name: deleteButtonLabel }),
+    ).toBeInTheDocument();
+    expect(
+      screen
+        .getByRole("dialog", { hidden: true })
+        .querySelector<HTMLInputElement>('input[name="einreichungId"]')?.value,
+    ).toBe("e-2");
   });
 });

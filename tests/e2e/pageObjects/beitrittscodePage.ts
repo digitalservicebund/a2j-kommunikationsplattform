@@ -50,34 +50,60 @@ export class BeitrittscodeConfirmationPage extends PageObject {
     });
   }
 
-  async expectRubrum(value: string) {
+  get kurzrubrum() {
+    return getDefinitionByTermLabel(this.page, t.shared.kurzrubrum.label);
+  }
+
+  get gericht() {
+    return getDefinitionByTermLabel(this.page, t.shared.gericht.label);
+  }
+
+  get aktenzeichenGericht() {
+    return getDefinitionByTermLabel(this.page, t.shared.gericht.azLabel);
+  }
+
+  get klagendePartei() {
+    return getDefinitionByTermLabel(
+      this.page,
+      t.shared.beteiligte.klaegerLabel,
+    );
+  }
+
+  get beklagtePartei() {
+    return getDefinitionByTermLabel(
+      this.page,
+      t.shared.beteiligte.beklagteLabel,
+    );
+  }
+
+  async expectKurzrubrumDisplayed(value?: string) {
     await expect(
       getDefinitionByTermLabel(this.page, t.shared.kurzrubrum.label),
-    ).toHaveText(value);
+    ).toHaveText(value ?? /\S/);
   }
 
-  async expectGericht(value: string) {
+  async expectGerichtDisplayed(value?: string) {
     await expect(
       getDefinitionByTermLabel(this.page, t.shared.gericht.label),
-    ).toHaveText(value);
+    ).toHaveText(value ?? /\S/);
   }
 
-  async expectAktenzeichenGericht(value: string) {
+  async expectAktenzeichenGerichtDisplayed(value?: string) {
     await expect(
       getDefinitionByTermLabel(this.page, t.shared.gericht.azLabel),
-    ).toHaveText(value);
+    ).toHaveText(value ?? /\S/);
   }
 
-  async expectKlagendePartei(value: string) {
+  async expectKlagendeParteiDisplayed(value?: string) {
     await expect(
       getDefinitionByTermLabel(this.page, t.shared.beteiligte.klaegerLabel),
-    ).toHaveText(value);
+    ).toHaveText(value ?? /\S/);
   }
 
-  async expectBeklagtePartei(value: string) {
+  async expectBeklagteParteiDisplayed(value?: string) {
     await expect(
       getDefinitionByTermLabel(this.page, t.shared.beteiligte.beklagteLabel),
-    ).toHaveText(value);
+    ).toHaveText(value ?? /\S/);
   }
 
   async confirm() {

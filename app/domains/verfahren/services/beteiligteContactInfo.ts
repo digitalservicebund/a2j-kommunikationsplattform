@@ -17,7 +17,7 @@ type Telekommunikation = {
 
 type BeteiligteContactInfo = {
   anschriften?: Anschrift[] | null;
-  telekommunikation?: Telekommunikation[] | null;
+  telekommunikationen?: Telekommunikation[] | null;
 };
 
 export function getBeteiligteAnschrift(
@@ -31,7 +31,7 @@ function getBeteiligteVerbindungByCode(
   telekommunikationsartCode: string,
 ): string {
   return (
-    beteiligung?.telekommunikation?.find(
+    beteiligung?.telekommunikationen?.find(
       (eintrag) =>
         eintrag.telekommunikationsart?.code === telekommunikationsartCode,
     )?.verbindung ?? ""

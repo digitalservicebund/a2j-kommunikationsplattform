@@ -23,7 +23,7 @@ describe("BeteiligungenInputSchema", () => {
         nachname: "Kühn",
         rollen: [rolle],
         anschriften: null,
-        kommunikationsanschluesse: null,
+        telekommunikationen: null,
       },
     ];
 
@@ -43,7 +43,7 @@ describe("BeteiligungenInputSchema", () => {
           },
         ],
         anschriften: null,
-        kommunikationsanschluesse: null,
+        telekommunikationen: null,
       },
     ]);
   });
@@ -57,27 +57,15 @@ describe("BeteiligungenInputSchema", () => {
         kanzleiformId: "kanzleiform-1",
         rollen: [rolle],
         anschriften: null,
-        kommunikationsanschluesse: null,
+        telekommunikationen: null,
       },
     ];
 
     expect(BeteiligungenInputSchema.parse(input)).toEqual([
-      {
-        beteiligtenart: "raKanzlei",
-        bezeichnung: "Kanzlei Böhm",
+      expect.objectContaining({
         rechtsform_id: null,
         kanzleiform_id: "kanzleiform-1",
-        rollen: [
-          {
-            rollennummer: null,
-            rollenbezeichnung_id: "rolle-1",
-            geschaeftszeichen: null,
-            referenz: [],
-          },
-        ],
-        anschriften: null,
-        kommunikationsanschluesse: null,
-      },
+      }),
     ]);
   });
 

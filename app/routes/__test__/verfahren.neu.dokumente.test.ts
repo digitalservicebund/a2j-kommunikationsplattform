@@ -1,13 +1,28 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
+  ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+  ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+} from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
+import resolveCodeWertId from "~/domains/verfahren/services/resolveCodeWertId";
 import { ApiError } from "~/utils/apiError";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 import { makeDokument } from "~tests/utils/factories/dokument";
 import { makeGericht } from "~tests/utils/factories/gericht";
+import { makeEinzelanwaltKanzleiform } from "~tests/utils/factories/kanzleiform";
+import {
+  makeBeklagteRollenbezeichnung,
+  makeKlaegerinRollenbezeichnung,
+  makeProzessbevollmaechtigteRollenbezeichnung,
+} from "~tests/utils/factories/rolle";
 import { makeVerfahren } from "~tests/utils/factories/verfahren";
+import { action, loader } from "../verfahren.neu.dokumente";
 
 const mocks = vi.hoisted(() => ({
   fetchGerichte: vi.fn(),
+  fetchRollenbezeichnungen: vi.fn(),
+  fetchKanzleiformen: vi.fn(),
   createVerfahren: vi.fn(),
   createEinreichung: vi.fn(),
   uploadDokumentWithSignaturdatei: vi.fn(),
@@ -21,7 +36,11 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock(
   "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server",
-  () => ({ fetchGerichte: mocks.fetchGerichte }),
+  () => ({
+    fetchGerichte: mocks.fetchGerichte,
+    fetchRollenbezeichnungen: mocks.fetchRollenbezeichnungen,
+    fetchKanzleiformen: mocks.fetchKanzleiformen,
+  }),
 );
 vi.mock(
   "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server",
@@ -64,10 +83,15 @@ vi.mock("~/middleware/auth.server", () => ({
   authMiddleware: vi.fn(),
 }));
 
-import { action, loader } from "../verfahren.neu.dokumente";
+const gericht = makeGericht();
+const rollenbezeichnungen = [
+  makeKlaegerinRollenbezeichnung(),
+  makeBeklagteRollenbezeichnung(),
+  makeProzessbevollmaechtigteRollenbezeichnung(),
+];
+const kanzleiformen = [makeEinzelanwaltKanzleiform()];
 
 const authSession = makeAuthSession();
-const gericht = makeGericht();
 const context = { get: () => authSession, set: () => {} };
 const BASE_URL = "http://localhost:3000/verfahren/neu/dokumente";
 const VERFAHREN_ID = "11111111-1111-1111-1111-111111111111";
@@ -139,6 +163,12 @@ describe("/verfahren/neu/dokumente", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mocks.fetchGerichte.mockResolvedValue({ elemente: [gericht] });
+    mocks.fetchRollenbezeichnungen.mockResolvedValue({
+      elemente: rollenbezeichnungen,
+    });
+    mocks.fetchKanzleiformen.mockResolvedValue({
+      elemente: kanzleiformen,
+    });
     mocks.fetchDokumentValidierungsstatus.mockResolvedValue(validierungsstatus);
   });
 
@@ -253,6 +283,20 @@ describe("/verfahren/neu/dokumente", () => {
           file: pdfFile,
         });
 
+        const expectBeteiligungWithRollenbezeichnung = (
+          rollenbezeichnungCode: string,
+        ) =>
+          expect.objectContaining({
+            rollen: expect.arrayContaining([
+              expect.objectContaining({
+                rollenbezeichnung_id: resolveCodeWertId(
+                  rollenbezeichnungen,
+                  rollenbezeichnungCode,
+                ),
+              }),
+            ]),
+          });
+
         expect(mocks.createVerfahren).toHaveBeenCalledWith(
           authSession,
           SAFE_ID,
@@ -260,14 +304,26 @@ describe("/verfahren/neu/dokumente", () => {
             verfahrensgegenstand: "Zahlungsklage",
             kurzrubrum: null,
             gericht_id: gericht.id,
-            beteiligungen: null,
+            beteiligungen: expect.arrayContaining([
+              expectBeteiligungWithRollenbezeichnung(
+                ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+              ),
+              expectBeteiligungWithRollenbezeichnung(
+                ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
+              ),
+              expectBeteiligungWithRollenbezeichnung(
+                ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+              ),
+            ]),
           },
         );
+
         expect(mocks.createEinreichung).toHaveBeenCalledWith(
           authSession,
           VERFAHREN_ID,
           "Klageeinreichung",
         );
+
         expect(mocks.uploadDokumentWithSignaturdatei).toHaveBeenCalledWith(
           authSession,
           {

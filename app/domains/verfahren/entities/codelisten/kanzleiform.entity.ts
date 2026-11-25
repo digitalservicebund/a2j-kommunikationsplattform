@@ -22,3 +22,7 @@ export type Kanzleiform = z.infer<typeof KanzleiformSchema>;
  * The {@link Kanzleiform} code list.
  */
 export type KanzleiformListe = z.infer<typeof KanzleiformListeSchema>;
+
+// Known Kanzleiform values
+export const KANZLEIFORM_CODE_EINZELANWALT = "001";
+export const KANZLEIFORM_CODE_SOZIETAET = "002";

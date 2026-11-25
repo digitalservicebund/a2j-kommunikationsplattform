@@ -184,15 +184,10 @@ export default function VerfahrenNeuVerfahrendetails({
                   appearance="primary"
                   type="submit"
                   disabled={isSubmitting}
-                >
-                  <span className="kern-label">
-                    {routes.verfahrenNeu.verfahrendetails.navigation.next}
-                  </span>
-                  <span
-                    className="kern-icon kern-icon--arrow-forward"
-                    aria-hidden="true"
-                  ></span>
-                </Button>
+                  label={routes.verfahrenNeu.verfahrendetails.navigation.next}
+                  icon="arrow-forward"
+                  iconPosition="trailing"
+                />
               </div>
             </Form>
           </div>

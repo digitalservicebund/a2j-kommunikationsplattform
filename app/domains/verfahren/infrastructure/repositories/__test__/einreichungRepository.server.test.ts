@@ -1,11 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createEinreichung,
-  createEinreichungXJustiz,
+  deleteEinreichung,
   fetchEinreichungById,
   fetchEinreichungenById,
   fetchEinreichungStatus,
-  fetchEinreichungXJustiz,
   submitEinreichungen,
 } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
@@ -106,52 +105,6 @@ describe("fetchEinreichungStatus", () => {
   });
 });
 
-describe("fetchEinreichungXJustiz", () => {
-  it("requests the xjustiz endpoint as text and returns the raw XML", async () => {
-    const xml = "<xjustiz>...</xjustiz>";
-    mocks.apiRequest.mockResolvedValueOnce(xml);
-
-    const result = await fetchEinreichungXJustiz(makeAuthSession(), {
-      verfahrenId: "v-1",
-      id: "e-1",
-    });
-
-    expect(result).toBe(xml);
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
-      expect.objectContaining({
-        authSession: makeAuthSession(),
-        path: "/api/v1/verfahren/v-1/einreichungen/e-1/xjustiz",
-        responseType: "text",
-        errorMessage:
-          "XJustiz-Nachricht for Einreichung with id e-1 of Verfahren with id v-1 could not be fetched.",
-      }),
-    );
-  });
-});
-
-describe("createEinreichungXJustiz", () => {
-  it("posts ersetzen to the xjustiz endpoint", async () => {
-    mocks.apiRequest.mockResolvedValueOnce(undefined);
-
-    await createEinreichungXJustiz(makeAuthSession(), {
-      verfahrenId: "v-1",
-      id: "e-1",
-      ersetzen: true,
-    });
-
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
-      expect.objectContaining({
-        authSession: makeAuthSession(),
-        path: "/api/v1/verfahren/v-1/einreichungen/e-1/xjustiz",
-        method: "POST",
-        body: { ersetzen: true },
-        errorMessage:
-          "XJustiz-Dokument for Einreichung with id e-1 of Verfahren with id v-1 could not be created.",
-      }),
-    );
-  });
-});
-
 describe("createEinreichung", () => {
   it("delegates to apiRequest with expected payload and schema", async () => {
     const mockEinreichung = {
@@ -212,6 +165,27 @@ describe("submitEinreichungen", () => {
       eTag: 'W/"0"',
       schema: expect.anything(),
       errorMessage: "Einreichung with id e-1 could not be submitted.",
+    });
+  });
+});
+
+describe("deleteEinreichung", () => {
+  it("sends the DELETE with the given eTag as If-Match", async () => {
+    mocks.apiRequest.mockResolvedValueOnce(undefined);
+
+    await deleteEinreichung(makeAuthSession(), {
+      verfahrenId: "v-1",
+      id: "e-1",
+      eTag: 'W/"3"',
+    });
+
+    expect(mocks.apiRequest).toHaveBeenCalledWith({
+      authSession: makeAuthSession(),
+      path: "/api/v1/verfahren/v-1/einreichungen/e-1",
+      method: "DELETE",
+      eTag: 'W/"3"',
+      errorMessage:
+        "Einreichung with id e-1 of Verfahren with id v-1 could not be deleted.",
     });
   });
 });

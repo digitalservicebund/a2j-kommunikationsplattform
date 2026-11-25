@@ -7,7 +7,6 @@ import { makeVerfahren } from "~tests/utils/factories/verfahren";
 const mocks = vi.hoisted(() => ({
   fetchVerfahrenById: vi.fn(),
   updateVerfahren: vi.fn(),
-  regenerateEinreichungXJustiz: vi.fn(),
 }));
 
 const { codeListFetcher } = vi.hoisted(() => ({
@@ -44,10 +43,6 @@ vi.mock(
     updateVerfahren: mocks.updateVerfahren,
   }),
 );
-vi.mock(
-  "~/domains/verfahren/application/regenerateEinreichungXJustiz.server",
-  () => ({ default: mocks.regenerateEinreichungXJustiz }),
-);
 vi.mock("~/middleware/auth.server", () => ({
   authContext: {},
   authMiddleware: vi.fn(),
@@ -72,7 +67,6 @@ describe("/verfahren/neu/beteiligte action", () => {
 
     const formData = new FormData();
     formData.set("formType", "submit");
-    formData.set("einreichungId", "einreichung-1");
     formData.set("klagendeParteiNachname", "Müller");
     formData.set("beklagteParteiNachname", "Weber");
     formData.set("hasLawyer", "on");
@@ -124,7 +118,6 @@ describe("/verfahren/neu/beteiligte action", () => {
 
     const formData = new FormData();
     formData.set("formType", "submit");
-    formData.set("einreichungId", "einreichung-1");
     formData.set("klagendeParteiNachname", "Müller");
     formData.set("beklagteParteiNachname", "Weber");
 

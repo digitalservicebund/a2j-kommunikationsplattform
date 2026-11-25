@@ -1,7 +1,7 @@
 import z from "zod";
 import { AnschriftInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/anschrift.input.schema";
 import { BeteiligungenRequestSchema } from "~/domains/verfahren/infrastructure/schemas/requests/beteiligung.request.schema";
-import { KommunikationsanschlussInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/kommunikationsanschluss.input.schema";
+import { TelekommunikationInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/kommunikationsanschluss.input.schema";
 import { RollenInputSchema } from "~/domains/verfahren/infrastructure/schemas/requests/rollen.input.schema";
 
 type BeteiligungenRequestDTO = z.infer<typeof BeteiligungenRequestSchema>;
@@ -10,10 +10,8 @@ type BeteiligungenRequestDTO = z.infer<typeof BeteiligungenRequestSchema>;
 // see beteiligung.request.schema.ts for why the field order matters.
 const beteiligteInputFields = {
   rollen: z.array(RollenInputSchema).min(1),
-  anschriften: z.nullable(z.array(AnschriftInputSchema)),
-  kommunikationsanschluesse: z.nullable(
-    z.array(KommunikationsanschlussInputSchema),
-  ),
+  anschriften: z.nullish(z.array(AnschriftInputSchema)),
+  telekommunikationen: z.nullish(z.array(TelekommunikationInputSchema)),
 };
 
 // These stay plain z.object() (no .transform()) so z.discriminatedUnion can
@@ -22,9 +20,9 @@ const beteiligteInputFields = {
 // applied once, after the union, in BeteiligungenInputSchema below.
 export const NatuerlichePersonInputSchema = z.object({
   beteiligtenart: z.literal("natuerlichePerson"),
-  vorname: z.nullable(z.string()),
-  titel: z.nullable(z.string()),
-  namensvorsatz: z.nullable(z.string()),
+  vorname: z.nullish(z.string()),
+  titel: z.nullish(z.string()),
+  namensvorsatz: z.nullish(z.string()),
   nachname: z.string().min(1),
   ...beteiligteInputFields,
 });
@@ -38,7 +36,7 @@ export const OrganisationInputSchema = z.object({
 export const RaKanzleiInputSchema = z.object({
   beteiligtenart: z.literal("raKanzlei"),
   bezeichnung: z.string().min(1),
-  rechtsformId: z.nullable(z.string()),
+  rechtsformId: z.nullish(z.string()),
   kanzleiformId: z.string().min(1),
   ...beteiligteInputFields,
 });
@@ -68,7 +66,7 @@ export const BeteiligungenInputSchema = z
         kanzleiform_id: beteiligung.kanzleiformId,
         rollen: beteiligung.rollen,
         anschriften: beteiligung.anschriften,
-        kommunikationsanschluesse: beteiligung.kommunikationsanschluesse,
+        telekommunikationen: beteiligung.telekommunikationen,
       };
     });
   });

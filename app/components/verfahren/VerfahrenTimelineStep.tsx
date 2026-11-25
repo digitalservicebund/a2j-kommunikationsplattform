@@ -1,8 +1,9 @@
 import { ReactNode } from "react";
+import Icon, { IconName } from "~/components/Icon";
 
 export type VerfahrenTimelineStepProps = {
   timelineLabel: string;
-  iconClassName?: string;
+  icon?: IconName;
   showConnector?: boolean;
   "data-testid"?: string;
   // The step's content, e.g. a card or an accordion.
@@ -15,7 +16,7 @@ export type VerfahrenTimelineStepProps = {
  */
 export default function VerfahrenTimelineStep({
   timelineLabel,
-  iconClassName = "kern-icon--check",
+  icon = "check",
   showConnector = true,
   "data-testid": testId,
   children,
@@ -31,10 +32,7 @@ export default function VerfahrenTimelineStep({
 
       {/* Icon & Connector */}
       <div className="flex flex-[0_0_auto] flex-col items-center">
-        <span
-          className={`kern-icon ${iconClassName} kern-icon--default`}
-          aria-hidden="true"
-        ></span>
+        <Icon name={icon} />
         {showConnector ? (
           <div
             data-testid="timeline-step-connector"

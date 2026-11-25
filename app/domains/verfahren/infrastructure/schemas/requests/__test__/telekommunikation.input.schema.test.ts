@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { KommunikationsanschlussInputSchema } from "../kommunikationsanschluss.input.schema";
+import { TelekommunikationInputSchema } from "../kommunikationsanschluss.input.schema";
 
-describe("KommunikationsanschlussInputSchema", () => {
+describe("TelekommunikationInputSchema", () => {
   it("maps the camelCase domain shape to the snake_case wire shape", () => {
     const input = {
       telekommunikationsartId: "tka-email",
       verbindung: "emiliakuehn@posteo.de",
     };
 
-    expect(KommunikationsanschlussInputSchema.parse(input)).toEqual({
+    expect(TelekommunikationInputSchema.parse(input)).toEqual({
       telekommunikationsart_id: "tka-email",
       verbindung: "emiliakuehn@posteo.de",
     });
@@ -16,7 +16,7 @@ describe("KommunikationsanschlussInputSchema", () => {
 
   it("throws on an invalid input", () => {
     expect(() =>
-      KommunikationsanschlussInputSchema.parse({ invalid: true }),
+      TelekommunikationInputSchema.parse({ invalid: true }),
     ).toThrow();
   });
 });

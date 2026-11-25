@@ -22,8 +22,8 @@ function buildBeteiligungInput(beteiligung: Beteiligung): BeteiligungInput {
         postfachnummer: anschrift.postfachnummer,
         staatId: anschrift.staat?.id ?? null,
       })) ?? null,
-    kommunikationsanschluesse:
-      beteiligung.telekommunikation?.map((telekommunikation) => ({
+    telekommunikationen:
+      beteiligung.telekommunikationen?.map((telekommunikation) => ({
         telekommunikationsartId: telekommunikation.telekommunikationsart.id,
         verbindung: telekommunikation.verbindung,
       })) ?? null,

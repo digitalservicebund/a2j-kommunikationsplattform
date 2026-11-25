@@ -35,7 +35,7 @@ export function makeNatuerlichePersonBeteiligung(
         },
       },
     ],
-    telekommunikation: [
+    telekommunikationen: [
       {
         id: crypto.randomUUID(),
         telekommunikationsart: {
@@ -95,7 +95,7 @@ export function makeRAKanzleiBeteiligung(
         },
       },
     ],
-    telekommunikation: [],
+    telekommunikationen: [],
     ...params,
   };
 }
