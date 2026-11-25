@@ -546,15 +546,10 @@ export default function VerfahrenNeuBeteiligte({
                       name="formType"
                       value="submit"
                       disabled={isSubmitting}
-                    >
-                      <span className="kern-label">
-                        {routes.verfahrenNeu.beteiligte.navigation.next}
-                      </span>
-                      <span
-                        className="kern-icon kern-icon--arrow-forward"
-                        aria-hidden="true"
-                      ></span>
-                    </Button>
+                      label={routes.verfahrenNeu.beteiligte.navigation.next}
+                      icon="arrow-forward"
+                      iconPosition="trailing"
+                    />
                   </div>
                 </div>
 
@@ -615,15 +610,10 @@ export default function VerfahrenNeuBeteiligte({
                         name="formType"
                         value="submit"
                         disabled={isSubmitting}
-                      >
-                        <span className="kern-label">
-                          {routes.verfahrenNeu.beteiligte.navigation.next}
-                        </span>
-                        <span
-                          className="kern-icon kern-icon--arrow-forward"
-                          aria-hidden="true"
-                        ></span>
-                      </Button>
+                        label={routes.verfahrenNeu.beteiligte.navigation.next}
+                        icon="arrow-forward"
+                        iconPosition="trailing"
+                      />
                     </div>
                   </div>
 

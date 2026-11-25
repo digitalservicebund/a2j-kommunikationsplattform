@@ -1,3 +1,4 @@
+import Icon from "~/components/Icon";
 import { useTranslations } from "~/services/translations/context";
 
 export interface UserProfileProps {
@@ -8,10 +9,7 @@ export default function UserProfile({ userName }: UserProfileProps) {
   const t = useTranslations();
   return (
     <p className="kern-body kern-body--small kern-body--muted kern-gap-sm m-0 flex p-0">
-      <span
-        className="kern-icon kern-icon--account-circle kern-icon--default"
-        aria-hidden="true"
-      ></span>
+      <Icon name="account-circle" />
       <span>
         {t.layout.userProfile.loggedInAs}{" "}
         <b data-testid="current-user-name">{userName}</b>

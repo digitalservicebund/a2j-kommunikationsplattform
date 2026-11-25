@@ -25,12 +25,8 @@ export default function ScrollToTopButton({
         aria-label={buttons.SCROLL_TO_TOP_BUTTON}
         title={buttons.SCROLL_TO_TOP_BUTTON}
         label={buttons.SCROLL_TO_TOP_BUTTON}
-      >
-        <span
-          className="kern-icon kern-icon--arrow-up kern-icon--default"
-          aria-hidden="true"
-        />
-      </Button>
+        icon="arrow-up"
+      />
     </div>
   );
 }

@@ -120,7 +120,9 @@ describe("VerfahrenEinreichungTimeline", () => {
     expect(titles).toEqual(["Schriftsatz", "Erste Einreichung"]);
     expect(getAllByTestId("timeline-step-connector")).toHaveLength(1);
     // The still-open Einreichung gets the draft (edit) icon.
-    const icons = container.querySelectorAll(".kern-icon--default");
+    const icons = [...container.querySelectorAll("article")].map((step) =>
+      step.querySelector(".kern-icon"),
+    );
     expect(icons[0]).toHaveClass("kern-icon--edit");
     expect(icons[1]).toHaveClass("kern-icon--check");
   });

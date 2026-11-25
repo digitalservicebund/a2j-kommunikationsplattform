@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import Icon from "~/components/Icon";
 import type { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import { useTranslations } from "~/services/translations/context";
 import { getVerfahrenDisplayName } from "./presentation/verfahrenDisplayName";
@@ -73,7 +74,7 @@ function VerfahrenTableRow({ verfahren }: Readonly<{ verfahren: Verfahren }>) {
       <td className="kern-table__cell kern-p-md align-middle text-nowrap max-md:hidden">
         <div className="kern-gap-lg flex justify-between">
           {statusBadge}
-          <span className="kern-icon kern-icon--chevron-right"></span>
+          <Icon name="chevron-right" />
         </div>
       </td>
     </tr>

@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Link } from "react-router";
+import { IconName } from "~/components/Icon";
 import VerfahrenTimelineStep from "~/components/verfahren/VerfahrenTimelineStep";
 import { useTranslations } from "~/services/translations/context";
 
@@ -10,7 +11,7 @@ export type VerfahrenTimelineStepCardProps = {
   editTo?: string;
   editLabel?: string;
   showConnector?: boolean;
-  iconClassName?: string;
+  icon?: IconName;
 };
 
 export default function VerfahrenTimelineStepCard({
@@ -20,14 +21,14 @@ export default function VerfahrenTimelineStepCard({
   editTo,
   editLabel,
   showConnector = true,
-  iconClassName = "kern-icon--check",
+  icon = "check",
 }: Readonly<VerfahrenTimelineStepCardProps>) {
   const translations = useTranslations();
 
   return (
     <VerfahrenTimelineStep
       timelineLabel={timelineLabel}
-      iconClassName={iconClassName}
+      icon={icon}
       showConnector={showConnector}
     >
       <div className="kern-card kern-card--small">

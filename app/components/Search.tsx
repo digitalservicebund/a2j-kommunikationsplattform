@@ -35,12 +35,8 @@ export default function Search({
             className="h-max flex-none self-end"
             disabled={shouldDisableInputs}
             label={buttons.SEARCH_BUTTON}
-          >
-            <span
-              className="kern-icon kern-icon--search kern-icon--default"
-              aria-hidden="true"
-            ></span>
-          </Button>
+            icon="search"
+          />
         </div>
       </form>
     </search>

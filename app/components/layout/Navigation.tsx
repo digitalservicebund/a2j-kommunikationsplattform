@@ -1,10 +1,11 @@
 import { NavLink } from "react-router";
+import Icon, { IconName } from "~/components/Icon";
 import { useTranslations } from "~/services/translations/context";
 
 export default function Navigation() {
   const t = useTranslations();
 
-  const navigationLinks = [
+  const navigationLinks: { name: string; iconName: IconName; url: string }[] = [
     {
       name: t.layout.navigation.home,
       iconName: "home",
@@ -25,10 +26,7 @@ export default function Navigation() {
                 to={link.url}
                 className="kern-link kern-py-md visited:text-(--kern-color-action-default)"
               >
-                <span
-                  className={`kern-icon kern-icon--default kern-icon--${link.iconName} bg-current`}
-                  aria-hidden="true"
-                ></span>
+                <Icon name={link.iconName} className="bg-current" />
                 {link.name}
               </NavLink>
             </li>
