@@ -14,7 +14,6 @@ import { buildKlageeinreichungPath } from "~/config/klageeinreichungRoutes";
 import loadKlageeinreichungDraft, {
   requireVerfahrenSearchParam,
 } from "~/domains/verfahren/application/loadKlageeinreichungDraft.server";
-import regenerateEinreichungXJustiz from "~/domains/verfahren/application/regenerateEinreichungXJustiz.server";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
 import { CodeWertSchema } from "~/domains/verfahren/entities/codelisten/codeWert.entity";
 import {
@@ -157,7 +156,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     new URL(request.url).searchParams,
   );
 
-  const { verfahren, einreichung } = await loadKlageeinreichungDraft(
+  const { verfahren } = await loadKlageeinreichungDraft(
     authSession,
     verfahrenId,
   );
@@ -166,7 +165,6 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
   return {
     verfahren,
-    einreichung,
     kanzleiformen,
   };
 }
@@ -177,7 +175,6 @@ type FormActionContext = {
 };
 
 const SubmitInputSchema = z.object({
-  einreichungId: z.string().min(1),
   // buildBeteiligungFromFormValues() silently omits a Partei from the
   // submission when their Nachname is blank instead of failing — validate
   // it here first so a blank Nachname is reported as a field error rather
@@ -206,8 +203,7 @@ const LawyerRequiredFieldsSchema = z.object({
   }),
 });
 
-// Persists the Verfahren and its Beteiligungen, then regenerates the
-// resulting XJustiz document.
+// Persists the Verfahren and its Beteiligungen.
 async function handleSubmitAction(
   formData: FormData,
   { authSession, verfahrenId }: FormActionContext,
@@ -224,7 +220,7 @@ async function handleSubmitAction(
     return submitInput.error;
   }
 
-  const { einreichungId, hasLawyer } = submitInput.data;
+  const { hasLawyer } = submitInput.data;
 
   if (hasLawyer) {
     const lawyerRequiredFields = safeParseActionFormData(
@@ -325,7 +321,6 @@ async function handleSubmitAction(
     anwaltBeteiligung,
   ].filter((beteiligung) => beteiligung !== null);
 
-  // Persist the Verfahren and regenerate the resulting XJustiz document.
   // The Verfahrensdetails are kept as saved in the previous step.
   try {
     const verfahren = await fetchVerfahrenById(authSession, {
@@ -348,10 +343,6 @@ async function handleSubmitAction(
     }
 
     await updateVerfahren(authSession, verfahrenId, verfahrenUpdateInput.data);
-    await regenerateEinreichungXJustiz(authSession, {
-      verfahrenId,
-      einreichungId,
-    });
   } catch (error) {
     return actionResultFromApiError(error, {
       message: de.shared.form.errors.saveFailed,
@@ -386,7 +377,7 @@ export default function VerfahrenNeuBeteiligte({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const { verfahren, einreichung, kanzleiformen } = loaderData;
+  const { verfahren, kanzleiformen } = loaderData;
 
   const isInvalid = actionData?.status === "invalid";
   const isError = actionData?.status === "error";
@@ -504,12 +495,6 @@ export default function VerfahrenNeuBeteiligte({
                 encType="multipart/form-data"
                 className="kern-gap-lg flex flex-col"
               >
-                <input
-                  type="hidden"
-                  name="einreichungId"
-                  value={einreichung.id}
-                />
-
                 <div className="kern-gap-md flex flex-wrap items-start justify-between">
                   {/* Intro */}
                   <div>
