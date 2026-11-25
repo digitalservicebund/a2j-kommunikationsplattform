@@ -47,7 +47,7 @@ function getDialog() {
   return screen.getByRole("dialog", { hidden: true });
 }
 
-describe("DeleteButton", () => {
+describe(DeleteButton, () => {
   it("opens a dialog asking for confirmation", async () => {
     renderDialog(vi.fn());
 
