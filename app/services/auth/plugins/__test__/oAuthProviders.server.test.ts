@@ -4,6 +4,7 @@ import {
   exchangeForKomPlaIdpTokens,
   makeGetTokenFromBrakIdp,
   makeGetUserInfo,
+  makeMapProfileToUser,
 } from "../oAuthProviders.server";
 
 const mocks = vi.hoisted(() => ({
@@ -120,6 +121,60 @@ describe("makeGetUserInfo", () => {
     const userInfo = await getUserInfo({});
 
     expect(userInfo).toBeNull();
+  });
+
+  it("keeps the granted_privileges claim", async () => {
+    const idToken = makeIdToken({
+      sub: "user-123",
+      granted_privileges: ["DE.BRAK_SPT.abc-123", "DE.BRAK_SPT.def-456"],
+    });
+
+    const getUserInfo = makeGetUserInfo(AuthProvider.BEA);
+    const userInfo = await getUserInfo({ idToken });
+
+    expect(userInfo).toMatchObject({
+      granted_privileges: ["DE.BRAK_SPT.abc-123", "DE.BRAK_SPT.def-456"],
+    });
+  });
+});
+
+describe("makeMapProfileToUser", () => {
+  const mapProfileToUser = makeMapProfileToUser(AuthProvider.BEA);
+  const baseProfile = {
+    name: "Beispiel-Anwältin",
+    email: "user-123@example.com",
+    emailVerified: false,
+    "safe-id": "DE.BRAK_SPT.abc-123",
+  };
+
+  it("maps granted_privileges to grantedPrivileges", async () => {
+    const user = await mapProfileToUser({
+      ...baseProfile,
+      granted_privileges: ["DE.BRAK_SPT.def-456"],
+    });
+
+    expect(user).toEqual({
+      authProvider: AuthProvider.BEA,
+      safeId: "DE.BRAK_SPT.abc-123",
+      grantedPrivileges: ["DE.BRAK_SPT.def-456"],
+    });
+  });
+
+  it("falls back to granted_privilege if granted_privileges is absent", async () => {
+    const user = await mapProfileToUser({
+      ...baseProfile,
+      granted_privilege: ["DE.BRAK_SPT.def-456"],
+    });
+
+    expect(user).toMatchObject({
+      grantedPrivileges: ["DE.BRAK_SPT.def-456"],
+    });
+  });
+
+  it("leaves grantedPrivileges undefined if neither claim is present", async () => {
+    const user = await mapProfileToUser(baseProfile);
+
+    expect(user).toMatchObject({ grantedPrivileges: undefined });
   });
 });
 

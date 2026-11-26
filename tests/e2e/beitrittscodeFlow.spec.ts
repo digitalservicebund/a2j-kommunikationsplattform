@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import {
   BeitrittscodeConfirmationPage,
   BeitrittscodePage,
@@ -36,6 +36,8 @@ test.describe("Joining a Verfahren (Beitrittscode / Lift)", () => {
     await confirmationPage.expectAktenzeichenGerichtDisplayed();
     await confirmationPage.expectKlagendeParteiDisplayed();
     await confirmationPage.expectBeklagteParteiDisplayed();
+
+    await expect(confirmationPage.safeIdSelect).not.toHaveValue("");
     await confirmationPage.confirm();
 
     const detailsPage = new VerfahrenDetailsPage(page);

@@ -68,14 +68,17 @@ export async function getAuthSession(
 
   const setCookieHeaders = sessionHeaders.getSetCookie();
 
+  const ownSafeId = user.safeId ? [user.safeId] : [];
+  const authorizedForSafeIds = user.grantedPrivileges?.length
+    ? user.grantedPrivileges
+    : ownSafeId;
+
   return {
     provider,
     accessToken: tokens.accessToken,
     userName: user.name,
     safeId: user?.safeId ?? null,
-    // TODO: Derive `authorizedForSafeIds` from the `granted_privileges` of
-    // the access token once it becomes available.
-    authorizedForSafeIds: user?.safeId ? [user.safeId] : [],
+    authorizedForSafeIds,
     sessionCookieHeaders: [...setCookieHeaders, ...tokens.setCookieHeaders],
   };
 }

@@ -60,6 +60,17 @@ const UPLOAD_FAILED_PARAM = "uploadFehlgeschlagen";
 // this route requires users to be logged in
 export const middleware = [authMiddleware];
 
+// Only a SAFE-ID the user may act for can own the new Verfahren
+function readSafeIdSearchParam(
+  searchParams: URLSearchParams,
+  authSession: AuthSession,
+): string | undefined {
+  const safeId = searchParams.get("safeId");
+  return safeId && authSession.authorizedForSafeIds.includes(safeId)
+    ? safeId
+    : undefined;
+}
+
 export async function loader({ request, context }: Route.LoaderArgs) {
   const authSession = requireAuthSession(context, "loader");
   const { searchParams } = new URL(request.url);
@@ -84,11 +95,15 @@ export async function loader({ request, context }: Route.LoaderArgs) {
   }
 
   // Without a Verfahren, the first upload creates one for the selected court
+  // and SAFE-ID
   const gerichtId = searchParams.get("gericht");
   const { elemente: gerichte } = await fetchGerichte(authSession);
 
-  if (!gerichte.some(({ id }) => id === gerichtId)) {
-    throw redirect(KLAGEEINREICHUNG_PATHS.gerichtAuswahl);
+  if (
+    !gerichte.some(({ id }) => id === gerichtId) ||
+    !readSafeIdSearchParam(searchParams, authSession)
+  ) {
+    throw redirect(KLAGEEINREICHUNG_PATHS.neu);
   }
 
   return {
@@ -103,6 +118,7 @@ type FormActionContext = {
   authSession: AuthSession;
   verfahrenId: string | undefined;
   gerichtId: string | undefined;
+  safeId: string | undefined;
 };
 
 function invalidSubmissionResponse() {
@@ -111,12 +127,13 @@ function invalidSubmissionResponse() {
   });
 }
 
-// The first upload creates the Verfahren for the court from the URL and its
-// Klageeinreichung, then uploads the Dokument to it
+// The first upload creates the Verfahren for the court and SAFE-ID from the
+// URL and its Klageeinreichung, then uploads the Dokument to it
 async function handleFirstUpload(
   formData: FormData,
   authSession: AuthSession,
   gerichtId: string,
+  safeId: string,
 ) {
   const actionResultData = buildUploadResultData(formData);
 
@@ -141,6 +158,7 @@ async function handleFirstUpload(
 
     const verfahren = await createVerfahren(
       authSession,
+      safeId,
       VerfahrenAendernInputSchema.parse({
         verfahrensgegenstand: DEFAULT_VERFAHRENSGEGENSTAND,
         kurzrubrum: null,
@@ -254,7 +272,7 @@ function buildDokumentActionContext(
 const formActionHandlers = {
   upload: (
     formData: FormData,
-    { authSession, verfahrenId, gerichtId }: FormActionContext,
+    { authSession, verfahrenId, gerichtId, safeId }: FormActionContext,
   ) => {
     if (verfahrenId) {
       return handleDokumentUpload(
@@ -263,8 +281,8 @@ const formActionHandlers = {
       );
     }
 
-    return gerichtId
-      ? handleFirstUpload(formData, authSession, gerichtId)
+    return gerichtId && safeId
+      ? handleFirstUpload(formData, authSession, gerichtId, safeId)
       : invalidSubmissionResponse();
   },
   delete: (
@@ -302,6 +320,7 @@ export const action = async ({ request, context }: Route.ActionArgs) => {
       authSession,
       verfahrenId: readVerfahrenSearchParam(searchParams),
       gerichtId: searchParams.get("gericht") ?? undefined,
+      safeId: readSafeIdSearchParam(searchParams, authSession),
     },
     invalidSubmissionResponse,
   );
@@ -313,7 +332,7 @@ export default function VerfahrenNeuDokumente({
 }: Route.ComponentProps) {
   const { verfahrenId, einreichung, dokumente, uploadFailed } = loaderData;
 
-  const { shared, routes, buttons } = useTranslations();
+  const t = useTranslations();
   const navigation = useNavigation();
   const isBusy = navigation.state !== "idle";
 
@@ -333,7 +352,7 @@ export default function VerfahrenNeuDokumente({
     formType !== "delete";
 
   const hasKlageschrift = dokumente.some(({ typ }) => typ === "SCHRIFTSTUECK");
-  const nextLabel = routes.verfahrenNeu.dokumente.navigation.next;
+  const nextLabel = t.routes.verfahrenNeu.dokumente.navigation.next;
 
   return (
     <>
@@ -345,11 +364,11 @@ export default function VerfahrenNeuDokumente({
         <div className="kern-row">
           <div className="kern-col-12 kern-col-xl-10 kern-col-xl-offset-1">
             <h1 className="kern-heading-large">
-              {routes.verfahrenNeu.dokumente.headline}
+              {t.routes.verfahrenNeu.dokumente.headline}
             </h1>
             <Progress
               id="progress-1"
-              label={routes.verfahrenNeu.dokumente.progress}
+              label={t.routes.verfahrenNeu.dokumente.progress}
               value={1}
               max={3}
             />
@@ -357,26 +376,26 @@ export default function VerfahrenNeuDokumente({
             <div className="kern-pt-xl kern-gap-lg flex flex-col">
               <div>
                 <h2 className="kern-heading-medium">
-                  {routes.verfahrenNeu.dokumente.subline}
+                  {t.routes.verfahrenNeu.dokumente.subline}
                 </h2>
                 <p className="kern-body">
-                  {routes.verfahrenNeu.dokumente.intro}
+                  {t.routes.verfahrenNeu.dokumente.intro}
                 </p>
               </div>
 
               {isError && (
                 <Alert
                   type="error"
-                  title={shared.form.submit.title}
-                  message={actionData?.error ?? shared.form.submit.message}
+                  title={t.shared.form.submit.title}
+                  message={actionData?.error ?? t.shared.form.submit.message}
                 />
               )}
 
               {!isError && uploadFailed && (
                 <Alert
                   type="error"
-                  title={shared.form.submit.title}
-                  message={shared.form.errors.uploadFailed}
+                  title={t.shared.form.submit.title}
+                  message={t.shared.form.errors.uploadFailed}
                 />
               )}
 
@@ -385,7 +404,7 @@ export default function VerfahrenNeuDokumente({
                 einreichung={einreichung}
                 dokumente={dokumente}
                 schriftstueckLabel={
-                  routes.verfahrenNeu.dokumente.schriftstueckLabel
+                  t.routes.verfahrenNeu.dokumente.schriftstueckLabel
                 }
                 allowSchriftstueckDeletion
                 disabled={isBusy}
@@ -393,10 +412,10 @@ export default function VerfahrenNeuDokumente({
 
               <div className="kern-gap-md flex flex-wrap justify-end">
                 <Link
-                  to={KLAGEEINREICHUNG_PATHS.gerichtAuswahl}
+                  to={KLAGEEINREICHUNG_PATHS.neu}
                   className="kern-btn kern-btn--secondary"
                 >
-                  <span className="kern-label">{buttons.prev}</span>
+                  <span className="kern-label">{t.buttons.prev}</span>
                 </Link>
                 {verfahrenId && hasKlageschrift ? (
                   <Link
@@ -424,7 +443,7 @@ export default function VerfahrenNeuDokumente({
             </div>
           </div>
         </div>
-        <VerfahrenLoader active={isBusy} label={shared.loading} />
+        <VerfahrenLoader active={isBusy} label={t.shared.loading} />
       </div>
     </>
   );

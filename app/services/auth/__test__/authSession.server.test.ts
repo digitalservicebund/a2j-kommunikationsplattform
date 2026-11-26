@@ -124,6 +124,70 @@ describe("getAuthSession", () => {
     expect(result?.safeId).toBe("DE.KOMPLA_SPT.xyz");
   });
 
+  describe("authorizedForSafeIds", () => {
+    beforeEach(() => {
+      mocks.listUserAccounts.mockResolvedValue([
+        {
+          id: "bea-row-id-1",
+          providerId: AuthProvider.BEA,
+          accountId: "bea-provider-account-1",
+        },
+      ]);
+      mocks.getAccessToken.mockResolvedValue({
+        response: {
+          accessToken: "bea-access-token",
+          accessTokenExpiresAt: futureDate(),
+        },
+        headers: emptyHeaders,
+      });
+    });
+
+    it.each([
+      [
+        "uses the granted privileges",
+        "DE.BRAK_SPT.abc",
+        ["DE.BRAK_SPT.abc", "DE.BRAK_SPT.other"],
+        ["DE.BRAK_SPT.abc", "DE.BRAK_SPT.other"],
+      ],
+      [
+        "uses only the granted privileges, even without the user's SAFE-ID",
+        "DE.BRAK_SPT.abc",
+        ["DE.BRAK_SPT.other"],
+        ["DE.BRAK_SPT.other"],
+      ],
+      [
+        "uses the granted privileges without a SAFE-ID",
+        null,
+        ["DE.BRAK_SPT.other"],
+        ["DE.BRAK_SPT.other"],
+      ],
+      [
+        "falls back to the user's SAFE-ID without granted privileges",
+        "DE.BRAK_SPT.abc",
+        undefined,
+        ["DE.BRAK_SPT.abc"],
+      ],
+      [
+        "falls back to the user's SAFE-ID with empty granted privileges",
+        "DE.BRAK_SPT.abc",
+        [],
+        ["DE.BRAK_SPT.abc"],
+      ],
+      ["is empty without either", null, undefined, []],
+    ])("%s", async (_, safeId, grantedPrivileges, expected) => {
+      mockSession({
+        id: "user-1",
+        authProvider: AuthProvider.BEA,
+        safeId,
+        grantedPrivileges,
+      });
+
+      const result = await getAuthSession(request);
+
+      expect(result?.authorizedForSafeIds).toEqual(expected);
+    });
+  });
+
   it("returns null if the auth provider is unknown", async () => {
     mockSession({
       id: "user-2",

@@ -122,10 +122,7 @@ export default function VerfahrenRoute() {
             </span>
           </Link>
 
-          <Link
-            to="/verfahren/neu/gericht-auswahl"
-            className="kern-btn kern-btn--primary"
-          >
+          <Link to="/verfahren/neu" className="kern-btn kern-btn--primary">
             <Icon name="add" />
             <span className="kern-label">{routes.index.createVerfahren}</span>
           </Link>

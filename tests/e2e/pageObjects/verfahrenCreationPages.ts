@@ -28,9 +28,15 @@ type KanzleiDetails = {
   telefon?: string;
 };
 
-export class GerichtAuswahlPage extends PageObject {
+export class VerfahrenNeuPage extends PageObject {
   constructor(page: Page) {
-    super(page, "/verfahren/neu/gericht-auswahl");
+    super(page, "/verfahren/neu");
+  }
+
+  get safeIdSelect() {
+    return this.page.getByRole("combobox", {
+      name: t.routes.safeIdAuswahl.label,
+    });
   }
 
   get komplaButton() {
@@ -91,6 +97,12 @@ export class VerfahrenDokumentePage extends PageObject {
     return this.page.getByRole("button", {
       name: t.routes.verfahrenNeu.dokumente.navigation.next,
     });
+  }
+
+  async expectSelectedSafeId(safeId: string) {
+    await expect(this.page).toHaveURL(
+      (url) => url.searchParams.get("safeId") === safeId,
+    );
   }
 
   async upload(

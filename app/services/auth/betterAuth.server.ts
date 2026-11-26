@@ -72,6 +72,13 @@ export const auth = betterAuth({
         type: "string",
         required: false,
       },
+      grantedPrivileges: {
+        type: "string[]",
+        items: {
+          type: "string",
+        },
+        required: false,
+      },
     },
   },
 

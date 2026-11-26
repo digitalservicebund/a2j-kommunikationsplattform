@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { HomePage } from "./pageObjects/homePage";
 import {
-  GerichtAuswahlPage,
+  VerfahrenNeuPage,
   VerfahrenDokumentePage,
 } from "./pageObjects/verfahrenCreationPages";
 import { VerfahrenDetailsPage } from "./pageObjects/verfahrenDetailsPage";
@@ -17,10 +17,10 @@ test.describe("Verfahren deletion", () => {
     const homePage = new HomePage(page);
     await homePage.startVerfahrenCreationFlow();
 
-    const gerichtAuswahl = new GerichtAuswahlPage(page);
-    await gerichtAuswahl.expectToBeHere();
-    await gerichtAuswahl.selectEmpfaengergericht("Amtsgericht Bremen");
-    await gerichtAuswahl.startKomplaKlageeinreichung();
+    const verfahrenNeu = new VerfahrenNeuPage(page);
+    await verfahrenNeu.expectToBeHere();
+    await verfahrenNeu.selectEmpfaengergericht("Amtsgericht Bremen");
+    await verfahrenNeu.startKomplaKlageeinreichung();
 
     // The first upload creates the Verfahren
     const dokumenteStep = new VerfahrenDokumentePage(page);

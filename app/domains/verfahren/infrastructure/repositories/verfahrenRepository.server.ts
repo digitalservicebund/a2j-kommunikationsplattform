@@ -62,10 +62,10 @@ export async function fetchVerfahrenById(
 
 export async function createVerfahren(
   authSession: AuthSession,
+  safeId: string,
   verfahren?: VerfahrenAendernRequestDTO,
 ): Promise<Verfahren> {
   const errorMessage = "Verfahren could not be created.";
-  const safeId = authSession.safeId;
 
   if (!safeId) {
     throw new Error("No safeId is available");

@@ -274,7 +274,12 @@ export const de = {
       klageErstellenEingabesystem: "Klage mit dem Eingabesystem erstellen",
       // Announced to screen readers once a court has been selected, as the
       // buttons for the available options appear only then
-      optionsAnnouncement: "Für {{gericht}} verfügbar: {{optionen}}.",
+      gerichtOptionsAnnouncement: "Für {{gericht}} verfügbar: {{optionen}}.",
+    },
+    safeIdAuswahl: {
+      subline: "SAFE-ID auswählen",
+      intro: "Wählen Sie die SAFE-ID aus, die Sie verwenden möchten.",
+      label: "SAFE-ID",
     },
     verfahrenNeu: {
       dokumente: {
@@ -479,7 +484,6 @@ export const de = {
   breadcrumb: {
     start: "Start",
     verfahrenNeu: "Neue Klage einreichen",
-    verfahrenGerichtAuswahl: "Gericht auswählen",
     verfahrenId: "Verfahren",
   },
 } as const;
