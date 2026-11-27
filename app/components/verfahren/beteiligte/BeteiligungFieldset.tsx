@@ -92,7 +92,7 @@ export default function BeteiligungFieldset({
   const t = useTranslations();
 
   const [beteiligtenart, setBeteiligtenart] = useState(
-    defaultValues.beteiligtenart ?? "natuerlichePerson",
+    defaultValues.beteiligtenart,
   );
 
   const kanzleiformOptions = useMemo(
@@ -158,9 +158,7 @@ export default function BeteiligungFieldset({
   const rolleInputName = (
     index: number,
     field: keyof BeteiligungRolleFieldValues,
-    options?: { array: boolean },
-  ) =>
-    `${inputName("rollen")}[${index}][${field}]${options?.array ? "[]" : ""}`;
+  ) => `${inputName("rollen")}[${index}][${field}]`;
 
   return (
     <FieldsetCard

@@ -9,7 +9,7 @@ import {
   BeteiligungFieldValues,
   BeteiligungFieldValuesSchema,
 } from "~/components/verfahren/beteiligte/BeteiligungFieldset";
-import VerfahrenCreationBeteiligungenEditForm from "~/components/verfahren/beteiligte/VerfahrenCreationBeteiligungenEditForm";
+import VerfahrenCreationBeteiligungenForm from "~/components/verfahren/beteiligte/VerfahrenCreationBeteiligungenForm";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import { buildKlageeinreichungPath } from "~/config/klageeinreichungRoutes";
 import loadKlageeinreichungDraft from "~/domains/verfahren/application/loadKlageeinreichungDraft.server";
@@ -518,7 +518,7 @@ export default function VerfahrenNeuBeteiligte({
                 )}
 
                 <div className="kern-gap-lg flex flex-col">
-                  <VerfahrenCreationBeteiligungenEditForm
+                  <VerfahrenCreationBeteiligungenForm
                     existingBeteiligungen={verfahren.beteiligungen ?? []}
                     kanzleiformen={kanzleiformen}
                     rechtsformen={rechtsformen}

@@ -159,17 +159,17 @@ function existingBeteiligungenToFieldsetItems(
   }));
 }
 
-export type VerfahrenBeteiligungenEditFormProps = {
+export type VerfahrenBeteiligungenFormProps = {
   existingBeteiligungen: Beteiligung[];
   kanzleiformen: Kanzleiform[];
   rechtsformen: Rechtsform[];
 };
 
-export default function VerfahrenCreationBeteiligungenEditForm({
+export default function VerfahrenCreationBeteiligungenForm({
   existingBeteiligungen,
   kanzleiformen,
   rechtsformen,
-}: VerfahrenBeteiligungenEditFormProps) {
+}: VerfahrenBeteiligungenFormProps) {
   const t = useTranslations();
 
   const [items, setItems] = useState(() =>
