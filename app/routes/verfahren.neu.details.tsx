@@ -7,10 +7,9 @@ import Progress from "~/components/Progress";
 import VerfahrenDetailsFormSection from "~/components/verfahren/VerfahrenDetailsFormSection";
 import VerfahrenLoader from "~/components/verfahren/VerfahrenLoader.static";
 import { buildKlageeinreichungPath } from "~/config/klageeinreichungRoutes";
-import loadKlageeinreichungDraft, {
-  requireVerfahrenSearchParam,
-} from "~/domains/verfahren/application/loadKlageeinreichungDraft.server";
+import loadKlageeinreichungDraft from "~/domains/verfahren/application/loadKlageeinreichungDraft.server";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
+import { requireVerfahrenSearchParam } from "~/domains/verfahren/application/verfahrenSearchParam.server";
 import {
   fetchVerfahrenById,
   updateVerfahren,

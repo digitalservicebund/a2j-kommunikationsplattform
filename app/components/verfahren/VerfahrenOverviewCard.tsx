@@ -5,11 +5,11 @@ import VerfahrenBriefSummaryOfBeteiligte from "~/components/verfahren/VerfahrenB
 import VerfahrenBriefSummaryOfGericht from "~/components/verfahren/VerfahrenBriefSummaryOfGericht.static";
 import VerfahrenStatusBadge from "~/components/verfahren/VerfahrenStatusBadge.static";
 import type { Verfahren } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
-import { GerichtInformation } from "~/domains/verfahren/infrastructure/schemas/gerichtInformation.schema";
 import {
-  ROLE_CODE_BEKLAGTE,
-  ROLE_CODE_KLAEGERIN,
-} from "~/domains/verfahren/services/beteiligteByRole";
+  ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
+  ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+} from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
+import { GerichtInformation } from "~/domains/verfahren/infrastructure/schemas/gerichtInformation.schema";
 import { useTranslations } from "~/services/translations/context";
 import { getVerfahrenDisplayName } from "./presentation/verfahrenDisplayName";
 
@@ -29,12 +29,12 @@ export default function VerfahrenOverviewCard({
   const t = useTranslations();
 
   const klaegerinnenSummary = buildBeteiligteSummaryItems(
-    verfahren.beteiligungen,
-    ROLE_CODE_KLAEGERIN,
+    verfahren.beteiligungen ?? [],
+    ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
   );
   const beklagteSummary = buildBeteiligteSummaryItems(
-    verfahren.beteiligungen,
-    ROLE_CODE_BEKLAGTE,
+    verfahren.beteiligungen ?? [],
+    ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
   );
 
   const gerichtBankverbindung = gerichtInformation?.bankverbindungen[0];

@@ -5480,7 +5480,7 @@
             },
             "description": "Gibt die Anschriften der beteiligten Person im Verfahren an."
           },
-          "kommunikationsanschluesse": {
+          "telekommunikationen": {
             "type": [
               "null",
               "array"

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { VerfahrenSchema } from "~/domains/verfahren/infrastructure/schemas/verfahren.schema";
+import { VerfahrenSchema } from "../verfahren.entity";
 
 describe("VerfahrenSchema", () => {
   it("maps the snake_case API response to the camelCase domain shape", () => {

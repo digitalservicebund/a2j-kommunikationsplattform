@@ -1,8 +1,13 @@
 import {
   NatuerlichePersonBeteiligung,
+  OrganisationBeteiligung,
   RAKanzleiBeteiligung,
 } from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
-import { makeKlaegerinRolle, makeProzessbevollmeachtigteRolle } from "./rolle";
+import {
+  makeBeklagteRolle,
+  makeKlaegerinRolle,
+  makeProzessbevollmeachtigteRolle,
+} from "./rolle";
 
 export function makeNatuerlichePersonBeteiligung(
   params?: Partial<NatuerlichePersonBeteiligung>,
@@ -57,6 +62,39 @@ export function makeNatuerlichePersonBeteiligung(
         verbindung: "06921994731",
       },
     ],
+    ...params,
+  };
+}
+
+export function makeOrganisationBeteiligung(
+  params?: Partial<OrganisationBeteiligung>,
+): OrganisationBeteiligung {
+  return {
+    id: crypto.randomUUID(),
+    beteiligtenart: "organisation",
+    bezeichnung: "Muster GmbH",
+    rollen: [makeBeklagteRolle()],
+    anschriften: [
+      {
+        id: crypto.randomUUID(),
+        anschriftstyp: {
+          id: "6f0b6a8e-3f4d-4c2b-9a51-0d6f1c2e7b34",
+          wert: "Dienst-/Geschäftsanschrift",
+          code: "003",
+        },
+        strasse: "Friedrichstraße",
+        hausnummer: "100",
+        postleitzahl: "10117",
+        ort: "Berlin",
+        postfachnummer: null,
+        staat: {
+          id: "51dd7b05-2c64-4ce9-800d-9a49d77aa062",
+          wert: "Deutschland",
+          code: "000",
+        },
+      },
+    ],
+    telekommunikationen: [],
     ...params,
   };
 }

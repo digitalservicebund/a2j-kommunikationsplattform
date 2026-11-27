@@ -58,8 +58,6 @@ export const loader = async ({ context, url }: Route.LoaderArgs) => {
     suchbegriff: url.searchParams.get("suchbegriff"),
   });
 
-  console.log("S", searchParams);
-
   if (!searchParams) {
     searchParams = {
       offset: 0,

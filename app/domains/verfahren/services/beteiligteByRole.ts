@@ -1,3 +1,5 @@
+import { ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE } from "../entities/codelisten/rollenbezeichnung.entity";
+
 type Rolle = {
   rollenbezeichnung?: { code?: string | null } | null;
   geschaeftszeichen?: string | null;
@@ -12,10 +14,6 @@ type Beteiligte = {
   bezeichnung?: string | null;
   rollen?: Rolle[] | null;
 };
-
-export const ROLE_CODE_KLAEGERIN = "101";
-export const ROLE_CODE_BEKLAGTE = "028";
-export const ROLE_CODE_PROZESSBEVOLLMAECHTIGTE = "132";
 
 export function getBeteiligteByRoleCode<T extends Beteiligte>(
   beteiligte: T[] | null | undefined,
@@ -75,17 +73,15 @@ export function getBeteiligteNamesByRoleCode(
 }
 
 export function getProzessbevollmaechtigteByReferenz<T extends Beteiligte>(
-  beteiligte: T[] | null | undefined,
-  rollenbezeichnungCode: string,
+  beteiligte: T[],
   referenz: string,
-): T | undefined {
-  return beteiligte?.find(
-    (beteiligung) =>
-      beteiligung.beteiligtenart === "raKanzlei" &&
-      beteiligung.rollen?.some(
-        (rolle) =>
-          rolle.rollenbezeichnung?.code === rollenbezeichnungCode &&
-          rolle.referenz.includes(referenz),
-      ),
+): T[] {
+  return beteiligte?.filter((beteiligung) =>
+    beteiligung.rollen?.some(
+      (rolle) =>
+        rolle.rollenbezeichnung?.code ===
+          ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE &&
+        rolle.referenz.includes(referenz),
+    ),
   );
 }

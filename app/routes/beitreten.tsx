@@ -18,6 +18,10 @@ import InputField from "~/components/InputField";
 import InputSelect from "~/components/InputSelect";
 import { PageMetadata } from "~/components/PageMetadata";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
+import {
+  ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
+  ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+} from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
 import { Verfahren } from "~/domains/verfahren/entities/verfahren/verfahren.entity";
 import {
   LiftResponse,
@@ -27,8 +31,6 @@ import {
 import {
   getBeteiligteByRoleCode,
   getBeteiligteDisplayName,
-  ROLE_CODE_BEKLAGTE,
-  ROLE_CODE_KLAEGERIN,
 } from "~/domains/verfahren/services/beteiligteByRole";
 import preselectSafeId from "~/domains/verfahren/services/preselectSafeId";
 import { authMiddleware } from "~/middleware/auth.server";
@@ -235,11 +237,11 @@ function LiftConfirmationForm({
 
   const klagende = getBeteiligteByRoleCode(
     verfahren.beteiligungen,
-    ROLE_CODE_KLAEGERIN,
+    ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
   );
   const beklagte = getBeteiligteByRoleCode(
     verfahren.beteiligungen,
-    ROLE_CODE_BEKLAGTE,
+    ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
   );
 
   return (

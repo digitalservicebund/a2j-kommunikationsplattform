@@ -5,15 +5,21 @@ import { TelekommunikationSchema } from "~/domains/verfahren/entities/beteiligun
 import { KanzleiformSchema } from "../codelisten/kanzleiform.entity";
 import { RechtsformSchema } from "../codelisten/rechtsform.entity";
 
-const BeteiligteSchema = z.object({
+const BeteiligungBaseSchema = z.object({
   id: z.string(),
   rollen: z.array(RolleSchema),
   anschriften: z.nullable(z.array(AnschriftSchema)),
   telekommunikationen: z.nullable(z.array(TelekommunikationSchema)),
 });
-export type Beteiligte = z.infer<typeof BeteiligteSchema>;
 
-const NatuerlichePersonBeteiligungSchema = BeteiligteSchema.extend({
+export const BeteiligtenartSchema = z.literal([
+  "natuerlichePerson",
+  "organisation",
+  "raKanzlei",
+]);
+export type Beteiligtenart = z.infer<typeof BeteiligtenartSchema>;
+
+export const NatuerlichePersonBeteiligungSchema = BeteiligungBaseSchema.extend({
   beteiligtenart: z.literal("natuerlichePerson"),
   vorname: z.nullable(z.string()),
   titel: z.nullable(z.string()),
@@ -24,7 +30,7 @@ export type NatuerlichePersonBeteiligung = z.infer<
   typeof NatuerlichePersonBeteiligungSchema
 >;
 
-const OrganisationBeteiligungSchema = BeteiligteSchema.extend({
+export const OrganisationBeteiligungSchema = BeteiligungBaseSchema.extend({
   beteiligtenart: z.literal("organisation"),
   bezeichnung: z.string(),
 });
@@ -32,7 +38,7 @@ export type OrganisationBeteiligung = z.infer<
   typeof OrganisationBeteiligungSchema
 >;
 
-const RAKanzleiBeteiligungSchema = BeteiligteSchema.extend({
+export const RAKanzleiBeteiligungSchema = BeteiligungBaseSchema.extend({
   beteiligtenart: z.literal("raKanzlei"),
   bezeichnung: z.string(),
   // TODO: remove the nullable part after confirming it with SINC

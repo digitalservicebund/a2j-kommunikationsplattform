@@ -117,6 +117,10 @@ export const de = {
         title: "Fehler beim Absenden des Formulars",
         message: "Bitte versuchen Sie es später erneut.",
       },
+      invalid: {
+        title: "Ungültige Angaben",
+        message: "Bitte überprüfen Sie Ihre Eingaben.",
+      },
       errors: {
         deleteFailed: "Löschen fehlgeschlagen.",
         deleteVerfahrenFailed: "Das Verfahren konnte nicht gelöscht werden.",
@@ -135,6 +139,7 @@ export const de = {
         unknown: "Ein unbekannter Fehler ist aufgetreten.",
       },
       labels: {
+        bezeichnung: "Bezeichnung",
         vorname: "Vorname",
         nachname: "Nachname",
         strasse: "Straße",
@@ -316,35 +321,35 @@ export const de = {
         navigation: {
           next: "Weiter zur Überprüfung",
         },
-        notification: {
-          headline: "Daten automatisch übernommen",
-          copy: "Wir haben die Angaben aus Ihrer Klageschrift vorausgefüllt. Bitte prüfen Sie alle Felder sorgfältig.",
-        },
         form: {
-          klagendePartei: {
-            title: "Klagende Partei",
-            description:
-              "Alle Angaben zur klagenden Partei, dem Kläger oder der Klägerin. Hier können Sie auch angeben, ob eine anwaltliche Vertretung vorhanden ist.",
-            vertretung: {
-              checkbox: "Anwaltliche Vertretung ist vorhanden",
-              title: "Angaben zum Anwalt",
-              bezeichnung:
-                "Name der Kanzlei / Sozietät / Berufsausübungsgesellschaft",
-              kanzleiform: "Art der anwaltlichen Vertretung",
+          beteiligtenart: {
+            label: "Art der Partei",
+            options: {
+              natuerlichePerson: "Natürliche Person",
+              organisation: "Firma / Organisation",
             },
           },
-          beklagtePartei: {
-            title: "Beklagte Partei",
-            description:
-              "Alle Angaben zur beklagten Partei, dem Beklagten oder der Beklagten.",
+          addPartei: "Partei hinzufügen",
+          addProzessbevollmaechtigte: "Anwaltliche Vertretung hinzufügen",
+          vertretungReferenzen: "Vertretung für",
+          geschaeftszeichen: "Geschäftszeichen für Verfahren",
+          kanzleiform: "Art der anwaltlichen Vertretung",
+          rechtsform: "Rechtsform",
+          klagendenseite: {
+            title: "Klagendenseite",
           },
-          validation: {
-            klagendeParteiNachname:
-              "Bitte geben Sie den Nachnamen der klagenden Partei an.",
-            beklagteParteiNachname:
-              "Bitte geben Sie den Nachnamen der beklagten Partei an.",
-            lawyerName: "Bitte geben Sie den Namen der Kanzlei an.",
-            lawyerKanzleiform: "Bitte wählen Sie die Kanzleiform aus.",
+          beklagtenseite: {
+            title: "Beklagtenseite",
+          },
+          klagendePartei: {
+            title: "Klagende Partei {{number}}",
+          },
+          beklagtePartei: {
+            title: "Beklagte Partei {{number}}",
+          },
+          prozessbevollmaechtigte: {
+            title: "Anwaltliche Vertretung {{number}}",
+            referenzOptionWithNumber: "Partei {{number}}",
           },
         },
       },

@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { Beteiligung } from "~/domains/verfahren/entities/beteiligung/beteiligung.entity";
 import {
+  ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
+  ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+} from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
+import {
   buildBeteiligteSummaryItems,
   formatAnschrift,
 } from "../buildBeteiligteSummaryItems";
-
-const ROLE_CODE_KLAEGERIN = "101";
-const ROLE_CODE_BEKLAGTE = "028";
 
 const beteiligungen: Beteiligung[] = [
   {
@@ -19,11 +20,11 @@ const beteiligungen: Beteiligung[] = [
     rollen: [
       {
         id: "rolle-1",
-        rollennummer: ROLE_CODE_KLAEGERIN,
+        rollennummer: ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
         rollenbezeichnung: {
           id: "rb-1",
           wert: "Kläger(in)",
-          code: ROLE_CODE_KLAEGERIN,
+          code: ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
         },
         geschaeftszeichen: null,
         referenz: [],
@@ -80,7 +81,7 @@ const beteiligungen: Beteiligung[] = [
           code: "132",
         },
         geschaeftszeichen: null,
-        referenz: [ROLE_CODE_KLAEGERIN],
+        referenz: [ROLLENBEZEICHNUNG_CODE_KLAEGERIN],
       },
     ],
     anschriften: [
@@ -118,11 +119,11 @@ const beteiligungen: Beteiligung[] = [
     rollen: [
       {
         id: "rolle-3",
-        rollennummer: ROLE_CODE_BEKLAGTE,
+        rollennummer: ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
         rollenbezeichnung: {
           id: "rb-3",
           wert: "Beklagte(r)",
-          code: ROLE_CODE_BEKLAGTE,
+          code: ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
         },
         geschaeftszeichen: null,
         referenz: [],
@@ -156,7 +157,7 @@ describe("buildBeteiligteSummaryItems", () => {
   it("builds the Klägerin summary with address, email, phone and lawyer details", () => {
     const result = buildBeteiligteSummaryItems(
       beteiligungen,
-      ROLE_CODE_KLAEGERIN,
+      ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
     );
 
     expect(result).toEqual([
@@ -181,7 +182,7 @@ describe("buildBeteiligteSummaryItems", () => {
   it("builds the Beklagte summary without a lawyer", () => {
     const result = buildBeteiligteSummaryItems(
       beteiligungen,
-      ROLE_CODE_BEKLAGTE,
+      ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
     );
 
     expect(result).toEqual([
@@ -213,10 +214,6 @@ describe("buildBeteiligteSummaryItems", () => {
         prozessbevollmaechtigte: [],
       },
     ]);
-  });
-
-  it("returns an empty array when beteiligungen is null", () => {
-    expect(buildBeteiligteSummaryItems(null, ROLE_CODE_KLAEGERIN)).toEqual([]);
   });
 });
 

@@ -22,9 +22,9 @@ import type {
 } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
 import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
 import {
-  ROLE_CODE_BEKLAGTE,
-  ROLE_CODE_KLAEGERIN,
-} from "~/domains/verfahren/services/beteiligteByRole";
+  ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
+  ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+} from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
 import hasSchriftstueck from "~/domains/verfahren/services/hasSchriftstueck";
 import { useTranslations } from "~/services/translations/context";
 
@@ -61,12 +61,12 @@ export default function VerfahrenDraftKlageeinreichungSection({
   const isBelegReady = beleg !== null && beleg.status === "ERSTELLT";
 
   const klaegerinnenSummary = buildBeteiligteSummaryItems(
-    verfahren.beteiligungen,
-    ROLE_CODE_KLAEGERIN,
+    verfahren.beteiligungen ?? [],
+    ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
   );
   const beklagteSummary = buildBeteiligteSummaryItems(
-    verfahren.beteiligungen,
-    ROLE_CODE_BEKLAGTE,
+    verfahren.beteiligungen ?? [],
+    ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
   );
 
   const klageeinreichungTimelineSteps = buildKlageeinreichungTimelineSteps({

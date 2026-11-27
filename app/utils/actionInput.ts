@@ -1,9 +1,25 @@
+import qs from "qs";
 import { ZodType } from "zod";
 import { actionResultFromInputParsingError } from "./actionResult";
 
 export type ActionInputParseOptions<ED extends object = {}> = {
+  /** Object payload to attach to the error result if parsing fails. */
   errorResultData?: ED;
 };
+
+export type ActionFormDataParseOptions<ED extends object = {}> =
+  ActionInputParseOptions<ED> & {
+    /**
+     * Whether to interpret bracket notation in field names (e.g.,
+     * "parent[child]", "arrayField[0][itemField]", "tags[]") as nested object
+     * and array fields. See the documentation of the qs library for the full
+     * syntax: https://www.npmjs.com/package/qs
+     *
+     * IMPORTANT: File fields are currently not supported when this option
+     * is enabled, due to limitations of qs.
+     */
+    parseNestingSyntax?: boolean;
+  };
 
 /**
  * Parses input passed to an action using the given schema. If the input is
@@ -130,10 +146,27 @@ export type FormEntriesObject = Record<string, FormDataEntryValue>;
 export function parseActionFormData<T>(
   formData: FormData,
   schema: ZodType<T>,
-  options?: ActionInputParseOptions,
+  options?: ActionFormDataParseOptions,
 ): T {
-  const input = Object.fromEntries(formData.entries());
+  const input = formDataToInput(formData, options);
   return parseActionInput(input, schema, options);
+}
+
+function formDataToInput(
+  formData: FormData,
+  options?: ActionFormDataParseOptions,
+): Record<string, unknown> {
+  if (options?.parseNestingSyntax) {
+    const formParams = new URLSearchParams();
+    for (const [key, value] of formData.entries()) {
+      if (typeof value === "string") {
+        formParams.append(key, value);
+      }
+    }
+    return qs.parse(formParams.toString());
+  } else {
+    return Object.fromEntries(formData.entries());
+  }
 }
 
 /**
@@ -177,18 +210,18 @@ export function safeParseActionFormData<T>(
 export function safeParseActionFormData<T, ED extends object>(
   formData: FormData,
   schema: ZodType<T>,
-  options: ActionInputParseOptions<ED>,
+  options: ActionFormDataParseOptions<ED>,
 ): ActionInputSafeParseResult<T, FormEntriesObject, ED>;
 export function safeParseActionFormData<T, ED extends object>(
   formData: FormData,
   schema: ZodType<T>,
-  options?: ActionInputParseOptions<ED>,
+  options?: ActionFormDataParseOptions<ED>,
 ): ActionInputSafeParseResult<T, FormEntriesObject, ED | {}>;
 export function safeParseActionFormData<T, ED extends object = {}>(
   formData: FormData,
   schema: ZodType<T>,
-  options?: ActionInputParseOptions<ED>,
-): ActionInputSafeParseResult<T, FormEntriesObject, ED | {}> {
-  const input = Object.fromEntries(formData.entries());
+  options?: ActionFormDataParseOptions<ED>,
+): ActionInputSafeParseResult<T, Record<string, unknown>, ED | {}> {
+  const input = formDataToInput(formData, options);
   return safeParseActionInput(input, schema, options);
 }

@@ -22,3 +22,5 @@ export const RollenInputSchema = z
     geschaeftszeichen: input.geschaeftszeichen ?? null,
     referenz: input.referenz,
   }));
+
+export type RollenInput = z.input<typeof RollenInputSchema>;

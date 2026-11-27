@@ -32,7 +32,7 @@ http:
               }
             ],
             "anschriften": null,
-            "kommunikationsanschluesse": null
+            "telekommunikationen": null
           },
           {
             "beteiligtenart": "organisation",
@@ -46,7 +46,7 @@ http:
               }
             ],
             "anschriften": null,
-            "kommunikationsanschluesse": null
+            "telekommunikationen": null
           },
               {
               "beteiligtenart": "raKanzlei",
@@ -62,7 +62,7 @@ http:
                 }
               ],
               "anschriften": null,
-              "kommunikationsanschluesse": null
+              "telekommunikationen": null
             }
         ]
       }
