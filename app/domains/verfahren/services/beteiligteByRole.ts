@@ -1,8 +1,4 @@
-import {
-  ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
-  ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
-  ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
-} from "../entities/codelisten/rollenbezeichnung.entity";
+import { ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE } from "../entities/codelisten/rollenbezeichnung.entity";
 
 type Rolle = {
   rollenbezeichnung?: { code?: string | null } | null;
@@ -18,12 +14,6 @@ type Beteiligte = {
   bezeichnung?: string | null;
   rollen?: Rolle[] | null;
 };
-
-// TODO: Remove these duplicate constants
-export const ROLE_CODE_KLAEGERIN = ROLLENBEZEICHNUNG_CODE_KLAEGERIN;
-export const ROLE_CODE_BEKLAGTE = ROLLENBEZEICHNUNG_CODE_BEKLAGTE;
-export const ROLE_CODE_PROZESSBEVOLLMAECHTIGTE =
-  ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE;
 
 export function getBeteiligteByRoleCode<T extends Beteiligte>(
   beteiligte: T[] | null | undefined,

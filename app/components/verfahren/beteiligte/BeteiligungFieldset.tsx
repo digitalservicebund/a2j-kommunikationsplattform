@@ -88,7 +88,7 @@ export default function BeteiligungFieldset({
   rechtsformen,
   referenceableParteiRollen,
   errors,
-}: BeteiligungFieldsetProps) {
+}: Readonly<BeteiligungFieldsetProps>) {
   const t = useTranslations();
 
   const [beteiligtenart, setBeteiligtenart] = useState(

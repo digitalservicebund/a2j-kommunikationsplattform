@@ -54,7 +54,7 @@ export default function VerfahrenCreationBeteiligungSeiteFieldset({
   rechtsformen,
   onAddPartei,
   onAddProzessbevollmaechtigte,
-}: VerfahrenCreationBeteiligungSeiteFieldsetProps) {
+}: Readonly<VerfahrenCreationBeteiligungSeiteFieldsetProps>) {
   const t = useTranslations();
 
   const annotatedItems = useMemo(() => {

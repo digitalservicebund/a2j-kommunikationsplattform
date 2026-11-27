@@ -1,12 +1,14 @@
 import { describe, expect, test } from "vitest";
 import {
+  ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
+  ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+} from "../../entities/codelisten/rollenbezeichnung.entity";
+import {
   getBeteiligteByRoleCode,
   getBeteiligteDisplayName,
   getBeteiligteNamesByRoleCode,
   getBeteiligungByRoleCode,
   getProzessbevollmaechtigteByReferenz,
-  ROLE_CODE_BEKLAGTE,
-  ROLE_CODE_KLAEGERIN,
 } from "../beteiligteByRole";
 
 describe("beteiligteByRole", () => {
@@ -15,34 +17,49 @@ describe("beteiligteByRole", () => {
       id: "b-1",
       bezeichnung: "Klaegerin GmbH",
       rollen: [
-        { rollenbezeichnung: { code: ROLE_CODE_KLAEGERIN }, referenz: [] },
+        {
+          rollenbezeichnung: { code: ROLLENBEZEICHNUNG_CODE_KLAEGERIN },
+          referenz: [],
+        },
       ],
     },
     {
       id: "b-2",
       bezeichnung: "Beklagte AG",
       rollen: [
-        { rollenbezeichnung: { code: ROLE_CODE_BEKLAGTE }, referenz: [] },
+        {
+          rollenbezeichnung: { code: ROLLENBEZEICHNUNG_CODE_BEKLAGTE },
+          referenz: [],
+        },
       ],
     },
     {
       id: "b-3",
       bezeichnung: null,
       rollen: [
-        { rollenbezeichnung: { code: ROLE_CODE_KLAEGERIN }, referenz: [] },
+        {
+          rollenbezeichnung: { code: ROLLENBEZEICHNUNG_CODE_KLAEGERIN },
+          referenz: [],
+        },
       ],
     },
   ];
 
   test("filters beteiligte by role code", () => {
-    const result = getBeteiligteByRoleCode(beteiligte, ROLE_CODE_KLAEGERIN);
+    const result = getBeteiligteByRoleCode(
+      beteiligte,
+      ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+    );
 
     expect(result).toHaveLength(2);
     expect(result[0]?.id).toBe("b-1");
   });
 
   test("returns first beteiligung for role code", () => {
-    const result = getBeteiligungByRoleCode(beteiligte, ROLE_CODE_BEKLAGTE);
+    const result = getBeteiligungByRoleCode(
+      beteiligte,
+      ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
+    );
 
     expect(result?.id).toBe("b-2");
   });
@@ -51,7 +68,7 @@ describe("beteiligteByRole", () => {
     expect(
       getBeteiligteNamesByRoleCode(
         beteiligte,
-        ROLE_CODE_KLAEGERIN,
+        ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
         "Unbekannt",
       ),
     ).toBe("Klaegerin GmbH");
@@ -71,7 +88,7 @@ describe(getProzessbevollmaechtigteByReferenz, () => {
       rollen: [
         {
           rollennummer: "b-1-rolle",
-          rollenbezeichnung: { code: ROLE_CODE_KLAEGERIN },
+          rollenbezeichnung: { code: ROLLENBEZEICHNUNG_CODE_KLAEGERIN },
           referenz: [],
         },
       ],

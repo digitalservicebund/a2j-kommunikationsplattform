@@ -169,7 +169,7 @@ export default function VerfahrenCreationBeteiligungenForm({
   existingBeteiligungen,
   kanzleiformen,
   rechtsformen,
-}: VerfahrenBeteiligungenFormProps) {
+}: Readonly<VerfahrenBeteiligungenFormProps>) {
   const t = useTranslations();
 
   const [items, setItems] = useState(() =>

@@ -128,9 +128,9 @@ describe(existingBeteiligungToFieldValues, () => {
   it("maps a missing Rechtsform of a RA-Kanzlei to null", () => {
     const beteiligung = makeRAKanzleiBeteiligung({ rechtsform: null });
 
-    expect(existingBeteiligungToFieldValues(beteiligung).rechtsformCode).toBe(
-      null,
-    );
+    expect(
+      existingBeteiligungToFieldValues(beteiligung).rechtsformCode,
+    ).toBeNull();
   });
 
   it("drops placeholder values for Nachname and Bezeichnung", () => {

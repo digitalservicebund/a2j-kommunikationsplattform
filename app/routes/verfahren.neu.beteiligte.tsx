@@ -116,15 +116,15 @@ type CodelistenForBuildingBeteiligungInput = {
  * The Rollen of the Beteiligungen managed by the form: the Parteien and their
  * Prozessbevollmächtigte.
  */
-const FORM_ROLLENBEZEICHNUNG_CODES = [
+const FORM_ROLLENBEZEICHNUNG_CODES = new Set([
   ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
   ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
   ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
-];
+]);
 
 function isManagedByForm(beteiligung: Beteiligung): boolean {
   return beteiligung.rollen.some((rolle) =>
-    FORM_ROLLENBEZEICHNUNG_CODES.includes(rolle.rollenbezeichnung.code),
+    FORM_ROLLENBEZEICHNUNG_CODES.has(rolle.rollenbezeichnung.code),
   );
 }
 
