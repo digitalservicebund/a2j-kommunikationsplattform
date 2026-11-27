@@ -22,7 +22,6 @@ import {
   ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
   ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
 } from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
-import { PLACEHOLDER_BEZEICHNUNG_OR_NACHNAME } from "~/domains/verfahren/services/buildPlaceholderBeteiligungInputs";
 import { useTranslations } from "~/services/translations/context";
 
 export const BeteiligungRolleFieldValuesSchema = z.object({
@@ -286,11 +285,7 @@ export default function BeteiligungFieldset({
               id={inputName("nachname")}
               name={inputName("nachname")}
               label={t.shared.form.labels.nachname}
-              defaultValue={
-                defaultValues.nachname === PLACEHOLDER_BEZEICHNUNG_OR_NACHNAME
-                  ? ""
-                  : (defaultValues.nachname ?? "")
-              }
+              defaultValue={defaultValues.nachname ?? ""}
               errors={errors}
             />
           </>
@@ -302,12 +297,7 @@ export default function BeteiligungFieldset({
               id={inputName("bezeichnung")}
               name={inputName("bezeichnung")}
               label={t.shared.form.labels.bezeichnung}
-              defaultValue={
-                defaultValues.bezeichnung ===
-                PLACEHOLDER_BEZEICHNUNG_OR_NACHNAME
-                  ? ""
-                  : (defaultValues.bezeichnung ?? "")
-              }
+              defaultValue={defaultValues.bezeichnung ?? ""}
               errors={errors}
             />
           </>
@@ -341,7 +331,7 @@ export default function BeteiligungFieldset({
             id={rolleInputName(vertretungRolleIndex, "geschaeftszeichen")}
             name={rolleInputName(vertretungRolleIndex, "geschaeftszeichen")}
             label={t.routes.verfahrenNeu.beteiligte.form.geschaeftszeichen}
-            defaultValue={defaultValues.rechtsformCode ?? undefined}
+            defaultValue={vertretungRolle?.geschaeftszeichen ?? undefined}
             optional={true}
           />
         </div>

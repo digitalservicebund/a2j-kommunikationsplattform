@@ -436,6 +436,49 @@ describe("/verfahren/neu/beteiligte action", () => {
     ]);
   });
 
+  it("omits fields of the previous Beteiligtenart when it changes", async () => {
+    const existing = makeNatuerlichePersonBeteiligung({
+      titel: "Dr.",
+      vorname: "Johanna",
+      nachname: "Groß",
+      namensvorsatz: "von",
+      rollen: [makeKlaegerinRolle({ rollennummer: "rollennummer-1" })],
+    });
+    mockDraftVerfahren(
+      makeVerfahren({
+        id: VERFAHREN_ID,
+        gericht: makeGericht(),
+        beteiligungen: [existing],
+      }),
+    );
+
+    const formData = makeFormData(
+      beteiligungFields(0, {
+        "[id]": existing.id,
+        "[beteiligtenart]": "organisation",
+        "[rollen][0][rollennummer]": "rollennummer-1",
+        "[rollen][0][rollenbezeichnungCode]": ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+        "[bezeichnung]": "Groß GmbH",
+        "[strasse]": "Industriestraße",
+        "[hausnummer]": "3",
+        "[postleitzahl]": "50667",
+        "[ort]": "Köln",
+      }),
+    );
+
+    await callAction(formData);
+
+    const [beteiligung] = updatedBeteiligungen();
+    expect(beteiligung).toMatchObject({
+      beteiligtenart: "organisation",
+      bezeichnung: "Groß GmbH",
+    });
+    expect(beteiligung).not.toHaveProperty("vorname");
+    expect(beteiligung).not.toHaveProperty("nachname");
+    expect(beteiligung).not.toHaveProperty("titel");
+    expect(beteiligung).not.toHaveProperty("namensvorsatz");
+  });
+
   describe("updating the Anschrift of an existing Beteiligung", () => {
     const zustellanschrift = {
       id: "anschrift-zustell",

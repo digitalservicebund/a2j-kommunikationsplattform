@@ -12,6 +12,11 @@ import { BeteiligungInput } from "../infrastructure/schemas/requests/beteiligung
 import generateRollennummer from "./generateRollennummer";
 import resolveCodeWertId from "./resolveCodeWertId";
 
+/**
+ * Placeholder value used for Beteiligung fields where a value is required, but
+ * no sensible default can be given. `VerfahrenCreationBeteiligungenForm` makes
+ * sure to not display this value to the user.
+ */
 export const PLACEHOLDER_BEZEICHNUNG_OR_NACHNAME = "_";
 
 /**
@@ -25,22 +30,41 @@ export default function buildPlaceholderBeteiligungInputs({
   rollenbezeichnungen: Rollenbezeichnung[];
   kanzleiformen: Kanzleiform[];
 }): BeteiligungInput[] {
+  // The API requires at least a "Kläger(in)" and a "Beklagte(r)". For
+  // convenience, also add a "Prozessbevollmächtigte(r)" on the
+  // Klagendenseite by default.
+
+  const rollenbezeichnungIds = {
+    klaegerin: resolveCodeWertId(
+      rollenbezeichnungen,
+      ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+    ),
+    beklagte: resolveCodeWertId(
+      rollenbezeichnungen,
+      ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
+    ),
+    prozessbevollmaechtigte: resolveCodeWertId(
+      rollenbezeichnungen,
+      ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+    ),
+  };
+
+  const rollennummern = {
+    klagendePartei: generateRollennummer(0, ROLLENBEZEICHNUNG_CODE_KLAEGERIN),
+    klagendeParteiAnwalt: generateRollennummer(
+      1,
+      ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+    ),
+    beklagtePartei: generateRollennummer(1, ROLLENBEZEICHNUNG_CODE_BEKLAGTE),
+  };
+
   return [
-    // The API requires at least a "Kläger(in)" and a "Beklagte(r)". For
-    // convenience, also add a "Prozessbevollmächtigte(r)" on the Klagendenseite
-    // by default.
     {
       beteiligtenart: "natuerlichePerson",
       rollen: [
         {
-          rollennummer: generateRollennummer(
-            0,
-            ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
-          ),
-          rollenbezeichnungId: resolveCodeWertId(
-            rollenbezeichnungen,
-            ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
-          ),
+          rollennummer: rollennummern.klagendePartei,
+          rollenbezeichnungId: rollenbezeichnungIds.klaegerin,
           referenz: [],
         },
       ],
@@ -50,15 +74,9 @@ export default function buildPlaceholderBeteiligungInputs({
       beteiligtenart: "raKanzlei",
       rollen: [
         {
-          rollennummer: generateRollennummer(
-            1,
-            ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
-          ),
-          rollenbezeichnungId: resolveCodeWertId(
-            rollenbezeichnungen,
-            ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
-          ),
-          referenz: [],
+          rollennummer: rollennummern.klagendeParteiAnwalt,
+          rollenbezeichnungId: rollenbezeichnungIds.prozessbevollmaechtigte,
+          referenz: [rollennummern.klagendePartei],
         },
       ],
       bezeichnung: PLACEHOLDER_BEZEICHNUNG_OR_NACHNAME,
@@ -71,14 +89,8 @@ export default function buildPlaceholderBeteiligungInputs({
       beteiligtenart: "natuerlichePerson",
       rollen: [
         {
-          rollennummer: generateRollennummer(
-            2,
-            ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
-          ),
-          rollenbezeichnungId: resolveCodeWertId(
-            rollenbezeichnungen,
-            ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
-          ),
+          rollennummer: rollennummern.beklagtePartei,
+          rollenbezeichnungId: rollenbezeichnungIds.beklagte,
           referenz: [],
         },
       ],

@@ -21,6 +21,7 @@ import {
   getBeteiligteEmail,
   getBeteiligteTelefon,
 } from "~/domains/verfahren/services/beteiligteContactInfo";
+import { PLACEHOLDER_BEZEICHNUNG_OR_NACHNAME } from "~/domains/verfahren/services/buildPlaceholderBeteiligungInputs";
 import generateRollennummer from "~/domains/verfahren/services/generateRollennummer";
 import { useTranslations } from "~/services/translations/context";
 import {
@@ -114,6 +115,16 @@ export function existingBeteiligungToFieldValues(
     (anschrift) => anschrift.anschriftstyp?.code === anschriftstyp,
   );
 
+  // When the draft Verfahren was initially created, required fields for the
+  // initial list of Beteiligungen was filled with placeholder values. We
+  // filter those out so that they are not shown to the user.
+  const dropPlaceholderValue = (
+    requiredFieldValue: string | null | undefined,
+  ) =>
+    requiredFieldValue === PLACEHOLDER_BEZEICHNUNG_OR_NACHNAME
+      ? ""
+      : (requiredFieldValue ?? "");
+
   return {
     id: beteiligung.id,
     beteiligtenart: beteiligung.beteiligtenart,
@@ -121,10 +132,13 @@ export function existingBeteiligungToFieldValues(
       rollennummer: rolle.rollennummer,
       rollenbezeichnungCode: rolle.rollenbezeichnung.code,
       referenz: rolle.referenz,
+      geschaeftszeichen: rolle.geschaeftszeichen,
     })),
     vorname: natuerlichePerson?.vorname,
-    nachname: natuerlichePerson?.nachname,
-    bezeichnung: organisation?.bezeichnung ?? raKanzlei?.bezeichnung,
+    nachname: dropPlaceholderValue(natuerlichePerson?.nachname),
+    bezeichnung: dropPlaceholderValue(
+      organisation?.bezeichnung ?? raKanzlei?.bezeichnung,
+    ),
     rechtsformCode: raKanzlei?.rechtsform?.code ?? null,
     kanzleiformCode: raKanzlei?.kanzleiform.code ?? null,
     strasse: primaryAnschrift?.strasse ?? "",
