@@ -7,7 +7,7 @@ import { makeAuthSession } from "~tests/utils/factories/authSession";
 import { makeVerfahren } from "~tests/utils/factories/verfahren";
 import { apiRequest } from "../../api/apiClient";
 
-vi.mock("~/domains/verfahren/infrastructure/api/apiClient", () => ({
+vi.mock(import("~/domains/verfahren/infrastructure/api/apiClient"), () => ({
   apiRequest: vi.fn(),
 }));
 

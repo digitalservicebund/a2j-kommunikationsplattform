@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { GerichtAuswahlOption } from "~/domains/verfahren/services/buildGerichtAuswahlOptions";
 import { renderWithTestTranslations } from "~tests/utils/translationsUtil";
 
-vi.mock("~/middleware/auth.server", () => ({
+vi.mock(import("~/middleware/auth.server"), () => ({
   authContext: {},
   authMiddleware: vi.fn(),
 }));

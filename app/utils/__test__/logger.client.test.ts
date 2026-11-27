@@ -4,7 +4,7 @@ const pinoMock = vi.fn(() => ({}));
 
 vi.mock("pino", () => ({ default: pinoMock }));
 
-vi.mock("~/config/config", () => ({
+vi.mock(import("~/config/config"), () => ({
   config: () => ({
     ENVIRONMENT: "production",
     LOG_LEVEL: "warn",

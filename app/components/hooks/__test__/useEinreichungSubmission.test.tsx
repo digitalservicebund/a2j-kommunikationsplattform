@@ -5,7 +5,7 @@ import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useEinreichungSubmission } from "~/components/hooks/useEinreichungSubmission";
 
-vi.mock("react-router", () => ({
+vi.mock(import("react-router"), () => ({
   useRevalidator: vi.fn(),
 }));
 

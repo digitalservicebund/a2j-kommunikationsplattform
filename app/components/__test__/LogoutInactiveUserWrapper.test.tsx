@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const oneMinute = 1000 * 60 * 1;
 
 // mock custom hook
-vi.mock("../hooks/useLogoutInactiveUser", () => ({
+vi.mock(import("../hooks/useLogoutInactiveUser"), () => ({
   useLogoutInactiveUser: vi.fn(),
 }));
 

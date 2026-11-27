@@ -4,7 +4,7 @@ import { useSearchParams, type URLSearchParamsInit } from "react-router";
 import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 import { useParamsState } from "~/components/hooks/useParamsState";
 
-vi.mock("react-router", () => {
+vi.mock(import("react-router"), () => {
   return {
     useSearchParams: vi.fn(),
   };

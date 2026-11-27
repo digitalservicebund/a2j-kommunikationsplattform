@@ -30,7 +30,7 @@ import VerfahrenCreationBeteiligungenForm, {
   existingBeteiligungToFieldValues,
 } from "../VerfahrenCreationBeteiligungenForm";
 
-vi.mock("~/config/config", () => ({
+vi.mock(import("~/config/config"), () => ({
   config: vi.fn(),
 }));
 

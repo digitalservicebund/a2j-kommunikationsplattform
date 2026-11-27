@@ -4,7 +4,7 @@ import { getAuthSession } from "~/services/auth/authSession.server";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 import { authContext, authMiddleware } from "../auth.server";
 
-vi.mock("react-router", async (importOriginal) => {
+vi.mock(import("react-router"), async (importOriginal) => {
   const original = await importOriginal<typeof import("react-router")>();
   return {
     ...original,
@@ -15,7 +15,7 @@ vi.mock("react-router", async (importOriginal) => {
   };
 });
 
-vi.mock("~/services/auth/authSession.server", () => ({
+vi.mock(import("~/services/auth/authSession.server"), () => ({
   getAuthSession: vi.fn(() => Promise.resolve(null)),
 }));
 

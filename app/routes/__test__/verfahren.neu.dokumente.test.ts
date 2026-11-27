@@ -73,7 +73,7 @@ vi.mock(
     handleDokumentSichtbarkeit: vi.fn(),
   }),
 );
-vi.mock("~/middleware/auth.server", () => ({
+vi.mock(import("~/middleware/auth.server"), () => ({
   authContext: {},
   authMiddleware: vi.fn(),
 }));

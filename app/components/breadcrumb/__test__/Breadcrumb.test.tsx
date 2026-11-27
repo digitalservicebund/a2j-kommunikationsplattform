@@ -10,7 +10,7 @@ import { Breadcrumb } from "../Breadcrumb";
 const mockUseLocation = vi.fn();
 const mockUseParams = vi.fn();
 
-vi.mock("react-router", async () => {
+vi.mock(import("react-router"), async () => {
   const actual =
     await vi.importActual<typeof import("react-router")>("react-router");
   return {

@@ -2,14 +2,15 @@ import * as Sentry from "@sentry/react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { initializeSentryOnClient, initializeSentryOnServer } from "~/sentry";
 
-vi.mock("@sentry/react-router", () => ({
+vi.mock(import("@sentry/react-router"), () => ({
   init: vi.fn(),
   reactRouterTracingIntegration: vi.fn(),
 }));
 
-vi.mock("~/config/config", () => ({
+vi.mock(import("~/config/config"), () => ({
   config: () => ({
     ENVIRONMENT: "development",
+    LOG_LEVEL: "silent",
     SENTRY_DSN: "example",
   }),
 }));

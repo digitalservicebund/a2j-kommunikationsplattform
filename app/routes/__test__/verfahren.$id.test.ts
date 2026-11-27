@@ -24,7 +24,7 @@ vi.mock(
 vi.mock(
   import("~/domains/verfahren/infrastructure/repositories/einreichungRepository.server"),
 );
-vi.mock("~/middleware/auth.server", () => ({
+vi.mock(import("~/middleware/auth.server"), () => ({
   authContext: {},
   authMiddleware: vi.fn(),
 }));

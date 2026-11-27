@@ -9,8 +9,8 @@ import {
 // Mock the `betterAuth()` function (called by the indirectly imported
 // `betterAuth.server.ts`)  as otherwise it attempts to fetch from the OpenID
 // Connect discovery URLs to resolve the authorization and token endpoints.
-vi.mock("better-auth", () => ({
-  betterAuth: () => {},
+vi.mock(import("better-auth"), () => ({
+  betterAuth: vi.fn(),
 }));
 
 describe("routeContext helpers", () => {

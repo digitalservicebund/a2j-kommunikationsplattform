@@ -10,7 +10,7 @@ import { makeVerfahren } from "~tests/utils/factories/verfahren";
 vi.mock(
   import("~/domains/verfahren/infrastructure/repositories/liftRepository.server"),
 );
-vi.mock("~/middleware/auth.server", () => ({
+vi.mock(import("~/middleware/auth.server"), () => ({
   authContext: {},
   authMiddleware: vi.fn(),
 }));

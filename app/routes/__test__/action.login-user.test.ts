@@ -5,7 +5,7 @@ vi.mock("~/services/auth/betterAuth.server", () => ({
   auth: { api: { signInSocial: vi.fn() } },
 }));
 
-vi.mock("~/config/config", () => ({
+vi.mock(import("~/config/config"), () => ({
   config: vi.fn(() => ({
     ENVIRONMENT: "development",
     LOG_LEVEL: "info",

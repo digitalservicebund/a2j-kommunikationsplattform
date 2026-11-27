@@ -9,7 +9,7 @@ import {
 } from "~tests/utils/translationsUtil";
 import ScrollToTopButton from "../ScrollToTopButton";
 
-vi.mock("~/components/hooks/useScrolledPastThreshold", () => ({
+vi.mock(import("~/components/hooks/useScrolledPastThreshold"), () => ({
   useScrolledPastThreshold: vi.fn(),
 }));
 

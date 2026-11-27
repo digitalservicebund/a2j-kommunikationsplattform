@@ -4,7 +4,7 @@ import { makeGerichtInformation } from "~tests/utils/factories/gerichtInformatio
 import { apiRequest } from "../../api/apiClient";
 import { fetchGerichtInformation } from "../gerichtInformationRepository.server";
 
-vi.mock("~/domains/verfahren/infrastructure/api/apiClient", () => ({
+vi.mock(import("~/domains/verfahren/infrastructure/api/apiClient"), () => ({
   apiRequest: vi.fn(),
 }));
 
