@@ -1,4 +1,4 @@
-import InputField from "~/components/InputField";
+import InputText from "~/components/InputText";
 import VerfahrenGerichteSelect, {
   type GerichtSelectItem,
 } from "~/components/verfahren/VerfahrenGerichteSelect";
@@ -32,14 +32,14 @@ export default function VerfahrenDetailsFormSection({
         initialSelectedValue={selectedGericht?.id ?? ""}
         disabled
       />
-      <InputField
+      <InputText
         label={shared.form.labels.rubrum}
         id="claim-rubrum"
         name="claimRubrum"
         defaultValue={kurzrubrum}
         errors={errors}
       />
-      <InputField
+      <InputText
         label={shared.form.labels.subjectMatterOfTheProceedings}
         id="subject-matter-of-the-proceedings"
         name="subjectMatterOfTheProceedings"

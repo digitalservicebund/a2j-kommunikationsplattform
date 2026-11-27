@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import InputField from "../InputField";
+import InputText from "../InputText";
 
-describe("InputField", () => {
+describe(InputText, () => {
   it("renders label associated with input via id/for", () => {
-    render(<InputField label="Name" id="name-input" />);
+    render(<InputText label="Name" id="name-input" />);
     const label = screen.getByText("Name");
     const input = screen.getByRole("textbox");
     expect(label).toHaveAttribute("for", "name-input");
@@ -14,18 +14,14 @@ describe("InputField", () => {
   });
 
   it("renders placeholder when provided", () => {
-    render(<InputField label="Email" id="email-input" placeholder="Search" />);
+    render(<InputText label="Email" id="email-input" placeholder="Search" />);
     const input = screen.getByRole("textbox") as HTMLInputElement;
     expect(input.placeholder).toBe("Search");
   });
 
   it("applies defaultValue", () => {
     render(
-      <InputField
-        label="Username"
-        id="username-input"
-        defaultValue="initial"
-      />,
+      <InputText label="Username" id="username-input" defaultValue="initial" />,
     );
     const input = screen.getByRole("textbox") as HTMLInputElement;
     expect(input.value).toBe("initial");
@@ -33,42 +29,42 @@ describe("InputField", () => {
 
   it("calls onFocus when input is focused", () => {
     const handleFocus = vi.fn();
-    render(<InputField label="Focus" id="focus-input" onFocus={handleFocus} />);
+    render(<InputText label="Focus" id="focus-input" onFocus={handleFocus} />);
     const input = screen.getByRole("textbox");
     fireEvent.focus(input);
     expect(handleFocus).toHaveBeenCalledTimes(1);
   });
 
   it("sets aria-disabled when disabled prop is true", () => {
-    render(<InputField label="Disabled" id="disabled-input" disabled />);
+    render(<InputText label="Disabled" id="disabled-input" disabled />);
     const input = screen.getByRole("textbox");
     expect(input).toHaveAttribute("aria-disabled", "true");
   });
 
   it("renders an optional hint when optional prop is true", () => {
-    render(<InputField label="Middlename" id="middlename-input" optional />);
+    render(<InputText label="Middlename" id="middlename-input" optional />);
     expect(screen.getByText("- Optional")).toBeInTheDocument();
   });
 
   it("does not render an optional hint when optional prop is omitted", () => {
-    render(<InputField label="Name" id="name-input" />);
+    render(<InputText label="Name" id="name-input" />);
     expect(screen.queryByText("- Optional")).not.toBeInTheDocument();
   });
 
   it("defaults to type text", () => {
-    render(<InputField label="Name" id="name-input" />);
+    render(<InputText label="Name" id="name-input" />);
     const input = screen.getByRole("textbox") as HTMLInputElement;
     expect(input.type).toBe("text");
   });
 
   it("overrides the type when passed, e.g. email", () => {
-    render(<InputField label="Email" id="email-input" type="email" />);
+    render(<InputText label="Email" id="email-input" type="email" />);
     const input = screen.getByRole("textbox") as HTMLInputElement;
     expect(input.type).toBe("email");
   });
 
   it("renders a hint and wires it via aria-describedby", () => {
-    render(<InputField label="Name" id="name-input" hint="Wie im Ausweis" />);
+    render(<InputText label="Name" id="name-input" hint="Wie im Ausweis" />);
     const input = screen.getByRole("textbox");
     expect(screen.getByText("Wie im Ausweis")).toHaveAttribute(
       "id",
@@ -79,7 +75,7 @@ describe("InputField", () => {
 
   it("renders an error, applies the error classes, and wires it via aria-describedby", () => {
     render(
-      <InputField
+      <InputText
         label="Name"
         id="name-input"
         errors={{ "name-input": ["Pflichtfeld"] }}
@@ -96,14 +92,14 @@ describe("InputField", () => {
   });
 
   it("is not marked invalid without errors", () => {
-    render(<InputField label="Name" id="name-input" />);
+    render(<InputText label="Name" id="name-input" />);
     const input = screen.getByRole("textbox");
     expect(input).toHaveAttribute("aria-invalid", "false");
   });
 
   it("joins multiple error messages for the same field with a space", () => {
     render(
-      <InputField
+      <InputText
         label="Name"
         id="name-input"
         errors={{ "name-input": ["Pflichtfeld", "Zu kurz"] }}
@@ -114,7 +110,7 @@ describe("InputField", () => {
 
   it("looks up errors by name when it differs from id", () => {
     render(
-      <InputField
+      <InputText
         label="Name"
         id="name-input"
         name="fieldName"
@@ -126,7 +122,7 @@ describe("InputField", () => {
 
   it("joins hint and error ids in aria-describedby when both are present", () => {
     render(
-      <InputField
+      <InputText
         label="Name"
         id="name-input"
         hint="Wie im Ausweis"
@@ -143,7 +139,7 @@ describe("InputField", () => {
   it.each([{ required: true }, { "aria-required": true }])(
     "marks the field as required via aria-required only for %o",
     (requiredProps) => {
-      render(<InputField label="Name" id="name-input" {...requiredProps} />);
+      render(<InputText label="Name" id="name-input" {...requiredProps} />);
 
       const input = screen.getByRole("textbox");
       expect(input).toHaveAttribute("aria-required", "true");
@@ -152,7 +148,7 @@ describe("InputField", () => {
   );
 
   it("doesn't mark an optional field as required", () => {
-    render(<InputField label="Name" id="name-input" />);
+    render(<InputText label="Name" id="name-input" />);
 
     expect(screen.getByRole("textbox")).not.toHaveAttribute("aria-required");
   });

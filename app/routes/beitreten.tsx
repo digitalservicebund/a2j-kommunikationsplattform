@@ -14,8 +14,8 @@ import Alert from "~/components/Alert";
 import Button from "~/components/Button";
 import Callout from "~/components/Callout";
 import Icon from "~/components/Icon";
-import InputField from "~/components/InputField";
 import InputSelect from "~/components/InputSelect";
+import InputText from "~/components/InputText";
 import { PageMetadata } from "~/components/PageMetadata";
 import { requireAuthSession } from "~/domains/verfahren/application/routeContext.server";
 import {
@@ -186,7 +186,7 @@ function LiftCodeValidationForm({
         "border-(--kern-color-decorative-border-contextual)",
       )}
     >
-      <InputField
+      <InputText
         id="code"
         inputClassName="uppercase placeholder:normal-case"
         label={t.routes.beitreten.code.label}

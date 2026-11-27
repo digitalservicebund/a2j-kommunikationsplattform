@@ -9,9 +9,9 @@ import {
 import { z } from "zod";
 import FieldsetCard from "~/components/FieldsetCard";
 import InputCheckbox from "~/components/InputCheckbox";
-import InputField from "~/components/InputField";
 import InputRadio from "~/components/InputRadio";
 import InputSelect from "~/components/InputSelect";
+import InputText from "~/components/InputText";
 import {
   Beteiligtenart,
   BeteiligtenartSchema,
@@ -269,7 +269,7 @@ export default function BeteiligungFieldset({
       <div className="kern-gap-md flex w-full">
         {beteiligtenart === "natuerlichePerson" ? (
           <>
-            <InputField
+            <InputText
               key="vorname"
               className="flex-1"
               id={inputName("vorname")}
@@ -278,7 +278,7 @@ export default function BeteiligungFieldset({
               defaultValue={defaultValues.vorname ?? ""}
               errors={errors}
             />
-            <InputField
+            <InputText
               className="flex-1"
               id={inputName("nachname")}
               name={inputName("nachname")}
@@ -289,7 +289,7 @@ export default function BeteiligungFieldset({
           </>
         ) : (
           <>
-            <InputField
+            <InputText
               key="bezeichnung"
               className="flex-1"
               id={inputName("bezeichnung")}
@@ -324,7 +324,7 @@ export default function BeteiligungFieldset({
             defaultValue={defaultValues.rechtsformCode ?? undefined}
             optional={true}
           />
-          <InputField
+          <InputText
             className="flex-1"
             id={rolleInputName(vertretungRolleIndex, "geschaeftszeichen")}
             name={rolleInputName(vertretungRolleIndex, "geschaeftszeichen")}
@@ -337,7 +337,7 @@ export default function BeteiligungFieldset({
 
       {/* Address */}
       <div className="kern-gap-md flex w-full">
-        <InputField
+        <InputText
           className="flex-2"
           label={t.shared.form.labels.strasse}
           id={inputName("strasse")}
@@ -345,7 +345,7 @@ export default function BeteiligungFieldset({
           defaultValue={defaultValues.strasse ?? ""}
           errors={errors}
         />
-        <InputField
+        <InputText
           className="flex-1"
           label={t.shared.form.labels.hausnummer}
           id={inputName("hausnummer")}
@@ -355,7 +355,7 @@ export default function BeteiligungFieldset({
         />
       </div>
       <div className="kern-gap-md flex w-full">
-        <InputField
+        <InputText
           className="flex-1"
           label={t.shared.form.labels.postleitzahl}
           id={inputName("postleitzahl")}
@@ -364,7 +364,7 @@ export default function BeteiligungFieldset({
           defaultValue={defaultValues.postleitzahl ?? ""}
           errors={errors}
         />
-        <InputField
+        <InputText
           className="flex-2"
           label={t.shared.form.labels.ort}
           id={inputName("ort")}
@@ -376,7 +376,7 @@ export default function BeteiligungFieldset({
 
       {/* Communication */}
       <div className="kern-gap-md flex w-full">
-        <InputField
+        <InputText
           className="flex-1"
           label={t.shared.form.labels.email}
           optional
@@ -386,7 +386,7 @@ export default function BeteiligungFieldset({
           defaultValue={defaultValues.email ?? ""}
           errors={errors}
         />
-        <InputField
+        <InputText
           className="flex-1"
           label={t.shared.form.labels.telefon}
           optional

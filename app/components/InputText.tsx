@@ -3,7 +3,7 @@ import { InputHTMLAttributes } from "react";
 import Icon from "./Icon";
 import InputLabel from "./InputLabel";
 
-export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+export interface InputTextProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   id: string;
   inputClassName?: string;
@@ -18,7 +18,7 @@ export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   errors?: string[] | Record<string, string[]>;
 }
 
-export default function InputField({
+export default function InputText({
   label,
   id,
   className,
@@ -32,7 +32,7 @@ export default function InputField({
   required,
   "aria-required": ariaRequired,
   ...inputProps
-}: Readonly<InputFieldProps>) {
+}: Readonly<InputTextProps>) {
   const hintId = hint ? `${id}-hint` : undefined;
   const fieldErrors = Array.isArray(errors) ? errors : errors?.[name];
   const error = fieldErrors?.join(" ");
