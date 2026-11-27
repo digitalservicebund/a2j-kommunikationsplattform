@@ -1,6 +1,5 @@
-import { EinreichungWithStatus } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import { EinreichungWithValidierungsstatusDetails } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
 import { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
-import { Validierungsstatus } from "~/domains/verfahren/entities/validierungsstatus/validierungsstatus.entity";
 import { makeValidierungsstatus } from "./validierungsstatus";
 
 export function makeEinreichung(params?: Partial<Einreichung>): Einreichung {
@@ -18,11 +17,12 @@ export function makeEinreichung(params?: Partial<Einreichung>): Einreichung {
   };
 }
 
-export function makeEinreichungWithStatus(
-  params?: Partial<Einreichung> & { einreichungsStatus?: Validierungsstatus },
-): EinreichungWithStatus {
+export function makeEinreichungWithValidierungsstatusDetails(
+  params?: Partial<EinreichungWithValidierungsstatusDetails>,
+): EinreichungWithValidierungsstatusDetails {
   return {
     ...makeEinreichung(params),
-    einreichungsStatus: params?.einreichungsStatus ?? makeValidierungsstatus(),
+    validierungsstatusDetails:
+      params?.validierungsstatusDetails ?? makeValidierungsstatus(),
   };
 }

@@ -17,7 +17,7 @@ import VerfahrenTimelineStep from "~/components/verfahren/VerfahrenTimelineStep"
 import VerfahrenTimelineStepCard from "~/components/verfahren/VerfahrenTimelineStepCard";
 import { buildKlageeinreichungPath } from "~/config/klageeinreichungRoutes";
 import type {
-  EinreichungWithStatus,
+  EinreichungWithValidierungsstatusDetails,
   Verfahren,
 } from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
 import type { Beleg } from "~/domains/verfahren/entities/beleg/beleg.entity";
@@ -29,7 +29,7 @@ import hasSchriftstueck from "~/domains/verfahren/services/hasSchriftstueck";
 import { useTranslations } from "~/services/translations/context";
 
 export type EinreichungDetails = {
-  einreichung: EinreichungWithStatus;
+  einreichung: EinreichungWithValidierungsstatusDetails;
   dokumente: DokumentWithValidierungsstatus[];
   beleg: Beleg | null;
 };

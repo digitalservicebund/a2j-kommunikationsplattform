@@ -46,7 +46,7 @@ function buildWeitereEinreichung(
       gesendetAm: null,
       eingereichtAm: null,
       validierungsStatus: "AUSSTEHEND",
-      einreichungsStatus: {
+      validierungsstatusDetails: {
         validierungslaufStatus: "AUSSTEHEND",
         ergebnis: "NICHT_VERFUEGBAR",
         fehler: [],

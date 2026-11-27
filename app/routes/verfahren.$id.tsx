@@ -423,7 +423,7 @@ export default function VerfahrenId() {
 
   const validierungPresentation = draftKlageeinreichung
     ? resolveEinreichungPresentation(
-        draftKlageeinreichung.einreichung.einreichungsStatus,
+        draftKlageeinreichung.einreichung.validierungsstatusDetails,
         t.routes.verfahrenId.draftKlageeinreichung.summary.badgeLabels,
         dokumenteValidierungsstatus,
       )
@@ -431,7 +431,7 @@ export default function VerfahrenId() {
   const isValidating = validierungPresentation?.loading === true;
 
   const validationErgebnis =
-    draftKlageeinreichung?.einreichung.einreichungsStatus.ergebnis;
+    draftKlageeinreichung?.einreichung.validierungsstatusDetails.ergebnis;
   const hasValidationIssues =
     validationErgebnis === "ROT" || validationErgebnis === "GELB";
 
@@ -459,7 +459,7 @@ export default function VerfahrenId() {
                 isValidationErrorFatal={validationErgebnis === "ROT"}
                 label={validierungPresentation?.label ?? ""}
                 error={
-                  draftKlageeinreichung?.einreichung.einreichungsStatus
+                  draftKlageeinreichung?.einreichung.validierungsstatusDetails
                     .fehler ?? []
                 }
               />

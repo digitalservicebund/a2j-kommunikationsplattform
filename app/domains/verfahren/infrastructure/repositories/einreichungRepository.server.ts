@@ -64,7 +64,7 @@ type FetchEinreichungStatusOptions = {
   verfahrenId: string;
 };
 
-export async function fetchEinreichungStatus(
+export async function fetchEinreichungValidierungsstatus(
   authSession: AuthSession,
   options: FetchEinreichungStatusOptions,
 ): Promise<Validierungsstatus> {

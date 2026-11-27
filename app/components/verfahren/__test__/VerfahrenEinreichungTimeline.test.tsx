@@ -17,7 +17,7 @@ const einreichungen: EinreichungSummary[] = [
       gesendetAm: null,
       eingereichtAm: "2026-01-02T00:00:00.000Z",
       validierungsStatus: "ABGESCHLOSSEN",
-      einreichungsStatus: {
+      validierungsstatusDetails: {
         validierungslaufStatus: "ABGESCHLOSSEN",
         ergebnis: "GRUEN",
         fehler: [],

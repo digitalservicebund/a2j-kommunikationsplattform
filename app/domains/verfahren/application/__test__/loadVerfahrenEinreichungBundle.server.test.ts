@@ -1,11 +1,15 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
+import { makeDokument } from "~tests/utils/factories/dokument";
+import { makeEinreichung } from "~tests/utils/factories/einreichung";
+import { makeValidierungsstatus } from "~tests/utils/factories/validierungsstatus";
+import { makeVerfahren } from "~tests/utils/factories/verfahren";
 import loadVerfahrenEinreichungBundle from "../loadVerfahrenEinreichungBundle.server";
 
 const mocks = vi.hoisted(() => ({
   fetchVerfahrenById: vi.fn(),
   fetchEinreichungenById: vi.fn(),
-  fetchEinreichungStatus: vi.fn(),
+  fetchEinreichungValidierungsstatus: vi.fn(),
   fetchDokumente: vi.fn(),
 }));
 
@@ -20,7 +24,8 @@ vi.mock(
   "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server",
   () => ({
     fetchEinreichungenById: mocks.fetchEinreichungenById,
-    fetchEinreichungStatus: mocks.fetchEinreichungStatus,
+    fetchEinreichungValidierungsstatus:
+      mocks.fetchEinreichungValidierungsstatus,
   }),
 );
 
@@ -37,15 +42,31 @@ describe("loadVerfahrenEinreichungBundle", () => {
   });
 
   test("loads and combines verfahren, einreichung, status and dokumente", async () => {
-    const verfahren = { id: "v-1", status: "ERSTELLT" };
-    const einreichungsStatus = { status: "GRUEN", validation_messages: [] };
-    const dokumente = [{ id: "d-1", name: "klage.pdf", size_in_bytes: 1200 }];
+    const verfahren = makeVerfahren({
+      id: "v-1",
+      status: "ERSTELLT",
+    });
+    const validierungsstatus = makeValidierungsstatus({
+      ergebnis: "GRUEN",
+    });
+    const einreichung = makeEinreichung({
+      id: "e-1",
+      name: "Klageeinreichung",
+    });
+    const dokumente = [
+      makeDokument({
+        id: "d-1",
+        dateiname: "klage.pdf",
+      }),
+    ];
 
     mocks.fetchVerfahrenById.mockResolvedValueOnce(verfahren);
     mocks.fetchEinreichungenById.mockResolvedValueOnce({
-      elemente: [{ id: "e-1", name: "Klageeinreichung" }],
+      elemente: [einreichung],
     });
-    mocks.fetchEinreichungStatus.mockResolvedValueOnce(einreichungsStatus);
+    mocks.fetchEinreichungValidierungsstatus.mockResolvedValueOnce(
+      validierungsstatus,
+    );
     mocks.fetchDokumente.mockResolvedValueOnce({ elemente: dokumente });
 
     const result = await loadVerfahrenEinreichungBundle(
@@ -58,11 +79,9 @@ describe("loadVerfahrenEinreichungBundle", () => {
     });
     expect(mocks.fetchEinreichungenById).toHaveBeenCalledWith(
       makeAuthSession(),
-      {
-        id: "v-1",
-      },
+      { id: "v-1" },
     );
-    expect(mocks.fetchEinreichungStatus).toHaveBeenCalledWith(
+    expect(mocks.fetchEinreichungValidierungsstatus).toHaveBeenCalledWith(
       makeAuthSession(),
       {
         id: "e-1",
@@ -77,9 +96,8 @@ describe("loadVerfahrenEinreichungBundle", () => {
     expect(result).toEqual({
       verfahren,
       einreichung: {
-        id: "e-1",
-        name: "Klageeinreichung",
-        einreichungsStatus,
+        ...einreichung,
+        validierungsstatusDetails: validierungsstatus,
       },
       dokumente,
       einreichungId: "e-1",
@@ -94,7 +112,9 @@ describe("loadVerfahrenEinreichungBundle", () => {
         { id: "e-1", name: "Klageeinreichung" },
       ],
     });
-    mocks.fetchEinreichungStatus.mockResolvedValue({ status: "GRUEN" });
+    mocks.fetchEinreichungValidierungsstatus.mockResolvedValue({
+      status: "GRUEN",
+    });
     mocks.fetchDokumente.mockResolvedValue({ elemente: [] });
 
     const result = await loadVerfahrenEinreichungBundle(
@@ -111,7 +131,9 @@ describe("loadVerfahrenEinreichungBundle", () => {
     mocks.fetchEinreichungenById.mockResolvedValueOnce({
       elemente: [{ id: "e-2", name: "Schriftsatz" }],
     });
-    mocks.fetchEinreichungStatus.mockResolvedValue({ status: "GRUEN" });
+    mocks.fetchEinreichungValidierungsstatus.mockResolvedValue({
+      status: "GRUEN",
+    });
     mocks.fetchDokumente.mockResolvedValue({ elemente: [] });
 
     await expect(

@@ -4,7 +4,7 @@ import {
   deleteEinreichung,
   fetchEinreichungById,
   fetchEinreichungenById,
-  fetchEinreichungStatus,
+  fetchEinreichungValidierungsstatus,
   submitEinreichungen,
 } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
@@ -88,7 +88,7 @@ describe("fetchEinreichungStatus", () => {
     };
     mocks.apiRequest.mockResolvedValueOnce(status);
 
-    const result = await fetchEinreichungStatus(makeAuthSession(), {
+    const result = await fetchEinreichungValidierungsstatus(makeAuthSession(), {
       id: "e-1",
       verfahrenId: "v-1",
     });

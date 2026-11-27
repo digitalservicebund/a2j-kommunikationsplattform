@@ -1,34 +1,25 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
+import { makeDokument } from "~tests/utils/factories/dokument";
+import { makeEinreichung } from "~tests/utils/factories/einreichung";
+import { makeValidierungsstatus } from "~tests/utils/factories/validierungsstatus";
+import { makeVerfahren } from "~tests/utils/factories/verfahren";
+import { fetchDokumente } from "../../infrastructure/repositories/dokumentRepository.server";
+import {
+  fetchEinreichungenById,
+  fetchEinreichungValidierungsstatus,
+} from "../../infrastructure/repositories/einreichungRepository.server";
+import { fetchVerfahrenById } from "../../infrastructure/repositories/verfahrenRepository.server";
 import loadVerfahrenEinreichungenOverview from "../loadVerfahrenEinreichungenOverview.server";
 
-const mocks = vi.hoisted(() => ({
-  fetchVerfahrenById: vi.fn(),
-  fetchEinreichungenById: vi.fn(),
-  fetchEinreichungStatus: vi.fn(),
-  fetchDokumente: vi.fn(),
-}));
-
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server",
-  () => ({
-    fetchVerfahrenById: mocks.fetchVerfahrenById,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server"),
 );
-
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server",
-  () => ({
-    fetchEinreichungenById: mocks.fetchEinreichungenById,
-    fetchEinreichungStatus: mocks.fetchEinreichungStatus,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/einreichungRepository.server"),
 );
-
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server",
-  () => ({
-    fetchDokumente: mocks.fetchDokumente,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/dokumentRepository.server"),
 );
 
 describe("loadVerfahrenEinreichungenOverview", () => {
@@ -37,28 +28,43 @@ describe("loadVerfahrenEinreichungenOverview", () => {
   });
 
   test("loads verfahren and all einreichungen with status and dokumente", async () => {
-    const verfahren = { id: "v-1", status: "ERSTELLT" };
-    const einreichungA = {
+    const verfahren = makeVerfahren({
+      id: "v-1",
+      status: "ERSTELLT",
+    });
+    const einreichungA = makeEinreichung({
       id: "e-1",
-      erstellt_am: "2026-07-23T10:00:00.000Z",
-    };
-    const einreichungB = {
+      erstelltAm: "2026-07-23T10:00:00.000Z",
+    });
+    const einreichungB = makeEinreichung({
       id: "e-2",
-      erstellt_am: "2026-07-24T10:00:00.000Z",
-    };
-    const statusA = { status: "GRUEN", validation_messages: [] };
-    const statusB = { status: "GELB", validation_messages: [] };
-    const dokumenteA = [{ id: "d-1", name: "klage.pdf", size_in_bytes: 1200 }];
-    const dokumenteB = [{ id: "d-2", name: "anlage.pdf", size_in_bytes: 800 }];
+      erstelltAm: "2026-07-24T10:00:00.000Z",
+    });
+    const statusA = makeValidierungsstatus({ ergebnis: "GRUEN" });
+    const statusB = makeValidierungsstatus({ ergebnis: "GELB" });
+    const dokumenteA = [
+      makeDokument({
+        id: "d-1",
+        dateiname: "klage.pdf",
+        sizeInBytes: 1200,
+      }),
+    ];
+    const dokumenteB = [
+      makeDokument({
+        id: "d-2",
+        dateiname: "anlage.pdf",
+        sizeInBytes: 800,
+      }),
+    ];
 
-    mocks.fetchVerfahrenById.mockResolvedValueOnce(verfahren);
-    mocks.fetchEinreichungenById.mockResolvedValueOnce({
+    vi.mocked(fetchVerfahrenById).mockResolvedValueOnce(verfahren);
+    vi.mocked(fetchEinreichungenById).mockResolvedValueOnce({
       elemente: [einreichungA, einreichungB],
     });
-    mocks.fetchEinreichungStatus
+    vi.mocked(fetchEinreichungValidierungsstatus)
       .mockResolvedValueOnce(statusA)
       .mockResolvedValueOnce(statusB);
-    mocks.fetchDokumente
+    vi.mocked(fetchDokumente)
       .mockResolvedValueOnce({ elemente: dokumenteA })
       .mockResolvedValueOnce({ elemente: dokumenteB });
 
@@ -67,22 +73,18 @@ describe("loadVerfahrenEinreichungenOverview", () => {
       "v-1",
     );
 
-    expect(mocks.fetchEinreichungStatus).toHaveBeenNthCalledWith(
-      1,
-      makeAuthSession(),
-      {
-        id: "e-1",
-        verfahrenId: "v-1",
-      },
-    );
-    expect(mocks.fetchEinreichungStatus).toHaveBeenNthCalledWith(
-      2,
-      makeAuthSession(),
-      {
-        id: "e-2",
-        verfahrenId: "v-1",
-      },
-    );
+    expect(
+      vi.mocked(fetchEinreichungValidierungsstatus),
+    ).toHaveBeenNthCalledWith(1, makeAuthSession(), {
+      id: "e-1",
+      verfahrenId: "v-1",
+    });
+    expect(
+      vi.mocked(fetchEinreichungValidierungsstatus),
+    ).toHaveBeenNthCalledWith(2, makeAuthSession(), {
+      id: "e-2",
+      verfahrenId: "v-1",
+    });
 
     expect(result).toEqual({
       verfahren,
@@ -90,14 +92,14 @@ describe("loadVerfahrenEinreichungenOverview", () => {
         {
           einreichung: {
             ...einreichungA,
-            einreichungsStatus: statusA,
+            validierungsstatusDetails: statusA,
           },
           dokumente: dokumenteA,
         },
         {
           einreichung: {
             ...einreichungB,
-            einreichungsStatus: statusB,
+            validierungsstatusDetails: statusB,
           },
           dokumente: dokumenteB,
         },
@@ -106,17 +108,20 @@ describe("loadVerfahrenEinreichungenOverview", () => {
   });
 
   test("returns empty einreichungen when the API returns none", async () => {
-    mocks.fetchVerfahrenById.mockResolvedValueOnce({ id: "v-1" });
-    mocks.fetchEinreichungenById.mockResolvedValueOnce({ elemente: [] });
+    const verfahren = makeVerfahren({ id: "v-1" });
+    vi.mocked(fetchVerfahrenById).mockResolvedValueOnce(verfahren);
+    vi.mocked(fetchEinreichungenById).mockResolvedValueOnce({ elemente: [] });
 
     await expect(
       loadVerfahrenEinreichungenOverview(makeAuthSession(), "v-1"),
     ).resolves.toEqual({
-      verfahren: { id: "v-1" },
+      verfahren,
       einreichungen: [],
     });
 
-    expect(mocks.fetchEinreichungStatus).not.toHaveBeenCalled();
-    expect(mocks.fetchDokumente).not.toHaveBeenCalled();
+    expect(
+      vi.mocked(fetchEinreichungValidierungsstatus),
+    ).not.toHaveBeenCalled();
+    expect(vi.mocked(fetchDokumente)).not.toHaveBeenCalled();
   });
 });

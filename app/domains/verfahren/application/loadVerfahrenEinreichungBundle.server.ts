@@ -8,13 +8,13 @@ import loadVerfahrenEinreichungenOverview from "./loadVerfahrenEinreichungenOver
 
 export type { Dokument, Einreichung, Verfahren };
 export type EinreichungStatus = Validierungsstatus;
-export type EinreichungWithStatus = Einreichung & {
-  einreichungsStatus: EinreichungStatus;
+export type EinreichungWithValidierungsstatusDetails = Einreichung & {
+  validierungsstatusDetails: Validierungsstatus;
 };
 
 export type VerfahrenEinreichungBundle = {
   verfahren: Verfahren;
-  einreichung: EinreichungWithStatus;
+  einreichung: EinreichungWithValidierungsstatusDetails;
   dokumente: Dokument[];
   einreichungId: string;
 };

@@ -1,20 +1,20 @@
 import { fetchDokumente } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import {
   fetchEinreichungenById,
-  fetchEinreichungStatus,
+  fetchEinreichungValidierungsstatus,
 } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { fetchVerfahrenById } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { AuthSession } from "~/services/auth/auth.types";
 import { logger } from "~/utils/logger.server";
+import { Validierungsstatus } from "../entities/validierungsstatus/validierungsstatus.entity";
 import type {
   Dokument,
-  EinreichungStatus,
-  EinreichungWithStatus,
+  EinreichungWithValidierungsstatusDetails,
   Verfahren,
 } from "./loadVerfahrenEinreichungBundle.server";
 
 export type EinreichungSummary = {
-  einreichung: EinreichungWithStatus;
+  einreichung: EinreichungWithValidierungsstatusDetails;
   dokumente: Dokument[];
 };
 
@@ -42,8 +42,8 @@ export default async function loadVerfahrenEinreichungenOverview(
 
   const einreichungen = await Promise.all(
     einreichungenList.map(async (einreichung) => {
-      const einreichungsStatus: EinreichungStatus =
-        await fetchEinreichungStatus(authSession, {
+      const validierungsstatus: Validierungsstatus =
+        await fetchEinreichungValidierungsstatus(authSession, {
           id: einreichung.id,
           verfahrenId,
         });
@@ -56,7 +56,7 @@ export default async function loadVerfahrenEinreichungenOverview(
       return {
         einreichung: {
           ...einreichung,
-          einreichungsStatus,
+          validierungsstatusDetails: validierungsstatus,
         },
         dokumente,
       };

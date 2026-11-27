@@ -56,7 +56,7 @@ const draftKlageeinreichung: EinreichungDetails = {
     gesendetAm: null,
     eingereichtAm: null,
     validierungsStatus: "AUSSTEHEND",
-    einreichungsStatus: {
+    validierungsstatusDetails: {
       validierungslaufStatus: "AUSSTEHEND",
       ergebnis: "NICHT_VERFUEGBAR",
       fehler: [],

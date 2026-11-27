@@ -13,7 +13,7 @@ import {
   makeNatuerlichePersonBeteiligung,
   makeRAKanzleiBeteiligung,
 } from "~tests/utils/factories/beteiligung";
-import { makeEinreichungWithStatus } from "~tests/utils/factories/einreichung";
+import { makeEinreichungWithValidierungsstatusDetails } from "~tests/utils/factories/einreichung";
 import { makeGericht } from "~tests/utils/factories/gericht";
 import {
   makeBeklagteRolle,
@@ -99,7 +99,9 @@ function updatedBeteiligungen() {
 function mockDraftVerfahren(verfahren: ReturnType<typeof makeVerfahren>) {
   vi.mocked(loadKlageeinreichungDraft).mockResolvedValue({
     verfahren,
-    einreichung: makeEinreichungWithStatus({ id: "einreichung-1" }),
+    einreichung: makeEinreichungWithValidierungsstatusDetails({
+      id: "einreichung-1",
+    }),
     dokumente: [],
     einreichungId: "einreichung-1",
   });
