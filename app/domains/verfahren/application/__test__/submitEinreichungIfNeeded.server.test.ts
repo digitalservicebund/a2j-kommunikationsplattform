@@ -1,32 +1,24 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { fetchBelege } from "~/domains/verfahren/infrastructure/repositories/belegRepository.server";
+import { fetchDokumente } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
+import {
+  fetchEinreichungById,
+  submitEinreichungen,
+} from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
+import { makeBeleg } from "~tests/utils/factories/beleg";
+import { makeDokument } from "~tests/utils/factories/dokument";
+import { makeEinreichung } from "~tests/utils/factories/einreichung";
 import submitEinreichungIfNeeded from "../submitEinreichungIfNeeded.server";
 
-const mocks = vi.hoisted(() => ({
-  fetchBelege: vi.fn(),
-  fetchDokumente: vi.fn(),
-  fetchEinreichungById: vi.fn(),
-  submitEinreichungen: vi.fn(),
-}));
-
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/belegRepository.server",
-  () => ({
-    fetchBelege: mocks.fetchBelege,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/belegRepository.server"),
 );
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server",
-  () => ({
-    fetchDokumente: mocks.fetchDokumente,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/dokumentRepository.server"),
 );
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server",
-  () => ({
-    fetchEinreichungById: mocks.fetchEinreichungById,
-    submitEinreichungen: mocks.submitEinreichungen,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/einreichungRepository.server"),
 );
 
 const options = { verfahrenId: "v-1", einreichungId: "e-1" };
@@ -37,16 +29,22 @@ describe("submitEinreichungIfNeeded", () => {
   });
 
   it("submits the Einreichung when it has a Schriftstück and no Beleg yet", async () => {
-    mocks.fetchBelege.mockResolvedValueOnce({ elemente: [] });
-    mocks.fetchDokumente.mockResolvedValueOnce({
-      elemente: [{ typ: "SCHRIFTSTUECK" }, { typ: "ANHANG" }],
+    vi.mocked(fetchBelege).mockResolvedValueOnce({ elemente: [] });
+    vi.mocked(fetchDokumente).mockResolvedValueOnce({
+      elemente: [
+        makeDokument({ typ: "SCHRIFTSTUECK" }),
+        makeDokument({ typ: "ANHANG" }),
+      ],
     });
-    mocks.fetchEinreichungById.mockResolvedValueOnce({ eTag: 'W/"1"' });
+    vi.mocked(fetchEinreichungById).mockResolvedValueOnce({
+      einreichung: makeEinreichung({ id: "e-1" }),
+      eTag: 'W/"1"',
+    });
 
     const result = await submitEinreichungIfNeeded(makeAuthSession(), options);
 
     expect(result).toBe("submitted");
-    expect(mocks.submitEinreichungen).toHaveBeenCalledWith(makeAuthSession(), {
+    expect(submitEinreichungen).toHaveBeenCalledWith(makeAuthSession(), {
       verfahrenId: "v-1",
       id: "e-1",
       eTag: 'W/"1"',
@@ -54,24 +52,27 @@ describe("submitEinreichungIfNeeded", () => {
   });
 
   it("skips submitting when a Beleg already exists", async () => {
-    mocks.fetchBelege.mockResolvedValueOnce({ elemente: [{ id: "b-1" }] });
+    vi.mocked(fetchBelege).mockResolvedValueOnce({ elemente: [makeBeleg()] });
 
     const result = await submitEinreichungIfNeeded(makeAuthSession(), options);
 
     expect(result).toBe("alreadySubmitted");
-    expect(mocks.fetchEinreichungById).not.toHaveBeenCalled();
-    expect(mocks.submitEinreichungen).not.toHaveBeenCalled();
+    expect(fetchEinreichungById).not.toHaveBeenCalled();
+    expect(submitEinreichungen).not.toHaveBeenCalled();
   });
 
   it("refuses to submit an Einreichung without a Schriftstück", async () => {
-    mocks.fetchBelege.mockResolvedValueOnce({ elemente: [] });
-    mocks.fetchDokumente.mockResolvedValueOnce({
-      elemente: [{ typ: "XJUSTIZ" }, { typ: "ANHANG" }],
+    vi.mocked(fetchBelege).mockResolvedValueOnce({ elemente: [] });
+    vi.mocked(fetchDokumente).mockResolvedValueOnce({
+      elemente: [
+        makeDokument({ typ: "XJUSTIZ" }),
+        makeDokument({ typ: "ANHANG" }),
+      ],
     });
 
     const result = await submitEinreichungIfNeeded(makeAuthSession(), options);
 
     expect(result).toBe("missingSchriftstueck");
-    expect(mocks.submitEinreichungen).not.toHaveBeenCalled();
+    expect(submitEinreichungen).not.toHaveBeenCalled();
   });
 });

@@ -1,4 +1,10 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import { fetchDokumente } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
+import {
+  fetchEinreichungenById,
+  fetchEinreichungValidierungsstatus,
+} from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
+import { fetchVerfahrenById } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 import { makeDokument } from "~tests/utils/factories/dokument";
 import { makeEinreichung } from "~tests/utils/factories/einreichung";
@@ -6,34 +12,16 @@ import { makeValidierungsstatus } from "~tests/utils/factories/validierungsstatu
 import { makeVerfahren } from "~tests/utils/factories/verfahren";
 import loadVerfahrenEinreichungBundle from "../loadVerfahrenEinreichungBundle.server";
 
-const mocks = vi.hoisted(() => ({
-  fetchVerfahrenById: vi.fn(),
-  fetchEinreichungenById: vi.fn(),
-  fetchEinreichungValidierungsstatus: vi.fn(),
-  fetchDokumente: vi.fn(),
-}));
-
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server",
-  () => ({
-    fetchVerfahrenById: mocks.fetchVerfahrenById,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server"),
 );
 
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server",
-  () => ({
-    fetchEinreichungenById: mocks.fetchEinreichungenById,
-    fetchEinreichungValidierungsstatus:
-      mocks.fetchEinreichungValidierungsstatus,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/einreichungRepository.server"),
 );
 
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server",
-  () => ({
-    fetchDokumente: mocks.fetchDokumente,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/dokumentRepository.server"),
 );
 
 describe("loadVerfahrenEinreichungBundle", () => {
@@ -60,35 +48,34 @@ describe("loadVerfahrenEinreichungBundle", () => {
       }),
     ];
 
-    mocks.fetchVerfahrenById.mockResolvedValueOnce(verfahren);
-    mocks.fetchEinreichungenById.mockResolvedValueOnce({
+    vi.mocked(fetchVerfahrenById).mockResolvedValueOnce(verfahren);
+    vi.mocked(fetchEinreichungenById).mockResolvedValueOnce({
       elemente: [einreichung],
     });
-    mocks.fetchEinreichungValidierungsstatus.mockResolvedValueOnce(
+    vi.mocked(fetchEinreichungValidierungsstatus).mockResolvedValueOnce(
       validierungsstatus,
     );
-    mocks.fetchDokumente.mockResolvedValueOnce({ elemente: dokumente });
+    vi.mocked(fetchDokumente).mockResolvedValueOnce({ elemente: dokumente });
 
     const result = await loadVerfahrenEinreichungBundle(
       makeAuthSession(),
       "v-1",
     );
 
-    expect(mocks.fetchVerfahrenById).toHaveBeenCalledWith(makeAuthSession(), {
+    expect(fetchVerfahrenById).toHaveBeenCalledWith(makeAuthSession(), {
       id: "v-1",
     });
-    expect(mocks.fetchEinreichungenById).toHaveBeenCalledWith(
-      makeAuthSession(),
-      { id: "v-1" },
-    );
-    expect(mocks.fetchEinreichungValidierungsstatus).toHaveBeenCalledWith(
+    expect(fetchEinreichungenById).toHaveBeenCalledWith(makeAuthSession(), {
+      id: "v-1",
+    });
+    expect(fetchEinreichungValidierungsstatus).toHaveBeenCalledWith(
       makeAuthSession(),
       {
         id: "e-1",
         verfahrenId: "v-1",
       },
     );
-    expect(mocks.fetchDokumente).toHaveBeenCalledWith(makeAuthSession(), {
+    expect(fetchDokumente).toHaveBeenCalledWith(makeAuthSession(), {
       einreichungId: "e-1",
       verfahrenId: "v-1",
     });
@@ -105,17 +92,19 @@ describe("loadVerfahrenEinreichungBundle", () => {
   });
 
   test("picks the Klageeinreichung even when a Weitere Einreichung is listed first", async () => {
-    mocks.fetchVerfahrenById.mockResolvedValueOnce({ id: "v-1" });
-    mocks.fetchEinreichungenById.mockResolvedValueOnce({
+    vi.mocked(fetchVerfahrenById).mockResolvedValueOnce(
+      makeVerfahren({ id: "v-1" }),
+    );
+    vi.mocked(fetchEinreichungenById).mockResolvedValueOnce({
       elemente: [
-        { id: "e-2", name: "Schriftsatz" },
-        { id: "e-1", name: "Klageeinreichung" },
+        makeEinreichung({ id: "e-2", name: "Schriftsatz" }),
+        makeEinreichung({ id: "e-1", name: "Klageeinreichung" }),
       ],
     });
-    mocks.fetchEinreichungValidierungsstatus.mockResolvedValue({
-      status: "GRUEN",
-    });
-    mocks.fetchDokumente.mockResolvedValue({ elemente: [] });
+    vi.mocked(fetchEinreichungValidierungsstatus).mockResolvedValue(
+      makeValidierungsstatus(),
+    );
+    vi.mocked(fetchDokumente).mockResolvedValue({ elemente: [] });
 
     const result = await loadVerfahrenEinreichungBundle(
       makeAuthSession(),
@@ -127,14 +116,16 @@ describe("loadVerfahrenEinreichungBundle", () => {
   });
 
   test("throws when no Klageeinreichung exists", async () => {
-    mocks.fetchVerfahrenById.mockResolvedValueOnce({ id: "v-1" });
-    mocks.fetchEinreichungenById.mockResolvedValueOnce({
-      elemente: [{ id: "e-2", name: "Schriftsatz" }],
+    vi.mocked(fetchVerfahrenById).mockResolvedValueOnce(
+      makeVerfahren({ id: "v-1" }),
+    );
+    vi.mocked(fetchEinreichungenById).mockResolvedValueOnce({
+      elemente: [makeEinreichung({ id: "e-2", name: "Schriftsatz" })],
     });
-    mocks.fetchEinreichungValidierungsstatus.mockResolvedValue({
-      status: "GRUEN",
-    });
-    mocks.fetchDokumente.mockResolvedValue({ elemente: [] });
+    vi.mocked(fetchEinreichungValidierungsstatus).mockResolvedValue(
+      makeValidierungsstatus(),
+    );
+    vi.mocked(fetchDokumente).mockResolvedValue({ elemente: [] });
 
     await expect(
       loadVerfahrenEinreichungBundle(makeAuthSession(), "v-1"),
@@ -142,8 +133,10 @@ describe("loadVerfahrenEinreichungBundle", () => {
   });
 
   test("throws when no einreichung exists", async () => {
-    mocks.fetchVerfahrenById.mockResolvedValueOnce({ id: "v-1" });
-    mocks.fetchEinreichungenById.mockResolvedValueOnce({ elemente: [] });
+    vi.mocked(fetchVerfahrenById).mockResolvedValueOnce(
+      makeVerfahren({ id: "v-1" }),
+    );
+    vi.mocked(fetchEinreichungenById).mockResolvedValueOnce({ elemente: [] });
 
     await expect(
       loadVerfahrenEinreichungBundle(makeAuthSession(), "v-1"),

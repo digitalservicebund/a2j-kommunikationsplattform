@@ -1,19 +1,14 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  performLift,
+  validateLiftCode,
+} from "~/domains/verfahren/infrastructure/repositories/liftRepository.server";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 import { makeVerfahren } from "~tests/utils/factories/verfahren";
 
-const mocks = vi.hoisted(() => ({
-  validateLiftCode: vi.fn(),
-  performLift: vi.fn(),
-}));
-
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/liftRepository.server",
-  () => ({
-    validateLiftCode: mocks.validateLiftCode,
-    performLift: mocks.performLift,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/liftRepository.server"),
 );
 vi.mock("~/middleware/auth.server", () => ({
   authContext: {},
@@ -56,7 +51,7 @@ describe("loader", () => {
       beteiligung_id: "beteiligung-1",
       verfahren: makeVerfahren(),
     };
-    mocks.validateLiftCode.mockResolvedValue({ lift, eTag: "etag-1" });
+    vi.mocked(validateLiftCode).mockResolvedValue({ lift, eTag: "etag-1" });
 
     const url = new URL(`${BASE_URL}?code=${CODE}`);
     const result = await loader({
@@ -80,11 +75,11 @@ describe("loader", () => {
 
 describe("action", () => {
   it("joins the Verfahren with the selected SAFE-ID", async () => {
-    mocks.performLift.mockResolvedValue({ verfahrenId: "verfahren-1" });
+    vi.mocked(performLift).mockResolvedValue({ verfahrenId: "verfahren-1" });
 
     const response = await callAction({ ...liftInput, safeId: OTHER_SAFE_ID });
 
-    expect(mocks.performLift).toHaveBeenCalledWith(authSession, {
+    expect(performLift).toHaveBeenCalledWith(authSession, {
       ...liftInput,
       safeId: OTHER_SAFE_ID,
     });
@@ -106,6 +101,6 @@ describe("action", () => {
     );
 
     expect(thrown).toMatchObject({ init: { status: 400 } });
-    expect(mocks.performLift).not.toHaveBeenCalled();
+    expect(performLift).not.toHaveBeenCalled();
   });
 });

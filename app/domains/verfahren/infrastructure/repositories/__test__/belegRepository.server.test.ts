@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { apiRequest } from "~/domains/verfahren/infrastructure/api/apiClient";
 import {
   fetchBelegById,
   fetchBelegDownloadLink,
@@ -7,13 +8,7 @@ import {
 } from "~/domains/verfahren/infrastructure/repositories/belegRepository.server";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 
-const mocks = vi.hoisted(() => ({
-  apiRequest: vi.fn(),
-}));
-
-vi.mock("~/domains/verfahren/infrastructure/api/apiClient", () => ({
-  apiRequest: mocks.apiRequest,
-}));
+vi.mock(import("~/domains/verfahren/infrastructure/api/apiClient"));
 
 describe("fetchBelegById", () => {
   beforeEach(() => {
@@ -29,7 +24,7 @@ describe("fetchBelegById", () => {
       contentType: "application/pdf",
     };
 
-    mocks.apiRequest.mockResolvedValueOnce(beleg);
+    vi.mocked(apiRequest).mockResolvedValueOnce(beleg);
 
     const result = await fetchBelegById(makeAuthSession(), {
       verfahrenId: "v-1",
@@ -37,7 +32,7 @@ describe("fetchBelegById", () => {
     });
 
     expect(result).toEqual(beleg);
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
+    expect(apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/belege/b-1",
@@ -59,12 +54,12 @@ describe("fetchBelege", () => {
   });
 
   it("fetches all Belege of a Verfahren without a filter", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({ elemente: [] });
+    vi.mocked(apiRequest).mockResolvedValueOnce({ elemente: [] });
 
     const result = await fetchBelege(makeAuthSession(), { verfahrenId: "v-1" });
 
     expect(result).toEqual({ elemente: [] });
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
+    expect(apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/belege",
@@ -74,14 +69,14 @@ describe("fetchBelege", () => {
   });
 
   it("filters by einreichung_id when given", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({ elemente: [] });
+    vi.mocked(apiRequest).mockResolvedValueOnce({ elemente: [] });
 
     await fetchBelege(makeAuthSession(), {
       verfahrenId: "v-1",
       einreichungId: "e-1",
     });
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
+    expect(apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         path: "/api/v1/verfahren/v-1/belege",
         searchParams: { einreichung_id: "e-1" },
@@ -103,7 +98,7 @@ describe("fetchBelegDownloadLink", () => {
   });
 
   it("fetches the download link without optional params", async () => {
-    mocks.apiRequest.mockResolvedValueOnce("https://s3.example.com/beleg");
+    vi.mocked(apiRequest).mockResolvedValueOnce("https://s3.example.com/beleg");
 
     const result = await fetchBelegDownloadLink(makeAuthSession(), {
       verfahrenId: "v-1",
@@ -111,7 +106,7 @@ describe("fetchBelegDownloadLink", () => {
     });
 
     expect(result).toBe("https://s3.example.com/beleg");
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
+    expect(apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         path: "/api/v1/verfahren/v-1/belege/b-1/downloadlink",
         searchParams: { ttl: undefined, disposition_type: undefined },
@@ -120,7 +115,7 @@ describe("fetchBelegDownloadLink", () => {
   });
 
   it("includes ttl and disposition_type when given", async () => {
-    mocks.apiRequest.mockResolvedValueOnce("https://s3.example.com/beleg");
+    vi.mocked(apiRequest).mockResolvedValueOnce("https://s3.example.com/beleg");
 
     await fetchBelegDownloadLink(makeAuthSession(), {
       verfahrenId: "v-1",
@@ -129,7 +124,7 @@ describe("fetchBelegDownloadLink", () => {
       dispositionType: "ATTACHMENT",
     });
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
+    expect(apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         path: "/api/v1/verfahren/v-1/belege/b-1/downloadlink",
         searchParams: { ttl: 300, disposition_type: "ATTACHMENT" },
@@ -151,7 +146,7 @@ describe("fetchLatestBelegForEinreichung", () => {
   });
 
   it("returns null when no Beleg exists yet", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({ elemente: [] });
+    vi.mocked(apiRequest).mockResolvedValueOnce({ elemente: [] });
 
     const result = await fetchLatestBelegForEinreichung(makeAuthSession(), {
       verfahrenId: "v-1",
@@ -159,11 +154,11 @@ describe("fetchLatestBelegForEinreichung", () => {
     });
 
     expect(result).toBeNull();
-    expect(mocks.apiRequest).toHaveBeenCalledTimes(1);
+    expect(apiRequest).toHaveBeenCalledTimes(1);
   });
 
   it("fetches the latest Beleg by id when one or more exist", async () => {
-    mocks.apiRequest
+    vi.mocked(apiRequest)
       .mockResolvedValueOnce({
         elemente: [{ id: "b-1" }, { id: "b-2" }],
       })
@@ -174,14 +169,14 @@ describe("fetchLatestBelegForEinreichung", () => {
       einreichungId: "e-1",
     });
 
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+    expect(apiRequest).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
         path: "/api/v1/verfahren/v-1/belege",
         searchParams: { einreichung_id: "e-1" },
       }),
     );
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+    expect(apiRequest).toHaveBeenNthCalledWith(
       2,
       expect.objectContaining({
         path: "/api/v1/verfahren/v-1/belege/b-2",

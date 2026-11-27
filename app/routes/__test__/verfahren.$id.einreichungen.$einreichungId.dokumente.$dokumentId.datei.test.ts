@@ -1,15 +1,11 @@
 import type { LoaderFunctionArgs } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { fetchDokumentDatei } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { ApiError } from "~/utils/apiError";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 
-const mocks = vi.hoisted(() => ({
-  fetchDokumentDatei: vi.fn(),
-}));
-
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server",
-  () => ({ fetchDokumentDatei: mocks.fetchDokumentDatei }),
+  import("~/domains/verfahren/infrastructure/repositories/dokumentRepository.server"),
 );
 
 vi.mock("~/middleware/auth.server", () => ({
@@ -51,7 +47,7 @@ async function catchThrown(promise: Promise<unknown>) {
 describe("Dokument Datei resource route", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    mocks.fetchDokumentDatei.mockResolvedValue(
+    vi.mocked(fetchDokumentDatei).mockResolvedValue(
       new Response("%PDF-1.7", {
         headers: {
           "Content-Type": "application/pdf",
@@ -64,7 +60,7 @@ describe("Dokument Datei resource route", () => {
   it("streams the file with an ATTACHMENT disposition for disposition=attachment", async () => {
     const response = await callLoader("?disposition=attachment");
 
-    expect(mocks.fetchDokumentDatei).toHaveBeenCalledWith(authSession, {
+    expect(fetchDokumentDatei).toHaveBeenCalledWith(authSession, {
       verfahrenId: params.id,
       einreichungId: params.einreichungId,
       id: params.dokumentId,
@@ -84,7 +80,7 @@ describe("Dokument Datei resource route", () => {
     async (search) => {
       await callLoader(search);
 
-      expect(mocks.fetchDokumentDatei).toHaveBeenCalledWith(
+      expect(fetchDokumentDatei).toHaveBeenCalledWith(
         authSession,
         expect.objectContaining({ dispositionType: "INLINE" }),
       );
@@ -97,11 +93,11 @@ describe("Dokument Datei resource route", () => {
     );
 
     expect(error).toMatchObject({ init: { status: 404 } });
-    expect(mocks.fetchDokumentDatei).not.toHaveBeenCalled();
+    expect(fetchDokumentDatei).not.toHaveBeenCalled();
   });
 
   it("responds with 404 when the API doesn't know the Dokument", async () => {
-    mocks.fetchDokumentDatei.mockRejectedValue(
+    vi.mocked(fetchDokumentDatei).mockRejectedValue(
       new ApiError("not found", { status: 404 }),
     );
 
@@ -112,7 +108,7 @@ describe("Dokument Datei resource route", () => {
 
   it("responds with 499 instead of an Error when the user cancels the download", async () => {
     const abortError = new DOMException("aborted", "AbortError");
-    mocks.fetchDokumentDatei.mockRejectedValue(abortError);
+    vi.mocked(fetchDokumentDatei).mockRejectedValue(abortError);
 
     const error = await catchThrown(
       callLoader("", params, AbortSignal.abort(abortError)),

@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import {
   Anschriftstyp,
   ANSCHRIFTSTYP_CODE_DIENST_GESCHAEFTSANSCHRIFT,
@@ -30,22 +31,23 @@ import {
 // The default mock implementation of `stammdatenRepository.server.ts`.
 // Used automatically when you `vi.mock()` the original module without
 // specifying an implementation.
+//
+// The functions are spies returning sample Codelisten by default, which
+// tests can override (e.g., with `mockResolvedValue`).
 
 function generateId(code: string) {
   return `id-${code}`;
 }
 
-function codeliste<T>(elemente: T[]): Codeliste<T> {
-  return {
+function codeliste<T>(elemente: T[]): Promise<Codeliste<T>> {
+  return Promise.resolve({
     listeVersion: "1",
     elemente,
-  };
+  });
 }
 
-export async function fetchAnschriftstypen(): Promise<
-  Codeliste<Anschriftstyp>
-> {
-  return codeliste([
+export const fetchAnschriftstypen = vi.fn(() =>
+  codeliste<Anschriftstyp>([
     {
       id: generateId(ANSCHRIFTSTYP_CODE_PRIVATANSCHRIFT),
       wert: "Dienst-/Geschäftsanschrift",
@@ -56,21 +58,21 @@ export async function fetchAnschriftstypen(): Promise<
       wert: "Dienst-/Geschäftsanschrift",
       code: ANSCHRIFTSTYP_CODE_DIENST_GESCHAEFTSANSCHRIFT,
     },
-  ]);
-}
+  ]),
+);
 
-export async function fetchGerichte(): Promise<Codeliste<Gericht>> {
-  return codeliste([
+export const fetchGerichte = vi.fn(() =>
+  codeliste<Gericht>([
     {
       id: generateId("H1101"),
       wert: "Amtsgericht Bremen",
       code: "H1101",
     },
-  ]);
-}
+  ]),
+);
 
-export async function fetchKanzleiformen(): Promise<Codeliste<Kanzleiform>> {
-  return codeliste([
+export const fetchKanzleiformen = vi.fn(() =>
+  codeliste<Kanzleiform>([
     {
       id: generateId(KANZLEIFORM_CODE_EINZELANWALT),
       wert: "Einzelanwalt",
@@ -81,23 +83,21 @@ export async function fetchKanzleiformen(): Promise<Codeliste<Kanzleiform>> {
       wert: "Sozietät",
       code: KANZLEIFORM_CODE_SOZIETAET,
     },
-  ]);
-}
+  ]),
+);
 
-export async function fetchRechtsformen(): Promise<Codeliste<Rechtsform>> {
-  return codeliste([
+export const fetchRechtsformen = vi.fn(() =>
+  codeliste<Rechtsform>([
     {
       id: generateId("GmbH"),
       wert: "GmbH",
       code: "GmbH",
     },
-  ]);
-}
+  ]),
+);
 
-export async function fetchRollenbezeichnungen(): Promise<
-  Codeliste<Rollenbezeichnung>
-> {
-  return codeliste([
+export const fetchRollenbezeichnungen = vi.fn(() =>
+  codeliste<Rollenbezeichnung>([
     {
       id: generateId(ROLLENBEZEICHNUNG_CODE_KLAEGERIN),
       wert: "Klägerin",
@@ -113,23 +113,21 @@ export async function fetchRollenbezeichnungen(): Promise<
       wert: "Prozessbevollmächtigte",
       code: ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
     },
-  ]);
-}
+  ]),
+);
 
-export async function fetchStaaten(): Promise<Codeliste<Staat>> {
-  return codeliste([
+export const fetchStaaten = vi.fn(() =>
+  codeliste<Staat>([
     {
       id: generateId(STAAT_CODE_DEUTSCHLAND),
       wert: "Deutschland",
       code: STAAT_CODE_DEUTSCHLAND,
     },
-  ]);
-}
+  ]),
+);
 
-export async function fetchTelekommunikationsarten(): Promise<
-  Codeliste<Telekommunikationsart>
-> {
-  return codeliste([
+export const fetchTelekommunikationsarten = vi.fn(() =>
+  codeliste<Telekommunikationsart>([
     {
       id: generateId(TELEKOMMUNIKATIONSART_CODE_EMAIL),
       wert: "E-Mail",
@@ -142,5 +140,5 @@ export async function fetchTelekommunikationsarten(): Promise<
       code: TELEKOMMUNIKATIONSART_CODE_MOBILTELEFON,
       beschreibung: "",
     },
-  ]);
-}
+  ]),
+);

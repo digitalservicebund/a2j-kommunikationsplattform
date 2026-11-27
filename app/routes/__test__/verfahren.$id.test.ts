@@ -1,35 +1,28 @@
 import type { ActionFunctionArgs } from "react-router";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
+import {
+  handleDokumentDelete,
+  handleDokumentSichtbarkeit,
+  handleDokumentUpload,
+} from "~/domains/verfahren/application/einreichungDokumentActions.server";
+import type { Einreichung } from "~/domains/verfahren/entities/einreichung/einreichung.entity";
+import {
+  deleteEinreichung,
+  fetchEinreichungById,
+} from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
+import { deleteVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { ApiError } from "~/utils/apiError";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
-
-const mocks = vi.hoisted(() => ({
-  handleDokumentUpload: vi.fn(),
-  handleDokumentDelete: vi.fn(),
-  handleDokumentSichtbarkeit: vi.fn(),
-  deleteVerfahren: vi.fn(),
-  deleteEinreichung: vi.fn(),
-  fetchEinreichungById: vi.fn(),
-}));
+import { makeEinreichung } from "~tests/utils/factories/einreichung";
 
 vi.mock(
-  "~/domains/verfahren/application/einreichungDokumentActions.server",
-  () => mocks,
+  import("~/domains/verfahren/application/einreichungDokumentActions.server"),
 );
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server",
-  async (importOriginal) => ({
-    ...(await importOriginal()),
-    deleteVerfahren: mocks.deleteVerfahren,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server"),
 );
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server",
-  async (importOriginal) => ({
-    ...(await importOriginal()),
-    deleteEinreichung: mocks.deleteEinreichung,
-    fetchEinreichungById: mocks.fetchEinreichungById,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/einreichungRepository.server"),
 );
 vi.mock("~/middleware/auth.server", () => ({
   authContext: {},
@@ -62,16 +55,18 @@ describe("/verfahren/:id action", () => {
     vi.resetAllMocks();
   });
 
-  it.each([
-    ["upload", mocks.handleDokumentUpload],
-    ["delete", mocks.handleDokumentDelete],
-    ["sichtbarkeit", mocks.handleDokumentSichtbarkeit],
+  // Typed loosely so that any of the handlers can return the same result
+  it.each<[string, Mock]>([
+    ["upload", vi.mocked(handleDokumentUpload)],
+    ["delete", vi.mocked(handleDokumentDelete)],
+    ["sichtbarkeit", vi.mocked(handleDokumentSichtbarkeit)],
   ])(
     "hands %s to the shared Dokument action, staying on the page",
     async (formType, handler) => {
-      handler.mockResolvedValue("handled");
+      const handled = new Response("handled");
+      handler.mockResolvedValue(handled);
 
-      expect(await callAction(formType)).toBe("handled");
+      expect(await callAction(formType)).toBe(handled);
       // Without allowSchriftstueckDeletion: the draft Klageschrift stays protected
       expect(handler).toHaveBeenCalledWith(expect.any(FormData), {
         authSession,
@@ -83,17 +78,17 @@ describe("/verfahren/:id action", () => {
 
   describe("delete-verfahren", () => {
     it("deletes the Verfahren and redirects to the Verfahren overview", async () => {
-      mocks.deleteVerfahren.mockResolvedValue(undefined);
+      vi.mocked(deleteVerfahren).mockResolvedValue(undefined);
 
       const response = await callAction("delete-verfahren");
 
-      expect(mocks.deleteVerfahren).toHaveBeenCalledWith(authSession, "v-1");
+      expect(deleteVerfahren).toHaveBeenCalledWith(authSession, "v-1");
       expect(response).toBeInstanceOf(Response);
       expect((response as Response).headers.get("Location")).toBe("/");
     });
 
     it("returns an error result if the Verfahren can't be deleted", async () => {
-      mocks.deleteVerfahren.mockRejectedValue(
+      vi.mocked(deleteVerfahren).mockRejectedValue(
         new ApiError("Conflict", { status: 409 }),
       );
 
@@ -112,30 +107,30 @@ describe("/verfahren/:id action", () => {
 
   describe("delete-einreichung", () => {
     function mockEinreichung(
-      einreichung: { name: string; status: string } = {
+      einreichung: Pick<Einreichung, "name" | "status"> = {
         name: "Schriftsatz",
         status: "ERSTELLT",
       },
     ) {
-      mocks.fetchEinreichungById.mockResolvedValue({
-        einreichung: { id: "e-2", ...einreichung },
+      vi.mocked(fetchEinreichungById).mockResolvedValue({
+        einreichung: makeEinreichung({ id: "e-2", ...einreichung }),
         eTag: 'W/"2"',
       });
     }
 
     it("deletes the draft Weitere Einreichung and reloads the Verfahren page", async () => {
       mockEinreichung();
-      mocks.deleteEinreichung.mockResolvedValue(undefined);
+      vi.mocked(deleteEinreichung).mockResolvedValue(undefined);
 
       const response = await callAction("delete-einreichung", {
         einreichungId: "e-2",
       });
 
-      expect(mocks.fetchEinreichungById).toHaveBeenCalledWith(authSession, {
+      expect(fetchEinreichungById).toHaveBeenCalledWith(authSession, {
         verfahrenId: "v-1",
         id: "e-2",
       });
-      expect(mocks.deleteEinreichung).toHaveBeenCalledWith(authSession, {
+      expect(deleteEinreichung).toHaveBeenCalledWith(authSession, {
         verfahrenId: "v-1",
         id: "e-2",
         eTag: 'W/"2"',
@@ -151,14 +146,14 @@ describe("/verfahren/:id action", () => {
         { name: "Klageeinreichung", status: "ERSTELLT" },
       ],
       ["a submitted Einreichung", { name: "Schriftsatz", status: "BEANTRAGT" }],
-    ])("refuses to delete %s", async (_description, einreichung) => {
+    ] as const)("refuses to delete %s", async (_description, einreichung) => {
       mockEinreichung(einreichung);
 
       const result = await callAction("delete-einreichung", {
         einreichungId: "e-2",
       });
 
-      expect(mocks.deleteEinreichung).not.toHaveBeenCalled();
+      expect(deleteEinreichung).not.toHaveBeenCalled();
       expect(result).toMatchObject({
         init: { status: 403 },
         data: {
@@ -171,7 +166,7 @@ describe("/verfahren/:id action", () => {
 
     it("returns an error result if the Einreichung can't be deleted", async () => {
       mockEinreichung();
-      mocks.deleteEinreichung.mockRejectedValue(
+      vi.mocked(deleteEinreichung).mockRejectedValue(
         new ApiError("Conflict", { status: 409 }),
       );
 
@@ -194,7 +189,7 @@ describe("/verfahren/:id action", () => {
         (error: unknown) => error,
       );
 
-      expect(mocks.deleteEinreichung).not.toHaveBeenCalled();
+      expect(deleteEinreichung).not.toHaveBeenCalled();
       expect(result).toMatchObject({ init: { status: 400 } });
     });
   });

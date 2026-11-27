@@ -1,14 +1,37 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
+import {
+  handleDokumentDelete,
+  handleDokumentSichtbarkeit,
+  handleDokumentUpload,
+} from "~/domains/verfahren/application/einreichungDokumentActions.server";
+import loadVerfahrenEinreichungBundle from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
 import {
   ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
   ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
   ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
 } from "~/domains/verfahren/entities/codelisten/rollenbezeichnung.entity";
+import { fetchLatestBelegForEinreichung } from "~/domains/verfahren/infrastructure/repositories/belegRepository.server";
+import {
+  fetchDokumentValidierungsstatus,
+  uploadDokumentWithSignaturdatei,
+} from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
+import { createEinreichung } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
+import {
+  fetchGerichte,
+  fetchKanzleiformen,
+  fetchRollenbezeichnungen,
+} from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
+import { createVerfahren } from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import resolveCodeWertId from "~/domains/verfahren/services/resolveCodeWertId";
 import { ApiError } from "~/utils/apiError";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
+import { makeBeleg } from "~tests/utils/factories/beleg";
 import { makeDokument } from "~tests/utils/factories/dokument";
+import {
+  makeEinreichung,
+  makeEinreichungWithValidierungsstatusDetails,
+} from "~tests/utils/factories/einreichung";
 import { makeGericht } from "~tests/utils/factories/gericht";
 import { makeEinzelanwaltKanzleiform } from "~tests/utils/factories/kanzleiform";
 import {
@@ -16,66 +39,38 @@ import {
   makeKlaegerinRollenbezeichnung,
   makeProzessbevollmaechtigteRollenbezeichnung,
 } from "~tests/utils/factories/rolle";
+import { makeValidierungsstatus } from "~tests/utils/factories/validierungsstatus";
 import { makeVerfahren } from "~tests/utils/factories/verfahren";
 import { action, loader } from "../verfahren.neu.dokumente";
 
-const mocks = vi.hoisted(() => ({
-  fetchGerichte: vi.fn(),
-  fetchRollenbezeichnungen: vi.fn(),
-  fetchKanzleiformen: vi.fn(),
-  createVerfahren: vi.fn(),
-  createEinreichung: vi.fn(),
-  uploadDokumentWithSignaturdatei: vi.fn(),
-  fetchDokumentValidierungsstatus: vi.fn(),
-  loadVerfahrenEinreichungBundle: vi.fn(),
-  fetchLatestBelegForEinreichung: vi.fn(),
-  handleDokumentUpload: vi.fn(),
-  handleDokumentDelete: vi.fn(),
-  handleDokumentSichtbarkeit: vi.fn(),
-}));
-
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server",
-  () => ({
-    fetchGerichte: mocks.fetchGerichte,
-    fetchRollenbezeichnungen: mocks.fetchRollenbezeichnungen,
-    fetchKanzleiformen: mocks.fetchKanzleiformen,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server"),
 );
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server",
-  () => ({ createVerfahren: mocks.createVerfahren }),
+  import("~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server"),
 );
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server",
-  () => ({ createEinreichung: mocks.createEinreichung }),
+  import("~/domains/verfahren/infrastructure/repositories/einreichungRepository.server"),
 );
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server",
-  () => ({
-    uploadDokumentWithSignaturdatei: mocks.uploadDokumentWithSignaturdatei,
-    fetchDokumentValidierungsstatus: mocks.fetchDokumentValidierungsstatus,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/dokumentRepository.server"),
 );
 vi.mock(
-  "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server",
-  () => ({ default: mocks.loadVerfahrenEinreichungBundle }),
+  import("~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server"),
 );
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/belegRepository.server",
-  () => ({
-    fetchLatestBelegForEinreichung: mocks.fetchLatestBelegForEinreichung,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/belegRepository.server"),
 );
 // The Dokumente of an existing Einreichung are handled by the shared actions
-// (tested on their own); only the delegation is tested here
+// (tested on their own); only the delegation is tested here. The rest of the
+// module (e.g. its input schemas) is kept, as automocking would break it.
 vi.mock(
-  "~/domains/verfahren/application/einreichungDokumentActions.server",
+  import("~/domains/verfahren/application/einreichungDokumentActions.server"),
   async (importOriginal) => ({
-    ...(await importOriginal<object>()),
-    handleDokumentUpload: mocks.handleDokumentUpload,
-    handleDokumentDelete: mocks.handleDokumentDelete,
-    handleDokumentSichtbarkeit: mocks.handleDokumentSichtbarkeit,
+    ...(await importOriginal()),
+    handleDokumentUpload: vi.fn(),
+    handleDokumentDelete: vi.fn(),
+    handleDokumentSichtbarkeit: vi.fn(),
   }),
 );
 vi.mock("~/middleware/auth.server", () => ({
@@ -99,11 +94,7 @@ const DOKUMENTE_PATH = `/verfahren/neu/dokumente?verfahren=${VERFAHREN_ID}`;
 const SAFE_ID = authSession.authorizedForSafeIds[0];
 const NEW_VERFAHREN_SEARCH = `?${new URLSearchParams({ gericht: gericht.id, safeId: SAFE_ID })}`;
 
-const validierungsstatus = {
-  validierungslaufStatus: "ABGESCHLOSSEN",
-  ergebnis: "GRUEN",
-  fehler: [],
-};
+const validierungsstatus = makeValidierungsstatus();
 
 function callLoader(search: string) {
   return loader({
@@ -143,16 +134,17 @@ function expectRedirect(response: unknown, location: string) {
 }
 
 function mockDraft(dokumente: ReturnType<typeof makeDokument>[] = []) {
-  mocks.loadVerfahrenEinreichungBundle.mockResolvedValue({
+  vi.mocked(loadVerfahrenEinreichungBundle).mockResolvedValue({
     verfahren: makeVerfahren({ id: VERFAHREN_ID }),
-    einreichung: {
+    einreichung: makeEinreichungWithValidierungsstatusDetails({
       id: "einreichung-1",
       name: "Klageeinreichung",
       status: "ERSTELLT",
-    },
+    }),
     dokumente,
+    einreichungId: "einreichung-1",
   });
-  mocks.fetchLatestBelegForEinreichung.mockResolvedValue(undefined);
+  vi.mocked(fetchLatestBelegForEinreichung).mockResolvedValue(null);
 }
 
 const pdfFile = new File(["%PDF-1.7"], "anlage.pdf", {
@@ -162,14 +154,21 @@ const pdfFile = new File(["%PDF-1.7"], "anlage.pdf", {
 describe("/verfahren/neu/dokumente", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    mocks.fetchGerichte.mockResolvedValue({ elemente: [gericht] });
-    mocks.fetchRollenbezeichnungen.mockResolvedValue({
+    vi.mocked(fetchGerichte).mockResolvedValue({
+      listeVersion: "1",
+      elemente: [gericht],
+    });
+    vi.mocked(fetchRollenbezeichnungen).mockResolvedValue({
+      listeVersion: "1",
       elemente: rollenbezeichnungen,
     });
-    mocks.fetchKanzleiformen.mockResolvedValue({
+    vi.mocked(fetchKanzleiformen).mockResolvedValue({
+      listeVersion: "1",
       elemente: kanzleiformen,
     });
-    mocks.fetchDokumentValidierungsstatus.mockResolvedValue(validierungsstatus);
+    vi.mocked(fetchDokumentValidierungsstatus).mockResolvedValue(
+      validierungsstatus,
+    );
   });
 
   describe("loader", () => {
@@ -212,12 +211,12 @@ describe("/verfahren/neu/dokumente", () => {
           ),
           "/verfahren/neu",
         );
-        expect(mocks.loadVerfahrenEinreichungBundle).not.toHaveBeenCalled();
+        expect(loadVerfahrenEinreichungBundle).not.toHaveBeenCalled();
       },
     );
 
     it("redirects to the court selection for an unknown Verfahren", async () => {
-      mocks.loadVerfahrenEinreichungBundle.mockRejectedValue(
+      vi.mocked(loadVerfahrenEinreichungBundle).mockRejectedValue(
         new ApiError("not found", { status: 404 }),
       );
 
@@ -231,7 +230,9 @@ describe("/verfahren/neu/dokumente", () => {
 
     it("redirects to the Verfahren once it has been submitted", async () => {
       mockDraft();
-      mocks.fetchLatestBelegForEinreichung.mockResolvedValue({ id: "beleg" });
+      vi.mocked(fetchLatestBelegForEinreichung).mockResolvedValue(
+        makeBeleg({ id: "beleg" }),
+      );
 
       expectRedirect(
         await catchThrown(callLoader(`?verfahren=${VERFAHREN_ID}`)),
@@ -258,7 +259,7 @@ describe("/verfahren/neu/dokumente", () => {
         uploadFailed: false,
       });
       // Not fetched for the XJustiz-Dokument, which isn't shown
-      expect(mocks.fetchDokumentValidierungsstatus).toHaveBeenCalledTimes(2);
+      expect(fetchDokumentValidierungsstatus).toHaveBeenCalledTimes(2);
     });
 
     it("flags a failed first upload", async () => {
@@ -274,8 +275,12 @@ describe("/verfahren/neu/dokumente", () => {
     it.each(["SCHRIFTSTUECK", "ANHANG"])(
       "creates Verfahren, Einreichung and Dokument on the first %s upload",
       async (typ) => {
-        mocks.createVerfahren.mockResolvedValue({ id: VERFAHREN_ID });
-        mocks.createEinreichung.mockResolvedValue({ id: "einreichung-1" });
+        vi.mocked(createVerfahren).mockResolvedValue(
+          makeVerfahren({ id: VERFAHREN_ID }),
+        );
+        vi.mocked(createEinreichung).mockResolvedValue(
+          makeEinreichung({ id: "einreichung-1" }),
+        );
 
         const response = await callAction(NEW_VERFAHREN_SEARCH, {
           formType: "upload",
@@ -297,34 +302,30 @@ describe("/verfahren/neu/dokumente", () => {
             ]),
           });
 
-        expect(mocks.createVerfahren).toHaveBeenCalledWith(
-          authSession,
-          SAFE_ID,
-          {
-            verfahrensgegenstand: "Zahlungsklage",
-            kurzrubrum: null,
-            gericht_id: gericht.id,
-            beteiligungen: expect.arrayContaining([
-              expectBeteiligungWithRollenbezeichnung(
-                ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
-              ),
-              expectBeteiligungWithRollenbezeichnung(
-                ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
-              ),
-              expectBeteiligungWithRollenbezeichnung(
-                ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
-              ),
-            ]),
-          },
-        );
+        expect(createVerfahren).toHaveBeenCalledWith(authSession, SAFE_ID, {
+          verfahrensgegenstand: "Zahlungsklage",
+          kurzrubrum: null,
+          gericht_id: gericht.id,
+          beteiligungen: expect.arrayContaining([
+            expectBeteiligungWithRollenbezeichnung(
+              ROLLENBEZEICHNUNG_CODE_KLAEGERIN,
+            ),
+            expectBeteiligungWithRollenbezeichnung(
+              ROLLENBEZEICHNUNG_CODE_BEKLAGTE,
+            ),
+            expectBeteiligungWithRollenbezeichnung(
+              ROLLENBEZEICHNUNG_CODE_PROZESSBEVOLLMAECHTIGTE,
+            ),
+          ]),
+        });
 
-        expect(mocks.createEinreichung).toHaveBeenCalledWith(
+        expect(createEinreichung).toHaveBeenCalledWith(
           authSession,
           VERFAHREN_ID,
           "Klageeinreichung",
         );
 
-        expect(mocks.uploadDokumentWithSignaturdatei).toHaveBeenCalledWith(
+        expect(uploadDokumentWithSignaturdatei).toHaveBeenCalledWith(
           authSession,
           {
             verfahrenId: VERFAHREN_ID,
@@ -339,8 +340,12 @@ describe("/verfahren/neu/dokumente", () => {
     );
 
     it("uploads the Signaturdatei along with the first Dokument", async () => {
-      mocks.createVerfahren.mockResolvedValue({ id: VERFAHREN_ID });
-      mocks.createEinreichung.mockResolvedValue({ id: "einreichung-1" });
+      vi.mocked(createVerfahren).mockResolvedValue(
+        makeVerfahren({ id: VERFAHREN_ID }),
+      );
+      vi.mocked(createEinreichung).mockResolvedValue(
+        makeEinreichung({ id: "einreichung-1" }),
+      );
 
       const response = await callAction(NEW_VERFAHREN_SEARCH, {
         formType: "upload",
@@ -349,7 +354,7 @@ describe("/verfahren/neu/dokumente", () => {
         signaturdatei: new File(["signature"], "signatur.p7s"),
       });
 
-      expect(mocks.uploadDokumentWithSignaturdatei).toHaveBeenCalledWith(
+      expect(uploadDokumentWithSignaturdatei).toHaveBeenCalledWith(
         authSession,
         expect.objectContaining({
           signaturdatei: expect.objectContaining({ name: "signatur.p7s" }),
@@ -359,9 +364,13 @@ describe("/verfahren/neu/dokumente", () => {
     });
 
     it("continues with the created Verfahren when the first upload fails", async () => {
-      mocks.createVerfahren.mockResolvedValue({ id: VERFAHREN_ID });
-      mocks.createEinreichung.mockResolvedValue({ id: "einreichung-1" });
-      mocks.uploadDokumentWithSignaturdatei.mockRejectedValue(
+      vi.mocked(createVerfahren).mockResolvedValue(
+        makeVerfahren({ id: VERFAHREN_ID }),
+      );
+      vi.mocked(createEinreichung).mockResolvedValue(
+        makeEinreichung({ id: "einreichung-1" }),
+      );
+      vi.mocked(uploadDokumentWithSignaturdatei).mockRejectedValue(
         new ApiError("rejected", { status: 422 }),
       );
 
@@ -375,7 +384,7 @@ describe("/verfahren/neu/dokumente", () => {
     });
 
     it("creates nothing more when creating the Verfahren fails", async () => {
-      mocks.createVerfahren.mockRejectedValue(
+      vi.mocked(createVerfahren).mockRejectedValue(
         new ApiError("failed", { status: 500 }),
       );
 
@@ -386,8 +395,8 @@ describe("/verfahren/neu/dokumente", () => {
       });
 
       expect(result).toMatchObject({ data: { status: "error" } });
-      expect(mocks.createEinreichung).not.toHaveBeenCalled();
-      expect(mocks.uploadDokumentWithSignaturdatei).not.toHaveBeenCalled();
+      expect(createEinreichung).not.toHaveBeenCalled();
+      expect(uploadDokumentWithSignaturdatei).not.toHaveBeenCalled();
     });
 
     it("reports a missing file for the uploaded type", async () => {
@@ -404,7 +413,7 @@ describe("/verfahren/neu/dokumente", () => {
           data: { formType: "upload", typ: "ANHANG" },
         },
       });
-      expect(mocks.createVerfahren).not.toHaveBeenCalled();
+      expect(createVerfahren).not.toHaveBeenCalled();
     });
 
     it.each([
@@ -421,7 +430,7 @@ describe("/verfahren/neu/dokumente", () => {
       });
 
       expect(result).toMatchObject({ init: { status: 400 } });
-      expect(mocks.createVerfahren).not.toHaveBeenCalled();
+      expect(createVerfahren).not.toHaveBeenCalled();
     });
 
     it("rejects the XJustiz type", async () => {
@@ -432,7 +441,7 @@ describe("/verfahren/neu/dokumente", () => {
       });
 
       expect(result).toMatchObject({ data: { status: "invalid" } });
-      expect(mocks.createVerfahren).not.toHaveBeenCalled();
+      expect(createVerfahren).not.toHaveBeenCalled();
     });
   });
 
@@ -445,23 +454,25 @@ describe("/verfahren/neu/dokumente", () => {
       allowSchriftstueckDeletion: true,
     };
 
-    it.each([
-      ["upload", mocks.handleDokumentUpload],
-      ["delete", mocks.handleDokumentDelete],
-      ["sichtbarkeit", mocks.handleDokumentSichtbarkeit],
+    // Typed loosely so that any of the handlers can return the same result
+    it.each<[string, Mock]>([
+      ["upload", vi.mocked(handleDokumentUpload)],
+      ["delete", vi.mocked(handleDokumentDelete)],
+      ["sichtbarkeit", vi.mocked(handleDokumentSichtbarkeit)],
     ])("hands %s to the shared Dokument action", async (formType, handler) => {
-      handler.mockResolvedValue("handled");
+      const handled = new Response("handled");
+      handler.mockResolvedValue(handled);
 
       const result = await callAction(`?verfahren=${VERFAHREN_ID}`, {
         formType,
       });
 
-      expect(result).toBe("handled");
+      expect(result).toBe(handled);
       expect(handler).toHaveBeenCalledWith(
         expect.any(FormData),
         expectedContext,
       );
-      expect(mocks.createVerfahren).not.toHaveBeenCalled();
+      expect(createVerfahren).not.toHaveBeenCalled();
     });
 
     it("rejects a malformed Verfahren id before calling the API", async () => {
@@ -475,7 +486,7 @@ describe("/verfahren/neu/dokumente", () => {
       );
 
       expectRedirect(response, "/verfahren/neu");
-      expect(mocks.handleDokumentUpload).not.toHaveBeenCalled();
+      expect(handleDokumentUpload).not.toHaveBeenCalled();
     });
 
     it.each(["delete", "sichtbarkeit"])(
@@ -486,8 +497,8 @@ describe("/verfahren/neu/dokumente", () => {
         });
 
         expect(result).toMatchObject({ init: { status: 400 } });
-        expect(mocks.handleDokumentDelete).not.toHaveBeenCalled();
-        expect(mocks.handleDokumentSichtbarkeit).not.toHaveBeenCalled();
+        expect(handleDokumentDelete).not.toHaveBeenCalled();
+        expect(handleDokumentSichtbarkeit).not.toHaveBeenCalled();
       },
     );
   });

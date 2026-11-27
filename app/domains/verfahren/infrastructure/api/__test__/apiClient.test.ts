@@ -1,22 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import z from "zod";
 import { apiRequest } from "~/domains/verfahren/infrastructure/api/apiClient";
+import {
+  logApiErrorAndThrow,
+  logParsingErrorAndThrow,
+} from "~/utils/logApiError";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 
-const mocks = vi.hoisted(() => {
-  return {
-    logApiErrorAndThrow: vi.fn(),
-    logParsingErrorAndThrow: vi.fn(),
-    fetch: vi.fn(),
-  };
-});
+vi.mock(import("~/utils/logApiError"));
 
-vi.mock("~/utils/logApiError", () => ({
-  logApiErrorAndThrow: mocks.logApiErrorAndThrow,
-  logParsingErrorAndThrow: mocks.logParsingErrorAndThrow,
-}));
-
-globalThis.fetch = mocks.fetch;
+const fetchMock = vi.fn();
+globalThis.fetch = fetchMock;
 
 describe("apiClient", () => {
   beforeEach(() => {
@@ -30,7 +24,7 @@ describe("apiClient", () => {
 
   describe("apiRequest", () => {
     it("constructs URL from the API base URL and path", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({ id: "123" }),
       });
@@ -40,14 +34,14 @@ describe("apiClient", () => {
         path: "/api/v1/test",
       });
 
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         "http://localhost:8080/api/v1/test",
         expect.any(Object),
       );
     });
 
     it("appends searchParams to the URL, leaving out empty values", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({}),
       });
@@ -58,14 +52,14 @@ describe("apiClient", () => {
         searchParams: { limit: 10, sort: "neueste", gericht: undefined, q: "" },
       });
 
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         "http://localhost:8080/api/v1/test?limit=10&sort=neueste",
         expect.any(Object),
       );
     });
 
     it("leaves the URL unchanged when all searchParams are empty", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({}),
       });
@@ -76,14 +70,14 @@ describe("apiClient", () => {
         searchParams: { gericht: null },
       });
 
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         "http://localhost:8080/api/v1/test",
         expect.any(Object),
       );
     });
 
     it("sets authorization header with bearer token", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({}),
       });
@@ -93,7 +87,7 @@ describe("apiClient", () => {
         path: "/api/v1/test",
       });
 
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({
           headers: expect.objectContaining({
@@ -104,7 +98,7 @@ describe("apiClient", () => {
     });
 
     it("performs GET request by default", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({}),
       });
@@ -114,7 +108,7 @@ describe("apiClient", () => {
         path: "/api/v1/test",
       });
 
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({
           method: "GET",
@@ -123,7 +117,7 @@ describe("apiClient", () => {
     });
 
     it("uses custom method when provided", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({}),
       });
@@ -134,7 +128,7 @@ describe("apiClient", () => {
         method: "POST",
       });
 
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({
           method: "POST",
@@ -143,7 +137,7 @@ describe("apiClient", () => {
     });
 
     it("sends JSON body with content-type header", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({}),
       });
@@ -157,7 +151,7 @@ describe("apiClient", () => {
         body,
       });
 
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({
           body: JSON.stringify(body),
@@ -169,7 +163,7 @@ describe("apiClient", () => {
     });
 
     it("handles FormData body without setting content-type", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({}),
       });
@@ -184,13 +178,13 @@ describe("apiClient", () => {
         body: formData,
       });
 
-      const [, config] = mocks.fetch.mock.calls[0];
+      const [, config] = fetchMock.mock.calls[0];
       expect(config?.body).toBe(formData);
       expect(config?.headers).not.toHaveProperty("Content-Type");
     });
 
     it("merges custom headers alongside Authorization for a FormData body", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({}),
       });
@@ -206,7 +200,7 @@ describe("apiClient", () => {
         headers: { "Dokument-Typ": "ANHANG" },
       });
 
-      const [, config] = mocks.fetch.mock.calls[0];
+      const [, config] = fetchMock.mock.calls[0];
       expect(config?.headers).toEqual({
         Authorization: `Bearer ${makeAuthSession().accessToken}`,
         Accept: "application/json",
@@ -215,12 +209,12 @@ describe("apiClient", () => {
     });
 
     it("calls logApiErrorAndThrow when response is not ok", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: false,
         status: 404,
         statusText: "Not Found",
       });
-      mocks.logApiErrorAndThrow.mockImplementation(() => {
+      vi.mocked(logApiErrorAndThrow).mockImplementation(() => {
         throw new Error("Test error");
       });
 
@@ -232,20 +226,19 @@ describe("apiClient", () => {
         }),
       ).rejects.toThrow("Test error");
 
-      expect(mocks.logApiErrorAndThrow).toHaveBeenCalledWith(
+      expect(logApiErrorAndThrow).toHaveBeenCalledWith(
         expect.any(Object),
         "Custom error message",
       );
     });
 
     it("continues when logApiErrorAndThrow does not throw on non-ok response", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: false,
         status: 404,
         json: async () => ({ id: "123" }),
         text: async () => JSON.stringify({ id: "123" }),
       });
-      mocks.logApiErrorAndThrow.mockResolvedValueOnce(undefined);
 
       const result = await apiRequest({
         authSession: makeAuthSession(),
@@ -253,7 +246,7 @@ describe("apiClient", () => {
         errorMessage: "Custom error message",
       });
 
-      expect(mocks.logApiErrorAndThrow).toHaveBeenCalledWith(
+      expect(logApiErrorAndThrow).toHaveBeenCalledWith(
         expect.any(Object),
         "Custom error message",
       );
@@ -261,11 +254,11 @@ describe("apiClient", () => {
     });
 
     it("uses default error message when not provided", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: false,
         status: 500,
       });
-      mocks.logApiErrorAndThrow.mockImplementation(() => {
+      vi.mocked(logApiErrorAndThrow).mockImplementation(() => {
         throw new Error("Error");
       });
 
@@ -276,14 +269,14 @@ describe("apiClient", () => {
         }),
       ).rejects.toThrow();
 
-      expect(mocks.logApiErrorAndThrow).toHaveBeenCalledWith(
+      expect(logApiErrorAndThrow).toHaveBeenCalledWith(
         expect.any(Object),
         "API request failed.",
       );
     });
 
     it("returns handled error result when throwOnError is false", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: false,
         status: 409,
         headers: new Headers({ etag: 'W/"1"' }),
@@ -307,7 +300,7 @@ describe("apiClient", () => {
     });
 
     it("returns handled error result with undefined body when JSON parsing fails", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: false,
         status: 500,
         headers: new Headers(),
@@ -338,7 +331,7 @@ describe("apiClient", () => {
         status: 412,
         detail: "Die eTag stimmt nicht mit der aktuellen Ressource ueberein.",
       };
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: false,
         status: 412,
         headers: new Headers(),
@@ -369,7 +362,7 @@ describe("apiClient", () => {
           kurzrubrum: ["Feld darf nicht leer sein."],
         },
       };
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: false,
         status: 400,
         headers: new Headers(),
@@ -392,7 +385,7 @@ describe("apiClient", () => {
 
     it("parses JSON response and returns data", async () => {
       const responseData = { id: "123", name: "test" };
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => responseData,
       });
@@ -406,7 +399,7 @@ describe("apiClient", () => {
     });
 
     it("requests application/json via the Accept header", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({}),
       });
@@ -416,7 +409,7 @@ describe("apiClient", () => {
         path: "/api/v1/test",
       });
 
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({
           headers: expect.objectContaining({ Accept: "application/json" }),
@@ -426,7 +419,7 @@ describe("apiClient", () => {
 
     it("parses text response and returns raw body when responseType is text", async () => {
       const xml = "<xjustiz>...</xjustiz>";
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         text: async () => xml,
       });
@@ -441,7 +434,7 @@ describe("apiClient", () => {
     });
 
     it("requests */* via the Accept header when responseType is text", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         text: async () => "",
       });
@@ -452,7 +445,7 @@ describe("apiClient", () => {
         responseType: "text",
       });
 
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({
           headers: expect.objectContaining({ Accept: "*/*" }),
@@ -463,7 +456,7 @@ describe("apiClient", () => {
     it("returns undefined for 204 responses without trying to read the body", async () => {
       const jsonSpy = vi.fn();
 
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         status: 204,
         headers: new Headers(),
@@ -482,7 +475,7 @@ describe("apiClient", () => {
     it("returns undefined for content-length 0 responses", async () => {
       const jsonSpy = vi.fn();
 
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         status: 200,
         headers: new Headers({ "content-length": "0" }),
@@ -500,7 +493,7 @@ describe("apiClient", () => {
 
     it("calls logParsingErrorAndThrow when JSON body cannot be parsed", async () => {
       const parseError = new SyntaxError("Unexpected end of JSON input");
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         status: 200,
         headers: new Headers(),
@@ -508,7 +501,7 @@ describe("apiClient", () => {
           throw parseError;
         },
       });
-      mocks.logParsingErrorAndThrow.mockImplementation(() => {
+      vi.mocked(logParsingErrorAndThrow).mockImplementation(() => {
         throw new Error("Parse error");
       });
 
@@ -520,7 +513,7 @@ describe("apiClient", () => {
         }),
       ).rejects.toThrow("Parse error");
 
-      expect(mocks.logParsingErrorAndThrow).toHaveBeenCalledWith(
+      expect(logParsingErrorAndThrow).toHaveBeenCalledWith(
         parseError,
         "Failed to parse response",
         "[unparsable JSON response]",
@@ -532,7 +525,7 @@ describe("apiClient", () => {
         id: z.string(),
         name: z.string(),
       });
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({ id: "123", name: "test" }),
       });
@@ -547,7 +540,7 @@ describe("apiClient", () => {
     });
 
     it("returns success result wrapper when throwOnError is false", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         status: 200,
         headers: new Headers({ etag: 'W/"9"' }),
@@ -571,7 +564,7 @@ describe("apiClient", () => {
 
     it("returns response meta when includeResponseMeta is enabled", async () => {
       const headers = new Headers({ etag: 'W/"2"' });
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         status: 200,
         headers,
@@ -593,7 +586,7 @@ describe("apiClient", () => {
     });
 
     it("returns data plus eTag when includeResponseETag is enabled", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         status: 200,
         headers: new Headers({ etag: 'W/"3"' }),
@@ -619,11 +612,11 @@ describe("apiClient", () => {
       });
       const invalidData = { id: "not-a-uuid", name: "x" };
 
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => invalidData,
       });
-      mocks.logParsingErrorAndThrow.mockImplementation(() => {
+      vi.mocked(logParsingErrorAndThrow).mockImplementation(() => {
         throw new Error("Schema validation failed");
       });
 
@@ -636,7 +629,7 @@ describe("apiClient", () => {
         }),
       ).rejects.toThrow("Schema validation failed");
 
-      expect(mocks.logParsingErrorAndThrow).toHaveBeenCalledWith(
+      expect(logParsingErrorAndThrow).toHaveBeenCalledWith(
         expect.any(Error),
         "Invalid data",
         JSON.stringify(invalidData),
@@ -644,7 +637,7 @@ describe("apiClient", () => {
     });
 
     it("adds If-Match header when eTag is provided", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({ id: "123" }),
       });
@@ -655,7 +648,7 @@ describe("apiClient", () => {
         eTag: 'W/"7"',
       });
 
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({
           headers: expect.objectContaining({
@@ -672,7 +665,7 @@ describe("apiClient", () => {
       });
       const data = { id: "test-id", count: 42 };
 
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => data,
       });
@@ -689,7 +682,7 @@ describe("apiClient", () => {
     it("handles array responses without schema", async () => {
       const arrayData = [{ id: "1" }, { id: "2" }];
 
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => arrayData,
       });
@@ -709,7 +702,7 @@ describe("apiClient", () => {
         { id: "2", name: "item2" },
       ];
 
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => arrayData,
       });

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { apiRequest } from "~/domains/verfahren/infrastructure/api/apiClient";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 import {
   createVerfahren,
@@ -6,13 +7,7 @@ import {
   updateVerfahren,
 } from "../verfahrenRepository.server";
 
-const mocks = vi.hoisted(() => ({
-  apiRequest: vi.fn(),
-}));
-
-vi.mock("~/domains/verfahren/infrastructure/api/apiClient", () => ({
-  apiRequest: mocks.apiRequest,
-}));
+vi.mock(import("~/domains/verfahren/infrastructure/api/apiClient"));
 
 const verfahrenPayload = {
   verfahrensgegenstand: "Zahlungsklage",
@@ -32,7 +27,7 @@ describe("createVerfahren", () => {
     await expect(
       createVerfahren(makeAuthSession(), "", verfahrenPayload),
     ).rejects.toThrow("No safeId is available");
-    expect(mocks.apiRequest).not.toHaveBeenCalled();
+    expect(apiRequest).not.toHaveBeenCalled();
   });
 
   it("returns the created Verfahren from apiRequest", async () => {
@@ -53,7 +48,7 @@ describe("createVerfahren", () => {
       },
       beteiligungen: null,
     };
-    mocks.apiRequest.mockResolvedValueOnce(verfahren);
+    vi.mocked(apiRequest).mockResolvedValueOnce(verfahren);
 
     const result = await createVerfahren(
       makeAuthSession(),
@@ -61,7 +56,7 @@ describe("createVerfahren", () => {
       verfahrenPayload,
     );
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith({
+    expect(apiRequest).toHaveBeenCalledWith({
       authSession: makeAuthSession(),
       path: "/api/v1/verfahren",
       method: "POST",
@@ -76,11 +71,11 @@ describe("createVerfahren", () => {
   });
 
   it("omits verfahren from the request body when not provided", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({});
+    vi.mocked(apiRequest).mockResolvedValueOnce({});
 
     await createVerfahren(makeAuthSession(), SAFE_ID);
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith({
+    expect(apiRequest).toHaveBeenCalledWith({
       authSession: makeAuthSession(),
       path: "/api/v1/verfahren",
       method: "POST",
@@ -101,7 +96,7 @@ describe("updateVerfahren", () => {
 
   it("reads the current eTag before sending the PUT with If-Match", async () => {
     const updatedVerfahren = { id: "v-1", ...verfahrenPayload };
-    mocks.apiRequest
+    vi.mocked(apiRequest)
       .mockResolvedValueOnce({ data: updatedVerfahren, eTag: 'W/"1"' })
       .mockResolvedValueOnce(updatedVerfahren);
 
@@ -111,14 +106,14 @@ describe("updateVerfahren", () => {
       verfahrenPayload,
     );
 
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(1, {
+    expect(apiRequest).toHaveBeenNthCalledWith(1, {
       authSession: makeAuthSession(),
       path: "/api/v1/verfahren/v-1",
       schema: expect.anything(),
       includeResponseETag: true,
       errorMessage: "Fehler beim Bearbeiten des Verfahrens.",
     });
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(2, {
+    expect(apiRequest).toHaveBeenNthCalledWith(2, {
       authSession: makeAuthSession(),
       path: "/api/v1/verfahren/v-1",
       method: "PUT",
@@ -132,13 +127,13 @@ describe("updateVerfahren", () => {
 
   it("sends undefined eTag when none is returned", async () => {
     const updatedVerfahren = { id: "v-1", ...verfahrenPayload };
-    mocks.apiRequest
+    vi.mocked(apiRequest)
       .mockResolvedValueOnce({ data: updatedVerfahren, eTag: null })
       .mockResolvedValueOnce(updatedVerfahren);
 
     await updateVerfahren(makeAuthSession(), "v-1", verfahrenPayload);
 
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+    expect(apiRequest).toHaveBeenNthCalledWith(
       2,
       expect.objectContaining({ eTag: undefined }),
     );
@@ -151,20 +146,20 @@ describe("deleteVerfahren", () => {
   });
 
   it("reads the current eTag before sending the DELETE with If-Match", async () => {
-    mocks.apiRequest
+    vi.mocked(apiRequest)
       .mockResolvedValueOnce({ data: { id: "v-1" }, eTag: 'W/"1"' })
       .mockResolvedValueOnce(undefined);
 
     await deleteVerfahren(makeAuthSession(), "v-1");
 
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(1, {
+    expect(apiRequest).toHaveBeenNthCalledWith(1, {
       authSession: makeAuthSession(),
       path: "/api/v1/verfahren/v-1",
       schema: expect.anything(),
       includeResponseETag: true,
       errorMessage: "Verfahren with id v-1 could not be deleted.",
     });
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(2, {
+    expect(apiRequest).toHaveBeenNthCalledWith(2, {
       authSession: makeAuthSession(),
       path: "/api/v1/verfahren/v-1",
       method: "DELETE",
@@ -174,7 +169,7 @@ describe("deleteVerfahren", () => {
   });
 
   it("propagates API errors", async () => {
-    mocks.apiRequest
+    vi.mocked(apiRequest)
       .mockResolvedValueOnce({ data: { id: "v-1" }, eTag: 'W/"1"' })
       .mockRejectedValueOnce(new Error("409"));
 

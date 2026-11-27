@@ -1,17 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  deleteDokumentFromEinreichung,
+  fetchDokument,
+  updateDokumentSichtbarkeit,
+  uploadDokumentWithSignaturdatei,
+} from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { ApiError } from "~/utils/apiError";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
-
-const mocks = vi.hoisted(() => ({
-  uploadDokumentWithSignaturdatei: vi.fn(),
-  fetchDokument: vi.fn(),
-  deleteDokumentFromEinreichung: vi.fn(),
-  updateDokumentSichtbarkeit: vi.fn(),
-}));
+import { makeDokument } from "~tests/utils/factories/dokument";
 
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server",
-  () => mocks,
+  import("~/domains/verfahren/infrastructure/repositories/dokumentRepository.server"),
 );
 
 import {
@@ -56,7 +55,7 @@ describe("einreichungDokumentActions", () => {
         context,
       );
 
-      expect(mocks.uploadDokumentWithSignaturdatei).toHaveBeenCalledWith(
+      expect(uploadDokumentWithSignaturdatei).toHaveBeenCalledWith(
         authSession,
         {
           verfahrenId: "v-1",
@@ -87,7 +86,7 @@ describe("einreichungDokumentActions", () => {
           fieldErrors: { file: [expect.any(String)] },
         },
       });
-      expect(mocks.uploadDokumentWithSignaturdatei).not.toHaveBeenCalled();
+      expect(uploadDokumentWithSignaturdatei).not.toHaveBeenCalled();
     });
 
     it("accepts any file as an Anlage", async () => {
@@ -98,7 +97,7 @@ describe("einreichungDokumentActions", () => {
         context,
       );
 
-      expect(mocks.uploadDokumentWithSignaturdatei).toHaveBeenCalledWith(
+      expect(uploadDokumentWithSignaturdatei).toHaveBeenCalledWith(
         authSession,
         expect.objectContaining({ typ: "ANHANG", file: expect.any(File) }),
       );
@@ -122,7 +121,7 @@ describe("einreichungDokumentActions", () => {
           fieldErrors: { signaturdatei: [expect.any(String)] },
         },
       });
-      expect(mocks.uploadDokumentWithSignaturdatei).not.toHaveBeenCalled();
+      expect(uploadDokumentWithSignaturdatei).not.toHaveBeenCalled();
     });
 
     it("rejects a Signaturdatei whose MIME type isn't a signature's", async () => {
@@ -144,7 +143,7 @@ describe("einreichungDokumentActions", () => {
           fieldErrors: { signaturdatei: [expect.any(String)] },
         },
       });
-      expect(mocks.uploadDokumentWithSignaturdatei).not.toHaveBeenCalled();
+      expect(uploadDokumentWithSignaturdatei).not.toHaveBeenCalled();
     });
 
     it("uploads the Dokument with its Signaturdatei", async () => {
@@ -158,7 +157,7 @@ describe("einreichungDokumentActions", () => {
         context,
       );
 
-      expect(mocks.uploadDokumentWithSignaturdatei).toHaveBeenCalledWith(
+      expect(uploadDokumentWithSignaturdatei).toHaveBeenCalledWith(
         authSession,
         expect.objectContaining({
           typ: "SCHRIFTSTUECK",
@@ -179,7 +178,7 @@ describe("einreichungDokumentActions", () => {
         context,
       );
 
-      expect(mocks.uploadDokumentWithSignaturdatei).toHaveBeenCalledWith(
+      expect(uploadDokumentWithSignaturdatei).toHaveBeenCalledWith(
         authSession,
         expect.objectContaining({ signaturdatei: undefined }),
       );
@@ -196,11 +195,11 @@ describe("einreichungDokumentActions", () => {
       );
 
       expect(result).toMatchObject({ data: { status: "invalid" } });
-      expect(mocks.uploadDokumentWithSignaturdatei).not.toHaveBeenCalled();
+      expect(uploadDokumentWithSignaturdatei).not.toHaveBeenCalled();
     });
 
     it("explains the API's refusal of a second Schriftstück", async () => {
-      mocks.uploadDokumentWithSignaturdatei.mockRejectedValue(
+      vi.mocked(uploadDokumentWithSignaturdatei).mockRejectedValue(
         new ApiError("conflict", {
           status: 409,
           problemDetails: { type: "/problems/dokument-typ-already-exists" },
@@ -227,7 +226,7 @@ describe("einreichungDokumentActions", () => {
     });
 
     it("reports other conflicts as a failed upload", async () => {
-      mocks.uploadDokumentWithSignaturdatei.mockRejectedValue(
+      vi.mocked(uploadDokumentWithSignaturdatei).mockRejectedValue(
         new ApiError("conflict", {
           status: 409,
           problemDetails: {
@@ -251,7 +250,7 @@ describe("einreichungDokumentActions", () => {
     });
 
     it("reports a failed upload for the uploaded type", async () => {
-      mocks.uploadDokumentWithSignaturdatei.mockRejectedValue(
+      vi.mocked(uploadDokumentWithSignaturdatei).mockRejectedValue(
         new ApiError("rejected", { status: 422 }),
       );
 
@@ -285,7 +284,7 @@ describe("einreichungDokumentActions", () => {
           fieldErrors: { file: [expect.any(String)] },
         },
       });
-      expect(mocks.uploadDokumentWithSignaturdatei).not.toHaveBeenCalled();
+      expect(uploadDokumentWithSignaturdatei).not.toHaveBeenCalled();
     });
 
     it("rejects an upload without Einreichung", async () => {
@@ -295,13 +294,13 @@ describe("einreichungDokumentActions", () => {
       );
 
       expect(result).toMatchObject({ init: { status: 400 } });
-      expect(mocks.uploadDokumentWithSignaturdatei).not.toHaveBeenCalled();
+      expect(uploadDokumentWithSignaturdatei).not.toHaveBeenCalled();
     });
   });
 
   describe("handleDokumentDelete", () => {
     it("deletes the Dokument and continues on the page", async () => {
-      mocks.deleteDokumentFromEinreichung.mockResolvedValue({
+      vi.mocked(deleteDokumentFromEinreichung).mockResolvedValue({
         status: "deleted",
       });
 
@@ -310,7 +309,7 @@ describe("einreichungDokumentActions", () => {
         { ...context, allowSchriftstueckDeletion: true },
       );
 
-      expect(mocks.deleteDokumentFromEinreichung).toHaveBeenCalledWith({
+      expect(deleteDokumentFromEinreichung).toHaveBeenCalledWith({
         authSession,
         verfahrenId: "v-1",
         einreichungId: "e-1",
@@ -323,23 +322,26 @@ describe("einreichungDokumentActions", () => {
     it.each([
       ["protected-dokument", 403],
       ["delete-failed", 500],
-    ])("reports a %s result for the Dokument", async (status, httpStatus) => {
-      mocks.deleteDokumentFromEinreichung.mockResolvedValue({ status });
+    ] as const)(
+      "reports a %s result for the Dokument",
+      async (status, httpStatus) => {
+        vi.mocked(deleteDokumentFromEinreichung).mockResolvedValue({ status });
 
-      const result = await handleDokumentDelete(
-        buildFormData({ einreichungId: "e-1", dokumentId: "d-1" }),
-        context,
-      );
+        const result = await handleDokumentDelete(
+          buildFormData({ einreichungId: "e-1", dokumentId: "d-1" }),
+          context,
+        );
 
-      expect(result).toMatchObject({
-        data: {
-          status: "error",
-          error: "Löschen fehlgeschlagen.",
-          data: { formType: "delete", dokumentId: "d-1" },
-        },
-        init: { status: httpStatus },
-      });
-    });
+        expect(result).toMatchObject({
+          data: {
+            status: "error",
+            error: "Löschen fehlgeschlagen.",
+            data: { formType: "delete", dokumentId: "d-1" },
+          },
+          init: { status: httpStatus },
+        });
+      },
+    );
 
     it("rejects a deletion without Dokument", async () => {
       const result = await handleDokumentDelete(
@@ -348,7 +350,7 @@ describe("einreichungDokumentActions", () => {
       );
 
       expect(result).toMatchObject({ data: { status: "invalid" } });
-      expect(mocks.deleteDokumentFromEinreichung).not.toHaveBeenCalled();
+      expect(deleteDokumentFromEinreichung).not.toHaveBeenCalled();
     });
   });
 
@@ -361,23 +363,23 @@ describe("einreichungDokumentActions", () => {
       });
 
     it("changes the Sichtbarkeit using the current eTag", async () => {
-      mocks.fetchDokument.mockResolvedValue({ eTag: "etag-1" });
+      vi.mocked(fetchDokument).mockResolvedValue({
+        dokument: makeDokument({ id: "d-1" }),
+        eTag: "etag-1",
+      });
 
       const result = await handleDokumentSichtbarkeit(
         sichtbarkeitFormData("false"),
         context,
       );
 
-      expect(mocks.updateDokumentSichtbarkeit).toHaveBeenCalledWith(
-        authSession,
-        {
-          verfahrenId: "v-1",
-          einreichungId: "e-1",
-          id: "d-1",
-          sichtbarkeitAlle: false,
-          eTag: "etag-1",
-        },
-      );
+      expect(updateDokumentSichtbarkeit).toHaveBeenCalledWith(authSession, {
+        verfahrenId: "v-1",
+        einreichungId: "e-1",
+        id: "d-1",
+        sichtbarkeitAlle: false,
+        eTag: "etag-1",
+      });
       expect(result).toMatchObject({
         status: "success",
         data: { formType: "sichtbarkeit", dokumentId: "d-1" },
@@ -385,8 +387,11 @@ describe("einreichungDokumentActions", () => {
     });
 
     it("reports a failed change", async () => {
-      mocks.fetchDokument.mockResolvedValue({ eTag: "etag-1" });
-      mocks.updateDokumentSichtbarkeit.mockRejectedValue(
+      vi.mocked(fetchDokument).mockResolvedValue({
+        dokument: makeDokument({ id: "d-1" }),
+        eTag: "etag-1",
+      });
+      vi.mocked(updateDokumentSichtbarkeit).mockRejectedValue(
         new ApiError("already submitted", { status: 409 }),
       );
 
@@ -411,7 +416,7 @@ describe("einreichungDokumentActions", () => {
       );
 
       expect(result).toMatchObject({ data: { status: "invalid" } });
-      expect(mocks.updateDokumentSichtbarkeit).not.toHaveBeenCalled();
+      expect(updateDokumentSichtbarkeit).not.toHaveBeenCalled();
     });
   });
 });

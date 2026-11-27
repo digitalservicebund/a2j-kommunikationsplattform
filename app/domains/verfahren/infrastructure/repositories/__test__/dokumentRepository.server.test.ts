@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, test, vi } from "vitest";
+import { apiRequest } from "~/domains/verfahren/infrastructure/api/apiClient";
 import {
   createDokument,
   deleteDokument,
@@ -14,20 +15,12 @@ import {
   uploadDokumentWithSignaturdatei,
 } from "~/domains/verfahren/infrastructure/repositories/dokumentRepository.server";
 import { DokumentSchema } from "~/domains/verfahren/infrastructure/schemas/dokument.schema";
+import { logger } from "~/utils/logger.server";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 
-const mocks = vi.hoisted(() => ({
-  apiRequest: vi.fn(),
-  loggerError: vi.fn(),
-}));
+vi.mock(import("~/domains/verfahren/infrastructure/api/apiClient"));
 
-vi.mock("~/domains/verfahren/infrastructure/api/apiClient", () => ({
-  apiRequest: mocks.apiRequest,
-}));
-
-vi.mock("~/utils/logger.server", () => ({
-  logger: { error: mocks.loggerError },
-}));
+vi.spyOn(logger, "error");
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -41,7 +34,7 @@ describe("fetchDokument", () => {
       sizeInBytes: 1234,
     };
 
-    mocks.apiRequest.mockResolvedValueOnce({
+    vi.mocked(apiRequest).mockResolvedValueOnce({
       data: dokument,
       eTag: 'W/"1"',
     });
@@ -52,7 +45,7 @@ describe("fetchDokument", () => {
       id: "d-1",
     });
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
+    expect(apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1",
@@ -66,14 +59,14 @@ describe("fetchDokument", () => {
 describe("fetchDokumente", () => {
   it("delegates path and message", async () => {
     const dokumente = { elemente: [] };
-    mocks.apiRequest.mockResolvedValueOnce(dokumente);
+    vi.mocked(apiRequest).mockResolvedValueOnce(dokumente);
 
     const result = await fetchDokumente(makeAuthSession(), {
       verfahrenId: "v-1",
       einreichungId: "e-1",
     });
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
+    expect(apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente",
@@ -97,7 +90,9 @@ describe(fetchDokumentDownloadLink, () => {
   });
 
   it("fetches the download link with the given disposition_type", async () => {
-    mocks.apiRequest.mockResolvedValueOnce("https://s3.example.com/dokument");
+    vi.mocked(apiRequest).mockResolvedValueOnce(
+      "https://s3.example.com/dokument",
+    );
 
     const result = await fetchDokumentDownloadLink(makeAuthSession(), {
       verfahrenId: "v-1",
@@ -107,7 +102,7 @@ describe(fetchDokumentDownloadLink, () => {
     });
 
     expect(result).toBe("https://s3.example.com/dokument");
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
+    expect(apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1/downloadlink",
         searchParams: { disposition_type: "INLINE" },
@@ -116,7 +111,9 @@ describe(fetchDokumentDownloadLink, () => {
   });
 
   it("only accepts http(s) URLs as download link", async () => {
-    mocks.apiRequest.mockResolvedValueOnce("https://s3.example.com/dokument");
+    vi.mocked(apiRequest).mockResolvedValueOnce(
+      "https://s3.example.com/dokument",
+    );
 
     await fetchDokumentDownloadLink(makeAuthSession(), {
       verfahrenId: "v-1",
@@ -124,11 +121,11 @@ describe(fetchDokumentDownloadLink, () => {
       id: "d-1",
     });
 
-    const { schema } = mocks.apiRequest.mock.calls[0][0];
-    expect(schema.safeParse("https://s3.example.com/dokument").success).toBe(
+    const { schema } = vi.mocked(apiRequest).mock.calls[0][0];
+    expect(schema?.safeParse("https://s3.example.com/dokument").success).toBe(
       true,
     );
-    expect(schema.safeParse("javascript:alert(1)").success).toBe(false);
+    expect(schema?.safeParse("javascript:alert(1)").success).toBe(false);
   });
 });
 
@@ -148,7 +145,9 @@ describe("fetchDokumentDatei", () => {
     const storageResponse = new Response("%PDF-1.7");
     const fetchMock = vi.fn().mockResolvedValue(storageResponse);
     vi.stubGlobal("fetch", fetchMock);
-    mocks.apiRequest.mockResolvedValueOnce("https://s3.example.com/dokument");
+    vi.mocked(apiRequest).mockResolvedValueOnce(
+      "https://s3.example.com/dokument",
+    );
     const signal = new AbortController().signal;
 
     const result = await fetchDokumentDatei(makeAuthSession(), {
@@ -168,14 +167,14 @@ describe("fetchDokumentDatei", () => {
       "fetch",
       vi.fn().mockResolvedValue(new Response(null, { status: 403 })),
     );
-    mocks.apiRequest.mockResolvedValueOnce(
+    vi.mocked(apiRequest).mockResolvedValueOnce(
       "https://s3.example.com/dokument?X-Amz-Signature=secret",
     );
 
     await expect(
       fetchDokumentDatei(makeAuthSession(), options),
     ).rejects.toThrow("Datei for Dokument with id d-1 could not be fetched.");
-    expect(JSON.stringify(mocks.loggerError.mock.calls)).not.toContain(
+    expect(JSON.stringify(vi.mocked(logger.error).mock.calls)).not.toContain(
       "X-Amz-Signature",
     );
   });
@@ -185,7 +184,9 @@ describe("fetchDokumentDatei", () => {
       "fetch",
       vi.fn().mockResolvedValue(new Response(null, { status: 404 })),
     );
-    mocks.apiRequest.mockResolvedValueOnce("https://s3.example.com/dokument");
+    vi.mocked(apiRequest).mockResolvedValueOnce(
+      "https://s3.example.com/dokument",
+    );
 
     await expect(
       fetchDokumentDatei(makeAuthSession(), options),
@@ -200,7 +201,7 @@ describe("fetchDokumentValidierungsstatus", () => {
       ergebnis: "GRUEN",
       fehler: [],
     };
-    mocks.apiRequest.mockResolvedValueOnce(status);
+    vi.mocked(apiRequest).mockResolvedValueOnce(status);
 
     const result = await fetchDokumentValidierungsstatus(makeAuthSession(), {
       verfahrenId: "v-1",
@@ -208,7 +209,7 @@ describe("fetchDokumentValidierungsstatus", () => {
       id: "d-1",
     });
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
+    expect(apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1/validierungsstatus",
@@ -223,7 +224,7 @@ describe("fetchDokumentValidierungsstatus", () => {
 describe("updateDokumentSichtbarkeit", () => {
   it("calls the PATCH endpoint with the Sichtbarkeit and eTag", async () => {
     const dokument = { id: "d-1", sichtbarkeitAlle: false };
-    mocks.apiRequest.mockResolvedValueOnce(dokument);
+    vi.mocked(apiRequest).mockResolvedValueOnce(dokument);
 
     const result = await updateDokumentSichtbarkeit(makeAuthSession(), {
       id: "d-1",
@@ -234,7 +235,7 @@ describe("updateDokumentSichtbarkeit", () => {
     });
 
     expect(result).toBe(dokument);
-    expect(mocks.apiRequest).toHaveBeenCalledWith({
+    expect(apiRequest).toHaveBeenCalledWith({
       authSession: makeAuthSession(),
       path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1",
       method: "PATCH",
@@ -249,7 +250,7 @@ describe("updateDokumentSichtbarkeit", () => {
 
 describe("deleteDokument", () => {
   it("calls DELETE endpoint and returns success result", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({ ok: true });
+    vi.mocked(apiRequest).mockResolvedValueOnce({ ok: true });
 
     const result = await deleteDokument(makeAuthSession(), {
       id: "d-1",
@@ -260,7 +261,7 @@ describe("deleteDokument", () => {
 
     expect(result).toEqual({ success: true });
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith({
+    expect(apiRequest).toHaveBeenCalledWith({
       authSession: makeAuthSession(),
       path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1",
       method: "DELETE",
@@ -271,7 +272,7 @@ describe("deleteDokument", () => {
   });
 
   it("returns error on 412", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({ ok: false, status: 412 });
+    vi.mocked(apiRequest).mockResolvedValueOnce({ ok: false, status: 412 });
 
     const result = await deleteDokument(makeAuthSession(), {
       id: "d-1",
@@ -284,7 +285,7 @@ describe("deleteDokument", () => {
   });
 
   it("returns error for other non-success responses", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({ ok: false, status: 500 });
+    vi.mocked(apiRequest).mockResolvedValueOnce({ ok: false, status: 500 });
 
     const result = await deleteDokument(makeAuthSession(), {
       id: "d-1",
@@ -312,10 +313,12 @@ describe("deleteDokumentFromEinreichung", () => {
     elemente: object[],
     einreichungName = "Klageeinreichung",
   ) {
-    mocks.apiRequest.mockResolvedValueOnce({ elemente }).mockResolvedValueOnce({
-      data: { id: "e-1", name: einreichungName },
-      eTag: null,
-    });
+    vi.mocked(apiRequest)
+      .mockResolvedValueOnce({ elemente })
+      .mockResolvedValueOnce({
+        data: { id: "e-1", name: einreichungName },
+        eTag: null,
+      });
   }
 
   function deleteDokumentWithId(dokumentId: string) {
@@ -336,7 +339,7 @@ describe("deleteDokumentFromEinreichung", () => {
     });
 
     expect(result).toEqual({ status: "invalid-form-data" });
-    expect(mocks.apiRequest).not.toHaveBeenCalled();
+    expect(apiRequest).not.toHaveBeenCalled();
   });
 
   test("looks up the Einreichung the Dokument belongs to", async () => {
@@ -344,7 +347,7 @@ describe("deleteDokumentFromEinreichung", () => {
 
     await deleteDokumentWithId("d-1");
 
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+    expect(apiRequest).toHaveBeenNthCalledWith(
       2,
       expect.objectContaining({
         path: "/api/v1/verfahren/v-1/einreichungen/e-1",
@@ -358,7 +361,7 @@ describe("deleteDokumentFromEinreichung", () => {
     const result = await deleteDokumentWithId("d-1");
 
     expect(result).toEqual({ status: "protected-dokument" });
-    expect(mocks.apiRequest).toHaveBeenCalledTimes(2);
+    expect(apiRequest).toHaveBeenCalledTimes(2);
   });
 
   test("protects a Schriftstück of the Klageeinreichung even when it is not the first element", async () => {
@@ -367,7 +370,7 @@ describe("deleteDokumentFromEinreichung", () => {
     const result = await deleteDokumentWithId("d-4");
 
     expect(result).toEqual({ status: "protected-dokument" });
-    expect(mocks.apiRequest).toHaveBeenCalledTimes(2);
+    expect(apiRequest).toHaveBeenCalledTimes(2);
   });
 
   test("protects the auto-managed XJustiz-Dokument from deletion", async () => {
@@ -376,12 +379,12 @@ describe("deleteDokumentFromEinreichung", () => {
     const result = await deleteDokumentWithId("d-3");
 
     expect(result).toEqual({ status: "protected-dokument" });
-    expect(mocks.apiRequest).toHaveBeenCalledTimes(2);
+    expect(apiRequest).toHaveBeenCalledTimes(2);
   });
 
   test("allows deleting a Schriftstück of the Klageeinreichung where it's replaceable", async () => {
     mockLookups([klageschrift, anlage]);
-    mocks.apiRequest
+    vi.mocked(apiRequest)
       .mockResolvedValueOnce({ data: { id: "d-1" }, eTag: 'W/"1"' })
       .mockResolvedValueOnce({ ok: true });
 
@@ -398,7 +401,7 @@ describe("deleteDokumentFromEinreichung", () => {
 
   test("allows deleting a Schriftstück of a Weitere Einreichung", async () => {
     mockLookups([klageschrift], "Schriftsatz");
-    mocks.apiRequest
+    vi.mocked(apiRequest)
       .mockResolvedValueOnce({ data: { id: "d-1" }, eTag: 'W/"1"' })
       .mockResolvedValueOnce({ ok: true });
 
@@ -409,21 +412,21 @@ describe("deleteDokumentFromEinreichung", () => {
 
   test("returns delete-failed when downstream delete call is unsuccessful", async () => {
     mockLookups([klageschrift, anlage]);
-    mocks.apiRequest
+    vi.mocked(apiRequest)
       .mockResolvedValueOnce({ data: { id: "d-2" }, eTag: undefined })
       .mockResolvedValueOnce({ ok: false, status: 500 });
 
     const result = await deleteDokumentWithId("d-2");
 
     expect(result).toEqual({ status: "delete-failed" });
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+    expect(apiRequest).toHaveBeenNthCalledWith(
       3,
       expect.objectContaining({
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-2",
         includeResponseETag: true,
       }),
     );
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+    expect(apiRequest).toHaveBeenNthCalledWith(
       4,
       expect.objectContaining({
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-2",
@@ -435,7 +438,7 @@ describe("deleteDokumentFromEinreichung", () => {
 
   test("returns deleted when a deletable dokument deletion succeeds", async () => {
     mockLookups([klageschrift, anlage]);
-    mocks.apiRequest
+    vi.mocked(apiRequest)
       .mockResolvedValueOnce({ data: { id: "d-2" }, eTag: 'W/"1"' })
       .mockResolvedValueOnce({ ok: true });
 
@@ -456,7 +459,7 @@ describe("createDokument", () => {
       erstelltAm: "2026-03-08T05:00:29.659Z",
       sichtbarkeitAlle: true,
     };
-    mocks.apiRequest.mockResolvedValueOnce({
+    vi.mocked(apiRequest).mockResolvedValueOnce({
       data: dokument,
       eTag: 'W/"0"',
     });
@@ -469,7 +472,7 @@ describe("createDokument", () => {
       sichtbarkeitAlle: true,
     });
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
+    expect(apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente",
@@ -507,7 +510,7 @@ describe("uploadDokumentDatei", () => {
       erstelltAm: "2026-03-08T05:00:29.659Z",
       sichtbarkeitAlle: true,
     };
-    mocks.apiRequest.mockResolvedValueOnce(dokument);
+    vi.mocked(apiRequest).mockResolvedValueOnce(dokument);
     const file = new File(["abc"], "test.txt", { type: "text/plain" });
 
     const result = await uploadDokumentDatei(makeAuthSession(), {
@@ -518,7 +521,7 @@ describe("uploadDokumentDatei", () => {
       eTag: 'W/"0"',
     });
 
-    const callArgs = mocks.apiRequest.mock.calls[0][0];
+    const callArgs = vi.mocked(apiRequest).mock.calls[0][0];
     expect(callArgs.path).toBe(
       "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1/datei",
     );
@@ -535,7 +538,7 @@ describe("uploadDokumentDatei", () => {
 
 describe("uploadDokument", () => {
   it("composes createDokument + uploadDokumentDatei", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({
+    vi.mocked(apiRequest).mockResolvedValueOnce({
       data: {
         id: "d-1",
         status: "ANGELEGT",
@@ -547,7 +550,7 @@ describe("uploadDokument", () => {
       },
       eTag: 'W/"0"',
     });
-    mocks.apiRequest.mockResolvedValueOnce({
+    vi.mocked(apiRequest).mockResolvedValueOnce({
       id: "d-1",
       status: "ERSTELLT",
       validierungslaufStatus: "AUSSTEHEND",
@@ -574,7 +577,7 @@ describe("uploadDokument", () => {
       "ANHANG",
     );
 
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+    expect(apiRequest).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente",
@@ -586,7 +589,7 @@ describe("uploadDokument", () => {
         },
       }),
     );
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+    expect(apiRequest).toHaveBeenNthCalledWith(
       2,
       expect.objectContaining({
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1/datei",
@@ -599,11 +602,11 @@ describe("uploadDokument", () => {
   });
 
   it("creates the Dokument with the given Sichtbarkeit", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({
+    vi.mocked(apiRequest).mockResolvedValueOnce({
       data: { id: "d-1" },
       eTag: 'W/"0"',
     });
-    mocks.apiRequest.mockResolvedValueOnce({});
+    vi.mocked(apiRequest).mockResolvedValueOnce({});
     const file = new File(["abc"], "test.txt", { type: "text/plain" });
 
     await uploadDokument(
@@ -615,7 +618,7 @@ describe("uploadDokument", () => {
       false,
     );
 
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+    expect(apiRequest).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
         body: {
@@ -628,7 +631,7 @@ describe("uploadDokument", () => {
   });
 
   it("deletes the orphaned metadata-only Dokument and rethrows when the file upload fails", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({
+    vi.mocked(apiRequest).mockResolvedValueOnce({
       data: {
         id: "d-1",
         status: "ANGELEGT",
@@ -641,17 +644,17 @@ describe("uploadDokument", () => {
       eTag: 'W/"0"',
     });
     const uploadError = new Error("Datei upload failed");
-    mocks.apiRequest.mockRejectedValueOnce(uploadError);
-    mocks.apiRequest.mockResolvedValueOnce({ ok: true });
+    vi.mocked(apiRequest).mockRejectedValueOnce(uploadError);
+    vi.mocked(apiRequest).mockResolvedValueOnce({ ok: true });
     const file = new File(["abc"], "test.txt", { type: "text/plain" });
 
     await expect(
       uploadDokument(makeAuthSession(), "v-1", "e-1", file, "ANHANG"),
     ).rejects.toBe(uploadError);
 
-    expect(mocks.loggerError).not.toHaveBeenCalled();
-    expect(mocks.apiRequest).toHaveBeenCalledTimes(3);
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+    expect(logger.error).not.toHaveBeenCalled();
+    expect(apiRequest).toHaveBeenCalledTimes(3);
+    expect(apiRequest).toHaveBeenNthCalledWith(
       3,
       expect.objectContaining({
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1",
@@ -663,7 +666,7 @@ describe("uploadDokument", () => {
   });
 
   it("still rethrows the original upload error even if the cleanup delete also fails", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({
+    vi.mocked(apiRequest).mockResolvedValueOnce({
       data: {
         id: "d-1",
         status: "ANGELEGT",
@@ -676,21 +679,23 @@ describe("uploadDokument", () => {
       eTag: 'W/"0"',
     });
     const uploadError = new Error("Datei upload failed");
-    mocks.apiRequest.mockRejectedValueOnce(uploadError);
-    mocks.apiRequest.mockRejectedValueOnce(new Error("Delete also failed"));
+    vi.mocked(apiRequest).mockRejectedValueOnce(uploadError);
+    vi.mocked(apiRequest).mockRejectedValueOnce(
+      new Error("Delete also failed"),
+    );
     const file = new File(["abc"], "test.txt", { type: "text/plain" });
 
     await expect(
       uploadDokument(makeAuthSession(), "v-1", "e-1", file, "ANHANG"),
     ).rejects.toBe(uploadError);
-    expect(mocks.loggerError).toHaveBeenCalledWith(
+    expect(logger.error).toHaveBeenCalledWith(
       { verfahrenId: "v-1", einreichungId: "e-1", dokumentId: "d-1" },
       "Failed to delete orphaned Dokument after Datei upload failed",
     );
   });
 
   it("logs and rethrows the original upload error when the cleanup delete responds unsuccessfully", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({
+    vi.mocked(apiRequest).mockResolvedValueOnce({
       data: {
         id: "d-1",
         status: "ANGELEGT",
@@ -703,14 +708,14 @@ describe("uploadDokument", () => {
       eTag: 'W/"0"',
     });
     const uploadError = new Error("Datei upload failed");
-    mocks.apiRequest.mockRejectedValueOnce(uploadError);
-    mocks.apiRequest.mockResolvedValueOnce({ ok: false, status: 412 });
+    vi.mocked(apiRequest).mockRejectedValueOnce(uploadError);
+    vi.mocked(apiRequest).mockResolvedValueOnce({ ok: false, status: 412 });
     const file = new File(["abc"], "test.txt", { type: "text/plain" });
 
     await expect(
       uploadDokument(makeAuthSession(), "v-1", "e-1", file, "ANHANG"),
     ).rejects.toBe(uploadError);
-    expect(mocks.loggerError).toHaveBeenCalledWith(
+    expect(logger.error).toHaveBeenCalledWith(
       { verfahrenId: "v-1", einreichungId: "e-1", dokumentId: "d-1" },
       "Failed to delete orphaned Dokument after Datei upload failed",
     );
@@ -729,11 +734,11 @@ describe("uploadDokumentWithSignaturdatei", () => {
   });
 
   function mockUploadedDokument() {
-    mocks.apiRequest.mockResolvedValueOnce({
+    vi.mocked(apiRequest).mockResolvedValueOnce({
       data: { id: "d-1" },
       eTag: 'W/"0"',
     });
-    mocks.apiRequest.mockResolvedValueOnce({ id: "d-1" });
+    vi.mocked(apiRequest).mockResolvedValueOnce({ id: "d-1" });
   }
 
   it("uploads only the Dokument without a Signaturdatei", async () => {
@@ -741,23 +746,23 @@ describe("uploadDokumentWithSignaturdatei", () => {
 
     await uploadDokumentWithSignaturdatei(makeAuthSession(), options);
 
-    expect(mocks.apiRequest).toHaveBeenCalledTimes(2);
+    expect(apiRequest).toHaveBeenCalledTimes(2);
   });
 
   it("uploads the Signaturdatei named after the Dokument", async () => {
     mockUploadedDokument();
-    mocks.apiRequest.mockResolvedValueOnce({
+    vi.mocked(apiRequest).mockResolvedValueOnce({
       data: { id: "s-1" },
       eTag: 'W/"0"',
     });
-    mocks.apiRequest.mockResolvedValueOnce({ id: "s-1" });
+    vi.mocked(apiRequest).mockResolvedValueOnce({ id: "s-1" });
 
     await uploadDokumentWithSignaturdatei(makeAuthSession(), {
       ...options,
       signaturdatei,
     });
 
-    expect(mocks.apiRequest).toHaveBeenNthCalledWith(
+    expect(apiRequest).toHaveBeenNthCalledWith(
       3,
       expect.objectContaining({
         method: "POST",
@@ -768,7 +773,7 @@ describe("uploadDokumentWithSignaturdatei", () => {
         },
       }),
     );
-    const { body } = mocks.apiRequest.mock.calls[3][0];
+    const { body } = vi.mocked(apiRequest).mock.calls[3][0];
     expect((body as FormData).get("datei")).toMatchObject({
       name: "Klageschrift.pdf.p7s",
       type: "application/pkcs7-signature",
@@ -778,12 +783,12 @@ describe("uploadDokumentWithSignaturdatei", () => {
   it("deletes the Dokument again and rethrows when the Signaturdatei fails", async () => {
     mockUploadedDokument();
     const signaturdateiError = new Error("Signaturdatei upload failed");
-    mocks.apiRequest.mockRejectedValueOnce(signaturdateiError);
-    mocks.apiRequest.mockResolvedValueOnce({
+    vi.mocked(apiRequest).mockRejectedValueOnce(signaturdateiError);
+    vi.mocked(apiRequest).mockResolvedValueOnce({
       data: { id: "d-1" },
       eTag: 'W/"1"',
     });
-    mocks.apiRequest.mockResolvedValueOnce({ ok: true });
+    vi.mocked(apiRequest).mockResolvedValueOnce({ ok: true });
 
     await expect(
       uploadDokumentWithSignaturdatei(makeAuthSession(), {
@@ -792,21 +797,21 @@ describe("uploadDokumentWithSignaturdatei", () => {
       }),
     ).rejects.toBe(signaturdateiError);
 
-    expect(mocks.apiRequest).toHaveBeenLastCalledWith(
+    expect(apiRequest).toHaveBeenLastCalledWith(
       expect.objectContaining({
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/dokumente/d-1",
         method: "DELETE",
         eTag: 'W/"1"',
       }),
     );
-    expect(mocks.loggerError).not.toHaveBeenCalled();
+    expect(logger.error).not.toHaveBeenCalled();
   });
 
   it("logs and rethrows the Signaturdatei error when deleting the Dokument fails", async () => {
     mockUploadedDokument();
     const signaturdateiError = new Error("Signaturdatei upload failed");
-    mocks.apiRequest.mockRejectedValueOnce(signaturdateiError);
-    mocks.apiRequest.mockRejectedValueOnce(new Error("Fetch failed"));
+    vi.mocked(apiRequest).mockRejectedValueOnce(signaturdateiError);
+    vi.mocked(apiRequest).mockRejectedValueOnce(new Error("Fetch failed"));
 
     await expect(
       uploadDokumentWithSignaturdatei(makeAuthSession(), {
@@ -815,7 +820,7 @@ describe("uploadDokumentWithSignaturdatei", () => {
       }),
     ).rejects.toBe(signaturdateiError);
 
-    expect(mocks.loggerError).toHaveBeenCalledWith(
+    expect(logger.error).toHaveBeenCalledWith(
       { verfahrenId: "v-1", einreichungId: "e-1", dokumentId: "d-1" },
       "Failed to delete Dokument after its Signaturdatei upload failed",
     );

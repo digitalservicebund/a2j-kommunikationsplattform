@@ -10,11 +10,8 @@ import {
 } from "~/domains/verfahren/infrastructure/repositories/stammdatenRepository.server";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 
-const mocks = vi.hoisted(() => ({
-  fetch: vi.fn(),
-}));
-
-globalThis.fetch = mocks.fetch;
+const fetchMock = vi.fn();
+globalThis.fetch = fetchMock;
 
 describe(fetchAnschriftstypen, () => {
   beforeEach(() => {
@@ -28,14 +25,14 @@ describe(fetchAnschriftstypen, () => {
       elemente: [{ id: "typ-1", wert: "Privatanschrift", code: "017" }],
     };
 
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => mockAnschriftstypen,
     });
 
     const result = await fetchAnschriftstypen(makeAuthSession());
 
-    expect(mocks.fetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/codelisten/anschriftstypen",
       expect.objectContaining({
         headers: expect.objectContaining({
@@ -51,7 +48,7 @@ describe(fetchAnschriftstypen, () => {
   });
 
   it("throws when the schema does not match", async () => {
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
     });
@@ -86,14 +83,14 @@ describe(fetchGerichte, () => {
       ],
     };
 
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => mockGerichte,
     });
 
     const result = await fetchGerichte(makeAuthSession());
 
-    expect(mocks.fetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/codelisten/gerichte",
       expect.objectContaining({
         headers: expect.objectContaining({
@@ -109,7 +106,7 @@ describe(fetchGerichte, () => {
   });
 
   it("throws error when API returns non-ok response", async () => {
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: false,
       status: 404,
       statusText: "Not Found",
@@ -126,7 +123,7 @@ describe(fetchGerichte, () => {
   });
 
   it("throws error on invalid schema", async () => {
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
     });
@@ -137,7 +134,7 @@ describe(fetchGerichte, () => {
   });
 
   it("returns empty list when API returns no elemente", async () => {
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({ list_version: "1", elemente: [] }),
     });
@@ -163,14 +160,14 @@ describe(fetchKanzleiformen, () => {
       elemente: [{ id: "kanzleiform-1", wert: "Einzelanwalt", code: "001" }],
     };
 
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => mockKanzleiformen,
     });
 
     const result = await fetchKanzleiformen(makeAuthSession());
 
-    expect(mocks.fetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/codelisten/kanzleiformen",
       expect.objectContaining({
         headers: expect.objectContaining({
@@ -186,7 +183,7 @@ describe(fetchKanzleiformen, () => {
   });
 
   it("throws when the schema does not match", async () => {
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
     });
@@ -209,14 +206,14 @@ describe(fetchRechtsformen, () => {
       elemente: [{ id: "rechtsform-1", wert: "GbR", code: "GbR" }],
     };
 
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => mockRechtsformen,
     });
 
     const result = await fetchRechtsformen(makeAuthSession());
 
-    expect(mocks.fetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/codelisten/rechtsformen",
       expect.objectContaining({
         headers: expect.objectContaining({
@@ -232,7 +229,7 @@ describe(fetchRechtsformen, () => {
   });
 
   it("throws when the schema does not match", async () => {
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
     });
@@ -255,14 +252,14 @@ describe(fetchRollenbezeichnungen, () => {
       elemente: [{ id: "rolle-1", wert: "Kläger(in)", code: "101" }],
     };
 
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => mockRollenbezeichnungen,
     });
 
     const result = await fetchRollenbezeichnungen(makeAuthSession());
 
-    expect(mocks.fetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/codelisten/rollenbezeichnungen",
       expect.objectContaining({
         headers: expect.objectContaining({
@@ -278,7 +275,7 @@ describe(fetchRollenbezeichnungen, () => {
   });
 
   it("throws when the schema does not match", async () => {
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
     });
@@ -301,11 +298,14 @@ describe(fetchStaaten, () => {
       elemente: [{ id: "staat-1", wert: "Deutschland", code: "000" }],
     };
 
-    mocks.fetch.mockResolvedValue({ ok: true, json: async () => mockStaaten });
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => mockStaaten,
+    });
 
     const result = await fetchStaaten(makeAuthSession());
 
-    expect(mocks.fetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/codelisten/staaten",
       expect.objectContaining({
         headers: expect.objectContaining({
@@ -321,7 +321,7 @@ describe(fetchStaaten, () => {
   });
 
   it("throws when the schema does not match", async () => {
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
     });
@@ -346,14 +346,14 @@ describe(fetchTelekommunikationsarten, () => {
       ],
     };
 
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => mockTelekommunikationsarten,
     });
 
     const result = await fetchTelekommunikationsarten(makeAuthSession());
 
-    expect(mocks.fetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledWith(
       "http://localhost:8080/api/v1/codelisten/telekommunikationsarten",
       expect.objectContaining({
         headers: expect.objectContaining({
@@ -369,7 +369,7 @@ describe(fetchTelekommunikationsarten, () => {
   });
 
   it("throws when the schema does not match", async () => {
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
     });

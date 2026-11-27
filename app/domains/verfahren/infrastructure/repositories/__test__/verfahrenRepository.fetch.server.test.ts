@@ -10,13 +10,8 @@ import {
   FetchVerfahrenOptions,
 } from "../verfahrenRepository.server";
 
-const mocks = vi.hoisted(() => {
-  return {
-    fetch: vi.fn(),
-  };
-});
-
-globalThis.fetch = mocks.fetch;
+const fetchMock = vi.fn();
+globalThis.fetch = fetchMock;
 
 const apiVerfahren = {
   id: "2ab3cbc7-d00a-48bf-95a1-4d6f07406196",
@@ -67,7 +62,7 @@ describe("fetchVerfahren", () => {
   });
 
   it("calls the API with correct arguments and returns camelCase Verfahren", async () => {
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({ elemente: [apiVerfahren] }),
     });
@@ -79,10 +74,10 @@ describe("fetchVerfahren", () => {
       sort: SORT_VALUES[0],
     });
 
-    const calledUrl = mocks.fetch.mock.calls[0][0] as string;
+    const calledUrl = fetchMock.mock.calls[0][0] as string;
     expect(calledUrl).toContain("limit=99");
     expect(calledUrl).toContain("offset=123");
-    expect(mocks.fetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
         headers: expect.objectContaining({
@@ -95,7 +90,7 @@ describe("fetchVerfahren", () => {
   });
 
   it("throws error on invalid schema", async () => {
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => [{ invalid: true }],
     });
@@ -106,7 +101,7 @@ describe("fetchVerfahren", () => {
   });
 
   it("throws error when API returns non-ok response", async () => {
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: false,
       status: 500,
       statusText: "Internal Server Error",
@@ -124,7 +119,7 @@ describe("fetchVerfahren", () => {
 
   describe("gericht parameter handling", () => {
     it("includes gericht parameter when provided", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
       });
@@ -137,19 +132,19 @@ describe("fetchVerfahren", () => {
         sort: SORT_VALUES[0],
       });
 
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.stringContaining("gericht=b727131c-0c32-91ba-3eaa-f44405967b6d"),
         expect.any(Object),
       );
     });
 
     it("excludes gericht parameter when null", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
       });
       await fetchVerfahren(makeAuthSession(), { gericht: null });
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.not.stringContaining("gericht="),
         expect.any(Object),
       );
@@ -164,7 +159,7 @@ describe("fetchVerfahren", () => {
     });
 
     it("includes sort parameter when provided", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
       });
@@ -173,7 +168,7 @@ describe("fetchVerfahren", () => {
         sort: SORT_VALUES[1],
       });
 
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.stringContaining(
           `sort=${encodeURIComponent(toSortQueryValue(SORT_VALUES[1]))}`,
         ),
@@ -182,12 +177,12 @@ describe("fetchVerfahren", () => {
     });
 
     it("excludes sort parameter when empty string", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
       });
       await fetchVerfahren(makeAuthSession(), { sort: "" });
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.not.stringContaining("sort="),
         expect.any(Object),
       );
@@ -202,7 +197,7 @@ describe("fetchVerfahren", () => {
     });
 
     it("includes suchbegriff parameter when suchbegriff is provided", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
       });
@@ -211,26 +206,26 @@ describe("fetchVerfahren", () => {
         suchbegriff: "legal case",
       });
 
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.stringContaining("suchbegriff=legal+case"),
         expect.any(Object),
       );
     });
 
     it("excludes suchbegriff parameter when suchbegriff is null", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
       });
       await fetchVerfahren(makeAuthSession(), { suchbegriff: null });
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.not.stringContaining("suchbegriff="),
         expect.any(Object),
       );
     });
 
     it("trims whitespace from suchbegriff before sending as suchbegriff", async () => {
-      mocks.fetch.mockResolvedValue({
+      fetchMock.mockResolvedValue({
         ok: true,
         json: async () => ({ elemente: [] }),
       });
@@ -239,7 +234,7 @@ describe("fetchVerfahren", () => {
         suchbegriff: "   trimmed search   ",
       });
 
-      expect(mocks.fetch).toHaveBeenCalledWith(
+      expect(fetchMock).toHaveBeenCalledWith(
         expect.stringContaining("suchbegriff=trimmed+search"),
         expect.any(Object),
       );
@@ -253,7 +248,7 @@ describe("fetchVerfahrenById", () => {
   });
 
   it("calls the API with correct arguments and returns camelCase Verfahren", async () => {
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => apiVerfahren,
     });
@@ -262,7 +257,7 @@ describe("fetchVerfahrenById", () => {
       id: apiVerfahren.id,
     });
 
-    expect(mocks.fetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining(`/verfahren/${apiVerfahren.id}`),
       expect.objectContaining({
         headers: expect.objectContaining({
@@ -275,7 +270,7 @@ describe("fetchVerfahrenById", () => {
   });
 
   it("throws error on invalid schema", async () => {
-    mocks.fetch.mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({ invalid: true }),
     });

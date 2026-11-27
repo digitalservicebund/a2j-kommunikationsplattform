@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { apiRequest } from "~/domains/verfahren/infrastructure/api/apiClient";
 import {
   createEinreichung,
   deleteEinreichung,
@@ -9,13 +10,7 @@ import {
 } from "~/domains/verfahren/infrastructure/repositories/einreichungRepository.server";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 
-const mocks = vi.hoisted(() => ({
-  apiRequest: vi.fn(),
-}));
-
-vi.mock("~/domains/verfahren/infrastructure/api/apiClient", () => ({
-  apiRequest: mocks.apiRequest,
-}));
+vi.mock(import("~/domains/verfahren/infrastructure/api/apiClient"));
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -35,7 +30,7 @@ describe("fetchEinreichungById", () => {
       name: "Klageschrift",
     };
 
-    mocks.apiRequest.mockResolvedValueOnce({
+    vi.mocked(apiRequest).mockResolvedValueOnce({
       data: einreichung,
       eTag: 'W/"1"',
     });
@@ -45,7 +40,7 @@ describe("fetchEinreichungById", () => {
       verfahrenId: "v-1",
     });
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
+    expect(apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen/e-1",
@@ -61,13 +56,13 @@ describe("fetchEinreichungById", () => {
 describe("fetchEinreichungenById", () => {
   it("delegates path and message", async () => {
     const einreichungen = { elemente: [] };
-    mocks.apiRequest.mockResolvedValueOnce(einreichungen);
+    vi.mocked(apiRequest).mockResolvedValueOnce(einreichungen);
 
     const result = await fetchEinreichungenById(makeAuthSession(), {
       id: "v-1",
     });
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
+    expect(apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen",
@@ -86,14 +81,14 @@ describe("fetchEinreichungStatus", () => {
       ergebnis: "GRUEN",
       fehler: [],
     };
-    mocks.apiRequest.mockResolvedValueOnce(status);
+    vi.mocked(apiRequest).mockResolvedValueOnce(status);
 
     const result = await fetchEinreichungValidierungsstatus(makeAuthSession(), {
       id: "e-1",
       verfahrenId: "v-1",
     });
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
+    expect(apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen/e-1/validierungsstatus",
@@ -114,7 +109,7 @@ describe("createEinreichung", () => {
       erstelltAm: "2026-01-01T12:00:00.000Z",
       erstelltVon: "",
     };
-    mocks.apiRequest.mockResolvedValueOnce(mockEinreichung);
+    vi.mocked(apiRequest).mockResolvedValueOnce(mockEinreichung);
 
     const result = await createEinreichung(
       makeAuthSession(),
@@ -122,7 +117,7 @@ describe("createEinreichung", () => {
       "Klageeinreichung",
     );
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
+    expect(apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         authSession: makeAuthSession(),
         path: "/api/v1/verfahren/v-1/einreichungen",
@@ -136,11 +131,11 @@ describe("createEinreichung", () => {
   });
 
   it("sends the given name as the request body (e.g. for a weitere Einreichung)", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({});
+    vi.mocked(apiRequest).mockResolvedValueOnce({});
 
     await createEinreichung(makeAuthSession(), "v-1", "Schriftsatz");
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith(
+    expect(apiRequest).toHaveBeenCalledWith(
       expect.objectContaining({ body: { name: "Schriftsatz" } }),
     );
   });
@@ -148,7 +143,7 @@ describe("createEinreichung", () => {
 
 describe("submitEinreichungen", () => {
   it("calls the einreichen endpoint with the given eTag and returns the camelCase result", async () => {
-    mocks.apiRequest.mockResolvedValueOnce({ belegId: "b-1" });
+    vi.mocked(apiRequest).mockResolvedValueOnce({ belegId: "b-1" });
 
     const result = await submitEinreichungen(makeAuthSession(), {
       verfahrenId: "v-1",
@@ -158,7 +153,7 @@ describe("submitEinreichungen", () => {
 
     expect(result).toEqual({ belegId: "b-1" });
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith({
+    expect(apiRequest).toHaveBeenCalledWith({
       authSession: makeAuthSession(),
       path: "/api/v1/verfahren/v-1/einreichungen/e-1/einreichen",
       method: "POST",
@@ -171,7 +166,7 @@ describe("submitEinreichungen", () => {
 
 describe("deleteEinreichung", () => {
   it("sends the DELETE with the given eTag as If-Match", async () => {
-    mocks.apiRequest.mockResolvedValueOnce(undefined);
+    vi.mocked(apiRequest).mockResolvedValueOnce(undefined);
 
     await deleteEinreichung(makeAuthSession(), {
       verfahrenId: "v-1",
@@ -179,7 +174,7 @@ describe("deleteEinreichung", () => {
       eTag: 'W/"3"',
     });
 
-    expect(mocks.apiRequest).toHaveBeenCalledWith({
+    expect(apiRequest).toHaveBeenCalledWith({
       authSession: makeAuthSession(),
       path: "/api/v1/verfahren/v-1/einreichungen/e-1",
       method: "DELETE",

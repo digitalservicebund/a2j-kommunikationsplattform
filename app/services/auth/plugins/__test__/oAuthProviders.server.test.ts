@@ -1,3 +1,4 @@
+import { Agent, fetch, type Response as UndiciResponse } from "undici";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthProvider } from "../../auth.types";
 import {
@@ -7,15 +8,10 @@ import {
   makeMapProfileToUser,
 } from "../oAuthProviders.server";
 
-const mocks = vi.hoisted(() => ({
-  fetch: vi.fn(),
-  Agent: vi.fn(),
-}));
-
-vi.mock("undici", () => ({
-  fetch: mocks.fetch,
-  Agent: mocks.Agent,
-}));
+// Automocking fails for undici, so the exports used are mocked explicitly. The
+// module isn't passed as `import()`, as a mock function can't satisfy the type
+// of the `Agent` class.
+vi.mock("undici", () => ({ fetch: vi.fn(), Agent: vi.fn() }));
 
 vi.mock("~/config/config.server", () => ({
   serverConfig: () => ({
@@ -47,7 +43,7 @@ const tokenExchangeResponse = {
 function stubTokenExchange(response: (init: RequestInit) => Response) {
   const globalFetch = vi.fn(async (_url, init) => response(init));
   vi.stubGlobal("fetch", globalFetch);
-  return vi.mocked(fetch);
+  return globalFetch;
 }
 
 function successfulTokenExchange() {
@@ -186,13 +182,13 @@ describe("makeGetTokenFromBrakIdp", () => {
   function jsonResponse(
     body: unknown,
     { ok = true, status = 200 } = {},
-  ): Response {
+  ): UndiciResponse {
     return {
       ok,
       status,
       json: vi.fn().mockResolvedValue(body),
       text: vi.fn().mockResolvedValue(JSON.stringify(body)),
-    } as unknown as Response;
+    } as unknown as UndiciResponse;
   }
 
   function makeTokenGetter() {
@@ -205,10 +201,10 @@ describe("makeGetTokenFromBrakIdp", () => {
   }
 
   beforeEach(() => {
-    mocks.fetch.mockReset();
-    mocks.Agent.mockReset();
+    vi.mocked(fetch).mockReset();
+    vi.mocked(Agent).mockReset();
     stubTokenExchange(successfulTokenExchange);
-    mocks.fetch.mockImplementation(async (url: string) => {
+    vi.mocked(fetch).mockImplementation(async (url) => {
       if (url === discoveryUrl) {
         return jsonResponse({ token_endpoint: tokenEndpoint });
       }
@@ -220,7 +216,7 @@ describe("makeGetTokenFromBrakIdp", () => {
           scope: "openid profile",
         });
       }
-      throw new Error(`Unexpected fetch call to "${url}"`);
+      throw new Error("Unexpected fetch call", { cause: url });
     });
   });
 
@@ -245,17 +241,17 @@ describe("makeGetTokenFromBrakIdp", () => {
       idToken: "id-token",
     });
 
-    expect(mocks.fetch).toHaveBeenNthCalledWith(1, discoveryUrl);
+    expect(fetch).toHaveBeenNthCalledWith(1, discoveryUrl);
 
-    expect(mocks.Agent).toHaveBeenCalledWith({
+    expect(Agent).toHaveBeenCalledWith({
       connect: {
         cert: "mock-cert-pem",
         key: "mock-key-pem",
       },
     });
-    const agentInstance = mocks.Agent.mock.results[0]?.value as unknown;
+    const agentInstance = vi.mocked(Agent).mock.results[0]?.value as unknown;
 
-    expect(mocks.fetch).toHaveBeenNthCalledWith(
+    expect(fetch).toHaveBeenNthCalledWith(
       2,
       tokenEndpoint,
       expect.objectContaining({
@@ -264,7 +260,7 @@ describe("makeGetTokenFromBrakIdp", () => {
       }),
     );
 
-    const [, requestInit] = mocks.fetch.mock.calls[1] as [
+    const [, requestInit] = vi.mocked(fetch).mock.calls[1] as [
       string,
       { body: URLSearchParams },
     ];
@@ -290,18 +286,18 @@ describe("makeGetTokenFromBrakIdp", () => {
     await getToken(tokenRequest);
 
     // Discovery only happens once; both calls hit the cached token endpoint.
-    const discoveryCalls = mocks.fetch.mock.calls.filter(
-      ([url]) => url === discoveryUrl,
-    );
+    const discoveryCalls = vi
+      .mocked(fetch)
+      .mock.calls.filter(([url]) => url === discoveryUrl);
     expect(discoveryCalls).toHaveLength(1);
 
-    const tokenCalls = mocks.fetch.mock.calls.filter(
-      ([url]) => url === tokenEndpoint,
-    );
+    const tokenCalls = vi
+      .mocked(fetch)
+      .mock.calls.filter(([url]) => url === tokenEndpoint);
     expect(tokenCalls).toHaveLength(2);
 
     // The mTLS agent is only constructed once and then reused.
-    expect(mocks.Agent).toHaveBeenCalledTimes(1);
+    expect(Agent).toHaveBeenCalledTimes(1);
   });
 
   it("re-runs discovery on the next call if it previously failed", async () => {
@@ -311,19 +307,19 @@ describe("makeGetTokenFromBrakIdp", () => {
       redirectURI: "https://app.example/betterauth/callback/should/be/ignored",
     };
 
-    mocks.fetch.mockImplementationOnce(async () =>
+    vi.mocked(fetch).mockImplementationOnce(async () =>
       jsonResponse({}, { ok: false, status: 500 }),
     );
 
     await expect(getToken(tokenRequest)).rejects.toThrow(
       "Failed to resolve BRAK IdP token endpoint",
     );
-    expect(mocks.fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledTimes(1);
 
     const result = await getToken(tokenRequest);
 
     expect(result.accessToken).toBe("kompla-access-token");
-    expect(mocks.fetch).toHaveBeenCalledTimes(3);
+    expect(fetch).toHaveBeenCalledTimes(3);
   });
 
   it("exchanges the BRAK access token for KomPla IdP tokens, keeping the BRAK ID token", async () => {
@@ -363,7 +359,7 @@ describe("makeGetTokenFromBrakIdp", () => {
   it("throws if the discovery document has no token_endpoint", async () => {
     const getToken = makeTokenGetter();
 
-    mocks.fetch.mockImplementationOnce(async () => jsonResponse({}));
+    vi.mocked(fetch).mockImplementationOnce(async () => jsonResponse({}));
 
     await expect(
       getToken({
@@ -376,7 +372,7 @@ describe("makeGetTokenFromBrakIdp", () => {
 
   it("computes accessTokenExpiresAt from the token response's expires_in", async () => {
     const getToken = makeTokenGetter();
-    mocks.fetch.mockImplementation(async (url: string) => {
+    vi.mocked(fetch).mockImplementation(async (url) => {
       if (url === discoveryUrl) {
         return jsonResponse({ token_endpoint: tokenEndpoint });
       }
@@ -389,7 +385,7 @@ describe("makeGetTokenFromBrakIdp", () => {
           scope: "openid profile",
         });
       }
-      throw new Error(`Unexpected fetch call to "${url}"`);
+      throw new Error("Unexpected fetch call", { cause: url });
     });
 
     const result = await getToken({
@@ -403,7 +399,7 @@ describe("makeGetTokenFromBrakIdp", () => {
   it("throws if the token request fails", async () => {
     const getToken = makeTokenGetter();
 
-    mocks.fetch.mockImplementation(async (url: string) => {
+    vi.mocked(fetch).mockImplementation(async (url) => {
       if (url === discoveryUrl) {
         return jsonResponse({ token_endpoint: tokenEndpoint });
       }

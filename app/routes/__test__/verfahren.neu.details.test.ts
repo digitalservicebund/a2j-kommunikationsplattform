@@ -1,37 +1,29 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import loadVerfahrenEinreichungBundle from "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server";
+import { fetchLatestBelegForEinreichung } from "~/domains/verfahren/infrastructure/repositories/belegRepository.server";
+import {
+  fetchVerfahrenById,
+  updateVerfahren,
+} from "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server";
 import { makeAuthSession } from "~tests/utils/factories/authSession";
 import {
   makeNatuerlichePersonBeteiligung,
   makeRAKanzleiBeteiligung,
 } from "~tests/utils/factories/beteiligung";
 import { makeDokument } from "~tests/utils/factories/dokument";
+import { makeEinreichungWithValidierungsstatusDetails } from "~tests/utils/factories/einreichung";
 import { makeGericht } from "~tests/utils/factories/gericht";
 import { makeVerfahren } from "~tests/utils/factories/verfahren";
 
-const mocks = vi.hoisted(() => ({
-  fetchVerfahrenById: vi.fn(),
-  updateVerfahren: vi.fn(),
-  loadVerfahrenEinreichungBundle: vi.fn(),
-  fetchLatestBelegForEinreichung: vi.fn(),
-}));
-
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server",
-  () => ({
-    fetchVerfahrenById: mocks.fetchVerfahrenById,
-    updateVerfahren: mocks.updateVerfahren,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/verfahrenRepository.server"),
 );
 vi.mock(
-  "~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server",
-  () => ({ default: mocks.loadVerfahrenEinreichungBundle }),
+  import("~/domains/verfahren/application/loadVerfahrenEinreichungBundle.server"),
 );
 vi.mock(
-  "~/domains/verfahren/infrastructure/repositories/belegRepository.server",
-  () => ({
-    fetchLatestBelegForEinreichung: mocks.fetchLatestBelegForEinreichung,
-  }),
+  import("~/domains/verfahren/infrastructure/repositories/belegRepository.server"),
 );
 vi.mock("~/middleware/auth.server", () => ({
   authContext: {},
@@ -70,12 +62,17 @@ function mockDraft(dokumente: ReturnType<typeof makeDokument>[]) {
   const verfahren = makeVerfahren({
     id: "11111111-1111-1111-1111-111111111111",
   });
-  mocks.loadVerfahrenEinreichungBundle.mockResolvedValue({
+  vi.mocked(loadVerfahrenEinreichungBundle).mockResolvedValue({
     verfahren,
-    einreichung: { id: "einreichung-1", name: "Klageeinreichung" },
+    einreichung: makeEinreichungWithValidierungsstatusDetails({
+      id: "einreichung-1",
+      name: "Klageeinreichung",
+      status: "ERSTELLT",
+    }),
     dokumente,
+    einreichungId: "einreichung-1",
   });
-  mocks.fetchLatestBelegForEinreichung.mockResolvedValue(undefined);
+  vi.mocked(fetchLatestBelegForEinreichung).mockResolvedValue(null);
   return verfahren;
 }
 
@@ -114,7 +111,7 @@ describe("/verfahren/neu/details", () => {
   describe("action", () => {
     it("saves the Verfahrensdetails with the court of the Verfahren", async () => {
       const gericht = makeGericht();
-      mocks.fetchVerfahrenById.mockResolvedValue(
+      vi.mocked(fetchVerfahrenById).mockResolvedValue(
         makeVerfahren({
           id: "11111111-1111-1111-1111-111111111111",
           gericht,
@@ -138,7 +135,7 @@ describe("/verfahren/neu/details", () => {
         context,
       } as unknown as ActionFunctionArgs);
 
-      expect(mocks.updateVerfahren).toHaveBeenCalledWith(
+      expect(updateVerfahren).toHaveBeenCalledWith(
         authSession,
         "11111111-1111-1111-1111-111111111111",
         {
@@ -156,7 +153,7 @@ describe("/verfahren/neu/details", () => {
 
     it("resends the existing Beteiligungen unchanged", async () => {
       const person = makeNatuerlichePersonBeteiligung({ nachname: "Müller" });
-      mocks.fetchVerfahrenById.mockResolvedValue(
+      vi.mocked(fetchVerfahrenById).mockResolvedValue(
         makeVerfahren({
           id: "11111111-1111-1111-1111-111111111111",
           beteiligungen: [person],
@@ -177,7 +174,7 @@ describe("/verfahren/neu/details", () => {
         context,
       } as unknown as ActionFunctionArgs);
 
-      expect(mocks.updateVerfahren).toHaveBeenCalledWith(
+      expect(updateVerfahren).toHaveBeenCalledWith(
         authSession,
         "11111111-1111-1111-1111-111111111111",
         expect.objectContaining({
@@ -197,7 +194,7 @@ describe("/verfahren/neu/details", () => {
     });
 
     it("reports stored data the update rejects as a general error", async () => {
-      mocks.fetchVerfahrenById.mockResolvedValue(
+      vi.mocked(fetchVerfahrenById).mockResolvedValue(
         makeVerfahren({
           id: "11111111-1111-1111-1111-111111111111",
           // the update requires a Kanzlei name
@@ -225,7 +222,7 @@ describe("/verfahren/neu/details", () => {
           error: "Die Änderungen konnten nicht gespeichert werden.",
         },
       });
-      expect(mocks.updateVerfahren).not.toHaveBeenCalled();
+      expect(updateVerfahren).not.toHaveBeenCalled();
     });
 
     it("requires a Verfahrensgegenstand", async () => {
@@ -250,7 +247,7 @@ describe("/verfahren/neu/details", () => {
           fieldErrors: { subjectMatterOfTheProceedings: [expect.any(String)] },
         },
       });
-      expect(mocks.updateVerfahren).not.toHaveBeenCalled();
+      expect(updateVerfahren).not.toHaveBeenCalled();
     });
   });
 });
